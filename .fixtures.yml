@@ -1,0 +1,10 @@
+fixtures:
+  forge_modules:
+    stdlib:
+      repo: 'puppetlabs/stdlib'
+      ref: '4.13.0'
+    postfix:
+      repo: 'thias/postfix'
+      ref: '0.3.4'
+  symlinks:
+    profile: "#{source_dir}"
