@@ -1,5 +1,5 @@
 class profile::base {
 
-  include profile
+  include ::profile
 
 }

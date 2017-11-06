@@ -79,9 +79,24 @@ describe 'profile::postfix' do
         }
 
         it { is_expected.to contain_postfix__dbfile('virtual').with(
-          'source' => 'puppet:///private/postfix/virtual'
+          'source' => 'puppet:///modules/profile/postfix/virtual'
         )
         }
+
+        context "with aliases_source => puppet:///private/postfix/virtual" do
+          let(:params) {
+            super().merge(
+              {
+                'aliases_source' => 'puppet:///private/postfix/virtual'
+              }
+            )
+          }
+
+          it { is_expected.to contain_postfix__dbfile('virtual').with(
+            'source' => 'puppet:///private/postfix/virtual'
+          )
+          }
+        end
       end
     end
   end

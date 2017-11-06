@@ -2,12 +2,12 @@ class profile::postfix (
   Boolean                     $tls              = true,
   Enum['ipv4', 'ipv6', 'all'] $inet_protocols   = 'all',
   String                      $listen_addresses = 'all',
-  Boolean											$aliases          = false,
-  Array[String]								$aliases_domains  = [],
-  String                      $aliases_source   = 'puppet:///private/postfix/virtual'
+  Boolean                     $aliases          = false,
+  Array[String]               $aliases_domains  = [],
+  String                      $aliases_source   = 'puppet:///modules/profile/postfix/virtual'
 ) {
 
-  include profile
+  include ::profile
 
   if $aliases {
     if $tls {
