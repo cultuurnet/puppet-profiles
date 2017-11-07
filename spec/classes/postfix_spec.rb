@@ -83,6 +83,30 @@ describe 'profile::postfix' do
         )
         }
 
+        context "with aliases_domains => [ foo.com, bar.com ]" do
+          let(:params) {
+            super().merge(
+              {
+                'aliases_domains' => [ 'foo.com', 'bar.com' ]
+              }
+            )
+          }
+
+          it { is_expected.to contain_class('postfix::server').with(
+            'inet_protocols'        => 'all',
+            'inet_interfaces'       => 'all',
+            'smtp_use_tls'          => 'no',
+            'virtual_alias_maps'    => [ 'hash:/etc/postfix/virtual'],
+            'virtual_alias_domains' => [ 'foo.com', 'bar.com' ]
+            )
+          }
+
+          it { is_expected.to contain_postfix__dbfile('virtual').with(
+            'source' => 'puppet:///modules/profile/postfix/virtual'
+          )
+          }
+        end
+
         context "with aliases_source => puppet:///private/postfix/virtual" do
           let(:params) {
             super().merge(
