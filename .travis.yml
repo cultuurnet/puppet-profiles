@@ -1,0 +1,12 @@
+---
+sudo: false
+language: ruby
+script: "bundle exec rake test"
+matrix:
+  fast_finish: true
+  include:
+  - rvm: 2.2.2
+    env: PUPPET_GEM_VERSION="~> 4.10.0"
+notifications:
+  email:
+		- infra@publiq.be

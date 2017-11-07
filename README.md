@@ -1,4 +1,5 @@
 # profile
+[![Build Status](https://travis-ci.org/cultuurnet/puppet-profile.png?branch=master)](https://travis-ci.org/cultuurnet/puppet-profile)
 
 #### Table of Contents
 
