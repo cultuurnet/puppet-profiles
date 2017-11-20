@@ -1,4 +1,4 @@
-class profile {
+class profiles {
   case $::operatingsystem {
     'Ubuntu': {
       case $::operatingsystemrelease {

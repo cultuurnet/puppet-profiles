@@ -1,5 +1,5 @@
-class profile::base {
+class profiles::base {
 
-  include ::profile
+  include ::profiles
 
 }

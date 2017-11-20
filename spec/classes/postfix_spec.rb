@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe 'profile::postfix' do
-  include_examples 'operating system support', 'profile::postfix'
+describe 'profiles::postfix' do
+  include_examples 'operating system support', 'profiles::postfix'
 
   context "on Ubuntu 14.04" do
     let(:facts) { {
@@ -79,7 +79,7 @@ describe 'profile::postfix' do
         }
 
         it { is_expected.to contain_postfix__dbfile('virtual').with(
-          'source' => 'puppet:///modules/profile/postfix/virtual'
+          'source' => 'puppet:///modules/profiles/postfix/virtual'
         )
         }
 
@@ -102,7 +102,7 @@ describe 'profile::postfix' do
           }
 
           it { is_expected.to contain_postfix__dbfile('virtual').with(
-            'source' => 'puppet:///modules/profile/postfix/virtual'
+            'source' => 'puppet:///modules/profiles/postfix/virtual'
           )
           }
         end

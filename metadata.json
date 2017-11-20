@@ -1,12 +1,12 @@
 {
-  "name": "puppet-profile",
+  "name": "puppet-profiles",
   "version": "0.1.0",
   "author": "publiq",
   "summary": "Profiles provide aggregations of classes to supply a technology stack",
   "license": "Apache-2.0",
-  "source": "https://github.com/cultuurnet/puppet-profile",
-  "project_page": "https://github.com/cultuurnet/puppet-profile",
-  "issues_url": "https://github.com/cultuurnet/puppet-profile/issues",
+  "source": "https://github.com/cultuurnet/puppet-profiles",
+  "project_page": "https://github.com/cultuurnet/puppet-profiles",
+  "issues_url": "https://github.com/cultuurnet/puppet-profiles/issues",
   "dependencies": [
     {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
   ],

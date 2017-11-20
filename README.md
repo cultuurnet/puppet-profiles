@@ -1,13 +1,13 @@
-# profile
-[![Build Status](https://travis-ci.org/cultuurnet/puppet-profile.png?branch=master)](https://travis-ci.org/cultuurnet/puppet-profile)
+# profiles
+[![Build Status](https://travis-ci.org/cultuurnet/puppet-profiles.png?branch=master)](https://travis-ci.org/cultuurnet/puppet-profiles)
 
 #### Table of Contents
 
 1. [Description](#description)
-1. [Setup - The basics of getting started with profile](#setup)
-    * [What profile affects](#what-profile-affects)
+1. [Setup - The basics of getting started with profiles](#setup)
+    * [What profiles affects](#what-profiles-affects)
     * [Setup requirements](#setup-requirements)
-    * [Beginning with profile](#beginning-with-profile)
+    * [Beginning with profiles](#beginning-with-profiles)
 1. [Usage - Configuration options and additional functionality](#usage)
 1. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
 1. [Limitations - OS compatibility, etc.](#limitations)
@@ -26,7 +26,7 @@ management, etc.), this is the time to mention it.
 
 ## Setup
 
-### What profile affects **OPTIONAL**
+### What profiles affects **OPTIONAL**
 
 If it's obvious what your module touches, you can skip this section. For
 example, folks can probably figure out that your mysql_instance module affects
@@ -48,7 +48,7 @@ If your most recent release breaks compatibility or requires particular steps
 for upgrading, you might want to include an additional "Upgrading" section
 here.
 
-### Beginning with profile
+### Beginning with profiles
 
 The very basic steps needed for a user to get the module up and running. This
 can include setup steps, if necessary, or it can be an example of the most
