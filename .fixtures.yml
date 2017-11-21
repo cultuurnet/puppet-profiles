@@ -7,4 +7,4 @@ fixtures:
       repo: 'thias/postfix'
       ref: '0.3.4'
   symlinks:
-    profile: "#{source_dir}"
+    profiles: "#{source_dir}"
