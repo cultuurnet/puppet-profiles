@@ -2,12 +2,18 @@ class profiles::postfix (
   Boolean                     $tls              = true,
   Enum['ipv4', 'ipv6', 'all'] $inet_protocols   = 'all',
   String                      $listen_addresses = 'all',
+  String                      $relayhost        = '',
   Boolean                     $aliases          = false,
   Array[String]               $aliases_domains  = [],
   String                      $aliases_source   = 'puppet:///modules/profiles/postfix/virtual'
 ) {
 
   include ::profiles
+
+  $relay_host = $relayhost ? {
+    ''      => false,
+    default => $relayhost
+  }
 
   if $aliases {
     if $tls {
@@ -16,6 +22,7 @@ class profiles::postfix (
         inet_interfaces         => $listen_addresses,
         virtual_alias_maps      => [ 'hash:/etc/postfix/virtual'],
         virtual_alias_domains   => $aliases_domains,
+        relayhost               => $relay_host,
         smtp_use_tls            => 'yes',
         smtp_tls_security_level => 'may',
         extra_main_parameters   => {
@@ -28,6 +35,7 @@ class profiles::postfix (
         inet_interfaces       => $listen_addresses,
         virtual_alias_maps    => [ 'hash:/etc/postfix/virtual'],
         virtual_alias_domains => $aliases_domains,
+        relayhost             => $relay_host,
         smtp_use_tls          => 'no'
       }
     }
@@ -41,6 +49,7 @@ class profiles::postfix (
       class { '::postfix::server':
         inet_protocols          => $inet_protocols,
         inet_interfaces         => $listen_addresses,
+        relayhost               => $relay_host,
         smtp_use_tls            => 'yes',
         smtp_tls_security_level => 'may',
         extra_main_parameters   => {
@@ -51,6 +60,7 @@ class profiles::postfix (
       class { '::postfix::server':
         inet_protocols  => $inet_protocols,
         inet_interfaces => $listen_addresses,
+        relayhost       => $relay_host,
         smtp_use_tls    => 'no'
       }
     }

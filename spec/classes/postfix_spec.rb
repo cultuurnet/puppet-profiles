@@ -20,6 +20,23 @@ describe 'profiles::postfix' do
         'inet_protocols'          => 'all',
         'inet_interfaces'         => 'all',
         'smtp_use_tls'            => 'yes',
+        'relayhost'               => false,
+        'smtp_tls_security_level' => 'may',
+        'extra_main_parameters'   => { 'smtp_tls_loglevel'   => '1' }
+        )
+      }
+
+      it { is_expected.not_to contain_postfix__dbfile('virtual') }
+    end
+
+    context "with relayhost => [mailhost.example.com]" do
+      let(:params) { { 'relayhost' => '[mailhost.example.com]' } }
+
+      it { is_expected.to contain_class('postfix::server').with(
+        'inet_protocols'          => 'all',
+        'inet_interfaces'         => 'all',
+        'smtp_use_tls'            => 'yes',
+        'relayhost'               => '[mailhost.example.com]',
         'smtp_tls_security_level' => 'may',
         'extra_main_parameters'   => { 'smtp_tls_loglevel'   => '1' }
         )
@@ -34,18 +51,20 @@ describe 'profiles::postfix' do
       it { is_expected.to contain_class('postfix::server').with(
         'inet_protocols'  => 'all',
         'inet_interfaces' => 'all',
-        'smtp_use_tls'    => 'no'
+        'smtp_use_tls'    => 'no',
+        'relayhost'       => false
         )
       }
 
       it { is_expected.not_to contain_postfix__dbfile('virtual') }
 
-      context "with inet_protocols => ipv4 and listen_addresses => 127.0.0.1" do
+      context "with inet_protocols => ipv4, listen_addresses => 127.0.0.1 and relayhost => [mailhost.example.com]" do
         let(:params) {
           super().merge(
             {
               'inet_protocols'   => 'ipv4',
-              'listen_addresses' => '127.0.0.1'
+              'listen_addresses' => '127.0.0.1',
+              'relayhost'        => '[mailhost.example.com]'
             }
           )
         }
@@ -53,7 +72,8 @@ describe 'profiles::postfix' do
         it { is_expected.to contain_class('postfix::server').with(
           'inet_protocols'  => 'ipv4',
           'inet_interfaces' => '127.0.0.1',
-          'smtp_use_tls'    => 'no'
+          'smtp_use_tls'    => 'no',
+          'relayhost'       => '[mailhost.example.com]'
           )
         }
 
@@ -73,6 +93,7 @@ describe 'profiles::postfix' do
           'inet_protocols'        => 'all',
           'inet_interfaces'       => 'all',
           'smtp_use_tls'          => 'no',
+          'relayhost'             => false,
           'virtual_alias_maps'    => [ 'hash:/etc/postfix/virtual'],
           'virtual_alias_domains' => []
           )
@@ -96,6 +117,7 @@ describe 'profiles::postfix' do
             'inet_protocols'        => 'all',
             'inet_interfaces'       => 'all',
             'smtp_use_tls'          => 'no',
+            'relayhost'             => false,
             'virtual_alias_maps'    => [ 'hash:/etc/postfix/virtual'],
             'virtual_alias_domains' => [ 'foo.com', 'bar.com' ]
             )
