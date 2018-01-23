@@ -3,7 +3,13 @@ RSpec.shared_examples "operating system support" do |klass|
     on_supported_os.each do |os, facts|
       context "on #{os}" do
         let(:facts) do
-          facts
+          facts.merge(
+            {
+              :ec2_metadata => {
+                'public-ipv4' => '5.6.7.8'
+              }
+            }
+          )
         end
 
         it { is_expected.to contain_class(klass) }

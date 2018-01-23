@@ -7,7 +7,10 @@ describe 'profiles::postfix' do
     let(:facts) { {
         :osfamily               => 'Debian',
         :operatingsystem        => 'Ubuntu',
-        :operatingsystemrelease => '14.04'
+        :operatingsystemrelease => '14.04',
+        :ec2_metadata           => {
+          'public-ipv4'     => '1.2.3.4'
+        }
       }
     }
 
@@ -21,12 +24,22 @@ describe 'profiles::postfix' do
         'inet_interfaces'         => 'all',
         'smtp_use_tls'            => 'yes',
         'relayhost'               => false,
+        'mynetworks'              => '/etc/postfix/mynetworks',
         'smtp_tls_security_level' => 'may',
         'extra_main_parameters'   => { 'smtp_tls_loglevel'   => '1' }
         )
       }
 
       it { is_expected.not_to contain_postfix__dbfile('virtual') }
+
+      it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_1.2.3.4').with(
+        'target'  => '/etc/postfix/mynetworks',
+        'content' => "1.2.3.4\n",
+        'tag'     => 'postfix_mynetworks'
+        )
+      }
+
+      it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
     end
 
     context "with relayhost => [mailhost.example.com]" do
@@ -37,12 +50,22 @@ describe 'profiles::postfix' do
         'inet_interfaces'         => 'all',
         'smtp_use_tls'            => 'yes',
         'relayhost'               => '[mailhost.example.com]',
+        'mynetworks'              => false,
         'smtp_tls_security_level' => 'may',
         'extra_main_parameters'   => { 'smtp_tls_loglevel'   => '1' }
         )
       }
 
       it { is_expected.not_to contain_postfix__dbfile('virtual') }
+
+      it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_1.2.3.4').with(
+        'target'  => '/etc/postfix/mynetworks',
+        'content' => "1.2.3.4\n",
+        'tag'     => 'postfix_mynetworks'
+        )
+      }
+
+      it { is_expected.not_to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
     end
 
     context "without tls" do
@@ -52,13 +75,33 @@ describe 'profiles::postfix' do
         'inet_protocols'  => 'all',
         'inet_interfaces' => 'all',
         'smtp_use_tls'    => 'no',
-        'relayhost'       => false
+        'relayhost'       => false,
+        'mynetworks'      => '/etc/postfix/mynetworks'
         )
       }
 
       it { is_expected.not_to contain_postfix__dbfile('virtual') }
 
-      context "with inet_protocols => ipv4, listen_addresses => 127.0.0.1 and relayhost => [mailhost.example.com]" do
+      it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_1.2.3.4').with(
+        'target'  => '/etc/postfix/mynetworks',
+        'content' => "1.2.3.4\n",
+        'tag'     => 'postfix_mynetworks'
+        )
+      }
+
+      it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
+
+      context "on host with public ip address 5.6.7.8 with inet_protocols => ipv4, listen_addresses => 127.0.0.1 and relayhost => [mailhost.example.com]" do
+        let(:facts) {
+          super().merge(
+            {
+              :ec2_metadata => {
+                'public-ipv4' => '5.6.7.8'
+              }
+            }
+          )
+        }
+
         let(:params) {
           super().merge(
             {
@@ -73,11 +116,21 @@ describe 'profiles::postfix' do
           'inet_protocols'  => 'ipv4',
           'inet_interfaces' => '127.0.0.1',
           'smtp_use_tls'    => 'no',
-          'relayhost'       => '[mailhost.example.com]'
+          'relayhost'       => '[mailhost.example.com]',
+          'mynetworks'      => false
           )
         }
 
         it { is_expected.not_to contain_postfix__dbfile('virtual') }
+
+        it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_5.6.7.8').with(
+          'target'  => '/etc/postfix/mynetworks',
+          'content' => "5.6.7.8\n",
+          'tag'     => 'postfix_mynetworks'
+          )
+        }
+
+        it { is_expected.not_to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
       end
 
       context "with aliases" do
@@ -94,6 +147,7 @@ describe 'profiles::postfix' do
           'inet_interfaces'       => 'all',
           'smtp_use_tls'          => 'no',
           'relayhost'             => false,
+          'mynetworks'            => '/etc/postfix/mynetworks',
           'virtual_alias_maps'    => [ 'hash:/etc/postfix/virtual'],
           'virtual_alias_domains' => []
           )
@@ -103,6 +157,15 @@ describe 'profiles::postfix' do
           'source' => 'puppet:///modules/profiles/postfix/virtual'
         )
         }
+
+        it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_1.2.3.4').with(
+          'target'  => '/etc/postfix/mynetworks',
+          'content' => "1.2.3.4\n",
+          'tag'     => 'postfix_mynetworks'
+          )
+        }
+
+        it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
 
         context "with aliases_domains => [ foo.com, bar.com ]" do
           let(:params) {
@@ -118,6 +181,7 @@ describe 'profiles::postfix' do
             'inet_interfaces'       => 'all',
             'smtp_use_tls'          => 'no',
             'relayhost'             => false,
+            'mynetworks'            => '/etc/postfix/mynetworks',
             'virtual_alias_maps'    => [ 'hash:/etc/postfix/virtual'],
             'virtual_alias_domains' => [ 'foo.com', 'bar.com' ]
             )
@@ -127,6 +191,15 @@ describe 'profiles::postfix' do
             'source' => 'puppet:///modules/profiles/postfix/virtual'
           )
           }
+
+          it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_1.2.3.4').with(
+            'target'  => '/etc/postfix/mynetworks',
+            'content' => "1.2.3.4\n",
+            'tag'     => 'postfix_mynetworks'
+            )
+          }
+
+          it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
         end
 
         context "with aliases_source => puppet:///private/postfix/virtual" do

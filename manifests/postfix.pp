@@ -10,9 +10,27 @@ class profiles::postfix (
 
   include ::profiles
 
-  $relay_host = $relayhost ? {
-    ''      => false,
-    default => $relayhost
+  $config_directory = '/etc/postfix'
+  $mynetworks_file = "${config_directory}/mynetworks"
+
+  if $relayhost == '' {
+    $relay_host  = false
+    $my_networks = "${config_directory}/mynetworks"
+
+    Concat::Fragment <<| tag == 'postfix_mynetworks' |>>
+
+    concat { $mynetworks_file:
+      notify => Class['postfix::server']
+    }
+  } else {
+    $relay_host  = $relayhost
+    $my_networks = false
+  }
+
+  @@concat::fragment { "postfix_mynetworks_${facts['ec2_metadata']['public-ipv4']}":
+    target  => $mynetworks_file,
+    content => "${facts['ec2_metadata']['public-ipv4']}\n",
+    tag     => 'postfix_mynetworks'
   }
 
   if $aliases {
@@ -20,9 +38,10 @@ class profiles::postfix (
       class { '::postfix::server':
         inet_protocols          => $inet_protocols,
         inet_interfaces         => $listen_addresses,
-        virtual_alias_maps      => [ 'hash:/etc/postfix/virtual'],
+        virtual_alias_maps      => [ "hash:${config_directory}/virtual"],
         virtual_alias_domains   => $aliases_domains,
         relayhost               => $relay_host,
+        mynetworks              => $my_networks,
         smtp_use_tls            => 'yes',
         smtp_tls_security_level => 'may',
         extra_main_parameters   => {
@@ -33,9 +52,10 @@ class profiles::postfix (
       class { '::postfix::server':
         inet_protocols        => $inet_protocols,
         inet_interfaces       => $listen_addresses,
-        virtual_alias_maps    => [ 'hash:/etc/postfix/virtual'],
+        virtual_alias_maps    => [ "hash:${config_directory}/virtual"],
         virtual_alias_domains => $aliases_domains,
         relayhost             => $relay_host,
+        mynetworks            => $my_networks,
         smtp_use_tls          => 'no'
       }
     }
@@ -50,6 +70,7 @@ class profiles::postfix (
         inet_protocols          => $inet_protocols,
         inet_interfaces         => $listen_addresses,
         relayhost               => $relay_host,
+        mynetworks              => $my_networks,
         smtp_use_tls            => 'yes',
         smtp_tls_security_level => 'may',
         extra_main_parameters   => {
@@ -61,6 +82,7 @@ class profiles::postfix (
         inet_protocols  => $inet_protocols,
         inet_interfaces => $listen_addresses,
         relayhost       => $relay_host,
+        mynetworks      => $my_networks,
         smtp_use_tls    => 'no'
       }
     }
