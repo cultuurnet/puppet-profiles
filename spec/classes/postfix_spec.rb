@@ -25,6 +25,7 @@ describe 'profiles::postfix' do
         'smtp_use_tls'            => 'yes',
         'relayhost'               => false,
         'mynetworks'              => '/etc/postfix/mynetworks',
+        'message_size_limit'      => '0',
         'smtp_tls_security_level' => 'may',
         'extra_main_parameters'   => { 'smtp_tls_loglevel'   => '1' }
         )
@@ -51,6 +52,7 @@ describe 'profiles::postfix' do
         'smtp_use_tls'            => 'yes',
         'relayhost'               => '[mailhost.example.com]',
         'mynetworks'              => false,
+        'message_size_limit'      => '0',
         'smtp_tls_security_level' => 'may',
         'extra_main_parameters'   => { 'smtp_tls_loglevel'   => '1' }
         )
@@ -72,11 +74,12 @@ describe 'profiles::postfix' do
       let(:params) { { 'tls' => false } }
 
       it { is_expected.to contain_class('postfix::server').with(
-        'inet_protocols'  => 'all',
-        'inet_interfaces' => 'all',
-        'smtp_use_tls'    => 'no',
-        'relayhost'       => false,
-        'mynetworks'      => '/etc/postfix/mynetworks'
+        'inet_protocols'     => 'all',
+        'inet_interfaces'    => 'all',
+        'smtp_use_tls'       => 'no',
+        'relayhost'          => false,
+        'mynetworks'         => '/etc/postfix/mynetworks',
+        'message_size_limit' => '0'
         )
       }
 
@@ -113,11 +116,12 @@ describe 'profiles::postfix' do
         }
 
         it { is_expected.to contain_class('postfix::server').with(
-          'inet_protocols'  => 'ipv4',
-          'inet_interfaces' => '127.0.0.1',
-          'smtp_use_tls'    => 'no',
-          'relayhost'       => '[mailhost.example.com]',
-          'mynetworks'      => false
+          'inet_protocols'     => 'ipv4',
+          'inet_interfaces'    => '127.0.0.1',
+          'smtp_use_tls'       => 'no',
+          'relayhost'          => '[mailhost.example.com]',
+          'mynetworks'         => false,
+          'message_size_limit' => '0'
           )
         }
 
@@ -148,6 +152,7 @@ describe 'profiles::postfix' do
           'smtp_use_tls'          => 'no',
           'relayhost'             => false,
           'mynetworks'            => '/etc/postfix/mynetworks',
+          'message_size_limit'    => '0',
           'virtual_alias_maps'    => [ 'hash:/etc/postfix/virtual'],
           'virtual_alias_domains' => []
           )
@@ -182,6 +187,7 @@ describe 'profiles::postfix' do
             'smtp_use_tls'          => 'no',
             'relayhost'             => false,
             'mynetworks'            => '/etc/postfix/mynetworks',
+            'message_size_limit'    => '0',
             'virtual_alias_maps'    => [ 'hash:/etc/postfix/virtual'],
             'virtual_alias_domains' => [ 'foo.com', 'bar.com' ]
             )

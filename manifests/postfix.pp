@@ -42,6 +42,7 @@ class profiles::postfix (
         virtual_alias_domains   => $aliases_domains,
         relayhost               => $relay_host,
         mynetworks              => $my_networks,
+        message_size_limit      => '0',
         smtp_use_tls            => 'yes',
         smtp_tls_security_level => 'may',
         extra_main_parameters   => {
@@ -56,6 +57,7 @@ class profiles::postfix (
         virtual_alias_domains => $aliases_domains,
         relayhost             => $relay_host,
         mynetworks            => $my_networks,
+        message_size_limit    => '0',
         smtp_use_tls          => 'no'
       }
     }
@@ -71,6 +73,7 @@ class profiles::postfix (
         inet_interfaces         => $listen_addresses,
         relayhost               => $relay_host,
         mynetworks              => $my_networks,
+        message_size_limit      => '0',
         smtp_use_tls            => 'yes',
         smtp_tls_security_level => 'may',
         extra_main_parameters   => {
@@ -79,11 +82,12 @@ class profiles::postfix (
       }
     } else {
       class { '::postfix::server':
-        inet_protocols  => $inet_protocols,
-        inet_interfaces => $listen_addresses,
-        relayhost       => $relay_host,
-        mynetworks      => $my_networks,
-        smtp_use_tls    => 'no'
+        inet_protocols     => $inet_protocols,
+        inet_interfaces    => $listen_addresses,
+        relayhost          => $relay_host,
+        mynetworks         => $my_networks,
+        message_size_limit => '0',
+        smtp_use_tls       => 'no'
       }
     }
   }
