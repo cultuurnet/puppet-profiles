@@ -43,6 +43,7 @@ class profiles::postfix (
         relayhost               => $relay_host,
         mynetworks              => $my_networks,
         message_size_limit      => '0',
+        mailbox_size_limit      => '0',
         smtp_use_tls            => 'yes',
         smtp_tls_security_level => 'may',
         extra_main_parameters   => {
@@ -58,6 +59,7 @@ class profiles::postfix (
         relayhost             => $relay_host,
         mynetworks            => $my_networks,
         message_size_limit    => '0',
+        mailbox_size_limit    => '0',
         smtp_use_tls          => 'no'
       }
     }
@@ -74,6 +76,7 @@ class profiles::postfix (
         relayhost               => $relay_host,
         mynetworks              => $my_networks,
         message_size_limit      => '0',
+        mailbox_size_limit      => '0',
         smtp_use_tls            => 'yes',
         smtp_tls_security_level => 'may',
         extra_main_parameters   => {
@@ -87,6 +90,7 @@ class profiles::postfix (
         relayhost          => $relay_host,
         mynetworks         => $my_networks,
         message_size_limit => '0',
+        mailbox_size_limit => '0',
         smtp_use_tls       => 'no'
       }
     }
