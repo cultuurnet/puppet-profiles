@@ -2,12 +2,18 @@ fixtures:
   forge_modules:
     stdlib:
       repo: 'puppetlabs/stdlib'
-      ref: '4.13.0'
+      ref: '4.15.0'
     concat:
       repo: 'puppetlabs/concat'
       ref: '2.2.1'
     postfix:
       repo: 'thias/postfix'
       ref: '0.3.4'
+    augeasproviders_shellvar:
+      repo: 'herculesteam/augeasproviders_shellvar'
+      ref: '3.0.0'
+    augeasproviders_core:
+      repo: 'herculesteam/augeasproviders_core'
+      ref: '2.1.4'
   symlinks:
     profiles: "#{source_dir}"
