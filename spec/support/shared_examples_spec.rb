@@ -5,9 +5,8 @@ RSpec.shared_examples "operating system support" do |klass|
         let(:facts) do
           facts.merge(
             {
-              :ec2_metadata => {
-                'public-ipv4' => '5.6.7.8'
-              }
+              'ec2_metadata' => { 'public-ipv4' => '5.6.7.8' },
+              'os'           => { 'distro'      => { 'codename' => 'trusty' } }
             }
           )
         end
