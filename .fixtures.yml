@@ -15,5 +15,11 @@ fixtures:
     augeasproviders_core:
       repo: 'herculesteam/augeasproviders_core'
       ref: '2.1.4'
+    augeasproviders_ssh:
+      repo: 'herculesteam/augeasproviders_ssh'
+      ref: '3.1.0'
+    apt:
+      repo: 'puppetlabs/apt'
+      ref: '2.3.0'
   symlinks:
     profiles: "#{source_dir}"
