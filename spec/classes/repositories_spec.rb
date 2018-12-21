@@ -10,7 +10,7 @@ describe 'profiles::repositories' do
 
         case facts[:os]['release']['major']
         when '14.04'
-          let (:facts) { facts.merge( { 'os' => { 'distro' => { 'codename' => 'trusty' } } } ) }
+          let (:facts) { facts }
 
           it { is_expected.to compile.with_all_deps }
 
@@ -30,7 +30,7 @@ describe 'profiles::repositories' do
             }
           end
         when '16.04'
-          let (:facts) { facts.merge( { 'os' => { 'distro' => { 'codename' => 'xenial' } } } ) }
+          let (:facts) { facts }
 
           it { is_expected.to compile.with_all_deps }
 
