@@ -1,6 +1,10 @@
 class profiles::base {
 
-  include ::profiles
+  contain ::profiles
+  contain ::profiles::repositories
+  contain ::profiles::packages
+
+  realize Apt::Source['cultuurnet-tools']
 
   shellvar { 'PATH':
     ensure => 'present',
