@@ -14,6 +14,14 @@ describe 'profiles::ssh' do
         'value'  => 'no'
         )
       }
+
+      it { is_expected.to contain_sshd_config('PermitRootLogin').that_notifies('Service[ssh]') }
+
+      it { is_expected.to contain_service('ssh').with(
+        'ensure' => 'running',
+        'enable' => true
+        )
+      }
     end
   end
 end
