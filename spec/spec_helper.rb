@@ -7,6 +7,7 @@ Dir['./spec/support/**/*.rb'].sort.each { |f| require f }
 
 RSpec.configure do |c|
   c.default_facts = { 'staging_http_get' =>  'curl' }
+  c.mock_with :rspec
   c.after(:suite) do
     RSpec::Puppet::Coverage.report!
   end
