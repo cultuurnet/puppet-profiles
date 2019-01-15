@@ -10,6 +10,18 @@ describe 'profiles::repositories' do
       context "with all virtual resources realized" do
         let(:pre_condition) { 'include ::profiles; Apt::Source <| |>' }
 
+        it { is_expected.to contain_apt__source('rabbitmq').with(
+          'location' => 'http://www.rabbitmq.com/debian/',
+          'ensure'   => 'present',
+          'repos'    => 'main',
+          'include'  => {
+            'deb' => 'true',
+            'src' => 'false'
+          },
+          'release' => 'testing'
+        )
+        }
+
         case facts[:os]['release']['major']
         when '14.04'
           let (:facts) { facts }
