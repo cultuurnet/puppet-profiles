@@ -1,7 +1,5 @@
 class profiles::repositories {
 
-  contain ::profiles
-
   @apt::source { 'cultuurnet-tools':
     location => "http://apt.uitdatabank.be/tools-${environment}",
     release  => $facts['lsbdistcodename'],

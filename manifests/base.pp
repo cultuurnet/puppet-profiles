@@ -1,8 +1,6 @@
 class profiles::base {
 
   contain ::profiles
-  contain ::profiles::repositories
-  contain ::profiles::packages
 
   realize Apt::Source['cultuurnet-tools']
 

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'profiles::packages' do
-  let(:pre_condition) { 'include profiles::base' }
+  let(:pre_condition) { 'include ::profiles' }
 
   include_examples 'operating system support', 'profiles::packages'
 
@@ -13,7 +13,7 @@ describe 'profiles::packages' do
 
       context "with all virtual resources realized" do
         let(:pre_condition) {
-          [ 'include profiles::base', 'Package <| |>' ]
+          [ 'include ::profiles', 'Package <| |>' ]
         }
 
         it { is_expected.to contain_package('composer').with(

@@ -1,12 +1,14 @@
 require 'spec_helper'
 
 describe 'profiles::repositories' do
+  let(:pre_condition) { 'include ::profiles' }
+
   include_examples 'operating system support', 'profiles::repositories'
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       context "with all virtual resources realized" do
-        let(:pre_condition) { 'Apt::Source <| |>' }
+        let(:pre_condition) { 'include ::profiles; Apt::Source <| |>' }
 
         case facts[:os]['release']['major']
         when '14.04'
