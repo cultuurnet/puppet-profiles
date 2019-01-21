@@ -29,11 +29,25 @@ describe 'profiles::rabbitmq' do
           )
         }
 
+        it { is_expected.to contain_package('amqp-tools').with(
+          'ensure' => 'present',
+          )
+        }
+
         it { is_expected.to contain_apt__source('rabbitmq').that_comes_before('Class[rabbitmq]') }
         it { is_expected.to contain_class('rabbitmq').that_comes_before('Rabbitmq_user[foo]') }
+
+        context "with with_tools => false" do
+          let(:params) {
+            super().merge( { 'with_tools' => false } )
+          }
+
+          it { is_expected.not_to contain_package('amqp-tools') }
+        end
       end
     end
   end
+
   context "without parameters" do
     let(:params) { { } }
 

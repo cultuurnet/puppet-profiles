@@ -1,11 +1,16 @@
 class profiles::rabbitmq (
-  String $admin_user,
-  String $admin_password
+  String  $admin_user,
+  String  $admin_password,
+  Boolean $with_tools      = true
 ) {
 
   contain ::profiles
 
   realize Apt::Source['rabbitmq']
+
+  if $with_tools {
+    realize Package['amqp-tools']
+  }
 
   class { '::rabbitmq':
     manage_repos      => false,

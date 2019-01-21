@@ -8,4 +8,8 @@ class profiles::packages {
   @package { 'git':
     ensure => 'present'
   }
+
+  @package { 'amqp-tools':
+    ensure => 'present'
+  }
 }
