@@ -16,7 +16,7 @@ RSpec.shared_examples "operating system support" do |klass|
   end
 
   context 'on an unsupported operating system' do
-    describe 'without any parameters on RedHat' do
+    describe 'without any extra parameters on RedHat' do
       let(:facts) do
         {
           :operatingsystem => 'RedHat'
@@ -28,7 +28,7 @@ RSpec.shared_examples "operating system support" do |klass|
   end
 
   context 'on an unsupported operating system release' do
-    describe 'without any parameters on Ubuntu 12.04' do
+    describe 'without any extra parameters on Ubuntu 12.04' do
       let(:facts) do
         {
           :operatingsystem        => 'Ubuntu',
