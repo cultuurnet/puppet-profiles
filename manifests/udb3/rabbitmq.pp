@@ -7,11 +7,6 @@ class profiles::udb3::rabbitmq (
   contain ::profiles
   contain ::profiles::rabbitmq
 
-  rabbitmq_user { $admin_user:
-    admin    => true,
-    password => $admin_password
-  }
-
   rabbitmq_vhost { $vhost:
     ensure  => present
   }

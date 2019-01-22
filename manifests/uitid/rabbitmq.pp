@@ -4,7 +4,6 @@ class profiles::uitid::rabbitmq (
   String $admin_password = $::profiles::rabbitmq::admin_password
 )
 {
-
   contain ::profiles
   contain ::profiles::rabbitmq
 
