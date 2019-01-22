@@ -15,12 +15,12 @@ class profiles::repositories {
   }
 
   @apt::source { 'rabbitmq':
-    location => 'http://www.rabbitmq.com/debian/',
+    location => "http://apt.uitdatabank.be/rabbitmq-${environment}",
     release  => 'testing',
     repos    => 'main',
     key      => {
-      'id'     => '0A9AF2115F4687BD29803A206B73A36E6026DFCA',
-      'source' => 'http://www.rabbitmq.com/rabbitmq-release-signing-key.asc'
+      'id'     => '2380EA3E50D3776DFC1B03359F4935C80DC9EA95',
+      'source' => 'http://apt.uitdatabank.be/gpgkey/cultuurnet.gpg.key'
     },
     include  => {
       'deb' => true,
