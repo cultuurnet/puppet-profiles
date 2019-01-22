@@ -1,7 +1,7 @@
 class profiles::udb3::rabbitmq (
   String $vhost,
-  String $admin_user     = $::profiles::rabbitmq::admin_user,
-  String $admin_password = $::profiles::rabbitmq::admin_password
+  String $admin_user     = $profiles::rabbitmq::admin_user,
+  String $admin_password = $profiles::rabbitmq::admin_password
 )
 {
   contain ::profiles
