@@ -11,6 +11,15 @@ describe 'profiles::base' do
 
       it { is_expected.to contain_apt__source('cultuurnet-tools') }
 
+      it { is_expected.to contain_file('data').with(
+        'ensure' => 'directory',
+        'group'  => 'root',
+        'mode'   => '0755',
+        'owner'  => 'root',
+        'path'   => '/data'
+        )
+      }
+
       it { is_expected.to contain_shellvar('PATH').with(
         'ensure' => 'present',
         'target' => '/etc/environment',

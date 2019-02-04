@@ -4,6 +4,14 @@ class profiles::base {
 
   realize Apt::Source['cultuurnet-tools']
 
+  file { 'data':
+    ensure => 'directory',
+    group  => 'root',
+    mode   => '0755',
+    owner  => 'root',
+    path   => '/data'
+  }
+
   shellvar { 'PATH':
     ensure => 'present',
     target => '/etc/environment',
