@@ -4,6 +4,10 @@ class profiles::base {
 
   realize Apt::Source['cultuurnet-tools']
 
+  class { 'lvm':
+    manage_pkg => true
+  }
+
   file { 'data':
     ensure => 'directory',
     group  => 'root',
