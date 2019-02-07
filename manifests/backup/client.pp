@@ -12,10 +12,10 @@ class profiles::backup::client (
   }
 
   file { '/root/.ssh':
-    ensure  => 'directory',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0700'
+    ensure => 'directory',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0700'
   }
 
   file { '/root/.ssh/backup_rsa':

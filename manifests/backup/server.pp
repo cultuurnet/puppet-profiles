@@ -62,14 +62,14 @@ class profiles::backup::server (
   }
 
   file { $backupdir:
-    ensure  => 'directory',
-    owner   => 'borgbackup',
-    group   => 'borgbackup'
+    ensure => 'directory',
+    owner  => 'borgbackup',
+    group  => 'borgbackup'
   }
 
   User['borgbackup'] -> Ssh_authorized_key['backup']
-  User['borgbackup'] -> Exec["create $backupdir"]
-  Exec["create $backupdir"] -> Mount[$backupdir]
+  User['borgbackup'] -> Exec["create ${backupdir}"]
+  Exec["create ${backupdir}"] -> Mount[$backupdir]
   Filesystem['/dev/backupvg/backup'] -> Mount[$backupdir]
   Mount[$backupdir] -> File[$backupdir]
 }
