@@ -31,5 +31,8 @@ fixtures:
     rabbitmq:
       repo: 'git://github.com/willaerk/puppetlabs-rabbitmq.git'
       ref: 'cdcb352'
+    borgbackup:
+      repo: 'git://github.com/cultuurnet/puppet-borgbackup.git'
+      ref: '0.5.0'
   symlinks:
     profiles: "#{source_dir}"
