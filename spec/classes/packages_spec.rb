@@ -30,6 +30,11 @@ describe 'profiles::packages' do
           'ensure' => 'present'
           )
         }
+
+        it { is_expected.to contain_package('awscli').with(
+          'ensure' => 'present'
+          )
+        }
       end
     end
   end
