@@ -63,7 +63,7 @@ describe 'profiles::backup::server' do
             ) }
 
             it { is_expected.to contain_exec('create /mnt').with(
-              'command' => 'install -o borgbackup -g borgbackup /mnt',
+              'command' => 'install -o borgbackup -g borgbackup -d /mnt',
               'path'    => '/usr/bin:/usr/sbin:/bin',
               'unless'  => 'test -d /mnt'
             ) }
@@ -128,7 +128,7 @@ describe 'profiles::backup::server' do
             ) }
 
             it { is_expected.to contain_exec('create /tmp/bla').with(
-              'command' => 'install -o borgbackup -g borgbackup /tmp/bla',
+              'command' => 'install -o borgbackup -g borgbackup -d /tmp/bla',
               'path'    => '/usr/bin:/usr/sbin:/bin',
               'unless'  => 'test -d /tmp/bla'
             ) }

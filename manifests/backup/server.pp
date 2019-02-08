@@ -48,7 +48,7 @@ class profiles::backup::server (
   }
 
   exec { "create ${backupdir}":
-    command => "install -o borgbackup -g borgbackup ${backupdir}",
+    command => "install -o borgbackup -g borgbackup -d ${backupdir}",
     unless  => "test -d ${backupdir}",
     path    => '/usr/bin:/usr/sbin:/bin'
   }
