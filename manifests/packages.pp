@@ -12,4 +12,8 @@ class profiles::packages {
   @package { 'amqp-tools':
     ensure => 'present'
   }
+
+  @package { 'awscli':
+    ensure => 'present'
+  }
 }

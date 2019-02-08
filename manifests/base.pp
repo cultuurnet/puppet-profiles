@@ -3,6 +3,7 @@ class profiles::base {
   contain ::profiles
 
   realize Apt::Source['cultuurnet-tools']
+  realize Package['awscli']
 
   class { 'lvm':
     manage_pkg => true
