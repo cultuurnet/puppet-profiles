@@ -42,6 +42,18 @@ describe 'profiles::repositories' do
               'release' => 'testing'
             )
             }
+
+            it { is_expected.to contain_apt__source('nodejs_8.x').with(
+              'location' => 'http://apt.uitdatabank.be/nodejs_8.x-testing',
+              'ensure'   => 'present',
+              'repos'    => 'main',
+              'include'  => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release' => 'trusty'
+            )
+            }
           end
 
         when '16.04'
@@ -73,6 +85,18 @@ describe 'profiles::repositories' do
                 'src' => 'false'
               },
               'release' => 'testing'
+            )
+            }
+
+            it { is_expected.to contain_apt__source('nodejs_8.x').with(
+              'location' => 'http://apt.uitdatabank.be/nodejs_8.x-acceptance',
+              'ensure'   => 'present',
+              'repos'    => 'main',
+              'include'  => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release' => 'xenial'
             )
             }
           end
