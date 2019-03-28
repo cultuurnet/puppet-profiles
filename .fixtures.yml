@@ -27,6 +27,9 @@ fixtures:
     lvm:
       repo: 'puppetlabs/lvm'
       ref: '1.0.1'
+    ntp:
+      repo: 'puppetlabs/ntp'
+      ref: '6.1.0'
   repositories:
     rabbitmq:
       repo: 'git://github.com/willaerk/puppetlabs-rabbitmq.git'
