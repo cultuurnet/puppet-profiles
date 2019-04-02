@@ -16,6 +16,12 @@ describe 'profiles::groups' do
           [ 'include ::profiles', 'Group <| |>' ]
         }
 
+        it { is_expected.to contain_group('ubuntu').with(
+          'ensure' => 'present',
+          'gid'    => '1000'
+          )
+        }
+
         it { is_expected.to contain_group('borgbackup').with(
           'ensure' => 'present',
           'gid'    => '1001'

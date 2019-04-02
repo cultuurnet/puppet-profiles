@@ -4,6 +4,8 @@ class profiles::base {
 
   realize Apt::Source['cultuurnet-tools']
   realize Package['awscli']
+  realize Group['ubuntu']
+  realize User['ubuntu']
 
   if $settings::storeconfigs {
     @@sshkey { $::ipaddress_eth0:

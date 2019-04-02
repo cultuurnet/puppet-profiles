@@ -15,8 +15,9 @@ describe 'profiles::base' do
       }
 
       it { is_expected.to contain_apt__source('cultuurnet-tools') }
-
       it { is_expected.to contain_package('awscli') }
+      it { is_expected.to contain_group('ubuntu') }
+      it { is_expected.to contain_user('ubuntu') }
 
       it { is_expected.to contain_class('lvm').with(
         'manage_pkg' => true

@@ -16,6 +16,17 @@ describe 'profiles::users' do
           [ 'include ::profiles', 'User <| |>' ]
         }
 
+        it { is_expected.to contain_user('ubuntu').with(
+          'ensure'         => 'present',
+          'gid'            => 'ubuntu',
+          'home'           => '/home/ubuntu',
+          'managehome'     => true,
+          'purge_ssh_keys' => true,
+          'shell'          => '/bin/bash',
+          'uid'            => '1000'
+          )
+        }
+
         it { is_expected.to contain_user('borgbackup').with(
           'ensure'         => 'present',
           'gid'            => 'borgbackup',
