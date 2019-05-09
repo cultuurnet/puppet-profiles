@@ -15,6 +15,11 @@ describe 'profiles::php' do
         'ensure' => 'present'
         )
       }
+
+      it { is_expected.to contain_package('git').with(
+        'ensure' => 'present'
+        )
+      }
     end
   end
 end
