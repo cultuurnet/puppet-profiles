@@ -11,6 +11,8 @@ describe 'profiles::php' do
 
       it { is_expected.to compile.with_all_deps }
 
+      it { is_expected.to contain_apt__source('php') }
+
       it { is_expected.to contain_package('composer').with(
         'ensure' => 'present'
         )
