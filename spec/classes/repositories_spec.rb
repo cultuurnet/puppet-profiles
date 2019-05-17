@@ -54,6 +54,18 @@ describe 'profiles::repositories' do
               'release' => 'trusty'
             )
             }
+
+            it { is_expected.to contain_apt__source('php').with(
+              'location' => 'http://apt.uitdatabank.be/php-testing',
+              'ensure'   => 'present',
+              'repos'    => 'main',
+              'include'  => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release' => 'trusty'
+            )
+            }
           end
 
         when '16.04'
