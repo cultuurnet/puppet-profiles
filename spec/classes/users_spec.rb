@@ -27,6 +27,17 @@ describe 'profiles::users' do
           )
         }
 
+        it { is_expected.to contain_user('vagrant').with(
+          'ensure'         => 'present',
+          'gid'            => 'vagrant',
+          'home'           => '/home/vagrant',
+          'managehome'     => true,
+          'purge_ssh_keys' => false,
+          'shell'          => '/bin/bash',
+          'uid'            => '1000'
+          )
+        }
+
         it { is_expected.to contain_user('borgbackup').with(
           'ensure'         => 'present',
           'gid'            => 'borgbackup',

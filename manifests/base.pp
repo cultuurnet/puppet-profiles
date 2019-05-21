@@ -3,9 +3,15 @@ class profiles::base {
   contain ::profiles
 
   realize Apt::Source['cultuurnet-tools']
-  realize Package['awscli']
-  realize Group['ubuntu']
-  realize User['ubuntu']
+
+  if $facts['ec2_metadata'] {
+    realize Package['awscli']
+    realize Group['ubuntu']
+    realize User['ubuntu']
+  } else {
+    realize Group['vagrant']
+    realize User['vagrant']
+  }
 
   if $settings::storeconfigs {
     @@sshkey { $::ipaddress_eth0:

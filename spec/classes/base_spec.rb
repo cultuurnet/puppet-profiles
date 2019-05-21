@@ -15,9 +15,6 @@ describe 'profiles::base' do
       }
 
       it { is_expected.to contain_apt__source('cultuurnet-tools') }
-      it { is_expected.to contain_package('awscli') }
-      it { is_expected.to contain_group('ubuntu') }
-      it { is_expected.to contain_user('ubuntu') }
 
       it { is_expected.to contain_class('lvm').with(
         'manage_pkg' => true
@@ -46,6 +43,30 @@ describe 'profiles::base' do
         'value'  => '/opt/puppetlabs/puppet/lib/ruby/vendor_ruby'
         )
       }
+
+      context "on AWS EC2" do
+        let(:facts) do
+          super().merge({ 'ec2_metadata' => 'true' })
+        end
+
+        it { is_expected.to contain_package('awscli') }
+        it { is_expected.to contain_group('ubuntu') }
+        it { is_expected.to contain_user('ubuntu') }
+        it { is_expected.to_not contain_group('vagrant') }
+        it { is_expected.to_not contain_user('vagrant') }
+      end
+
+      context "not on AWS EC2" do
+        let(:facts) do
+          super()
+        end
+
+        it { is_expected.to_not contain_package('awscli') }
+        it { is_expected.to_not contain_group('ubuntu') }
+        it { is_expected.to_not contain_user('ubuntu') }
+        it { is_expected.to contain_group('vagrant') }
+        it { is_expected.to contain_user('vagrant') }
+      end
     end
   end
 end

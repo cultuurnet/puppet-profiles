@@ -10,6 +10,16 @@ class profiles::users {
     uid            => '1000'
   }
 
+  @user { 'vagrant':
+    ensure         => 'present',
+    gid            => 'vagrant',
+    home           => '/home/vagrant',
+    managehome     => true,
+    purge_ssh_keys => false,
+    shell          => '/bin/bash',
+    uid            => '1000'
+  }
+
   @user { 'borgbackup':
     ensure         => 'present',
     gid            => 'borgbackup',
