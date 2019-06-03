@@ -1,9 +1,10 @@
 class profiles::glassfish {
 
   contain ::profiles
-  contain ::java8
 
   realize Apt::Source['cultuurnet-tools']
+
+  contain profiles::java8
 
   class { 'glassfish':
     install_method      => 'package',
@@ -14,7 +15,7 @@ class profiles::glassfish {
     manage_java         => false,
     parent_dir          => '/opt',
     install_dir         => 'payara',
-    require             => Class['java8']
+    require             => Class['profiles::java8']
   }
 
   package { 'mysql-connector-java':

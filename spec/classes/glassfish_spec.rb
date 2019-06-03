@@ -11,7 +11,7 @@ describe 'profiles::glassfish' do
 
       it { is_expected.to contain_apt__source('cultuurnet-tools') }
 
-      it { is_expected.to contain_class('java8') }
+      it { is_expected.to contain_class('profiles::java8') }
 
       it { is_expected.to contain_class('glassfish').with(
         'install_method'      => 'package',
@@ -25,7 +25,7 @@ describe 'profiles::glassfish' do
         )
       }
 
-      it { is_expected.to contain_class('glassfish').that_requires('Class[java8]') }
+      it { is_expected.to contain_class('glassfish').that_requires('Class[profiles::java8]') }
 
       it { is_expected.to contain_package('mysql-connector-java').with(
         'ensure' => 'latest'
