@@ -11,24 +11,12 @@ describe 'profiles::java8' do
 
       it { is_expected.to contain_apt__source('cultuurnet-tools') }
 
-      it { is_expected.to contain_file('/var/cache').with(
-        'ensure' => 'directory'
+      it { is_expected.to contain_package('oracle-jdk8-archive').with(
+        'ensure' => '8u151'
         )
       }
 
-      it { is_expected.to contain_file('/var/cache/oracle-jdk8-installer').with(
-        'ensure' => 'directory'
-        )
-      }
-
-      it { is_expected.to contain_wget__fetch('jdk-8u151-linux-x64.tar.gz').with(
-        'destination' => '/var/cache/oracle-jdk8-installer/jdk-8u151-linux-x64.tar.gz',
-        'source'      => 'https://s3-eu-west-1.amazonaws.com/udb3-vagrant/jdk-8u151-linux-x64.tar.gz'
-        )
-      }
-
-      it { is_expected.to contain_wget__fetch('jdk-8u151-linux-x64.tar.gz').that_comes_before('Class[java8]') }
-      it { is_expected.to contain_wget__fetch('jdk-8u151-linux-x64.tar.gz').that_requires('File[/var/cache/oracle-jdk8-installer]') }
+      it { is_expected.to contain_package('oracle-jdk8-archive').that_requires('Apt::Source[cultuurnet-tools]') }
 
       it { is_expected.to contain_class('java8').with(
         'installer_version' => '8u151-1~webupd8~0',
@@ -36,7 +24,7 @@ describe 'profiles::java8' do
         )
       }
 
-      it { is_expected.to contain_class('java8').that_requires('Apt::Source[cultuurnet-tools]') }
+      it { is_expected.to contain_class('java8').that_requires('Package[oracle-jdk8-archive]') }
     end
   end
 end

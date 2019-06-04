@@ -30,9 +30,6 @@ fixtures:
     ntp:
       repo: 'puppetlabs/ntp'
       ref: '6.1.0'
-    wget:
-      repo: 'puppet/wget'
-      ref: '2.0.1'
   repositories:
     rabbitmq:
       repo: 'git://github.com/willaerk/puppetlabs-rabbitmq.git'
