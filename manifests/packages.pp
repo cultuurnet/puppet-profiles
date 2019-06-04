@@ -16,4 +16,9 @@ class profiles::packages {
   @package { 'awscli':
     ensure => 'present'
   }
+
+  @package { 'ca-certificates-publiq':
+    ensure  => 'present',
+    require => Apt::Source['cultuurnet-tools']
+  }
 }

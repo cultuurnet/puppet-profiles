@@ -9,6 +9,7 @@ class profiles::base {
     realize Group['ubuntu']
     realize User['ubuntu']
   } else {
+    realize Package['ca-certificates-publiq']
     realize Group['vagrant']
     realize User['vagrant']
   }
