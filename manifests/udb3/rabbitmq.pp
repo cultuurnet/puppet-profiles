@@ -1,11 +1,17 @@
 class profiles::udb3::rabbitmq (
-  String $vhost,
-  String $admin_user     = $profiles::rabbitmq::admin_user,
-  String $admin_password = $profiles::rabbitmq::admin_password
+  String  $vhost,
+  String  $admin_user,
+  String  $admin_password,
+  Boolean $with_tools      = true
 )
 {
   contain ::profiles
-  contain ::profiles::rabbitmq
+
+  class { '::profiles::rabbitmq':
+    admin_user     => $admin_user,
+    admin_password => $admin_password,
+    with_tools     => $with_tools
+  }
 
   rabbitmq_vhost { $vhost:
     ensure  => present
