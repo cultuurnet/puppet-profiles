@@ -55,6 +55,18 @@ describe 'profiles::repositories' do
             )
             }
 
+            it { is_expected.to contain_apt__source('nodejs_10.x').with(
+              'location' => 'http://apt.uitdatabank.be/nodejs_10.x-testing',
+              'ensure'   => 'present',
+              'repos'    => 'main',
+              'include'  => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release' => 'trusty'
+            )
+            }
+
             it { is_expected.to contain_apt__source('php').with(
               'location' => 'http://apt.uitdatabank.be/php-testing',
               'ensure'   => 'present',
@@ -109,6 +121,18 @@ describe 'profiles::repositories' do
                 'src' => 'false'
               },
               'release' => 'xenial'
+            )
+            }
+
+            it { is_expected.to contain_apt__source('nodejs_10.x').with(
+              'location' => 'http://apt.uitdatabank.be/nodejs_10.x-acceptance',
+              'ensure'   => 'present',
+              'repos'    => 'main',
+              'include'  => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release' => 'trusty'
             )
             }
           end
