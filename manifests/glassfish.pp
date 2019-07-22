@@ -1,4 +1,6 @@
-class profiles::glassfish {
+class profiles::glassfish (
+  String $flavor = 'payara'
+) {
 
   contain ::profiles
 
@@ -8,13 +10,12 @@ class profiles::glassfish {
 
   class { 'glassfish':
     install_method      => 'package',
-    package_prefix      => 'payara',
-    version             => '4.1.1.171.1',
+    package_prefix      => $flavor,
     create_service      => false,
     enable_secure_admin => false,
     manage_java         => false,
     parent_dir          => '/opt',
-    install_dir         => 'payara',
+    install_dir         => $flavor,
     require             => Class['profiles::java8']
   }
 
@@ -25,7 +26,7 @@ class profiles::glassfish {
   # Hack to circumvent dependency problems with using glassfish::install_jars
   file { 'mysql-connector-java':
     ensure    => 'link',
-    path      => '/opt/payara/glassfish/lib/mysql-connector-java.jar',
+    path      => "/opt/${flavor}/glassfish/lib/mysql-connector-java.jar",
     target    => '/opt/mysql-connector-java/mysql-connector-java.jar',
     require   => Class['glassfish'],
     subscribe => Package['mysql-connector-java']

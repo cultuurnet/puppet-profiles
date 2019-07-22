@@ -1,5 +1,42 @@
 require 'spec_helper'
 
+RSpec.shared_examples "glassfish" do |flavor|
+  it { is_expected.to compile.with_all_deps }
+
+  it { is_expected.to contain_apt__source('cultuurnet-tools') }
+
+  it { is_expected.to contain_class('profiles::java8') }
+
+  it { is_expected.to contain_class('glassfish').with(
+    'install_method'      => 'package',
+    'package_prefix'      => flavor,
+    'create_service'      => false,
+    'enable_secure_admin' => false,
+    'manage_java'         => false,
+    'parent_dir'          => '/opt',
+    'install_dir'         => flavor,
+    )
+  }
+
+  it { is_expected.to contain_class('glassfish').that_requires('Class[profiles::java8]') }
+
+  it { is_expected.to contain_package('mysql-connector-java').with(
+    'ensure' => 'latest'
+    )
+  }
+
+  it { is_expected.to contain_file('mysql-connector-java').with(
+    'ensure' => 'link',
+    'path'   => "/opt/#{flavor}/glassfish/lib/mysql-connector-java.jar",
+    'target' => '/opt/mysql-connector-java/mysql-connector-java.jar'
+    )
+  }
+
+  it { is_expected.to contain_file('mysql-connector-java').that_subscribes_to('Package[mysql-connector-java]') }
+
+  it { is_expected.to contain_file('mysql-connector-java').that_requires('Class[glassfish]') }
+end
+
 describe 'profiles::glassfish' do
   include_examples 'operating system support', 'profiles::glassfish'
 
@@ -7,41 +44,23 @@ describe 'profiles::glassfish' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      it { is_expected.to compile.with_all_deps }
+      context "without parameters" do
+        let(:params) { {} }
 
-      it { is_expected.to contain_apt__source('cultuurnet-tools') }
+        include_examples 'glassfish', 'payara'
+      end
 
-      it { is_expected.to contain_class('profiles::java8') }
+      context "with flavor => 'payara'" do
+        let(:params) { { 'flavor' => 'payara' } }
 
-      it { is_expected.to contain_class('glassfish').with(
-        'install_method'      => 'package',
-        'package_prefix'      => 'payara',
-        'version'             => '4.1.1.171.1',
-        'create_service'      => false,
-        'enable_secure_admin' => false,
-        'manage_java'         => false,
-        'parent_dir'          => '/opt',
-        'install_dir'         => 'payara',
-        )
-      }
+        include_examples 'glassfish', 'payara'
+      end
 
-      it { is_expected.to contain_class('glassfish').that_requires('Class[profiles::java8]') }
+      context "with flavor => 'glassfish'" do
+        let(:params) { { 'flavor' => 'glassfish' } }
 
-      it { is_expected.to contain_package('mysql-connector-java').with(
-        'ensure' => 'latest'
-        )
-      }
-
-      it { is_expected.to contain_file('mysql-connector-java').with(
-        'ensure' => 'link',
-        'path'   => '/opt/payara/glassfish/lib/mysql-connector-java.jar',
-        'target' => '/opt/mysql-connector-java/mysql-connector-java.jar'
-        )
-      }
-
-      it { is_expected.to contain_file('mysql-connector-java').that_subscribes_to('Package[mysql-connector-java]') }
-
-      it { is_expected.to contain_file('mysql-connector-java').that_requires('Class[glassfish]') }
+        include_examples 'glassfish', 'glassfish'
+      end
     end
   end
 end
