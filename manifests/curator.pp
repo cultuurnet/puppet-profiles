@@ -12,6 +12,8 @@ class profiles::curator (
   String  $puppetdb_url                      = ''
 ) {
 
+  # TODO: unit tests, better solution for certificates
+
   contain ::profiles
 
   @apt::source { 'publiq-curator':
@@ -45,8 +47,8 @@ class profiles::curator (
   }
 
   apache::vhost { "${api_hostname}_80":
-    servername      => ${api_hostname},
-    docroot         => '/var/www/curator-api',
+    servername      => $api_hostname,
+    docroot         => '/var/www/curator-api/public',
     manage_docroot  => false,
     request_headers => [ 'unset Proxy early'],
     port            => '80',
@@ -55,32 +57,29 @@ class profiles::curator (
     redirect_status => 'permanent'
   }
 
-#   'cdbxml.uitdatabank.dev_443':
-#     servername: 'cdbxml.uitdatabank.dev'
-#     manage_docroot: false
-#     docroot: '/var/www/udb-cdbxml/web'
-#     request_headers:
-#       - 'unset Proxy early'
-#     port: '443'
-#     ssl: true
-#     ssl_cert: '/etc/ssl/certs/wildcard.uitdatabank.dev.cert.pem'
-#     ssl_chain: '/etc/ssl/certs/intermediate.cert.pem'
-#     ssl_key: '/etc/ssl/private/wildcard.uitdatabank.dev.key.pem'
-#     ssl_ca: '/etc/ssl/certs/ca.cert.pem'
-#     directories:
-#       - path: '/var/www/udb-cdbxml/web'
-#         options:
-#           - 'Indexes'
-#           - 'FollowSymLinks'
-#           - 'MultiViews'
-#           - 'ExecCGI'
-#         allow_override:
-#           - 'All'
-#     require:
-#       - 'File[/etc/ssl/certs/wildcard.uitdatabank.dev.cert.pem]'
-#       - 'File[/etc/ssl/certs/intermediate.cert.pem]'
-#       - 'File[/etc/ssl/private/wildcard.uitdatabank.dev.key.pem]'
-#       - 'File[/etc/ssl/certs/ca.cert.pem]'
+  apache::vhost { "${api_hostname}_443":
+    servername      => $api_hostname,
+    docroot         => '/var/www/curator-api/public',
+    manage_docroot  => false,
+    request_headers => [ 'unset Proxy early'],
+    port            => '443',
+    ssl             => true,
+    ssl_cert        => '/etc/ssl/certs/wildcard.uitdatabank.dev.cert.pem',
+    ssl_chain       => '/etc/ssl/certs/intermediate.cert.pem',
+    ssl_key         => '/etc/ssl/private/wildcard.uitdatabank.dev.key.pem',
+    ssl_ca          => '/etc/ssl/certs/ca.cert.pem',
+    directories     => [ {
+                           'path'           => '/var/www/curator-api/public',
+                           'options'        => [ 'Indexes', 'FollowSymLinks', 'MultiViews', 'ExecCGI' ],
+                           'allow_override' => [ 'All']
+                       } ],
+    require         => [
+                         File['/etc/ssl/certs/wildcard.uitdatabank.dev.cert.pem'],
+                         File['/etc/ssl/certs/intermediate.cert.pem'],
+                         File['/etc/ssl/private/wildcard.uitdatabank.dev.key.pem'],
+                         File['/etc/ssl/certs/ca.cert.pem']
+                       ]
+  }
 
   unless $facts['noop_deploy'] == 'true' {
     class { 'deployment::curator::articlelinker':
@@ -94,7 +93,7 @@ class profiles::curator (
       config_source => $api_config_source,
       update_facts  => $update_facts,
       puppetdb_url  => $puppetdb_url,
-      require       => Mysql::Db['$api_database_name']
+      require       => Mysql::Db[$api_database_name]
     }
 
     if $articlelinker_env_defaults_source {
