@@ -2,8 +2,9 @@ class profiles::curator (
   String  $articlelinker_config_source,
   String  $articlelinker_publishers_source,
   String  $api_config_source,
-  Boolean $update_facts                    = false,
-  String  $puppetdb_url                    = ''
+  String  $articlelinker_env_defaults_source = undef,
+  Boolean $update_facts                      = false,
+  String  $puppetdb_url                      = ''
 ) {
 
   contain ::profiles
@@ -22,6 +23,15 @@ class profiles::curator (
     }
   }
 
+  if $articlelinker_env_defaults_source {
+    file { '/etc/default/curator-articlelinker':
+      ensure => 'file',
+      owner  => 'root',
+      group  => 'root',
+      source => $articlelinker_env_defaults_source
+    }
+  }
+
   # database, vhost
 
   unless $facts['noop_deploy'] == 'true' {
@@ -36,6 +46,10 @@ class profiles::curator (
       config_source => $api_config_source,
       update_facts  => $update_facts,
       puppetdb_url  => $puppetdb_url
+    }
+
+    if $articlelinker_env_defaults_source {
+      File['/etc/default/curator-articlelinker'] -> Class['deployment::curator::articlelinker']
     }
   }
 }
