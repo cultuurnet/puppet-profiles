@@ -2,6 +2,10 @@ class profiles::curator (
   String  $articlelinker_config_source,
   String  $articlelinker_publishers_source,
   String  $api_config_source,
+  String  $api_database_name,
+  String  $api_database_user,
+  String  $api_database_password,
+  String  $api_database_host                 = 'localhost',
   String  $articlelinker_env_defaults_source = undef,
   Boolean $update_facts                      = false,
   String  $puppetdb_url                      = ''
@@ -33,6 +37,12 @@ class profiles::curator (
   }
 
   # database, vhost
+  mysql::db { $api_database_name:
+    user     => $api_database_user,
+    password => $api_database_password,
+    host     => $api_database_host,
+    grant    => ['ALL']
+  }
 
   unless $facts['noop_deploy'] == 'true' {
     class { 'deployment::curator::articlelinker':
