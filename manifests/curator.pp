@@ -69,16 +69,16 @@ class profiles::curator (
     ssl_key         => '/etc/ssl/private/wildcard.uitdatabank.dev.key.pem',
     ssl_ca          => '/etc/ssl/certs/ca.cert.pem',
     directories     => [ {
-                           'path'           => '/var/www/curator-api/public',
-                           'options'        => [ 'Indexes', 'FollowSymLinks', 'MultiViews', 'ExecCGI' ],
-                           'allow_override' => [ 'All']
-                       } ],
+      'path'           => '/var/www/curator-api/public',
+      'options'        => [ 'Indexes', 'FollowSymLinks', 'MultiViews', 'ExecCGI'],
+      'allow_override' => [ 'All']
+    } ],
     require         => [
-                         File['/etc/ssl/certs/wildcard.uitdatabank.dev.cert.pem'],
-                         File['/etc/ssl/certs/intermediate.cert.pem'],
-                         File['/etc/ssl/private/wildcard.uitdatabank.dev.key.pem'],
-                         File['/etc/ssl/certs/ca.cert.pem']
-                       ]
+      File['/etc/ssl/certs/wildcard.uitdatabank.dev.cert.pem'],
+      File['/etc/ssl/certs/intermediate.cert.pem'],
+      File['/etc/ssl/private/wildcard.uitdatabank.dev.key.pem'],
+      File['/etc/ssl/certs/ca.cert.pem']
+    ]
   }
 
   unless $facts['noop_deploy'] == 'true' {
