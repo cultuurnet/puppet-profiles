@@ -68,8 +68,9 @@ class profiles::curator (
 #     ssl_chain       => '/etc/ssl/certs/intermediate.cert.pem',
 #     ssl_key         => '/etc/ssl/private/wildcard.uitdatabank.dev.key.pem',
 #     ssl_ca          => '/etc/ssl/certs/ca.cert.pem',
-#     directories     => [ {
-#       'path'           => '/var/www/curator-api/public',
+#     directories        => [ {
+#       'path'           => '/',
+#       'provider'       => 'location',
 #       'options'        => [ 'Indexes', 'FollowSymLinks', 'MultiViews', 'ExecCGI'],
 #       'allow_override' => [ 'All']
 #     } ],
