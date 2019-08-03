@@ -107,7 +107,7 @@ class profiles::curator (
     }
 
     if $api_local_database {
-      Mysql::Db[$api_database_name] -> Class['deployment::curator::api']
+      Mysql::Db[$api_local_database_name] -> Class['deployment::curator::api']
     }
 
     if $articlelinker_env_defaults_source {
