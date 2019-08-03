@@ -4,7 +4,7 @@ class profiles::curator (
   String  $api_config_source,
   String  $api_hostname,
   String  $articlelinker_env_defaults_source = undef,
-  String  $api_local_database                = true,
+  Boolean $api_local_database                = true,
   String  $api_local_database_name           = undef,
   String  $api_local_database_user           = undef,
   String  $api_local_database_password       = undef,
