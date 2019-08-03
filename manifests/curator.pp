@@ -3,16 +3,16 @@ class profiles::curator (
   String  $articlelinker_publishers_source,
   String  $api_config_source,
   String  $api_hostname,
-  String  $api_database_name,
-  String  $api_database_user,
-  String  $api_database_password,
-  String  $api_database_host                 = 'localhost',
   String  $articlelinker_env_defaults_source = undef,
+  String  $api_local_database                = true,
+  String  $api_local_database_name           = undef,
+  String  $api_local_database_user           = undef,
+  String  $api_local_database_password       = undef,
   Boolean $update_facts                      = false,
   String  $puppetdb_url                      = ''
 ) {
 
-  # TODO: unit tests, apache vhosts, better solution for certificates
+  # TODO: unit tests, apache vhosts, non-local DB, better solution for certificates
 
   contain ::profiles
 
@@ -39,11 +39,13 @@ class profiles::curator (
     }
   }
 
-  mysql::db { $api_database_name:
-    user     => $api_database_user,
-    password => $api_database_password,
-    host     => $api_database_host,
-    grant    => ['ALL']
+  if $api_local_database {
+    mysql::db { $api_local_database_name:
+      user     => $api_local_database_user,
+      password => $api_local_database_password,
+      host     => 'localhost',
+      grant    => ['ALL']
+    }
   }
 
 #   apache::vhost { "${api_hostname}_80":
@@ -83,6 +85,14 @@ class profiles::curator (
 #   }
 
   unless $facts['noop_deploy'] == 'true' {
+    #file { '/var/www/curator-api':
+    #  ensure => 'directory',
+    #owner  => 'www-data',
+    #group  => 'www-data'
+    #}
+
+    #File['/var/www/curator-api'] -> Class['deployment::curator::api']
+
     class { 'deployment::curator::articlelinker':
       config_source     => $articlelinker_config_source,
       publishers_source => $articlelinker_publishers_source,
@@ -93,8 +103,11 @@ class profiles::curator (
     class { 'deployment::curator::api':
       config_source => $api_config_source,
       update_facts  => $update_facts,
-      puppetdb_url  => $puppetdb_url,
-      require       => Mysql::Db[$api_database_name]
+      puppetdb_url  => $puppetdb_url
+    }
+
+    if $api_local_database {
+      Mysql::Db[$api_database_name] -> Class['deployment::curator::api']
     }
 
     if $articlelinker_env_defaults_source {
