@@ -1,15 +1,15 @@
 class profiles::curator (
-  String  $articlelinker_config_source,
-  String  $articlelinker_publishers_source,
-  String  $api_config_source,
-  String  $api_hostname,
-  String  $articlelinker_env_defaults_source = undef,
-  Boolean $api_local_database                = true,
-  String  $api_local_database_name           = undef,
-  String  $api_local_database_user           = undef,
-  String  $api_local_database_password       = undef,
-  Boolean $update_facts                      = false,
-  String  $puppetdb_url                      = ''
+  String           $articlelinker_config_source,
+  String           $articlelinker_publishers_source,
+  String           $api_config_source,
+  String           $api_hostname,
+  Optional[String] $articlelinker_env_defaults_source = undef,
+  Boolean          $api_local_database                = true,
+  Optional[String] $api_local_database_name           = undef,
+  Optional[String] $api_local_database_user           = undef,
+  Optional[String] $api_local_database_password       = undef,
+  Boolean          $update_facts                      = false,
+  String           $puppetdb_url                      = ''
 ) {
 
   # TODO: unit tests, apache vhosts, non-local DB, better solution for certificates
