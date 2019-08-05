@@ -1,5 +1,6 @@
 class profiles::glassfish (
-  String $flavor = 'payara'
+  String $flavor = 'payara',
+  String $version = '4.1.1.171.1'
 ) {
 
   contain ::profiles
@@ -11,6 +12,7 @@ class profiles::glassfish (
   class { 'glassfish':
     install_method      => 'package',
     package_prefix      => $flavor,
+    version             => $version,
     create_service      => false,
     enable_secure_admin => false,
     manage_java         => false,
