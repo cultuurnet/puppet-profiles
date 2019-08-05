@@ -1,4 +1,3 @@
-require 'puppetlabs_spec_helper/module_spec_helper'
 require 'rspec-puppet-facts'
 
 include RspecPuppetFacts
@@ -12,3 +11,5 @@ RSpec.configure do |c|
     RSpec::Puppet::Coverage.report!
   end
 end
+
+require 'puppetlabs_spec_helper/module_spec_helper'
