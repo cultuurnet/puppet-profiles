@@ -161,6 +161,33 @@ RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin
     'arguments'        => {}
     )
   }
+
+  it { is_expected.to contain_rabbitmq_exchange("curators.x.events@#{vhost}").with(
+    'user'        => admin_user,
+    'password'    => admin_password,
+    'type'        => 'topic',
+    'internal'    => false,
+    'auto_delete' => false,
+    'durable'     => true
+    )
+  }
+
+  it { is_expected.to contain_rabbitmq_queue("udb3.q.curators-events@#{vhost}").with(
+    'user'        => admin_user,
+    'password'    => admin_password,
+    'durable'     => true,
+    'auto_delete' => false
+    )
+  }
+
+  it { is_expected.to contain_rabbitmq_binding("curators.x.events@udb3.q.curators-events@#{vhost}").with(
+    'user'             => admin_user,
+    'password'         => admin_password,
+    'destination_type' => 'queue',
+    'routing_key'      => '#',
+    'arguments'        => {}
+    )
+  }
 end
 
 describe 'profiles::udb3::rabbitmq' do

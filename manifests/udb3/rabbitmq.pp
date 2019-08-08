@@ -157,4 +157,28 @@ class profiles::udb3::rabbitmq (
     routing_key      => '#',
     arguments        => {}
   }
+
+  rabbitmq_exchange { "curators.x.events@${vhost}":
+    user        => $admin_user,
+    password    => $admin_password,
+    type        => 'topic',
+    internal    => false,
+    auto_delete => false,
+    durable     => true
+  }
+
+  rabbitmq_queue { "udb3.q.curators-events@${vhost}":
+    user        => $admin_user,
+    password    => $admin_password,
+    durable     => true,
+    auto_delete => false
+  }
+
+  rabbitmq_binding { "curators.x.events@udb3.q.curators-events@${vhost}":
+    user             => $admin_user,
+    password         => $admin_password,
+    destination_type => 'queue',
+    routing_key      => '#',
+    arguments        => {}
+  }
 }
