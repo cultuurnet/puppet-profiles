@@ -2,7 +2,7 @@ fixtures:
   forge_modules:
     stdlib:
       repo: 'puppetlabs/stdlib'
-      ref: '4.15.0'
+      ref: '4.25.0'
     concat:
       repo: 'puppetlabs/concat'
       ref: '2.2.1'
@@ -11,10 +11,10 @@ fixtures:
       ref: '0.3.4'
     augeasproviders_shellvar:
       repo: 'herculesteam/augeasproviders_shellvar'
-      ref: '3.0.0'
+      ref: '4.0.0'
     augeasproviders_core:
       repo: 'herculesteam/augeasproviders_core'
-      ref: '2.1.4'
+      ref: '2.4.0'
     augeasproviders_ssh:
       repo: 'herculesteam/augeasproviders_ssh'
       ref: '3.1.0'
@@ -30,18 +30,30 @@ fixtures:
     ntp:
       repo: 'puppetlabs/ntp'
       ref: '6.1.0'
+    ruby:
+      repo: 'puppetlabs/ruby'
+      ref: '1.0.1'
+    apache:
+      repo: 'puppetlabs/apache'
+      ref: '1.11.0'
   repositories:
     rabbitmq:
-      repo: 'git://github.com/willaerk/puppetlabs-rabbitmq.git'
+      repo: 'git@github.com:willaerk/puppetlabs-rabbitmq.git'
       ref: 'cdcb352'
     borgbackup:
-      repo: 'git://github.com/cultuurnet/puppet-borgbackup.git'
+      repo: 'git@github.com:cultuurnet/puppet-borgbackup.git'
       ref: '0.5.0'
     java8:
-      repo: 'git://github.com/willaerk/puppet-java8.git'
+      repo: 'git@github.com:willaerk/puppet-java8.git'
       ref: '0d64540'
     glassfish:
-      repo: 'git://github.com/willaerk/fatmcgav-glassfish.git'
+      repo: 'git@github.com:willaerk/fatmcgav-glassfish.git'
       ref: 'be6c31f'
+    deployment:
+      repo: 'git@bitbucket.org:cultuurnet/puppet-deployment.git'
+      ref: 'e3e88c6'
+    php:
+      repo: 'git@github.com:willaerk/puppet-php.git'
+      ref: '15a1818'
   symlinks:
     profiles: "#{source_dir}"

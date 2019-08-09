@@ -4,7 +4,7 @@ class profiles::curator (
   String           $api_config_source,
   String           $api_hostname,
   Optional[String] $articlelinker_env_defaults_source = undef,
-  Boolean          $api_local_database                = true,
+  Boolean          $api_local_database                = false,
   Optional[String] $api_local_database_name           = undef,
   Optional[String] $api_local_database_user           = undef,
   Optional[String] $api_local_database_password       = undef,
@@ -14,6 +14,7 @@ class profiles::curator (
 
   # TODO: unit tests, apache vhosts, non-local DB, better solution for certificates
 
+  include apache
   contain ::profiles
 
   @apt::source { 'publiq-curator':
