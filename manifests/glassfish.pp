@@ -4,10 +4,9 @@ class profiles::glassfish (
 ) {
 
   contain ::profiles
+  contain ::profiles::java8
 
   realize Apt::Source['cultuurnet-tools']
-
-  contain profiles::java8
 
   class { 'glassfish':
     install_method      => 'package',
@@ -22,7 +21,8 @@ class profiles::glassfish (
   }
 
   package { 'mysql-connector-java':
-    ensure => 'latest'
+    ensure => 'latest',
+    require => Apt::Source['cultuurnet-tools']
   }
 
   # Hack to circumvent dependency problems with using glassfish::install_jars

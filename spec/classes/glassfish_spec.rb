@@ -25,6 +25,8 @@ RSpec.shared_examples "glassfish" do |flavor|
     )
   }
 
+  it { is_expected.to contain_package('mysql-connector-java').that_requires('Apt::Source[cultuurnet-tools]') }
+
   it { is_expected.to contain_file('mysql-connector-java').with(
     'ensure' => 'link',
     'path'   => "/opt/#{flavor}/glassfish/lib/mysql-connector-java.jar",
@@ -33,7 +35,6 @@ RSpec.shared_examples "glassfish" do |flavor|
   }
 
   it { is_expected.to contain_file('mysql-connector-java').that_subscribes_to('Package[mysql-connector-java]') }
-
   it { is_expected.to contain_file('mysql-connector-java').that_requires('Class[glassfish]') }
 end
 
