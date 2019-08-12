@@ -21,4 +21,8 @@ class profiles::packages {
     ensure  => 'present',
     require => Apt::Source['cultuurnet-tools']
   }
+
+  @package { 'jq':
+    ensure => 'present'
+  }
 }
