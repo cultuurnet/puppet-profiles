@@ -35,19 +35,19 @@ fixtures:
       ref: '1.11.0'
   repositories:
     rabbitmq:
-      repo: 'git@github.com:willaerk/puppetlabs-rabbitmq.git'
+      repo: 'https://github.com/willaerk/puppetlabs-rabbitmq.git'
       ref: 'cdcb352'
     borgbackup:
-      repo: 'git@github.com:cultuurnet/puppet-borgbackup.git'
+      repo: 'https://github.com/cultuurnet/puppet-borgbackup.git'
       ref: '0.5.0'
     java8:
-      repo: 'git@github.com:willaerk/puppet-java8.git'
+      repo: 'https://github.com/willaerk/puppet-java8.git'
       ref: '0d64540'
     glassfish:
-      repo: 'git@github.com:willaerk/fatmcgav-glassfish.git'
+      repo: 'https://github.com/willaerk/fatmcgav-glassfish.git'
       ref: 'be6c31f'
     php:
-      repo: 'git@github.com:willaerk/puppet-php.git'
+      repo: 'https://github.com/willaerk/puppet-php.git'
       ref: '15a1818'
   symlinks:
     profiles: "#{source_dir}"
