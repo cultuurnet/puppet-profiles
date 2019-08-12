@@ -17,7 +17,7 @@ class profiles::glassfish (
     manage_java         => false,
     parent_dir          => '/opt',
     install_dir         => $flavor,
-    require             => Class['profiles::java8']
+    require             => Class['::profiles::java8']
   }
 
   package { 'mysql-connector-java':
@@ -30,7 +30,7 @@ class profiles::glassfish (
     ensure    => 'link',
     path      => "/opt/${flavor}/glassfish/lib/mysql-connector-java.jar",
     target    => '/opt/mysql-connector-java/mysql-connector-java.jar',
-    require   => Class['glassfish'],
+    require   => Class['::glassfish'],
     subscribe => Package['mysql-connector-java']
   }
 }

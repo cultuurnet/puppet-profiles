@@ -227,8 +227,6 @@ describe 'profiles::udb3::rabbitmq' do
       'with_tools'     => false
     } }
 
-    include_examples 'operating system support', 'profiles::rabbitmq'
-
     on_supported_os.each do |os, facts|
       context "on #{os}" do
         let(:facts) { facts }

@@ -20,7 +20,7 @@ class profiles::postfix (
     Concat::Fragment <<| tag == 'postfix_mynetworks' |>>
 
     concat { $mynetworks_file:
-      notify => Class['postfix::server']
+      notify => Class['::postfix::server']
     }
   } else {
     $relay_host  = $relayhost
