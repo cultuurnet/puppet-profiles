@@ -1,12 +1,17 @@
 class profiles::glassfish (
-  String $flavor = 'payara',
-  String $version = '4.1.1.171.1'
+  String $flavor = 'payara'
 ) {
 
   contain ::profiles
   contain ::profiles::java8
 
   realize Apt::Source['cultuurnet-tools']
+  realize Package['ca-certificates-publiq']
+
+  $version = $flavor ? {
+    'payara'    => '4.1.1.171.1',
+    'glassfish' => '3.1.2.2'
+  }
 
   class { 'glassfish':
     install_method      => 'package',

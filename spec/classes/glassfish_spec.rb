@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.shared_examples "glassfish" do |flavor|
+RSpec.shared_examples "glassfish" do |flavor, version|
   it { is_expected.to compile.with_all_deps }
 
   it { is_expected.to contain_apt__source('cultuurnet-tools') }
@@ -15,6 +15,7 @@ RSpec.shared_examples "glassfish" do |flavor|
     'manage_java'         => false,
     'parent_dir'          => '/opt',
     'install_dir'         => flavor,
+    'version'             => version
     )
   }
 
@@ -48,19 +49,19 @@ describe 'profiles::glassfish' do
       context "without parameters" do
         let(:params) { {} }
 
-        include_examples 'glassfish', 'payara'
+        include_examples 'glassfish', 'payara', '4.1.1.171.1'
       end
 
       context "with flavor => 'payara'" do
         let(:params) { { 'flavor' => 'payara' } }
 
-        include_examples 'glassfish', 'payara'
+        include_examples 'glassfish', 'payara', '4.1.1.171.1'
       end
 
       context "with flavor => 'glassfish'" do
         let(:params) { { 'flavor' => 'glassfish' } }
 
-        include_examples 'glassfish', 'glassfish'
+        include_examples 'glassfish', 'glassfish', '3.1.2.2'
       end
     end
   end
