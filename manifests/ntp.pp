@@ -1,5 +1,5 @@
 class profiles::ntp (
-  Array[String] $servers = [],
+  Optional[Array[String]] $servers = undef,
 ) {
 
   contain ::profiles
@@ -12,20 +12,13 @@ class profiles::ntp (
   ]
 
   if $facts['ec2_metadata'] {
-    class { '::ntp':
-      servers  => [ '169.254.169.123'],
-      restrict => $restrict
-    }
+    $ntp_servers = [ '169.254.169.123']
   } else {
-    if $servers == [] {
-      class { '::ntp':
-        restrict => $restrict
-      }
-    } else {
-      class { '::ntp':
-        servers  => $servers,
-        restrict => $restrict
-      }
-    }
+    $ntp_servers = $servers
+  }
+
+  class { '::ntp':
+    servers  => $ntp_servers,
+    restrict => $restrict
   }
 }

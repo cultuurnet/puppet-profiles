@@ -81,7 +81,7 @@ describe 'profiles::ntp' do
           { 'servers' => '1.2.3.4' }
         }
 
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /parameter 'servers' expects an Array value/) }
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /parameter 'servers' expects a value of type Undef or Array/) }
       end
     end
   end
