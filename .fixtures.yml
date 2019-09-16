@@ -33,6 +33,9 @@ fixtures:
     apache:
       repo: 'puppetlabs/apache'
       ref: '1.11.0'
+    mysql:
+      repo: 'puppetlabs/mysql'
+      ref: '3.11.0'
   repositories:
     rabbitmq:
       repo: 'https://github.com/willaerk/puppetlabs-rabbitmq.git'

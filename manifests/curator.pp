@@ -4,41 +4,30 @@ class profiles::curator (
   String           $api_config_source,
   String           $api_hostname,
   Optional[String] $articlelinker_env_defaults_source = undef,
+  Boolean          $articlelinker_service_manage      = true,
+  String           $articlelinker_service_ensure      = 'running',
+  Boolean          $articlelinker_service_enable      = true,
   Boolean          $api_local_database                = false,
   Optional[String] $api_local_database_name           = undef,
   Optional[String] $api_local_database_user           = undef,
   Optional[String] $api_local_database_password       = undef,
-  Boolean          $update_facts                      = false,
-  String           $puppetdb_url                      = ''
+  Optional[String] $puppetdb_url                      = undef
 ) {
 
-  # TODO: unit tests, apache vhosts, non-local DB, better solution for certificates
+  # TODO: unit tests
+  # TODO: apache vhosts (articlelinker & api)
+  # TODO: non-local DB
+  # TODO: php
+  # TODO: better solution for certificates
 
-  include apache
+  $api_basedir = '/var/www/curator-api'
+  $articlelinker_basedir = '/var/www/curator-articlelinker'
+
+  #include php
+  #include apache
+  #include mysql::server ??
+  #include supervisor
   contain ::profiles
-
-  @apt::source { 'publiq-curator':
-    location => "http://apt.uitdatabank.be/curator-${environment}",
-    release  => 'trusty',
-    repos    => 'main',
-    key      => {
-      'id'     => '2380EA3E50D3776DFC1B03359F4935C80DC9EA95',
-      'source' => 'http://apt.uitdatabank.be/gpgkey/cultuurnet.gpg.key'
-    },
-    include  => {
-      'deb' => true,
-      'src' => false
-    }
-  }
-
-  if $articlelinker_env_defaults_source {
-    file { '/etc/default/curator-articlelinker':
-      ensure => 'file',
-      owner  => 'root',
-      group  => 'root',
-      source => $articlelinker_env_defaults_source
-    }
-  }
 
   if $api_local_database {
     mysql::db { $api_local_database_name:
@@ -51,7 +40,7 @@ class profiles::curator (
 
 #   apache::vhost { "${api_hostname}_80":
 #     servername      => $api_hostname,
-#     docroot         => '/var/www/curator-api/public',
+#     docroot         => "${api_basedir}/public",
 #     manage_docroot  => false,
 #     request_headers => [ 'unset Proxy early'],
 #     port            => '80',
@@ -62,7 +51,7 @@ class profiles::curator (
 #
 #   apache::vhost { "${api_hostname}_443":
 #     servername      => $api_hostname,
-#     docroot         => '/var/www/curator-api/public',
+#     docroot         => "${api_basedir}/public",
 #     manage_docroot  => false,
 #     request_headers => [ 'unset Proxy early'],
 #     port            => '443',
@@ -86,33 +75,35 @@ class profiles::curator (
 #   }
 
   unless $facts['noop_deploy'] == 'true' {
-    #file { '/var/www/curator-api':
-    #  ensure => 'directory',
-    #owner  => 'www-data',
-    #group  => 'www-data'
-    #}
-
-    #File['/var/www/curator-api'] -> Class['deployment::curator::api']
-
-    class { 'deployment::curator::articlelinker':
-      config_source     => $articlelinker_config_source,
-      publishers_source => $articlelinker_publishers_source,
-      update_facts      => $update_facts,
-      puppetdb_url      => $puppetdb_url
+    file { $api_basedir:
+      ensure => 'directory',
+      owner  => 'www-data',
+      group  => 'www-data',
+      before => Class['::profiles::deployment::curator::api']
     }
 
-    class { 'deployment::curator::api':
+    #File[$api_basedir] -> Apache::Vhost["${api_hostname}_80"]
+    #File[$api_basedir] -> Apache::Vhost["${api_hostname}_443"]
+
+    class { 'profiles::deployment::curator::articlelinker':
+      config_source       => $articlelinker_config_source,
+      publishers_source   => $articlelinker_publishers_source,
+      env_defaults_source => $articlelinker_env_defaults_source,
+      service_manage      => $articlelinker_service_manage,
+      service_ensure      => $articlelinker_service_ensure,
+      service_enable      => $articlelinker_service_enable,
+      puppetdb_url        => $puppetdb_url
+    }
+
+    class { 'profiles::deployment::curator::api':
       config_source => $api_config_source,
-      update_facts  => $update_facts,
       puppetdb_url  => $puppetdb_url
     }
 
     if $api_local_database {
-      Mysql::Db[$api_local_database_name] -> Class['deployment::curator::api']
+      Mysql::Db[$api_local_database_name] -> Class['::profiles::deployment::curator::api']
     }
 
-    if $articlelinker_env_defaults_source {
-      File['/etc/default/curator-articlelinker'] -> Class['deployment::curator::articlelinker']
-    }
+    #Class['php'] -> Class['profiles::deployment::curator::api']
   }
 }
