@@ -43,9 +43,6 @@ fixtures:
     borgbackup:
       repo: 'https://github.com/cultuurnet/puppet-borgbackup.git'
       ref: '0.5.0'
-    java8:
-      repo: 'https://github.com/willaerk/puppet-java8.git'
-      ref: '0d64540'
     glassfish:
       repo: 'https://github.com/willaerk/fatmcgav-glassfish.git'
       ref: 'be6c31f'

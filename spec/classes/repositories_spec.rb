@@ -8,7 +8,7 @@ describe 'profiles::repositories' do
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       context "with all virtual resources realized" do
-        let(:pre_condition) { 'include ::profiles; Apt::Source <| |>' }
+        let(:pre_condition) { 'include ::profiles; Apt::Source <| |>; Profiles::Apt::Update <| |>' }
 
         case facts[:os]['release']['major']
         when '14.04'
@@ -30,6 +30,8 @@ describe 'profiles::repositories' do
               'release' => 'trusty'
             )
             }
+
+            it { is_expected.to contain_profiles__apt__update('cultuurnet-tools').that_requires('Apt::Source[cultuurnet-tools]') }
 
             it { is_expected.to contain_apt__source('rabbitmq').with(
               'location' => 'http://apt.uitdatabank.be/rabbitmq-testing',
@@ -99,6 +101,8 @@ describe 'profiles::repositories' do
               'release' => 'xenial'
             )
             }
+
+            it { is_expected.to contain_profiles__apt__update('cultuurnet-tools').that_requires('Apt::Source[cultuurnet-tools]') }
 
             it { is_expected.to contain_apt__source('rabbitmq').with(
               'location' => 'http://apt.uitdatabank.be/rabbitmq-acceptance',

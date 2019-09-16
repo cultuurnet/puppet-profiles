@@ -14,6 +14,10 @@ class profiles::repositories {
     }
   }
 
+  @profiles::apt::update { 'cultuurnet-tools':
+    require => Apt::Source['cultuurnet-tools']
+  }
+
   @apt::source { 'rabbitmq':
     location => "http://apt.uitdatabank.be/rabbitmq-${environment}",
     release  => 'testing',
