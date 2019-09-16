@@ -1,8 +1,6 @@
 require 'spec_helper'
 
 describe 'profiles::deployment::curator::api' do
-  let (:pre_condition) { 'include ::profiles' }
-
   context "with config_source => /foo" do
     let (:params) { {
       'config_source' => '/foo'
