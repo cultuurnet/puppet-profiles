@@ -74,7 +74,7 @@ class profiles::curator (
 #     ]
 #   }
 
-  unless $facts['noop_deploy'] == 'true' {
+  unless any2bool($facts['noop_deploy']) {
     file { $api_basedir:
       ensure => 'directory',
       owner  => 'www-data',

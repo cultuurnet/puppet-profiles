@@ -26,7 +26,7 @@ class profiles::glassfish (
   }
 
   package { 'mysql-connector-java':
-    ensure => 'latest',
+    ensure  => 'latest',
     require => Apt::Source['cultuurnet-tools']
   }
 
