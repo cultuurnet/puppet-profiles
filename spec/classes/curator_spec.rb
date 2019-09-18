@@ -40,9 +40,7 @@ describe 'profiles::curator' do
           }
 
           it { is_expected.to contain_file('/var/www/curator-api').with(
-            'ensure' => 'directory',
-            'owner'  => 'www-data',
-            'group'  => 'www-data'
+            'ensure' => 'directory'
           ) }
 
           it { is_expected.to contain_file('/var/www/curator-api').that_comes_before('Class[profiles::deployment::curator::api]') }
