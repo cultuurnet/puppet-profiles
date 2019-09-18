@@ -60,6 +60,24 @@ class profiles::repositories {
     }
   }
 
+  @apt::source { 'elasticsearch':
+    location => "http://apt.uitdatabank.be/elasticsearch-${environment}",
+    release  => 'stable',
+    repos    => 'main',
+    key      => {
+      'id'     => '2380EA3E50D3776DFC1B03359F4935C80DC9EA95',
+      'source' => 'http://apt.uitdatabank.be/gpgkey/cultuurnet.gpg.key'
+    },
+    include  => {
+      'deb' => true,
+      'src' => false
+    }
+  }
+
+  @profiles::apt::update { 'elasticsearch':
+    require => Apt::Source['elasticsearch']
+  }
+
   @apt::source { 'php':
     location => "http://apt.uitdatabank.be/php-${environment}",
     release  => 'trusty',

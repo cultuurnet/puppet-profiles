@@ -5,7 +5,12 @@ class profiles::glassfish (
   contain ::profiles
   contain ::profiles::java8
 
+  include ::profiles::packages
+  include ::profiles::repositories
+
   realize Apt::Source['cultuurnet-tools']
+  realize Profiles::Apt::Update['cultuurnet-tools']
+
   realize Package['ca-certificates-publiq']
 
   $version = $flavor ? {
@@ -27,7 +32,7 @@ class profiles::glassfish (
 
   package { 'mysql-connector-java':
     ensure  => 'latest',
-    require => Apt::Source['cultuurnet-tools']
+    require => Profiles::Apt::Update['cultuurnet-tools']
   }
 
   # Hack to circumvent dependency problems with using glassfish::install_jars

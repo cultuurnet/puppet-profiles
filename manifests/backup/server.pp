@@ -9,6 +9,9 @@ class profiles::backup::server (
 {
   contain ::profiles
 
+  include ::profiles::groups
+  include ::profiles::users
+
   realize(Group['borgbackup'])
   realize(User['borgbackup'])
 

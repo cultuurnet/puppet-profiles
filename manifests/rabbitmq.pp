@@ -6,6 +6,9 @@ class profiles::rabbitmq (
 
   contain ::profiles
 
+  include ::profiles::packages
+  include ::profiles::repositories
+
   realize Apt::Source['rabbitmq']
 
   if $with_tools {

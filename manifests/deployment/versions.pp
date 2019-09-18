@@ -8,6 +8,8 @@ define profiles::deployment::versions (
   contain ::profiles
   contain ::profiles::deployment
 
+  include ::profiles::packages
+
   realize Package['jq']
 
   if $packages {

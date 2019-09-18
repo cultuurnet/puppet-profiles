@@ -1,8 +1,10 @@
 class profiles::packages {
 
+  include ::profiles::repositories
+
   @package { 'composer':
     ensure  => 'present',
-    require => Apt::Source['cultuurnet-tools']
+    require => Profiles::Apt::Update['cultuurnet-tools']
   }
 
   @package { 'git':
@@ -19,7 +21,7 @@ class profiles::packages {
 
   @package { 'ca-certificates-publiq':
     ensure  => 'present',
-    require => Apt::Source['cultuurnet-tools']
+    require => Profiles::Apt::Update['cultuurnet-tools']
   }
 
   @package { 'jq':

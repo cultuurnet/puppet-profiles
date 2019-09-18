@@ -2,7 +2,13 @@ class profiles::base {
 
   contain ::profiles
 
+  include ::profiles::groups
+  include ::profiles::packages
+  include ::profiles::repositories
+  include ::profiles::users
+
   realize Apt::Source['cultuurnet-tools']
+  realize Profiles::Apt::Update['cultuurnet-tools']
 
   if $facts['ec2_metadata'] {
     realize Package['awscli']
