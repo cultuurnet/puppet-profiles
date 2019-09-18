@@ -69,6 +69,20 @@ describe 'profiles::repositories' do
             )
             }
 
+            it { is_expected.to contain_apt__source('elasticsearch').with(
+              'location' => 'http://apt.uitdatabank.be/elasticsearch-testing',
+              'ensure'   => 'present',
+              'repos'    => 'main',
+              'include'  => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release' => 'stable'
+            )
+            }
+
+            it { is_expected.to contain_profiles__apt__update('elasticsearch').that_requires('Apt::Source[elasticsearch]') }
+
             it { is_expected.to contain_apt__source('php').with(
               'location' => 'http://apt.uitdatabank.be/php-testing',
               'ensure'   => 'present',
@@ -139,6 +153,20 @@ describe 'profiles::repositories' do
               'release' => 'trusty'
             )
             }
+
+            it { is_expected.to contain_apt__source('elasticsearch').with(
+              'location' => 'http://apt.uitdatabank.be/elasticsearch-acceptance',
+              'ensure'   => 'present',
+              'repos'    => 'main',
+              'include'  => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release' => 'stable'
+            )
+            }
+
+            it { is_expected.to contain_profiles__apt__update('elasticsearch').that_requires('Apt::Source[elasticsearch]') }
           end
         end
       end
