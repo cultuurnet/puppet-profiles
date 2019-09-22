@@ -91,4 +91,9 @@ class profiles::repositories {
       'src' => false
     }
   }
+
+  @profiles::apt::update { 'php':
+    require => Apt::Source['php']
+  }
+
 }

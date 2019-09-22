@@ -13,6 +13,13 @@ describe 'profiles::php' do
 
       it { is_expected.to contain_apt__source('php') }
 
+      it { is_expected.to contain_profiles__apt__update('php') }
+
+      it { is_expected.to contain_class('php::globals').that_requires('Profiles::Apt::Update[php]') }
+
+      it { is_expected.to contain_class('php').that_requires('Profiles::Apt::Update[php]') }
+      it { is_expected.to contain_class('php').that_requires('Class[php::globals]') }
+
       it { is_expected.to contain_package('composer').with(
         'ensure' => 'present'
         )

@@ -94,6 +94,8 @@ describe 'profiles::repositories' do
               'release' => 'trusty'
             )
             }
+
+            it { is_expected.to contain_profiles__apt__update('php').that_requires('Apt::Source[php]') }
           end
 
         when '16.04'
