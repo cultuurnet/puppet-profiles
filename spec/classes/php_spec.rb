@@ -10,7 +10,6 @@ describe 'profiles::php' do
       it { is_expected.to compile.with_all_deps }
 
       it { is_expected.to contain_apt__source('php') }
-
       it { is_expected.to contain_profiles__apt__update('php') }
 
       it { is_expected.to contain_class('php::globals').that_requires('Profiles::Apt::Update[php]') }

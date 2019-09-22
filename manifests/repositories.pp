@@ -32,20 +32,6 @@ class profiles::repositories {
     }
   }
 
-  @apt::source { 'nodejs_8.x':
-    location => "http://apt.uitdatabank.be/nodejs_8.x-${environment}",
-    release  => $facts['lsbdistcodename'],
-    repos    => 'main',
-    key      => {
-      'id'     => '2380EA3E50D3776DFC1B03359F4935C80DC9EA95',
-      'source' => 'http://apt.uitdatabank.be/gpgkey/cultuurnet.gpg.key'
-    },
-    include  => {
-      'deb' => true,
-      'src' => false
-    }
-  }
-
   @apt::source { 'nodejs_10.x':
     location => "http://apt.uitdatabank.be/nodejs_10.x-${environment}",
     release  => 'trusty',
@@ -58,6 +44,10 @@ class profiles::repositories {
       'deb' => true,
       'src' => false
     }
+  }
+
+  @profiles::apt::update { 'nodejs_10.x':
+    require => Apt::Source['nodejs_10.x']
   }
 
   @apt::source { 'elasticsearch':

@@ -45,18 +45,6 @@ describe 'profiles::repositories' do
             )
             }
 
-            it { is_expected.to contain_apt__source('nodejs_8.x').with(
-              'location' => 'http://apt.uitdatabank.be/nodejs_8.x-testing',
-              'ensure'   => 'present',
-              'repos'    => 'main',
-              'include'  => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'trusty'
-            )
-            }
-
             it { is_expected.to contain_apt__source('nodejs_10.x').with(
               'location' => 'http://apt.uitdatabank.be/nodejs_10.x-testing',
               'ensure'   => 'present',
@@ -68,6 +56,8 @@ describe 'profiles::repositories' do
               'release' => 'trusty'
             )
             }
+
+            it { is_expected.to contain_profiles__apt__update('nodejs_10.x').that_requires('Apt::Source[nodejs_10.x]') }
 
             it { is_expected.to contain_apt__source('elasticsearch').with(
               'location' => 'http://apt.uitdatabank.be/elasticsearch-testing',
@@ -132,18 +122,6 @@ describe 'profiles::repositories' do
             )
             }
 
-            it { is_expected.to contain_apt__source('nodejs_8.x').with(
-              'location' => 'http://apt.uitdatabank.be/nodejs_8.x-acceptance',
-              'ensure'   => 'present',
-              'repos'    => 'main',
-              'include'  => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'xenial'
-            )
-            }
-
             it { is_expected.to contain_apt__source('nodejs_10.x').with(
               'location' => 'http://apt.uitdatabank.be/nodejs_10.x-acceptance',
               'ensure'   => 'present',
@@ -155,6 +133,8 @@ describe 'profiles::repositories' do
               'release' => 'trusty'
             )
             }
+
+            it { is_expected.to contain_profiles__apt__update('nodejs_10.x').that_requires('Apt::Source[nodejs_10.x]') }
 
             it { is_expected.to contain_apt__source('elasticsearch').with(
               'location' => 'http://apt.uitdatabank.be/elasticsearch-acceptance',
