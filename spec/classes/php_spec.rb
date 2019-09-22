@@ -1,8 +1,6 @@
 require 'spec_helper'
 
 describe 'profiles::php' do
-  let(:pre_condition) { 'include profiles::base' }
-
   include_examples 'operating system support', 'profiles::php'
 
   on_supported_os.each do |os, facts|
