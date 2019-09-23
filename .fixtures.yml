@@ -54,7 +54,7 @@ fixtures:
       ref: '15a1818'
     mailcatcher:
       repo: 'https://github.com/cultuurnet/puppet-mailcatcher.git'
-      ref: 'c9d1120'
+      ref: '9752479'
     resqueweb:
       repo: 'https://github.com/cultuurnet/puppet-resqueweb.git'
       ref: '7353dd0'
