@@ -52,5 +52,11 @@ fixtures:
     php:
       repo: 'https://github.com/willaerk/puppet-php.git'
       ref: '15a1818'
+    mailcatcher:
+      repo: 'https://github.com/cultuurnet/puppet-mailcatcher.git'
+      ref: 'c9d1120'
+    resqueweb:
+      repo: 'https://github.com/cultuurnet/puppet-resqueweb.git'
+      ref: '7353dd0'
   symlinks:
     profiles: "#{source_dir}"
