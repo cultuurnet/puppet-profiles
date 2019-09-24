@@ -58,5 +58,8 @@ fixtures:
     resqueweb:
       repo: 'https://github.com/cultuurnet/puppet-resqueweb.git'
       ref: '7353dd0'
+    websockets:
+      repo: 'https://github.com/cultuurnet/puppet-websockets.git'
+      ref: 'fdde08f'
   symlinks:
     profiles: "#{source_dir}"
