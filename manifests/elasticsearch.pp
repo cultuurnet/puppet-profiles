@@ -23,13 +23,13 @@ class profiles::elasticsearch {
   }
 
   class { 'elasticsearch':
-    version              => '5.2.2',
-    manage_repo          => false,
-    api_timeout          => 30,
-    restart_on_change    => true,
-    status               => 'running',
-    jvm_options          => [ '-Xms768m', '-Xmx768m'],
-    instances            => {
+    version           => '5.2.2',
+    manage_repo       => false,
+    api_timeout       => 30,
+    restart_on_change => true,
+    status            => 'running',
+    jvm_options       => [ '-Xms768m', '-Xmx768m'],
+    instances         => {
       'es01' => {
         'config'  => {
           'http.host'    => $http_hosts,

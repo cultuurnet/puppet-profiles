@@ -24,5 +24,5 @@ class profiles::udb3::search (
   }
 
   Class['profiles::elasticsearch'] -> Class['deployment::udb3::search']
-  Profiles::Apt::Update['cultuurnet-search'] -> Class['deployment::udb3::search'
+  Profiles::Apt::Update['cultuurnet-search'] -> Class['deployment::udb3::search']
 }
