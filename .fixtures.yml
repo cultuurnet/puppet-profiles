@@ -42,6 +42,12 @@ fixtures:
     nodejs:
       repo: 'puppet/nodejs'
       ref: '2.1.0'
+    elasticsearch:
+      repo: 'elastic/elasticsearch'
+      ref: '6.2.1'
+    datacat:
+      repo: 'richardc/datacat'
+      ref: '0.6.2'
   repositories:
     rabbitmq:
       repo: 'https://github.com/willaerk/puppetlabs-rabbitmq.git'
