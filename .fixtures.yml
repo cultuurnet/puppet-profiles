@@ -12,6 +12,9 @@ fixtures:
     augeasproviders_shellvar:
       repo: 'herculesteam/augeasproviders_shellvar'
       ref: '4.0.0'
+    augeasproviders_sysctl:
+      repo: 'herculesteam/augeasproviders_sysctl'
+      ref: '2.2.1'
     augeasproviders_core:
       repo: 'herculesteam/augeasproviders_core'
       ref: '2.4.0'
