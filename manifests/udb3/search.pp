@@ -30,11 +30,11 @@ class profiles::udb3::search (
   }
 
   elasticsearch::instance { 'es01':
-    'config'  => {
+    config  => {
       'http.host'    => $http_hosts,
       'network.host' => [ '127.0.0.1']
     },
-    'datadir' => '/data/elasticsearch/es01'
+    datadir => '/data/elasticsearch/es01'
   }
 
   Class['profiles::elasticsearch'] -> Elasticsearch::Instance['es01']

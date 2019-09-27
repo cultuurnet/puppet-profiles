@@ -22,7 +22,8 @@ class profiles::elasticsearch {
     api_timeout       => 30,
     restart_on_change => true,
     status            => 'running',
-    jvm_options       => [ '-Xms768m', '-Xmx768m']
+    jvm_options       => [ '-Xms768m', '-Xmx768m'],
+    instances         => {}
   }
 
   Profiles::Apt::Update['elasticsearch'] -> Class['elasticsearch']
