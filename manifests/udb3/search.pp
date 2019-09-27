@@ -23,6 +23,21 @@ class profiles::udb3::search (
     require => Apt::Source['cultuurnet-search']
   }
 
-  Class['profiles::elasticsearch'] -> Class['deployment::udb3::search']
+  if $facts['ec2_metadata'] {
+    $http_hosts = [ $facts['ipaddress_eth0'], '127.0.0.1']
+  } else {
+    $http_hosts = [ $facts['ipaddress_eth1'], '127.0.0.1']
+  }
+
+  elasticsearch::instance { 'es01':
+    'config'  => {
+      'http.host'    => $http_hosts,
+      'network.host' => [ '127.0.0.1']
+    },
+    'datadir' => '/data/elasticsearch/es01'
+  }
+
+  Class['profiles::elasticsearch'] -> Elasticsearch::Instance['es01']
+  Elasticsearch::Instance['es01'] -> Class['deployment::udb3::search']
   Profiles::Apt::Update['cultuurnet-search'] -> Class['deployment::udb3::search']
 }
