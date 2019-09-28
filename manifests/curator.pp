@@ -19,6 +19,7 @@ class profiles::curator (
   # TODO: non-local DB
   # TODO: php
   # TODO: better solution for certificates
+  # TODO: firewall rules
 
   $api_basedir = '/var/www/curator-api'
   $articlelinker_basedir = '/var/www/curator-articlelinker'

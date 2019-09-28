@@ -8,6 +8,12 @@ class profiles::elasticsearch {
   realize Apt::Source['elasticsearch']
   realize Profiles::Apt::Update['elasticsearch']
 
+  # TODO: parameterize this profile (version, heap size, ...)
+  # TODO: add /data/backups/elasticsearch directory
+  # TODO: add snapshot repositories and backup schedule (maybe in product profile)
+  # TODO: unit tests
+  # TODO: firewall rules
+
   file { '/data/elasticsearch':
     ensure => 'directory'
   }

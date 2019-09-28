@@ -11,8 +11,8 @@ class profiles::deployment::curator::api (
   realize Apt::Source['publiq-curator']
   realize Profiles::Apt::Update['publiq-curator']
 
-  #TODO: package notify Apache::Service ?
-  #TODO: config file notify Apache::Service ?
+  # TODO: package notify Apache::Service ?
+  # TODO: config file notify Apache::Service ?
 
   package { 'curator-api':
     ensure  => 'latest',

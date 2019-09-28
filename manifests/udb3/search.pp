@@ -5,6 +5,16 @@ class profiles::udb3::search (
   contain ::profiles::elasticsearch
   contain ::deployment::udb3::search
 
+  # TODO: move deployment to profiles and rework update_facts stuff
+  # TODO: pass parameters from elasticsearch profile here
+  # TODO: supervisor + program
+  # TODO: apache + vhosts
+  # TODO: redis
+  # TODO: noop_deploy
+  # TODO: unit tests
+  # TODO: solution for certificates/HTTPS vhosts
+  # TODO: firewall rules
+
   apt::source { 'cultuurnet-search':
     location => "http://apt.uitdatabank.be/search-${environment}",
     release  => 'trusty',
