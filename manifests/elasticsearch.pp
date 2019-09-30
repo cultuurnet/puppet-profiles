@@ -8,7 +8,7 @@ class profiles::elasticsearch {
   realize Apt::Source['elasticsearch']
   realize Profiles::Apt::Update['elasticsearch']
 
-  # TODO: parameterize this profile (version, heap size, ...)
+  # TODO: parameterize this profile (version, ...)
   # TODO: add /data/backups/elasticsearch directory
   # TODO: add snapshot repositories and backup schedule (maybe in product profile)
   # TODO: unit tests
@@ -27,8 +27,6 @@ class profiles::elasticsearch {
     manage_repo       => false,
     api_timeout       => 30,
     restart_on_change => true,
-    status            => 'running',
-    jvm_options       => [ '-Xms768m', '-Xmx768m'],
     instances         => {}
   }
 

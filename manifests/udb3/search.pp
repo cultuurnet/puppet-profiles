@@ -5,6 +5,7 @@ class profiles::udb3::search (
   contain ::profiles::elasticsearch
   contain ::deployment::udb3::search
 
+  # TODO: parameterize memory settings for instance
   # TODO: move deployment to profiles and rework update_facts stuff
   # TODO: pass parameters from elasticsearch profile here
   # TODO: supervisor + program
@@ -40,13 +41,14 @@ class profiles::udb3::search (
   }
 
   elasticsearch::instance { 'es01':
-    ensure  => 'present',
-    status  => 'enabled',
-    config  => {
+    ensure      => 'present',
+    status      => 'enabled',
+    jvm_options => [ '-Xms768m', '-Xmx768m'],
+    datadir     => '/data/elasticsearch/es01',
+    config      => {
       'http.host'    => $http_hosts,
       'network.host' => [ '127.0.0.1']
-    },
-    datadir => '/data/elasticsearch/es01'
+    }
   }
 
   Class['profiles::elasticsearch'] -> Elasticsearch::Instance['es01']
