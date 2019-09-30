@@ -40,6 +40,8 @@ class profiles::udb3::search (
   }
 
   elasticsearch::instance { 'es01':
+    ensure  => 'present',
+    status  => 'enabled',
     config  => {
       'http.host'    => $http_hosts,
       'network.host' => [ '127.0.0.1']
