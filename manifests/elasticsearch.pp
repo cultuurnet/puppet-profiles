@@ -1,4 +1,6 @@
-class profiles::elasticsearch {
+class profiles::elasticsearch (
+  String $version = 'latest'
+) {
 
   contain ::profiles
   contain ::profiles::java8
@@ -23,7 +25,7 @@ class profiles::elasticsearch {
   }
 
   class { 'elasticsearch':
-    version           => '5.2.2',
+    version           => $version,
     manage_repo       => false,
     api_timeout       => 30,
     restart_on_change => true,

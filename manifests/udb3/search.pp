@@ -1,8 +1,10 @@
 class profiles::udb3::search (
+  String $elasticsearch_version           = 'latest',
+  String $elasticsearch_initial_heap_size = '512m',
+  String $elasticsearch_max_heap_size     = '512m'
 ) {
 
   contain ::profiles
-  contain ::profiles::elasticsearch
   contain ::deployment::udb3::search
 
   # TODO: parameterize memory settings for instance
@@ -40,10 +42,14 @@ class profiles::udb3::search (
     $http_hosts = [ $facts['ipaddress_eth1'], '127.0.0.1']
   }
 
+  class { 'profiles::elasticsearch':
+    version => $elasticsearch_version
+  }
+
   elasticsearch::instance { 'es01':
     ensure      => 'present',
     status      => 'enabled',
-    jvm_options => [ '-Xms768m', '-Xmx768m'],
+    jvm_options => [ "-Xms${elasticsearch_initial_heap_size}", "-Xmx${elasticsearch_max_heap_size}"],
     datadir     => '/data/elasticsearch/es01',
     config      => {
       'http.host'    => $http_hosts,
