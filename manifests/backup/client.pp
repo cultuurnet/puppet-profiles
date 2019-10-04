@@ -5,6 +5,11 @@ class profiles::backup::client (
 {
   contain ::profiles
 
+  include ::profiles::repositories
+
+  realize Apt::Source['cultuurnet-tools']
+  realize Profiles::Apt::Update['cultuurnet-tools']
+
   Sshkey <<| title == 'backup' |>>
 
   class { 'borgbackup':
@@ -25,4 +30,6 @@ class profiles::backup::client (
     mode    => '0400',
     content => $private_key
   }
+
+  Profiles::Apt::Update['cultuurnet-tools'] -> Class['borgbackup']
 }

@@ -1,5 +1,7 @@
 class profiles::repositories {
 
+  # TODO: repositories split for trusty and xenial
+
   @apt::source { 'cultuurnet-tools':
     location => "http://apt.uitdatabank.be/tools-${environment}",
     release  => $facts['lsbdistcodename'],
