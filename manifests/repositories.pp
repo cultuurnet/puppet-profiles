@@ -88,4 +88,21 @@ class profiles::repositories {
     require => Apt::Source['php']
   }
 
+  @apt::source { 'yarn':
+    location => "http://apt.uitdatabank.be/yarn-${environment}",
+    release  => 'stable',
+    repos    => 'main',
+    key      => {
+      'id'     => '2380EA3E50D3776DFC1B03359F4935C80DC9EA95',
+      'source' => 'http://apt.uitdatabank.be/gpgkey/cultuurnet.gpg.key'
+    },
+    include  => {
+      'deb' => true,
+      'src' => false
+    }
+  }
+
+  @profiles::apt::update { 'yarn':
+    require => Apt::Source['yarn']
+  }
 }

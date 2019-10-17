@@ -86,6 +86,20 @@ describe 'profiles::repositories' do
             }
 
             it { is_expected.to contain_profiles__apt__update('php').that_requires('Apt::Source[php]') }
+
+            it { is_expected.to contain_apt__source('yarn').with(
+              'location' => 'http://apt.uitdatabank.be/yarn-testing',
+              'ensure'   => 'present',
+              'repos'    => 'main',
+              'include'  => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release' => 'stable'
+            )
+            }
+
+            it { is_expected.to contain_profiles__apt__update('yarn').that_requires('Apt::Source[yarn]') }
           end
 
         when '16.04'
@@ -149,6 +163,20 @@ describe 'profiles::repositories' do
             }
 
             it { is_expected.to contain_profiles__apt__update('elasticsearch').that_requires('Apt::Source[elasticsearch]') }
+
+            it { is_expected.to contain_apt__source('yarn').with(
+              'location' => 'http://apt.uitdatabank.be/yarn-acceptance',
+              'ensure'   => 'present',
+              'repos'    => 'main',
+              'include'  => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release' => 'stable'
+            )
+            }
+
+            it { is_expected.to contain_profiles__apt__update('yarn').that_requires('Apt::Source[yarn]') }
           end
         end
       end
