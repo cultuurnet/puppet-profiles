@@ -34,7 +34,7 @@ class profiles::deployment::curator::api (
     cwd         => $basedir,
     user        => 'www-data',
     group       => 'www-data',
-    path        => [ '/usr/local/bin', '/usr/bin', '/bin', '/var/www/curator-api'],
+    path        => [ '/usr/local/bin', '/usr/bin', '/bin', $basedir],
     subscribe   => Package['curator-api'],
     refreshonly => true
   }
@@ -44,7 +44,7 @@ class profiles::deployment::curator::api (
     cwd         => $basedir,
     user        => 'www-data',
     group       => 'www-data',
-    path        => [ '/usr/local/bin', '/usr/bin', '/bin', '/var/www/curator-api'],
+    path        => [ '/usr/local/bin', '/usr/bin', '/bin', $basedir],
     subscribe   => Package['curator-api'],
     require     => Exec['curator-api_db_schema_update'],
     refreshonly => true
