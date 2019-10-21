@@ -3,10 +3,12 @@ class profiles::curator (
   String           $articlelinker_publishers_source,
   String           $api_config_source,
   String           $api_hostname,
+  String           $articlelinker_package_version     = 'latest',
   Optional[String] $articlelinker_env_defaults_source = undef,
   Boolean          $articlelinker_service_manage      = true,
   String           $articlelinker_service_ensure      = 'running',
   Boolean          $articlelinker_service_enable      = true,
+  String           $api_package_version               = 'latest',
   Boolean          $api_local_database                = false,
   Optional[String] $api_local_database_name           = undef,
   Optional[String] $api_local_database_user           = undef,
@@ -87,6 +89,7 @@ class profiles::curator (
     class { 'profiles::deployment::curator::articlelinker':
       config_source       => $articlelinker_config_source,
       publishers_source   => $articlelinker_publishers_source,
+      package_version     => $articlelinker_package_version,
       env_defaults_source => $articlelinker_env_defaults_source,
       service_manage      => $articlelinker_service_manage,
       service_ensure      => $articlelinker_service_ensure,
@@ -95,8 +98,9 @@ class profiles::curator (
     }
 
     class { 'profiles::deployment::curator::api':
-      config_source => $api_config_source,
-      puppetdb_url  => $puppetdb_url
+      config_source   => $api_config_source,
+      package_version => $api_package_version,
+      puppetdb_url    => $puppetdb_url
     }
 
     if $api_local_database {
