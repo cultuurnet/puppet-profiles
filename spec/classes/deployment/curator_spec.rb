@@ -41,10 +41,6 @@ describe 'profiles::deployment::curator' do
             },
             'release' => 'trusty'
           ) }
-
-          it { is_expected.to contain_profiles__apt__update('publiq-curator').with(
-
-          ) }
         end
       end
     end
