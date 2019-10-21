@@ -1,4 +1,6 @@
-class profiles::php {
+class profiles::php (
+  Boolean $with_composer = false
+) {
 
   contain ::profiles
 
@@ -14,8 +16,10 @@ class profiles::php {
   contain ::php::globals
   contain ::php
 
-  Profiles::Apt::Update['php'] -> Class['php::globals'] -> Class['php']
+  if $with_composer {
+    realize Package['composer']
+    realize Package['git']
+  }
 
-  realize Package['composer']
-  realize Package['git']
+  Profiles::Apt::Update['php'] -> Class['php::globals'] -> Class['php']
 }
