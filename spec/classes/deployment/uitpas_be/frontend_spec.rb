@@ -61,9 +61,10 @@ describe 'profiles::deployment::uitpas_be::frontend' do
     end
   end
 
-  context "with config_source => /bar, env_defaults_source => /tmp/a, service_ensure => stopped, service_enable = false and puppetdb_url => http://example.com:8000" do
+  context "with config_source => /bar, package_version => 1.2.3, env_defaults_source => /tmp/a, service_ensure => stopped, service_enable = false and puppetdb_url => http://example.com:8000" do
     let (:params) { {
       'config_source'       => '/bar',
+      'package_version'     => '1.2.3',
       'env_defaults_source' => '/tmp/a',
       'service_ensure'      => 'stopped',
       'service_enable'      => false,
@@ -77,6 +78,8 @@ describe 'profiles::deployment::uitpas_be::frontend' do
         it { is_expected.to contain_file('uitpas.be-frontend-config').with(
           'source' => '/bar',
         ) }
+
+        it { is_expected.to contain_package('uitpas.be-frontend').with( 'ensure' => '1.2.3') }
 
         it { is_expected.to contain_service('uitpas.be-frontend').with(
           'ensure'    => 'stopped',

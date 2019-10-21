@@ -51,10 +51,11 @@ describe 'profiles::deployment::uitpas_be::backend' do
     end
   end
 
-  context "with config_source => /bar and puppetdb_url => http://example.com:8000" do
+  context "with config_source => /bar, package_version => 9.8.7 and puppetdb_url => http://example.com:8000" do
     let (:params) { {
-      'config_source' => '/bar',
-      'puppetdb_url'  => 'http://example.com:8000'
+      'config_source'   => '/bar',
+      'package_version' => '9.8.7',
+      'puppetdb_url'    => 'http://example.com:8000'
     } }
 
     on_supported_os.each do |os, facts|
@@ -64,6 +65,8 @@ describe 'profiles::deployment::uitpas_be::backend' do
         it { is_expected.to contain_file('uitpas.be-backend-config').with(
           'source' => '/bar',
         ) }
+
+        it { is_expected.to contain_package('uitpas.be-backend').with( 'ensure' => '9.8.7') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uitpas_be::backend').with(
           'puppetdb_url' => 'http://example.com:8000'
