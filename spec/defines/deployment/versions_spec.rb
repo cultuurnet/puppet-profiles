@@ -31,14 +31,14 @@ describe 'profiles::deployment::versions' do
 
           it { is_expected.to contain_exec('update versions.example file for package foo').with(
             'command'     => 'facter -pj example_version | jq \'.["example_version"]\' > /tmp/versions.example',
-            'path'        => [ '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
+            'path'        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
             'refreshonly' => true
             )
           }
 
           it { is_expected.to contain_exec('update versions.example.foo file for package foo').with(
             'command'     => 'facter -pj example_version.foo | jq \'.["example_version.foo"]\' > /tmp/versions.example.foo',
-            'path'        => [ '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
+            'path'        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
             'refreshonly' => true
             )
           }
@@ -59,42 +59,42 @@ describe 'profiles::deployment::versions' do
 
           it { is_expected.to contain_exec('update versions.example file for package bar').with(
             'command'     => 'facter -pj example_version | jq \'.["example_version"]\' > /var/www/versions.example',
-            'path'        => [ '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
+            'path'        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
             'refreshonly' => true
             )
           }
 
           it { is_expected.to contain_exec('update versions.example file for package baz').with(
             'command'     => 'facter -pj example_version | jq \'.["example_version"]\' > /var/www/versions.example',
-            'path'        => [ '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
+            'path'        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
             'refreshonly' => true
             )
           }
 
           it { is_expected.to contain_exec('update versions.example.bar file for package bar').with(
             'command'     => 'facter -pj example_version.bar | jq \'.["example_version.bar"]\' > /var/www/versions.example.bar',
-            'path'        => [ '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
+            'path'        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
             'refreshonly' => true
             )
           }
 
           it { is_expected.to contain_exec('update versions.example.baz file for package baz').with(
             'command'     => 'facter -pj example_version.baz | jq \'.["example_version.baz"]\' > /var/www/versions.example.baz',
-            'path'        => [ '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
+            'path'        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
             'refreshonly' => true
             )
           }
 
           it { is_expected.to contain_exec('update_facts for bar package').with(
             'command'     => 'update_facts -p http://localhost:8080',
-            'path'        => [ '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
+            'path'        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
             'refreshonly' => true
             )
           }
 
           it { is_expected.to contain_exec('update_facts for baz package').with(
             'command'     => 'update_facts -p http://localhost:8080',
-            'path'        => [ '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
+            'path'        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
             'refreshonly' => true
             )
           }

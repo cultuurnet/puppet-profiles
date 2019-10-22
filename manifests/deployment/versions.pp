@@ -16,14 +16,14 @@ define profiles::deployment::versions (
     any2array($packages).each |$package| {
       exec { "update versions.${project} file for package ${package}":
         command     => "facter -pj ${project}_version | jq '.[\"${project}_version\"]' > ${destination_dir}/versions.${project}",
-        path        => [ '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
+        path        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
         require     => Package['jq'],
         refreshonly => true
       }
 
       exec { "update versions.${project}.${package} file for package ${package}":
         command     => "facter -pj ${project}_version.${package} | jq '.[\"${project}_version.${package}\"]' > ${destination_dir}/versions.${project}.${package}",
-        path        => [ '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
+        path        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
         require     => Package['jq'],
         refreshonly => true
       }
@@ -31,7 +31,7 @@ define profiles::deployment::versions (
       if $puppetdb_url {
         exec { "update_facts for ${package} package":
           command     => "update_facts -p ${puppetdb_url}",
-          path        => [ '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
+          path        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
           subscribe   => Class['::profiles::deployment'],
           refreshonly => true
         }
