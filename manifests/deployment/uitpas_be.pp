@@ -1,6 +1,6 @@
 class profiles::deployment::uitpas_be {
 
-  @apt::source { 'publiq-uitpas.be':
+  @apt::source { 'publiq-uitpasbe':
     location => "http://apt.uitdatabank.be/uitpas.be-${environment}",
     release  => 'trusty',
     repos    => 'main',
@@ -14,7 +14,7 @@ class profiles::deployment::uitpas_be {
     }
   }
 
-  @profiles::apt::update { 'publiq-uitpas.be':
-    require => Apt::Source['publiq-uitpas.be']
+  @profiles::apt::update { 'publiq-uitpasbe':
+    require => Apt::Source['publiq-uitpasbe']
   }
 }

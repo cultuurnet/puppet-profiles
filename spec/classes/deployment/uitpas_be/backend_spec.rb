@@ -14,37 +14,37 @@ describe 'profiles::deployment::uitpas_be::backend' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_apt__source('publiq-uitpas.be') }
-        it { is_expected.to contain_profiles__apt__update('publiq-uitpas.be') }
+        it { is_expected.to contain_apt__source('publiq-uitpasbe') }
+        it { is_expected.to contain_profiles__apt__update('publiq-uitpasbe') }
 
-        it { is_expected.to contain_package('uitpas.be-backend').with( 'ensure' => 'latest') }
-        it { is_expected.to contain_package('uitpas.be-backend').that_notifies('Profiles::Deployment::Versions[profiles::deployment::uitpas_be::backend]') }
-        it { is_expected.to contain_package('uitpas.be-backend').that_requires('Profiles::Apt::Update[publiq-uitpas.be]') }
+        it { is_expected.to contain_package('uitpasbe-backend').with( 'ensure' => 'latest') }
+        it { is_expected.to contain_package('uitpasbe-backend').that_notifies('Profiles::Deployment::Versions[profiles::deployment::uitpas_be::backend]') }
+        it { is_expected.to contain_package('uitpasbe-backend').that_requires('Profiles::Apt::Update[publiq-uitpasbe]') }
 
-        it { is_expected.to contain_file('uitpas.be-backend-config').with(
+        it { is_expected.to contain_file('uitpasbe-backend-config').with(
           'ensure' => 'file',
-          'path'   => '/var/www/uitpas.be-backend/.env',
+          'path'   => '/var/www/uitpasbe-backend/.env',
           'source' => '/foo',
           'owner'  => 'www-data',
           'group'  => 'www-data'
         ) }
 
-        it { is_expected.to contain_file('uitpas.be-backend-config').that_requires('Package[uitpas.be-backend]') }
+        it { is_expected.to contain_file('uitpasbe-backend-config').that_requires('Package[uitpasbe-backend]') }
 
-        it { is_expected.to contain_exec('uitpas.be-backend_cache_clear').with(
+        it { is_expected.to contain_exec('uitpasbe-backend_cache_clear').with(
           'command'     => 'php bin/console cache:clear',
-          'cwd'         => '/var/www/uitpas.be-backend',
+          'cwd'         => '/var/www/uitpasbe-backend',
           'user'        => 'www-data',
           'group'       => 'www-data',
-          'path'        => [ '/usr/local/bin', '/usr/bin', '/bin', '/var/www/uitpas.be-backend'],
+          'path'        => [ '/usr/local/bin', '/usr/bin', '/bin', '/var/www/uitpasbe-backend'],
           'refreshonly' => true
         ) }
 
-        it { is_expected.to contain_exec('uitpas.be-backend_cache_clear').that_subscribes_to('Package[uitpas.be-backend]') }
+        it { is_expected.to contain_exec('uitpasbe-backend_cache_clear').that_subscribes_to('Package[uitpasbe-backend]') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uitpas_be::backend').with(
-          'project'      => 'uitpas.be',
-          'packages'     => 'uitpas.be-backend',
+          'project'      => 'uitpasbe',
+          'packages'     => 'uitpasbe-backend',
           'puppetdb_url' => nil
         ) }
       end
@@ -62,11 +62,11 @@ describe 'profiles::deployment::uitpas_be::backend' do
       context "on #{os}" do
         let (:facts) { facts }
 
-        it { is_expected.to contain_file('uitpas.be-backend-config').with(
+        it { is_expected.to contain_file('uitpasbe-backend-config').with(
           'source' => '/bar',
         ) }
 
-        it { is_expected.to contain_package('uitpas.be-backend').with( 'ensure' => '9.8.7') }
+        it { is_expected.to contain_package('uitpasbe-backend').with( 'ensure' => '9.8.7') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uitpas_be::backend').with(
           'puppetdb_url' => 'http://example.com:8000'

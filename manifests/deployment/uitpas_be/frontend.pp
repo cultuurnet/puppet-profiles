@@ -8,53 +8,53 @@ class profiles::deployment::uitpas_be::frontend (
   Optional[String] $puppetdb_url        = undef
 ) {
 
-  $basedir = '/var/www/uitpas.be-frontend'
+  $basedir = '/var/www/uitpasbe-frontend'
 
   contain profiles
   contain profiles::deployment::uitpas_be
 
-  realize Apt::Source['publiq-uitpas.be']
-  realize Profiles::Apt::Update['publiq-uitpas.be']
+  realize Apt::Source['publiq-uitpasbe']
+  realize Profiles::Apt::Update['publiq-uitpasbe']
 
-  package { 'uitpas.be-frontend':
+  package { 'uitpasbe-frontend':
     ensure  => $package_version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Profiles::Apt::Update['publiq-uitpas.be']
+    require => Profiles::Apt::Update['publiq-uitpasbe']
   }
 
-  file { 'uitpas.be-frontend-config':
+  file { 'uitpasbe-frontend-config':
     ensure  => 'file',
     path    => "${basedir}/.env",
     owner   => 'www-data',
     group   => 'www-data',
     source  => $config_source,
-    require => Package['uitpas.be-frontend']
+    require => Package['uitpasbe-frontend']
   }
 
   if $service_manage {
     if $env_defaults_source {
-      file { '/etc/default/uitpas.be-frontend':
+      file { '/etc/default/uitpasbe-frontend':
         ensure => 'file',
         owner  => 'root',
         group  => 'root',
         source => $env_defaults_source,
-        notify => Service['uitpas.be-frontend']
+        notify => Service['uitpasbe-frontend']
       }
     }
 
-    service { 'uitpas.be-frontend':
+    service { 'uitpasbe-frontend':
       ensure    => $service_ensure,
       enable    => $service_enable,
-      require   => Package['uitpas.be-frontend'],
+      require   => Package['uitpasbe-frontend'],
       hasstatus => true
     }
 
-    File['uitpas.be-frontend-config'] ~> Service['uitpas.be-frontend']
+    File['uitpasbe-frontend-config'] ~> Service['uitpasbe-frontend']
   }
 
   profiles::deployment::versions { $title:
-    project      => 'uitpas.be',
-    packages     => 'uitpas.be-frontend',
+    project      => 'uitpasbe',
+    packages     => 'uitpasbe-frontend',
     puppetdb_url => $puppetdb_url
   }
 }

@@ -11,12 +11,12 @@ describe 'profiles::deployment::uitpas_be' do
         let(:pre_condition) { 'Apt::Source <| |>; Profiles::Apt::Update <| |>' }
 
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to contain_profiles__apt__update('publiq-uitpas.be').that_requires('Apt::Source[publiq-uitpas.be]') }
+        it { is_expected.to contain_profiles__apt__update('publiq-uitpasbe').that_requires('Apt::Source[publiq-uitpasbe]') }
 
         context "in the testing environment" do
           let(:environment) { 'testing' }
 
-          it { is_expected.to contain_apt__source('publiq-uitpas.be').with(
+          it { is_expected.to contain_apt__source('publiq-uitpasbe').with(
             'location' => 'http://apt.uitdatabank.be/uitpas.be-testing',
             'ensure'   => 'present',
             'repos'    => 'main',
@@ -31,7 +31,7 @@ describe 'profiles::deployment::uitpas_be' do
         context "in the production environment" do
           let(:environment) { 'production' }
 
-          it { is_expected.to contain_apt__source('publiq-uitpas.be').with(
+          it { is_expected.to contain_apt__source('publiq-uitpasbe').with(
             'location' => 'http://apt.uitdatabank.be/uitpas.be-production',
             'ensure'   => 'present',
             'repos'    => 'main',
