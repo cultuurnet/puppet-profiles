@@ -48,6 +48,9 @@ fixtures:
     datacat:
       repo: 'richardc/datacat'
       ref: '0.6.2'
+    firewall:
+      repo: 'puppetlabs/firewall'
+      ref: '1.9.0'
   repositories:
     rabbitmq:
       repo: 'https://github.com/willaerk/puppetlabs-rabbitmq.git'
