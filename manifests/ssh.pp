@@ -15,4 +15,10 @@ class profiles::ssh {
     ensure => 'running',
     enable => true
   }
+
+  firewall { '100 accept SSH traffic':
+    proto  => 'tcp',
+    dport  => '22',
+    action => 'accept'
+  }
 }
