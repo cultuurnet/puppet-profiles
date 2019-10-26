@@ -22,6 +22,13 @@ class profiles::postfix (
     concat { $mynetworks_file:
       notify => Class['::postfix::server']
     }
+
+    firewall { '300 accept smtp traffic':
+      proto  => 'tcp',
+      dport  => '25',
+      action => 'accept'
+    }
+
   } else {
     $relay_host  = $relayhost
     $my_networks = false

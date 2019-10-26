@@ -39,6 +39,12 @@ describe 'profiles::postfix' do
         }
 
         it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
+
+        it { is_expected.to contain_firewall('300 accept smtp traffic').with(
+          'proto' => 'tcp',
+          'dport' => '25',
+          'action' => 'accept'
+        ) }
       end
 
       context "with relayhost => [mailhost.example.com]" do
@@ -65,6 +71,8 @@ describe 'profiles::postfix' do
           'tag'     => 'postfix_mynetworks'
           )
         }
+
+        it { is_expected.not_to contain_firewall('300 accept smtp traffic') }
 
         it { is_expected.not_to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
       end
@@ -93,6 +101,12 @@ describe 'profiles::postfix' do
         }
 
         it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
+
+        it { is_expected.to contain_firewall('300 accept smtp traffic').with(
+          'proto' => 'tcp',
+          'dport' => '25',
+          'action' => 'accept'
+        ) }
 
         context "on host with public ip address 5.6.7.8 with inet_protocols => ipv4, listen_addresses => 127.0.0.1 and relayhost => [mailhost.example.com]" do
           let(:facts) {
@@ -135,6 +149,8 @@ describe 'profiles::postfix' do
             )
           }
 
+          it { is_expected.not_to contain_firewall('300 accept smtp traffic') }
+
           it { is_expected.not_to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
         end
 
@@ -174,6 +190,12 @@ describe 'profiles::postfix' do
 
           it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
 
+          it { is_expected.to contain_firewall('300 accept smtp traffic').with(
+            'proto' => 'tcp',
+            'dport' => '25',
+            'action' => 'accept'
+          ) }
+
           context "with aliases_domains => [ foo.com, bar.com ]" do
             let(:params) {
               super().merge(
@@ -207,6 +229,12 @@ describe 'profiles::postfix' do
               'tag'     => 'postfix_mynetworks'
               )
             }
+
+            it { is_expected.to contain_firewall('300 accept smtp traffic').with(
+              'proto' => 'tcp',
+              'dport' => '25',
+              'action' => 'accept'
+            ) }
 
             it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
           end
