@@ -8,7 +8,7 @@ describe 'profiles::repositories' do
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       context "with all virtual resources realized" do
-        let(:pre_condition) { 'include ::profiles; Apt::Source <| |>; Profiles::Apt::Update <| |>' }
+        let(:pre_condition) { 'Apt::Source <| |>; Profiles::Apt::Update <| |>' }
 
         case facts[:os]['release']['major']
         when '14.04'

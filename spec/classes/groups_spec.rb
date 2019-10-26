@@ -12,9 +12,7 @@ describe 'profiles::groups' do
       it { is_expected.to compile.with_all_deps }
 
       context "with all virtual resources realized" do
-        let(:pre_condition) {
-          [ 'include ::profiles', 'Group <| |>' ]
-        }
+        let(:pre_condition) { 'Group <| |>' }
 
         it { is_expected.to contain_group('ubuntu').with(
           'ensure' => 'present',

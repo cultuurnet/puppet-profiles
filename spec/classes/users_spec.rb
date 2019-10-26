@@ -12,9 +12,7 @@ describe 'profiles::users' do
       it { is_expected.to compile.with_all_deps }
 
       context "with all virtual resources realized" do
-        let(:pre_condition) {
-          [ 'include ::profiles', 'User <| |>' ]
-        }
+        let(:pre_condition) { 'User <| |>' }
 
         it { is_expected.to contain_user('ubuntu').with(
           'ensure'         => 'present',

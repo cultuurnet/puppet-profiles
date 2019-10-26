@@ -12,9 +12,7 @@ describe 'profiles::packages' do
       it { is_expected.to compile.with_all_deps }
 
       context "with all virtual resources realized" do
-        let(:pre_condition) {
-          [ 'include ::profiles', 'Package <| |>' ]
-        }
+        let(:pre_condition) { 'Package <| |>' }
 
         it { is_expected.to contain_package('composer').with(
           'ensure' => 'present'
