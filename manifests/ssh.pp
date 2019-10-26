@@ -2,6 +2,8 @@ class profiles::ssh {
 
   contain ::profiles
 
+  include ::profiles::firewall
+
   Sshd_config {
     notify => Service['ssh']
   }
@@ -16,9 +18,5 @@ class profiles::ssh {
     enable => true
   }
 
-  firewall { '100 accept ssh traffic':
-    proto  => 'tcp',
-    dport  => '22',
-    action => 'accept'
-  }
+  realize Firewall['100 accept ssh traffic']
 }
