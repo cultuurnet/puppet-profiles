@@ -23,7 +23,7 @@ describe 'profiles::ssh' do
         )
       }
 
-      it { is_expected.to contain_firewall('100 accept SSH traffic').with(
+      it { is_expected.to contain_firewall('100 accept ssh traffic').with(
         'proto'  => 'tcp',
         'dport'  => '22',
         'action' => 'accept'
