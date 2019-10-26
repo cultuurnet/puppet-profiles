@@ -11,12 +11,12 @@ describe 'profiles::firewall::base' do
 
       it { is_expected.to contain_class('profiles::firewall') }
 
-      it { is_expected.to contain_firewall('000 accept all icmp').with(
+      it { is_expected.to contain_firewall('000 accept all icmp traffic').with(
         'proto'  => 'icmp',
         'action' => 'accept'
       ) }
 
-      it { is_expected.to contain_firewall('001 accept all to lo interface').with(
+      it { is_expected.to contain_firewall('001 accept all traffic to lo interface').with(
         'proto'   => 'all',
         'iniface' => 'lo',
         'action'  => 'accept'

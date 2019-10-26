@@ -2,12 +2,12 @@ class profiles::firewall::base {
 
   contain ::profiles::firewall
 
-  firewall { '000 accept all icmp':
+  firewall { '000 accept all icmp traffic':
     proto  => 'icmp',
     action => 'accept'
   }
 
-  firewall { '001 accept all to lo interface':
+  firewall { '001 accept all traffic to lo interface':
     proto   => 'all',
     iniface => 'lo',
     action  => 'accept'
