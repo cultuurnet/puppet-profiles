@@ -9,7 +9,11 @@ describe 'profiles::firewall::base' do
 
       it { is_expected.to compile.with_all_deps }
 
-      it { is_expected.to contain_class('profiles::firewall') }
+      it { is_expected.to contain_class('firewall') }
+
+      it { is_expected.to contain_resources('firewall').with(
+        'purge' => true
+      ) }
 
       it { is_expected.to contain_firewall('000 accept all icmp traffic').with(
         'proto'  => 'icmp',

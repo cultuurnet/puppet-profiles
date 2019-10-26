@@ -10,6 +10,8 @@ class profiles::postfix (
 
   contain ::profiles
 
+  include ::profiles::firewall
+
   $config_directory = '/etc/postfix'
   $mynetworks_file = "${config_directory}/mynetworks"
 
@@ -23,11 +25,7 @@ class profiles::postfix (
       notify => Class['::postfix::server']
     }
 
-    firewall { '300 accept smtp traffic':
-      proto  => 'tcp',
-      dport  => '25',
-      action => 'accept'
-    }
+    realize Firewall['300 accept smtp traffic']
 
   } else {
     $relay_host  = $relayhost

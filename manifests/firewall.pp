@@ -1,10 +1,8 @@
 class profiles::firewall {
 
-  contain ::profiles
-
-  contain ::firewall
-
-  resources { 'firewall':
-    purge => true
+  @firewall { '300 accept smtp traffic':
+    proto  => 'tcp',
+    dport  => '25',
+    action => 'accept'
   }
 }

@@ -1,6 +1,11 @@
 class profiles::firewall::base {
 
-  contain ::profiles::firewall
+  contain ::profiles
+  contain ::firewall
+
+  resources { 'firewall':
+    purge => true
+  }
 
   firewall { '000 accept all icmp traffic':
     proto  => 'icmp',
