@@ -18,5 +18,9 @@ class profiles::ssh {
     enable => true
   }
 
+  resources { 'ssh_authorized_key':
+    purge => true
+  }
+
   realize Firewall['100 accept ssh traffic']
 }

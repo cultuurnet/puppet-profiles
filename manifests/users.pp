@@ -29,5 +29,4 @@ class profiles::users {
     shell          => '/bin/bash',
     uid            => '1001'
   }
-
 }

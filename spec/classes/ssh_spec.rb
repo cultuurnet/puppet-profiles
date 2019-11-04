@@ -23,6 +23,10 @@ describe 'profiles::ssh' do
         )
       }
 
+      it { is_expected.to contain_resources('ssh_authorized_key').with(
+        'purge' => true
+      ) }
+
       it { is_expected.to contain_firewall('100 accept ssh traffic').with(
         'proto'  => 'tcp',
         'dport'  => '22',
