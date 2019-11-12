@@ -36,6 +36,14 @@ class profiles::udb3::search (
     require => Apt::Source['cultuurnet-search']
   }
 
+  realize Apt::Source['nodejs_10.x']
+  realize Profiles::Apt::Update['nodejs_10.x']
+
+  package { 'elasticdump':
+    ensure  => 'present',
+    require => [ Profiles::Apt::Update['cultuurnet-tools'], Profiles::Apt::Update['nodejs_10.x']]
+  }
+
   if $facts['ec2_metadata'] {
     $http_hosts = [ $facts['ipaddress_eth0'], '127.0.0.1']
   } else {
