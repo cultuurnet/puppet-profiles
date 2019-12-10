@@ -5,9 +5,8 @@ define profiles::deployment::versions (
   Optional[String]                          $puppetdb_url    = undef
 ) {
 
-  contain ::profiles
-  contain ::profiles::deployment
-
+  include ::profiles
+  include ::profiles::deployment
   include ::profiles::packages
 
   realize Package['jq']
