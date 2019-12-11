@@ -17,6 +17,7 @@ define profiles::deployment::versions (
         command     => "facter -pj ${project}_version | jq '.[\"${project}_version\"]' > ${destination_dir}/versions.${project}",
         path        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
         require     => Package['jq'],
+        subscribe   => Package[$package],
         refreshonly => true
       }
 
@@ -24,14 +25,15 @@ define profiles::deployment::versions (
         command     => "facter -pj ${project}_version.${package} | jq '.[\"${project}_version.${package}\"]' > ${destination_dir}/versions.${project}.${package}",
         path        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
         require     => Package['jq'],
+        subscribe   => Package[$package],
         refreshonly => true
       }
 
       if $puppetdb_url {
-        exec { "update_facts for ${package} package":
+        exec { "update facts for package ${package}":
           command     => "update_facts -p ${puppetdb_url}",
           path        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
-          subscribe   => Class['::profiles::deployment'],
+          subscribe   => [ Class['::profiles::deployment'], Package[$package] ],
           refreshonly => true
         }
       }

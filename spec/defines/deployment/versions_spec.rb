@@ -22,6 +22,8 @@ describe 'profiles::deployment::versions' do
         it { is_expected.to have_exec_resource_count(0) }
 
         context "with packages => foo and destination_dir => /tmp" do
+          let(:pre_condition) { 'package { "foo":}' }
+
           let(:params) {
             super().merge( {
               'packages'        => 'foo',
@@ -43,13 +45,18 @@ describe 'profiles::deployment::versions' do
             )
           }
 
-          it { is_expected.not_to contain_exec('update_facts for foo package') }
+          it { is_expected.not_to contain_exec('update facts for package foo') }
+
+          it { is_expected.to contain_exec('update versions.example file for package foo').that_subscribes_to('Package[foo]') }
+          it { is_expected.to contain_exec('update versions.example.foo file for package foo').that_subscribes_to('Package[foo]') }
 
           it { is_expected.to contain_package('jq').that_comes_before('Exec[update versions.example file for package foo]') }
           it { is_expected.to contain_package('jq').that_comes_before('Exec[update versions.example.foo file for package foo]') }
         end
 
         context "with packages => [ 'bar', 'baz'] and puppetdb_url => http://localhost:8080" do
+          let(:pre_condition) { 'package { "bar":}; package { "baz":}' }
+
           let(:params) {
             super().merge( {
               'packages'     => [ 'bar', 'baz'],
@@ -85,27 +92,35 @@ describe 'profiles::deployment::versions' do
             )
           }
 
-          it { is_expected.to contain_exec('update_facts for bar package').with(
+          it { is_expected.to contain_exec('update facts for package bar').with(
             'command'     => 'update_facts -p http://localhost:8080',
             'path'        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
             'refreshonly' => true
             )
           }
 
-          it { is_expected.to contain_exec('update_facts for baz package').with(
+          it { is_expected.to contain_exec('update facts for package baz').with(
             'command'     => 'update_facts -p http://localhost:8080',
             'path'        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
             'refreshonly' => true
             )
           }
+
+          it { is_expected.to contain_exec('update versions.example file for package bar').that_subscribes_to('Package[bar]') }
+          it { is_expected.to contain_exec('update versions.example.bar file for package bar').that_subscribes_to('Package[bar]') }
+          it { is_expected.to contain_exec('update facts for package bar').that_subscribes_to('Package[bar]') }
+
+          it { is_expected.to contain_exec('update versions.example file for package baz').that_subscribes_to('Package[baz]') }
+          it { is_expected.to contain_exec('update versions.example.baz file for package baz').that_subscribes_to('Package[baz]') }
+          it { is_expected.to contain_exec('update facts for package baz').that_subscribes_to('Package[baz]') }
 
           it { is_expected.to contain_package('jq').that_comes_before('Exec[update versions.example file for package bar]') }
           it { is_expected.to contain_package('jq').that_comes_before('Exec[update versions.example file for package baz]') }
           it { is_expected.to contain_package('jq').that_comes_before('Exec[update versions.example.bar file for package bar]') }
           it { is_expected.to contain_package('jq').that_comes_before('Exec[update versions.example.baz file for package baz]') }
 
-          it { is_expected.to contain_exec('update_facts for bar package').that_subscribes_to('Class[profiles::deployment]') }
-          it { is_expected.to contain_exec('update_facts for baz package').that_subscribes_to('Class[profiles::deployment]') }
+          it { is_expected.to contain_exec('update facts for package bar').that_subscribes_to('Class[profiles::deployment]') }
+          it { is_expected.to contain_exec('update facts for package baz').that_subscribes_to('Class[profiles::deployment]') }
         end
       end
     end
