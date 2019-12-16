@@ -3,11 +3,20 @@ class profiles::ssh_authorized_keys(
 ) {
 
   $keys.each | $key, $attributes| {
-    @ssh_authorized_key { $key:
-      user => 'ubuntu',
-      type => $attributes['type'],
-      key  => $attributes['key'],
-      tag  => $attributes['tag']
+    any2array($attributes['key']).each | $index, $attribute_key | {
+      if size(any2array($attributes['key'])) == 1 {
+        $key_title = $key
+      } else {
+        $key_number = $index + 1
+        $key_title  = "${key} ${key_number}"
+      }
+
+      @ssh_authorized_key { $key_title:
+        user => 'ubuntu',
+        type => $attributes['type'],
+        key  => $attribute_key,
+        tag  => $attributes['tag']
+      }
     }
   }
 }

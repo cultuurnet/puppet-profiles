@@ -20,12 +20,12 @@ describe 'profiles::ssh_authorized_keys' do
           it { is_expected.to have_ssh_authorized_key_resource_count(0) }
         end
 
-        context "with keys => { foo => { type => ssh-rsa, key => abcd1234, tag => publiq } }, bar => { type => ssh-rsa, key => efgh5678, tag => publiq } }, baz => { type => ssh-rsa, key => efgh5678, tag => acme } }" do
+        context "with keys => { foo => { type => ssh-rsa, key => abcd1234, tag => publiq } }, bar => { type => ssh-rsa, key => [ efgh5678, ijkl9012 ], tag => publiq } }, baz => { type => ssh-rsa, key => efgh5678, tag => acme } }" do
           let(:params) {
             {
               'keys' => {
                 'foo' => { 'type' => 'ssh-rsa', 'key' => 'abcd1234', 'tag' => 'publiq' },
-                'bar' => { 'type' => 'ssh-rsa', 'key' => 'efgh5678', 'tag' => 'publiq' },
+                'bar' => { 'type' => 'ssh-rsa', 'key' => [ 'efgh5678', 'ijkl9012'] , 'tag' => 'publiq' },
                 'baz' => { 'type' => 'ssh-rsa', 'key' => 'efgh5678', 'tag' => 'acme' }
               }
             }
@@ -38,10 +38,17 @@ describe 'profiles::ssh_authorized_keys' do
             'tag'  => 'publiq'
           ) }
 
-          it { is_expected.to contain_ssh_authorized_key('bar').with(
+          it { is_expected.to contain_ssh_authorized_key('bar 1').with(
             'user' => 'ubuntu',
             'type' => 'ssh-rsa',
             'key'  => 'efgh5678',
+            'tag'  => 'publiq'
+          ) }
+
+          it { is_expected.to contain_ssh_authorized_key('bar 2').with(
+            'user' => 'ubuntu',
+            'type' => 'ssh-rsa',
+            'key'  => 'ijkl9012',
             'tag'  => 'publiq'
           ) }
 
