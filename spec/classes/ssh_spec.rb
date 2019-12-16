@@ -43,15 +43,15 @@ describe 'profiles::ssh' do
         let(:params) { { 'ssh_authorized_keys_tags' => [ 'publiq', 'acme'] } }
 
         let(:pre_condition) { [
-          '@ssh_authorized_key { "publiq key 1": tag => "publiq" }',
-          '@ssh_authorized_key { "publiq key 2": tag => "publiq" }',
-          '@ssh_authorized_key { "foobar key 1": tag => "foobar" }',
-          '@ssh_authorized_key { "acme key 1": tag => "acme" }'
+          '@ssh_authorized_key { "publiq first key": tag => "publiq" }',
+          '@ssh_authorized_key { "publiq second key": tag => "publiq" }',
+          '@ssh_authorized_key { "foobar first key": tag => "foobar" }',
+          '@ssh_authorized_key { "acme first key": tag => "acme" }'
         ] }
 
-        it { is_expected.to contain_ssh_authorized_key('publiq key 1') }
-        it { is_expected.to contain_ssh_authorized_key('publiq key 2') }
-        it { is_expected.to contain_ssh_authorized_key('acme key 1') }
+        it { is_expected.to contain_ssh_authorized_key('publiq first key') }
+        it { is_expected.to contain_ssh_authorized_key('publiq second key') }
+        it { is_expected.to contain_ssh_authorized_key('acme first key') }
 
         it { is_expected.to have_ssh_authorized_key_resource_count(3) }
       end
