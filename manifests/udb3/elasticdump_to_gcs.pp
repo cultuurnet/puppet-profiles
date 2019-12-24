@@ -1,7 +1,6 @@
 class profiles::udb3::elasticdump_to_gcs (
   String      $gcs_bucket_name,
   String      $gcs_key_file_source,
-  String      $bucket_mountpoint,
   String      $index_name,
   String      $local_timezone = 'UTC',
   Integer[-1] $size           = '-1'
@@ -20,6 +19,14 @@ class profiles::udb3::elasticdump_to_gcs (
   realize Package['elasticdump']
   realize Package['gcsfuse']
 
+  file { '/mnt/gcs':
+    ensure => 'directory'
+  }
+
+  file { '/mnt/gcs/cloud-composer':
+    ensure => 'directory'
+  }
+
   file { 'gcs_credentials.json':
     path   => '/etc/gcs_credentials.json',
     mode   => '0644',
@@ -35,7 +42,7 @@ class profiles::udb3::elasticdump_to_gcs (
 
   cron { 'elasticdump_to_gcs':
     command => '/usr/local/bin/elasticdump_to_gcs',
-    require => File['elasticdump_to_gcs'],
+    require => [ File['elasticdump_to_gcs'], File['/mnt/gcs/cloud-composer']],
     user    => 'ubuntu',
     hour    => '*',
     minute  => '59'
