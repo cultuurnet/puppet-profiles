@@ -59,6 +59,13 @@ describe 'profiles::packages' do
 
         it { is_expected.to contain_package('elasticdump').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
         it { is_expected.to contain_package('elasticdump').that_requires('Profiles::Apt::Update[nodejs_10.x]') }
+
+        it { is_expected.to contain_package('gcsfuse').with(
+          'ensure' => 'present'
+          )
+        }
+
+        it { is_expected.to contain_package('gcsfuse').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
       end
     end
   end

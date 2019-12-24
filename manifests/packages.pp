@@ -32,4 +32,9 @@ class profiles::packages {
     ensure  => 'present',
     require => [ Profiles::Apt::Update['cultuurnet-tools'], Profiles::Apt::Update['nodejs_10.x']]
   }
+
+  @package { 'gcsfuse':
+    ensure  => 'present',
+    require => Profiles::Apt::Update['cultuurnet-tools']
+  }
 }
