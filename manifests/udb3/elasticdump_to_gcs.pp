@@ -3,7 +3,7 @@ class profiles::udb3::elasticdump_to_gcs (
   String      $gcs_key_file_source,
   String      $index_name,
   String      $local_timezone = 'UTC',
-  Integer[-1] $size           = '-1'
+  Integer[-1] $size           = -1
 ) {
 
   contain ::profiles
