@@ -12,9 +12,9 @@ class profiles::udb3::elasticdump_to_gcs (
   include ::profiles::packages
 
   realize Apt::Source['nodejs_10.x']
-  realize Apt::Source['tools']
+  realize Apt::Source['cultuurnet-tools']
   realize Profiles::Apt::Update['nodejs_10.x']
-  realize Profiles::Apt::Update['tools']
+  realize Profiles::Apt::Update['cultuurnet-tools']
 
   realize Package['elasticdump']
   realize Package['gcsfuse']
