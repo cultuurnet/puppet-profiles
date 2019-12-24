@@ -1,0 +1,32 @@
+#!/bin/bash
+
+gcs_bucket_name=<%= @gcs_bucket_name %>
+bucket_mountpoint=<%= @bucket_mountpoint %>
+index_name=<%= @index_name %>
+local_timezone=<% @local_timezone %>
+size=<%= size %>
+
+function cleanup()
+{
+    fusermount -u ${bucket_mountpoint}
+}
+
+# Akward hack to make sure we run this at midnight local time.
+# The script should be scheduled at XX:59 and will only perform
+# the dump when the local time is 23:59
+
+if [[ $(TZ=${local_timezone} date +%_H) -eq 23 ]]; then
+    trap cleanup EXIT
+
+    date=$(date +%Y%m%d)
+
+    sleep 60
+
+    echo "Mounting GCS bucket ${gcs_bucket_name} on ${bucket_mountpoint}"
+    gcsfuse --implicit-dirs --key-file /etc/gcs_credentials.json ${gcs_bucket_name} ${bucket_mountpoint}
+
+    echo "Dumping index ${index_name} to file ${bucket_mountpoint}/data/import/${index_name}_${date}.json"
+    elasticdump --input http://localhost:9200/${index_name} --type data --size ${size} --output ${bucket_mountpoint}/data/import/${index_name}_${date}.json
+else
+    exit 0
+fi
