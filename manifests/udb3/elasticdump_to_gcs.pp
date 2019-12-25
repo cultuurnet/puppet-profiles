@@ -24,7 +24,9 @@ class profiles::udb3::elasticdump_to_gcs (
   }
 
   file { '/mnt/gcs/cloud-composer':
-    ensure => 'directory'
+    ensure => 'directory',
+    owner  => 'ubuntu',
+    group  => 'ubuntu'
   }
 
   file { 'gcs_credentials.json':

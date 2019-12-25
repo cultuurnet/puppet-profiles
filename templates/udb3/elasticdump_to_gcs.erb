@@ -26,7 +26,7 @@ if [[ $(TZ=${local_timezone} date +%_H) -eq 23 ]]; then
     gcsfuse --implicit-dirs --key-file /etc/gcs_credentials.json ${gcs_bucket_name} ${bucket_mountpoint}
 
     echo "Dumping index ${index_name} to file ${bucket_mountpoint}/data/import/${index_name}_${date}.json"
-    elasticdump --input http://localhost:9200/${index_name} --type data --size ${size} --sourceOnly true --output ${bucket_mountpoint}/data/import/${index_name}_${date}.json
+    /usr/local/bin/elasticdump --input http://localhost:9200/${index_name} --type data --size ${size} --sourceOnly true --output ${bucket_mountpoint}/data/import/${index_name}_${date}.json
 else
     exit 0
 fi
