@@ -42,10 +42,11 @@ class profiles::udb3::elasticdump_to_gcs (
   }
 
   cron { 'elasticdump_to_gcs':
-    command => "[[ $(TZ=${local_timezone} date +%_H) -eq 23 ]] && (sleep 60; /usr/local/bin/elasticdump_to_gcs)",
-    require => [ File['elasticdump_to_gcs'], File['/mnt/gcs/cloud-composer']],
-    user    => 'ubuntu',
-    hour    => '*',
-    minute  => '59'
+    command     => "[[ $(TZ=${local_timezone} date +%_H) -eq 23 ]] && (sleep 60; /usr/local/bin/elasticdump_to_gcs)",
+    environment => [ 'SHELL=/bin/bash'],
+    user        => 'ubuntu',
+    hour        => '*',
+    minute      => '59',
+    require     => [ File['elasticdump_to_gcs'], File['/mnt/gcs/cloud-composer']]
   }
 }
