@@ -42,7 +42,7 @@ class profiles::udb3::elasticdump_to_gcs (
   }
 
   cron { 'elasticdump_to_gcs':
-    command     => "[[ $(TZ=${local_timezone} date +%_H) -eq 23 ]] && (sleep 60; /usr/local/bin/elasticdump_to_gcs)",
+    command     => "test $(TZ=${local_timezone} date +%_H ) -eq 23 && (sleep 60; /usr/local/bin/elasticdump_to_gcs)",
     environment => [ 'SHELL=/bin/bash'],
     user        => 'ubuntu',
     hour        => '*',
