@@ -38,12 +38,12 @@ class profiles::udb3::elasticdump_to_gcs (
     path    => '/usr/local/bin/elasticdump_to_gcs',
     content => template('profiles/udb3/elasticdump_to_gcs.erb'),
     mode    => '0755',
-    require => [ Package['elasticdump'], Package['gcsfuse'], File['gcs_credentials.json']],
+    require => [ Package['elasticdump'], Package['gcsfuse'], File['gcs_credentials.json']]
   }
 
   cron { 'elasticdump_to_gcs':
-    command     => "test $(TZ=${local_timezone} date +%_H ) -eq 23 && (sleep 60; /usr/local/bin/elasticdump_to_gcs)",
-    environment => [ 'SHELL=/bin/bash'],
+    command     => 'test `date +%_H` -eq 23 && (sleep 60; /usr/local/bin/elasticdump_to_gcs)',
+    environment => [ 'SHELL=/bin/bash', "TZ=${local_timezone}"],
     user        => 'ubuntu',
     hour        => '*',
     minute      => '59',
