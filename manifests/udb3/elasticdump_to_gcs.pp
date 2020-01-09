@@ -41,12 +41,19 @@ class profiles::udb3::elasticdump_to_gcs (
     require => [ Package['elasticdump'], Package['gcsfuse'], File['gcs_credentials.json']]
   }
 
+  file { 'midnight_elasticdump_to_gcs':
+    path    => '/usr/local/bin/midnight_elasticdump_to_gcs',
+    content => 'test $(date +%_H) -eq 23 && (sleep 60; /usr/local/bin/elasticdump_to_gcs)',
+    mode    => '0755',
+    require => File['elasticdump_to_gcs']
+  }
+
   cron { 'elasticdump_to_gcs':
-    command     => 'test `date +%_H` -eq 23 && (sleep 60; /usr/local/bin/elasticdump_to_gcs)',
+    command     => '/usr/local/bin/midnight_elasticdump_to_gcs',
     environment => [ 'SHELL=/bin/bash', "TZ=${local_timezone}"],
     user        => 'ubuntu',
     hour        => '*',
     minute      => '59',
-    require     => [ File['elasticdump_to_gcs'], File['/mnt/gcs/cloud-composer']]
+    require     => [ File['midnight_elasticdump_to_gcs'], File['/mnt/gcs/cloud-composer']]
   }
 }
