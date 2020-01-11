@@ -43,7 +43,7 @@ class profiles::udb3::elasticdump_to_gcs (
 
   file { 'midnight_elasticdump_to_gcs':
     path    => '/usr/local/bin/midnight_elasticdump_to_gcs',
-    content => 'test $(date +%_H) -eq 23 && (sleep 60; /usr/local/bin/elasticdump_to_gcs)\n',
+    content => "test $(date +%_H) -eq 23 && (sleep 60; /usr/local/bin/elasticdump_to_gcs)\n",
     mode    => '0755',
     require => File['elasticdump_to_gcs']
   }
