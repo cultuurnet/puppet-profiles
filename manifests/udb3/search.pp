@@ -12,7 +12,6 @@ class profiles::udb3::search (
   # TODO: pass parameters from elasticsearch profile here
   # TODO: supervisor + program
   # TODO: apache + vhosts
-  # TODO: redis
   # TODO: noop_deploy
   # TODO: unit tests
   # TODO: solution for certificates/HTTPS vhosts
