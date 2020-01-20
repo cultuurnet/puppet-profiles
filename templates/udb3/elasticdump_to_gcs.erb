@@ -3,6 +3,7 @@
 gcs_bucket_name=<%= @gcs_bucket_name %>
 bucket_mountpoint=/mnt/gcs/cloud-composer
 index_name=<%= @index_name %>
+limit=<%= @batch_size %>
 
 function cleanup()
 {
@@ -17,4 +18,4 @@ echo "Mounting GCS bucket ${gcs_bucket_name} on ${bucket_mountpoint}"
 gcsfuse --implicit-dirs --key-file /etc/gcs_credentials.json ${gcs_bucket_name} ${bucket_mountpoint}
 
 echo "Dumping index ${index_name} to file ${bucket_mountpoint}/data/import/${index_name}_${date}.json"
-/usr/local/bin/elasticdump --input http://localhost:9200/${index_name} --type data --sourceOnly true --output ${bucket_mountpoint}/data/import/${index_name}_${date}.json
+/usr/local/bin/elasticdump --input http://localhost:9200/${index_name} --type data --limit ${limit} --sourceOnly true --output ${bucket_mountpoint}/data/import/${index_name}_${date}.json

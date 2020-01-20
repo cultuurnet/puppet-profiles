@@ -1,8 +1,9 @@
 class profiles::udb3::elasticdump_to_gcs (
-  String      $gcs_bucket_name,
-  String      $gcs_key_file_source,
-  String      $index_name,
-  String      $local_timezone = 'UTC'
+  String  $gcs_bucket_name,
+  String  $gcs_key_file_source,
+  String  $index_name,
+  Integer $batch_size = 100,
+  String  $local_timezone = 'UTC'
 ) {
 
   contain ::profiles
