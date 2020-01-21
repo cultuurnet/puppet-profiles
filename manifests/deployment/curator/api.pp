@@ -30,6 +30,14 @@ class profiles::deployment::curator::api (
     require => Package['curator-api']
   }
 
+  file { 'curator-api-var':
+    path    => "${basedir}/var",
+    owner   => 'www-data',
+    group   => 'www-data',
+    recurse => true,
+    before  => Exec['curator-api_cache_clear']
+  }
+
   exec { 'curator-api_db_schema_update':
     command     => 'php bin/console doctrine:migrations:migrate --no-interaction',
     cwd         => $basedir,

@@ -31,6 +31,15 @@ describe 'profiles::deployment::curator::api' do
 
         it { is_expected.to contain_file('curator-api-config').that_requires('Package[curator-api]') }
 
+        it { is_expected.to contain_file('curator-api-var').with(
+          'path'    => '/var/www/curator-api/var',
+          'owner'   => 'www-data',
+          'group'   => 'www-data',
+          'recurse' => true
+        ) }
+
+        it { is_expected.to contain_file('curator-api-var').that_comes_before('Exec[curator-api_cache_clear]') }
+
         it { is_expected.to contain_exec('curator-api_db_schema_update').with(
           'command'     => 'php bin/console doctrine:migrations:migrate --no-interaction',
           'cwd'         => '/var/www/curator-api',
