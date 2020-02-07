@@ -2,8 +2,9 @@ class profiles::udb3::elasticdump_to_gcs (
   String  $gcs_bucket_name,
   String  $gcs_key_file_source,
   String  $index_name,
-  Integer $batch_size = 100,
-  String  $local_timezone = 'UTC'
+  Integer $batch_size           = 100,
+  Boolean $source_only          = false,
+  String  $local_timezone       = 'UTC'
 ) {
 
   contain ::profiles
@@ -18,6 +19,12 @@ class profiles::udb3::elasticdump_to_gcs (
 
   realize Package['elasticdump']
   realize Package['gcsfuse']
+
+  if $source_only {
+    $options = '-s'
+  } else {
+    $options = ''
+  }
 
   file { '/mnt/gcs':
     ensure => 'directory'
@@ -44,7 +51,7 @@ class profiles::udb3::elasticdump_to_gcs (
 
   file { 'midnight_elasticdump_to_gcs':
     path    => '/usr/local/bin/midnight_elasticdump_to_gcs',
-    content => "test $(date +%_H) -eq 23 && (sleep 60; /usr/local/bin/elasticdump_to_gcs)\n",
+    content => "test $(date +%_H) -eq 23 && (sleep 60; /usr/local/bin/elasticdump_to_gcs ${options})\n",
     mode    => '0755',
     require => File['elasticdump_to_gcs']
   }
