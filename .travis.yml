@@ -1,6 +1,9 @@
 ---
 sudo: false
 language: ruby
+branches:
+  only:
+  - master
 script: "bundle exec rake test"
 matrix:
   fast_finish: true
@@ -10,3 +13,4 @@ matrix:
 notifications:
   email:
   - infra@publiq.be
+  - seth@publiq.be
