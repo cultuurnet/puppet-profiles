@@ -28,7 +28,17 @@ describe 'profiles::puppet::agent' do
           )
         }
 
+        it { is_expected.to contain_ini_setting('agent usecacheonfailure').with(
+          'ensure'  => 'present',
+          'path'    => '/etc/puppetlabs/puppet/puppet.conf',
+          'section' => 'agent',
+          'setting' => 'usecacheonfailure',
+          'value'   => 'false',
+          )
+        }
+
         it { is_expected.to contain_ini_setting('agent certificate_revocation').that_notifies('Service[puppet]') }
+        it { is_expected.to contain_ini_setting('agent usecacheonfailure').that_notifies('Service[puppet]') }
       end
     end
   end

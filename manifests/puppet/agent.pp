@@ -2,13 +2,22 @@ class profiles::puppet::agent {
 
   contain ::profiles
 
-  ini_setting { 'agent certificate_revocation':
+  Ini_setting {
     ensure  => 'present',
     path    => '/etc/puppetlabs/puppet/puppet.conf',
+    notify  => Service['puppet']
+  }
+
+  ini_setting { 'agent certificate_revocation':
     section => 'agent',
     setting => 'certificate_revocation',
-    value   => 'false',
-    notify  => Service['puppet']
+    value   => 'false'
+  }
+
+  ini_setting { 'agent usecacheonfailure':
+    section => 'agent',
+    setting => 'usecacheonfailure',
+    value   => 'false'
   }
 
   service { 'puppet':
