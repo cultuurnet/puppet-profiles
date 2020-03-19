@@ -1,11 +1,9 @@
 ## This profile/module installs and configures aptly.
 class profiles::aptly {
 
-  include aptly
-
   contain ::profiles
 
-  class { 'aptly':
+  class { '::aptly':
     s3_publish_endpoints =>
     {
       'apt.publiq.be' =>
