@@ -12,7 +12,7 @@ class profiles::aptly {
   }
 
   # we need to do an apt-get update now that we have the aptly key.
-  exec { 'apt-get update': }
+  #exec { 'apt-get update': }
 
   #This will install aptly and set the s3_publish_endpoints parameter.
   class { 'aptly':
@@ -26,6 +26,5 @@ class profiles::aptly {
     }
   }
 
-  #Exec['Get Install Key']
   Exec['Get Install Key'] -> Exec['apt-get update']
 }
