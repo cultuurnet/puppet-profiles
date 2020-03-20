@@ -26,5 +26,5 @@ class profiles::aptly {
     }
   }
 
-  Exec['Get Install Key'] -> Exec['apt-get update']
+  Exec['Get Install Key'] -> Exec['apt_update']
 }
