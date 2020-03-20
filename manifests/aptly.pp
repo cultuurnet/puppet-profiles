@@ -6,7 +6,7 @@ class profiles::aptly {
   #Gets the aptly install key unless it is already there.
   exec { 'Get Install Key':
     command   => 'sudo apt-key adv --keyserver pool.sks-keyservers.net --recv-keys ED75B5A4483DA07C',
-    unless    => 'apt-key list | grep -w 'Andrey Smirnov'',
+    unless    => 'apt-key list | grep -w Andrey',
     path      => [ '/usr/local/bin', '/usr/bin'],
     logoutput => 'true',
   }
