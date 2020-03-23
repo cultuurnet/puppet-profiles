@@ -22,7 +22,7 @@ class profiles::aptly {
       {
         'region'         => 'eu-west-1',
         'bucket'         => 'apt.publiq.be',
-        'awsAccessKeyID' => lookup('profiles::aptly::awskey:')
+        'awsAccessKeyID' => lookup('profiles::aptly::awskey')
       }
     }
   }
