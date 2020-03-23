@@ -1,7 +1,7 @@
 ## This profile/module installs and configures aptly.
 class profiles::aptly (
   $awsaccesskeyid = '',
-  $awssecretaccesskey = ''
+  $awssecretaccesskey = '',
 ) {
 
   contain ::profiles
@@ -11,10 +11,14 @@ class profiles::aptly (
     install_repo         => true,
     repo_location        => 'http://aptly.publiq.be',
     repo_keyserver       => 'hkps.pool.sks-keyservers.net',
-    repo_keys            => 'ED75B5A4483DA07C',
+    repo_key             => 'ED75B5A4483DA07C',
     api_port             => '8080',
     api_nolock           => true,
     enable_api           => true,
+
+    #release  => $aptly::repo_release,
+    #repos    => $aptly::repo_repos,
+
     s3_publish_endpoints =>
     {
       'apt.publiq.be' =>
