@@ -16,7 +16,7 @@ class profiles::aptly (
     api_nolock           => true,
     enable_api           => true,
 
-    #release  => $aptly::repo_release,
+    #repo_release        =>,
     #repos    => $aptly::repo_repos,
 
     s3_publish_endpoints =>
