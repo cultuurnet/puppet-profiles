@@ -31,6 +31,8 @@ class profiles::aptly (
   # According to the aptly module documenttion, aptly API service can not start without at least one repo. 
   aptly::repo {'initial_repo':
     ensure => present,
+    uid    => '1000'
   }
 
+  #Aptly::Repo['initial_repo']
 }
