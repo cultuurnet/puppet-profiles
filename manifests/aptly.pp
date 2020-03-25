@@ -15,6 +15,7 @@ class profiles::aptly (
     api_port             => '8080',
     api_nolock           => true,
     enable_api           => true,
+    uid                  => '0',
 
     s3_publish_endpoints =>
     {
