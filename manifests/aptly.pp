@@ -2,8 +2,8 @@
 class profiles::aptly (
   $awsaccesskeyid = '',
   $awssecretaccesskey = '',
-  $sslcert = '',
   $sslchain = '',
+  $sslcert = '',
   $sslkey = '',
 ) {
 
@@ -64,9 +64,9 @@ class profiles::aptly (
       url  => 'http://localhost:80/'
     },
     require             => [
-      File[$sslcert],
-      File[$sslchain],
-      File[$sslkey]
+      File['/etc/ssl/certs/comodo_bundle_intermediate.pem'],
+      File['/etc/ssl/certs/uitdatabank.be.crt'],
+      File['/etc/ssl/private/uitdatabank.be.key'],
     ]
   }
 }
