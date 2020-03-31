@@ -2,6 +2,9 @@
 class profiles::aptly (
   $awsaccesskeyid = '',
   $awssecretaccesskey = '',
+  $sslcert = '',
+  $sslchain = '',
+  $sslkey = '',
 ) {
 
   contain ::profiles
@@ -33,32 +36,34 @@ class profiles::aptly (
   }
 
   apache::vhost { 'apt-private_80':
-    manage_docroot      => false,
     port                => '80',
     servername          => 'aptly.publiq.be',
     proxy_preserve_host => true,
     proxy_pass          =>
     {
       path =>  '/',
-      url  => 'http://localhost:80/',
+      url  => 'http://localhost:80/'
     }
   }
 
   apache::vhost { 'apt-private_443':
     docroot             => '/var/aptly/public',
-    manage_docroot      => false,
     proxy_preserve_host => true,
     port                => '443',
     servername          => 'aptly.publiq.be',
     ssl                 => true,
-    ssl_cert            => '/etc/ssl/certs/uitdatabank.be.crt',
-    ssl_chain           => '/etc/ssl/certs/comodo_bundle_intermediate.pem',
-    ssl_key             => '/etc/ssl/private/uitdatabank.be.key',
-
+    ssl_cert            => $sslcert,
+    ssl_chain           => $sslchain,
+    ssl_key             => sslkey,
     proxy_pass          =>
     {
       path =>  '/',
-      url  => 'http://localhost:80/',
+      url  => 'http://localhost:80/'
     },
+    require             => [
+      File[$sslcert],
+      File[$sslchain],
+      File[$sslkey]
+    ]
   }
 }
