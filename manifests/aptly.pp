@@ -36,6 +36,8 @@ class profiles::aptly (
   }
 
   apache::vhost { 'apt-private_80':
+    docroot             => '/var/www',
+    manage_docroot      => false,
     port                => '80',
     servername          => 'aptly.publiq.be',
     proxy_preserve_host => true,
@@ -47,7 +49,8 @@ class profiles::aptly (
   }
 
   apache::vhost { 'apt-private_443':
-    docroot             => '/var/aptly/public',
+    docroot             => '/var/www',
+    manage_docroot      => false,
     proxy_preserve_host => true,
     port                => '443',
     servername          => 'aptly.publiq.be',
