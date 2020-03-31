@@ -57,7 +57,7 @@ class profiles::aptly (
     ssl                 => true,
     ssl_cert            => $sslcert,
     ssl_chain           => $sslchain,
-    ssl_key             => sslkey,
+    ssl_key             => $sslkey,
     proxy_pass          =>
     {
       path =>  '/',
