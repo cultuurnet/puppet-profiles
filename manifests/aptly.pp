@@ -36,7 +36,7 @@ class profiles::aptly (
   }
 
   apache::vhost { 'apt-private_80':
-    docroot             => '/var/www',
+    docroot             => '/var/www/html',
     manage_docroot      => false,
     port                => '80',
     servername          => 'aptly.publiq.be',
@@ -49,7 +49,7 @@ class profiles::aptly (
   }
 
   apache::vhost { 'apt-private_443':
-    docroot             => '/var/www',
+    docroot             => '/var/www/html',
     manage_docroot      => false,
     proxy_preserve_host => true,
     port                => '443',
@@ -64,7 +64,7 @@ class profiles::aptly (
       url  => 'http://localhost:80/'
     },
     require             => [
-      File['/etc/ssl/certs/comodo_bundle_intermediate.pem'],
+      File[$sslchain],
       File['/etc/ssl/certs/uitdatabank.be.crt'],
       File['/etc/ssl/private/uitdatabank.be.key'],
     ]
