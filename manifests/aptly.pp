@@ -17,7 +17,6 @@ class profiles::aptly (
     repo_key             => 'ED75B5A4483DA07C',
     api_nolock           => true,
     enable_api           => true,
-    port                 => '8080',
 
     s3_publish_endpoints =>
     {
@@ -44,7 +43,7 @@ class profiles::aptly (
     proxy_pass          =>
     {
       path =>  '/',
-      url  => 'http://localhost:8080/'
+      url  => 'http://localhost:8081/'  #By defualt the aptly-puppet module sets the api port to 8081, aptly itself defaults to 8080. 
     }
   }
 
@@ -61,7 +60,7 @@ class profiles::aptly (
     proxy_pass          =>
     {
       path =>  '/',
-      url  => 'http://localhost:8080/'
+      url  => 'http://localhost:8081/'   #By defualt the aptly-puppet module sets the api port to 8081, aptly itself defaults to 8080.
     },
     require             => [
       File[$sslchain],
