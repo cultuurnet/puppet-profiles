@@ -15,7 +15,6 @@ class profiles::aptly (
     repo_location        => 'http://repo.aptly.info/', # Where to get the deb file
     repo_keyserver       => 'hkps.pool.sks-keyservers.net', # Where to get the install key
     repo_key             => 'ED75B5A4483DA07C',
-    port                 => '80',
     api_nolock           => true,
     enable_api           => true,
 
@@ -44,7 +43,7 @@ class profiles::aptly (
     proxy_pass          =>
     {
       path =>  '/',
-      url  => 'http://localhost:80/'
+      url  => 'http://localhost:8080/'
     }
   }
 
@@ -61,12 +60,12 @@ class profiles::aptly (
     proxy_pass          =>
     {
       path =>  '/',
-      url  => 'http://localhost:80/'
+      url  => 'http://localhost:8080/'
     },
     require             => [
       File[$sslchain],
-      File['/etc/ssl/certs/uitdatabank.be.crt'],
-      File['/etc/ssl/private/uitdatabank.be.key'],
+      File[$sslcert],
+      File[$sslkey],
     ]
   }
 }
