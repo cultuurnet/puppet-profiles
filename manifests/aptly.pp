@@ -17,6 +17,7 @@ class profiles::aptly (
     repo_key             => 'ED75B5A4483DA07C',
     api_nolock           => true,
     enable_api           => true,
+    port                 => '8080',
 
     s3_publish_endpoints =>
     {
