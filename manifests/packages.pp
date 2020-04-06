@@ -41,4 +41,5 @@ class profiles::packages {
   @package { 'liquibase':
     ensure  => 'present',
     require => Profiles::Apt::Update['cultuurnet-tools']
+  }
 }
