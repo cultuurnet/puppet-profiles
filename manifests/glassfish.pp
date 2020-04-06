@@ -12,6 +12,7 @@ class profiles::glassfish (
   realize Profiles::Apt::Update['cultuurnet-tools']
 
   realize Package['ca-certificates-publiq']
+  realize Package['mysql-connector-java']
 
   $version = $flavor ? {
     'payara'    => '4.1.1.171.1',
@@ -28,11 +29,6 @@ class profiles::glassfish (
     parent_dir          => '/opt',
     install_dir         => $flavor,
     require             => Class['::profiles::java8']
-  }
-
-  package { 'mysql-connector-java':
-    ensure  => 'latest',
-    require => Profiles::Apt::Update['cultuurnet-tools']
   }
 
   # Hack to circumvent dependency problems with using glassfish::install_jars

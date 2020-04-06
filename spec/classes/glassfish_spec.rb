@@ -22,7 +22,7 @@ RSpec.shared_examples "glassfish" do |flavor, version|
   it { is_expected.to contain_class('glassfish').that_requires('Class[profiles::java8]') }
 
   it { is_expected.to contain_package('mysql-connector-java').with(
-    'ensure' => 'latest'
+    'ensure' => 'present'
     )
   }
 

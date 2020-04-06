@@ -42,4 +42,9 @@ class profiles::packages {
     ensure  => 'present',
     require => Profiles::Apt::Update['cultuurnet-tools']
   }
+
+  @package { 'mysql-connector-java':
+    ensure  => 'present',
+    require => Profiles::Apt::Update['cultuurnet-tools']
+  }
 }
