@@ -66,6 +66,13 @@ describe 'profiles::packages' do
         }
 
         it { is_expected.to contain_package('gcsfuse').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
+
+        it { is_expected.to contain_package('liquibase').with(
+          'ensure' => 'present'
+          )
+        }
+
+        it { is_expected.to contain_package('liquibase').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
       end
     end
   end
