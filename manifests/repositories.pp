@@ -16,6 +16,20 @@ class profiles::repositories {
     }
   }
 
+  @apt::source { 'publiq-infrastructure':
+    location => "http://apt.publiq.be/infrastructure-${environment}",
+    release  => $facts['lsbdistcodename'],
+    repos    => 'main',
+    key      => {
+      'id'     => '2380EA3E50D3776DFC1B03359F4935C80DC9EA95',
+      'source' => 'http://apt.publiq.be/gpgkey/cultuurnet.gpg.key'
+    },
+    include  => {
+      'deb' => true,
+      'src' => false
+    }
+  }
+
   @profiles::apt::update { 'cultuurnet-tools':
     require => Apt::Source['cultuurnet-tools']
   }
