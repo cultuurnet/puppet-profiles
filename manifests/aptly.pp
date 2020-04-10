@@ -8,6 +8,8 @@ class profiles::aptly (
 ) {
 
   contain ::profiles
+  $aptly_api_port = 8081  #By defualt the aptly-puppet module sets the api port to 8081, aptly itself defaults to 8080.
+  $apache_server = 'aptly.publiq.be'
 
   # This will install aptly and set the s3_publish_endpoints parameter.
   class { 'aptly':
@@ -17,6 +19,7 @@ class profiles::aptly (
     repo_key             => 'ED75B5A4483DA07C',
     api_nolock           => true,
     enable_api           => true,
+    port                 => $aptly_api_port,
 
     s3_publish_endpoints =>
     {
@@ -38,12 +41,12 @@ class profiles::aptly (
     docroot             => '/var/www/html',
     manage_docroot      => false,
     port                => '80',
-    servername          => 'aptly.publiq.be',
+    servername          => $apache_server,
     proxy_preserve_host => true,
     proxy_pass          =>
     {
       path =>  '/',
-      url  => 'http://localhost:8081/'  #By defualt the aptly-puppet module sets the api port to 8081, aptly itself defaults to 8080. 
+      url  => "http://localhost:${aptly_api_port}/"
     }
   }
 
@@ -52,7 +55,7 @@ class profiles::aptly (
     manage_docroot      => false,
     proxy_preserve_host => true,
     port                => '443',
-    servername          => 'aptly.publiq.be',
+    servername          => $apache_server,
     ssl                 => true,
     ssl_cert            => $sslcert,
     ssl_chain           => $sslchain,
@@ -60,7 +63,7 @@ class profiles::aptly (
     proxy_pass          =>
     {
       path =>  '/',
-      url  => 'http://localhost:8081/'   #By defualt the aptly-puppet module sets the api port to 8081, aptly itself defaults to 8080.
+      url  => "http://localhost:${aptly_api_port}/"
     },
     require             => [
       File[$sslchain],
