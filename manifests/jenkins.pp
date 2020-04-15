@@ -7,7 +7,7 @@ class profiles::jenkins ()
   # This will install aptly and set the s3_publish_endpoints parameter.
   class { 'jenkins':
     repo    => false,
-    require => Class['apt::update']
+    require => Class['apt::update'],
   }
 
 }
