@@ -18,9 +18,10 @@ class profiles::jenkins ()
 
   # This will install and configure jenkins.
   class { 'jenkins':
-    cli          => false,
-    install_java => false,
-    require      => Class['::profiles::java8'],
+    cli               => false,
+    install_java      => false,
+    cli_remoting_free => true,
+    require           => Class['::profiles::java8'],
   }
 
   $jar = "${jenkins::params::libdir}/cli-2.222.1.jar"
