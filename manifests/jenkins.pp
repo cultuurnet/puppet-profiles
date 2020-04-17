@@ -16,7 +16,7 @@ class profiles::jenkins ()
     ensure => present,
   }
 
-  # This will install aptly and set the s3_publish_endpoints parameter.
+  # This will install and configure jenkins.
   class { 'jenkins':
     cli          => false,
     install_java => false,
@@ -30,12 +30,24 @@ class profiles::jenkins ()
                 rm -rf WEB-INF"
   }
 
+  # ----------- Install Jenkins Plugins -----------
+  # The puppet-jenkins module has functionality for adding plugins but you must install the dependencies also(not done automatically). This was tried but
+  # proved to be too much work. For example the delivery-pipeline-plugin has a total of 38 dependencies. 
+  # It was decided to use the jenkins cli instead because it auto loads all the dependencies. 
+  # We have to use the .jar manually because the name of the file was changed in jenkins itslef but the puppet plugin has not been updated yet,  https://github.com/voxpupuli/puppet-jenkins/pull/945
+
+  #Installs the jenkins plugin delivery-pipeline-plugin. The cli will detect if the plugin is already present and do nothing if it is. 
   exec { 'check-jenkins-cli-version':
-    command => "java -jar ${jar} -s http://localhost:8080/ list-plugins",
+    command => "java -jar ${jar} -s http://localhost:8080/ install-plugin delivery-pipeline-plugin -restart",
   }
 
-  exec { 'echo':
-    command => "echo Dude ${jenkins::params::libdir}",
+  #Installs the jenkins plugin templating engine. The cli will detect if the plugin is already present and do nothing if it is.
+  exec { 'check-jenkins-cli-version':
+    command => "java -jar ${jar} -s http://localhost:8080/ install-plugin templating-engine -restart",
   }
 
+  #Installs the jenkins plugin templating engine. The cli will detect if the plugin is already present and do nothing if it is.
+  exec { 'check-jenkins-cli-version':
+    command => "java -jar ${jar} -s http://localhost:8080/ install-plugin bitbucket -restart",
+  }
 }
