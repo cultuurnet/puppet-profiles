@@ -31,7 +31,7 @@ class profiles::jenkins ()
   }
 
   exec { 'check-jenkins-cli-version':
-    command => "java -jar ${jar} -s http:// localhost:8080/ list-plugins",
+    command => "java -jar ${jar} -s http://localhost:8080/ list-plugins",
   }
 
   exec { 'echo':
