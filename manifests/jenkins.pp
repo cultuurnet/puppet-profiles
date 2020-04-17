@@ -24,12 +24,18 @@ class profiles::jenkins ()
   }
 
   $jar = "${jenkins::params::libdir}/cli-2.222.1.jar"
-  $extract_jar = "jar -xf ${jenkins::params::libdir}/jenkins.war WEB-INF/lib/cli-2.222.1.jar"
-  $move_jar = "mv WEB-INF/lib/cli-2.222.1.jar ${jar}"
-  $remove_dir = 'rm -rf WEB-INF'
+  exec{ 'install-cli-jar' :
+    command => "jar -xf ${jenkins::params::libdir}/jenkins.war WEB-INF/lib/cli-2.222.1.jar ;
+                mv WEB-INF/lib/cli-2.222.1.jar ${jar} ; 
+                rm -rf WEB-INF"
+  }
 
   exec { 'check-jenkins-cli-version':
     command => "java -jar ${jar} -s http:// localhost:8080/ list-plugins",
+  }
+
+  exec { 'echo':
+    command => "echo Dude ${jenkins::params::libdir}",
   }
 
 }
