@@ -23,8 +23,8 @@ class profiles::jenkins ()
     require      => Class['::profiles::java8'],
   }
 
-  $jar = "${jenkins::libdir}/cli-2.222.1.jar"
-  $extract_jar = "jar -xf ${jenkins::libdir}/jenkins.war WEB-INF/lib/cli-2.222.1.jar"
+  $jar = "${jenkins::params::libdir}/cli-2.222.1.jar"
+  $extract_jar = "jar -xf ${jenkins::params::libdir}/jenkins.war WEB-INF/lib/cli-2.222.1.jar"
   $move_jar = "mv WEB-INF/lib/cli-2.222.1.jar ${jar}"
   $remove_dir = 'rm -rf WEB-INF'
 
