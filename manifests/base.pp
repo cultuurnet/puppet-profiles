@@ -11,13 +11,18 @@ class profiles::base {
   realize Profiles::Apt::Update['cultuurnet-tools']
 
   if $facts['ec2_metadata'] {
+    $admin_user = 'ubuntu'
     realize Package['awscli']
-    realize Group['ubuntu']
-    realize User['ubuntu']
   } else {
+    $admin_user= 'vagrant'
     realize Package['ca-certificates-publiq']
-    realize Group['vagrant']
-    realize User['vagrant']
+  }
+
+  realize Group[$admin_user]
+  realize User[$admin_user]
+
+  class { '::profiles::sudo':
+    admin_user => $admin_user
   }
 
   if $settings::storeconfigs {
