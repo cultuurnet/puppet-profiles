@@ -38,16 +38,16 @@ class profiles::jenkins ()
   # We have to use the .jar manually because the name of the file was changed in jenkins itslef but the puppet plugin has not been updated yet,  https://github.com/voxpupuli/puppet-jenkins/pull/945
 
   #Installs the jenkins plugin delivery-pipeline-plugin. The cli will detect if the plugin is already present and do nothing if it is. 
-  exec { 'delivery-pipeline-plugin':
-    command => "java -jar ${jar} -s http://localhost:8080/ install-plugin delivery-pipeline-plugin -restart ;
-                wait",
-  }
+  #exec { 'delivery-pipeline-plugin':
+  #  command => "java -jar ${jar} -s http://localhost:8080/ install-plugin delivery-pipeline-plugin -restart ;
+  #              wait",
+  #}
 
   #Installs the jenkins plugin templating engine. The cli will detect if the plugin is already present and do nothing if it is.
-  exec { 'templating-engine':
-    command => "java -jar ${jar} -s http://localhost:8080/ install-plugin templating-engine -restart ;
-                wait",
-  }
+  #exec { 'templating-engine':
+  #  command => "java -jar ${jar} -s http://localhost:8080/ install-plugin templating-engine -restart ;
+  #              wait",
+  #}
 
   #Installs the jenkins plugin templating engine. The cli will detect if the plugin is already present and do nothing if it is.
   exec { 'bitbucket':
