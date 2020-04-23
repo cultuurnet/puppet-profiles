@@ -66,7 +66,7 @@ class profiles::jenkins (
 
   #Creates the credential that will be used to clone depos from bitbucket. 
   exec { 'create-bitbucket-credential':
-    command   => "java -jar ${jar} -s http://localhost:8080/ create-credentials-by-xml system::system::jenkins _  < credential.xml",
+    command   => "java -jar ${jar} -s http://localhost:8080/ create-credentials-by-xml system::system::jenkins _  < ${bitbucketcredential}",
     tries     => 10,
     try_sleep => 30,
     require   => [
