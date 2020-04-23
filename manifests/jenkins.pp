@@ -1,6 +1,5 @@
 ## This profile installs jenkins, adds plugins, and ....
 class profiles::jenkins (
-  $bitbucketpassword = '',
   $bitbucketcredential = '',
 ){
   contain ::profiles
@@ -67,10 +66,12 @@ class profiles::jenkins (
 
   #Creates the credential that will be used to clone depos from bitbucket. 
   exec { 'create-bitbucket-credential':
-    # The cli expects all fields even if they are empty: username password uuid description private_key_or_path
-    command   => "java -jar ${jar} -s http://localhost:8080/ create_or_update_credentials Dude '${bitbucketpassword}' 'Dude' '' '' ",
+    command   => "java -jar ${jar} -s http://localhost:8080/ create-credentials-by-xml system::system::jenkins _  < credential.xml",
     tries     => 10,
     try_sleep => 30,
-    require   => Exec['templating-engine'],
+    require   => [
+      Exec['templating-engine'],
+      File[$bitbucketcredential],
+    ]
   }
 }
