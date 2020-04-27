@@ -65,13 +65,14 @@ class profiles::jenkins (
     try_sleep => 30,
   }
 
-  Exec['install-cli-jar'] -> Exec['delivery-pipeline-plugin'] -> Exec['templating-engine'] -> Exec['bitbucket']
+  Exec['install-cli-jar'] -> Exec['delivery-pipeline-plugin'] -> Exec['templating-engine'] -> Exec['bitbucket'] -> File[$infrastructure_pipeline_file]
 
   #Creates the credential that will be used to clone depos from bitbucket. 
   exec { 'create-bitbucket-credential':
     command   => "java -jar ${jar} -s http://localhost:8080/ create-credentials-by-xml system::system::jenkins _  < ${bitbucket_credential_file}",
     tries     => 10,
     try_sleep => 30,
+    returns   => [0, 1],  # 1 is returned if the user already exists which is ok
     require   => [
       Exec['templating-engine'],
       File[$bitbucket_credential_file],
