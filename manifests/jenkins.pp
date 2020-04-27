@@ -3,7 +3,7 @@ class profiles::jenkins (
   $bitbucket_credential_file = '',
   $template_engine_file  = '',
   $infrastructure_pipeline_file = '',
-){
+) {
   contain ::profiles
   contain ::profiles::java8
 
@@ -65,7 +65,7 @@ class profiles::jenkins (
     try_sleep => 30,
   }
 
-  Exec['install-cli-jar'] -> Exec['delivery-pipeline-plugin'] -> Exec['templating-engine'] -> Exec['bitbucket'] -> File[$infrastructure_pipeline_file]
+  Exec['install-cli-jar'] -> Exec['delivery-pipeline-plugin'] -> Exec['templating-engine'] -> Exec['bitbucket']
 
   #Creates the credential that will be used to clone depos from bitbucket. 
   exec { 'create-bitbucket-credential':
