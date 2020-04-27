@@ -2,6 +2,7 @@
 class profiles::jenkins (
   $bitbucket_credential_file = '',
   $template_engine_file  = '',
+  $infrastructure_pipeline_file = '',
 ){
   contain ::profiles
   contain ::profiles::java8
@@ -74,6 +75,7 @@ class profiles::jenkins (
     require   => [
       Exec['templating-engine'],
       File[$bitbucket_credential_file],
+      File[$infrastructure_pipeline_file],
     ]
   }
 }
