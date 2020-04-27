@@ -75,7 +75,6 @@ class profiles::jenkins (
     require   => [
       Exec['templating-engine'],
       File[$bitbucket_credential_file],
-      File[$infrastructure_pipeline_file],
     ]
   }
 }
