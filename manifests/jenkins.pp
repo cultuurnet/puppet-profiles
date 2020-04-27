@@ -50,9 +50,9 @@ class profiles::jenkins (
     try_sleep => 30,
   }
 
-  #Installs the jenkins plugin templating engine. The cli will detect if the plugin is already present and do nothing if it is.
-  exec { 'templating-engine':
-    command   => "java -jar ${jar} -s http://localhost:8080/ install-plugin templating-engine -restart",
+  #Installs the jenkins shared groovy libraries.
+  exec { 'workflow-cps-global-lib':
+    command   => "java -jar ${jar} -s http://localhost:8080/ install-plugin workflow-cps-global-lib -restart",
     tries     => 10,
     try_sleep => 30,
     require   => File[$global_libraries_file]
@@ -65,7 +65,7 @@ class profiles::jenkins (
     try_sleep => 30,
   }
 
-  Exec['install-cli-jar'] -> Exec['delivery-pipeline-plugin'] -> Exec['templating-engine'] -> Exec['bitbucket'] -> File[$infrastructure_pipeline_file]
+  Exec['install-cli-jar'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket'] -> File[$infrastructure_pipeline_file]
 
   #Creates the credential that will be used to clone depos from bitbucket. 
   exec { 'create-bitbucket-credential':
