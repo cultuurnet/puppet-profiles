@@ -1,7 +1,7 @@
 ## This profile installs jenkins, adds plugins, and ....
 class profiles::jenkins (
   $bitbucket_credential_file = '',
-  $template_engine_file  = '',
+  $global_libraries_file  = '',
   $infrastructure_pipeline_file = '',
 ) {
   contain ::profiles
@@ -55,7 +55,7 @@ class profiles::jenkins (
     command   => "java -jar ${jar} -s http://localhost:8080/ install-plugin templating-engine -restart",
     tries     => 10,
     try_sleep => 30,
-    require   => File[$template_engine_file]
+    require   => File[$global_libraries_file]
   }
 
   #Installs the jenkins plugin templating engine. The cli will detect if the plugin is already present and do nothing if it is.
