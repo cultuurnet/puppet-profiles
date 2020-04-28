@@ -74,7 +74,7 @@ class profiles::jenkins (
     try_sleep => 30,
     returns   => [0, 1],  # 1 is returned if the user already exists which is ok
     require   => [
-      Exec['templating-engine'],
+      Exec['workflow-cps-global-lib'],
       File[$bitbucket_credential_file],
     ]
   }
