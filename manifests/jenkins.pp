@@ -38,9 +38,10 @@ class profiles::jenkins (
 
   # We extract the cli jar and rename it. It will have a name like cli-2.222.1.jar but we will rename it to something static, jenkins-cli.jar. We do this
   # becuase jar name will be continuesly changing with every version.
+  # If the directory is not made the rm will fail, that is why we don't use -f
   exec{ 'install-cli-jar' :
-    command => "jar -xf ${jenkins::params::libdir}/jenkins.war WEB-INF/lib/cli-2.222.1.jar ;
-                mv WEB-INF/lib/cli-2.222.1.jar ${jar} ;
+    command => "jar -xf ${jenkins::params::libdir}/jenkins.war WEB-INF/lib/cli-*.jar ;
+                mv WEB-INF/lib/cli-*.jar ${jar} ;
                 yes | rm -r WEB-INF",
     require => Class['jenkins'],
   }
