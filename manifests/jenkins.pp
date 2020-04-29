@@ -65,7 +65,7 @@ class profiles::jenkins (
     try_sleep => 30,
   }
 
-  Exec['install-cli-jar'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket'] -> File[$infrastructure_pipeline_file]
+  Exec['create-bitbucket-credential'] -> Exec['install-cli-jar'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket'] -> File[$infrastructure_pipeline_file]
 
   #Creates the credential that will be used to clone depos from bitbucket. 
   exec { 'create-bitbucket-credential':
