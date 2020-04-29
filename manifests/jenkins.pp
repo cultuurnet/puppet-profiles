@@ -74,6 +74,6 @@ class profiles::jenkins (
     try_sleep => 30,
   }
 
-  Exec['create-bitbucket-credential'] -> Exec['install-cli-jar'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket'] -> File[$infrastructure_pipeline_file]
+  Exec['install-cli-jar'] -> Exec['create-bitbucket-credential'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket'] -> File[$infrastructure_pipeline_file]
 
 }
