@@ -49,7 +49,7 @@ class profiles::jenkins (
     tries     => 10,
     try_sleep => 30,
     returns   => [0, 1],  # 1 is returned if the user already exists which is ok
-    require   => File[$bitbucket_credential_file]
+    require   => [File[$bitbucket_credential_file], Exec['install-cli-jar']],
   }
 
   #Installs the jenkins plugin delivery-pipeline-plugin. The cli will detect if the plugin is already present and do nothing if it is. 
