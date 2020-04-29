@@ -57,6 +57,7 @@ class profiles::jenkins (
     command   => "java -jar ${jar} -s http://localhost:8080/ install-plugin delivery-pipeline-plugin -restart",
     tries     => 10,
     try_sleep => 30,
+    require   => Exec['install-cli-jar'],
   }
 
   #Installs the jenkins shared groovy libraries.
