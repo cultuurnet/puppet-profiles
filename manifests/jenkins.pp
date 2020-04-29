@@ -34,12 +34,14 @@ class profiles::jenkins (
   # We have to use the .jar manually because the name of the file was changed in jenkins itslef but the puppet plugin has not been updated yet,  
   # https://github.com/voxpupuli/puppet-jenkins/pull/945, this means we can not use jenkins::cli or jenkins::credentials and several other classes.
 
-  $jar = "${jenkins::params::libdir}/cli-2.222.1.jar"
+  $jar = "${jenkins::params::libdir}/jenkins-cli.jar"
 
+  # We extract the cli jar and rename it. It will have a name like cli-2.222.1.jar but we will rename it to something static, jenkins-cli.jar. We do this
+  # becuase jar name will be continuesly changing with every version.
   exec{ 'install-cli-jar' :
     command => "jar -xf ${jenkins::params::libdir}/jenkins.war WEB-INF/lib/cli-2.222.1.jar ;
-                mv WEB-INF/lib/cli-2.222.1.jar ${jar} ; 
-                rm -rf WEB-INF",
+                mv WEB-INF/lib/cli-2.222.1.jar ${jar} ;
+                yes | rm -r WEB-INF",
     require => Class['jenkins'],
   }
 
