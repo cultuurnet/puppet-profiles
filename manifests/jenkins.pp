@@ -41,7 +41,7 @@ class profiles::jenkins (
   # If the directory is not made the rm will fail, that is why we don't use -f
   exec{ 'install-cli-jar' :
     command => "jar -xf ${jenkins::params::libdir}/jenkins.war WEB-INF/lib/cli-*.jar ;
-                mv WEB-INF/lib/cli-*.jar ${jar} ;
+                mv $(sudo find /var -type f -name cli-*.jar) ${jar} ;
                 yes | rm -r WEB-INF",
     require => Class['jenkins'],
   }
