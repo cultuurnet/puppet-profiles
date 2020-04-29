@@ -36,22 +36,20 @@ class profiles::jenkins (
 
   $jar = "${jenkins::params::libdir}/cli-2.222.1.jar"
 
+  exec{ 'install-cli-jar' :
+    command => "jar -xf ${jenkins::params::libdir}/jenkins.war WEB-INF/lib/cli-2.222.1.jar ;
+                mv WEB-INF/lib/cli-2.222.1.jar ${jar} ; 
+                rm -rf WEB-INF",
+    require => Class['jenkins'],
+  }
+
   #Creates the credential that will be used to clone depos from bitbucket. 
   exec { 'create-bitbucket-credential':
     command   => "java -jar ${jar} -s http://localhost:8080/ create-credentials-by-xml system::system::jenkins _  < ${bitbucket_credential_file}",
     tries     => 10,
     try_sleep => 30,
     returns   => [0, 1],  # 1 is returned if the user already exists which is ok
-    require   => [
-      File[$bitbucket_credential_file],
-    ]
-  }
-
-  exec{ 'install-cli-jar' :
-    command => "jar -xf ${jenkins::params::libdir}/jenkins.war WEB-INF/lib/cli-2.222.1.jar ;
-                mv WEB-INF/lib/cli-2.222.1.jar ${jar} ; 
-                rm -rf WEB-INF",
-    require => Class['jenkins'],
+    require   => File[$bitbucket_credential_file]
   }
 
   #Installs the jenkins plugin delivery-pipeline-plugin. The cli will detect if the plugin is already present and do nothing if it is. 
