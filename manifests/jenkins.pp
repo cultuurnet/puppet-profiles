@@ -43,7 +43,7 @@ class profiles::jenkins (
     command => "filename=$(jar -tvf /usr/share/jenkins/jenkins.war | egrep -o 'cli-[0-9]{1,}.[0-9]{1,}.[0-9]{1,}.jar') &&
                 jar -xf ${jenkins::params::libdir}/jenkins.war WEB-INF/lib/dude.jar &&
                 mv WEB-INF/lib/dude.jar ${jar} &&
-                yes | rm -r WEB-INF",
+                rm -rf WEB-INF",
     require => Class['jenkins'],
   }
 
