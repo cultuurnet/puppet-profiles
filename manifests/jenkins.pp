@@ -39,7 +39,7 @@ class profiles::jenkins (
   # We extract the cli jar and rename it. It will have a name like cli-2.222.1.jar but we will rename it to something static, jenkins-cli.jar. We do this
   # becuase jar name will be continuesly changing with every version.
   # If the directory is not made the rm will fail, that is why we don't use -f
-  $cmd = join(['filename="$(jar -tvf /usr/share/jenkins/jenkins.war | egrep -o "cli-[0-9]{1,}.[0-9]{1,}.[0-9]{1,}.jar")"" && ',
+  $cmd = join(['filename="$(jar -tvf /usr/share/jenkins/jenkins.war | egrep -o "cli-[0-9]{1,}.[0-9]{1,}.[0-9]{1,}.jar")" && ',
                 "jar -xf ${jenkins::params::libdir}/jenkins.war WEB-INF/lib/dude.jar && ",
                 "mv WEB-INF/lib/dude.jar ${jar} && ",
                 'rm -rf WEB-INF'], '')
