@@ -40,8 +40,9 @@ class profiles::jenkins (
   # becuase jar name will be continuesly changing with every version.
   # If the directory is not made the rm will fail, that is why we don't use -f
   exec{ 'install-cli-jar' :
-    command => "jar -xf ${jenkins::params::libdir}/jenkins.war WEB-INF/lib/cli-*.jar ;
-                mv '$(find /var -type f -name cli-*.jar)' ${jar} ;
+    command => "filename=$(jar -tvf /usr/share/jenkins/jenkins.war | egrep -o 'cli-[0-9]{1,}.[0-9]{1,}.[0-9]{1,}.jar') &&
+                jar -xf ${jenkins::params::libdir}/jenkins.war WEB-INF/lib/dude.jar &&
+                mv WEB-INF/lib/dude.jar ${jar} &&
                 yes | rm -r WEB-INF",
     require => Class['jenkins'],
   }
