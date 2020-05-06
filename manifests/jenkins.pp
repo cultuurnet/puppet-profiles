@@ -1,4 +1,4 @@
-## This profile installs jenkins, adds plugins, and ....
+## This profile installs everything needed to get Jenkins up and running with all jobs and plugins it needs.
 class profiles::jenkins (
   $bitbucket_credential_file = '',
   $global_libraries_file  = '',
@@ -15,17 +15,21 @@ class profiles::jenkins (
     provider => apt,
   }
 
-  package { 'bundler':    #install bundler
-    ensure => present,
-  }
-
   # This will install and configure jenkins.
   class { 'jenkins':
     cli          => false,
     install_java => false,
   }
 
-  Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> Package['bundler']
+  package { 'bundler':    #install bundler
+    ensure => present,
+  }
+
+  package { 'puppet':
+    ensure => present,
+  }
+
+  Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> Package['bundler'] -> Package['puppet']
 
   # ----------- Install Jenkins Plugins -----------
   # The puppet-jenkins module has functionality for adding plugins but you must install the dependencies also(not done automatically). 
@@ -63,7 +67,7 @@ class profiles::jenkins (
     require   => Exec['install-cli-jar'],
   }
 
-  #Installs the jenkins shared groovy libraries.
+  #Installs the jenkins shared groovy libraries(DSL). 
   exec { 'workflow-cps-global-lib':
     command   => "java -jar ${jar} -s http://localhost:8080/ install-plugin workflow-cps-global-lib -restart",
     tries     => 10,
@@ -78,6 +82,19 @@ class profiles::jenkins (
     try_sleep => 30,
   }
 
-  Exec['install-cli-jar'] -> Exec['create-bitbucket-credential'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket'] -> File[$infrastructure_pipeline_file]
+  #Installs the pipleine plugin, we need this for PipelineAsCode. The cli will detect if the plugin is already present and do nothing if it is.
+  exec { 'workflow-aggregator':
+    command   => "java -jar ${jar} -s http://localhost:8080/ install-plugin workflow-aggregator -restart",
+    tries     => 10,
+    try_sleep => 30,
+  }
+
+  # TODO: pbulic and private keys
+
+  # TODO: Blue Ocean
+
+
+
+  Exec['install-cli-jar'] -> Exec['create-bitbucket-credential'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket'] -> Exec['workflow-aggregator'] -> File[$infrastructure_pipeline_file]
 
 }
