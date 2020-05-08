@@ -1,8 +1,7 @@
 ## This profile installs everything needed to get Jenkins up and running with all jobs and plugins it needs.
 class profiles::jenkins (
-  $bitbucket_credential_file = '',
+  $credentials_file = '',
   $global_libraries_file  = '',
-  $infrastructure_pipeline_file = '',
 ) {
   contain ::profiles
   contain ::profiles::java8
@@ -25,11 +24,11 @@ class profiles::jenkins (
     ensure => present,
   }
 
-  package { 'puppet':
-    ensure => present,
-  }
+  #package { 'jenkins-cli':
+  #  ensure => present,
+  #}
 
-  Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> Package['bundler'] -> Package['puppet']
+  Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> Package['bundler'] # -> Package['puppet']
 
   # ----------- Install Jenkins Plugins -----------
   # The puppet-jenkins module has functionality for adding plugins but you must install the dependencies also(not done automatically). 
@@ -48,15 +47,6 @@ class profiles::jenkins (
                 mv WEB-INF/lib/cli-2.222.3.jar ${jar} && 
                 rm -rf WEB-INF",
     require => Class['jenkins'],
-  }
-
-  #Creates the credential that will be used to clone depos from bitbucket. 
-  exec { 'create-bitbucket-credential':
-    command   => "java -jar ${jar} -s http://localhost:8080/ create-credentials-by-xml system::system::jenkins _  < ${bitbucket_credential_file}",
-    tries     => 10,
-    try_sleep => 30,
-    returns   => [0, 1],  # 1 is returned if the user already exists which is ok
-    require   => [File[$bitbucket_credential_file], Exec['install-cli-jar']],
   }
 
   #Installs the jenkins plugin delivery-pipeline-plugin. The cli will detect if the plugin is already present and do nothing if it is. 
@@ -93,8 +83,13 @@ class profiles::jenkins (
 
   # TODO: Blue Ocean
 
+  # We use the import-credentials-as-xml because we can load many credentials fromm one xml file, unlike create-credentials-by-xml . 
+  exec { 'import-credentials':
+    command   => "java -jar ${jar} -s http://localhost:8080/ import-credentials-as-xml system::system::jenkins < ${credentials_file}",
+    tries     => 10,
+    try_sleep => 30,
+  }
 
-
-  Exec['install-cli-jar'] -> Exec['create-bitbucket-credential'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket'] -> Exec['workflow-aggregator'] -> File[$infrastructure_pipeline_file]
+  Exec['install-cli-jar'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket'] -> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials']
 
 }
