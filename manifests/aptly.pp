@@ -5,11 +5,18 @@ class profiles::aptly (
   $sslchain = '',
   $sslcert = '',
   $sslkey = '',
+  $gpgkey = '',
 ) {
 
   contain ::profiles
   $aptly_api_port = 8081  #By defualt the aptly-puppet module sets the api port to 8081, aptly itself defaults to 8080.
   $apache_server = 'aptly.publiq.be'
+
+  #Install the gpg key for the aptly user to sign the published packages.
+  exec { 'import-gpg-key':
+    command => "gpg --import ${gpgkey}",
+    require => File[$gpgkey],
+  }
 
   # This will install aptly and set the s3_publish_endpoints parameter.
   class { 'aptly':
