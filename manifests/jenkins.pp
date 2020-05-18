@@ -88,7 +88,12 @@ class profiles::jenkins (
     try_sleep => 30,
   }
 
-  # TODO: pbulic and private keys
+  #Installs the pipleine plugin, we need this for PipelineAsCode. The cli will detect if the plugin is already present and do nothing if it is.
+  exec { 'blueocean':
+    command   => "${clitool} install-plugin blueocean -restart",
+    tries     => 12,
+    try_sleep => 30,
+  }
 
   # TODO: Blue Ocean
 
@@ -99,6 +104,6 @@ class profiles::jenkins (
     try_sleep => 30,
   }
 
-  Package['jenkins-cli'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket'] -> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials']
+  Package['jenkins-cli'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket'] -> Exec['workflow-aggregator'] -> Exec['blueocean'] -> File[$credentials_file] -> Exec['import-credentials']
 
 }
