@@ -31,7 +31,22 @@ class profiles::jenkins (
     install_java => false,
   }
 
-  Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] # -> Class['ruby::dev'] #Package['bundler']
+  # Set the jenkins URL and admin email address.
+  file {'jenkins.model.JenkinsLocationConfiguration.xml':
+    ensure  => file,
+    path    => '/var/lib/jenkins/jenkins.model.JenkinsLocationConfiguration.xml',
+    owner   => 'jenkins',
+    group   => 'jenkins',
+    mode    => '0644',
+    require => Class['jenkins'],
+    content => '<?xml version=\'1.1\' encoding=\'UTF-8\'?>
+<jenkins.model.JenkinsLocationConfiguration>
+  <adminAddress>jenkins@cultuurnet.be</adminAddress>
+  <jenkinsUrl>https://jenkins.publiq.be/</jenkinsUrl>
+</jenkins.model.JenkinsLocationConfiguration>',
+  }
+
+  Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> File['jenkins.model.JenkinsLocationConfiguration.xml']
 
   realize Package['git']  #defined in packages.pp, installs git
 
@@ -105,20 +120,4 @@ class profiles::jenkins (
   }
 
   Package['jenkins-cli'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket'] -> Exec['workflow-aggregator'] -> Exec['blueocean'] -> File[$credentials_file] -> Exec['import-credentials']
-
-  # Set the jenkins URL and admin email address.
-  file {'jenkins.model.JenkinsLocationConfiguration.xml':
-    ensure  => file,
-    path    => '/var/lib/jenkins/jenkins.model.JenkinsLocationConfiguration.xml',
-    owner   => 'jenkins',
-    group   => 'jenkins',
-    mode    => '0644',
-    require => Class['jenkins'],
-    content => '<?xml version=\'1.1\' encoding=\'UTF-8\'?>
-<jenkins.model.JenkinsLocationConfiguration>
-  <adminAddress>address not configured yet &lt;nobody@nowhere&gt;</adminAddress>
-  <jenkinsUrl>https://jenkins.publiq.be/</jenkinsUrl>
-</jenkins.model.JenkinsLocationConfiguration>',
-  }
-
 }
