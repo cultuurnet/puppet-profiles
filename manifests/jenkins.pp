@@ -42,7 +42,7 @@ class profiles::jenkins (
     content => '<?xml version=\'1.1\' encoding=\'UTF-8\'?>
 <jenkins.model.JenkinsLocationConfiguration>
   <adminAddress>jenkins@cultuurnet.be</adminAddress>
-  <jenkinsUrl>https://jenkins.publiq.be/</jenkinsUrl>
+  <jenkinsUrl>http://192.168.144.130:8080/</jenkinsUrl>
 </jenkins.model.JenkinsLocationConfiguration>',
   }
 
@@ -59,17 +59,11 @@ class profiles::jenkins (
 
   $clitool = 'jenkins-cli'
 
-  # We extract the cli jar and rename it. It will have a name like cli-2.222.1.jar but we will rename it to something static, jenkins-cli.jar. We do this
-  # becuase jar name will be continuesly changing with every version.
-  # If the directory is not made the rm will fail, that is why we don't use -f
-  #exec{ 'install-cli-jar' :
-  #  command => "jar -xf ${jenkins::params::libdir}/jenkins.war WEB-INF/lib/cli-2.222.3.jar && 
-  #              mv WEB-INF/lib/cli-2.222.3.jar ${jar} && 
-  #              rm -rf WEB-INF",
-  #  require => Class['jenkins'],
-  #}
-  package{'jenkins-cli':
-    name     => 'jenkins-cli',
+  # We have made our own rake file that installs the cli(jar file) and adds a script for easy use, that is 
+  # installed in the system path for easy use. The rake file can be found here: 
+  # https://github.com/cultuurnet/tool-builder/tree/master/jenkins-cli 
+  package{$clitool:
+    name     => $clitool,
     provider => apt,
     require  => Class['jenkins'],
   }
@@ -110,8 +104,6 @@ class profiles::jenkins (
     try_sleep => 30,
   }
 
-  # TODO: Blue Ocean
-
   # We use the import-credentials-as-xml because we can load many credentials fromm one xml file, unlike create-credentials-by-xml . 
   exec { 'import-credentials':
     command   => "${clitool} import-credentials-as-xml system::system::jenkins < ${credentials_file}",
@@ -119,5 +111,5 @@ class profiles::jenkins (
     try_sleep => 30,
   }
 
-  Package['jenkins-cli'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket'] -> Exec['workflow-aggregator'] -> Exec['blueocean'] -> File[$credentials_file] -> Exec['import-credentials']
+  Package['jenkins-cli'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket'] -> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials'] -> Exec['blueocean']
 }
