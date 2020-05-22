@@ -29,9 +29,6 @@ class profiles::jenkins (
   class { 'jenkins':
     cli          => false,
     install_java => false,
-    config_hash  => {
-      'JENKINS_URL' => { 'value' => 'https://jenkins.publiq.be/' },
-    }
   }
 
   Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] # -> Class['ruby::dev'] #Package['bundler']
@@ -108,5 +105,20 @@ class profiles::jenkins (
   }
 
   Package['jenkins-cli'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket'] -> Exec['workflow-aggregator'] -> Exec['blueocean'] -> File[$credentials_file] -> Exec['import-credentials']
+
+  # Set the jenkins URL and admin email address.
+  file {'jenkins.model.JenkinsLocationConfiguration.xml':
+    ensure  => file,
+    path    => '/var/lib/jenkins/jenkins.model.JenkinsLocationConfiguration.xml',
+    owner   => 'jenkins',
+    group   => 'jenkins',
+    mode    => '0644',
+    require => Class['jenkins'],
+    content => '<?xml version=\'1.1\' encoding=\'UTF-8\'?>
+<jenkins.model.JenkinsLocationConfiguration>
+  <adminAddress>address not configured yet &lt;nobody@nowhere&gt;</adminAddress>
+  <jenkinsUrl>https://jenkins.publiq.be/</jenkinsUrl>
+</jenkins.model.JenkinsLocationConfiguration>',
+  }
 
 }
