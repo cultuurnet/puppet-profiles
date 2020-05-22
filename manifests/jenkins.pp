@@ -29,6 +29,9 @@ class profiles::jenkins (
   class { 'jenkins':
     cli          => false,
     install_java => false,
+    config_hash  => {
+      'JENKINS_URL' => { 'value' => 'https://jenkins.publiq.be/' },
+    }
   }
 
   Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] # -> Class['ruby::dev'] #Package['bundler']
