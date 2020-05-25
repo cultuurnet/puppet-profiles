@@ -17,14 +17,14 @@ class profiles::jenkins (
     bundler_provider => 'apt',
   }
 
-  # we have to intall this manually because of https://github.com/ffi/ffi/issues/607
+  # we have to install this manually because of https://github.com/ffi/ffi/issues/607
   package { 'libffi-dev':
     name     => 'libffi-dev',
     provider => apt,
     require  => Class['ruby::dev']
   }
 
-  package { 'dpkg':       #we need to upgrade dpkg to 5.8 for the jenkins install to work correctly
+  package { 'dpkg':       #we need to upgrade dpkg to 5.8 for the jenkins install to work correctly, default ubuntu 14.04 is 5.7
     ensure   => latest,
     name     => 'dpkg',
     provider => apt,
@@ -46,7 +46,7 @@ class profiles::jenkins (
     require => Class['jenkins'],
     content => "<?xml version=\'1.1\' encoding=\'UTF-8\'?>
 <jenkins.model.JenkinsLocationConfiguration>
-  <adminAddress>jenkins@cultuurnet.be</adminAddress>
+  <adminAddress>jenkins@publiq.be</adminAddress>
   <jenkinsUrl>https://${apache_server}/</jenkinsUrl>
 </jenkins.model.JenkinsLocationConfiguration>",
   }
@@ -55,8 +55,8 @@ class profiles::jenkins (
 
   realize Package['git']  #defined in packages.pp, installs git
 
-  # ----------- Install Jenkins Plugins -----------
-  # The puppet-jenkins module has functionality for adding plugins but you must install the dependencies also(not done automatically). 
+  # ----------- Install Jenkins Plugins and Credentials-----------
+  # The puppet-jenkins module has functionality for adding plugins but you must install the dependencies manually(not done automatically). 
   # This was tried but proved to be too much work. For example the delivery-pipeline-plugin has a total of 38 dependencies. 
   # It was decided to use the jenkins cli instead because it auto loads all the dependencies. 
   # We have to use the .jar manually because the name of the file was changed in jenkins itslef but the puppet plugin has not been updated yet,  
@@ -80,7 +80,7 @@ class profiles::jenkins (
     try_sleep => 30,
   }
 
-  #Installs the jenkins shared groovy libraries(DSL). 
+  # We need this plugin for libraries used in PipeLineAsCode. 
   exec { 'workflow-cps-global-lib':
     command   => "${clitool} install-plugin workflow-cps-global-lib -restart",
     tries     => 12,
@@ -88,23 +88,30 @@ class profiles::jenkins (
     require   => File[$global_libraries_file],
   }
 
-  #Installs the jenkins plugin templating engine. The cli will detect if the plugin is already present and do nothing if it is.
+  # We need this to connect to bitbucket. The cli will detect if the plugin is already present and do nothing if it is.
   exec { 'bitbucket':
     command   => "${clitool} install-plugin bitbucket -restart",
     tries     => 12,
     try_sleep => 30,
   }
 
-  #Installs the pipleine plugin, we need this for PipelineAsCode. The cli will detect if the plugin is already present and do nothing if it is.
+  # This plugin is adds libraries need for PipeLineAsCode. The cli will detect if the plugin is already present and do nothing if it is.
   exec { 'workflow-aggregator':
     command   => "${clitool} install-plugin workflow-aggregator -restart",
     tries     => 12,
     try_sleep => 30,
   }
 
-  #Installs the pipleine plugin, we need this for PipelineAsCode. The cli will detect if the plugin is already present and do nothing if it is.
+  # This plugin makes the pipeline view more user friendly and easier to debug.
   exec { 'blueocean':
     command   => "${clitool} install-plugin blueocean -restart",
+    tries     => 12,
+    try_sleep => 30,
+  }
+
+  # This plugin allows us more granular control over user's access right.
+  exec { 'matrix-auth':
+    command   => "${clitool} install-plugin matrix-auth -restart",
     tries     => 12,
     try_sleep => 30,
   }
@@ -116,8 +123,10 @@ class profiles::jenkins (
     try_sleep => 30,
   }
 
-  Package['jenkins-cli'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket'] -> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials'] -> Exec['blueocean']
+  Package['jenkins-cli'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket']-> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials'] -> Exec['blueocean'] -> Exec['matrix-auth']
 
+
+  # ----------- Install the Apache server and vhosts for HTTP and HTTPS -----------
   class{ 'apache':
     default_vhost => false,
   }
