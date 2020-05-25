@@ -2,10 +2,15 @@
 class profiles::jenkins (
   $credentials_file = '',
   $global_libraries_file  = '',
+  $sslchain = '',
+  $sslcert = '',
+  $sslkey = '',
 ) {
   contain ::profiles
   contain ::profiles::java8
   include ruby
+  $jenkins_port = 8080
+  $apache_server = 'jenkins.publiq.be'
 
   # This will install the ruby dev package and bundler
   class{'ruby::dev':
@@ -39,11 +44,11 @@ class profiles::jenkins (
     group   => 'jenkins',
     mode    => '0644',
     require => Class['jenkins'],
-    content => '<?xml version=\'1.1\' encoding=\'UTF-8\'?>
+    content => "<?xml version=\'1.1\' encoding=\'UTF-8\'?>
 <jenkins.model.JenkinsLocationConfiguration>
   <adminAddress>jenkins@cultuurnet.be</adminAddress>
-  <jenkinsUrl>http://192.168.144.130:8080/</jenkinsUrl>
-</jenkins.model.JenkinsLocationConfiguration>',
+  <jenkinsUrl>https://${apache_server}/</jenkinsUrl>
+</jenkins.model.JenkinsLocationConfiguration>",
   }
 
   Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> File['jenkins.model.JenkinsLocationConfiguration.xml']
@@ -112,4 +117,43 @@ class profiles::jenkins (
   }
 
   Package['jenkins-cli'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket'] -> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials'] -> Exec['blueocean']
+
+  class{ 'apache':
+    default_vhost => false,
+  }
+
+  apache::vhost { 'apt-private_80':
+    docroot             => '/var/www/html',
+    manage_docroot      => false,
+    port                => '80',
+    servername          => $apache_server,
+    proxy_preserve_host => true,
+    proxy_pass          =>
+    {
+      path =>  '/',
+      url  => "http://localhost:${jenkins_port}/"
+    }
+  }
+
+  apache::vhost { 'apt-private_443':
+    docroot             => '/var/www/html',
+    manage_docroot      => false,
+    proxy_preserve_host => true,
+    port                => '443',
+    servername          => $apache_server,
+    ssl                 => true,
+    ssl_cert            => $sslcert,
+    ssl_chain           => $sslchain,
+    ssl_key             => $sslkey,
+    proxy_pass          =>
+    {
+      path =>  '/',
+      url  => "http://localhost:${jenkins_port}/"
+    },
+    require             => [
+      File[$sslchain],
+      File[$sslcert],
+      File[$sslkey],
+    ]
+  }
 }
