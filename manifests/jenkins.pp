@@ -132,7 +132,7 @@ class profiles::jenkins (
 
   Package['jenkins-cli'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket']-> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials'] -> Exec['blueocean'] #-> Exec['matrix-auth'] -> Exec['antisamy-markup-formatter']
 
-  $oldauthorizationstrategy = '<authorizationStrategy class="hudson.security.AuthorizationStrategy$Unsecured"/>'
+  $oldauthorizationstrategy = '<authorizationStrategy class="hudson.security.AuthorizationStrategy'
   #<securityRealm class="hudson.security.SecurityRealm$None"/>'
 
   $newauthorizationstrategy = '<authorizationStrategy class="hudson.security.FullControlOnceLoggedInAuthorizationStrategy">
@@ -149,6 +149,7 @@ class profiles::jenkins (
     path   => '/var/lib/jenkins/config.xml',
     line   => $newauthorizationstrategy,
     match  => $oldauthorizationstrategy,
+    notify => Class['::jenkins::service'], #Reload config
   }
 
   # ----------- Install the Apache server and vhosts for HTTP and HTTPS -----------
