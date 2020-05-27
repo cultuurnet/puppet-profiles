@@ -132,22 +132,23 @@ class profiles::jenkins (
 
   Package['jenkins-cli'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket']-> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials'] -> Exec['blueocean'] #-> Exec['matrix-auth'] -> Exec['antisamy-markup-formatter']
 
-  $oldlines = '<authorizationStrategy class="hudson.security.AuthorizationStrategy$Unsecured"/>
-  <securityRealm class="hudson.security.SecurityRealm$None"/>'
+  $oldauthorizationstrategy = '<authorizationStrategy class="hudson.security.AuthorizationStrategy$Unsecured"/>'
+  #<securityRealm class="hudson.security.SecurityRealm$None"/>'
 
-  $newlines = '<authorizationStrategy class="hudson.security.FullControlOnceLoggedInAuthorizationStrategy">
+  $newauthorizationstrategy = '<authorizationStrategy class="hudson.security.FullControlOnceLoggedInAuthorizationStrategy">
     <denyAnonymousReadAccess>false</denyAnonymousReadAccess>
-  </authorizationStrategy>
-  <securityRealm class="hudson.security.HudsonPrivateSecurityRealm">
-    <disableSignup>true</disableSignup>
-    <enableCaptcha>false</enableCaptcha>
-  </securityRealm>'
+  </authorizationStrategy>'
+  #<securityRealm class="hudson.security.HudsonPrivateSecurityRealm">
+  #  <disableSignup>true</disableSignup>
+  #  <enableCaptcha>false</enableCaptcha>
+  #</securityRealm>'
 
-  file_line { 'virtual_host':
+  #This addes the xml necessary to enable security(usernames, passwords)
+  file_line { 'change_authorizationstrategy':
     ensure => present,
     path   => '/var/lib/jenkins/config.xml',
-    line   => $newlines,
-    match  => $oldlines,
+    line   => $newauthorizationstrategy,
+    match  => $oldauthorizationstrategy,
   }
 
   # ----------- Install the Apache server and vhosts for HTTP and HTTPS -----------
