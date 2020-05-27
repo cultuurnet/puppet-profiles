@@ -145,7 +145,7 @@ class profiles::jenkins (
 
   file_line { 'virtual_host':
     ensure => present,
-    path   => '/var/lib/jenkins/conf.xml',
+    path   => '/var/lib/jenkins/config.xml',
     line   => $newlines,
     match  => $oldlines,
   }
