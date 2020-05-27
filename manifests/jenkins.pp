@@ -34,20 +34,6 @@ class profiles::jenkins (
   class { 'jenkins':
     cli          => false,
     install_java => false,
-    user_hash    => {
-      'admin' => {
-        'password' => 'admin',
-        'email'    => 'admin@example.com',
-      },
-      'bob'   => {
-        'password' => 'bob',
-        'email'    => 'bob@example.com',
-      },
-      'bob'   => {
-        'password' => 'bob',
-        'email'    => 'bob@example.com',
-      }
-    }
   }
 
   # Set the jenkins URL and admin email address.
@@ -146,6 +132,23 @@ class profiles::jenkins (
 
   Package['jenkins-cli'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket']-> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials'] -> Exec['blueocean'] #-> Exec['matrix-auth'] -> Exec['antisamy-markup-formatter']
 
+  $oldlines = '<authorizationStrategy class="hudson.security.AuthorizationStrategy$Unsecured"/>
+  <securityRealm class="hudson.security.SecurityRealm$None"/>'
+
+  $newlines = '<authorizationStrategy class="hudson.security.FullControlOnceLoggedInAuthorizationStrategy">
+    <denyAnonymousReadAccess>false</denyAnonymousReadAccess>
+  </authorizationStrategy>
+  <securityRealm class="hudson.security.HudsonPrivateSecurityRealm">
+    <disableSignup>true</disableSignup>
+    <enableCaptcha>false</enableCaptcha>
+  </securityRealm>'
+
+  file_line { 'virtual_host':
+    ensure => present,
+    path   => '/var/lib/conf.xml',
+    line   => $newlines,
+    match  => $oldlines,
+  }
 
   # ----------- Install the Apache server and vhosts for HTTP and HTTPS -----------
   class{ 'apache':
