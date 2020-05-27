@@ -34,6 +34,20 @@ class profiles::jenkins (
   class { 'jenkins':
     cli          => false,
     install_java => false,
+    user_hash    => {
+      'admin' => {
+        'password' => 'admin',
+        'email'    => 'admin@example.com',
+      },
+      'bob'   => {
+        'password' => 'bob',
+        'email'    => 'bob@example.com',
+      },
+      'bob'   => {
+        'password' => 'bob',
+        'email'    => 'bob@example.com',
+      }
+    }
   }
 
   # Set the jenkins URL and admin email address.
@@ -110,11 +124,18 @@ class profiles::jenkins (
   }
 
   # This plugin allows us more granular control over user's access right.
-  exec { 'matrix-auth':
-    command   => "${clitool} install-plugin matrix-auth -restart",
-    tries     => 12,
-    try_sleep => 30,
-  }
+  #exec { 'matrix-auth':
+  #  command   => "${clitool} install-plugin matrix-auth -restart",
+  #  tries     => 12,
+  #  try_sleep => 30,
+  #}
+
+  # This plugin esures users can't add harmfull text. 
+  #exec { 'antisamy-markup-formatter':
+  #  command   => "${clitool} install-plugin antisamy-markup-formatter -restart",
+  #  tries     => 10,
+  #  try_sleep => 30,
+  #}
 
   # We use the import-credentials-as-xml because we can load many credentials fromm one xml file, unlike create-credentials-by-xml . 
   exec { 'import-credentials':
@@ -123,7 +144,7 @@ class profiles::jenkins (
     try_sleep => 30,
   }
 
-  Package['jenkins-cli'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket']-> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials'] -> Exec['blueocean'] -> Exec['matrix-auth']
+  Package['jenkins-cli'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket']-> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials'] -> Exec['blueocean'] #-> Exec['matrix-auth'] -> Exec['antisamy-markup-formatter']
 
 
   # ----------- Install the Apache server and vhosts for HTTP and HTTPS -----------
