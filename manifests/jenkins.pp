@@ -51,45 +51,9 @@ class profiles::jenkins (
 </jenkins.model.JenkinsLocationConfiguration>",
   }
 
-  #This addes the xml necessary to enable security(usernames, passwords)
-  $oldauthorizationstrategy = '<authorizationStrategy class="hudson.security.AuthorizationStrategy'
-  $newauthorizationstrategy = '<authorizationStrategy class="hudson.security.FullControlOnceLoggedInAuthorizationStrategy">
-    <denyAnonymousReadAccess>false</denyAnonymousReadAccess>
-  </authorizationStrategy>'
-  file_line { 'change_authorizationstrategy':
-    ensure => present,
-    path   => '/var/lib/jenkins/config.xml',
-    line   => $newauthorizationstrategy,
-    match  => $oldauthorizationstrategy,
-    notify => Class['::jenkins::service'], #Reload config
-  }
+  
 
-  #This addes the xml necessary to enable security(usernames, passwords)
-  $oldsecurityrealm = '<securityRealm class="hudson.security.SecurityRealm'
-  $newsecurityrealm = '<securityRealm class="hudson.security.HudsonPrivateSecurityRealm">
-    <disableSignup>true</disableSignup>
-    <enableCaptcha>false</enableCaptcha>
-  </securityRealm>'
-  file_line { 'change_securityrealm':
-    ensure => present,
-    path   => '/var/lib/jenkins/config.xml',
-    line   => $newsecurityrealm,
-    match  => $oldsecurityrealm,
-    notify => Class['::jenkins::service'], #Reload config
-  }
-
-  #This addes the xml necessary to enable security(usernames, passwords)
-  $newsecurityrealm = '<markupFormatter class="hudson.markup.EscapedMarkupFormatter"/>
-  </hudson>'
-  file_line { 'add_markupformatter':
-    ensure => present,
-    path   => '/var/lib/jenkins/config.xml',
-    line   => $newsecurityrealm,
-    match  =>'</hudson>',
-    notify => Class['::jenkins::service'], #Reload config
-  }
-
-  Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> File['jenkins.model.JenkinsLocationConfiguration.xml'] -> File_line['change_authorizationstrategy'] -> File_line['change_securityrealm'] -> File_line['add_markupformatter']
+  Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> File['jenkins.model.JenkinsLocationConfiguration.xml']
 
   realize Package['git']  #defined in packages.pp, installs git
 
@@ -169,6 +133,46 @@ class profiles::jenkins (
   }
 
   Package['jenkins-cli'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket']-> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials'] -> Exec['blueocean'] #-> Exec['matrix-auth'] -> Exec['antisamy-markup-formatter']
+
+  #This addes the xml necessary to enable security(usernames, passwords)
+  $oldauthorizationstrategy = '<authorizationStrategy class="hudson.security.AuthorizationStrategy'
+  $newauthorizationstrategy = '<authorizationStrategy class="hudson.security.FullControlOnceLoggedInAuthorizationStrategy">
+    <denyAnonymousReadAccess>false</denyAnonymousReadAccess>
+  </authorizationStrategy>'
+  #file_line { 'change_authorizationstrategy':
+  #  ensure => present,
+  #  path   => '/var/lib/jenkins/config.xml',
+  #  line   => $newauthorizationstrategy,
+  #  match  => $oldauthorizationstrategy,
+  #  notify => Class['::jenkins::service'], #Reload config
+  #}
+
+  #This addes the xml necessary to enable security(usernames, passwords)
+  $oldsecurityrealm = '<securityRealm class="hudson.security.SecurityRealm'
+  $newsecurityrealm = '<securityRealm class="hudson.security.HudsonPrivateSecurityRealm">
+    <disableSignup>true</disableSignup>
+    <enableCaptcha>false</enableCaptcha>
+  </securityRealm>'
+  #file_line { 'change_securityrealm':
+  #  ensure => present,
+  #  path   => '/var/lib/jenkins/config.xml',
+  #  line   => $newsecurityrealm,
+  #  match  => $oldsecurityrealm,
+  #  notify => Class['::jenkins::service'], #Reload config
+  #}
+
+  #This addes the xml necessary to enable security(usernames, passwords)
+  $newsecurityrealm = '<markupFormatter class="hudson.markup.EscapedMarkupFormatter"/>
+  </hudson>'
+  #file_line { 'add_markupformatter':
+  #  ensure => present,
+  #  path   => '/var/lib/jenkins/config.xml',
+  #  line   => $newsecurityrealm,
+  #  match  =>'</hudson>',
+  #  notify => Class['::jenkins::service'], #Reload config
+  #}
+
+  #File_line['change_authorizationstrategy'] -> File_line['change_securityrealm'] -> File_line['add_markupformatter']
 
   # ----------- Install the Apache server and vhosts for HTTP and HTTPS -----------
   class{ 'apache':
