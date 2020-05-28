@@ -162,7 +162,7 @@ class profiles::jenkins (
   #}
 
   #This addes the xml necessary to enable security(usernames, passwords)
-  $newsecurityrealm = '<markupFormatter class="hudson.markup.EscapedMarkupFormatter"/>
+  $markupformatter = '<markupFormatter class="hudson.markup.EscapedMarkupFormatter"/>
   </hudson>'
   #file_line { 'add_markupformatter':
   #  ensure => present,
