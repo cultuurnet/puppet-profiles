@@ -156,7 +156,7 @@ class profiles::jenkins (
   $security_model = 'full_control'
   exec { "jenkins-security-${security_model}":
     command   => "cat ${helper_groovy} | jenkins-cli groovy = set_security full_control",
-    unless    => "\$HELPER_CMD get_authorization_strategyname | grep -q -e '^${security_model}\$'",
+    unless    => "cat ${helper_groovy} | jenkins-cli groovy = get_authorization_strategyname | grep -q -e '^${security_model}\$'",
     tries     => 10,
     try_sleep => 30,
     require   => [Package[$clitool],Class['jenkins']],
