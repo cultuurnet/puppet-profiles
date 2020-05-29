@@ -5,6 +5,7 @@ class profiles::jenkins (
   $sslchain = '',
   $sslcert = '',
   $sslkey = '',
+  String $adminpassword,
 ) {
   contain ::profiles
   contain ::profiles::java8
@@ -132,47 +133,32 @@ class profiles::jenkins (
     try_sleep => 30,
   }
 
-  Package['jenkins-cli'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket']-> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials'] -> Exec['blueocean'] #-> Exec['matrix-auth'] -> Exec['antisamy-markup-formatter']
+  Package['jenkins-cli'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket']-> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials'] -> Exec['blueocean'] #-> Exec['matrix-auth'] -> Exec['antisamy-markup-formatter']                                                                               
 
-  #This addes the xml necessary to enable security(usernames, passwords)
-  $oldauthorizationstrategy = '<authorizationStrategy class="hudson.security.AuthorizationStrategy'
-  $newauthorizationstrategy = '<authorizationStrategy class="hudson.security.FullControlOnceLoggedInAuthorizationStrategy">
-    <denyAnonymousReadAccess>false</denyAnonymousReadAccess>
-  </authorizationStrategy>'
-  #file_line { 'change_authorizationstrategy':
-  #  ensure => present,
-  #  path   => '/var/lib/jenkins/config.xml',
-  #  line   => $newauthorizationstrategy,
-  #  match  => $oldauthorizationstrategy,
-  #  notify => Class['::jenkins::service'], #Reload config
-  #}
+  # ----------- Setup security ----------------------------------------------------
 
-  #This addes the xml necessary to enable security(usernames, passwords)
-  $oldsecurityrealm = '<securityRealm class="hudson.security.SecurityRealm'
-  $newsecurityrealm = '<securityRealm class="hudson.security.HudsonPrivateSecurityRealm">
-    <disableSignup>true</disableSignup>
-    <enableCaptcha>false</enableCaptcha>
-  </securityRealm>'
-  #file_line { 'change_securityrealm':
-  #  ensure => present,
-  #  path   => '/var/lib/jenkins/config.xml',
-  #  line   => $newsecurityrealm,
-  #  match  => $oldsecurityrealm,
-  #  notify => Class['::jenkins::service'], #Reload config
-  #}
+  $helper_groovy = '/usr/share/jenkins/puppet_helper.groovy'
+  file { $helper_groovy:
+    #source  => 'puppet:///modules/jenkins/puppet_helper.groovy',
+    source  => '/vagrant/puppet/modules/jenkins/files/puppet_helper.groovy',
+    owner   => 'jenkins',
+    group   => 'jenkins',
+    mode    => '0444',
+    require => Package['jenkins-cli'],
+  }
 
-  #This addes the xml necessary to enable security(usernames, passwords)
-  $markupformatter = '<markupFormatter class="hudson.markup.EscapedMarkupFormatter"/>
-  </hudson>'
-  #file_line { 'add_markupformatter':
-  #  ensure => present,
-  #  path   => '/var/lib/jenkins/config.xml',
-  #  line   => $newsecurityrealm,
-  #  match  =>'</hudson>',
-  #  notify => Class['::jenkins::service'], #Reload config
-  #}
+  exec { 'create-jenkins-user-admin':
+    command => "cat ${helper_groovy} | jenkins-cli groovy = create_or_update_user admin ${adminpassword} \"admin\" \"\"",
+  }
 
-  #File_line['change_authorizationstrategy'] -> File_line['change_securityrealm'] -> File_line['add_markupformatter']
+  $security_model = 'full_control'
+  exec { "jenkins-security-${security_model}":
+    command => "cat ${helper_groovy} | jenkins-cli groovy = set_security full_control",
+    unless  => "\$HELPER_CMD get_authorization_strategyname | grep -q -e '^${security_model}\$'",
+  }
+  #cat /vagrant/puppet/modules/jenkins/files/puppet_helper.groovy | jenkins-cli groovy = create_or_update_user admin jenkins@pubiq.be "3d8hk9s" "admin" ""
+  #cat /vagrant/puppet/modules/jenkins/files/puppet_helper.groovy | jenkins-cli groovy = set_security full_control
+  File[$helper_groovy] -> Exec['create-jenkins-user-admin'] -> Exec["jenkins-security-${security_model}"]
 
   # ----------- Install the Apache server and vhosts for HTTP and HTTPS -----------
   class{ 'apache':
