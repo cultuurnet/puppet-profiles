@@ -148,13 +148,17 @@ class profiles::jenkins (
   }
 
   exec { 'create-jenkins-user-admin':
-    command => "cat ${helper_groovy} | jenkins-cli groovy = create_or_update_user admin \"jenkins@publiq.be\" ${adminpassword} \"admin\" \"\"",
+    command   => "cat ${helper_groovy} | jenkins-cli groovy = create_or_update_user admin \"jenkins@publiq.be\" ${adminpassword} \"admin\" \"\"",
+    tries     => 10,
+    try_sleep => 30,
   }
 
   $security_model = 'full_control'
   exec { "jenkins-security-${security_model}":
-    command => "cat ${helper_groovy} | jenkins-cli groovy = set_security full_control",
-    unless  => "\$HELPER_CMD get_authorization_strategyname | grep -q -e '^${security_model}\$'",
+    command   => "cat ${helper_groovy} | jenkins-cli groovy = set_security full_control",
+    unless    => "\$HELPER_CMD get_authorization_strategyname | grep -q -e '^${security_model}\$'",
+    tries     => 10,
+    try_sleep => 30,
   }
   #cat /vagrant/puppet/modules/jenkins/files/puppet_helper.groovy | jenkins-cli groovy = create_or_update_user admin jenkins@pubiq.be "3d8hk9s" "admin" ""
   #cat /vagrant/puppet/modules/jenkins/files/puppet_helper.groovy | jenkins-cli groovy = set_security full_control
