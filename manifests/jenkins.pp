@@ -140,17 +140,17 @@ class profiles::jenkins (
   $helper_groovy = '/usr/share/jenkins/puppet_helper.groovy'
   file { $helper_groovy:
     #source  => 'puppet:///modules/jenkins/puppet_helper.groovy',
-    source  => '/vagrant/puppet/modules/jenkins/files/puppet_helper.groovy',
-    owner   => 'jenkins',
-    group   => 'jenkins',
-    mode    => '0444',
-    require => Package['jenkins-cli'],
+    source => '/vagrant/puppet/modules/jenkins/files/puppet_helper.groovy',
+    owner  => 'jenkins',
+    group  => 'jenkins',
+    mode   => '0444',
   }
 
   exec { 'create-jenkins-user-admin':
     command   => "cat ${helper_groovy} | jenkins-cli groovy = create_or_update_user admin \"jenkins@publiq.be\" ${adminpassword} \"admin\" \"\"",
     tries     => 10,
     try_sleep => 30,
+    require   => [Package[$clitool],Class['jenkins']],
   }
 
   $security_model = 'full_control'
@@ -159,6 +159,7 @@ class profiles::jenkins (
     unless    => "\$HELPER_CMD get_authorization_strategyname | grep -q -e '^${security_model}\$'",
     tries     => 10,
     try_sleep => 30,
+    require   => [Package[$clitool],Class['jenkins']],
   }
   #cat /vagrant/puppet/modules/jenkins/files/puppet_helper.groovy | jenkins-cli groovy = create_or_update_user admin jenkins@pubiq.be "3d8hk9s" "admin" ""
   #cat /vagrant/puppet/modules/jenkins/files/puppet_helper.groovy | jenkins-cli groovy = set_security full_control
