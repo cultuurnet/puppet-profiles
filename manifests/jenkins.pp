@@ -148,7 +148,7 @@ class profiles::jenkins (
   }
 
   exec { 'create-jenkins-user-admin':
-    command => "cat ${helper_groovy} | jenkins-cli groovy = create_or_update_user admin ${adminpassword} \"admin\" \"\"",
+    command => "cat ${helper_groovy} | jenkins-cli groovy = create_or_update_user admin \"jenkins@publiq.be\" ${adminpassword} \"admin\" \"\"",
   }
 
   $security_model = 'full_control'
