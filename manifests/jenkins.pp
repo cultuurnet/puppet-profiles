@@ -1,17 +1,20 @@
 ## This profile installs everything needed to get Jenkins up and running with all jobs and plugins it needs.
 class profiles::jenkins (
+  String $adminpassword,
   $credentials_file = '',
   $global_libraries_file  = '',
   $sslchain = '',
   $sslcert = '',
   $sslkey = '',
-  String $adminpassword,
 ) {
   contain ::profiles
   contain ::profiles::java8
   include ruby
   $jenkins_port = 8080
   $apache_server = 'jenkins.publiq.be'
+  $adminuser = 'admin'
+  $security_model = 'full_control'
+  $helper_groovy = '/usr/share/jenkins/puppet_helper.groovy'
 
   # This will install the ruby dev package and bundler
   class{'ruby::dev':
@@ -52,9 +55,41 @@ class profiles::jenkins (
 </jenkins.model.JenkinsLocationConfiguration>",
   }
 
-  
+  # We have made our own rake file that installs the cli(jar file) and adds a script for easy use, that is 
+  # installed in the system path for easy use. The rake file can be found here: 
+  # https://github.com/cultuurnet/tool-builder/tree/master/jenkins-cli 
+  $clitool = 'jenkins-cli'
+  package{$clitool:
+    name     => $clitool,
+    provider => apt,
+    require  => Class['jenkins'],
+  }
 
-  Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> File['jenkins.model.JenkinsLocationConfiguration.xml']
+  # ----------- Setup security ----------------------------------------------------
+  file { $helper_groovy:
+    #source  => 'puppet:///modules/jenkins/puppet_helper.groovy',
+    source => '/vagrant/puppet/modules/jenkins/files/puppet_helper.groovy',
+    owner  => 'jenkins',
+    group  => 'jenkins',
+    mode   => '0444',
+  }
+
+  exec { 'create-jenkins-user-admin':
+    command   => "cat ${helper_groovy} | jenkins-cli groovy = create_or_update_user ${adminuser} \"jenkins@publiq.be\" ${adminpassword} \"${adminuser}\" \"\"",
+    tries     => 10,
+    try_sleep => 30,
+    require   => [Package[$clitool],Class['jenkins']],
+  }
+
+  exec { "jenkins-security-${security_model}":
+    command   => "cat ${helper_groovy} | jenkins-cli groovy = set_security full_control",
+    unless    => "cat ${helper_groovy} | jenkins-cli groovy = get_authorization_strategyname | grep -q -e '^${security_model}\$'",
+    tries     => 10,
+    try_sleep => 30,
+    require   => [Package[$clitool],Class['jenkins']],
+  }
+
+  Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> File['jenkins.model.JenkinsLocationConfiguration.xml'] -> File[$helper_groovy] -> Exec['create-jenkins-user-admin'] -> Exec["jenkins-security-${security_model}"]
 
   realize Package['git']  #defined in packages.pp, installs git
 
@@ -65,27 +100,16 @@ class profiles::jenkins (
   # We have to use the .jar manually because the name of the file was changed in jenkins itslef but the puppet plugin has not been updated yet,  
   # https://github.com/voxpupuli/puppet-jenkins/pull/945, this means we can not use jenkins::cli or jenkins::credentials and several other classes.
 
-  $clitool = 'jenkins-cli'
-
-  # We have made our own rake file that installs the cli(jar file) and adds a script for easy use, that is 
-  # installed in the system path for easy use. The rake file can be found here: 
-  # https://github.com/cultuurnet/tool-builder/tree/master/jenkins-cli 
-  package{$clitool:
-    name     => $clitool,
-    provider => apt,
-    require  => Class['jenkins'],
-  }
-
   #Installs the jenkins plugin delivery-pipeline-plugin. The cli will detect if the plugin is already present and do nothing if it is. 
   exec { 'delivery-pipeline-plugin':
-    command   => "${clitool} install-plugin delivery-pipeline-plugin -restart",
+    command   => "${clitool} install-plugin delivery-pipeline-plugin --username ${adminuser} --password ${adminpassword} -restart",
     tries     => 12,
     try_sleep => 30,
   }
 
   # We need this plugin for libraries used in PipeLineAsCode. 
   exec { 'workflow-cps-global-lib':
-    command   => "${clitool} install-plugin workflow-cps-global-lib -restart",
+    command   => "${clitool} install-plugin workflow-cps-global-lib --username ${adminuser} --password ${adminpassword} -restart",
     tries     => 12,
     try_sleep => 30,
     require   => File[$global_libraries_file],
@@ -93,21 +117,21 @@ class profiles::jenkins (
 
   # We need this to connect to bitbucket. The cli will detect if the plugin is already present and do nothing if it is.
   exec { 'bitbucket':
-    command   => "${clitool} install-plugin bitbucket -restart",
+    command   => "${clitool} install-plugin bitbucket --username ${adminuser} --password ${adminpassword} -restart",
     tries     => 12,
     try_sleep => 30,
   }
 
   # This plugin is adds libraries need for PipeLineAsCode. The cli will detect if the plugin is already present and do nothing if it is.
   exec { 'workflow-aggregator':
-    command   => "${clitool} install-plugin workflow-aggregator -restart",
+    command   => "${clitool} install-plugin workflow-aggregator --username ${adminuser} --password ${adminpassword} -restart",
     tries     => 12,
     try_sleep => 30,
   }
 
   # This plugin makes the pipeline view more user friendly and easier to debug.
   exec { 'blueocean':
-    command   => "${clitool} install-plugin blueocean -restart",
+    command   => "${clitool} install-plugin blueocean --username ${adminuser} --password ${adminpassword} -restart",
     tries     => 12,
     try_sleep => 30,
   }
@@ -134,36 +158,6 @@ class profiles::jenkins (
   }
 
   Package['jenkins-cli'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket']-> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials'] -> Exec['blueocean'] #-> Exec['matrix-auth'] -> Exec['antisamy-markup-formatter']                                                                               
-
-  # ----------- Setup security ----------------------------------------------------
-
-  $helper_groovy = '/usr/share/jenkins/puppet_helper.groovy'
-  file { $helper_groovy:
-    #source  => 'puppet:///modules/jenkins/puppet_helper.groovy',
-    source => '/vagrant/puppet/modules/jenkins/files/puppet_helper.groovy',
-    owner  => 'jenkins',
-    group  => 'jenkins',
-    mode   => '0444',
-  }
-
-  exec { 'create-jenkins-user-admin':
-    command   => "cat ${helper_groovy} | jenkins-cli groovy = create_or_update_user admin \"jenkins@publiq.be\" ${adminpassword} \"admin\" \"\"",
-    tries     => 10,
-    try_sleep => 30,
-    require   => [Package[$clitool],Class['jenkins']],
-  }
-
-  $security_model = 'full_control'
-  exec { "jenkins-security-${security_model}":
-    command   => "cat ${helper_groovy} | jenkins-cli groovy = set_security full_control",
-    unless    => "cat ${helper_groovy} | jenkins-cli groovy = get_authorization_strategyname | grep -q -e '^${security_model}\$'",
-    tries     => 10,
-    try_sleep => 30,
-    require   => [Package[$clitool],Class['jenkins']],
-  }
-  #cat /vagrant/puppet/modules/jenkins/files/puppet_helper.groovy | jenkins-cli groovy = create_or_update_user admin jenkins@pubiq.be "3d8hk9s" "admin" ""
-  #cat /vagrant/puppet/modules/jenkins/files/puppet_helper.groovy | jenkins-cli groovy = set_security full_control
-  File[$helper_groovy] -> Exec['create-jenkins-user-admin'] -> Exec["jenkins-security-${security_model}"]
 
   # ----------- Install the Apache server and vhosts for HTTP and HTTPS -----------
   class{ 'apache':
