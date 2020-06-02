@@ -172,7 +172,7 @@ class profiles::jenkins (
 
   # We use the import-credentials-as-xml because we can load many credentials fromm one xml file, unlike create-credentials-by-xml . 
   exec { 'import-credentials':
-    command   => "${clitool} import-credentials-as-xml system::system::jenkins < ${credentials_file}",
+    command   => "${clitool} -auth ${adminuser}:${adminpassword} import-credentials-as-xml system::system::jenkins < ${credentials_file}",
     tries     => 10,
     try_sleep => 30,
     require   => Package[$clitool],
