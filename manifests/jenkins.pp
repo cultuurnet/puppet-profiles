@@ -74,8 +74,22 @@ class profiles::jenkins (
     mode   => '0444',
   }
 
+  #We need this plugin to create our first user
+  #exec { 'mailer':
+  #  command   => "${clitool} install-plugin mailer -restart",
+  #  tries     => 12,
+  #  try_sleep => 30,
+  #}
+
+  #exec { 'create-jenkins-user-admin':
+  #  command   => "cat ${helper_groovy} | jenkins-cli groovy = create_or_update_user ${adminuser} \"jenkins@publiq.be\" ${adminpassword} \"${adminuser}\" \"\"",
+  #  tries     => 10,
+  #  try_sleep => 30,
+  #  require   => [Package[$clitool],Class['jenkins']],
+  #}
+
   exec { 'create-jenkins-user-admin':
-    command   => "cat ${helper_groovy} | jenkins-cli groovy = create_or_update_user ${adminuser} \"jenkins@publiq.be\" ${adminpassword} \"${adminuser}\" \"\"",
+    command   => "'jenkins.model.Jenkins.instance.securityRealm.createAccount(\"${adminuser}\", \"${adminpassword}\")' | jenkins-cli groovy =",
     tries     => 10,
     try_sleep => 30,
     require   => [Package[$clitool],Class['jenkins']],
@@ -102,14 +116,14 @@ class profiles::jenkins (
 
   #Installs the jenkins plugin delivery-pipeline-plugin. The cli will detect if the plugin is already present and do nothing if it is. 
   exec { 'delivery-pipeline-plugin':
-    command   => "${clitool} install-plugin delivery-pipeline-plugin --username ${adminuser} --password ${adminpassword} -restart",
+    command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin delivery-pipeline-plugin -restart",
     tries     => 12,
     try_sleep => 30,
   }
 
   # We need this plugin for libraries used in PipeLineAsCode. 
   exec { 'workflow-cps-global-lib':
-    command   => "${clitool} install-plugin workflow-cps-global-lib --username ${adminuser} --password ${adminpassword} -restart",
+    command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin workflow-cps-global-lib -restart",
     tries     => 12,
     try_sleep => 30,
     require   => File[$global_libraries_file],
@@ -117,21 +131,21 @@ class profiles::jenkins (
 
   # We need this to connect to bitbucket. The cli will detect if the plugin is already present and do nothing if it is.
   exec { 'bitbucket':
-    command   => "${clitool} install-plugin bitbucket --username ${adminuser} --password ${adminpassword} -restart",
+    command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin bitbucket -restart",
     tries     => 12,
     try_sleep => 30,
   }
 
   # This plugin is adds libraries need for PipeLineAsCode. The cli will detect if the plugin is already present and do nothing if it is.
   exec { 'workflow-aggregator':
-    command   => "${clitool} install-plugin workflow-aggregator --username ${adminuser} --password ${adminpassword} -restart",
+    command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin workflow-aggregator -restart",
     tries     => 12,
     try_sleep => 30,
   }
 
   # This plugin makes the pipeline view more user friendly and easier to debug.
   exec { 'blueocean':
-    command   => "${clitool} install-plugin blueocean --username ${adminuser} --password ${adminpassword} -restart",
+    command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin blueocean -restart",
     tries     => 12,
     try_sleep => 30,
   }
