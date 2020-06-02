@@ -75,18 +75,18 @@ class profiles::jenkins (
   }
 
   #We need this plugin to create our first user
-  #exec { 'mailer':
-  #  command   => "${clitool} install-plugin mailer -restart",
-  #  tries     => 12,
-  #  try_sleep => 30,
-  #}
+  exec { 'mailer':
+    command   => "${clitool} install-plugin mailer -restart",
+    tries     => 12,
+    try_sleep => 30,
+  }
 
-  #exec { 'create-jenkins-user-admin':
-  #  command   => "cat ${helper_groovy} | jenkins-cli groovy = create_or_update_user ${adminuser} \"jenkins@publiq.be\" ${adminpassword} \"${adminuser}\" \"\"",
-  #  tries     => 10,
-  #  try_sleep => 30,
-  #  require   => [Package[$clitool],Class['jenkins']],
-  #}
+  exec { 'create-jenkins-user-admin':
+    command   => "cat ${helper_groovy} | jenkins-cli groovy = create_or_update_user ${adminuser} \"jenkins@publiq.be\" ${adminpassword} \"${adminuser}\" \"\"",
+    tries     => 10,
+    try_sleep => 30,
+    require   => [Package[$clitool],Class['jenkins']],
+  }
 
   exec { "jenkins-security-${security_model}":
     command   => "cat ${helper_groovy} | ${clitool} groovy = set_security full_control",
@@ -96,14 +96,14 @@ class profiles::jenkins (
     require   => [Package[$clitool],Class['jenkins']],
   }
 
-  exec { 'create-jenkins-user-admin':
-    command   => "echo 'jenkins.model.Jenkins.instance.securityRealm.createAccount(\"${adminuser}\", \"${adminpassword}\")' | ${clitool} groovy =",
-    tries     => 10,
-    try_sleep => 30,
-    require   => [Package[$clitool],Class['jenkins']],
-  }
+  #exec { 'create-jenkins-user-admin':
+  #  command   => "echo 'jenkins.model.Jenkins.instance.securityRealm.createAccount(\"${adminuser}\", \"${adminpassword}\")' | ${clitool} groovy =",
+  #  tries     => 10,
+  #  try_sleep => 30,
+  #  require   => [Package[$clitool],Class['jenkins']],
+  #}
 
-  Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> File['jenkins.model.JenkinsLocationConfiguration.xml'] -> Package['jenkins-cli'] -> File[$helper_groovy] -> Exec["jenkins-security-${security_model}"] -> Exec['create-jenkins-user-admin']
+  Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> File['jenkins.model.JenkinsLocationConfiguration.xml'] -> Package['jenkins-cli'] -> File[$helper_groovy] -> Exec['create-jenkins-user-admin'] -> Exec['mailer'] -> Exec["jenkins-security-${security_model}"]
 
   realize Package['git']  #defined in packages.pp, installs git
 
