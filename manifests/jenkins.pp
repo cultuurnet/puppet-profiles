@@ -89,15 +89,15 @@ class profiles::jenkins (
   #}
 
   exec { "jenkins-security-${security_model}":
-    command   => "cat ${helper_groovy} | jenkins-cli groovy = set_security full_control",
-    unless    => "cat ${helper_groovy} | jenkins-cli groovy = get_authorization_strategyname | grep -q -e '^${security_model}\$'",
+    command   => "cat ${helper_groovy} | ${clitool} groovy = set_security full_control",
+    unless    => "cat ${helper_groovy} | ${clitool} groovy = get_authorization_strategyname | grep -q -e '^${security_model}\$'",
     tries     => 10,
     try_sleep => 30,
     require   => [Package[$clitool],Class['jenkins']],
   }
 
   exec { 'create-jenkins-user-admin':
-    command   => "'jenkins.model.Jenkins.instance.securityRealm.createAccount(\"${adminuser}\", \"${adminpassword}\")' | jenkins-cli groovy =",
+    command   => "'jenkins.model.Jenkins.instance.securityRealm.createAccount(\"${adminuser}\", \"${adminpassword}\")' | ${clitool} groovy =",
     tries     => 10,
     try_sleep => 30,
     require   => [Package[$clitool],Class['jenkins']],
@@ -119,6 +119,7 @@ class profiles::jenkins (
     command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin delivery-pipeline-plugin -restart",
     tries     => 12,
     try_sleep => 30,
+    require   => Package[$clitool],
   }
 
   # We need this plugin for libraries used in PipeLineAsCode. 
@@ -134,6 +135,7 @@ class profiles::jenkins (
     command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin bitbucket -restart",
     tries     => 12,
     try_sleep => 30,
+    require   => Package[$clitool],
   }
 
   # This plugin is adds libraries need for PipeLineAsCode. The cli will detect if the plugin is already present and do nothing if it is.
@@ -141,6 +143,7 @@ class profiles::jenkins (
     command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin workflow-aggregator -restart",
     tries     => 12,
     try_sleep => 30,
+    require   => Package[$clitool],
   }
 
   # This plugin makes the pipeline view more user friendly and easier to debug.
@@ -148,6 +151,7 @@ class profiles::jenkins (
     command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin blueocean -restart",
     tries     => 12,
     try_sleep => 30,
+    require   => Package[$clitool],
   }
 
   # This plugin allows us more granular control over user's access right.
@@ -155,6 +159,7 @@ class profiles::jenkins (
   #  command   => "${clitool} install-plugin matrix-auth -restart",
   #  tries     => 12,
   #  try_sleep => 30,
+  #  require   => Package[$clitool],
   #}
 
   # This plugin esures users can't add harmfull text. 
@@ -162,6 +167,7 @@ class profiles::jenkins (
   #  command   => "${clitool} install-plugin antisamy-markup-formatter -restart",
   #  tries     => 10,
   #  try_sleep => 30,
+  #  require   => Package[$clitool],
   #}
 
   # We use the import-credentials-as-xml because we can load many credentials fromm one xml file, unlike create-credentials-by-xml . 
@@ -169,6 +175,7 @@ class profiles::jenkins (
     command   => "${clitool} import-credentials-as-xml system::system::jenkins < ${credentials_file}",
     tries     => 10,
     try_sleep => 30,
+    require   => Package[$clitool],
   }
 
   Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket']-> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials'] -> Exec['blueocean'] #-> Exec['matrix-auth'] -> Exec['antisamy-markup-formatter']                                                                               
