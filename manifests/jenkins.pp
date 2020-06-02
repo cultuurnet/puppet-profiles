@@ -97,7 +97,7 @@ class profiles::jenkins (
   }
 
   exec { 'create-jenkins-user-admin':
-    command   => "'jenkins.model.Jenkins.instance.securityRealm.createAccount(\"${adminuser}\", \"${adminpassword}\")' | ${clitool} groovy =",
+    command   => "echo 'jenkins.model.Jenkins.instance.securityRealm.createAccount(\"${adminuser}\", \"${adminpassword}\")' | ${clitool} groovy =",
     tries     => 10,
     try_sleep => 30,
     require   => [Package[$clitool],Class['jenkins']],
