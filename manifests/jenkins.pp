@@ -88,13 +88,6 @@ class profiles::jenkins (
   #  require   => [Package[$clitool],Class['jenkins']],
   #}
 
-  exec { 'create-jenkins-user-admin':
-    command   => "'jenkins.model.Jenkins.instance.securityRealm.createAccount(\"${adminuser}\", \"${adminpassword}\")' | jenkins-cli groovy =",
-    tries     => 10,
-    try_sleep => 30,
-    require   => [Package[$clitool],Class['jenkins']],
-  }
-
   exec { "jenkins-security-${security_model}":
     command   => "cat ${helper_groovy} | jenkins-cli groovy = set_security full_control",
     unless    => "cat ${helper_groovy} | jenkins-cli groovy = get_authorization_strategyname | grep -q -e '^${security_model}\$'",
@@ -103,7 +96,14 @@ class profiles::jenkins (
     require   => [Package[$clitool],Class['jenkins']],
   }
 
-  Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> File['jenkins.model.JenkinsLocationConfiguration.xml'] -> File[$helper_groovy] -> Exec['create-jenkins-user-admin'] -> Exec["jenkins-security-${security_model}"]
+  exec { 'create-jenkins-user-admin':
+    command   => "'jenkins.model.Jenkins.instance.securityRealm.createAccount(\"${adminuser}\", \"${adminpassword}\")' | jenkins-cli groovy =",
+    tries     => 10,
+    try_sleep => 30,
+    require   => [Package[$clitool],Class['jenkins']],
+  }
+
+  Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> File['jenkins.model.JenkinsLocationConfiguration.xml'] -> Package['jenkins-cli'] -> File[$helper_groovy] -> Exec["jenkins-security-${security_model}"] -> Exec['create-jenkins-user-admin']
 
   realize Package['git']  #defined in packages.pp, installs git
 
@@ -171,7 +171,7 @@ class profiles::jenkins (
     try_sleep => 30,
   }
 
-  Package['jenkins-cli'] -> Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket']-> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials'] -> Exec['blueocean'] #-> Exec['matrix-auth'] -> Exec['antisamy-markup-formatter']                                                                               
+  Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket']-> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials'] -> Exec['blueocean'] #-> Exec['matrix-auth'] -> Exec['antisamy-markup-formatter']                                                                               
 
   # ----------- Install the Apache server and vhosts for HTTP and HTTPS -----------
   class{ 'apache':
