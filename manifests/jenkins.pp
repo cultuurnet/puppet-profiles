@@ -88,8 +88,24 @@ class profiles::jenkins (
     require   => [Package[$clitool],Class['jenkins']],
   }
 
+  #exec { "jenkins-security-${security_model}":
+  #  command   => "cat ${helper_groovy} | ${clitool} groovy = set_security ${security_model}",
+  #  unless    => "cat ${helper_groovy} | ${clitool} groovy = get_authorization_strategyname | grep -q -e '^${security_model}\$'",
+  #  tries     => 10,
+  #  try_sleep => 30,
+  #  require   => [Package[$clitool],Class['jenkins']],
+  #}
+
   exec { "jenkins-security-${security_model}":
-    command   => "cat ${helper_groovy} | ${clitool} groovy = set_security full_control",
+    command   => "echo 'import jenkins.model.*
+def instance = Jenkins.getInstance()
+import hudson.security.*
+def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
+strategy.setAllowAnonymousRead(false)
+instance.setAuthorizationStrategy(strategy)
+def realm = new HudsonPrivateSecurityRealm(false)
+instance.setSecurityRealm(realm)
+instance.save()' | ${clitool} -auth admin:3d8hk9s groovy =",
     unless    => "cat ${helper_groovy} | ${clitool} groovy = get_authorization_strategyname | grep -q -e '^${security_model}\$'",
     tries     => 10,
     try_sleep => 30,
