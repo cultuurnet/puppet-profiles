@@ -66,9 +66,9 @@ class profiles::jenkins (
   }
 
   # ----------- Setup security ----------------------------------------------------
+  #Make sure the groovy script from the jenkins puppet module is available
   file { $helper_groovy:
-    #source  => 'puppet:///modules/jenkins/puppet_helper.groovy',
-    source => '/vagrant/puppet/modules/jenkins/files/puppet_helper.groovy',
+    source => 'puppet:///modules/jenkins/puppet_helper.groovy',
     owner  => 'jenkins',
     group  => 'jenkins',
     mode   => '0444',
@@ -81,6 +81,7 @@ class profiles::jenkins (
     try_sleep => 30,
   }
 
+  # Create first user
   exec { 'create-jenkins-user-admin':
     command   => "cat ${helper_groovy} | jenkins-cli groovy = create_or_update_user ${adminuser} \"jenkins@publiq.be\" ${adminpassword} \"${adminuser}\" \"\"",
     tries     => 10,
@@ -88,14 +89,7 @@ class profiles::jenkins (
     require   => [Package[$clitool],Class['jenkins']],
   }
 
-  #exec { "jenkins-security-${security_model}":
-  #  command   => "cat ${helper_groovy} | ${clitool} groovy = set_security ${security_model}",
-  #  unless    => "cat ${helper_groovy} | ${clitool} groovy = get_authorization_strategyname | grep -q -e '^${security_model}\$'",
-  #  tries     => 10,
-  #  try_sleep => 30,
-  #  require   => [Package[$clitool],Class['jenkins']],
-  #}
-
+  # Set security/strategy policy (jenkins database + no sign up, logged-in uses can do anything + no anonymous read )
   exec { "jenkins-security-${security_model}":
     command   => "echo 'import jenkins.model.*
 def instance = Jenkins.getInstance()
@@ -111,13 +105,6 @@ instance.save()' | ${clitool} -auth admin:3d8hk9s groovy =",
     try_sleep => 30,
     require   => [Package[$clitool],Class['jenkins']],
   }
-
-  #exec { 'create-jenkins-user-admin':
-  #  command   => "echo 'jenkins.model.Jenkins.instance.securityRealm.createAccount(\"${adminuser}\", \"${adminpassword}\")' | ${clitool} groovy =",
-  #  tries     => 10,
-  #  try_sleep => 30,
-  #  require   => [Package[$clitool],Class['jenkins']],
-  #}
 
   Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> File['jenkins.model.JenkinsLocationConfiguration.xml'] -> Package['jenkins-cli'] -> File[$helper_groovy] -> Exec['mailer'] -> Exec['create-jenkins-user-admin'] -> Exec["jenkins-security-${security_model}"]
 
