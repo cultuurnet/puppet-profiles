@@ -20,6 +20,12 @@ class profiles::puppet::agent {
     value   => 'false'
   }
 
+  ini_setting { 'agent preferred_serialization_format':
+    section => 'agent',
+    setting => 'preferred_serialization_format',
+    value   => 'pson'
+  }
+
   service { 'puppet':
     ensure    => 'running',
     enable    => true,
