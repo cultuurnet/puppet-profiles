@@ -36,8 +36,9 @@ class profiles::jenkins (
 
   # This will install and configure jenkins.
   class { 'jenkins':
-    cli          => false,
-    install_java => false,
+    cli                => false,
+    install_java       => false,
+    configure_firewall => false,
   }
 
   # Set the jenkins URL and admin email address.
