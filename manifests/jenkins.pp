@@ -1,7 +1,6 @@
 ## This profile installs everything needed to get Jenkins up and running with all jobs and plugins it needs.
 class profiles::jenkins (
   String $adminpassword,
-  $global_libraries_file  = '',
   $sslchain = '',
   $sslcert = '',
   $sslkey = '',
@@ -50,21 +49,21 @@ class profiles::jenkins (
     group  => 'jenkins',
     mode   => '0755',
   }
-  file {'/var/lib/jenkins/.ssh/id_rsa':
+  file {"${sshdir}/id_rsa":
     ensure => file,
     owner  => 'jenkins',
     group  => 'jenkins',
     mode   => '0400',
     source => 'puppet:///private/id_rsa',
   }
-  file {'/var/lib/jenkins/.ssh/known_hosts':
+  file {"${sshdir}/known_hosts":
     ensure => file,
     owner  => 'jenkins',
     group  => 'jenkins',
     mode   => '0644',
     source => 'puppet:///private/known_hosts',
   }
-  file {'/var/lib/jenkins/.ssh/id_rsa.pub':
+  file {"${sshdir}/id_rsa.pub":
     ensure  => file,
     owner   => 'jenkins',
     group   => 'jenkins',
