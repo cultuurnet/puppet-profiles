@@ -1,11 +1,11 @@
 ## This profile installs everything needed to get Jenkins up and running with all jobs and plugins it needs.
 class profiles::jenkins (
   String $adminpassword,
-  $credentials_file = '',
   $global_libraries_file  = '',
   $sslchain = '',
   $sslcert = '',
   $sslkey = '',
+  $sshpublickey = '',
 ) {
   contain ::profiles
   contain ::profiles::java8
@@ -36,9 +36,40 @@ class profiles::jenkins (
 
   # This will install and configure jenkins.
   class { 'jenkins':
-    cli                => false,
-    install_java       => false,
-    configure_firewall => false,
+    cli          => false,
+    install_java => false,
+  }
+
+  # This folder will hold all the files needed for a special ssh key. When you run something in a job 
+  # like 'librarian-puppet install' it expects there to be an ssh key already on the operating system. 
+  # It can't see/use the one made in jenkins.
+  $sshdir = '/var/lib/jenkins/.ssh'
+  file {$sshdir:
+    ensure => directory,
+    owner  => 'jenkins',
+    group  => 'jenkins',
+    mode   => '0755',
+  }
+  file {'/var/lib/jenkins/.ssh/id_rsa':
+    ensure => file,
+    owner  => 'jenkins',
+    group  => 'jenkins',
+    mode   => '0400',
+    source => 'puppet:///modules/jenkins/id_rsa',
+  }
+  file {'/var/lib/jenkins/.ssh/known_hosts':
+    ensure => file,
+    owner  => 'jenkins',
+    group  => 'jenkins',
+    mode   => '0644',
+    source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/known_hosts',
+  }
+  file {'/var/lib/jenkins/.ssh/id_rsa.pub':
+    ensure  => file,
+    owner   => 'jenkins',
+    group   => 'jenkins',
+    mode    => '0644',
+    content => $sshpublickey,
   }
 
   # Set the jenkins URL and admin email address.
@@ -107,7 +138,7 @@ instance.save()' | ${clitool} -auth admin:3d8hk9s groovy =",
     require   => [Package[$clitool],Class['jenkins']],
   }
 
-  Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> File['jenkins.model.JenkinsLocationConfiguration.xml'] -> Package['jenkins-cli'] -> File[$helper_groovy] -> Exec['mailer'] -> Exec['create-jenkins-user-admin'] -> Exec["jenkins-security-${security_model}"]
+  Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> File[$sshdir] -> File['jenkins.model.JenkinsLocationConfiguration.xml'] -> Package['jenkins-cli'] -> File[$helper_groovy] -> Exec['mailer'] -> Exec['create-jenkins-user-admin'] -> Exec["jenkins-security-${security_model}"]
 
   realize Package['git']  #defined in packages.pp, installs git
 
@@ -126,12 +157,19 @@ instance.save()' | ${clitool} -auth admin:3d8hk9s groovy =",
     require   => Package[$clitool],
   }
 
-  # We need this plugin for libraries used in PipeLineAsCode. 
+  # We need this plugin for libraries used in PipeLineAsCode. After the plugin is installed we add a config file for it.
   exec { 'workflow-cps-global-lib':
     command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin workflow-cps-global-lib -restart",
     tries     => 12,
     try_sleep => 30,
-    require   => File[$global_libraries_file],
+  }
+  file { '/var/lib/jenkins/org.jenkinsci.plugins.workflow.libs.GlobalLibraries.xml':
+    ensure  => file,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    source  => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/org.jenkinsci.plugins.workflow.libs.GlobalLibraries.xml',
+    require => Exec['workflow-cps-global-lib'],
   }
 
   # We need this to connect to bitbucket. The cli will detect if the plugin is already present and do nothing if it is.
@@ -158,23 +196,15 @@ instance.save()' | ${clitool} -auth admin:3d8hk9s groovy =",
     require   => Package[$clitool],
   }
 
-  # This plugin allows us more granular control over user's access right.
-  #exec { 'matrix-auth':
-  #  command   => "${clitool} install-plugin matrix-auth -restart",
-  #  tries     => 12,
-  #  try_sleep => 30,
-  #  require   => Package[$clitool],
-  #}
-
-  # This plugin esures users can't add harmfull text. 
-  #exec { 'antisamy-markup-formatter':
-  #  command   => "${clitool} install-plugin antisamy-markup-formatter -restart",
-  #  tries     => 10,
-  #  try_sleep => 30,
-  #  require   => Package[$clitool],
-  #}
-
-  # We use the import-credentials-as-xml because we can load many credentials fromm one xml file, unlike create-credentials-by-xml . 
+  # We use the import-credentials-as-xml because we can load many credentials fromm one xml file, unlike create-credentials-by-xml.
+  $credentials_file = '/usr/share/jenkins/credentials.xml'
+  file{'/usr/share/jenkins/credentials.xml':
+    ensure => file,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0644',
+    source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/credentials.xml',
+  }
   exec { 'import-credentials':
     command   => "${clitool} -auth ${adminuser}:${adminpassword} import-credentials-as-xml system::system::jenkins < ${credentials_file}",
     tries     => 10,
@@ -182,7 +212,9 @@ instance.save()' | ${clitool} -auth admin:3d8hk9s groovy =",
     require   => Package[$clitool],
   }
 
-  Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket']-> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials'] -> Exec['blueocean'] #-> Exec['matrix-auth'] -> Exec['antisamy-markup-formatter']                                                                               
+  Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket']-> Exec['workflow-aggregator'] -> File['/usr/share/jenkins/credentials.xml'] -> Exec['import-credentials'] -> Exec['blueocean']
+
+
 
   # ----------- Install the Apache server and vhosts for HTTP and HTTPS -----------
   class{ 'apache':
