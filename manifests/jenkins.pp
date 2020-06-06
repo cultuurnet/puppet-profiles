@@ -55,14 +55,14 @@ class profiles::jenkins (
     owner  => 'jenkins',
     group  => 'jenkins',
     mode   => '0400',
-    source => 'puppet:///modules/jenkins/id_rsa',
+    source => 'puppet:///private/id_rsa',
   }
   file {'/var/lib/jenkins/.ssh/known_hosts':
     ensure => file,
     owner  => 'jenkins',
     group  => 'jenkins',
     mode   => '0644',
-    source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/known_hosts',
+    source => 'puppet:///private/known_hosts',
   }
   file {'/var/lib/jenkins/.ssh/id_rsa.pub':
     ensure  => file,
@@ -168,7 +168,7 @@ instance.save()' | ${clitool} -auth admin:3d8hk9s groovy =",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    source  => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/org.jenkinsci.plugins.workflow.libs.GlobalLibraries.xml',
+    source  => 'puppet:///private/org.jenkinsci.plugins.workflow.libs.GlobalLibraries.xml',
     require => Exec['workflow-cps-global-lib'],
   }
 
@@ -198,12 +198,12 @@ instance.save()' | ${clitool} -auth admin:3d8hk9s groovy =",
 
   # We use the import-credentials-as-xml because we can load many credentials fromm one xml file, unlike create-credentials-by-xml.
   $credentials_file = '/usr/share/jenkins/credentials.xml'
-  file{'/usr/share/jenkins/credentials.xml':
+  file{$credentials_file:
     ensure => file,
     owner  => 'root',
     group  => 'root',
     mode   => '0644',
-    source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/credentials.xml',
+    source => 'puppet:///private/credentials.xml',
   }
   exec { 'import-credentials':
     command   => "${clitool} -auth ${adminuser}:${adminpassword} import-credentials-as-xml system::system::jenkins < ${credentials_file}",
@@ -212,7 +212,7 @@ instance.save()' | ${clitool} -auth admin:3d8hk9s groovy =",
     require   => Package[$clitool],
   }
 
-  Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket']-> Exec['workflow-aggregator'] -> File['/usr/share/jenkins/credentials.xml'] -> Exec['import-credentials'] -> Exec['blueocean']
+  Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket']-> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials'] -> Exec['blueocean']
 
 
 
