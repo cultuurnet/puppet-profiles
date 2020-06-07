@@ -105,7 +105,7 @@ class profiles::jenkins (
     owner  => 'jenkins',
     group  => 'jenkins',
     mode   => '0644',
-    source => 'puppet:///modules/jenkins/files/puppet_helper.groovy',
+    source => 'puppet:///modules/jenkins/puppet_helper.groovy',
     #source => '/vagrant/puppet/modules/jenkins/files/puppet_helper.groovy',
   }
 
