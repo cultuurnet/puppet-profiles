@@ -1,10 +1,10 @@
 ## This profile installs everything needed to get Jenkins up and running with all jobs and plugins it needs.
 class profiles::jenkins (
   String $adminpassword,
+  $sslcert,
+  $sslkey,
+  $sshpublickey,
   $sslchain = '',
-  $sslcert = '',
-  $sslkey = '',
-  $sshpublickey = '',
 ) {
   contain ::profiles
   contain ::profiles::java8
