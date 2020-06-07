@@ -54,14 +54,16 @@ class profiles::jenkins (
     owner  => 'jenkins',
     group  => 'jenkins',
     mode   => '0400',
-    source => 'puppet:///private/id_rsa',
+    #source => 'puppet:///private/id_rsa',
+    source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/id_rsa',
   }
   file {"${sshdir}/known_hosts":
     ensure => file,
     owner  => 'jenkins',
     group  => 'jenkins',
     mode   => '0644',
-    source => 'puppet:///private/known_hosts',
+    #source => 'puppet:///private/known_hosts',
+    source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/known_hosts',
   }
   file {"${sshdir}/id_rsa.pub":
     ensure  => file,
@@ -99,10 +101,11 @@ class profiles::jenkins (
   # ----------- Setup security ----------------------------------------------------
   #Make sure the groovy script from the jenkins puppet module is available
   file { $helper_groovy:
-    source => 'puppet:///modules/jenkins/puppet_helper.groovy',
     owner  => 'jenkins',
     group  => 'jenkins',
     mode   => '0444',
+    #source => 'puppet:///modules/jenkins/puppet_helper.groovy',
+    source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/puppet_helper.groovy',
   }
 
   #We need this plugin to create our first user
@@ -167,7 +170,8 @@ instance.save()' | ${clitool} -auth admin:3d8hk9s groovy =",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    source  => 'puppet:///private/org.jenkinsci.plugins.workflow.libs.GlobalLibraries.xml',
+    #source  => 'puppet:///private/org.jenkinsci.plugins.workflow.libs.GlobalLibraries.xml',
+    source  => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/org.jenkinsci.plugins.workflow.libs.GlobalLibraries.xml',
     require => Exec['workflow-cps-global-lib'],
   }
 
@@ -202,7 +206,8 @@ instance.save()' | ${clitool} -auth admin:3d8hk9s groovy =",
     owner  => 'root',
     group  => 'root',
     mode   => '0644',
-    source => 'puppet:///private/credentials.xml',
+    #source => 'puppet:///private/credentials.xml',
+    source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/credentials.xml',
   }
   exec { 'import-credentials':
     command   => "${clitool} -auth ${adminuser}:${adminpassword} import-credentials-as-xml system::system::jenkins < ${credentials_file}",
