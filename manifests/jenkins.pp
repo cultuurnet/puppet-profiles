@@ -101,9 +101,10 @@ class profiles::jenkins (
   # ----------- Setup security ----------------------------------------------------
   #Make sure the groovy script from the jenkins puppet module is available
   file { $helper_groovy:
+    ensure => file,
     owner  => 'jenkins',
     group  => 'jenkins',
-    mode   => '0444',
+    mode   => '0644',
     source => 'puppet:///modules/jenkins/files/puppet_helper.groovy',
     #source => '/vagrant/puppet/modules/jenkins/files/puppet_helper.groovy',
   }
