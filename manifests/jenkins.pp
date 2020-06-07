@@ -234,7 +234,7 @@ instance.save()' | ${clitool} -auth admin:3d8hk9s groovy =",
     proxy_pass          =>
     {
       path =>  '/',
-      url  => "http://localhost:${jenkins_port}/"
+      url  => "https://${$apache_server}/"
     }
   }
 
