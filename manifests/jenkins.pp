@@ -104,8 +104,8 @@ class profiles::jenkins (
     owner  => 'jenkins',
     group  => 'jenkins',
     mode   => '0444',
-    #source => 'puppet:///modules/jenkins/puppet_helper.groovy',
-    source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/puppet_helper.groovy',
+    #source => 'puppet:///modules/jenkins/files/puppet_helper.groovy',
+    source => '/vagrant/puppet/modules/jenkins/files/puppet_helper.groovy',
   }
 
   #We need this plugin to create our first user
