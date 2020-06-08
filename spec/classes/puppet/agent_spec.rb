@@ -37,8 +37,18 @@ describe 'profiles::puppet::agent' do
           )
         }
 
+        it { is_expected.to contain_ini_setting('agent preferred_serialization_format').with(
+          'ensure'  => 'present',
+          'path'    => '/etc/puppetlabs/puppet/puppet.conf',
+          'section' => 'agent',
+          'setting' => 'preferred_serialization_format',
+          'value'   => 'pson',
+          )
+        }
+
         it { is_expected.to contain_ini_setting('agent certificate_revocation').that_notifies('Service[puppet]') }
         it { is_expected.to contain_ini_setting('agent usecacheonfailure').that_notifies('Service[puppet]') }
+        it { is_expected.to contain_ini_setting('agent preferred_serialization_format').that_notifies('Service[puppet]') }
       end
     end
   end
