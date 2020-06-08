@@ -76,7 +76,7 @@ class profiles::aptly (
   #Install the gpg key for the aptly user to sign the published packages.
   exec { 'import-gpg-key':
     path    => '/home/aptly',
-    command => 'gpg --import private.key',
+    command => '/usr/bin/gpg --import private.key',
     require => File[$gpgkey],
   }
 }
