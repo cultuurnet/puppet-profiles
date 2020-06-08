@@ -226,35 +226,40 @@ instance.save()' | ${clitool} -auth admin:3d8hk9s groovy =",
     default_vhost => false,
   }
 
-  apache::vhost { 'apt-private_80':
-    docroot             => '/var/www/html',
-    manage_docroot      => false,
-    port                => '80',
-    servername          => $apache_server,
-    proxy_preserve_host => true,
-    proxy_pass          =>
-    {
-      path =>  '/',
-      url  => "https://${$apache_server}/"
-    }
+  apache::vhost { "${apache_server}_80":
+    docroot         => '/var/www/html',
+    manage_docroot  => false,
+    port            => '80',
+    servername      => $apache_server,
+    redirect_source => '/',
+    redirect_dest   => "https://${apache_server}/",
+    redirect_status => 'permanent',
   }
 
-  apache::vhost { 'apt-private_443':
-    docroot             => '/var/www/html',
-    manage_docroot      => false,
-    proxy_preserve_host => true,
-    port                => '443',
-    servername          => $apache_server,
-    ssl                 => true,
-    ssl_cert            => $sslcert,
-    ssl_chain           => $sslchain,
-    ssl_key             => $sslkey,
-    proxy_pass          =>
+  apache::vhost { "${apache_server}_443":
+    docroot               => '/var/www/html',
+    manage_docroot        => false,
+    proxy_preserve_host   => true,
+    allow_encoded_slashes => 'nodecode',
+    port                  => '443',
+    servername            => $apache_server,
+    ssl                   => true,
+    ssl_cert              => $sslcert,
+    ssl_chain             => $sslchain,
+    ssl_key               => $sslkey,
+
+    setenv                => ['force-proxy-request-1.0 1','proxy-nokeepalive 1'],
+    request_headers       => ['set X-Forwarded-Proto "https"','set X-Forwarded-Port "443"'],
+
+    proxy_pass            =>
     {
-      path =>  '/',
-      url  => "http://localhost:${jenkins_port}/"
+      path         =>  '/',
+      url          => "http://localhost:${jenkins_port}/",
+      keywords     => ['nocanon'],
+      reverse_urls => ["http://localhost:${jenkins_port}/","http://${apache_server}/"],
     },
-    require             => [
+
+    require               => [
       File[$sslchain],
       File[$sslcert],
       File[$sslkey],
