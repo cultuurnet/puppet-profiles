@@ -114,11 +114,12 @@ class profiles::jenkins (
     command   => "${clitool} install-plugin mailer -restart",
     tries     => 12,
     try_sleep => 30,
+    unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins mailer", #Check if plugin is already installed
   }
 
   # Create first user
   exec { 'create-jenkins-user-admin':
-    command   => "cat ${helper_groovy} | jenkins-cli groovy = create_or_update_user ${adminuser} \"jenkins@publiq.be\" ${adminpassword} \"${adminuser}\" \"\"",
+    command   => "cat ${helper_groovy} | ${clitool} groovy = create_or_update_user ${adminuser} \"jenkins@publiq.be\" ${adminpassword} \"${adminuser}\" \"\"",
     tries     => 10,
     try_sleep => 30,
     require   => [Package[$clitool],Class['jenkins']],
@@ -134,7 +135,7 @@ strategy.setAllowAnonymousRead(false)
 instance.setAuthorizationStrategy(strategy)
 def realm = new HudsonPrivateSecurityRealm(false)
 instance.setSecurityRealm(realm)
-instance.save()' | ${clitool} -auth admin:3d8hk9s groovy =",
+instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
     unless    => "cat ${helper_groovy} | ${clitool} groovy = get_authorization_strategyname | grep -q -e '^${security_model}\$'",
     tries     => 10,
     try_sleep => 30,
@@ -158,6 +159,7 @@ instance.save()' | ${clitool} -auth admin:3d8hk9s groovy =",
     tries     => 12,
     try_sleep => 30,
     require   => Package[$clitool],
+    unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins mailer", #Check if plugin is already installed
   }
 
   # We need this plugin for libraries used in PipeLineAsCode. After the plugin is installed we add a config file for it.
@@ -165,6 +167,7 @@ instance.save()' | ${clitool} -auth admin:3d8hk9s groovy =",
     command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin workflow-cps-global-lib -restart",
     tries     => 12,
     try_sleep => 30,
+    unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins mailer", #Check if plugin is already installed
   }
   file { '/var/lib/jenkins/org.jenkinsci.plugins.workflow.libs.GlobalLibraries.xml':
     ensure  => file,
@@ -182,6 +185,7 @@ instance.save()' | ${clitool} -auth admin:3d8hk9s groovy =",
     tries     => 12,
     try_sleep => 30,
     require   => Package[$clitool],
+    unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins mailer", #Check if plugin is already installed
   }
 
   # This plugin is adds libraries need for PipeLineAsCode. The cli will detect if the plugin is already present and do nothing if it is.
@@ -190,6 +194,7 @@ instance.save()' | ${clitool} -auth admin:3d8hk9s groovy =",
     tries     => 12,
     try_sleep => 30,
     require   => Package[$clitool],
+    unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins mailer", #Check if plugin is already installed
   }
 
   # This plugin makes the pipeline view more user friendly and easier to debug.
@@ -198,6 +203,7 @@ instance.save()' | ${clitool} -auth admin:3d8hk9s groovy =",
     tries     => 12,
     try_sleep => 30,
     require   => Package[$clitool],
+    unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins mailer", #Check if plugin is already installed
   }
 
   # We use the import-credentials-as-xml because we can load many credentials fromm one xml file, unlike create-credentials-by-xml.
