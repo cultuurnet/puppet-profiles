@@ -123,7 +123,7 @@ class profiles::jenkins (
     tries     => 10,
     try_sleep => 30,
     require   => [Package[$clitool],Class['jenkins']],
-    unless    => "cat ${helper_groovy} | ${clitool} -auth ${adminuser}:${adminpassword} user_info ${adminuser}", #Check if the admin user exists
+    unless    => "cat ${helper_groovy} | ${clitool} -auth ${adminuser}:${adminpassword} groovy = user_info ${adminuser}", #Check if the admin user exists
   }
 
   # Set security/strategy policy (jenkins database + no sign up, logged-in uses can do anything + no anonymous read )
