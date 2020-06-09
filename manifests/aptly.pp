@@ -77,6 +77,8 @@ class profiles::aptly (
   exec { 'import-gpg-key':
     path    => '/home/aptly',
     command => "/usr/bin/gpg --import ${gpgkey}",
+    user    => 'aptly',
+    group   => 'aptly',
     require => File[$gpgkey],
   }
 }
