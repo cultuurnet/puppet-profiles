@@ -7,8 +7,16 @@ class profiles::base {
   include ::profiles::repositories
   include ::profiles::users
 
+  Shellvar {
+    target  => '/etc/environment',
+    require => [ Package['augeas-tools'], Package['ruby-augeas']]
+  }
+
   realize Apt::Source['cultuurnet-tools']
   realize Profiles::Apt::Update['cultuurnet-tools']
+
+  realize Package['augeas-tools']
+  realize Package['ruby-augeas']
 
   if $facts['ec2_metadata'] {
     $admin_user = 'ubuntu'
@@ -47,14 +55,12 @@ class profiles::base {
   shellvar { 'system PATH':
     ensure   => 'present',
     variable => 'PATH',
-    target   => '/etc/environment',
     value    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/puppetlabs/bin'
   }
 
   shellvar { 'system RUBYLIB':
     ensure   => 'present',
     variable => 'RUBYLIB',
-    target   => '/etc/environment',
     value    => '/opt/puppetlabs/puppet/lib/ruby/vendor_ruby'
   }
 }

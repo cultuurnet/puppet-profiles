@@ -4,12 +4,17 @@ class profiles::ssh(
 
   contain ::profiles
 
+  include ::profiles::packages
   include ::profiles::firewall
   include ::profiles::ssh_authorized_keys
 
   Sshd_config {
-    notify => Service['ssh']
+    require => [ Package['augeas-tools'], Package['ruby-augeas']],
+    notify  => Service['ssh']
   }
+
+  realize Package['augeas-tools']
+  realize Package['ruby-augeas']
 
   sshd_config { 'PermitRootLogin':
     ensure => 'present',

@@ -12,12 +12,24 @@ describe 'profiles::ssh' do
 
         it { is_expected.to compile.with_all_deps }
 
+        it { is_expected.to contain_package('augeas-tools').with(
+          'ensure' => 'present'
+          )
+        }
+
+        it { is_expected.to contain_package('ruby-augeas').with(
+          'ensure' => 'present'
+          )
+        }
+
         it { is_expected.to contain_sshd_config('PermitRootLogin').with(
           'ensure' => 'present',
           'value'  => 'no'
           )
         }
 
+        it { is_expected.to contain_sshd_config('PermitRootLogin').that_requires('Package[augeas-tools]') }
+        it { is_expected.to contain_sshd_config('PermitRootLogin').that_requires('Package[ruby-augeas]') }
         it { is_expected.to contain_sshd_config('PermitRootLogin').that_notifies('Service[ssh]') }
 
         it { is_expected.to contain_service('ssh').with(

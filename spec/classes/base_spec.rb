@@ -16,6 +16,9 @@ describe 'profiles::base' do
 
       it { is_expected.to contain_apt__source('cultuurnet-tools') }
 
+      it { is_expected.to contain_package('augeas-tools') }
+      it { is_expected.to contain_package('ruby-augeas') }
+
       it { is_expected.to contain_class('lvm').with(
         'manage_pkg' => true
         )
@@ -34,7 +37,7 @@ describe 'profiles::base' do
         'ensure'   => 'present',
         'variable' => 'PATH',
         'target'   => '/etc/environment',
-        'value'    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/puppetlabs/bin'
+        'value'    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/puppetlabs/bin',
         )
       }
 
@@ -45,6 +48,12 @@ describe 'profiles::base' do
         'value'    => '/opt/puppetlabs/puppet/lib/ruby/vendor_ruby'
         )
       }
+
+      it { is_expected.to contain_shellvar('system PATH').that_requires('Package[augeas-tools]') }
+      it { is_expected.to contain_shellvar('system PATH').that_requires('Package[ruby-augeas]') }
+
+      it { is_expected.to contain_shellvar('system RUBYLIB').that_requires('Package[augeas-tools]') }
+      it { is_expected.to contain_shellvar('system RUBYLIB').that_requires('Package[ruby-augeas]') }
 
       context "on AWS EC2" do
         let(:facts) do
