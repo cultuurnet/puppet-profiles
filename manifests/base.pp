@@ -3,20 +3,15 @@ class profiles::base {
   contain ::profiles
 
   include ::profiles::groups
-  include ::profiles::packages
   include ::profiles::repositories
   include ::profiles::users
 
   Shellvar {
-    target  => '/etc/environment',
-    require => [ Package['augeas-tools'], Package['ruby-augeas']]
+    target  => '/etc/environment'
   }
 
   realize Apt::Source['cultuurnet-tools']
   realize Profiles::Apt::Update['cultuurnet-tools']
-
-  realize Package['augeas-tools']
-  realize Package['ruby-augeas']
 
   if $facts['ec2_metadata'] {
     $admin_user = 'ubuntu'

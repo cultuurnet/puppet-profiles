@@ -2,14 +2,10 @@ class profiles::java8 {
 
   contain ::profiles
 
-  include ::profiles::packages
   include ::profiles::repositories
 
   realize Apt::Source['cultuurnet-tools']
   realize Profiles::Apt::Update['cultuurnet-tools']
-
-  realize Package['augeas-tools']
-  realize Package['ruby-augeas']
 
   package { 'oracle-jdk8-archive':
     ensure  => '8u151',
@@ -32,7 +28,6 @@ class profiles::java8 {
   shellvar { 'JAVA_HOME':
     ensure  => 'present',
     target  => '/etc/environment',
-    value   => '/usr/lib/jvm/java-8-oracle',
-    require => [ Package['augeas-tools'], Package['ruby-augeas']]
+    value   => '/usr/lib/jvm/java-8-oracle'
   }
 }

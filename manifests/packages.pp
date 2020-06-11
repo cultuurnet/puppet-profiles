@@ -47,12 +47,4 @@ class profiles::packages {
     ensure  => 'present',
     require => Profiles::Apt::Update['cultuurnet-tools']
   }
-
-  @package { 'augeas-tools':
-    ensure => 'present'
-  }
-
-  @package { 'ruby-augeas':
-    ensure => 'present'
-  }
 }

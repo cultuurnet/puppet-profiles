@@ -80,16 +80,6 @@ describe 'profiles::packages' do
         }
 
         it { is_expected.to contain_package('mysql-connector-java').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
-
-        it { is_expected.to contain_package('augeas-tools').with(
-          'ensure' => 'present'
-          )
-        }
-
-        it { is_expected.to contain_package('ruby-augeas').with(
-          'ensure' => 'present'
-          )
-        }
       end
     end
   end

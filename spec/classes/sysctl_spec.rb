@@ -7,16 +7,6 @@ describe 'profiles::sysctl' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      it { is_expected.to contain_package('augeas-tools').with(
-        'ensure' => 'present'
-        )
-      }
-
-      it { is_expected.to contain_package('ruby-augeas').with(
-        'ensure' => 'present'
-        )
-      }
-
       context "without parameters" do
         let(:params) { {} }
 
@@ -47,12 +37,6 @@ describe 'profiles::sysctl' do
           'persist' => false
           )
         }
-
-        it { is_expected.to contain_sysctl('vm.overcommit_memory').that_requires('Package[augeas-tools]') }
-        it { is_expected.to contain_sysctl('vm.overcommit_memory').that_requires('Package[ruby-augeas]') }
-
-        it { is_expected.to contain_sysctl('vm.max_map_count').that_requires('Package[augeas-tools]') }
-        it { is_expected.to contain_sysctl('vm.max_map_count').that_requires('Package[ruby-augeas]') }
       end
     end
   end

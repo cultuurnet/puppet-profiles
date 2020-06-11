@@ -12,9 +12,6 @@ describe 'profiles::java8' do
       it { is_expected.to contain_apt__source('cultuurnet-tools') }
       it { is_expected.to contain_profiles__apt__update('cultuurnet-tools') }
 
-      it { is_expected.to contain_package('augeas-tools') }
-      it { is_expected.to contain_package('ruby-augeas') }
-
       it { is_expected.to contain_package('oracle-jdk8-archive').with(
         'ensure' => '8u151'
         )
@@ -43,9 +40,6 @@ describe 'profiles::java8' do
         'target' => '/etc/environment',
         'value'  => '/usr/lib/jvm/java-8-oracle'
       ) }
-
-      it { is_expected.to contain_shellvar('JAVA_HOME').that_requires('Package[augeas-tools]') }
-      it { is_expected.to contain_shellvar('JAVA_HOME').that_requires('Package[ruby-augeas]') }
     end
   end
 end
