@@ -5,6 +5,7 @@ class profiles::base {
   include ::profiles::groups
   include ::profiles::repositories
   include ::profiles::users
+  include ::profiles::packages
 
   Shellvar {
     target  => '/etc/environment'
