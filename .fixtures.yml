@@ -63,7 +63,7 @@ fixtures:
       ref: 'cdcb352'
     borgbackup:
       repo: 'https://github.com/cultuurnet/puppet-borgbackup.git'
-      ref: '0.5.0'
+      ref: '0.6.1'
     glassfish:
       repo: 'https://github.com/willaerk/fatmcgav-glassfish.git'
       ref: 'be6c31f'
