@@ -8,7 +8,7 @@ class profiles::ssh(
   include ::profiles::ssh_authorized_keys
 
   Sshd_config {
-    notify => Service['ssh']
+    notify  => Service['ssh']
   }
 
   sshd_config { 'PermitRootLogin':

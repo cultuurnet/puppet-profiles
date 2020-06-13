@@ -34,7 +34,7 @@ describe 'profiles::base' do
         'ensure'   => 'present',
         'variable' => 'PATH',
         'target'   => '/etc/environment',
-        'value'    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/puppetlabs/bin'
+        'value'    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/puppetlabs/bin',
         )
       }
 
@@ -56,6 +56,10 @@ describe 'profiles::base' do
         it { is_expected.to contain_user('ubuntu') }
         it { is_expected.to_not contain_group('vagrant') }
         it { is_expected.to_not contain_user('vagrant') }
+        it { is_expected.to contain_class('profiles::sudo').with(
+          'admin_user' => 'ubuntu'
+          )
+        }
       end
 
       context "not on AWS EC2" do
@@ -68,6 +72,10 @@ describe 'profiles::base' do
         it { is_expected.to_not contain_user('ubuntu') }
         it { is_expected.to contain_group('vagrant') }
         it { is_expected.to contain_user('vagrant') }
+        it { is_expected.to contain_class('profiles::sudo').with(
+          'admin_user' => 'vagrant'
+          )
+        }
       end
     end
   end

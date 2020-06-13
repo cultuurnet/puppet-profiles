@@ -26,8 +26,8 @@ class profiles::java8 {
   }
 
   shellvar { 'JAVA_HOME':
-    ensure => 'present',
-    target => '/etc/environment',
-    value  => '/usr/lib/jvm/java-8-oracle'
+    ensure  => 'present',
+    target  => '/etc/environment',
+    value   => '/usr/lib/jvm/java-8-oracle'
   }
 }
