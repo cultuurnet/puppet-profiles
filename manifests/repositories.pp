@@ -16,6 +16,11 @@ class profiles::repositories {
     }
   }
 
+  @profiles::apt::update { 'cultuurnet-tools':
+    require => Apt::Source['cultuurnet-tools']
+  }
+
+
   @apt::source { 'publiq-infrastructure':
     location => "http://apt.publiq.be/infrastructure-${environment}",
     release  => $facts['lsbdistcodename'],
@@ -30,9 +35,10 @@ class profiles::repositories {
     }
   }
 
-  @profiles::apt::update { 'cultuurnet-tools':
-    require => Apt::Source['cultuurnet-tools']
+  @profiles::apt::update { 'publiq-infrastructure':
+    require => Apt::Source['publiq-infrastructure']
   }
+
 
   @apt::source { 'rabbitmq':
     location => "http://apt.uitdatabank.be/rabbitmq-${environment}",
