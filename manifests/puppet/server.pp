@@ -6,7 +6,7 @@ class profiles::puppet::server {
   realize Profiles::Apt::Update['publiq-infrastructure']
 
   package{'publiq-infrastructure':
-    version => 'latest',
+    ensure  => latest,
     require => Profiles::Apt::Update['publiq-infrastructure'],
   }
 
