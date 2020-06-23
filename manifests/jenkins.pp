@@ -233,7 +233,7 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
     require   => Package[$clitool],
   }
 
-  Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket']-> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials'] -> Exec['blueocean']
+  Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket']-> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials'] -> Exec['ssh-steps'] -> Exec['blueocean']
 
 
 
