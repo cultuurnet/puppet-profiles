@@ -198,6 +198,15 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
     unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins workflow-aggregator", #Check if plugin is already installed
   }
 
+  # This plugin is adds SSH functionality need for PipeLineAsCode. The cli will detect if the plugin is already present and do nothing if it is.
+  exec { 'ssh-steps':
+    command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin ssh-steps -restart",
+    tries     => 12,
+    try_sleep => 30,
+    require   => Package[$clitool],
+    unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins ssh-steps", #Check if plugin is already installed
+  }
+
   # This plugin makes the pipeline view more user friendly and easier to debug.
   exec { 'blueocean':
     command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin blueocean -restart",
