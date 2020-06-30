@@ -29,7 +29,7 @@ describe 'profiles::php' do
       end
 
       context 'with with_composer => true' do
-        let(:params) { { 'with_composer' => true} }
+        let(:params) { { 'with_composer' => true } }
 
         include_examples 'php'
 

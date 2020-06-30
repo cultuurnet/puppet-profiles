@@ -4,10 +4,10 @@ class profiles::apache::mod::php {
 
   include ::profiles::repositories
 
-  realize Apt::Source['cultuurnet-tools']
-  realize Profiles::Apt::Update['cultuurnet-tools']
+  realize Apt::Source['php']
+  realize Profiles::Apt::Update['php']
 
   contain ::apache::mod::php
 
-  Profiles::Apt::Update['cultuurnet-tools'] -> Class['apache::mod::php']
+  Profiles::Apt::Update['php'] -> Class['apache::mod::php']
 }
