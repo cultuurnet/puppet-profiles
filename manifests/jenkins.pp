@@ -148,7 +148,6 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
   Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> File[$sshdir] -> File['jenkins.model.JenkinsLocationConfiguration.xml'] -> Package['jenkins-cli'] -> File[$helper_groovy] -> Exec['mailer'] -> Exec['create-jenkins-user-admin'] -> Exec["jenkins-security-${security_model}"]
 
   realize Package['git']  #defined in packages.pp, installs git
-  profiles::nodejs
 
   # ----------- Install Jenkins Plugins and Credentials-----------
   # The puppet-jenkins module has functionality for adding plugins but you must install the dependencies manually(not done automatically). 
