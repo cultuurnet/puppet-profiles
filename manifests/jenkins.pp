@@ -8,7 +8,9 @@ class profiles::jenkins (
 ) {
   contain ::profiles
   contain ::profiles::java8
+  include profiles::nodejs
   include ruby
+
   $jenkins_port = 8080
   $apache_server = 'jenkins.publiq.be'
   $adminuser = 'admin'
