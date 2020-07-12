@@ -26,18 +26,6 @@ class profiles::repositories {
     require => Apt::Source['cultuurnet-tools']
   }
 
-
-  @apt::source { 'publiq-infrastructure':
-    location => "http://apt.publiq.be/infrastructure-${environment}",
-    release  => $facts['lsbdistcodename'],
-    repos    => 'main'
-  }
-
-  @profiles::apt::update { 'publiq-infrastructure':
-    require => Apt::Source['publiq-infrastructure']
-  }
-
-
   @apt::source { 'rabbitmq':
     location => "http://apt.uitdatabank.be/rabbitmq-${environment}",
     release  => 'testing',
