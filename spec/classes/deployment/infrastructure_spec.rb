@@ -9,6 +9,8 @@ describe 'profiles::deployment::infrastructure' do
 
       it { is_expected.to compile.with_all_deps }
 
+      it { is_expected.to contain_class('profiles::apt_keys') }
+
       it { is_expected.to contain_apt__source('publiq-infrastructure').with(
         'location' => 'http://apt.publiq.be/infrastructure-production',
         'ensure'   => 'present',
@@ -19,8 +21,8 @@ describe 'profiles::deployment::infrastructure' do
         }
       ) }
 
+      it { is_expected.to contain_apt__source('publiq-infrastructure').that_requires('Class[profiles::apt_keys]') }
       it { is_expected.to contain_profiles__apt__update('publiq-infrastructure').that_requires('Apt::Source[publiq-infrastructure]') }
-      it { is_expected.to contain_apt__source('publiq-infrastructure').that_requires('Class[profiles::repositories]') }
 
       it { is_expected.to contain_package('publiq-infrastructure').with(
         'ensure' => 'latest'

@@ -2,13 +2,13 @@ class profiles::deployment::infrastructure {
 
   contain ::profiles
 
-  include profiles::repositories
+  include ::profiles::apt_keys
 
   apt::source { 'publiq-infrastructure':
     location => 'http://apt.publiq.be/infrastructure-production',
     release  => $facts['lsbdistcodename'],
     repos    => 'main',
-    require  => Class['profiles::repositories'],
+    require  => Class['profiles::apt_keys'],
     include  => {
       'deb' => true,
       'src' => false

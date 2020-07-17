@@ -2,18 +2,14 @@ class profiles::repositories {
 
   # TODO: repositories split for trusty and xenial
 
+  include ::profiles::apt_keys
+
   Apt::Source {
-    require => Apt::Key['Infra CultuurNet'],
+    require => Class['profiles::apt_keys'],
     include => {
       'deb' => true,
       'src' => false
     }
-  }
-
-  apt::key { 'Infra CultuurNet':
-    id     => '2380EA3E50D3776DFC1B03359F4935C80DC9EA95',
-    server => 'keyserver.ubuntu.com',
-    source => 'http://apt.uitdatabank.be/gpgkey/cultuurnet.gpg.key'
   }
 
   @apt::source { 'cultuurnet-tools':
