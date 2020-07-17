@@ -11,7 +11,7 @@ class profiles::deployment::curator::articlelinker (
 
   $basedir = '/var/www/curator-articlelinker'
 
-  contain profiles
+  contain ::profiles
 
   include ::profiles::deployment::curator
 

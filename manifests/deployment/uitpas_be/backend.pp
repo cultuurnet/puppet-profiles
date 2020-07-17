@@ -6,7 +6,7 @@ class profiles::deployment::uitpas_be::backend (
 
   $basedir = '/var/www/uitpasbe-backend'
 
-  contain profiles
+  contain ::profiles
 
   include ::profiles::deployment::uitpas_be
 

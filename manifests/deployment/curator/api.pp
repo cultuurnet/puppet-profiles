@@ -6,7 +6,7 @@ class profiles::deployment::curator::api (
 
   $basedir = '/var/www/curator-api'
 
-  contain profiles
+  contain ::profiles
 
   include ::profiles::deployment::curator
 
