@@ -7,7 +7,8 @@ class profiles::deployment::curator::api (
   $basedir = '/var/www/curator-api'
 
   contain profiles
-  contain profiles::deployment::curator
+
+  include ::profiles::deployment::curator
 
   realize Apt::Source['publiq-curator']
   realize Profiles::Apt::Update['publiq-curator']

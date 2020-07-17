@@ -11,7 +11,8 @@ class profiles::deployment::uitpas_be::frontend (
   $basedir = '/var/www/uitpasbe-frontend'
 
   contain profiles
-  contain profiles::deployment::uitpas_be
+
+  include ::profiles::deployment::uitpas_be
 
   realize Apt::Source['publiq-uitpasbe']
   realize Profiles::Apt::Update['publiq-uitpasbe']
