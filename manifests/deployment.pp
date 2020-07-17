@@ -1,7 +1,5 @@
 class profiles::deployment {
 
-  contain ::profiles
-
   file { 'update_facts':
     ensure => 'file',
     group  => 'root',
