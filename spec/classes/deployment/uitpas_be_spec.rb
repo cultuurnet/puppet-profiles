@@ -5,12 +5,14 @@ describe 'profiles::deployment::uitpas_be' do
    context "on #{os}" do
       let (:facts) { facts }
 
-      it { is_expected.to compile.with_all_deps }
-
       context "with all virtual resources realized" do
         let(:pre_condition) { 'Apt::Source <| |>; Profiles::Apt::Update <| |>' }
 
         it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to contain_class('profiles::apt_keys') }
+
+        it { is_expected.to contain_apt__source('publiq-uitpasbe').that_requires('Class[profiles::apt_keys]') }
         it { is_expected.to contain_profiles__apt__update('publiq-uitpasbe').that_requires('Apt::Source[publiq-uitpasbe]') }
 
         context "in the testing environment" do

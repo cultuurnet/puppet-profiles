@@ -7,6 +7,8 @@ class profiles::udb3::search (
   contain ::profiles
   contain ::deployment::udb3::search
 
+  include ::profiles::apt_keys
+
   # TODO: parameterize memory settings for instance
   # TODO: move deployment to profiles and rework update_facts stuff
   # TODO: pass parameters from elasticsearch profile here
@@ -21,10 +23,7 @@ class profiles::udb3::search (
     location => "http://apt.uitdatabank.be/search-${environment}",
     release  => 'trusty',
     repos    => 'main',
-    key      => {
-      'id'     => '2380EA3E50D3776DFC1B03359F4935C80DC9EA95',
-      'source' => 'http://apt.uitdatabank.be/gpgkey/cultuurnet.gpg.key'
-    },
+    require  => Class['profiles::apt_keys'],
     include  => {
       'deb' => true,
       'src' => false

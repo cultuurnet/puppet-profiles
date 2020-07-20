@@ -1,13 +1,12 @@
 class profiles::deployment::curator {
 
+  include ::profiles::apt_keys
+
   @apt::source { 'publiq-curator':
     location => "http://apt.uitdatabank.be/curator-${environment}",
     release  => 'trusty',
     repos    => 'main',
-    key      => {
-      'id'     => '2380EA3E50D3776DFC1B03359F4935C80DC9EA95',
-      'source' => 'http://apt.uitdatabank.be/gpgkey/cultuurnet.gpg.key'
-    },
+    require  => Class['profiles::apt_keys'],
     include  => {
       'deb' => true,
       'src' => false

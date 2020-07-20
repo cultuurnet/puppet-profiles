@@ -11,8 +11,9 @@ class profiles::deployment::curator::articlelinker (
 
   $basedir = '/var/www/curator-articlelinker'
 
-  contain profiles
-  contain profiles::deployment::curator
+  contain ::profiles
+
+  include ::profiles::deployment::curator
 
   realize Apt::Source['publiq-curator']
   realize Profiles::Apt::Update['publiq-curator']

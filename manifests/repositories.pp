@@ -2,18 +2,14 @@ class profiles::repositories {
 
   # TODO: repositories split for trusty and xenial
 
+  include ::profiles::apt_keys
+
   Apt::Source {
-    require => Apt::Key['Infra CultuurNet'],
+    require => Class['profiles::apt_keys'],
     include => {
       'deb' => true,
       'src' => false
     }
-  }
-
-  apt::key { 'Infra CultuurNet':
-    id     => '2380EA3E50D3776DFC1B03359F4935C80DC9EA95',
-    server => 'keyserver.ubuntu.com',
-    source => 'http://apt.uitdatabank.be/gpgkey/cultuurnet.gpg.key'
   }
 
   @apt::source { 'cultuurnet-tools':
@@ -25,18 +21,6 @@ class profiles::repositories {
   @profiles::apt::update { 'cultuurnet-tools':
     require => Apt::Source['cultuurnet-tools']
   }
-
-
-  @apt::source { 'publiq-infrastructure':
-    location => "http://apt.publiq.be/infrastructure-${environment}",
-    release  => $facts['lsbdistcodename'],
-    repos    => 'main'
-  }
-
-  @profiles::apt::update { 'publiq-infrastructure':
-    require => Apt::Source['publiq-infrastructure']
-  }
-
 
   @apt::source { 'rabbitmq':
     location => "http://apt.uitdatabank.be/rabbitmq-${environment}",
