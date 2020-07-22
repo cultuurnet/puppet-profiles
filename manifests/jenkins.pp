@@ -8,9 +8,7 @@ class profiles::jenkins (
 ) {
   contain ::profiles
   contain ::profiles::java8
-
-  include ::profiles::nodejs
-  include ::ruby
+  include ruby
 
   $jenkins_port = 8080
   $apache_server = 'jenkins.publiq.be'
@@ -42,8 +40,8 @@ class profiles::jenkins (
     install_java => false,
   }
 
-  # This folder will hold all the files needed for a special ssh key. When you run something in a job
-  # like 'librarian-puppet install' it expects there to be an ssh key already on the operating system.
+  # This folder will hold all the files needed for a special ssh key. When you run something in a job 
+  # like 'librarian-puppet install' it expects there to be an ssh key already on the operating system. 
   # It can't see/use the one made in jenkins.
   $sshdir = '/var/lib/jenkins/.ssh'
   file {$sshdir:
@@ -91,9 +89,9 @@ class profiles::jenkins (
 </jenkins.model.JenkinsLocationConfiguration>",
   }
 
-  # We have made our own rake file that installs the cli(jar file) and adds a script for easy use, that is
-  # installed in the system path for easy use. The rake file can be found here:
-  # https://github.com/cultuurnet/tool-builder/tree/master/jenkins-cli
+  # We have made our own rake file that installs the cli(jar file) and adds a script for easy use, that is 
+  # installed in the system path for easy use. The rake file can be found here: 
+  # https://github.com/cultuurnet/tool-builder/tree/master/jenkins-cli 
   $clitool = 'jenkins-cli'
   package{$clitool:
     name     => $clitool,
@@ -151,13 +149,13 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
   realize Package['git']  #defined in packages.pp, installs git
 
   # ----------- Install Jenkins Plugins and Credentials-----------
-  # The puppet-jenkins module has functionality for adding plugins but you must install the dependencies manually(not done automatically).
-  # This was tried but proved to be too much work. For example the delivery-pipeline-plugin has a total of 38 dependencies.
-  # It was decided to use the jenkins cli instead because it auto loads all the dependencies.
-  # We have to use the .jar manually because the name of the file was changed in jenkins itslef but the puppet plugin has not been updated yet,
+  # The puppet-jenkins module has functionality for adding plugins but you must install the dependencies manually(not done automatically). 
+  # This was tried but proved to be too much work. For example the delivery-pipeline-plugin has a total of 38 dependencies. 
+  # It was decided to use the jenkins cli instead because it auto loads all the dependencies. 
+  # We have to use the .jar manually because the name of the file was changed in jenkins itslef but the puppet plugin has not been updated yet,  
   # https://github.com/voxpupuli/puppet-jenkins/pull/945, this means we can not use jenkins::cli or jenkins::credentials and several other classes.
 
-  #Installs the jenkins plugin delivery-pipeline-plugin. The cli will detect if the plugin is already present and do nothing if it is.
+  #Installs the jenkins plugin delivery-pipeline-plugin. The cli will detect if the plugin is already present and do nothing if it is. 
   exec { 'delivery-pipeline-plugin':
     command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin delivery-pipeline-plugin -restart",
     tries     => 12,
