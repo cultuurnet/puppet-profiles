@@ -94,9 +94,9 @@ class profiles::aptly (
   exec { 'import_gpg_secret_key':
     path    => '/home/aptly',
     command => "/usr/bin/gpg --import /home/aptly/private.key",
-    unless  => "test ${gpgkey_fingerprint} = $(gpg --list-secret-keys --with-colons --fingerprint | egrep '^fpr' | cut -d : -f 10)"
+    unless  => "test ${gpgkey_fingerprint} = $(gpg --list-secret-keys --with-colons --fingerprint | egrep '^fpr' | cut -d : -f 10)",
     user    => 'aptly',
     group   => 'aptly',
-    require => File['/home/aptly/private.key'],
+    require => File['/home/aptly/private.key']
   }
 }
