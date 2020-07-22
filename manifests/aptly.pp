@@ -92,8 +92,8 @@ class profiles::aptly (
 
   #Install the gpg key for the aptly user to sign the published packages.
   exec { 'import_gpg_secret_key':
-    path    => '/home/aptly',
-    command => "/usr/bin/gpg --import /home/aptly/private.key",
+    command => 'gpg --import /home/aptly/private.key',
+    path    => [ '/usr/local/bin', '/usr/bin', '/bin' ],
     unless  => "test ${gpgkey_fingerprint} = $(gpg --list-secret-keys --with-colons --fingerprint | egrep '^fpr' | cut -d : -f 10)",
     user    => 'aptly',
     group   => 'aptly',
