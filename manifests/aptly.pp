@@ -5,7 +5,8 @@ class profiles::aptly (
   $sslchain = '',
   $sslcert = '',
   $sslkey = '',
-  $gpgkey = '',
+  $gpgkey_source = '',
+  $gpgkey_fingerprint = ''
 ) {
 
   contain ::profiles
@@ -73,12 +74,29 @@ class profiles::aptly (
     ]
   }
 
+  file { '/home/aptly':
+    ensure => 'directory',
+    owner  => 'aptly',
+    group  => 'aptly',
+    mode   => '0755'
+  }
+
+  file { '/home/aptly/private.key':
+    ensure  => 'file',
+    owner   => 'aptly',
+    group   => 'aptly',
+    mode    => '0644',
+    require => File['/home/aptly'],
+    source  => $gpgkey_source
+  }
+
   #Install the gpg key for the aptly user to sign the published packages.
-  exec { 'import-gpg-key':
+  exec { 'import_gpg_secret_key':
     path    => '/home/aptly',
-    command => "/usr/bin/gpg --import ${gpgkey}",
+    command => "/usr/bin/gpg --import /home/aptly/private.key",
+    unless  => "test ${gpgkey_fingerprint} = $(gpg --list-secret-keys --with-colons --fingerprint | egrep '^fpr' | cut -d : -f 10)"
     user    => 'aptly',
     group   => 'aptly',
-    require => File[$gpgkey],
+    require => File['/home/aptly/private.key'],
   }
 }
