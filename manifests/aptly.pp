@@ -18,11 +18,11 @@ class profiles::aptly (
     install_repo         => true, # Tell aptly to install from a repo
     repo_location        => 'http://repo.aptly.info/', # Where to get the deb file
     repo_keyserver       => 'hkps.pool.sks-keyservers.net', # Where to get the install key
-    repo_key             => 'ED75B5A4483DA07C',
-    api_nolock           => true,
+    repo_key             => '26DA9D8630302E0B86A7A2CBED75B5A4483DA07C',
+    enable_service       => false,
     enable_api           => true,
+    api_nolock           => true,
     port                 => $aptly_api_port,
-
     s3_publish_endpoints =>
     {
       'apt.publiq.be' =>
@@ -35,7 +35,7 @@ class profiles::aptly (
     }
   }
 
-  class{ 'apache':
+  class { 'apache':
     default_vhost => false,
   }
 
