@@ -11,13 +11,13 @@ class profiles::puppet::agent {
   ini_setting { 'agent certificate_revocation':
     section => 'agent',
     setting => 'certificate_revocation',
-    value   => 'false'
+    value   => false
   }
 
   ini_setting { 'agent usecacheonfailure':
     section => 'agent',
     setting => 'usecacheonfailure',
-    value   => 'false'
+    value   => false
   }
 
   ini_setting { 'agent preferred_serialization_format':

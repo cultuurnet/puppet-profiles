@@ -24,7 +24,7 @@ describe 'profiles::puppet::agent' do
           'path'    => '/etc/puppetlabs/puppet/puppet.conf',
           'section' => 'agent',
           'setting' => 'certificate_revocation',
-          'value'   => 'false',
+          'value'   => false,
           )
         }
 
@@ -33,7 +33,7 @@ describe 'profiles::puppet::agent' do
           'path'    => '/etc/puppetlabs/puppet/puppet.conf',
           'section' => 'agent',
           'setting' => 'usecacheonfailure',
-          'value'   => 'false',
+          'value'   => false,
           )
         }
 
