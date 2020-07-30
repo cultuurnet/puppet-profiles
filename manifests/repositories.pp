@@ -42,6 +42,26 @@ class profiles::repositories {
     require => Apt::Source['nodejs_10.x']
   }
 
+  @apt::source { 'nodejs_12.x':
+    location => "http://apt.uitdatabank.be/nodejs_12.x-${environment}",
+    release  => 'trusty',
+    repos    => 'main'
+  }
+
+  @profiles::apt::update { 'nodejs_12.x':
+    require => Apt::Source['nodejs_12.x']
+  }
+
+  @apt::source { 'nodejs_14.x':
+    location => "http://apt.uitdatabank.be/nodejs_14.x-${environment}",
+    release  => 'trusty',
+    repos    => 'main'
+  }
+
+  @profiles::apt::update { 'nodejs_14.x':
+    require => Apt::Source['nodejs_14.x']
+  }
+
   @apt::source { 'elasticsearch':
     location => "http://apt.uitdatabank.be/elasticsearch-${environment}",
     release  => 'stable',
