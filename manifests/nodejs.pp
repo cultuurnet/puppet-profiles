@@ -1,13 +1,15 @@
-class profiles::nodejs {
+class profiles::nodejs (
+  Integer $major_version = 10
+) {
 
   contain ::profiles
 
   include ::profiles::repositories
 
-  realize Apt::Source['nodejs_10.x']
-  realize Profiles::Apt::Update['nodejs_10.x']
+  realize Apt::Source["nodejs_${major_version}.x"]
+  realize Profiles::Apt::Update["nodejs_${major_version}.x"]
 
   contain ::nodejs
 
-  Profiles::Apt::Update['nodejs_10.x'] -> Class['nodejs']
+  Profiles::Apt::Update["nodejs_${major_version}.x"] -> Class['nodejs']
 }
