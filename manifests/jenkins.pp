@@ -208,6 +208,15 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
     unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins ssh-steps", #Check if plugin is already installed
   }
 
+  # Since we will be using multiple version of NodeJS we need this plugin. Easier to manage than via puppet.
+  exec { 'nodejs':
+    command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin nodejs -restart",
+    tries     => 12,
+    try_sleep => 30,
+    require   => Package[$clitool],
+    unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins nodejs", #Check if plugin is already installed
+  }
+
   # This plugin makes the pipeline view more user friendly and easier to debug.
   exec { 'blueocean':
     command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin blueocean -restart",
@@ -234,7 +243,7 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
     require   => Package[$clitool],
   }
 
-  Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket']-> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials'] -> Exec['ssh-steps'] -> Exec['blueocean']
+  Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket']-> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials'] -> Exec['ssh-steps'] -> Exec['nodejs'] -> Exec['blueocean']
 
 
 
