@@ -66,6 +66,36 @@ describe 'profiles::repositories' do
             it { is_expected.to contain_apt__source('nodejs_10.x').that_requires('Class[profiles::apt_keys]') }
             it { is_expected.to contain_profiles__apt__update('nodejs_10.x').that_requires('Apt::Source[nodejs_10.x]') }
 
+            it { is_expected.to contain_apt__source('nodejs_12.x').with(
+              'location' => 'http://apt.uitdatabank.be/nodejs_12.x-testing',
+              'ensure'   => 'present',
+              'repos'    => 'main',
+              'include'  => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release' => 'trusty'
+            )
+            }
+
+            it { is_expected.to contain_apt__source('nodejs_12.x').that_requires('Class[profiles::apt_keys]') }
+            it { is_expected.to contain_profiles__apt__update('nodejs_12.x').that_requires('Apt::Source[nodejs_12.x]') }
+
+            it { is_expected.to contain_apt__source('nodejs_14.x').with(
+              'location' => 'http://apt.uitdatabank.be/nodejs_14.x-testing',
+              'ensure'   => 'present',
+              'repos'    => 'main',
+              'include'  => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release' => 'trusty'
+            )
+            }
+
+            it { is_expected.to contain_apt__source('nodejs_14.x').that_requires('Class[profiles::apt_keys]') }
+            it { is_expected.to contain_profiles__apt__update('nodejs_14.x').that_requires('Apt::Source[nodejs_14.x]') }
+
             it { is_expected.to contain_apt__source('elasticsearch').with(
               'location' => 'http://apt.uitdatabank.be/elasticsearch-testing',
               'ensure'   => 'present',
@@ -162,6 +192,36 @@ describe 'profiles::repositories' do
 
             it { is_expected.to contain_apt__source('nodejs_10.x').that_requires('Class[profiles::apt_keys]') }
             it { is_expected.to contain_profiles__apt__update('nodejs_10.x').that_requires('Apt::Source[nodejs_10.x]') }
+
+            it { is_expected.to contain_apt__source('nodejs_12.x').with(
+              'location' => 'http://apt.uitdatabank.be/nodejs_12.x-acceptance',
+              'ensure'   => 'present',
+              'repos'    => 'main',
+              'include'  => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release' => 'trusty'
+            )
+            }
+
+            it { is_expected.to contain_apt__source('nodejs_12.x').that_requires('Class[profiles::apt_keys]') }
+            it { is_expected.to contain_profiles__apt__update('nodejs_12.x').that_requires('Apt::Source[nodejs_12.x]') }
+
+            it { is_expected.to contain_apt__source('nodejs_14.x').with(
+              'location' => 'http://apt.uitdatabank.be/nodejs_14.x-acceptance',
+              'ensure'   => 'present',
+              'repos'    => 'main',
+              'include'  => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release' => 'trusty'
+            )
+            }
+
+            it { is_expected.to contain_apt__source('nodejs_14.x').that_requires('Class[profiles::apt_keys]') }
+            it { is_expected.to contain_profiles__apt__update('nodejs_14.x').that_requires('Apt::Source[nodejs_14.x]') }
 
             it { is_expected.to contain_apt__source('elasticsearch').with(
               'location' => 'http://apt.uitdatabank.be/elasticsearch-acceptance',
