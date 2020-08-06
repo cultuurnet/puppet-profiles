@@ -146,7 +146,17 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
 
   Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> File[$sshdir] -> File['jenkins.model.JenkinsLocationConfiguration.xml'] -> Package['jenkins-cli'] -> File[$helper_groovy] -> Exec['mailer'] -> Exec['create-jenkins-user-admin'] -> Exec["jenkins-security-${security_model}"]
 
-  realize Package['git']  #defined in packages.pp, installs git
+  realize Package['git']  #defined in packages.pp
+
+  #For silex builds
+  realize Apt::Source['cultuurnet-tools']
+  realize Profiles::Apt::Update['cultuurnet-tools']
+  realize Package['composer']  #defined in packages.pp
+  package{'phing':
+    name     => 'phing',
+    provider => apt,
+    require  => Profiles::Apt::Update['cultuurnet-tools']
+  }
 
   # ----------- Install Jenkins Plugins and Credentials-----------
   # The puppet-jenkins module has functionality for adding plugins but you must install the dependencies manually(not done automatically). 
@@ -215,6 +225,15 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
     try_sleep => 30,
     require   => Package[$clitool],
     unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins nodejs", #Check if plugin is already installed
+  }
+  file { '/var/lib/jenkins/jenkins.plugins.nodejs.tools.NodeJSInstallation.xml':
+    ensure  => file,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    #source  => 'puppet:///private/jenkins.plugins.nodejs.tools.NodeJSInstallation.xml',
+    source  => '/vagrant/puppet/files/jenkins.plugins.nodejs.tools.NodeJSInstallation.xml',
+    require => Exec['nodejs'],
   }
 
   # This plugin makes the pipeline view more user friendly and easier to debug.
