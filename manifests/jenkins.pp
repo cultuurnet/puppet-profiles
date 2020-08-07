@@ -232,7 +232,7 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
     group   => 'root',
     mode    => '0644',
     #source  => 'puppet:///private/jenkins.plugins.nodejs.tools.NodeJSInstallation.xml',
-    source  => '/vagrant/puppet/files/jenkins.plugins.nodejs.tools.NodeJSInstallation.xml',
+    source  => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/jenkins.plugins.nodejs.tools.NodeJSInstallation.xml',
     require => Exec['nodejs'],
   }
 
