@@ -1,8 +1,8 @@
 module Facter
   module Util
     module PubliqApps
-      def self.get_version(prefix)
-        command = "dpkg-query -f='\$\{binary:Package\}:\$\{Version\}\\n' -W '#{prefix}*' 2> /dev/null"
+      def self.get_version(pattern)
+        command = "dpkg-query -f='\$\{binary:Package\}:\$\{Version\}\\n' -W '#{pattern}*' 2> /dev/null"
         versions = Facter::Util::Resolution.exec(command)
 
         return nil if versions.empty?
