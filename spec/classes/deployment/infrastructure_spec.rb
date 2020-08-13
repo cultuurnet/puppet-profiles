@@ -24,7 +24,7 @@ describe 'profiles::deployment::infrastructure' do
       it { is_expected.to contain_apt__source('publiq-infrastructure').that_requires('Class[profiles::apt_keys]') }
       it { is_expected.to contain_profiles__apt__update('publiq-infrastructure').that_requires('Apt::Source[publiq-infrastructure]') }
 
-      it { is_expected.to contain_package('publiq-infrastructure').with(
+      it { is_expected.to contain_package('infrastructure-publiq').with(
         'ensure' => 'latest'
       ) }
 
@@ -34,8 +34,8 @@ describe 'profiles::deployment::infrastructure' do
         'refreshonly' => true,
       ) }
 
-      it { is_expected.to contain_package('publiq-infrastructure').that_requires('Profiles::Apt::Update[publiq-infrastructure]') }
-      it { is_expected.to contain_package('publiq-infrastructure').that_notifies('Exec[puppetserver_environment_cache_clear]') }
+      it { is_expected.to contain_package('infrastructure-publiq').that_requires('Profiles::Apt::Update[publiq-infrastructure]') }
+      it { is_expected.to contain_package('infrastructure-publiq').that_notifies('Exec[puppetserver_environment_cache_clear]') }
 
       case facts[:os]['release']['major']
       when '14.04'

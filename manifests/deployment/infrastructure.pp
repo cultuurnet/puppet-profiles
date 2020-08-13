@@ -19,7 +19,7 @@ class profiles::deployment::infrastructure {
     require => Apt::Source['publiq-infrastructure']
   }
 
-  package { 'publiq-infrastructure':
+  package { 'infrastructure-publiq':
     ensure  => 'latest',
     require => Profiles::Apt::Update['publiq-infrastructure']
   }
@@ -27,7 +27,7 @@ class profiles::deployment::infrastructure {
   exec { 'puppetserver_environment_cache_clear':
     command     => 'curl -i -k --fail -X DELETE https://localhost:8140/puppet-admin-api/v1/environment-cache',
     path        => [ '/usr/local/bin', '/usr/bin', '/bin' ],
-    subscribe   => Package['publiq-infrastructure'],
+    subscribe   => Package['infrastructure-publiq'],
     refreshonly => true
   }
 }
