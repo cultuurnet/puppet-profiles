@@ -28,6 +28,30 @@ class profiles::deployment::mspotm::backend (
     require => Package['mspotm-backend']
   }
 
+  exec { 'mspotm composer script post-autoload-dump':
+    command     => 'composer run-script post-autoload-dump',
+    cwd         => $basedir,
+    path        => [ '/usr/local/bin', '/usr/bin', '/bin'],
+    user        => 'www-data',
+    environment => [ 'HOME=/'],
+    logoutput   => true,
+    subscribe   => Package['mspotm-backend'],
+    refreshonly => true,
+    require     => File['mspotm-backend-config']
+  }
+
+  exec { 'run mspotm database migrations':
+    command     => 'php artisan migrate',
+    cwd         => $basedir,
+    path        => [ '/usr/local/bin', '/usr/bin', '/bin'],
+    user        => 'www-data',
+    environment => [ 'HOME=/'],
+    logoutput   => true,
+    subscribe   => Package['mspotm-backend'],
+    refreshonly => true,
+    require     => File['mspotm-backend-config'],
+  }
+
   profiles::deployment::versions { $title:
     project      => 'mspotm',
     packages     => 'mspotm-backend',

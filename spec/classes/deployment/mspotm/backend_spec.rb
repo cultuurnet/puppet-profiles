@@ -31,6 +31,32 @@ describe 'profiles::deployment::mspotm::backend' do
 
         it { is_expected.to contain_file('mspotm-backend-config').that_requires('Package[mspotm-backend]') }
 
+        it { is_expected.to contain_exec('mspotm composer script post-autoload-dump').with(
+          'command'     => 'composer run-script post-autoload-dump',
+          'cwd'         => '/var/www/mspotm-backend',
+          'path'        => [ '/usr/local/bin', '/usr/bin', '/bin'],
+          'user'        => 'www-data',
+          'environment' => [ 'HOME=/'],
+          'logoutput'   => true,
+          'refreshonly' => true
+        ) }
+
+        it { is_expected.to contain_exec('mspotm composer script post-autoload-dump').that_subscribes_to('Package[mspotm-backend]') }
+        it { is_expected.to contain_exec('mspotm composer script post-autoload-dump').that_requires('File[mspotm-backend-config]') }
+
+        it { is_expected.to contain_exec('run mspotm database migrations').with(
+          'command'     => 'php artisan migrate',
+          'cwd'         => '/var/www/mspotm-backend',
+          'path'        => [ '/usr/local/bin', '/usr/bin', '/bin'],
+          'user'        => 'www-data',
+          'environment' => [ 'HOME=/'],
+          'logoutput'   => true,
+          'refreshonly' => true
+        ) }
+
+        it { is_expected.to contain_exec('run mspotm database migrations').that_subscribes_to('Package[mspotm-backend]') }
+        it { is_expected.to contain_exec('run mspotm database migrations').that_requires('File[mspotm-backend-config]') }
+
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::mspotm::backend').with(
           'project'      => 'mspotm',
           'packages'     => 'mspotm-backend',
