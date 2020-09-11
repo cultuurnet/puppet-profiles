@@ -44,6 +44,12 @@ class profiles::jenkins (
     install_java => false,
   }
 
+  sudo::conf { 'jenkins':
+    priority => '10',
+    content  => "jenkins ALL=(ALL) NOPASSWD: ALL",
+    require  => Class['jenkins']
+  }
+
   # This folder will hold all the files needed for a special ssh key. When you run something in a job
   # like 'librarian-puppet install' it expects there to be an ssh key already on the operating system.
   # It can't see/use the one made in jenkins.
