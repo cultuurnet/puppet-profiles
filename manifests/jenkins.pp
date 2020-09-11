@@ -46,7 +46,7 @@ class profiles::jenkins (
 
   sudo::conf { 'jenkins':
     priority => '10',
-    content  => "jenkins ALL=(ALL) NOPASSWD: ALL",
+    content  => 'jenkins ALL=(ALL) NOPASSWD: ALL',
     require  => Class['jenkins']
   }
 
