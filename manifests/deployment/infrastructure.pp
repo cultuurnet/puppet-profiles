@@ -6,6 +6,7 @@ class profiles::deployment::infrastructure (
   contain ::profiles
 
   include ::profiles::apt_keys
+  include ::profiles::puppetserver::cache_clear
 
   apt::source { 'publiq-infrastructure':
     location => 'http://apt.publiq.be/infrastructure-production',
@@ -24,20 +25,14 @@ class profiles::deployment::infrastructure (
 
   package { 'infrastructure-publiq':
     ensure  => $package_version,
+    notify  => Class['profiles::puppetserver::cache_clear'],
     require => Profiles::Apt::Update['publiq-infrastructure']
-  }
-
-  exec { 'puppetserver_environment_cache_clear':
-    command     => 'curl -i -k --fail -X DELETE https://localhost:8140/puppet-admin-api/v1/environment-cache',
-    path        => [ '/usr/local/bin', '/usr/bin', '/bin' ],
-    subscribe   => Package['infrastructure-publiq'],
-    refreshonly => true
   }
 
   profiles::deployment::versions { $title:
     project      => 'infrastructure',
     packages     => 'infrastructure-publiq',
     puppetdb_url => $puppetdb_url,
-    require      => Exec['puppetserver_environment_cache_clear']
+    require      => Class['profiles::puppetserver::cache_clear']
   }
 }
