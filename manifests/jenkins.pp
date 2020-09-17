@@ -38,6 +38,10 @@ class profiles::jenkins (
     provider => apt,
   }
 
+  package { 'build-essential':
+    ensure   => 'installed'
+  }
+
   # This will install and configure jenkins.
   class { 'jenkins':
     cli          => false,
