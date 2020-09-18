@@ -13,7 +13,7 @@ describe 'profiles::deployment::infrastructure' do
       it { is_expected.to contain_class('profiles::puppetserver::cache_clear') }
 
       it { is_expected.to contain_apt__source('publiq-infrastructure').with(
-        'location' => 'http://apt.publiq.be/infrastructure-production',
+        'location' => 'https://apt.publiq.be/infrastructure-production',
         'ensure'   => 'present',
         'repos'    => 'main',
         'include'  => {

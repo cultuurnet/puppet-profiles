@@ -9,7 +9,7 @@ class profiles::deployment::infrastructure (
   include ::profiles::puppetserver::cache_clear
 
   apt::source { 'publiq-infrastructure':
-    location => 'http://apt.publiq.be/infrastructure-production',
+    location => 'https://apt.publiq.be/infrastructure-production',
     release  => $facts['lsbdistcodename'],
     repos    => 'main',
     require  => Class['profiles::apt_keys'],

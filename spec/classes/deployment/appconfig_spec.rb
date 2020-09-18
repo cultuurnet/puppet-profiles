@@ -13,7 +13,7 @@ describe 'profiles::deployment::appconfig' do
       it { is_expected.to contain_class('profiles::puppetserver::cache_clear') }
 
       it { is_expected.to contain_apt__source('publiq-appconfig').with(
-        'location' => 'http://apt.publiq.be/appconfig-production',
+        'location' => 'https://apt.publiq.be/appconfig-production',
         'ensure'   => 'present',
         'repos'    => 'main',
         'include'  => {

@@ -19,7 +19,7 @@ describe 'profiles::apt_keys' do
       it { is_expected.to contain_apt__key('publiq Infrastructure').with(
         'id'     => 'AD726BD2A48017B060AA43FA4A49242DE36CDCAF',
         'server' => 'keyserver.ubuntu.com',
-        'source' => 'http://apt.publiq.be/gpgkey/publiq.gpg.key'
+        'source' => 'https://apt.publiq.be/gpgkey/publiq.gpg.key'
       )
       }
     end

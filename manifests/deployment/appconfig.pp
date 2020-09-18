@@ -9,7 +9,7 @@ class profiles::deployment::appconfig (
   include ::profiles::puppetserver::cache_clear
 
   apt::source { 'publiq-appconfig':
-    location => 'http://apt.publiq.be/appconfig-production',
+    location => 'https://apt.publiq.be/appconfig-production',
     release  => $facts['lsbdistcodename'],
     repos    => 'main',
     require  => Class['profiles::apt_keys'],
