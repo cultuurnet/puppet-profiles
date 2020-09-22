@@ -6,7 +6,8 @@ class profiles::aptly (
   $sslcert = '',
   $sslkey = '',
   $gpgkey_source = '',
-  $gpgkey_fingerprint = ''
+  $gpgkey_fingerprint = '',
+  $repos = []
 ) {
 
   contain ::profiles
@@ -99,4 +100,10 @@ class profiles::aptly (
     group   => 'aptly',
     require => File['/home/aptly/private.key']
   }
+
+  any2array($repos).each |$repo| {
+    aptly::repo { $repo:
+      ensure            => 'present',
+      default_component => 'main'
+    }
 }
