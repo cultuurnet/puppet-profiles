@@ -106,4 +106,5 @@ class profiles::aptly (
       ensure            => 'present',
       default_component => 'main'
     }
+  }
 }
