@@ -12,6 +12,11 @@ describe 'profiles::mailcatcher' do
       it { is_expected.to contain_apt__source('cultuurnet-tools') }
       it { is_expected.to contain_profiles__apt__update('cultuurnet-tools') }
 
+      it { is_expected.to contain_class('mailcatcher').with(
+        'manage_repo' => false
+        )
+      }
+
       it { is_expected.to contain_class('mailcatcher').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
     end
   end

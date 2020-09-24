@@ -7,7 +7,9 @@ class profiles::mailcatcher {
   realize Apt::Source['cultuurnet-tools']
   realize Profiles::Apt::Update['cultuurnet-tools']
 
-  contain ::mailcatcher
+  class { ::mailcatcher:
+    manage_repo => false
+  }
 
   Profiles::Apt::Update['cultuurnet-tools'] -> Class['mailcatcher']
 }
