@@ -240,6 +240,15 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
     unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins copyartifact", #Check if plugin is already installed
   }
 
+  # This plugin installs a few useful pipeline utilities.
+  exec { 'pipeline-utility-steps':
+    command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin pipeline-utility-steps -restart",
+    tries     => 12,
+    try_sleep => 30,
+    require   => Package[$clitool],
+    unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins pipeline-utility-steps", #Check if plugin is already installed
+  }
+
   # We use the import-credentials-as-xml because we can load many credentials fromm one xml file, unlike create-credentials-by-xml.
   $credentials_file = '/usr/share/jenkins/credentials.xml'
   file{$credentials_file:
