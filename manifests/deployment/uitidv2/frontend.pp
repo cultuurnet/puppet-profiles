@@ -8,7 +8,7 @@ class profiles::deployment::uitidv2::frontend (
   Optional[String] $puppetdb_url        = undef
 ) {
 
-  $basedir = '/var/www/uitid-frontend'
+  $basedir = '/var/www/uitid-frontend/app'
 
   contain ::profiles
 
