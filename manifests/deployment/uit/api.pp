@@ -7,7 +7,7 @@ class profiles::deployment::uit::api (
   Optional[String] $puppetdb_url        = undef
 ) {
 
-  $basedir = '/var/www/uitbe-api/packages/graphql'
+  $basedir = '/var/www/uit-api/packages/graphql'
 
   contain ::profiles
 
@@ -16,35 +16,35 @@ class profiles::deployment::uit::api (
   realize Apt::Source['publiq-uit']
   realize Profiles::Apt::Update['publiq-uit']
 
-  package { 'uitbe-api':
+  package { 'uit-api':
     ensure  => $package_version,
     notify  => Profiles::Deployment::Versions[$title],
     require => Profiles::Apt::Update['publiq-uit']
   }
 
-  file { 'uitbe-api-config':
+  file { 'uit-api-config':
     ensure  => 'file',
     path    => "${basedir}/.env",
     owner   => 'www-data',
     group   => 'www-data',
     source  => $config_source,
-    require => Package['uitbe-api']
+    require => Package['uit-api']
   }
 
   if $service_manage {
-    service { 'uitbe-api':
+    service { 'uit-api':
       ensure    => $service_ensure,
       enable    => $service_enable,
-      require   => Package['uitbe-api'],
+      require   => Package['uit-api'],
       hasstatus => true
     }
 
-    File['uitbe-api-config'] ~> Service['uitbe-api']
+    File['uit-api-config'] ~> Service['uit-api']
   }
 
   profiles::deployment::versions { $title:
     project      => 'uit',
-    packages     => 'uitbe-api',
+    packages     => 'uit-api',
     puppetdb_url => $puppetdb_url
   }
 }

@@ -17,32 +17,32 @@ describe 'profiles::deployment::uit::api' do
         it { is_expected.to contain_apt__source('publiq-uit') }
         it { is_expected.to contain_profiles__apt__update('publiq-uit') }
 
-        it { is_expected.to contain_package('uitbe-api').with( 'ensure' => 'latest') }
-        it { is_expected.to contain_package('uitbe-api').that_notifies('Profiles::Deployment::Versions[profiles::deployment::uit::api]') }
-        it { is_expected.to contain_package('uitbe-api').that_requires('Profiles::Apt::Update[publiq-uit]') }
+        it { is_expected.to contain_package('uit-api').with( 'ensure' => 'latest') }
+        it { is_expected.to contain_package('uit-api').that_notifies('Profiles::Deployment::Versions[profiles::deployment::uit::api]') }
+        it { is_expected.to contain_package('uit-api').that_requires('Profiles::Apt::Update[publiq-uit]') }
 
-        it { is_expected.to contain_file('uitbe-api-config').with(
+        it { is_expected.to contain_file('uit-api-config').with(
           'ensure' => 'file',
-          'path'   => '/var/www/uitbe-api/packages/graphql/.env',
+          'path'   => '/var/www/uit-api/packages/graphql/.env',
           'source' => '/foo',
           'owner'  => 'www-data',
           'group'  => 'www-data'
         ) }
 
-        it { is_expected.to contain_file('uitbe-api-config').that_requires('Package[uitbe-api]') }
+        it { is_expected.to contain_file('uit-api-config').that_requires('Package[uit-api]') }
 
-        it { is_expected.to contain_service('uitbe-api').with(
+        it { is_expected.to contain_service('uit-api').with(
           'ensure'    => 'running',
           'enable'    => true,
           'hasstatus' => true
         ) }
 
-        it { is_expected.to contain_service('uitbe-api').that_requires('Package[uitbe-api]') }
-        it { is_expected.to contain_file('uitbe-api-config').that_notifies('Service[uitbe-api]') }
+        it { is_expected.to contain_service('uit-api').that_requires('Package[uit-api]') }
+        it { is_expected.to contain_file('uit-api-config').that_notifies('Service[uit-api]') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::api').with(
           'project'      => 'uit',
-          'packages'     => 'uitbe-api',
+          'packages'     => 'uit-api',
           'puppetdb_url' => nil
         ) }
 
@@ -53,7 +53,7 @@ describe 'profiles::deployment::uit::api' do
             } )
           }
 
-          it { is_expected.not_to contain_service('uitbe-api') }
+          it { is_expected.not_to contain_service('uit-api') }
         end
       end
     end
@@ -72,13 +72,13 @@ describe 'profiles::deployment::uit::api' do
       context "on #{os}" do
         let (:facts) { facts }
 
-        it { is_expected.to contain_file('uitbe-api-config').with(
+        it { is_expected.to contain_file('uit-api-config').with(
           'source' => '/bar',
         ) }
 
-        it { is_expected.to contain_package('uitbe-api').with( 'ensure' => '1.2.3') }
+        it { is_expected.to contain_package('uit-api').with( 'ensure' => '1.2.3') }
 
-        it { is_expected.to contain_service('uitbe-api').with(
+        it { is_expected.to contain_service('uit-api').with(
           'ensure'    => 'stopped',
           'enable'    => false
         ) }

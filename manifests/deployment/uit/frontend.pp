@@ -7,7 +7,7 @@ class profiles::deployment::uit::frontend (
   Optional[String] $puppetdb_url        = undef
 ) {
 
-  $basedir = '/var/www/uitbe-frontend/packages/app'
+  $basedir = '/var/www/uit-frontend/packages/app'
 
   contain ::profiles
 
@@ -16,35 +16,35 @@ class profiles::deployment::uit::frontend (
   realize Apt::Source['publiq-uit']
   realize Profiles::Apt::Update['publiq-uit']
 
-  package { 'uitbe-frontend':
+  package { 'uit-frontend':
     ensure  => $package_version,
     notify  => Profiles::Deployment::Versions[$title],
     require => Profiles::Apt::Update['publiq-uit']
   }
 
-  file { 'uitbe-frontend-config':
+  file { 'uit-frontend-config':
     ensure  => 'file',
     path    => "${basedir}/.env",
     owner   => 'www-data',
     group   => 'www-data',
     source  => $config_source,
-    require => Package['uitbe-frontend']
+    require => Package['uit-frontend']
   }
 
   if $service_manage {
-    service { 'uitbe-frontend':
+    service { 'uit-frontend':
       ensure    => $service_ensure,
       enable    => $service_enable,
-      require   => Package['uitbe-frontend'],
+      require   => Package['uit-frontend'],
       hasstatus => true
     }
 
-    File['uitbe-frontend-config'] ~> Service['uitbe-frontend']
+    File['uit-frontend-config'] ~> Service['uit-frontend']
   }
 
   profiles::deployment::versions { $title:
     project      => 'uit',
-    packages     => 'uitbe-frontend',
+    packages     => 'uit-frontend',
     puppetdb_url => $puppetdb_url
   }
 }

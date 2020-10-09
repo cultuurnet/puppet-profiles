@@ -17,34 +17,34 @@ describe 'profiles::deployment::uit::frontend' do
         it { is_expected.to contain_apt__source('publiq-uit') }
         it { is_expected.to contain_profiles__apt__update('publiq-uit') }
 
-        it { is_expected.to contain_package('uitbe-frontend').with( 'ensure' => 'latest') }
-        it { is_expected.to contain_package('uitbe-frontend').that_notifies('Profiles::Deployment::Versions[profiles::deployment::uit::frontend]') }
-        it { is_expected.to contain_package('uitbe-frontend').that_requires('Profiles::Apt::Update[publiq-uit]') }
+        it { is_expected.to contain_package('uit-frontend').with( 'ensure' => 'latest') }
+        it { is_expected.to contain_package('uit-frontend').that_notifies('Profiles::Deployment::Versions[profiles::deployment::uit::frontend]') }
+        it { is_expected.to contain_package('uit-frontend').that_requires('Profiles::Apt::Update[publiq-uit]') }
 
-        it { is_expected.to contain_file('uitbe-frontend-config').with(
+        it { is_expected.to contain_file('uit-frontend-config').with(
           'ensure' => 'file',
-          'path'   => '/var/www/uitbe-frontend/packages/app/.env',
+          'path'   => '/var/www/uit-frontend/packages/app/.env',
           'source' => '/foo',
           'owner'  => 'www-data',
           'group'  => 'www-data'
         ) }
 
-        it { is_expected.to contain_file('uitbe-frontend-config').that_requires('Package[uitbe-frontend]') }
+        it { is_expected.to contain_file('uit-frontend-config').that_requires('Package[uit-frontend]') }
 
         #it { is_expected.not_to contain_file('/etc/defaults/uitpasbe-frontend') }
 
-        it { is_expected.to contain_service('uitbe-frontend').with(
+        it { is_expected.to contain_service('uit-frontend').with(
           'ensure'    => 'running',
           'enable'    => true,
           'hasstatus' => true
         ) }
 
-        it { is_expected.to contain_service('uitbe-frontend').that_requires('Package[uitbe-frontend]') }
-        it { is_expected.to contain_file('uitbe-frontend-config').that_notifies('Service[uitbe-frontend]') }
+        it { is_expected.to contain_service('uit-frontend').that_requires('Package[uit-frontend]') }
+        it { is_expected.to contain_file('uit-frontend-config').that_notifies('Service[uit-frontend]') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::frontend').with(
           'project'      => 'uit',
-          'packages'     => 'uitbe-frontend',
+          'packages'     => 'uit-frontend',
           'puppetdb_url' => nil
         ) }
 
@@ -55,7 +55,7 @@ describe 'profiles::deployment::uit::frontend' do
             } )
           }
 
-          it { is_expected.not_to contain_service('uitbe-frontend') }
+          it { is_expected.not_to contain_service('uit-frontend') }
         end
       end
     end
@@ -74,13 +74,13 @@ describe 'profiles::deployment::uit::frontend' do
       context "on #{os}" do
         let (:facts) { facts }
 
-        it { is_expected.to contain_file('uitbe-frontend-config').with(
+        it { is_expected.to contain_file('uit-frontend-config').with(
           'source' => '/bar',
         ) }
 
-        it { is_expected.to contain_package('uitbe-frontend').with( 'ensure' => '1.2.3') }
+        it { is_expected.to contain_package('uit-frontend').with( 'ensure' => '1.2.3') }
 
-        it { is_expected.to contain_service('uitbe-frontend').with(
+        it { is_expected.to contain_service('uit-frontend').with(
           'ensure'    => 'stopped',
           'enable'    => false
         ) }
