@@ -31,7 +31,7 @@ describe 'profiles::deployment::uit::frontend' do
 
         it { is_expected.to contain_file('uit-frontend-config').that_requires('Package[uit-frontend]') }
 
-        #it { is_expected.not_to contain_file('/etc/defaults/uitpasbe-frontend') }
+        it { is_expected.not_to contain_file('/etc/default/uit-frontend') }
 
         it { is_expected.to contain_service('uit-frontend').with(
           'ensure'    => 'running',
@@ -61,13 +61,14 @@ describe 'profiles::deployment::uit::frontend' do
     end
   end
 
-  context "with config_source => /bar, package_version => 1.2.3, service_ensure => stopped, service_enable = false and puppetdb_url => http://example.com:8000" do
+  context "with config_source => /bar, package_version => 1.2.3, service_defaults_source => /baz, service_ensure => stopped, service_enable = false and puppetdb_url => http://example.com:8000" do
     let (:params) { {
-      'config_source'       => '/bar',
-      'package_version'     => '1.2.3',
-      'service_ensure'      => 'stopped',
-      'service_enable'      => false,
-      'puppetdb_url'        => 'http://example.com:8000'
+      'config_source'           => '/bar',
+      'package_version'         => '1.2.3',
+      'service_ensure'          => 'stopped',
+      'service_defaults_source' => '/baz',
+      'service_enable'          => false,
+      'puppetdb_url'            => 'http://example.com:8000'
     } }
 
     on_supported_os.each do |os, facts|
@@ -76,6 +77,14 @@ describe 'profiles::deployment::uit::frontend' do
 
         it { is_expected.to contain_file('uit-frontend-config').with(
           'source' => '/bar',
+        ) }
+
+        it { is_expected.to contain_file('uit-frontend-service-defaults').with(
+          'ensure' => 'file',
+          'path'   => '/etc/default/uit-frontend',
+          'source' => '/baz',
+          'owner'  => 'root',
+          'group'  => 'root'
         ) }
 
         it { is_expected.to contain_package('uit-frontend').with( 'ensure' => '1.2.3') }
@@ -88,6 +97,8 @@ describe 'profiles::deployment::uit::frontend' do
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::frontend').with(
           'puppetdb_url' => 'http://example.com:8000'
         ) }
+
+        it { is_expected.to contain_file('uit-frontend-service-defaults').that_notifies('Service[uit-frontend]') }
       end
     end
   end

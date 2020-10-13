@@ -1,10 +1,11 @@
 class profiles::deployment::uit::api (
   String           $config_source,
-  String           $package_version     = 'latest',
-  Boolean          $service_manage      = true,
-  String           $service_ensure      = 'running',
-  Boolean          $service_enable      = true,
-  Optional[String] $puppetdb_url        = undef
+  String           $package_version         = 'latest',
+  Boolean          $service_manage          = true,
+  String           $service_ensure          = 'running',
+  Boolean          $service_enable          = true,
+  Optional[String] $service_defaults_source = undef,
+  Optional[String] $puppetdb_url            = undef
 ) {
 
   $basedir = '/var/www/uit-api/packages/graphql'
@@ -32,6 +33,17 @@ class profiles::deployment::uit::api (
   }
 
   if $service_manage {
+    if $service_defaults_source {
+      file { 'uit-api-service-defaults':
+        ensure => 'file',
+        path   => '/etc/default/uit-api',
+        owner  => 'root',
+        group  => 'root',
+        source => $service_defaults_source,
+        notify => Service['uit-api']
+      }
+    }
+
     service { 'uit-api':
       ensure    => $service_ensure,
       enable    => $service_enable,
