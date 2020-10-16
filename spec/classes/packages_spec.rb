@@ -80,6 +80,13 @@ describe 'profiles::packages' do
         }
 
         it { is_expected.to contain_package('mysql-connector-java').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
+
+        it { is_expected.to contain_package('yarn').with(
+          'ensure' => 'present'
+          )
+        }
+
+        it { is_expected.to contain_package('yarn').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
       end
     end
   end

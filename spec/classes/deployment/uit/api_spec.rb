@@ -17,6 +17,8 @@ describe 'profiles::deployment::uit::api' do
         it { is_expected.to contain_apt__source('publiq-uit') }
         it { is_expected.to contain_profiles__apt__update('publiq-uit') }
 
+        it { is_expected.to contain_package('yarn') }
+
         it { is_expected.to contain_package('uit-api').with( 'ensure' => 'latest') }
         it { is_expected.to contain_package('uit-api').that_notifies('Profiles::Deployment::Versions[profiles::deployment::uit::api]') }
         it { is_expected.to contain_package('uit-api').that_requires('Profiles::Apt::Update[publiq-uit]') }
@@ -32,6 +34,19 @@ describe 'profiles::deployment::uit::api' do
         it { is_expected.to contain_file('uit-api-config').that_requires('Package[uit-api]') }
 
         it { is_expected.not_to contain_file('/etc/default/uit-api') }
+
+        it { is_expected.to contain_exec('uit-api_db_schema_update').with(
+          'command'     => 'yarn graphql typeorm migration:run',
+          'cwd'         => '/var/www/uit-api',
+          'user'        => 'www-data',
+          'group'       => 'www-data',
+          'path'        => [ '/usr/local/bin', '/usr/bin', '/bin', '/var/www/uit-api'],
+          'refreshonly' => true
+        ) }
+
+        it { is_expected.to contain_exec('uit-api_db_schema_update').that_subscribes_to('Package[uit-api]') }
+        it { is_expected.to contain_exec('uit-api_db_schema_update').that_subscribes_to('File[uit-api-config]') }
+        it { is_expected.to contain_exec('uit-api_db_schema_update').that_requires('Package[yarn]') }
 
         it { is_expected.to contain_service('uit-api').with(
           'ensure'    => 'running',
