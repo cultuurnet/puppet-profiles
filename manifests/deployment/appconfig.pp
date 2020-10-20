@@ -30,9 +30,10 @@ class profiles::deployment::appconfig (
   }
 
   profiles::deployment::versions { $title:
-    project      => 'appconfig',
-    packages     => 'appconfig-publiq',
-    puppetdb_url => $puppetdb_url,
-    require      => Class['profiles::puppetserver::cache_clear']
+    project         => 'appconfig',
+    packages        => 'appconfig-publiq',
+    destination_dir => '/var/run',
+    puppetdb_url    => $puppetdb_url,
+    require         => Class['profiles::puppetserver::cache_clear']
   }
 }

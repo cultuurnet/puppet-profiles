@@ -30,9 +30,10 @@ class profiles::deployment::infrastructure (
   }
 
   profiles::deployment::versions { $title:
-    project      => 'infrastructure',
-    packages     => 'infrastructure-publiq',
-    puppetdb_url => $puppetdb_url,
-    require      => Class['profiles::puppetserver::cache_clear']
+    project         => 'infrastructure',
+    packages        => 'infrastructure-publiq',
+    destination_dir => '/var/run',
+    puppetdb_url    => $puppetdb_url,
+    require         => Class['profiles::puppetserver::cache_clear']
   }
 }
