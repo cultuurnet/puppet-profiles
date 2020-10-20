@@ -70,9 +70,10 @@ describe 'profiles::deployment::infrastructure' do
         ) }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::infrastructure').with(
-          'project'      => 'infrastructure',
-          'packages'     => 'infrastructure-publiq',
-          'puppetdb_url' => 'http://example.com:8000'
+          'project'         => 'infrastructure',
+          'packages'        => 'infrastructure-publiq',
+          'destination_dir' => '/var/run',
+          'puppetdb_url'    => 'http://example.com:8000'
         ) }
       end
     end

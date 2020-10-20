@@ -70,9 +70,10 @@ describe 'profiles::deployment::appconfig' do
         ) }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::appconfig').with(
-          'project'      => 'appconfig',
-          'packages'     => 'appconfig-publiq',
-          'puppetdb_url' => 'http://example.com:8000'
+          'project'         => 'appconfig',
+          'packages'        => 'appconfig-publiq',
+          'destination_dir' => '/var/run',
+          'puppetdb_url'    => 'http://example.com:8000'
         ) }
       end
     end
