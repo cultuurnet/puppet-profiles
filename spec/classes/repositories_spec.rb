@@ -164,7 +164,7 @@ describe 'profiles::repositories' do
             it { is_expected.to contain_profiles__apt__update('cultuurnet-tools').that_requires('Apt::Source[cultuurnet-tools]') }
 
             it { is_expected.to contain_apt__source('php').with(
-              'location' => 'http://apt.uitdatabank.be/php-acceptance',
+              'location' => 'http://apt.uitdatabank.be/php-new-acceptance',
               'ensure'   => 'present',
               'repos'    => 'main',
               'include'  => {

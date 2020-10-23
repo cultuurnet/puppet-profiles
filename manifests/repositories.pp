@@ -24,7 +24,7 @@ class profiles::repositories {
 
   $php_repository = $facts['lsbdistcodename'] ? {
     'trusty' => 'php-legacy',
-    'xenial' => 'php'
+    'xenial' => 'php-new'
   }
 
   @apt::source { 'php':
