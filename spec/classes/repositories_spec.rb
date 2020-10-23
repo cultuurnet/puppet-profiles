@@ -36,6 +36,21 @@ describe 'profiles::repositories' do
             it { is_expected.to contain_apt__source('cultuurnet-tools').that_requires('Class[profiles::apt_keys]') }
             it { is_expected.to contain_profiles__apt__update('cultuurnet-tools').that_requires('Apt::Source[cultuurnet-tools]') }
 
+            it { is_expected.to contain_apt__source('php').with(
+              'location' => 'http://apt.uitdatabank.be/php-legacy-testing',
+              'ensure'   => 'present',
+              'repos'    => 'main',
+              'include'  => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release' => 'trusty'
+            )
+            }
+
+            it { is_expected.to contain_apt__source('php').that_requires('Class[profiles::apt_keys]') }
+            it { is_expected.to contain_profiles__apt__update('php').that_requires('Apt::Source[php]') }
+
             it { is_expected.to contain_apt__source('rabbitmq').with(
               'location' => 'http://apt.uitdatabank.be/rabbitmq-testing',
               'ensure'   => 'present',
@@ -111,21 +126,6 @@ describe 'profiles::repositories' do
             it { is_expected.to contain_apt__source('elasticsearch').that_requires('Class[profiles::apt_keys]') }
             it { is_expected.to contain_profiles__apt__update('elasticsearch').that_requires('Apt::Source[elasticsearch]') }
 
-            it { is_expected.to contain_apt__source('php').with(
-              'location' => 'http://apt.uitdatabank.be/php-testing',
-              'ensure'   => 'present',
-              'repos'    => 'main',
-              'include'  => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'trusty'
-            )
-            }
-
-            it { is_expected.to contain_apt__source('php').that_requires('Class[profiles::apt_keys]') }
-            it { is_expected.to contain_profiles__apt__update('php').that_requires('Apt::Source[php]') }
-
             it { is_expected.to contain_apt__source('yarn').with(
               'location' => 'http://apt.uitdatabank.be/yarn-testing',
               'ensure'   => 'present',
@@ -162,6 +162,21 @@ describe 'profiles::repositories' do
 
             it { is_expected.to contain_apt__source('cultuurnet-tools').that_requires('Class[profiles::apt_keys]') }
             it { is_expected.to contain_profiles__apt__update('cultuurnet-tools').that_requires('Apt::Source[cultuurnet-tools]') }
+
+            it { is_expected.to contain_apt__source('php').with(
+              'location' => 'http://apt.uitdatabank.be/php-acceptance',
+              'ensure'   => 'present',
+              'repos'    => 'main',
+              'include'  => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release' => 'xenial'
+            )
+            }
+
+            it { is_expected.to contain_apt__source('php').that_requires('Class[profiles::apt_keys]') }
+            it { is_expected.to contain_profiles__apt__update('php').that_requires('Apt::Source[php]') }
 
             it { is_expected.to contain_apt__source('rabbitmq').with(
               'location' => 'http://apt.uitdatabank.be/rabbitmq-acceptance',
