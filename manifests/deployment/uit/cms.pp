@@ -107,6 +107,4 @@ class profiles::deployment::uit::cms (
     packages     => [ 'uit-cms', 'uit-cms-database', 'uit-cms-files'],
     puppetdb_url => $puppetdb_url
   }
-
-  Class['profiles::php'] -> Class['profiles::deployment::uit::cms']
 }
