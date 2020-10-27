@@ -59,7 +59,7 @@ class profiles::deployment::uit::cms (
   }
 
   exec { 'uit-cms-db-install':
-    command     => "vendor/bin/drush sql-query --file=${database_source}",
+    command     => "drush sql-query --file=${database_source}",
     cwd         => $basedir,
     path        => [ '/usr/local/bin', '/usr/bin', '/bin', "${basedir}/vendor/bin"],
     onlyif      => 'test 0 -eq $(vendor/bin/drush sql-query "show tables" | sed -e "/^$/d" | wc -l)',
@@ -70,7 +70,7 @@ class profiles::deployment::uit::cms (
   }
 
   exec { 'uit-cms-updatedb':
-    command     => "vendor/bin/drush updatedb -y",
+    command     => "drush updatedb -y",
     cwd         => $basedir,
     path        => [ '/usr/local/bin', '/usr/bin', '/bin', "${basedir}/vendor/bin"],
     environment => [ 'HOME=/'],
@@ -81,7 +81,7 @@ class profiles::deployment::uit::cms (
   }
 
   exec { 'uit-cms-config-import':
-    command     => "vendor/bin/drush config:import -y",
+    command     => "drush config:import -y",
     cwd         => $basedir,
     path        => [ '/usr/local/bin', '/usr/bin', '/bin', "${basedir}/vendor/bin"],
     environment => [ 'HOME=/'],
@@ -92,7 +92,7 @@ class profiles::deployment::uit::cms (
   }
 
   exec { 'uit-cms-cache-rebuild':
-    command     => "vendor/bin/drush cache:rebuild",
+    command     => "drush cache:rebuild",
     cwd         => $basedir,
     path        => [ '/usr/local/bin', '/usr/bin', '/bin', "${basedir}/vendor/bin"],
     environment => [ 'HOME=/'],
