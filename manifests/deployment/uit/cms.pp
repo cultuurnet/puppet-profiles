@@ -76,8 +76,8 @@ class profiles::deployment::uit::cms (
     environment => [ 'HOME=/'],
     user        => 'www-data',
     refreshonly => true,
-    subscribe   => [ Package['uit-cms'], Package['uit-cms-database'], File['uit-cms-settings'], File['uit-cms-drush-config']]
-    require     => Exec['uit-cms-db-install'],
+    subscribe   => [ Package['uit-cms'], Package['uit-cms-database'], File['uit-cms-settings'], File['uit-cms-drush-config']],
+    require     => Exec['uit-cms-db-install']
   }
 
   exec { 'uit-cms-config-import':
@@ -87,8 +87,8 @@ class profiles::deployment::uit::cms (
     environment => [ 'HOME=/'],
     user        => 'www-data',
     refreshonly => true,
-    subscribe   => [ Package['uit-cms'], Package['uit-cms-database'], File['uit-cms-settings'], File['uit-cms-drush-config']]
-    require     => Exec['uit-cms-updatedb'],
+    subscribe   => [ Package['uit-cms'], Package['uit-cms-database'], File['uit-cms-settings'], File['uit-cms-drush-config']],
+    require     => Exec['uit-cms-updatedb']
   }
 
   exec { 'uit-cms-cache-rebuild':
@@ -98,13 +98,13 @@ class profiles::deployment::uit::cms (
     environment => [ 'HOME=/'],
     user        => 'www-data',
     refreshonly => true,
-    subscribe   => [ Package['uit-cms'], Package['uit-cms-database'], File['uit-cms-settings'], File['uit-cms-drush-config']]
-    require     => Exec['uit-cms-config-import'],
+    subscribe   => [ Package['uit-cms'], Package['uit-cms-database'], File['uit-cms-settings'], File['uit-cms-drush-config']],
+    require     => Exec['uit-cms-config-import']
   }
 
   profiles::deployment::versions { $title:
     project      => 'uit',
-    packages     => 'uit-cms',
+    packages     => [ 'uit-cms', 'uit-cms-database', 'uit-cms-files'],
     puppetdb_url => $puppetdb_url
   }
 
