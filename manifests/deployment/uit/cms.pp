@@ -59,7 +59,7 @@ class profiles::deployment::uit::cms (
   }
 
   exec { 'uit-cms-db-install':
-    command     => "drush sql-query --file=${database_source}",
+    command     => "drush sql:cli < ${database_source}",
     cwd         => $basedir,
     path        => [ '/usr/local/bin', '/usr/bin', '/bin', "${basedir}/vendor/bin"],
     onlyif      => 'test 0 -eq $(vendor/bin/drush sql-query "show tables" | sed -e "/^$/d" | wc -l)',
