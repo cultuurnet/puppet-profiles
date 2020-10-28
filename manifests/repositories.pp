@@ -22,6 +22,21 @@ class profiles::repositories {
     require => Apt::Source['cultuurnet-tools']
   }
 
+  $php_repository = $facts['lsbdistcodename'] ? {
+    'trusty' => 'php-legacy',
+    'xenial' => 'php'
+  }
+
+  @apt::source { 'php':
+    location => "http://apt.uitdatabank.be/${php_repository}-${environment}",
+    release  => $facts['lsbdistcodename'],
+    repos    => 'main'
+  }
+
+  @profiles::apt::update { 'php':
+    require => Apt::Source['php']
+  }
+
   @apt::source { 'rabbitmq':
     location => "http://apt.uitdatabank.be/rabbitmq-${environment}",
     release  => 'testing',
@@ -70,16 +85,6 @@ class profiles::repositories {
 
   @profiles::apt::update { 'elasticsearch':
     require => Apt::Source['elasticsearch']
-  }
-
-  @apt::source { 'php':
-    location => "http://apt.uitdatabank.be/php-${environment}",
-    release  => 'trusty',
-    repos    => 'main'
-  }
-
-  @profiles::apt::update { 'php':
-    require => Apt::Source['php']
   }
 
   @apt::source { 'yarn':

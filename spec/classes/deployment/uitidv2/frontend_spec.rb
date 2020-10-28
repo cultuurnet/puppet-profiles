@@ -23,7 +23,7 @@ describe 'profiles::deployment::uitidv2::frontend' do
 
         it { is_expected.to contain_file('uitid-frontend-config').with(
           'ensure' => 'file',
-          'path'   => '/var/www/uitid-frontend/.env',
+          'path'   => '/var/www/uitid-frontend/app/.env',
           'source' => '/foo',
           'owner'  => 'www-data',
           'group'  => 'www-data'

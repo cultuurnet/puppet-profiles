@@ -20,7 +20,7 @@ describe Facter::Util::Fact do
       end
 
       it do
-        expect(Facter.fact(:museumpas_version).value).to eq({"museumpas-website" => { "commit" => "692e9e0", "version" => "20200609124800+sha.692e9e0" }})
+        expect(Facter.fact(:museumpas_version).value).to eq({"museumpas-website" => { "commit" => "692e9e0", "pipeline" => "20200609124800", "version" => "20200609124800+sha.692e9e0" }})
       end
     end
 
@@ -34,9 +34,9 @@ describe Facter::Util::Fact do
       it do
         expect(Facter.fact(:museumpas_version).value).to eq(
           {
-            "museumpas-database" => { "version" => "20180810152730" },
-            "museumpas-files" => { "version" => "20180816150116" },
-            "museumpas-website" => { "commit" => "692e9e0", "version" => "20200609124800+sha.692e9e0" }
+            "museumpas-database" => { "version" => "20180810152730", "pipeline" => "20180810152730" },
+            "museumpas-files" => { "version" => "20180816150116", "pipeline" => "20180816150116" },
+            "museumpas-website" => { "commit" => "692e9e0", "pipeline" => "20200609124800", "version" => "20200609124800+sha.692e9e0" }
           }
         )
       end

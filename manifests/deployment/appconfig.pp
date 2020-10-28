@@ -1,4 +1,4 @@
-class profiles::deployment::infrastructure (
+class profiles::deployment::appconfig (
   String           $package_version = 'latest',
   Optional[String] $puppetdb_url    = undef
 ) {
@@ -8,8 +8,8 @@ class profiles::deployment::infrastructure (
   include ::profiles::apt_keys
   include ::profiles::puppetserver::cache_clear
 
-  apt::source { 'publiq-infrastructure':
-    location => 'https://apt.publiq.be/infrastructure-production',
+  apt::source { 'publiq-appconfig':
+    location => 'https://apt.publiq.be/appconfig-production',
     release  => $facts['lsbdistcodename'],
     repos    => 'main',
     require  => Class['profiles::apt_keys'],
@@ -19,19 +19,19 @@ class profiles::deployment::infrastructure (
     }
   }
 
-  profiles::apt::update { 'publiq-infrastructure':
-    require => Apt::Source['publiq-infrastructure']
+  profiles::apt::update { 'publiq-appconfig':
+    require => Apt::Source['publiq-appconfig']
   }
 
-  package { 'infrastructure-publiq':
+  package { 'appconfig-publiq':
     ensure  => $package_version,
     notify  => Class['profiles::puppetserver::cache_clear'],
-    require => Profiles::Apt::Update['publiq-infrastructure']
+    require => Profiles::Apt::Update['publiq-appconfig']
   }
 
   profiles::deployment::versions { $title:
-    project         => 'infrastructure',
-    packages        => 'infrastructure-publiq',
+    project         => 'appconfig',
+    packages        => 'appconfig-publiq',
     destination_dir => '/var/run',
     puppetdb_url    => $puppetdb_url,
     require         => Class['profiles::puppetserver::cache_clear']
