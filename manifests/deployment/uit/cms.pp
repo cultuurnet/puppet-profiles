@@ -69,6 +69,17 @@ class profiles::deployment::uit::cms (
     subscribe   => [ Package['uit-cms'], Package['uit-cms-database'], File['uit-cms-settings'], File['uit-cms-drush-config']]
   }
 
+  exec { 'uit-cms-cache-rebuild pre':
+    command     => 'drush cache:rebuild',
+    cwd         => $basedir,
+    path        => [ '/usr/local/bin', '/usr/bin', '/bin', "${basedir}/vendor/bin"],
+    environment => [ 'HOME=/'],
+    user        => 'www-data',
+    refreshonly => true,
+    subscribe   => [ Package['uit-cms'], Package['uit-cms-database'], File['uit-cms-settings'], File['uit-cms-drush-config']],
+    require     => Exec['uit-cms-db-install']
+  }
+
   exec { 'uit-cms-updatedb':
     command     => 'drush updatedb -y',
     cwd         => $basedir,
@@ -77,7 +88,7 @@ class profiles::deployment::uit::cms (
     user        => 'www-data',
     refreshonly => true,
     subscribe   => [ Package['uit-cms'], Package['uit-cms-database'], File['uit-cms-settings'], File['uit-cms-drush-config']],
-    require     => Exec['uit-cms-db-install']
+    require     => Exec['uit-cms-cache-rebuild pre']
   }
 
   exec { 'uit-cms-config-import':
@@ -91,7 +102,7 @@ class profiles::deployment::uit::cms (
     require     => Exec['uit-cms-updatedb']
   }
 
-  exec { 'uit-cms-cache-rebuild':
+  exec { 'uit-cms-cache-rebuild post':
     command     => 'drush cache:rebuild',
     cwd         => $basedir,
     path        => [ '/usr/local/bin', '/usr/bin', '/bin', "${basedir}/vendor/bin"],
