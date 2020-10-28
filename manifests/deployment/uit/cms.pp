@@ -70,7 +70,7 @@ class profiles::deployment::uit::cms (
   }
 
   exec { 'uit-cms-updatedb':
-    command     => "drush updatedb -y",
+    command     => 'drush updatedb -y',
     cwd         => $basedir,
     path        => [ '/usr/local/bin', '/usr/bin', '/bin', "${basedir}/vendor/bin"],
     environment => [ 'HOME=/'],
@@ -81,7 +81,7 @@ class profiles::deployment::uit::cms (
   }
 
   exec { 'uit-cms-config-import':
-    command     => "drush config:import -y",
+    command     => 'drush config:import -y',
     cwd         => $basedir,
     path        => [ '/usr/local/bin', '/usr/bin', '/bin', "${basedir}/vendor/bin"],
     environment => [ 'HOME=/'],
@@ -92,7 +92,7 @@ class profiles::deployment::uit::cms (
   }
 
   exec { 'uit-cms-cache-rebuild':
-    command     => "drush cache:rebuild",
+    command     => 'drush cache:rebuild',
     cwd         => $basedir,
     path        => [ '/usr/local/bin', '/usr/bin', '/bin', "${basedir}/vendor/bin"],
     environment => [ 'HOME=/'],
