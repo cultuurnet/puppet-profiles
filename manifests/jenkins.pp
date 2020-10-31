@@ -11,6 +11,7 @@ class profiles::jenkins (
 
   include ::profiles::packages
   include ruby
+  include sudo
 
   $jenkins_port = 8080
   $apache_server = 'jenkins.publiq.be'
@@ -161,6 +162,7 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
   Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> File[$sshdir] -> File['jenkins.model.JenkinsLocationConfiguration.xml'] -> Package['jenkins-cli'] -> File[$helper_groovy] -> Exec['mailer'] -> Exec['create-jenkins-user-admin'] -> Exec["jenkins-security-${security_model}"]
 
   realize Package['git']  #defined in packages.pp
+  realize Package['groovy']  #defined in packages.pp
 
   #For silex builds
   realize Apt::Source['cultuurnet-tools']

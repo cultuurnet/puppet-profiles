@@ -11,6 +11,10 @@ class profiles::packages {
     ensure => 'present'
   }
 
+  @package { 'groovy':
+    ensure => 'present'
+  }
+
   @package { 'amqp-tools':
     ensure => 'present'
   }
