@@ -314,6 +314,30 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
     redirect_status => 'permanent',
   }
 
+#-------------DO NOT CHECK IN THE BELOW CODE---------------------------------------------------------
+file { $sslchain:
+  ensure => file,
+  owner  => 'root',
+  group  => 'root',
+  mode   => '0644',
+  source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/certs/PBQ-bundle.crt',
+}
+file { $sslcert:
+  ensure => file,
+  owner  => 'root',
+  group  => 'root',
+  mode   => '0644',
+  source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/certs/publiq.be.crt',
+}
+file { $sslkey:
+  ensure => file,
+  owner  => 'root',
+  group  => 'root',
+  mode   => '0644',
+  source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/certs/publiq.be.key',
+}
+#-------------DO NOT CHECK IN THE ABOVE CODE---------------------------------------------------------
+
   apache::vhost { "${apache_server}_443":
     docroot               => '/var/www/html',
     manage_docroot        => false,
