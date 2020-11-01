@@ -11,7 +11,6 @@ class profiles::jenkins (
 
   include ::profiles::packages
   include ruby
-  include sudo
 
   $jenkins_port = 8080
   $apache_server = 'jenkins.publiq.be'
