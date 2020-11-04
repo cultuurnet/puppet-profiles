@@ -32,7 +32,7 @@ class profiles::jenkins (
     require  => Class['ruby::dev']
   }
 
-  package { 'dpkg':       #we need to upgrade dpkg to 5.8 for the jenkins install to work correctly, default ubuntu 14.04 is 5.7
+  package { 'dpkg':       #we need to upgrade dpkg 1.17.5ubuntu5.7 to 1.17.5ubuntu5.8 so the jenkins install will work correctly.
     ensure   => latest,
     name     => 'dpkg',
     provider => apt,
@@ -40,6 +40,25 @@ class profiles::jenkins (
 
   package { 'build-essential':
     ensure   => 'installed'
+  }
+
+  # We need 
+  file_line { 'append-curl-security':
+    path => '/etc/apt/sources.list',
+    line => 'deb http://security.ubuntu.com/ubuntu xenial-security main',
+  }
+  file_line { 'append-curl-archive':
+    path => '/etc/apt/sources.list',
+    line => 'deb http://cz.archive.ubuntu.com/ubuntu xenial main universe',
+  }
+  exec { 'update-curl':
+    command => '/usr/bin/apt-get update',
+    require => [File_line['append-curl-security'],File_line['append-curl-archive']],
+  }
+  package { 'curl':
+    ensure  => latest,
+    name    => 'curl',
+    require => Exec['update-curl'],
   }
 
   # This will install and configure jenkins.
