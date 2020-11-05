@@ -177,7 +177,7 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
     require   => [Package[$clitool],Class['jenkins']],
   }
 
-  Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> File[$sshdir] -> File['jenkins.model.JenkinsLocationConfiguration.xml'] -> Package['jenkins-cli'] -> File[$helper_groovy] -> Exec['mailer'] -> Exec['create-jenkins-user-admin'] -> Exec["jenkins-security-${security_model}"]
+  Package['dpkg'] -> Class['::profiles::java8'] -> Package['curl'] -> Class['jenkins'] -> File[$sshdir] -> File['jenkins.model.JenkinsLocationConfiguration.xml'] -> Package['jenkins-cli'] -> File[$helper_groovy] -> Exec['mailer'] -> Exec['create-jenkins-user-admin'] -> Exec["jenkins-security-${security_model}"]
 
   realize Package['git']  #defined in packages.pp
   realize Package['groovy']  #defined in packages.pp
