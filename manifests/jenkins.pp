@@ -249,6 +249,15 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
     unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins pipeline-utility-steps", #Check if plugin is already installed
   }
 
+  # This plugin installs the slack integration..
+  exec { 'slack':
+    command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin slack -restart",
+    tries     => 12,
+    try_sleep => 30,
+    require   => Package[$clitool],
+    unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins slack", #Check if plugin is already installed
+  }
+
   # We use the import-credentials-as-xml because we can load many credentials fromm one xml file, unlike create-credentials-by-xml.
   $credentials_file = '/usr/share/jenkins/credentials.xml'
   file{$credentials_file:
