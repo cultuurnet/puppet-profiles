@@ -6,7 +6,7 @@ class profiles::glassfish (
   contain ::profiles::java8
 
   include ::profiles::packages
-  include ::profiles::repositories
+  include ::profiles::apt::repositories
 
   realize Apt::Source['cultuurnet-tools']
   realize Profiles::Apt::Update['cultuurnet-tools']

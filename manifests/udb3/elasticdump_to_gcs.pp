@@ -9,7 +9,7 @@ class profiles::udb3::elasticdump_to_gcs (
 
   contain ::profiles
 
-  include ::profiles::repositories
+  include ::profiles::apt::repositories
   include ::profiles::packages
 
   realize Apt::Source['nodejs_10.x']

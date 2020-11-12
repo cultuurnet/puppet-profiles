@@ -3,7 +3,7 @@ class profiles::base {
   contain ::profiles
 
   include ::profiles::groups
-  include ::profiles::repositories
+  include ::profiles::apt::repositories
   include ::profiles::users
   include ::profiles::packages
 

@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe 'profiles::repositories' do
+describe 'profiles::apt::repositories' do
   let(:pre_condition) { 'include ::profiles' }
 
-  include_examples 'operating system support', 'profiles::repositories'
+  include_examples 'operating system support', 'profiles::apt::repositories'
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do

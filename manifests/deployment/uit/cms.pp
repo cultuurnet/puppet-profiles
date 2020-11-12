@@ -13,7 +13,7 @@ class profiles::deployment::uit::cms (
 
   contain ::profiles
 
-  include ::profiles::repositories
+  include ::profiles::apt::repositories
   include ::profiles::deployment::uit
 
   realize Apt::Source['publiq-uit']

@@ -4,7 +4,7 @@ class profiles::nodejs (
 
   contain ::profiles
 
-  include ::profiles::repositories
+  include ::profiles::apt::repositories
 
   realize Apt::Source["nodejs_${major_version}.x"]
   realize Profiles::Apt::Update["nodejs_${major_version}.x"]

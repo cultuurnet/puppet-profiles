@@ -2,7 +2,7 @@ class profiles::apache::mod::php {
 
   contain ::profiles
 
-  include ::profiles::repositories
+  include ::profiles::apt::repositories
 
   realize Apt::Source['php']
   realize Profiles::Apt::Update['php']
