@@ -9,7 +9,7 @@ describe 'profiles::deployment::infrastructure' do
 
       it { is_expected.to compile.with_all_deps }
 
-      it { is_expected.to contain_class('profiles::apt_keys') }
+      it { is_expected.to contain_class('profiles::apt::keys') }
       it { is_expected.to contain_class('profiles::puppetserver::cache_clear') }
 
       it { is_expected.to contain_apt__source('publiq-infrastructure').with(
@@ -22,7 +22,7 @@ describe 'profiles::deployment::infrastructure' do
         }
       ) }
 
-      it { is_expected.to contain_apt__source('publiq-infrastructure').that_requires('Class[profiles::apt_keys]') }
+      it { is_expected.to contain_apt__source('publiq-infrastructure').that_requires('Class[profiles::apt::keys]') }
       it { is_expected.to contain_profiles__apt__update('publiq-infrastructure').that_requires('Apt::Source[publiq-infrastructure]') }
 
       it { is_expected.to contain_package('infrastructure-publiq').that_requires('Profiles::Apt::Update[publiq-infrastructure]') }

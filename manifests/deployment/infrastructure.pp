@@ -5,14 +5,14 @@ class profiles::deployment::infrastructure (
 
   contain ::profiles
 
-  include ::profiles::apt_keys
+  include ::profiles::apt::keys
   include ::profiles::puppetserver::cache_clear
 
   apt::source { 'publiq-infrastructure':
     location => 'https://apt.publiq.be/infrastructure-production',
     release  => $facts['lsbdistcodename'],
     repos    => 'main',
-    require  => Class['profiles::apt_keys'],
+    require  => Class['profiles::apt::keys'],
     include  => {
       'deb' => true,
       'src' => false

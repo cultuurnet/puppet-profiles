@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe 'profiles::apt_keys' do
-  include_examples 'operating system support', 'profiles::apt_keys'
+describe 'profiles::apt::keys' do
+  include_examples 'operating system support', 'profiles::apt::keys'
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do

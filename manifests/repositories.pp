@@ -2,10 +2,10 @@ class profiles::repositories {
 
   # TODO: repositories split for trusty and xenial
 
-  include ::profiles::apt_keys
+  include ::profiles::apt::keys
 
   Apt::Source {
-    require => Class['profiles::apt_keys'],
+    require => Class['profiles::apt::keys'],
     include => {
       'deb' => true,
       'src' => false

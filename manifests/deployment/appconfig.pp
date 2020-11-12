@@ -5,14 +5,14 @@ class profiles::deployment::appconfig (
 
   contain ::profiles
 
-  include ::profiles::apt_keys
+  include ::profiles::apt::keys
   include ::profiles::puppetserver::cache_clear
 
   apt::source { 'publiq-appconfig':
     location => 'https://apt.publiq.be/appconfig-production',
     release  => $facts['lsbdistcodename'],
     repos    => 'main',
-    require  => Class['profiles::apt_keys'],
+    require  => Class['profiles::apt::keys'],
     include  => {
       'deb' => true,
       'src' => false

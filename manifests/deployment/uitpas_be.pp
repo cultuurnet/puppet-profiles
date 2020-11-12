@@ -1,12 +1,12 @@
 class profiles::deployment::uitpas_be {
 
-  include ::profiles::apt_keys
+  include ::profiles::apt::keys
 
   @apt::source { 'publiq-uitpasbe':
     location => "http://apt.uitdatabank.be/uitpas.be-${environment}",
     release  => 'trusty',
     repos    => 'main',
-    require  => Class['profiles::apt_keys'],
+    require  => Class['profiles::apt::keys'],
     include  => {
       'deb' => true,
       'src' => false
