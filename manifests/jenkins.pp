@@ -25,8 +25,8 @@ class profiles::jenkins (
     location => "http://apt.uitdatabank.be/jenkins-${environment}",
     release  => $facts['lsbdistcodename'],
     repos    => 'main',
-    require => Class['profiles::apt::keys'],
-    include => {
+    require  => Class['profiles::apt::keys'],
+    include  => {
       'deb' => true,
       'src' => false
     }
