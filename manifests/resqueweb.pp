@@ -2,7 +2,7 @@ class profiles::resqueweb {
 
   contain ::profiles
 
-  include ::profiles::repositories
+  include ::profiles::apt::repositories
 
   realize Apt::Source['cultuurnet-tools']
   realize Profiles::Apt::Update['cultuurnet-tools']

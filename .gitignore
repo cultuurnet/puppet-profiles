@@ -3,4 +3,5 @@ Gemfile.lock
 vendor
 .bundle
 .ruby-version
+*.swp
 manifests/.vscode/

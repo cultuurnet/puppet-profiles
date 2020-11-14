@@ -7,7 +7,7 @@ class profiles::rabbitmq (
   contain ::profiles
 
   include ::profiles::packages
-  include ::profiles::repositories
+  include ::profiles::apt::repositories
 
   realize Apt::Source['rabbitmq']
 

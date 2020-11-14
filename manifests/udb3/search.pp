@@ -7,7 +7,7 @@ class profiles::udb3::search (
   contain ::profiles
   contain ::deployment::udb3::search
 
-  include ::profiles::apt_keys
+  include ::profiles::apt::keys
 
   # TODO: parameterize memory settings for instance
   # TODO: move deployment to profiles and rework update_facts stuff
@@ -23,7 +23,7 @@ class profiles::udb3::search (
     location => "http://apt.uitdatabank.be/search-${environment}",
     release  => 'trusty',
     repos    => 'main',
-    require  => Class['profiles::apt_keys'],
+    require  => Class['profiles::apt::keys'],
     include  => {
       'deb' => true,
       'src' => false

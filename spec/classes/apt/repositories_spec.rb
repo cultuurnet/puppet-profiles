@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe 'profiles::repositories' do
+describe 'profiles::apt::repositories' do
   let(:pre_condition) { 'include ::profiles' }
 
-  include_examples 'operating system support', 'profiles::repositories'
+  include_examples 'operating system support', 'profiles::apt::repositories'
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do
@@ -12,7 +12,7 @@ describe 'profiles::repositories' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_class('profiles::apt_keys') }
+        it { is_expected.to contain_class('profiles::apt::keys') }
 
         case facts[:os]['release']['major']
         when '14.04'
@@ -33,7 +33,7 @@ describe 'profiles::repositories' do
             )
             }
 
-            it { is_expected.to contain_apt__source('cultuurnet-tools').that_requires('Class[profiles::apt_keys]') }
+            it { is_expected.to contain_apt__source('cultuurnet-tools').that_requires('Class[profiles::apt::keys]') }
             it { is_expected.to contain_profiles__apt__update('cultuurnet-tools').that_requires('Apt::Source[cultuurnet-tools]') }
 
             it { is_expected.to contain_apt__source('php').with(
@@ -48,7 +48,7 @@ describe 'profiles::repositories' do
             )
             }
 
-            it { is_expected.to contain_apt__source('php').that_requires('Class[profiles::apt_keys]') }
+            it { is_expected.to contain_apt__source('php').that_requires('Class[profiles::apt::keys]') }
             it { is_expected.to contain_profiles__apt__update('php').that_requires('Apt::Source[php]') }
 
             it { is_expected.to contain_apt__source('rabbitmq').with(
@@ -63,7 +63,7 @@ describe 'profiles::repositories' do
             )
             }
 
-            it { is_expected.to contain_apt__source('rabbitmq').that_requires('Class[profiles::apt_keys]') }
+            it { is_expected.to contain_apt__source('rabbitmq').that_requires('Class[profiles::apt::keys]') }
             it { is_expected.to contain_profiles__apt__update('rabbitmq').that_requires('Apt::Source[rabbitmq]') }
 
             it { is_expected.to contain_apt__source('nodejs_10.x').with(
@@ -78,7 +78,7 @@ describe 'profiles::repositories' do
             )
             }
 
-            it { is_expected.to contain_apt__source('nodejs_10.x').that_requires('Class[profiles::apt_keys]') }
+            it { is_expected.to contain_apt__source('nodejs_10.x').that_requires('Class[profiles::apt::keys]') }
             it { is_expected.to contain_profiles__apt__update('nodejs_10.x').that_requires('Apt::Source[nodejs_10.x]') }
 
             it { is_expected.to contain_apt__source('nodejs_12.x').with(
@@ -93,7 +93,7 @@ describe 'profiles::repositories' do
             )
             }
 
-            it { is_expected.to contain_apt__source('nodejs_12.x').that_requires('Class[profiles::apt_keys]') }
+            it { is_expected.to contain_apt__source('nodejs_12.x').that_requires('Class[profiles::apt::keys]') }
             it { is_expected.to contain_profiles__apt__update('nodejs_12.x').that_requires('Apt::Source[nodejs_12.x]') }
 
             it { is_expected.to contain_apt__source('nodejs_14.x').with(
@@ -108,7 +108,7 @@ describe 'profiles::repositories' do
             )
             }
 
-            it { is_expected.to contain_apt__source('nodejs_14.x').that_requires('Class[profiles::apt_keys]') }
+            it { is_expected.to contain_apt__source('nodejs_14.x').that_requires('Class[profiles::apt::keys]') }
             it { is_expected.to contain_profiles__apt__update('nodejs_14.x').that_requires('Apt::Source[nodejs_14.x]') }
 
             it { is_expected.to contain_apt__source('elasticsearch').with(
@@ -123,7 +123,7 @@ describe 'profiles::repositories' do
             )
             }
 
-            it { is_expected.to contain_apt__source('elasticsearch').that_requires('Class[profiles::apt_keys]') }
+            it { is_expected.to contain_apt__source('elasticsearch').that_requires('Class[profiles::apt::keys]') }
             it { is_expected.to contain_profiles__apt__update('elasticsearch').that_requires('Apt::Source[elasticsearch]') }
 
             it { is_expected.to contain_apt__source('yarn').with(
@@ -138,7 +138,7 @@ describe 'profiles::repositories' do
             )
             }
 
-            it { is_expected.to contain_apt__source('yarn').that_requires('Class[profiles::apt_keys]') }
+            it { is_expected.to contain_apt__source('yarn').that_requires('Class[profiles::apt::keys]') }
             it { is_expected.to contain_profiles__apt__update('yarn').that_requires('Apt::Source[yarn]') }
           end
 
@@ -160,7 +160,7 @@ describe 'profiles::repositories' do
             )
             }
 
-            it { is_expected.to contain_apt__source('cultuurnet-tools').that_requires('Class[profiles::apt_keys]') }
+            it { is_expected.to contain_apt__source('cultuurnet-tools').that_requires('Class[profiles::apt::keys]') }
             it { is_expected.to contain_profiles__apt__update('cultuurnet-tools').that_requires('Apt::Source[cultuurnet-tools]') }
 
             it { is_expected.to contain_apt__source('php').with(
@@ -175,7 +175,7 @@ describe 'profiles::repositories' do
             )
             }
 
-            it { is_expected.to contain_apt__source('php').that_requires('Class[profiles::apt_keys]') }
+            it { is_expected.to contain_apt__source('php').that_requires('Class[profiles::apt::keys]') }
             it { is_expected.to contain_profiles__apt__update('php').that_requires('Apt::Source[php]') }
 
             it { is_expected.to contain_apt__source('rabbitmq').with(
@@ -190,7 +190,7 @@ describe 'profiles::repositories' do
             )
             }
 
-            it { is_expected.to contain_apt__source('rabbitmq').that_requires('Class[profiles::apt_keys]') }
+            it { is_expected.to contain_apt__source('rabbitmq').that_requires('Class[profiles::apt::keys]') }
             it { is_expected.to contain_profiles__apt__update('rabbitmq').that_requires('Apt::Source[rabbitmq]') }
 
             it { is_expected.to contain_apt__source('nodejs_10.x').with(
@@ -205,7 +205,7 @@ describe 'profiles::repositories' do
             )
             }
 
-            it { is_expected.to contain_apt__source('nodejs_10.x').that_requires('Class[profiles::apt_keys]') }
+            it { is_expected.to contain_apt__source('nodejs_10.x').that_requires('Class[profiles::apt::keys]') }
             it { is_expected.to contain_profiles__apt__update('nodejs_10.x').that_requires('Apt::Source[nodejs_10.x]') }
 
             it { is_expected.to contain_apt__source('nodejs_12.x').with(
@@ -220,7 +220,7 @@ describe 'profiles::repositories' do
             )
             }
 
-            it { is_expected.to contain_apt__source('nodejs_12.x').that_requires('Class[profiles::apt_keys]') }
+            it { is_expected.to contain_apt__source('nodejs_12.x').that_requires('Class[profiles::apt::keys]') }
             it { is_expected.to contain_profiles__apt__update('nodejs_12.x').that_requires('Apt::Source[nodejs_12.x]') }
 
             it { is_expected.to contain_apt__source('nodejs_14.x').with(
@@ -235,7 +235,7 @@ describe 'profiles::repositories' do
             )
             }
 
-            it { is_expected.to contain_apt__source('nodejs_14.x').that_requires('Class[profiles::apt_keys]') }
+            it { is_expected.to contain_apt__source('nodejs_14.x').that_requires('Class[profiles::apt::keys]') }
             it { is_expected.to contain_profiles__apt__update('nodejs_14.x').that_requires('Apt::Source[nodejs_14.x]') }
 
             it { is_expected.to contain_apt__source('elasticsearch').with(
@@ -250,7 +250,7 @@ describe 'profiles::repositories' do
             )
             }
 
-            it { is_expected.to contain_apt__source('elasticsearch').that_requires('Class[profiles::apt_keys]') }
+            it { is_expected.to contain_apt__source('elasticsearch').that_requires('Class[profiles::apt::keys]') }
             it { is_expected.to contain_profiles__apt__update('elasticsearch').that_requires('Apt::Source[elasticsearch]') }
 
             it { is_expected.to contain_apt__source('yarn').with(
@@ -265,7 +265,7 @@ describe 'profiles::repositories' do
             )
             }
 
-            it { is_expected.to contain_apt__source('yarn').that_requires('Class[profiles::apt_keys]') }
+            it { is_expected.to contain_apt__source('yarn').that_requires('Class[profiles::apt::keys]') }
             it { is_expected.to contain_profiles__apt__update('yarn').that_requires('Apt::Source[yarn]') }
           end
         end

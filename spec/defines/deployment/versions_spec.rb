@@ -125,4 +125,10 @@ describe 'profiles::deployment::versions' do
       end
     end
   end
+
+  context "without parameters" do
+    let(:params) { {} }
+
+    it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'project'/) }
+  end
 end

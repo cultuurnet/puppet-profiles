@@ -1,4 +1,4 @@
-class profiles::apt_keys {
+class profiles::apt::keys {
 
   contain ::profiles
 

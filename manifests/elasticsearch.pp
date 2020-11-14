@@ -5,7 +5,7 @@ class profiles::elasticsearch (
   contain ::profiles
   contain ::profiles::java8
 
-  include ::profiles::repositories
+  include ::profiles::apt::repositories
 
   realize Apt::Source['elasticsearch']
   realize Profiles::Apt::Update['elasticsearch']

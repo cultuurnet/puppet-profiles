@@ -9,6 +9,7 @@ class profiles::jenkins (
   contain ::profiles
   contain ::profiles::java8
 
+  include ::profiles::apt::keys
   include ::profiles::packages
   include ruby
 
@@ -19,6 +20,21 @@ class profiles::jenkins (
   $helper_groovy = '/usr/share/jenkins/puppet_helper.groovy'
 
   realize Package['jq']
+
+  apt::source { 'publiq-jenkins':
+    location => "http://apt.uitdatabank.be/jenkins-${environment}",
+    release  => $facts['lsbdistcodename'],
+    repos    => 'main',
+    require  => Class['profiles::apt::keys'],
+    include  => {
+      'deb' => true,
+      'src' => false
+    }
+  }
+
+  profiles::apt::update { 'publiq-jenkins':
+    require => Apt::Source['publiq-jenkins']
+  }
 
   # This will install the ruby dev package and bundler
   class{'ruby::dev':
@@ -63,8 +79,10 @@ class profiles::jenkins (
 
   # This will install and configure jenkins.
   class { 'jenkins':
+    repo         => false,
     cli          => false,
     install_java => false,
+    require      => Profiles::Apt::Update['publiq-jenkins']
   }
 
   sudo::conf { 'jenkins':
@@ -126,10 +144,10 @@ class profiles::jenkins (
   # installed in the system path for easy use. The rake file can be found here:
   # https://github.com/cultuurnet/tool-builder/tree/master/jenkins-cli
   $clitool = 'jenkins-cli'
-  package{$clitool:
+  package{ $clitool:
     name     => $clitool,
     provider => apt,
-    require  => Class['jenkins'],
+    require  => Profiles::Apt::Update['publiq-jenkins']
   }
 
   # ----------- Setup security ----------------------------------------------------
@@ -295,6 +313,15 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
     try_sleep => 30,
     require   => Package[$clitool],
     unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins pipeline-utility-steps", #Check if plugin is already installed
+  }
+
+  # This plugin installs the slack integration..
+  exec { 'slack':
+    command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin slack -restart",
+    tries     => 12,
+    try_sleep => 30,
+    require   => Package[$clitool],
+    unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins slack", #Check if plugin is already installed
   }
 
   # We use the import-credentials-as-xml because we can load many credentials fromm one xml file, unlike create-credentials-by-xml.
