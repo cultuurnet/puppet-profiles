@@ -48,7 +48,7 @@ class profiles::jenkins (
     require  => Class['ruby::dev']
   }
 
-  package { 'dpkg':       #we need to upgrade dpkg 1.17.5ubuntu5.7 to 1.17.5ubuntu5.8 so the jenkins install will work correctly.
+  package { 'dpkg':       #we need to upgrade dpkg to 5.8 for the jenkins install to work correctly, default ubuntu 14.04 is 5.7
     ensure   => latest,
     name     => 'dpkg',
     provider => apt,
@@ -56,25 +56,6 @@ class profiles::jenkins (
 
   package { 'build-essential':
     ensure   => 'installed'
-  }
-
-  # We need 
-  file_line { 'append-curl-security':
-    path => '/etc/apt/sources.list',
-    line => 'deb http://security.ubuntu.com/ubuntu xenial-security main',
-  }
-  file_line { 'append-curl-archive':
-    path => '/etc/apt/sources.list',
-    line => 'deb http://cz.archive.ubuntu.com/ubuntu xenial main universe',
-  }
-  exec { 'update-curl':
-    command => '/usr/bin/apt-get update',
-    require => [File_line['append-curl-security'],File_line['append-curl-archive']],
-  }
-  package { 'curl':
-    ensure  => latest,
-    name    => 'curl',
-    require => Exec['update-curl'],
   }
 
   # This will install and configure jenkins.
@@ -106,16 +87,16 @@ class profiles::jenkins (
     owner  => 'jenkins',
     group  => 'jenkins',
     mode   => '0400',
-    #source => 'puppet:///private/id_rsa',
-    source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/id_rsa',
+    source => 'puppet:///private/id_rsa',
+    #source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/id_rsa',
   }
   file {"${sshdir}/known_hosts":
     ensure => file,
     owner  => 'jenkins',
     group  => 'jenkins',
     mode   => '0644',
-    #source => 'puppet:///private/known_hosts',
-    source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/known_hosts',
+    source => 'puppet:///private/known_hosts',
+    #source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/known_hosts',
   }
   file {"${sshdir}/id_rsa.pub":
     ensure  => file,
@@ -157,16 +138,13 @@ class profiles::jenkins (
     owner  => 'jenkins',
     group  => 'jenkins',
     mode   => '0644',
-    #source => 'puppet:///modules/jenkins/puppet_helper.groovy',
-    source => '/vagrant/puppet/modules/jenkins/files/puppet_helper.groovy',
+    source => 'puppet:///modules/jenkins/puppet_helper.groovy',
+    #source => '/vagrant/puppet/modules/jenkins/files/puppet_helper.groovy',
   }
 
-  #We need this plugin to create our first user
-  exec { 'mailer':
-    command   => "${clitool} install-plugin mailer -restart",
-    tries     => 12,
-    try_sleep => 30,
-    unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins mailer", #Check if plugin is already installed
+  profiles::jenkins::plugin { 'mailer':
+    admin_user     => $adminuser,
+    admin_password => $adminpassword
   }
 
   # Create first user
@@ -174,7 +152,7 @@ class profiles::jenkins (
     command   => "cat ${helper_groovy} | ${clitool} groovy = create_or_update_user ${adminuser} \"jenkins@publiq.be\" ${adminpassword} \"${adminuser}\" \"\"",
     tries     => 10,
     try_sleep => 30,
-    require   => [Package[$clitool],Class['jenkins']],
+    require   => [ Package[$clitool], Class['jenkins'], File[$helper_groovy], Profiles::Jenkins::Plugin['mailer']],
     unless    => "cat ${helper_groovy} | ${clitool} -auth ${adminuser}:${adminpassword} groovy = user_info ${adminuser}", #Check if the admin user exists
   }
 
@@ -192,23 +170,12 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
     unless    => "cat ${helper_groovy} | ${clitool} -auth ${adminuser}:${adminpassword} groovy = get_authorization_strategyname | grep -q -e '^${security_model}\$'",
     tries     => 10,
     try_sleep => 30,
-    require   => [Package[$clitool],Class['jenkins']],
+    require   => [Class['jenkins'], Exec['create-jenkins-user-admin']],
   }
 
-  Package['dpkg'] -> Class['::profiles::java8'] -> Package['curl'] -> Class['jenkins'] -> File[$sshdir] -> File['jenkins.model.JenkinsLocationConfiguration.xml'] -> Package['jenkins-cli'] -> File[$helper_groovy] -> Exec['mailer'] -> Exec['create-jenkins-user-admin'] -> Exec["jenkins-security-${security_model}"]
+  Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> File[$sshdir] -> File['jenkins.model.JenkinsLocationConfiguration.xml']
 
-  realize Package['git']  #defined in packages.pp
-  realize Package['groovy']  #defined in packages.pp
-
-  #For silex builds
-  realize Apt::Source['cultuurnet-tools']
-  realize Profiles::Apt::Update['cultuurnet-tools']
-  realize Package['composer']  #defined in packages.pp
-  package{'phing':
-    name     => 'phing',
-    provider => apt,
-    require  => Profiles::Apt::Update['cultuurnet-tools']
-  }
+  realize Package['git']  #defined in packages.pp, installs git
 
   # ----------- Install Jenkins Plugins and Credentials-----------
   # The puppet-jenkins module has functionality for adding plugins but you must install the dependencies manually(not done automatically).
@@ -217,111 +184,59 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
   # We have to use the .jar manually because the name of the file was changed in jenkins itslef but the puppet plugin has not been updated yet,
   # https://github.com/voxpupuli/puppet-jenkins/pull/945, this means we can not use jenkins::cli or jenkins::credentials and several other classes.
 
-  #Installs the jenkins plugin delivery-pipeline-plugin. The cli will detect if the plugin is already present and do nothing if it is.
-  exec { 'delivery-pipeline-plugin':
-    command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin delivery-pipeline-plugin -restart",
-    tries     => 12,
-    try_sleep => 30,
-    require   => Package[$clitool],
-    unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins delivery-pipeline-plugin", #Check if plugin is already installed
+  profiles::jenkins::plugin { 'delivery-pipeline-plugin':
+    admin_user     => $adminuser,
+    admin_password => $adminpassword
   }
 
-  # We need this plugin for libraries used in PipeLineAsCode. After the plugin is installed we add a config file for it.
-  exec { 'workflow-cps-global-lib':
-    command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin workflow-cps-global-lib -restart",
-    tries     => 12,
-    try_sleep => 30,
-    unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins workflow-cps-global-lib", #Check if plugin is already installed
+  profiles::jenkins::plugin { 'workflow-cps-global-lib':
+    admin_user     => $adminuser,
+    admin_password => $adminpassword
   }
+
   file { '/var/lib/jenkins/org.jenkinsci.plugins.workflow.libs.GlobalLibraries.xml':
     ensure  => file,
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    #source  => 'puppet:///private/org.jenkinsci.plugins.workflow.libs.GlobalLibraries.xml',
-    source  => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/org.jenkinsci.plugins.workflow.libs.GlobalLibraries.xml',
-    require => Exec['workflow-cps-global-lib'],
+    source  => 'puppet:///private/org.jenkinsci.plugins.workflow.libs.GlobalLibraries.xml',
+    #source  => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/org.jenkinsci.plugins.workflow.libs.GlobalLibraries.xml',
+    require => Profiles::Jenkins::Plugin['workflow-cps-global-lib'],
   }
 
-  # We need this to connect to bitbucket. The cli will detect if the plugin is already present and do nothing if it is.
-  exec { 'bitbucket':
-    command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin bitbucket -restart",
-    tries     => 12,
-    try_sleep => 30,
-    require   => Package[$clitool],
-    unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins bitbucket", #Check if plugin is already installed
+  profiles::jenkins::plugin { 'bitbucket':
+    admin_user     => $adminuser,
+    admin_password => $adminpassword
   }
 
-  # This plugin is adds libraries need for PipeLineAsCode. The cli will detect if the plugin is already present and do nothing if it is.
-  exec { 'workflow-aggregator':
-    command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin workflow-aggregator -restart",
-    tries     => 12,
-    try_sleep => 30,
-    require   => Package[$clitool],
-    unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins workflow-aggregator", #Check if plugin is already installed
+  profiles::jenkins::plugin { 'workflow-aggregator':
+    admin_user     => $adminuser,
+    admin_password => $adminpassword
   }
 
-  # This plugin is adds SSH functionality need for PipeLineAsCode. The cli will detect if the plugin is already present and do nothing if it is.
-  exec { 'ssh-steps':
-    command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin ssh-steps -restart",
-    tries     => 12,
-    try_sleep => 30,
-    require   => Package[$clitool],
-    unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins ssh-steps", #Check if plugin is already installed
+  profiles::jenkins::plugin { 'ssh-steps':
+    admin_user     => $adminuser,
+    admin_password => $adminpassword
   }
 
-  # Since we will be using multiple version of NodeJS we need this plugin. Easier to manage than via puppet.
-  exec { 'nodejs':
-    command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin nodejs -restart",
-    tries     => 12,
-    try_sleep => 30,
-    require   => Package[$clitool],
-    unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins nodejs", #Check if plugin is already installed
-  }
-  file { '/var/lib/jenkins/jenkins.plugins.nodejs.tools.NodeJSInstallation.xml':
-    ensure  => file,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    #source  => 'puppet:///private/jenkins.plugins.nodejs.tools.NodeJSInstallation.xml',
-    source  => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/jenkins.plugins.nodejs.tools.NodeJSInstallation.xml',
-    require => Exec['nodejs'],
+  profiles::jenkins::plugin { 'blueocean':
+    admin_user     => $adminuser,
+    admin_password => $adminpassword
   }
 
-  # This plugin makes the pipeline view more user friendly and easier to debug.
-  exec { 'blueocean':
-    command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin blueocean -restart",
-    tries     => 12,
-    try_sleep => 30,
-    require   => Package[$clitool],
-    unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins blueocean", #Check if plugin is already installed
+  profiles::jenkins::plugin { 'copyartifact':
+    admin_user     => $adminuser,
+    admin_password => $adminpassword
   }
 
-  # This plugin allows us to copy artifacts from projects and builds.
-  exec { 'copyartifact':
-    command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin copyartifact -restart",
-    tries     => 12,
-    try_sleep => 30,
-    require   => Package[$clitool],
-    unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins copyartifact", #Check if plugin is already installed
+  profiles::jenkins::plugin { 'pipeline-utility-steps':
+    admin_user     => $adminuser,
+    admin_password => $adminpassword
   }
 
-  # This plugin installs a few useful pipeline utilities.
-  exec { 'pipeline-utility-steps':
-    command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin pipeline-utility-steps -restart",
-    tries     => 12,
-    try_sleep => 30,
-    require   => Package[$clitool],
-    unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins pipeline-utility-steps", #Check if plugin is already installed
-  }
-
-  # This plugin installs the slack integration..
-  exec { 'slack':
-    command   => "${clitool} -auth ${adminuser}:${adminpassword} install-plugin slack -restart",
-    tries     => 12,
-    try_sleep => 30,
-    require   => Package[$clitool],
-    unless    => "${clitool} -auth ${adminuser}:${adminpassword} list-plugins slack", #Check if plugin is already installed
+  profiles::jenkins::plugin { 'slack':
+    admin_user     => $adminuser,
+    admin_password => $adminpassword
   }
 
   # We use the import-credentials-as-xml because we can load many credentials fromm one xml file, unlike create-credentials-by-xml.
@@ -331,19 +246,17 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
     owner  => 'root',
     group  => 'root',
     mode   => '0644',
-    #source => 'puppet:///private/credentials.xml',
-    source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/credentials.xml',
+    source => 'puppet:///private/credentials.xml',
+    #source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/credentials.xml',
   }
   exec { 'import-credentials':
     command   => "${clitool} -auth ${adminuser}:${adminpassword} import-credentials-as-xml system::system::jenkins < ${credentials_file}",
     tries     => 10,
     try_sleep => 30,
-    require   => Package[$clitool],
+    require   => [ Package[$clitool], File[$credentials_file]],
   }
 
-  Exec['delivery-pipeline-plugin'] -> Exec['workflow-cps-global-lib'] -> Exec['bitbucket']-> Exec['workflow-aggregator'] -> File[$credentials_file] -> Exec['import-credentials'] -> Exec['ssh-steps'] -> Exec['nodejs'] -> Exec['blueocean']
-
-
+  Profiles::Jenkins::Plugin['delivery-pipeline-plugin'] -> Profiles::Jenkins::Plugin['workflow-cps-global-lib'] -> Profiles::Jenkins::Plugin['bitbucket'] -> Profiles::Jenkins::Plugin['workflow-aggregator']
 
   # ----------- Install the Apache server and vhosts for HTTP and HTTPS -----------
   class{ 'apache':
@@ -359,30 +272,6 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
     redirect_dest   => "https://${apache_server}/",
     redirect_status => 'permanent',
   }
-
-#-------------DO NOT CHECK IN THE BELOW CODE---------------------------------------------------------
-file { $sslchain:
-  ensure => file,
-  owner  => 'root',
-  group  => 'root',
-  mode   => '0644',
-  source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/certs/PBQ-bundle.crt',
-}
-file { $sslcert:
-  ensure => file,
-  owner  => 'root',
-  group  => 'root',
-  mode   => '0644',
-  source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/certs/publiq.be.crt',
-}
-file { $sslkey:
-  ensure => file,
-  owner  => 'root',
-  group  => 'root',
-  mode   => '0644',
-  source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/certs/publiq.be.key',
-}
-#-------------DO NOT CHECK IN THE ABOVE CODE---------------------------------------------------------
 
   apache::vhost { "${apache_server}_443":
     docroot               => '/var/www/html',
