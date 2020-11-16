@@ -26,11 +26,17 @@ describe 'profiles::jenkins::plugin' do
 
         it { is_expected.to contain_exec('jenkins plugin foobar').that_requires('Package[jenkins-cli]') }
 
-        context "with title => guineapig and ensure => present" do
+        context "with title => guineapig, restart => true and ensure => present" do
           let(:title) { 'guineapig' }
 
+          let(:params) {
+            super().merge( {
+              'restart' => true
+            }
+          ) }
+
           it { is_expected.to contain_exec('jenkins plugin guineapig').with(
-            'command'   => "jenkins-cli -auth john:doe -webSocket install-plugin guineapig -deploy",
+            'command'   => "jenkins-cli -auth john:doe -webSocket install-plugin guineapig -restart",
             'path'      => [ '/usr/local/bin', '/usr/bin'],
             'unless'    => 'jenkins-cli -auth john:doe list-plugins guineapig',
             'logoutput' => 'on_failure'
@@ -65,17 +71,18 @@ describe 'profiles::jenkins::plugin' do
 
         it { is_expected.to contain_exec('jenkins plugin foobar').that_requires('Package[jenkins-cli]') }
 
-        context "with title => guineapig and ensure => absent" do
+        context "with title => guineapig, restart => true and ensure => absent" do
           let(:title) { 'guineapig' }
 
           let(:params) {
             super().merge( {
-              'ensure' => 'absent'
+              'ensure'  => 'absent',
+              'restart' => true
             }
           ) }
 
           it { is_expected.to contain_exec('jenkins plugin guineapig').with(
-            'command'   => "jenkins-cli -auth jane:roe -webSocket disable-plugin guineapig",
+            'command'   => "jenkins-cli -auth jane:roe -webSocket disable-plugin guineapig -restart",
             'path'      => [ '/usr/local/bin', '/usr/bin'],
             'onlyif'    => 'jenkins-cli -auth jane:roe list-plugins guineapig',
             'logoutput' => 'on_failure'
