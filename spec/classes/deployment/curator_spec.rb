@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe 'profiles::deployment::curator' do
+  include_examples 'operating system support', 'profiles::deployment::curator'
+
   on_supported_os.each do |os, facts|
    context "on #{os}" do
       let (:facts) { facts }

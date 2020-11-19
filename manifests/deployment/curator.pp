@@ -1,5 +1,7 @@
 class profiles::deployment::curator {
 
+  contain ::profiles
+
   include ::profiles::apt::keys
 
   @apt::source { 'publiq-curator':
