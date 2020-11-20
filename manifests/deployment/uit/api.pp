@@ -39,10 +39,10 @@ class profiles::deployment::uit::api (
   }
 
   file { 'uit-api-log':
-    ensure  => 'directory',
-    path    => '/var/log/uit-api',
-    owner   => 'www-data',
-    group   => 'www-data'
+    ensure => 'directory',
+    path   => '/var/log/uit-api',
+    owner  => 'www-data',
+    group  => 'www-data'
   }
 
   exec { 'uit-api_db_schema_update':
