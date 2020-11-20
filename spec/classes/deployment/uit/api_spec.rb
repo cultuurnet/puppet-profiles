@@ -31,6 +31,13 @@ describe 'profiles::deployment::uit::api' do
           'group'  => 'www-data'
         ) }
 
+        it { is_expected.to contain_file('uit-api-log').with(
+          'ensure' => 'directory',
+          'path'   => '/var/log/uit-api',
+          'owner'  => 'www-data',
+          'group'  => 'www-data'
+        ) }
+
         it { is_expected.to contain_file('uit-api-config').that_requires('Package[uit-api]') }
 
         it { is_expected.not_to contain_file('/etc/default/uit-api') }
@@ -55,6 +62,7 @@ describe 'profiles::deployment::uit::api' do
         ) }
 
         it { is_expected.to contain_service('uit-api').that_requires('Package[uit-api]') }
+        it { is_expected.to contain_service('uit-api').that_requires('File[uit-api-log]') }
         it { is_expected.to contain_file('uit-api-config').that_notifies('Service[uit-api]') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::api').with(
