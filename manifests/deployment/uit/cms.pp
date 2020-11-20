@@ -20,7 +20,9 @@ class profiles::deployment::uit::cms (
   realize Profiles::Apt::Update['publiq-uit']
 
   package { 'uit-cms':
-    ensure => $package_version
+    ensure  => $package_version,
+    notify  => Profiles::Deployment::Versions[$title],
+    require => Profiles::Apt::Update['publiq-uit']
   }
 
   package { 'uit-cms-database':
