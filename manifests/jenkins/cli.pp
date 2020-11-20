@@ -1,6 +1,6 @@
 class profiles::jenkins::cli(
-  String $admin_user,
-  String $admin_password,
+  String $user,
+  String $password,
   String $version        = 'latest',
   String $server_url     = 'http://localhost:8080'
 ) {

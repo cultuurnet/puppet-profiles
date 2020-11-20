@@ -3,8 +3,8 @@ require 'spec_helper'
 describe 'profiles::jenkins::cli' do
   context "with admin_user => john and admin_password => doe" do
     let(:params) { {
-      'admin_user' => 'john',
-      'admin_password' => 'doe'
+      'user' => 'john',
+      'password' => 'doe'
     } }
 
     include_examples 'operating system support', 'profiles::jenkins::cli'
@@ -29,8 +29,8 @@ describe 'profiles::jenkins::cli' do
           'mode'   => '0644'
         ) }
 
-        it { is_expected.to contain_file('/etc/jenkins-cli/cli.conf').with_content(/ADMIN_USER=john/) }
-        it { is_expected.to contain_file('/etc/jenkins-cli/cli.conf').with_content(/ADMIN_PASSWORD=doe/) }
+        it { is_expected.to contain_file('/etc/jenkins-cli/cli.conf').with_content(/JENKINS_USER=john/) }
+        it { is_expected.to contain_file('/etc/jenkins-cli/cli.conf').with_content(/JENKINS_PASSWORD=doe/) }
         it { is_expected.to contain_file('/etc/jenkins-cli/cli.conf').with_content(/SERVER_URL=http:\/\/localhost:8080/) }
 
         context "with version => 1.2.3, server_url => http://remote:5555/" do
@@ -53,16 +53,16 @@ describe 'profiles::jenkins::cli' do
 
   context "with admin_user => jane and admin_password => roe" do
     let(:params) { {
-      'admin_user' => 'jane',
-      'admin_password' => 'roe'
+      'user' => 'jane',
+      'password' => 'roe'
     } }
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do
         let (:facts) { facts }
 
-        it { is_expected.to contain_file('/etc/jenkins-cli/cli.conf').with_content(/ADMIN_USER=jane/) }
-        it { is_expected.to contain_file('/etc/jenkins-cli/cli.conf').with_content(/ADMIN_PASSWORD=roe/) }
+        it { is_expected.to contain_file('/etc/jenkins-cli/cli.conf').with_content(/JENKINS_USER=jane/) }
+        it { is_expected.to contain_file('/etc/jenkins-cli/cli.conf').with_content(/JENKINS_PASSWORD=roe/) }
       end
     end
   end
@@ -70,7 +70,7 @@ describe 'profiles::jenkins::cli' do
   context "without parameters" do
     let(:params) { {} }
 
-    it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'admin_user'/) }
-    it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'admin_password'/) }
+    it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'user'/) }
+    it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'password'/) }
   end
 end
