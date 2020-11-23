@@ -40,6 +40,10 @@ class profiles::aptly (
     default_vhost => false,
   }
 
+  package { 'graphviz':
+    ensure => 'present'
+  }
+  
   apache::vhost { 'apt-private_80':
     docroot             => '/var/www/html',
     manage_docroot      => false,
