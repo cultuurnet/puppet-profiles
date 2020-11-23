@@ -43,7 +43,7 @@ class profiles::aptly (
   package { 'graphviz':
     ensure => 'present'
   }
-  
+
   apache::vhost { 'apt-private_80':
     docroot             => '/var/www/html',
     manage_docroot      => false,
