@@ -1,17 +1,17 @@
 require 'spec_helper'
 
 describe 'profiles::jenkins::cli' do
-  context "with admin_user => john and admin_password => doe" do
-    let(:params) { {
-      'user' => 'john',
-      'password' => 'doe'
-    } }
+  include_examples 'operating system support', 'profiles::jenkins::cli'
 
-    include_examples 'operating system support', 'profiles::jenkins::cli'
+  on_supported_os.each do |os, facts|
+    context "on #{os}" do
+      let (:facts) { facts }
 
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        let (:facts) { facts }
+      context "with admin_user => john and admin_password => doe" do
+        let(:params) { {
+          'user' => 'john',
+          'password' => 'doe'
+        } }
 
         it { is_expected.to compile.with_all_deps }
 
@@ -48,29 +48,32 @@ describe 'profiles::jenkins::cli' do
           it { is_expected.to contain_file('/etc/jenkins-cli/cli.conf').with_content(/SERVER_URL=http:\/\/remote:5555/) }
         end
       end
-    end
-  end
 
-  context "with admin_user => jane and admin_password => roe" do
-    let(:params) { {
-      'user' => 'jane',
-      'password' => 'roe'
-    } }
-
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        let (:facts) { facts }
+      context "with admin_user => jane and admin_password => roe" do
+        let(:params) { {
+          'user' => 'jane',
+          'password' => 'roe'
+        } }
 
         it { is_expected.to contain_file('/etc/jenkins-cli/cli.conf').with_content(/JENKINS_USER=jane/) }
         it { is_expected.to contain_file('/etc/jenkins-cli/cli.conf').with_content(/JENKINS_PASSWORD=roe/) }
       end
+
+      context "without parameters it uses hieradata from profiles::jenkins::controller" do
+        let(:hiera_config) { 'spec/fixtures/hiera/hiera.yaml' }
+        let(:params) { {} }
+
+        it { is_expected.to contain_file('/etc/jenkins-cli/cli.conf').with_content(/JENKINS_USER=foo/) }
+        it { is_expected.to contain_file('/etc/jenkins-cli/cli.conf').with_content(/JENKINS_PASSWORD=bar/) }
+      end
+
+      context "without parameters it defaults to empty strings for user and password without hieradata" do
+        let(:hiera_config) { 'spec/fixtures/hiera/empty.yaml' }
+        let(:params) { {} }
+
+        it { is_expected.to contain_file('/etc/jenkins-cli/cli.conf').with_content(/JENKINS_USER=\n/) }
+        it { is_expected.to contain_file('/etc/jenkins-cli/cli.conf').with_content(/JENKINS_PASSWORD=\n/) }
+      end
     end
-  end
-
-  context "without parameters" do
-    let(:params) { {} }
-
-    it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'user'/) }
-    it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'password'/) }
   end
 end

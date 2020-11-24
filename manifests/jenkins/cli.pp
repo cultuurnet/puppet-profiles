@@ -1,8 +1,8 @@
 class profiles::jenkins::cli(
-  String $user,
-  String $password,
-  String $version        = 'latest',
-  String $server_url     = 'http://localhost:8080'
+  String $user       = lookup('profiles::jenkins::controller::admin_user', String, 'first', ''),
+  String $password   = lookup('profiles::jenkins::controller::admin_password', String, 'first', ''),
+  String $version    = 'latest',
+  String $server_url = 'http://localhost:8080'
 ) {
 
   contain ::profiles

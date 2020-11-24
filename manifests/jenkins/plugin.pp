@@ -1,16 +1,15 @@
 define profiles::jenkins::plugin (
-  String                    $admin_user,
-  String                    $admin_password,
   Enum['present', 'absent'] $ensure         = 'present',
   Boolean                   $restart        = false
 ) {
 
   include ::profiles
+  include ::profiles::jenkins::cli
 
   $default_exec_attributes = {
     path      => ['/usr/local/bin', '/usr/bin'],
     logoutput => 'on_failure',
-    require   => Package['jenkins-cli']
+    require   => Class['profiles::jenkins::cli']
   }
 
   if $ensure == 'absent' {
@@ -20,8 +19,8 @@ define profiles::jenkins::plugin (
     }
 
     exec { "jenkins plugin ${title}":
-      command => "jenkins-cli -auth ${admin_user}:${admin_password} -webSocket disable-plugin ${title} ${post_action}",
-      onlyif  => "jenkins-cli -auth ${admin_user}:${admin_password} list-plugins ${title}",
+      command => "jenkins-cli disable-plugin ${title} ${post_action}",
+      onlyif  => "jenkins-cli list-plugins ${title}",
       *       => $default_exec_attributes
     }
   } else {
@@ -31,8 +30,8 @@ define profiles::jenkins::plugin (
     }
 
     exec { "jenkins plugin ${title}":
-      command => "jenkins-cli -auth ${admin_user}:${admin_password} -webSocket install-plugin ${title} ${post_action}",
-      unless  => "jenkins-cli -auth ${admin_user}:${admin_password} list-plugins ${title}",
+      command => "jenkins-cli install-plugin ${title} ${post_action}",
+      unless  => "jenkins-cli list-plugins ${title}",
       *       => $default_exec_attributes
     }
   }
