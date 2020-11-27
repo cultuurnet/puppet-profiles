@@ -4,7 +4,6 @@ class profiles::java8 {
 
   include ::profiles::apt::repositories
 
-  realize Apt::Source['cultuurnet-tools']
   realize Profiles::Apt::Update['cultuurnet-tools']
 
   package { 'oracle-jdk8-archive':

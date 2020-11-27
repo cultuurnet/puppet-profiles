@@ -8,7 +8,6 @@ class profiles::glassfish (
   include ::profiles::packages
   include ::profiles::apt::repositories
 
-  realize Apt::Source['cultuurnet-tools']
   realize Profiles::Apt::Update['cultuurnet-tools']
 
   realize Package['ca-certificates-publiq']

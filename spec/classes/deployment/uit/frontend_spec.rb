@@ -14,7 +14,6 @@ describe 'profiles::deployment::uit::frontend' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_apt__source('publiq-uit') }
         it { is_expected.to contain_profiles__apt__update('publiq-uit') }
 
         it { is_expected.to contain_package('uit-frontend').with( 'ensure' => 'latest') }

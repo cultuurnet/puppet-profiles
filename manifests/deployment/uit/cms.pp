@@ -16,7 +16,6 @@ class profiles::deployment::uit::cms (
   include ::profiles::apt::repositories
   include ::profiles::deployment::uit
 
-  realize Apt::Source['publiq-uit']
   realize Profiles::Apt::Update['publiq-uit']
 
   package { 'uit-cms':

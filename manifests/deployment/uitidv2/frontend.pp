@@ -14,7 +14,6 @@ class profiles::deployment::uitidv2::frontend (
 
   include ::profiles::deployment::uitidv2
 
-  realize Apt::Source['publiq-uitidv2']
   realize Profiles::Apt::Update['publiq-uitidv2']
 
   package { 'uitid-frontend':

@@ -9,7 +9,7 @@ class profiles::rabbitmq (
   include ::profiles::packages
   include ::profiles::apt::repositories
 
-  realize Apt::Source['rabbitmq']
+  realize Profiles::Apt::Update['rabbitmq']
 
   if $with_tools {
     realize Package['amqp-tools']
@@ -25,5 +25,5 @@ class profiles::rabbitmq (
     password => $admin_password
   }
 
-  Apt::Source['rabbitmq'] -> Class['::rabbitmq'] -> Rabbitmq_user[$admin_user]
+  Profiles::Apt::Update['rabbitmq'] -> Class['::rabbitmq'] -> Rabbitmq_user[$admin_user]
 }

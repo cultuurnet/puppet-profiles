@@ -4,7 +4,6 @@ class profiles::mailcatcher {
 
   include ::profiles::apt::repositories
 
-  realize Apt::Source['cultuurnet-tools']
   realize Profiles::Apt::Update['cultuurnet-tools']
 
   class { '::mailcatcher':

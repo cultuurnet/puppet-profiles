@@ -11,7 +11,6 @@ class profiles::base {
     target  => '/etc/environment'
   }
 
-  realize Apt::Source['cultuurnet-tools']
   realize Profiles::Apt::Update['cultuurnet-tools']
 
   if $facts['ec2_metadata'] {

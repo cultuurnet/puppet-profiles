@@ -12,17 +12,24 @@ describe 'profiles::nodejs' do
       context "without parameters" do
         let(:params) { { } }
 
-        it { is_expected.to contain_apt__source('nodejs_10.x') }
         it { is_expected.to contain_profiles__apt__update('nodejs_10.x') }
+
+        it { is_expected.to contain_class('nodejs').with(
+          'manage_package_repo'   => false,
+          'nodejs_package_ensure' => '10.14.0-1nodesource1'
+        ) }
 
         it { is_expected.to contain_class('nodejs').that_requires('Profiles::Apt::Update[nodejs_10.x]') }
       end
 
-      context "with major_version => 12" do
-        let(:params) { { 'major_version' => 12 } }
+      context "with version => 12.18.3-1nodesource1" do
+        let(:params) { { 'version' => '12.18.3-1nodesource1' } }
 
-        it { is_expected.to contain_apt__source('nodejs_12.x') }
         it { is_expected.to contain_profiles__apt__update('nodejs_12.x') }
+
+        it { is_expected.to contain_class('nodejs').with(
+          'nodejs_package_ensure' => '12.18.3-1nodesource1'
+        ) }
 
         it { is_expected.to contain_class('nodejs').that_requires('Profiles::Apt::Update[nodejs_12.x]') }
       end

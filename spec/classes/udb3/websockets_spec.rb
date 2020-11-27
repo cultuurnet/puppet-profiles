@@ -14,7 +14,6 @@ describe 'profiles::udb3::websockets' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_apt__source('cultuurnet-tools') }
         it { is_expected.to contain_profiles__apt__update('cultuurnet-tools') }
 
         it { is_expected.to contain_class('websockets::udb3').with(

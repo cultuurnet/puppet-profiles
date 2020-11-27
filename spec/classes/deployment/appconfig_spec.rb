@@ -23,7 +23,7 @@ describe 'profiles::deployment::appconfig' do
       ) }
 
       it { is_expected.to contain_apt__source('publiq-appconfig').that_requires('Class[profiles::apt::keys]') }
-      it { is_expected.to contain_profiles__apt__update('publiq-appconfig').that_requires('Apt::Source[publiq-appconfig]') }
+      it { is_expected.to contain_profiles__apt__update('publiq-appconfig') }
 
       it { is_expected.to contain_package('appconfig-publiq').that_requires('Profiles::Apt::Update[publiq-appconfig]') }
       it { is_expected.to contain_package('appconfig-publiq').that_notifies('Class[profiles::puppetserver::cache_clear]') }

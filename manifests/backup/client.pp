@@ -7,7 +7,6 @@ class profiles::backup::client (
 
   include ::profiles::apt::repositories
 
-  realize Apt::Source['cultuurnet-tools']
   realize Profiles::Apt::Update['cultuurnet-tools']
 
   Sshkey <<| title == 'backup' |>>

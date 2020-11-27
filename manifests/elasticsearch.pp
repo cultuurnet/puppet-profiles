@@ -7,7 +7,6 @@ class profiles::elasticsearch (
 
   include ::profiles::apt::repositories
 
-  realize Apt::Source['elasticsearch']
   realize Profiles::Apt::Update['elasticsearch']
 
   # TODO: parameterize this profile (version, ...)

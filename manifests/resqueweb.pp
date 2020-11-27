@@ -4,7 +4,6 @@ class profiles::resqueweb {
 
   include ::profiles::apt::repositories
 
-  realize Apt::Source['cultuurnet-tools']
   realize Profiles::Apt::Update['cultuurnet-tools']
 
   contain ::resqueweb
