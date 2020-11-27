@@ -11,11 +11,10 @@ class profiles::udb3::elasticdump_to_gcs (
 
   include ::profiles::apt::updates
   include ::profiles::packages
+  include ::profiles::elasticdump
 
-  realize Profiles::Apt::Update['nodejs_10.x']
   realize Profiles::Apt::Update['cultuurnet-tools']
 
-  realize Package['elasticdump']
   realize Package['gcsfuse']
 
   if $source_only {
@@ -44,7 +43,7 @@ class profiles::udb3::elasticdump_to_gcs (
     path    => '/usr/local/bin/elasticdump_to_gcs',
     content => template('profiles/udb3/elasticdump_to_gcs.erb'),
     mode    => '0755',
-    require => [ Package['elasticdump'], Package['gcsfuse'], File['gcs_credentials.json']]
+    require => [ Class['profiles::elasticdump'], Package['gcsfuse'], File['gcs_credentials.json']]
   }
 
   file { 'midnight_elasticdump_to_gcs':
