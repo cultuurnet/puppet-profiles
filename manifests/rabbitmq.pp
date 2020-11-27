@@ -7,7 +7,7 @@ class profiles::rabbitmq (
   contain ::profiles
 
   include ::profiles::packages
-  include ::profiles::apt::repositories
+  include ::profiles::apt::updates
 
   realize Profiles::Apt::Update['rabbitmq']
 

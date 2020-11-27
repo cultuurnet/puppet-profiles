@@ -9,11 +9,9 @@ class profiles::udb3::elasticdump_to_gcs (
 
   contain ::profiles
 
-  include ::profiles::apt::repositories
+  include ::profiles::apt::updates
   include ::profiles::packages
 
-  realize Apt::Source['nodejs_10.x']
-  realize Apt::Source['cultuurnet-tools']
   realize Profiles::Apt::Update['nodejs_10.x']
   realize Profiles::Apt::Update['cultuurnet-tools']
 
@@ -51,7 +49,7 @@ class profiles::udb3::elasticdump_to_gcs (
 
   file { 'midnight_elasticdump_to_gcs':
     path    => '/usr/local/bin/midnight_elasticdump_to_gcs',
-    content => "test $(date +%_H) -eq 23 && (sleep 60; /usr/local/bin/elasticdump_to_gcs ${options})\n",
+    content => "test $(date +%0H) -eq 0 && /usr/local/bin/elasticdump_to_gcs ${options}\n",
     mode    => '0755',
     require => File['elasticdump_to_gcs']
   }
@@ -61,7 +59,7 @@ class profiles::udb3::elasticdump_to_gcs (
     environment => [ 'SHELL=/bin/bash', "TZ=${local_timezone}"],
     user        => 'ubuntu',
     hour        => '*',
-    minute      => '59',
+    minute      => '00',
     require     => [ File['midnight_elasticdump_to_gcs'], File['/mnt/gcs/cloud-composer']]
   }
 }

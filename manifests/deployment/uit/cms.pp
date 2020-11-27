@@ -13,7 +13,7 @@ class profiles::deployment::uit::cms (
 
   contain ::profiles
 
-  include ::profiles::apt::repositories
+  include ::profiles::apt::keys
   include ::profiles::deployment::uit
 
   realize Profiles::Apt::Update['publiq-uit']

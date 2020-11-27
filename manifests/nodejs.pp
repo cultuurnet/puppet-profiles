@@ -4,7 +4,7 @@ class profiles::nodejs (
 
   contain ::profiles
 
-  include ::profiles::apt::repositories
+  include ::profiles::apt::updates
 
   $major_version = split($version, /\./)[0]
 

@@ -8,7 +8,7 @@ class profiles::udb3::search (
   contain ::deployment::udb3::search
 
   include ::profiles::apt::keys
-  include ::profiles::apt::repositories
+  include ::profiles::apt::updates
 
   # TODO: parameterize memory settings for instance
   # TODO: move deployment to profiles and rework update_facts stuff

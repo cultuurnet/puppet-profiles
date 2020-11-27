@@ -1,6 +1,6 @@
 class profiles::packages {
 
-  include ::profiles::apt::repositories
+  include ::profiles::apt::updates
 
   @package { 'composer':
     ensure  => 'present',

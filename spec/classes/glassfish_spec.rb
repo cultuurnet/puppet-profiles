@@ -26,7 +26,8 @@ RSpec.shared_examples "glassfish" do |flavor, version|
     )
   }
 
-  it { is_expected.to contain_package('mysql-connector-java').that_requires('Apt::Source[cultuurnet-tools]') }
+  it { is_expected.to contain_package('ca-certificates-publiq').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
+  it { is_expected.to contain_package('mysql-connector-java').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
 
   it { is_expected.to contain_file('mysql-connector-java').with(
     'ensure' => 'link',
