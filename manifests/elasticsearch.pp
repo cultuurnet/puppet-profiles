@@ -16,22 +16,21 @@ class profiles::elasticsearch (
   # TODO: firewall rules
 
   file { '/data/elasticsearch':
-    ensure => 'directory'
+    ensure => 'directory',
+    before => Class['elasticsearch']
   }
 
   sysctl { 'vm.max_map_count':
-    value => '262144'
+    value  => '262144',
+    before => Class['elasticsearch']
   }
 
-  class { 'elasticsearch':
+  class { '::elasticsearch':
     version           => $version,
     manage_repo       => false,
     api_timeout       => 30,
     restart_on_change => true,
-    instances         => {}
+    instances         => {},
+    require           => [ Profiles::Apt::Update['elasticsearch'], Class['::profiles::java8']]
   }
-
-  Profiles::Apt::Update['elasticsearch'] -> Class['elasticsearch']
-  File['/data/elasticsearch'] -> Class['elasticsearch']
-  Sysctl['vm.max_map_count'] -> Class['elasticsearch']
 }

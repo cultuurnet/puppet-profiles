@@ -23,6 +23,13 @@ describe 'profiles::elasticsearch' do
         it { is_expected.to contain_sysctl('vm.max_map_count').with(
           'value' => '262144'
         ) }
+
+        it { is_expected.to contain_class('elasticsearch') }
+
+        it { is_expected.to contain_class('elasticsearch').that_requires('Profiles::Apt::Update[elasticsearch]') }
+        it { is_expected.to contain_class('elasticsearch').that_requires('File[/data/elasticsearch]') }
+        it { is_expected.to contain_class('elasticsearch').that_requires('Sysctl[vm.max_map_count]') }
+        it { is_expected.to contain_class('elasticsearch').that_requires('Class[profiles::java8]') }
       end
     end
   end
