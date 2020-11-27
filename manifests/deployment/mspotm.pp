@@ -13,7 +13,5 @@ class profiles::deployment::mspotm {
     }
   }
 
-  @profiles::apt::update { 'publiq-mspotm':
-    require => Apt::Source['publiq-mspotm']
-  }
+  @profiles::apt::update { 'publiq-mspotm': }
 }

@@ -32,9 +32,7 @@ class profiles::jenkins::server (
     }
   }
 
-  profiles::apt::update { 'publiq-jenkins':
-    require => Apt::Source['publiq-jenkins']
-  }
+  profiles::apt::update { 'publiq-jenkins': }
 
   # This will install the ruby dev package and bundler
   class{'ruby::dev':

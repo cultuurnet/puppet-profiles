@@ -19,9 +19,7 @@ class profiles::deployment::infrastructure (
     }
   }
 
-  profiles::apt::update { 'publiq-infrastructure':
-    require => Apt::Source['publiq-infrastructure']
-  }
+  profiles::apt::update { 'publiq-infrastructure': }
 
   package { 'infrastructure-publiq':
     ensure  => $package_version,

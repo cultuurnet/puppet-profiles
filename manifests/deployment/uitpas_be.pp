@@ -13,7 +13,5 @@ class profiles::deployment::uitpas_be {
     }
   }
 
-  @profiles::apt::update { 'publiq-uitpasbe':
-    require => Apt::Source['publiq-uitpasbe']
-  }
+  @profiles::apt::update { 'publiq-uitpasbe': }
 }

@@ -31,9 +31,7 @@ class profiles::udb3::search (
     }
   }
 
-  profiles::apt::update { 'cultuurnet-search':
-    require => Apt::Source['cultuurnet-search']
-  }
+  profiles::apt::update { 'cultuurnet-search': }
 
   realize Profiles::Apt::Update['nodejs_10.x']
 
