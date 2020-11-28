@@ -1,6 +1,6 @@
 class profiles::packages {
 
-  include ::profiles::apt::repositories
+  include ::profiles::apt::updates
 
   @package { 'composer':
     ensure  => 'present',
@@ -30,11 +30,6 @@ class profiles::packages {
 
   @package { 'jq':
     ensure => 'present'
-  }
-
-  @package { 'elasticdump':
-    ensure  => 'present',
-    require => [ Profiles::Apt::Update['cultuurnet-tools'], Profiles::Apt::Update['nodejs_10.x']]
   }
 
   @package { 'gcsfuse':

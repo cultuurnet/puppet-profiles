@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe 'profiles::deployment::curator' do
+  include_examples 'operating system support', 'profiles::deployment::curator'
+
   on_supported_os.each do |os, facts|
    context "on #{os}" do
       let (:facts) { facts }
@@ -13,7 +15,7 @@ describe 'profiles::deployment::curator' do
         it { is_expected.to contain_class('profiles::apt::keys') }
 
         it { is_expected.to contain_apt__source('publiq-curator').that_requires('Class[profiles::apt::keys]') }
-        it { is_expected.to contain_profiles__apt__update('publiq-curator').that_requires('Apt::Source[publiq-curator]') }
+        it { is_expected.to contain_profiles__apt__update('publiq-curator') }
 
         context "in the testing environment" do
           let(:environment) { 'testing' }

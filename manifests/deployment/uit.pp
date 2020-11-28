@@ -13,7 +13,5 @@ class profiles::deployment::uit {
     }
   }
 
-  @profiles::apt::update { 'publiq-uit':
-    require => Apt::Source['publiq-uit']
-  }
+  @profiles::apt::update { 'publiq-uit': }
 }

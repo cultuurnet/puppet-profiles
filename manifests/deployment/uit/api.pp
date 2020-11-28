@@ -12,13 +12,10 @@ class profiles::deployment::uit::api (
 
   contain ::profiles
 
-  include ::profiles::apt::repositories
+  include ::profiles::apt::updates
   include ::profiles::deployment::uit
 
-  realize Apt::Source['cultuurnet-tools']
   realize Profiles::Apt::Update['cultuurnet-tools']
-
-  realize Apt::Source['publiq-uit']
   realize Profiles::Apt::Update['publiq-uit']
 
   realize Package['yarn']
@@ -36,6 +33,13 @@ class profiles::deployment::uit::api (
     group   => 'www-data',
     source  => $config_source,
     require => Package['uit-api']
+  }
+
+  file { 'uit-api-log':
+    ensure => 'directory',
+    path   => '/var/log/uit-api',
+    owner  => 'www-data',
+    group  => 'www-data'
   }
 
   exec { 'uit-api_db_schema_update':
@@ -65,11 +69,10 @@ class profiles::deployment::uit::api (
     service { 'uit-api':
       ensure    => $service_ensure,
       enable    => $service_enable,
-      require   => Package['uit-api'],
+      require   => [ Package['uit-api'], File['uit-api-log']],
+      subscribe => File['uit-api-config'],
       hasstatus => true
     }
-
-    File['uit-api-config'] ~> Service['uit-api']
   }
 
   profiles::deployment::versions { $title:

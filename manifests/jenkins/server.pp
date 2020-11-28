@@ -1,5 +1,5 @@
 ## This profile installs everything needed to get Jenkins up and running with all jobs and plugins it needs.
-class profiles::jenkins (
+class profiles::jenkins::server (
   String $adminpassword,
   $sslcert,
   $sslkey,
@@ -32,9 +32,7 @@ class profiles::jenkins (
     }
   }
 
-  profiles::apt::update { 'publiq-jenkins':
-    require => Apt::Source['publiq-jenkins']
-  }
+  profiles::apt::update { 'publiq-jenkins': }
 
   # This will install the ruby dev package and bundler
   class{'ruby::dev':

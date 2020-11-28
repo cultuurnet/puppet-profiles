@@ -14,7 +14,6 @@ describe 'profiles::deployment::uit::api' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_apt__source('publiq-uit') }
         it { is_expected.to contain_profiles__apt__update('publiq-uit') }
 
         it { is_expected.to contain_package('yarn') }
@@ -27,6 +26,13 @@ describe 'profiles::deployment::uit::api' do
           'ensure' => 'file',
           'path'   => '/var/www/uit-api/packages/graphql/.env',
           'source' => '/foo',
+          'owner'  => 'www-data',
+          'group'  => 'www-data'
+        ) }
+
+        it { is_expected.to contain_file('uit-api-log').with(
+          'ensure' => 'directory',
+          'path'   => '/var/log/uit-api',
           'owner'  => 'www-data',
           'group'  => 'www-data'
         ) }
@@ -55,6 +61,7 @@ describe 'profiles::deployment::uit::api' do
         ) }
 
         it { is_expected.to contain_service('uit-api').that_requires('Package[uit-api]') }
+        it { is_expected.to contain_service('uit-api').that_requires('File[uit-api-log]') }
         it { is_expected.to contain_file('uit-api-config').that_notifies('Service[uit-api]') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::api').with(

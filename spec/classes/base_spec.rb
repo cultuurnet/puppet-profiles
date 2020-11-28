@@ -14,7 +14,7 @@ describe 'profiles::base' do
         )
       }
 
-      it { is_expected.to contain_apt__source('cultuurnet-tools') }
+      it { is_expected.to contain_profiles__apt__update('cultuurnet-tools') }
 
       it { is_expected.to contain_class('lvm').with(
         'manage_pkg' => true

@@ -15,7 +15,6 @@ class profiles::deployment::curator::articlelinker (
 
   include ::profiles::deployment::curator
 
-  realize Apt::Source['publiq-curator']
   realize Profiles::Apt::Update['publiq-curator']
 
   package { 'curator-articlelinker':

@@ -19,9 +19,7 @@ class profiles::deployment::appconfig (
     }
   }
 
-  profiles::apt::update { 'publiq-appconfig':
-    require => Apt::Source['publiq-appconfig']
-  }
+  profiles::apt::update { 'publiq-appconfig': }
 
   package { 'appconfig-publiq':
     ensure  => $package_version,

@@ -14,7 +14,6 @@ describe 'profiles::deployment::uitpas_be::frontend' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_apt__source('publiq-uitpasbe') }
         it { is_expected.to contain_profiles__apt__update('publiq-uitpasbe') }
 
         it { is_expected.to contain_package('uitpasbe-frontend').with( 'ensure' => 'latest') }

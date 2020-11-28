@@ -5,12 +5,9 @@ class profiles::php (
   contain ::profiles
 
   include ::profiles::packages
-  include ::profiles::apt::repositories
+  include ::profiles::apt::updates
 
-  realize Apt::Source['cultuurnet-tools']
   realize Profiles::Apt::Update['cultuurnet-tools']
-
-  realize Apt::Source['php']
   realize Profiles::Apt::Update['php']
 
   contain ::php::globals

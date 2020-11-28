@@ -8,7 +8,7 @@ describe 'profiles::apt::repositories' do
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       context "with all virtual resources realized" do
-        let(:pre_condition) { 'Apt::Source <| |>; Profiles::Apt::Update <| |>' }
+        let(:pre_condition) { 'Apt::Source <| |>' }
 
         it { is_expected.to compile.with_all_deps }
 
@@ -34,7 +34,6 @@ describe 'profiles::apt::repositories' do
             }
 
             it { is_expected.to contain_apt__source('cultuurnet-tools').that_requires('Class[profiles::apt::keys]') }
-            it { is_expected.to contain_profiles__apt__update('cultuurnet-tools').that_requires('Apt::Source[cultuurnet-tools]') }
 
             it { is_expected.to contain_apt__source('php').with(
               'location' => 'http://apt.uitdatabank.be/php-legacy-testing',
@@ -49,7 +48,6 @@ describe 'profiles::apt::repositories' do
             }
 
             it { is_expected.to contain_apt__source('php').that_requires('Class[profiles::apt::keys]') }
-            it { is_expected.to contain_profiles__apt__update('php').that_requires('Apt::Source[php]') }
 
             it { is_expected.to contain_apt__source('rabbitmq').with(
               'location' => 'http://apt.uitdatabank.be/rabbitmq-testing',
@@ -64,7 +62,6 @@ describe 'profiles::apt::repositories' do
             }
 
             it { is_expected.to contain_apt__source('rabbitmq').that_requires('Class[profiles::apt::keys]') }
-            it { is_expected.to contain_profiles__apt__update('rabbitmq').that_requires('Apt::Source[rabbitmq]') }
 
             it { is_expected.to contain_apt__source('nodejs_10.x').with(
               'location' => 'http://apt.uitdatabank.be/nodejs_10.x-testing',
@@ -79,7 +76,6 @@ describe 'profiles::apt::repositories' do
             }
 
             it { is_expected.to contain_apt__source('nodejs_10.x').that_requires('Class[profiles::apt::keys]') }
-            it { is_expected.to contain_profiles__apt__update('nodejs_10.x').that_requires('Apt::Source[nodejs_10.x]') }
 
             it { is_expected.to contain_apt__source('nodejs_12.x').with(
               'location' => 'http://apt.uitdatabank.be/nodejs_12.x-testing',
@@ -94,7 +90,6 @@ describe 'profiles::apt::repositories' do
             }
 
             it { is_expected.to contain_apt__source('nodejs_12.x').that_requires('Class[profiles::apt::keys]') }
-            it { is_expected.to contain_profiles__apt__update('nodejs_12.x').that_requires('Apt::Source[nodejs_12.x]') }
 
             it { is_expected.to contain_apt__source('nodejs_14.x').with(
               'location' => 'http://apt.uitdatabank.be/nodejs_14.x-testing',
@@ -109,7 +104,6 @@ describe 'profiles::apt::repositories' do
             }
 
             it { is_expected.to contain_apt__source('nodejs_14.x').that_requires('Class[profiles::apt::keys]') }
-            it { is_expected.to contain_profiles__apt__update('nodejs_14.x').that_requires('Apt::Source[nodejs_14.x]') }
 
             it { is_expected.to contain_apt__source('elasticsearch').with(
               'location' => 'http://apt.uitdatabank.be/elasticsearch-testing',
@@ -124,7 +118,6 @@ describe 'profiles::apt::repositories' do
             }
 
             it { is_expected.to contain_apt__source('elasticsearch').that_requires('Class[profiles::apt::keys]') }
-            it { is_expected.to contain_profiles__apt__update('elasticsearch').that_requires('Apt::Source[elasticsearch]') }
 
             it { is_expected.to contain_apt__source('yarn').with(
               'location' => 'http://apt.uitdatabank.be/yarn-testing',
@@ -139,7 +132,6 @@ describe 'profiles::apt::repositories' do
             }
 
             it { is_expected.to contain_apt__source('yarn').that_requires('Class[profiles::apt::keys]') }
-            it { is_expected.to contain_profiles__apt__update('yarn').that_requires('Apt::Source[yarn]') }
           end
 
         when '16.04'
@@ -161,7 +153,6 @@ describe 'profiles::apt::repositories' do
             }
 
             it { is_expected.to contain_apt__source('cultuurnet-tools').that_requires('Class[profiles::apt::keys]') }
-            it { is_expected.to contain_profiles__apt__update('cultuurnet-tools').that_requires('Apt::Source[cultuurnet-tools]') }
 
             it { is_expected.to contain_apt__source('php').with(
               'location' => 'http://apt.uitdatabank.be/php-acceptance',
@@ -176,7 +167,6 @@ describe 'profiles::apt::repositories' do
             }
 
             it { is_expected.to contain_apt__source('php').that_requires('Class[profiles::apt::keys]') }
-            it { is_expected.to contain_profiles__apt__update('php').that_requires('Apt::Source[php]') }
 
             it { is_expected.to contain_apt__source('rabbitmq').with(
               'location' => 'http://apt.uitdatabank.be/rabbitmq-acceptance',
@@ -191,7 +181,6 @@ describe 'profiles::apt::repositories' do
             }
 
             it { is_expected.to contain_apt__source('rabbitmq').that_requires('Class[profiles::apt::keys]') }
-            it { is_expected.to contain_profiles__apt__update('rabbitmq').that_requires('Apt::Source[rabbitmq]') }
 
             it { is_expected.to contain_apt__source('nodejs_10.x').with(
               'location' => 'http://apt.uitdatabank.be/nodejs_10.x-acceptance',
@@ -206,7 +195,6 @@ describe 'profiles::apt::repositories' do
             }
 
             it { is_expected.to contain_apt__source('nodejs_10.x').that_requires('Class[profiles::apt::keys]') }
-            it { is_expected.to contain_profiles__apt__update('nodejs_10.x').that_requires('Apt::Source[nodejs_10.x]') }
 
             it { is_expected.to contain_apt__source('nodejs_12.x').with(
               'location' => 'http://apt.uitdatabank.be/nodejs_12.x-acceptance',
@@ -221,7 +209,6 @@ describe 'profiles::apt::repositories' do
             }
 
             it { is_expected.to contain_apt__source('nodejs_12.x').that_requires('Class[profiles::apt::keys]') }
-            it { is_expected.to contain_profiles__apt__update('nodejs_12.x').that_requires('Apt::Source[nodejs_12.x]') }
 
             it { is_expected.to contain_apt__source('nodejs_14.x').with(
               'location' => 'http://apt.uitdatabank.be/nodejs_14.x-acceptance',
@@ -236,7 +223,6 @@ describe 'profiles::apt::repositories' do
             }
 
             it { is_expected.to contain_apt__source('nodejs_14.x').that_requires('Class[profiles::apt::keys]') }
-            it { is_expected.to contain_profiles__apt__update('nodejs_14.x').that_requires('Apt::Source[nodejs_14.x]') }
 
             it { is_expected.to contain_apt__source('elasticsearch').with(
               'location' => 'http://apt.uitdatabank.be/elasticsearch-acceptance',
@@ -251,7 +237,6 @@ describe 'profiles::apt::repositories' do
             }
 
             it { is_expected.to contain_apt__source('elasticsearch').that_requires('Class[profiles::apt::keys]') }
-            it { is_expected.to contain_profiles__apt__update('elasticsearch').that_requires('Apt::Source[elasticsearch]') }
 
             it { is_expected.to contain_apt__source('yarn').with(
               'location' => 'http://apt.uitdatabank.be/yarn-acceptance',
@@ -266,7 +251,6 @@ describe 'profiles::apt::repositories' do
             }
 
             it { is_expected.to contain_apt__source('yarn').that_requires('Class[profiles::apt::keys]') }
-            it { is_expected.to contain_profiles__apt__update('yarn').that_requires('Apt::Source[yarn]') }
           end
         end
       end

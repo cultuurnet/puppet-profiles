@@ -1,5 +1,7 @@
 class profiles::deployment::curator {
 
+  contain ::profiles
+
   include ::profiles::apt::keys
 
   @apt::source { 'publiq-curator':
@@ -13,7 +15,5 @@ class profiles::deployment::curator {
     }
   }
 
-  @profiles::apt::update { 'publiq-curator':
-    require => Apt::Source['publiq-curator']
-  }
+  @profiles::apt::update { 'publiq-curator': }
 }

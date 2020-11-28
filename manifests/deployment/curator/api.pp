@@ -10,7 +10,6 @@ class profiles::deployment::curator::api (
 
   include ::profiles::deployment::curator
 
-  realize Apt::Source['publiq-curator']
   realize Profiles::Apt::Update['publiq-curator']
 
   # TODO: package notify Apache::Service ?

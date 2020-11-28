@@ -3,7 +3,7 @@ class profiles::base {
   contain ::profiles
 
   include ::profiles::groups
-  include ::profiles::apt::repositories
+  include ::profiles::apt::updates
   include ::profiles::users
   include ::profiles::packages
 
@@ -11,7 +11,6 @@ class profiles::base {
     target  => '/etc/environment'
   }
 
-  realize Apt::Source['cultuurnet-tools']
   realize Profiles::Apt::Update['cultuurnet-tools']
 
   if $facts['ec2_metadata'] {
