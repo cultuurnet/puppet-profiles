@@ -126,7 +126,7 @@ class profiles::jenkins::server (
   package{ $clitool:
     name     => $clitool,
     provider => apt,
-    require  => Profiles::Apt::Update['publiq-jenkins']
+    require  => [Profiles::Apt::Update['publiq-jenkins'], Class['jenkins']]
   }
 
   # ----------- Setup security ----------------------------------------------------
