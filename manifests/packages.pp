@@ -15,6 +15,10 @@ class profiles::packages {
     ensure => 'present'
   }
 
+  @package { 'phing':
+    ensure => 'present'
+  }
+
   @package { 'amqp-tools':
     ensure => 'present'
   }
