@@ -61,7 +61,8 @@ class profiles::jenkins::server (
     repo         => false,
     cli          => false,
     install_java => false,
-    require      => Profiles::Apt::Update['publiq-jenkins']
+    require      => Profiles::Apt::Update['publiq-jenkins'],
+    version      => '2.235.5'
   }
 
   sudo::conf { 'jenkins':
@@ -126,6 +127,7 @@ class profiles::jenkins::server (
   package{ $clitool:
     name     => $clitool,
     provider => apt,
+    version  => '2.235.5',
     require  => [Profiles::Apt::Update['publiq-jenkins'], Class['jenkins']]
   }
 
