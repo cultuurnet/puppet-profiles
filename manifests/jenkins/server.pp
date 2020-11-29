@@ -125,9 +125,9 @@ class profiles::jenkins::server (
   # https://github.com/cultuurnet/tool-builder/tree/master/jenkins-cli
   $clitool = 'jenkins-cli'
   package{ $clitool:
+    ensure   => '2.235.5',
     name     => $clitool,
     provider => apt,
-    version  => '2.235.5',
     require  => [Profiles::Apt::Update['publiq-jenkins'], Class['jenkins']]
   }
 
