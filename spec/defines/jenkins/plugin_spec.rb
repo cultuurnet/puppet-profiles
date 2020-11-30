@@ -17,7 +17,7 @@ describe 'profiles::jenkins::plugin' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_exec('jenkins plugin foobar').with(
-          'command'   => "jenkins-cli -auth john:doe -webSocket install-plugin foobar -deploy",
+          'command'   => "jenkins-cli -auth john:doe install-plugin foobar -deploy",
           'path'      => [ '/usr/local/bin', '/usr/bin'],
           'unless'    => 'jenkins-cli -auth john:doe list-plugins foobar',
           'logoutput' => 'on_failure'
@@ -36,7 +36,7 @@ describe 'profiles::jenkins::plugin' do
           ) }
 
           it { is_expected.to contain_exec('jenkins plugin guineapig').with(
-            'command'   => "jenkins-cli -auth john:doe -webSocket install-plugin guineapig -restart",
+            'command'   => "jenkins-cli -auth john:doe install-plugin guineapig -restart",
             'path'      => [ '/usr/local/bin', '/usr/bin'],
             'unless'    => 'jenkins-cli -auth john:doe list-plugins guineapig',
             'logoutput' => 'on_failure'
@@ -62,7 +62,7 @@ describe 'profiles::jenkins::plugin' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_exec('jenkins plugin foobar').with(
-          'command'   => "jenkins-cli -auth jane:roe -webSocket install-plugin foobar -deploy",
+          'command'   => "jenkins-cli -auth jane:roe install-plugin foobar -deploy",
           'path'      => [ '/usr/local/bin', '/usr/bin'],
           'unless'    => 'jenkins-cli -auth jane:roe list-plugins foobar',
           'logoutput' => 'on_failure'
@@ -82,7 +82,7 @@ describe 'profiles::jenkins::plugin' do
           ) }
 
           it { is_expected.to contain_exec('jenkins plugin guineapig').with(
-            'command'   => "jenkins-cli -auth jane:roe -webSocket disable-plugin guineapig -restart",
+            'command'   => "jenkins-cli -auth jane:roe disable-plugin guineapig -restart",
             'path'      => [ '/usr/local/bin', '/usr/bin'],
             'onlyif'    => 'jenkins-cli -auth jane:roe list-plugins guineapig',
             'logoutput' => 'on_failure'
