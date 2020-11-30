@@ -11,6 +11,16 @@ class profiles::packages {
     ensure => 'present'
   }
 
+  @package { 'groovy':
+    ensure => 'present'
+  }
+
+  @package { 'phing':
+    ensure  => 'present',
+    require => Profiles::Apt::Update['cultuurnet-tools']
+  }
+
+
   @package { 'amqp-tools':
     ensure => 'present'
   }
