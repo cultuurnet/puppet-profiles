@@ -87,16 +87,16 @@ class profiles::jenkins::server (
     owner  => 'jenkins',
     group  => 'jenkins',
     mode   => '0400',
-    #source => 'puppet:///private/id_rsa',
-    source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/id_rsa',
+    source => 'puppet:///private/id_rsa',
+    #source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/id_rsa',
   }
   file {"${sshdir}/known_hosts":
     ensure => file,
     owner  => 'jenkins',
     group  => 'jenkins',
     mode   => '0644',
-    #source => 'puppet:///private/known_hosts',
-    source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/known_hosts',
+    source => 'puppet:///private/known_hosts',
+    #source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/known_hosts',
   }
   file {"${sshdir}/id_rsa.pub":
     ensure  => file,
@@ -139,8 +139,7 @@ class profiles::jenkins::server (
     owner   => 'jenkins',
     group   => 'jenkins',
     mode    => '0644',
-    #source => 'puppet:///modules/jenkins/puppet_helper.groovy',
-    source  => '/vagrant/puppet/modules/jenkins/files/puppet_helper.groovy',
+    source  => 'puppet:///modules/jenkins/puppet_helper.groovy',
     require => Package[$clitool],
   }
 
@@ -210,8 +209,8 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    #source  => 'puppet:///private/org.jenkinsci.plugins.workflow.libs.GlobalLibraries.xml',
-    source  => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/org.jenkinsci.plugins.workflow.libs.GlobalLibraries.xml',
+    source  => 'puppet:///private/org.jenkinsci.plugins.workflow.libs.GlobalLibraries.xml',
+    #source  => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/org.jenkinsci.plugins.workflow.libs.GlobalLibraries.xml',
     require => Profiles::Jenkins::Plugin['workflow-cps-global-lib'],
   }
 
@@ -232,8 +231,8 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    #source => 'puppet:///private/credentials.xml',
-    source  => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/credentials.xml',
+    source  => 'puppet:///private/credentials.xml',
+    #source  => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/credentials.xml',
     require => Class['jenkins'], #The jenkins class creates the directory this file will go into to
   }
   exec { 'import-credentials':
@@ -258,8 +257,8 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    #source  => 'puppet:///private/jenkins.plugins.nodejs.tools.NodeJSInstallation.xml',
-    source  => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/jenkins.plugins.nodejs.tools.NodeJSInstallation.xml',
+    source  => 'puppet:///private/jenkins.plugins.nodejs.tools.NodeJSInstallation.xml',
+    #source  => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/jenkins.plugins.nodejs.tools.NodeJSInstallation.xml',
     require => Profiles::Jenkins::Plugin['nodejs'],
   }
 
