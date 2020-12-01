@@ -60,7 +60,7 @@ describe 'profiles::jenkins::cli' do
       end
 
       context "without parameters it uses hieradata from profiles::jenkins::controller" do
-        let(:hiera_config) { 'spec/fixtures/hiera/hiera.yaml' }
+        let(:hiera_config) { 'spec/support/hiera/hiera.yaml' }
         let(:params) { {} }
 
         it { is_expected.to contain_file('/etc/jenkins-cli/cli.conf').with_content(/JENKINS_USER=foo/) }
@@ -68,7 +68,7 @@ describe 'profiles::jenkins::cli' do
       end
 
       context "without parameters it defaults to empty strings for user and password without hieradata" do
-        let(:hiera_config) { 'spec/fixtures/hiera/empty.yaml' }
+        let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
         let(:params) { {} }
 
         it { is_expected.to contain_file('/etc/jenkins-cli/cli.conf').with_content(/JENKINS_USER=\n/) }

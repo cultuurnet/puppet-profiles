@@ -1,0 +1,4 @@
+---
+profiles::jenkins::controller::admin_user: 'foo'
+profiles::jenkins::controller::admin_password: 'bar'
+
