@@ -128,7 +128,7 @@ class profiles::jenkins::server (
   }
 
   profiles::jenkins::plugin { 'mailer':
-    restart        => true
+    restart => true
   }
 
   # Create first user
@@ -172,9 +172,8 @@ instance.save()' | jenkins-cli groovy =",
   # We have to use the .jar manually because the name of the file was changed in jenkins itslef but the puppet plugin has not been updated yet,
   # https://github.com/voxpupuli/puppet-jenkins/pull/945, this means we can not use jenkins::cli or jenkins::credentials and several other classes.
 
-<<<<<<< HEAD
   profiles::jenkins::plugin { 'delivery-pipeline-plugin':
-    restart        => true
+    restart => true
   }
 
   profiles::jenkins::plugin { 'workflow-cps-global-lib': }
