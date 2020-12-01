@@ -3,9 +3,8 @@ class profiles::udb3::websockets (
 ) {
   contain ::profiles
 
-  include ::profiles::apt::repositories
+  include ::profiles::apt::updates
 
-  realize Apt::Source['cultuurnet-tools']
   realize Profiles::Apt::Update['cultuurnet-tools']
 
   class { '::websockets::udb3':

@@ -14,7 +14,6 @@ class profiles::deployment::uitpas_be::frontend (
 
   include ::profiles::deployment::uitpas_be
 
-  realize Apt::Source['publiq-uitpasbe']
   realize Profiles::Apt::Update['publiq-uitpasbe']
 
   package { 'uitpasbe-frontend':

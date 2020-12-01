@@ -13,7 +13,7 @@ describe 'profiles::deployment::uit' do
         it { is_expected.to contain_class('profiles::apt::keys') }
 
         it { is_expected.to contain_apt__source('publiq-uit').that_requires('Class[profiles::apt::keys]') }
-        it { is_expected.to contain_profiles__apt__update('publiq-uit').that_requires('Apt::Source[publiq-uit]') }
+        it { is_expected.to contain_profiles__apt__update('publiq-uit') }
 
         context "in the testing environment" do
           let(:environment) { 'testing' }

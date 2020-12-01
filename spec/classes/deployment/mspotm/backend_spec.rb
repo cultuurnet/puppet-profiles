@@ -14,7 +14,6 @@ describe 'profiles::deployment::mspotm::backend' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_apt__source('publiq-mspotm') }
         it { is_expected.to contain_profiles__apt__update('publiq-mspotm') }
 
         it { is_expected.to contain_package('mspotm-backend').with( 'ensure' => 'latest') }

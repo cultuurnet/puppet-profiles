@@ -13,7 +13,7 @@ describe 'profiles::deployment::mspotm' do
         it { is_expected.to contain_class('profiles::apt::keys') }
 
         it { is_expected.to contain_apt__source('publiq-mspotm').that_requires('Class[profiles::apt::keys]') }
-        it { is_expected.to contain_profiles__apt__update('publiq-mspotm').that_requires('Apt::Source[publiq-mspotm]') }
+        it { is_expected.to contain_profiles__apt__update('publiq-mspotm') }
 
         context "in the testing environment" do
           let(:environment) { 'testing' }

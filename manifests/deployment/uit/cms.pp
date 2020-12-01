@@ -13,10 +13,8 @@ class profiles::deployment::uit::cms (
 
   contain ::profiles
 
-  include ::profiles::apt::repositories
   include ::profiles::deployment::uit
 
-  realize Apt::Source['publiq-uit']
   realize Profiles::Apt::Update['publiq-uit']
 
   package { 'uit-cms':

@@ -10,7 +10,6 @@ class profiles::deployment::uitpas_be::backend (
 
   include ::profiles::deployment::uitpas_be
 
-  realize Apt::Source['publiq-uitpasbe']
   realize Profiles::Apt::Update['publiq-uitpasbe']
 
   # TODO: package notify Apache::Service ?

@@ -15,7 +15,7 @@ describe 'profiles::rabbitmq' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_apt__source('rabbitmq') }
+        it { is_expected.to contain_profiles__apt__update('rabbitmq') }
 
         it { is_expected.to contain_class('rabbitmq').with(
           'manage_repos'      => false,
@@ -34,7 +34,7 @@ describe 'profiles::rabbitmq' do
           )
         }
 
-        it { is_expected.to contain_apt__source('rabbitmq').that_comes_before('Class[rabbitmq]') }
+        it { is_expected.to contain_profiles__apt__update('rabbitmq').that_comes_before('Class[rabbitmq]') }
         it { is_expected.to contain_class('rabbitmq').that_comes_before('Rabbitmq_user[foo]') }
 
         context "with with_tools => false" do

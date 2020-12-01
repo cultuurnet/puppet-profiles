@@ -15,7 +15,6 @@ describe 'profiles::deployment::curator::articlelinker' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_apt__source('publiq-curator') }
         it { is_expected.to contain_profiles__apt__update('publiq-curator') }
 
         it { is_expected.to contain_package('curator-articlelinker').with( 'ensure' => 'latest') }

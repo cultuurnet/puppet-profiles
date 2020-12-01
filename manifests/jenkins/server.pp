@@ -5,6 +5,7 @@ class profiles::jenkins::server (
   $sslkey,
   $sshpublickey,
   $sslchain = '',
+  $jenkinsversion = 'latest',
 ) {
   contain ::profiles
   contain ::profiles::java8
@@ -20,10 +21,8 @@ class profiles::jenkins::server (
   $security_model = 'full_control'
   $helper_groovy = '/usr/share/jenkins/puppet_helper.groovy'
 
-  realize Package['jq']
-
-  realize Apt::Source['publiq-jenkins']
   realize Profiles::Apt::Update['publiq-jenkins']
+  realize Profiles::Apt::Update['cultuurnet-tools']
 
   # This will install the ruby dev package and bundler
   class{'ruby::dev':
@@ -37,7 +36,7 @@ class profiles::jenkins::server (
     require  => Class['ruby::dev']
   }
 
-  package { 'dpkg':       #we need to upgrade dpkg to 5.8 for the jenkins install to work correctly, default ubuntu 14.04 is 5.7
+  package { 'dpkg':       #we need to upgrade dpkg 1.17.5ubuntu5.7 to 1.17.5ubuntu5.8 so the jenkins install will work correctly.
     ensure   => latest,
     name     => 'dpkg',
     provider => apt,
@@ -52,7 +51,8 @@ class profiles::jenkins::server (
     repo         => false,
     cli          => false,
     install_java => false,
-    require      => Profiles::Apt::Update['publiq-jenkins']
+    require      => Profiles::Apt::Update['publiq-jenkins'],
+    version      => $jenkinsversion
   }
 
   class { '::profiles::jenkins::cli':
@@ -127,7 +127,9 @@ class profiles::jenkins::server (
     #source => '/vagrant/puppet/modules/jenkins/files/puppet_helper.groovy',
   }
 
-  profiles::jenkins::plugin { 'mailer': }
+  profiles::jenkins::plugin { 'mailer':
+    restart        => true
+  }
 
   # Create first user
   exec { 'create-jenkins-user-admin':
@@ -148,16 +150,20 @@ strategy.setAllowAnonymousRead(false)
 instance.setAuthorizationStrategy(strategy)
 def realm = new HudsonPrivateSecurityRealm(false)
 instance.setSecurityRealm(realm)
-instance.save()' | jenkins-cli -auth ${admin_user}:${admin_password} groovy =",
-    unless    => "cat ${helper_groovy} | jenkins-cli -auth ${admin_user}:${admin_password} groovy = get_authorization_strategyname | grep -q -e '^${security_model}\$'",
+instance.save()' | jenkins-cli groovy =",
+    unless    => "cat ${helper_groovy} | jenkins-cli groovy = get_authorization_strategyname | grep -q -e '^${security_model}\$'",
     tries     => 10,
     try_sleep => 30,
-    require   => [Class['jenkins'], Exec['create-jenkins-user-admin']],
+    require   => [ Class['profiles::jenkins::cli'], Class['jenkins'], Exec['create-jenkins-user-admin']],
   }
 
   Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> File[$sshdir] -> File['jenkins.model.JenkinsLocationConfiguration.xml']
 
-  realize Package['git']  #defined in packages.pp, installs git
+  realize Package['git']
+  realize Package['groovy']
+  realize Package['composer']
+  realize Package['phing']
+  realize Package['jq']
 
   # ----------- Install Jenkins Plugins and Credentials-----------
   # The puppet-jenkins module has functionality for adding plugins but you must install the dependencies manually(not done automatically).
@@ -166,7 +172,11 @@ instance.save()' | jenkins-cli -auth ${admin_user}:${admin_password} groovy =",
   # We have to use the .jar manually because the name of the file was changed in jenkins itslef but the puppet plugin has not been updated yet,
   # https://github.com/voxpupuli/puppet-jenkins/pull/945, this means we can not use jenkins::cli or jenkins::credentials and several other classes.
 
-  profiles::jenkins::plugin { 'delivery-pipeline-plugin': }
+<<<<<<< HEAD
+  profiles::jenkins::plugin { 'delivery-pipeline-plugin':
+    restart        => true
+  }
+
   profiles::jenkins::plugin { 'workflow-cps-global-lib': }
   profiles::jenkins::plugin { 'bitbucket': }
   profiles::jenkins::plugin { 'workflow-aggregator': }
@@ -188,6 +198,7 @@ instance.save()' | jenkins-cli -auth ${admin_user}:${admin_password} groovy =",
 
   # We use the import-credentials-as-xml because we can load many credentials fromm one xml file, unlike create-credentials-by-xml.
   $credentials_file = '/usr/share/jenkins/credentials.xml'
+
   file{ $credentials_file:
     ensure => file,
     owner  => 'root',
@@ -195,15 +206,27 @@ instance.save()' | jenkins-cli -auth ${admin_user}:${admin_password} groovy =",
     mode   => '0644',
     source => 'puppet:///private/credentials.xml',
     #source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/credentials.xml',
+    require => Class['jenkins']
   }
+
   exec { 'import-credentials':
-    command   => "jenkins-cli -auth ${admin_user}:${admin_password} import-credentials-as-xml system::system::jenkins < ${credentials_file}",
+    command   => "jenkins-cli import-credentials-as-xml system::system::jenkins < ${credentials_file}",
     tries     => 10,
     try_sleep => 30,
     require   => [ Class['profiles::jenkins::cli'], File[$credentials_file]],
   }
 
-  Profiles::Jenkins::Plugin['delivery-pipeline-plugin'] -> Profiles::Jenkins::Plugin['workflow-cps-global-lib'] -> Profiles::Jenkins::Plugin['bitbucket'] -> Profiles::Jenkins::Plugin['workflow-aggregator']
+  file { '/var/lib/jenkins/jenkins.plugins.nodejs.tools.NodeJSInstallation.xml':
+    ensure  => file,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    source  => 'puppet:///private/jenkins.plugins.nodejs.tools.NodeJSInstallation.xml',
+    #source  => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/jenkins.plugins.nodejs.tools.NodeJSInstallation.xml',
+    require => Profiles::Jenkins::Plugin['nodejs'],
+  }
+
+  Profiles::Jenkins::Plugin['delivery-pipeline-plugin'] -> Profiles::Jenkins::Plugin['workflow-cps-global-lib'] -> Profiles::Jenkins::Plugin['bitbucket'] -> Profiles::Jenkins::Plugin['workflow-aggregator'] -> Exec['import-credentials']
 
   # ----------- Install the Apache server and vhosts for HTTP and HTTPS -----------
   class{ 'apache':

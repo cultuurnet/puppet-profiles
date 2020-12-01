@@ -10,7 +10,6 @@ class profiles::deployment::mspotm::backend (
 
   include ::profiles::deployment::mspotm
 
-  realize Apt::Source['publiq-mspotm']
   realize Profiles::Apt::Update['publiq-mspotm']
 
   package { 'mspotm-backend':

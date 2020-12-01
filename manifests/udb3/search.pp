@@ -8,6 +8,7 @@ class profiles::udb3::search (
   contain ::deployment::udb3::search
 
   include ::profiles::apt::keys
+  include ::profiles::elasticdump
 
   # TODO: parameterize memory settings for instance
   # TODO: move deployment to profiles and rework update_facts stuff
@@ -30,14 +31,7 @@ class profiles::udb3::search (
     }
   }
 
-  profiles::apt::update { 'cultuurnet-search':
-    require => Apt::Source['cultuurnet-search']
-  }
-
-  realize Apt::Source['nodejs_10.x']
-  realize Profiles::Apt::Update['nodejs_10.x']
-
-  realize Package['elasticdump']
+  profiles::apt::update { 'cultuurnet-search': }
 
   if $facts['ec2_metadata'] {
     $http_hosts = [ $facts['ipaddress_eth0'], '127.0.0.1']

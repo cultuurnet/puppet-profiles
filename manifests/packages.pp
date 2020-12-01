@@ -1,6 +1,6 @@
 class profiles::packages {
 
-  include ::profiles::apt::repositories
+  include ::profiles::apt::updates
 
   @package { 'composer':
     ensure  => 'present',
@@ -10,6 +10,16 @@ class profiles::packages {
   @package { 'git':
     ensure => 'present'
   }
+
+  @package { 'groovy':
+    ensure => 'present'
+  }
+
+  @package { 'phing':
+    ensure  => 'present',
+    require => Profiles::Apt::Update['cultuurnet-tools']
+  }
+
 
   @package { 'amqp-tools':
     ensure => 'present'
@@ -26,11 +36,6 @@ class profiles::packages {
 
   @package { 'jq':
     ensure => 'present'
-  }
-
-  @package { 'elasticdump':
-    ensure  => 'present',
-    require => [ Profiles::Apt::Update['cultuurnet-tools'], Profiles::Apt::Update['nodejs_10.x']]
   }
 
   @package { 'gcsfuse':

@@ -14,7 +14,6 @@ class profiles::deployment::uit::frontend (
 
   include ::profiles::deployment::uit
 
-  realize Apt::Source['publiq-uit']
   realize Profiles::Apt::Update['publiq-uit']
 
   package { 'uit-frontend':

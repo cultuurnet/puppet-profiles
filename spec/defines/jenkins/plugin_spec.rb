@@ -44,7 +44,7 @@ describe 'profiles::jenkins::plugin' do
           it { is_expected.to contain_exec('jenkins plugin guineapig').that_requires('Class[profiles::jenkins::cli]') }
         end
 
-        context "with title => guineapig, restart => true and ensure => absent" do
+        context "with title => hedgehog, restart => true and ensure => absent" do
           let(:title) { 'hedgehog' }
 
           let(:params) {

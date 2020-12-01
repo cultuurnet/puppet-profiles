@@ -13,7 +13,5 @@ class profiles::deployment::uitidv2 {
     }
   }
 
-  @profiles::apt::update { 'publiq-uitidv2':
-    require => Apt::Source['publiq-uitidv2']
-  }
+  @profiles::apt::update { 'publiq-uitidv2': }
 }
