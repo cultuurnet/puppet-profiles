@@ -15,7 +15,5 @@ class profiles::jenkins {
     }
   }
 
-  @profiles::apt::update { 'publiq-jenkins':
-    require => Apt::Source['publiq-jenkins']
-  }
+  @profiles::apt::update { 'publiq-jenkins': }
 }

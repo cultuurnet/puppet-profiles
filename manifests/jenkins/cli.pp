@@ -9,7 +9,6 @@ class profiles::jenkins::cli(
 
   include ::profiles::jenkins
 
-  realize Apt::Source['publiq-jenkins']
   realize Profiles::Apt::Update['publiq-jenkins']
 
   package { 'jenkins-cli':
