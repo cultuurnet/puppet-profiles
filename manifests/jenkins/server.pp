@@ -137,7 +137,7 @@ class profiles::jenkins::server (
     tries     => 10,
     try_sleep => 30,
     require   => [ Class['profiles::jenkins::cli'], Class['jenkins'], File[$helper_groovy], Profiles::Jenkins::Plugin['mailer']],
-    unless    => "cat ${helper_groovy} | jenkins-cli -auth ${admin_user}:${admin_password} groovy = user_info ${admin_user}", #Check if the admin user exists
+    unless    => "cat ${helper_groovy} | jenkins-cli groovy = user_info ${admin_user}"
   }
 
   # Set security/strategy policy (jenkins database + no sign up, logged-in uses can do anything + no anonymous read )
