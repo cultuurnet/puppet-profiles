@@ -12,15 +12,20 @@ class profiles::apt::repositories {
     }
   }
 
-  @apt::source { 'cultuurnet-tools':
-    location => "http://apt.uitdatabank.be/tools-${environment}",
-    release  => $facts['lsbdistcodename'],
-    repos    => 'main'
-  }
-
   $php_repository = $facts['lsbdistcodename'] ? {
     'trusty' => 'php-legacy',
     'xenial' => 'php'
+  }
+
+  $tools_repository = $facts['lsbdistcodename'] ? {
+    'trusty' => 'tools-legacy',
+    'xenial' => 'tools'
+  }
+
+  @apt::source { 'cultuurnet-tools':
+    location => "http://apt.uitdatabank.be/${tools_repository}-${environment}",
+    release  => $facts['lsbdistcodename'],
+    repos    => 'main'
   }
 
   @apt::source { 'php':
