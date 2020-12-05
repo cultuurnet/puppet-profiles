@@ -21,6 +21,12 @@ class profiles::ssh(
     enable => true
   }
 
+  file { 'ssh_known_hosts':
+    ensure => 'file',
+    path   => '/etc/ssh/ssh_known_hosts',
+    mode   => '0644'
+  }
+
   resources { 'ssh_authorized_key':
     purge => true
   }
