@@ -28,13 +28,6 @@ class profiles::base {
     admin_user => $admin_user
   }
 
-  if $settings::storeconfigs {
-    @@sshkey { $::ipaddress_eth0:
-      type => 'rsa',
-      key  => $::sshrsakey
-    }
-  }
-
   class { 'lvm':
     manage_pkg => true
   }

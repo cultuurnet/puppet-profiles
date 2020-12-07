@@ -27,6 +27,20 @@ class profiles::ssh(
     mode   => '0644'
   }
 
+  if $settings::storeconfigs {
+    @@sshkey { $facts['network']['hostname']:
+      type         => 'rsa',
+      key          => $facts['ssh']['rsa']['key'],
+      host_aliases => [ $facts['network']['ip'], "${facts['network']['hostname']}.machines.publiq.be", $facts['network']['fqdn']]
+    }
+  }
+
+  resources { 'sshkey':
+    purge => true
+  }
+
+  Sshkey <<| |>>
+
   resources { 'ssh_authorized_key':
     purge => true
   }

@@ -30,6 +30,10 @@ describe 'profiles::ssh' do
           'mode'   => '0644'
         ) }
 
+        it { is_expected.to contain_resources('sshkey').with(
+          'purge' => true
+        ) }
+
         it { is_expected.to contain_resources('ssh_authorized_key').with(
           'purge' => true
         ) }
