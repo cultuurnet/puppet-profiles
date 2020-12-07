@@ -28,13 +28,10 @@ class profiles::ssh(
   }
 
   if $settings::storeconfigs {
-    $network          = fact('network')
-    $ssh_rsa_host_key = fact('ssh.rsa.key')
-
-    @@sshkey { $network['hostname']:
+    @@sshkey { $facts['networking']['hostname']:
       type         => 'rsa',
-      key          => $ssh_rsa_host_key,
-      host_aliases => [ $network['ip'], "${network['hostname']}.machines.publiq.be", $network['fqdn']]
+      key          => $facts['ssh']['rsa']['key'],
+      host_aliases => [ $facts['networking']['ip'], "${facts['networking']['hostname']}.machines.publiq.be", $facts['networking']['fqdn']]
     }
   }
 
