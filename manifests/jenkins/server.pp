@@ -185,6 +185,7 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
   realize Profiles::Apt::Update['cultuurnet-tools']
   realize Package['composer']
   realize Package['phing']
+  realize Package['yarn']
 
   # ----------- Install Jenkins Plugins and Credentials-----------
   # The puppet-jenkins module has functionality for adding plugins but you must install the dependencies manually(not done automatically).
