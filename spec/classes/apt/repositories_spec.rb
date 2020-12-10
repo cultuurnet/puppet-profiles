@@ -22,7 +22,7 @@ describe 'profiles::apt::repositories' do
             let(:environment) { 'testing' }
 
             it { is_expected.to contain_apt__source('cultuurnet-tools').with(
-              'location' => 'http://apt.uitdatabank.be/tools-testing',
+              'location' => 'http://apt.uitdatabank.be/tools-legacy-testing',
               'ensure'   => 'present',
               'repos'    => 'main',
               'include'  => {

@@ -9,7 +9,7 @@ describe 'profiles::backup::server' do
       'backupdir'        => '/mnt'
     } }
 
-  # include_examples 'operating system support', 'profiles::backup::server'
+    include_examples 'operating system support', 'profiles::backup::server'
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do

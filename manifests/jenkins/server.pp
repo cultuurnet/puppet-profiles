@@ -164,6 +164,7 @@ instance.save()' | jenkins-cli groovy =",
   realize Package['composer']
   realize Package['phing']
   realize Package['jq']
+  realize Package['yarn']
 
   # ----------- Install Jenkins Plugins and Credentials-----------
   # The puppet-jenkins module has functionality for adding plugins but you must install the dependencies manually(not done automatically).
@@ -199,11 +200,11 @@ instance.save()' | jenkins-cli groovy =",
   $credentials_file = '/usr/share/jenkins/credentials.xml'
 
   file{ $credentials_file:
-    ensure => file,
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0644',
-    source => 'puppet:///private/credentials.xml',
+    ensure  => file,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    source  => 'puppet:///private/credentials.xml',
     #source => '/vagrant/puppet/files/jenkins-prod01.eu-west-1.compute.internal/credentials.xml',
     require => Class['jenkins']
   }

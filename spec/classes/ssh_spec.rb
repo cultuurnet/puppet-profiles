@@ -15,16 +15,24 @@ describe 'profiles::ssh' do
         it { is_expected.to contain_sshd_config('PermitRootLogin').with(
           'ensure' => 'present',
           'value'  => 'no'
-          )
-        }
+        ) }
 
         it { is_expected.to contain_sshd_config('PermitRootLogin').that_notifies('Service[ssh]') }
 
         it { is_expected.to contain_service('ssh').with(
           'ensure' => 'running',
           'enable' => true
-          )
-        }
+        ) }
+
+        it { is_expected.to contain_file('ssh_known_hosts').with(
+          'ensure' => 'file',
+          'path'   => '/etc/ssh/ssh_known_hosts',
+          'mode'   => '0644'
+        ) }
+
+        it { is_expected.to contain_resources('sshkey').with(
+          'purge' => true
+        ) }
 
         it { is_expected.to contain_resources('ssh_authorized_key').with(
           'purge' => true

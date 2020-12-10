@@ -12,7 +12,7 @@ class profiles::aptly (
 
   contain ::profiles
   $aptly_api_port = 8081  #By defualt the aptly-puppet module sets the api port to 8081, aptly itself defaults to 8080.
-  $apache_server = 'aptly.publiq.be'
+  $virtual_host   = 'aptly.publiq.be'
 
   # This will install aptly and set the s3_publish_endpoints parameter.
   class { 'aptly':
@@ -44,11 +44,11 @@ class profiles::aptly (
     ensure => 'present'
   }
 
-  apache::vhost { 'apt-private_80':
+  apache::vhost { "${virtual_host}_80":
     docroot             => '/var/www/html',
     manage_docroot      => false,
     port                => '80',
-    servername          => $apache_server,
+    servername          => $virtual_host,
     proxy_preserve_host => true,
     proxy_pass          =>
     {
@@ -57,12 +57,12 @@ class profiles::aptly (
     }
   }
 
-  apache::vhost { 'apt-private_443':
+  apache::vhost { "${virtual_host}_443":
     docroot             => '/var/www/html',
     manage_docroot      => false,
     proxy_preserve_host => true,
     port                => '443',
-    servername          => $apache_server,
+    servername          => $virtual_host,
     ssl                 => true,
     ssl_cert            => $sslcert,
     ssl_chain           => $sslchain,

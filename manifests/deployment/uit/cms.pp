@@ -1,5 +1,6 @@
 class profiles::deployment::uit::cms (
   String           $settings_source,
+  String           $hostnames_source,
   String           $drush_config_source,
   String           $package_version         = 'latest',
   String           $database_version        = 'latest',
@@ -21,6 +22,12 @@ class profiles::deployment::uit::cms (
     ensure  => $package_version,
     notify  => Profiles::Deployment::Versions[$title],
     require => Profiles::Apt::Update['publiq-uit']
+  }
+
+  file { 'hostnames.txt':
+    ensure => 'file',
+    path   => '/var/www/uit-cms/hostnames.txt',
+    source => $hostnames_source
   }
 
   package { 'uit-cms-database':
