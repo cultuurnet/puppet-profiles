@@ -78,7 +78,7 @@ describe 'profiles::packages' do
           )
         }
 
-        it { is_expected.to contain_package('yarn').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
+        it { is_expected.to contain_package('yarn').that_requires('Profiles::Apt::Update[yarn]') }
       end
     end
   end

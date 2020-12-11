@@ -20,20 +20,9 @@ class profiles::jenkins::server (
   $security_model = 'full_control'
   $helper_groovy = '/usr/share/jenkins/puppet_helper.groovy'
 
-  realize Package['jq']
-
-  apt::source { 'publiq-jenkins':
-    location => "http://apt.uitdatabank.be/jenkins-${environment}",
-    release  => $facts['lsbdistcodename'],
-    repos    => 'main',
-    require  => Class['profiles::apt::keys'],
-    include  => {
-      'deb' => true,
-      'src' => false
-    }
-  }
-
-  profiles::apt::update { 'publiq-jenkins': }
+  realize Profiles::Apt::Update['publiq-jenkins']
+  realize Profiles::Apt::Update['cultuurnet-tools']
+  realize Profiles::Apt::Update['yarn']
 
   # This will install the ruby dev package and bundler
   class{'ruby::dev':
@@ -185,6 +174,7 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
   realize Profiles::Apt::Update['cultuurnet-tools']
   realize Package['composer']
   realize Package['phing']
+  realize Package['jq']
   realize Package['yarn']
 
   # ----------- Install Jenkins Plugins and Credentials-----------
