@@ -23,6 +23,7 @@ class profiles::jenkins::server (
 
   realize Profiles::Apt::Update['publiq-jenkins']
   realize Profiles::Apt::Update['cultuurnet-tools']
+  realize Profiles::Apt::Update['yarn']
 
   # This will install the ruby dev package and bundler
   class{'ruby::dev':

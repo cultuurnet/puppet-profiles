@@ -55,6 +55,6 @@ class profiles::packages {
 
   @package { 'yarn':
     ensure  => 'present',
-    require => Profiles::Apt::Update['cultuurnet-tools']
+    require => Profiles::Apt::Update['yarn']
   }
 }

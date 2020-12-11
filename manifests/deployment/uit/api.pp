@@ -15,7 +15,7 @@ class profiles::deployment::uit::api (
   include ::profiles::apt::updates
   include ::profiles::deployment::uit
 
-  realize Profiles::Apt::Update['cultuurnet-tools']
+  realize Profiles::Apt::Update['yarn']
   realize Profiles::Apt::Update['publiq-uit']
 
   realize Package['yarn']
