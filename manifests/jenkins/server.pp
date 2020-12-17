@@ -128,9 +128,7 @@ class profiles::jenkins::server (
     #source => '/vagrant/puppet/modules/jenkins/files/puppet_helper.groovy',
   }
 
-  profiles::jenkins::plugin { 'mailer':
-    restart => true
-  }
+  profiles::jenkins::plugin { 'mailer': restart => true }
 
   # Create first user
   exec { 'create-jenkins-user-admin':
@@ -174,10 +172,7 @@ instance.save()' | jenkins-cli groovy =",
   # We have to use the .jar manually because the name of the file was changed in jenkins itslef but the puppet plugin has not been updated yet,
   # https://github.com/voxpupuli/puppet-jenkins/pull/945, this means we can not use jenkins::cli or jenkins::credentials and several other classes.
 
-  profiles::jenkins::plugin { 'delivery-pipeline-plugin':
-    restart => true
-  }
-
+  profiles::jenkins::plugin { 'delivery-pipeline-plugin': restart => true }
   profiles::jenkins::plugin { 'workflow-cps-global-lib': }
   profiles::jenkins::plugin { 'bitbucket': }
   profiles::jenkins::plugin { 'workflow-aggregator': }
