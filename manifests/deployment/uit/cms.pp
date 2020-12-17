@@ -121,8 +121,7 @@ class profiles::deployment::uit::cms (
   }
 
   cron { 'uit-cms-core-cron':
-    command     => '../vendor/bin/drush core:cron',
-    cwd         => "${basedir}/web",
+    command     => "${basedir}/vendor/bin/drush core:cron",
     environment => [ 'MAILTO=infra@publiq.be' ],
     require     => Exec['uit-cms-cache-rebuild post'],
     user        => 'www-data',
@@ -131,8 +130,7 @@ class profiles::deployment::uit::cms (
   }
 
   cron { 'uit-cms-curator-sync':
-    command     => '../vendor/bin/drush queue-run curator_sync',
-    cwd         => "${basedir}/web",
+    command     => "${basedir}/vendor/bin/drush queue-run curator_sync",
     environment => [ 'MAILTO=infra@publiq.be' ],
     require     => Exec['uit-cms-cache-rebuild post'],
     user        => 'www-data',
