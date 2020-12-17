@@ -120,6 +120,26 @@ class profiles::deployment::uit::cms (
     require     => Exec['uit-cms-config-import']
   }
 
+  cron { 'uit-cms-core-cron':
+    command     => '../vendor/bin/drush core:cron',
+    cwd         => "${basedir}/web",
+    environment => [ 'MAILTO=infra@publiq.be' ],
+    require     => Exec['uit-cms-cache-rebuild post'],
+    user        => 'www-data',
+    hour        => '*',
+    minute      => '15,45'
+  }
+
+  cron { 'uit-cms-curator-sync':
+    command     => '../vendor/bin/drush queue-run curator_sync',
+    cwd         => "${basedir}/web",
+    environment => [ 'MAILTO=infra@publiq.be' ],
+    require     => Exec['uit-cms-cache-rebuild post'],
+    user        => 'www-data',
+    hour        => '*',
+    minute      => '*'
+  }
+
   profiles::deployment::versions { $title:
     project      => 'uit',
     packages     => [ 'uit-cms', 'uit-cms-database', 'uit-cms-files'],
