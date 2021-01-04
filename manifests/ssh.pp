@@ -33,13 +33,13 @@ class profiles::ssh(
       key          => $facts['ssh']['rsa']['key'],
       host_aliases => [ $facts['networking']['ip'], "${facts['networking']['hostname']}.machines.publiq.be", $facts['networking']['fqdn']]
     }
+
+    Sshkey <<| |>>
   }
 
   resources { 'sshkey':
     purge => true
   }
-
-  Sshkey <<| |>>
 
   resources { 'ssh_authorized_key':
     purge => true
