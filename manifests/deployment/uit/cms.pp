@@ -121,16 +121,16 @@ class profiles::deployment::uit::cms (
   }
 
   cron { 'uit-cms-core-cron':
-    command     => "${basedir}/vendor/bin/drush core:cron",
+    command     => "${basedir}/vendor/bin/drush -q core:cron",
     environment => [ 'MAILTO=infra@publiq.be' ],
     require     => Exec['uit-cms-cache-rebuild post'],
     user        => 'www-data',
     hour        => '*',
-    minute      => '15,45'
+    minute      => [ '15', '45']
   }
 
   cron { 'uit-cms-curator-sync':
-    command     => "${basedir}/vendor/bin/drush queue-run curator_sync",
+    command     => "${basedir}/vendor/bin/drush -q queue-run curator_sync",
     environment => [ 'MAILTO=infra@publiq.be' ],
     require     => Exec['uit-cms-cache-rebuild post'],
     user        => 'www-data',
