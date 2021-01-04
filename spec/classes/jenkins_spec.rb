@@ -15,7 +15,6 @@ describe 'profiles::jenkins' do
         it { is_expected.to contain_class('profiles::apt::keys') }
 
         it { is_expected.to contain_apt__source('publiq-jenkins').that_requires('Class[profiles::apt::keys]') }
-        it { is_expected.to contain_profiles__apt__update('publiq-jenkins').that_requires('Apt::Source[publiq-jenkins]') }
 
         it { is_expected.to contain_apt__source('publiq-jenkins').with(
           'ensure'   => 'present',
