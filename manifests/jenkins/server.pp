@@ -12,6 +12,7 @@ class profiles::jenkins::server (
 
   include ::profiles::apt::keys
   include ::profiles::packages
+  include ::profiles::jenkins
   include ruby
 
   $jenkins_port = 8080
