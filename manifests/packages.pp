@@ -7,6 +7,11 @@ class profiles::packages {
     require => Profiles::Apt::Update['cultuurnet-tools']
   }
 
+  @package { 'drush':
+    ensure  => 'present',
+    require => Profiles::Apt::Update['cultuurnet-tools']
+  }
+
   @package { 'git':
     ensure => 'present'
   }
@@ -19,7 +24,6 @@ class profiles::packages {
     ensure  => 'present',
     require => Profiles::Apt::Update['cultuurnet-tools']
   }
-
 
   @package { 'amqp-tools':
     ensure => 'present'
