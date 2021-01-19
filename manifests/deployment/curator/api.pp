@@ -64,4 +64,6 @@ class profiles::deployment::curator::api (
     packages     => 'curator-api',
     puppetdb_url => $puppetdb_url
   }
+
+  Class['php'] -> Class['profiles::deployment::curator::api']
 }
