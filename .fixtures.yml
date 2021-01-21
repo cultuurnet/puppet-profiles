@@ -78,6 +78,6 @@ fixtures:
       ref: '7353dd0'
     websockets:
       repo: 'https://github.com/cultuurnet/puppet-websockets.git'
-      ref: 'fdde08f'
+      ref: 'f8a1bb2'
   symlinks:
     profiles: "#{source_dir}"

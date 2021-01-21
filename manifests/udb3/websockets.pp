@@ -1,5 +1,6 @@
 class profiles::udb3::websockets (
-  String $config_source
+  String $config_source,
+  String $version       = 'latest'
 ) {
   contain ::profiles
 
@@ -8,7 +9,8 @@ class profiles::udb3::websockets (
   realize Profiles::Apt::Update['cultuurnet-tools']
 
   class { '::websockets::udb3':
-    config_source => $config_source,
-    require       => Profiles::Apt::Update['cultuurnet-tools']
+    package_version => $version,
+    config_source   => $config_source,
+    require         => Profiles::Apt::Update['cultuurnet-tools']
   }
 }
