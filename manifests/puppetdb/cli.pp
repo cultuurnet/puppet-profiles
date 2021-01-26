@@ -12,6 +12,10 @@ class profiles::puppetdb::cli(
     require => Profiles::Apt::Update['cultuurnet-tools']
   }
 
+  file { '/etc/puppetlabs/client-tools':
+    ensure  => 'directory',
+  }
+
   file { 'puppetdb-cli-config':
     ensure  => 'file',
     path    => '/etc/puppetlabs/client-tools/puppetdb.conf',
