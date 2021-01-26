@@ -1,8 +1,8 @@
 {
   "puppetdb": {
     "server_urls": <%- if @server_urls.is_a?(String) %>"<%= @server_urls %>"<%- else %><%= @server_urls %><%- end %>,
-    "cacert": "/etc/puppetlabs/puppet/ssl/certs/ca.pem",
-    "cert": "/etc/puppetlabs/puppet/ssl/certs/<%= @trusted['certname'] %>.pem",
-    "key": "/etc/puppetlabs/puppet/ssl/private_keys/<%= @trusted['certname'] %>.pem"
+    "cacert": "<%= @puppet_agent_ssldir %>/certs/ca.pem",
+    "cert": "<%= @puppet_agent_ssldir %>/certs/<%= @trusted['certname'] %>.pem",
+    "key": "<%= @puppet_agent_ssldir %>/private_keys/<%= @trusted['certname'] %>.pem"
   }
 }

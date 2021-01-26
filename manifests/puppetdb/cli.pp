@@ -8,6 +8,8 @@ class profiles::puppetdb::cli(
 
   realize Profiles::Apt::Update['cultuurnet-tools']
 
+  $puppet_agent_ssldir = '/etc/puppetlabs/puppet/ssl'
+
   package { 'rubygem-puppetdb-cli':
     require => Profiles::Apt::Update['cultuurnet-tools']
   }
