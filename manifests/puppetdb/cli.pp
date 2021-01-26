@@ -1,0 +1,20 @@
+class profiles::puppetdb::cli(
+  Variant[String, Array[String]] $server_urls
+) {
+
+  contain profiles
+
+  include ::profiles::apt::updates
+
+  realize Profiles::Apt::Update['cultuurnet-tools']
+
+  package { 'rubygem-puppetdb-cli':
+    require => Profiles::Apt::Update['cultuurnet-tools']
+  }
+
+  file { 'puppetdb-cli-config':
+    ensure  => 'file',
+    path    => '/etc/puppetlabs/client-tools/puppetdb.conf',
+    content => template('profiles/puppetdb/cli.conf.erb')
+  }
+}
