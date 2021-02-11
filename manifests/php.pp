@@ -1,5 +1,6 @@
 class profiles::php (
-  Boolean $with_composer = false
+  Boolean       $with_composer                 = false,
+  Integer[1, 2] $with_composer_default_version = 1
 ) {
 
   contain ::profiles
@@ -15,7 +16,17 @@ class profiles::php (
 
   if $with_composer {
     realize Package['composer']
+    realize Package['composer1']
+    realize Package['composer2']
     realize Package['git']
+
+    Package['composer'] -> Package['composer1']
+    Package['composer'] -> Package['composer2']
+
+    alternatives { 'composer':
+      path    => "/usr/bin/composer${with_composer_default_version}",
+      require => [ Package['composer1'], Package['composer2']]
+    }
   }
 
   Profiles::Apt::Update['php'] -> Class['php::globals'] -> Class['php']
