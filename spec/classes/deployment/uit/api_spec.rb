@@ -41,8 +41,21 @@ describe 'profiles::deployment::uit::api' do
 
         it { is_expected.not_to contain_file('/etc/default/uit-api') }
 
-        it { is_expected.to contain_exec('uit-api_db_schema_update').with(
+        it { is_expected.to contain_exec('uit-api_graphql_schema_update').with(
           'command'     => 'yarn graphql typeorm migration:run',
+          'cwd'         => '/var/www/uit-api',
+          'user'        => 'www-data',
+          'group'       => 'www-data',
+          'path'        => [ '/usr/local/bin', '/usr/bin', '/bin', '/var/www/uit-api'],
+          'refreshonly' => true
+        ) }
+
+        it { is_expected.to contain_exec('uit-api_graphql_schema_update').that_subscribes_to('Package[uit-api]') }
+        it { is_expected.to contain_exec('uit-api_graphql_schema_update').that_subscribes_to('File[uit-api-config]') }
+        it { is_expected.to contain_exec('uit-api_graphql_schema_update').that_requires('Package[yarn]') }
+
+        it { is_expected.to contain_exec('uit-api_db_schema_update').with(
+          'command'     => 'yarn db typeorm migration:run',
           'cwd'         => '/var/www/uit-api',
           'user'        => 'www-data',
           'group'       => 'www-data',

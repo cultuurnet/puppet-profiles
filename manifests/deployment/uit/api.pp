@@ -52,8 +52,8 @@ class profiles::deployment::uit::api (
     subscribe   => [ Package['uit-api'], File['uit-api-config']],
     require     => Package['yarn']
   }
-  
-   exec { 'uit-api_db_schema_update':
+
+  exec { 'uit-api_db_schema_update':
     command     => 'yarn db typeorm migration:run',
     cwd         => $basedir,
     user        => 'www-data',
@@ -63,7 +63,6 @@ class profiles::deployment::uit::api (
     subscribe   => [ Package['uit-api'], File['uit-api-config']],
     require     => Package['yarn']
   }
-
 
   if $service_manage {
     if $service_defaults_source {
