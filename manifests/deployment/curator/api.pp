@@ -10,6 +10,7 @@ class profiles::deployment::curator::api (
 
   include ::profiles::deployment::curator
 
+  realize Profiles::Apt::Update['php']
   realize Profiles::Apt::Update['publiq-curator']
 
   # TODO: package notify Apache::Service ?
@@ -18,7 +19,7 @@ class profiles::deployment::curator::api (
   package { 'curator-api':
     ensure  => $package_version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Profiles::Apt::Update['publiq-curator']
+    require => [ Profiles::Apt::Update['php'], Profiles::Apt::Update['publiq-curator']]
   }
 
   file { 'curator-api-config':

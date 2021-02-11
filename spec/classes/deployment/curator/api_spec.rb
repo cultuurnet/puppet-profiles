@@ -14,11 +14,12 @@ describe 'profiles::deployment::curator::api' do
 
         it { is_expected.to compile.with_all_deps }
 
+        it { is_expected.to contain_profiles__apt__update('php') }
         it { is_expected.to contain_profiles__apt__update('publiq-curator') }
 
         it { is_expected.to contain_package('curator-api').with( 'ensure' => 'latest') }
         it { is_expected.to contain_package('curator-api').that_notifies('Profiles::Deployment::Versions[profiles::deployment::curator::api]') }
-        it { is_expected.to contain_package('curator-api').that_requires('Profiles::Apt::Update[publiq-curator]') }
+        it { is_expected.to contain_package('curator-api').that_requires(['Profiles::Apt::Update[php]', 'Profiles::Apt::Update[publiq-curator]']) }
 
         it { is_expected.to contain_file('curator-api-config').with(
           'ensure' => 'file',
