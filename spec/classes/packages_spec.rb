@@ -39,8 +39,6 @@ describe 'profiles::packages' do
 
         it { is_expected.to contain_package('drush').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
 
-        it { is_expected.to contain_package('drush').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
-
         it { is_expected.to contain_package('git').with(
           'ensure' => 'present'
           )
