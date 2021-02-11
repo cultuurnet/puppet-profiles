@@ -56,8 +56,8 @@ describe 'profiles::php' do
           )
         }
 
-        it { is_expected.to contain_package('composer1').that_requires('Package[composer]') }
-        it { is_expected.to contain_package('composer2').that_requires('Package[composer]') }
+        it { is_expected.to contain_package('composer1').that_requires(['Class[php]', 'Package[composer]']) }
+        it { is_expected.to contain_package('composer2').that_requires(['Class[php]', 'Package[composer]']) }
         it { is_expected.to contain_alternatives('composer').that_requires(['Package[composer1]', 'Package[composer2]']) }
 
         context 'with with_composer_default_version => 2' do

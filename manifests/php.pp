@@ -22,6 +22,8 @@ class profiles::php (
 
     Package['composer'] -> Package['composer1']
     Package['composer'] -> Package['composer2']
+    Class['php'] -> Package['composer1']
+    Class['php'] -> Package['composer2']
 
     alternatives { 'composer':
       path    => "/usr/bin/composer${with_composer_default_version}",
