@@ -274,6 +274,11 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
     admin_password => $adminpassword
   }
 
+  profiles::jenkins::plugin { 'ws-cleanup':
+    admin_user     => $adminuser,
+    admin_password => $adminpassword
+  }
+
   Profiles::Jenkins::Plugin['delivery-pipeline-plugin'] -> Profiles::Jenkins::Plugin['workflow-cps-global-lib'] -> Profiles::Jenkins::Plugin['bitbucket'] -> Profiles::Jenkins::Plugin['workflow-aggregator'] -> Exec['import-credentials']
 
   # ----------- Install the Apache server and vhosts for HTTP and HTTPS -----------
