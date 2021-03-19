@@ -5,7 +5,7 @@ class profiles::jenkins::server (
   $sslkey,
   $sshpublickey,
   $sslchain = '',
-  $jenkinsversion = 'latest',
+  $version = 'latest',
 ) {
   contain ::profiles
   contain ::profiles::java8
@@ -53,7 +53,7 @@ class profiles::jenkins::server (
     cli          => false,
     install_java => false,
     require      => Profiles::Apt::Update['publiq-jenkins'],
-    version      => $jenkinsversion
+    version      => $version
   }
 
   sudo::conf { 'jenkins':
@@ -116,7 +116,7 @@ class profiles::jenkins::server (
   # https://github.com/cultuurnet/tool-builder/tree/master/jenkins-cli
   $clitool = 'jenkins-cli'
   package{ $clitool:
-    ensure   => $jenkinsversion,
+    ensure   => $version,
     name     => $clitool,
     provider => apt,
     require  => [Profiles::Apt::Update['publiq-jenkins'], Class['jenkins']]
