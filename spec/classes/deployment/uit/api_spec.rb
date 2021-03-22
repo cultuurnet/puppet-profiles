@@ -22,9 +22,17 @@ describe 'profiles::deployment::uit::api' do
         it { is_expected.to contain_package('uit-api').that_notifies('Profiles::Deployment::Versions[profiles::deployment::uit::api]') }
         it { is_expected.to contain_package('uit-api').that_requires('Profiles::Apt::Update[publiq-uit]') }
 
-        it { is_expected.to contain_file('uit-api-config').with(
+        it { is_expected.to contain_file('uit-api-config-graphql').with(
           'ensure' => 'file',
           'path'   => '/var/www/uit-api/packages/graphql/.env',
+          'source' => '/foo',
+          'owner'  => 'www-data',
+          'group'  => 'www-data'
+        ) }
+
+        it { is_expected.to contain_file('uit-api-config-db').with(
+          'ensure' => 'file',
+          'path'   => '/var/www/uit-api/packages/db/.env',
           'source' => '/foo',
           'owner'  => 'www-data',
           'group'  => 'www-data'
@@ -37,11 +45,12 @@ describe 'profiles::deployment::uit::api' do
           'group'  => 'www-data'
         ) }
 
-        it { is_expected.to contain_file('uit-api-config').that_requires('Package[uit-api]') }
+        it { is_expected.to contain_file('uit-api-config-graphql').that_requires('Package[uit-api]') }
+        it { is_expected.to contain_file('uit-api-config-db').that_requires('Package[uit-api]') }
 
         it { is_expected.not_to contain_file('/etc/default/uit-api') }
 
-        it { is_expected.to contain_exec('uit-api_db_schema_update').with(
+        it { is_expected.to contain_exec('uit-api_graphql_schema_update').with(
           'command'     => 'yarn graphql typeorm migration:run',
           'cwd'         => '/var/www/uit-api',
           'user'        => 'www-data',
@@ -50,8 +59,21 @@ describe 'profiles::deployment::uit::api' do
           'refreshonly' => true
         ) }
 
+        it { is_expected.to contain_exec('uit-api_graphql_schema_update').that_subscribes_to('Package[uit-api]') }
+        it { is_expected.to contain_exec('uit-api_graphql_schema_update').that_subscribes_to('File[uit-api-config-graphql]') }
+        it { is_expected.to contain_exec('uit-api_graphql_schema_update').that_requires('Package[yarn]') }
+
+        it { is_expected.to contain_exec('uit-api_db_schema_update').with(
+          'command'     => 'yarn db typeorm migration:run',
+          'cwd'         => '/var/www/uit-api',
+          'user'        => 'www-data',
+          'group'       => 'www-data',
+          'path'        => [ '/usr/local/bin', '/usr/bin', '/bin', '/var/www/uit-api'],
+          'refreshonly' => true
+        ) }
+
         it { is_expected.to contain_exec('uit-api_db_schema_update').that_subscribes_to('Package[uit-api]') }
-        it { is_expected.to contain_exec('uit-api_db_schema_update').that_subscribes_to('File[uit-api-config]') }
+        it { is_expected.to contain_exec('uit-api_db_schema_update').that_subscribes_to('File[uit-api-config-db]') }
         it { is_expected.to contain_exec('uit-api_db_schema_update').that_requires('Package[yarn]') }
 
         it { is_expected.to contain_service('uit-api').with(
@@ -62,7 +84,7 @@ describe 'profiles::deployment::uit::api' do
 
         it { is_expected.to contain_service('uit-api').that_requires('Package[uit-api]') }
         it { is_expected.to contain_service('uit-api').that_requires('File[uit-api-log]') }
-        it { is_expected.to contain_file('uit-api-config').that_notifies('Service[uit-api]') }
+        it { is_expected.to contain_file('uit-api-config-graphql').that_notifies('Service[uit-api]') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::api').with(
           'project'      => 'uit',
@@ -97,7 +119,11 @@ describe 'profiles::deployment::uit::api' do
       context "on #{os}" do
         let (:facts) { facts }
 
-        it { is_expected.to contain_file('uit-api-config').with(
+        it { is_expected.to contain_file('uit-api-config-graphql').with(
+          'source' => '/bar',
+        ) }
+
+        it { is_expected.to contain_file('uit-api-config-db').with(
           'source' => '/bar',
         ) }
 

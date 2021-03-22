@@ -57,6 +57,9 @@ fixtures:
     sudo:
       repo: 'saz/sudo'
       ref: '6.0.0'
+    alternatives:
+      repo: 'puppet/alternatives'
+      ref: '3.0.0'
   repositories:
     rabbitmq:
       repo: 'https://github.com/willaerk/puppetlabs-rabbitmq.git'
@@ -78,6 +81,6 @@ fixtures:
       ref: '7353dd0'
     websockets:
       repo: 'https://github.com/cultuurnet/puppet-websockets.git'
-      ref: 'fdde08f'
+      ref: 'f8a1bb2'
   symlinks:
     profiles: "#{source_dir}"

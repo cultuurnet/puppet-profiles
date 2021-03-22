@@ -17,10 +17,29 @@ describe 'profiles::udb3::websockets' do
         it { is_expected.to contain_profiles__apt__update('cultuurnet-tools') }
 
         it { is_expected.to contain_class('websockets::udb3').with(
-          'config_source' => '/tmp/config.json'
+          'package_version' => 'latest',
+          'config_source'   => '/tmp/config.json'
         ) }
 
         it { is_expected.to contain_class('websockets::udb3').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
+      end
+    end
+  end
+
+  context "with config_source => /tmp/bla.json and version => '1.2.3'" do
+    let (:params) { {
+      'config_source' => '/tmp/bla.json',
+      'version'       => '1.2.3'
+    } }
+
+    on_supported_os.each do |os, facts|
+      context "on #{os}" do
+        let(:facts) { facts }
+
+        it { is_expected.to contain_class('websockets::udb3').with(
+          'package_version' => '1.2.3',
+          'config_source'   => '/tmp/bla.json'
+        ) }
       end
     end
   end

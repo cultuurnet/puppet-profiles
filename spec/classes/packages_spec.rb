@@ -19,11 +19,25 @@ describe 'profiles::packages' do
         ] }
 
         it { is_expected.to contain_package('composer').with(
+          'ensure' => 'absent'
+          )
+        }
+
+        it { is_expected.to contain_package('composer1').with(
           'ensure' => 'present'
           )
         }
 
-        it { is_expected.to contain_package('composer').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
+        it { is_expected.to contain_package('composer1').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
+
+        it { is_expected.to contain_package('composer2').with(
+          'ensure' => 'present'
+          )
+        }
+
+        it { is_expected.to contain_package('composer2').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
+
+        it { is_expected.to contain_package('drush').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
 
         it { is_expected.to contain_package('git').with(
           'ensure' => 'present'

@@ -3,6 +3,20 @@ class profiles::packages {
   include ::profiles::apt::updates
 
   @package { 'composer':
+    ensure  => 'absent'
+  }
+
+  @package { 'composer1':
+    ensure  => 'present',
+    require => Profiles::Apt::Update['cultuurnet-tools']
+  }
+
+  @package { 'composer2':
+    ensure  => 'present',
+    require => Profiles::Apt::Update['cultuurnet-tools']
+  }
+
+  @package { 'drush':
     ensure  => 'present',
     require => Profiles::Apt::Update['cultuurnet-tools']
   }
@@ -19,7 +33,6 @@ class profiles::packages {
     ensure  => 'present',
     require => Profiles::Apt::Update['cultuurnet-tools']
   }
-
 
   @package { 'amqp-tools':
     ensure => 'present'

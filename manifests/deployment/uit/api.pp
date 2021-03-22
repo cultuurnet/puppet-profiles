@@ -26,9 +26,18 @@ class profiles::deployment::uit::api (
     require => Profiles::Apt::Update['publiq-uit']
   }
 
-  file { 'uit-api-config':
+  file { 'uit-api-config-graphql':
     ensure  => 'file',
     path    => "${basedir}/packages/graphql/.env",
+    owner   => 'www-data',
+    group   => 'www-data',
+    source  => $config_source,
+    require => Package['uit-api']
+  }
+
+  file { 'uit-api-config-db':
+    ensure  => 'file',
+    path    => "${basedir}/packages/db/.env",
     owner   => 'www-data',
     group   => 'www-data',
     source  => $config_source,
@@ -42,17 +51,27 @@ class profiles::deployment::uit::api (
     group  => 'www-data'
   }
 
-  exec { 'uit-api_db_schema_update':
+  exec { 'uit-api_graphql_schema_update':
     command     => 'yarn graphql typeorm migration:run',
     cwd         => $basedir,
     user        => 'www-data',
     group       => 'www-data',
     path        => [ '/usr/local/bin', '/usr/bin', '/bin', $basedir],
     refreshonly => true,
-    subscribe   => [ Package['uit-api'], File['uit-api-config']],
+    subscribe   => [ Package['uit-api'], File['uit-api-config-graphql']],
     require     => Package['yarn']
   }
 
+  exec { 'uit-api_db_schema_update':
+    command     => 'yarn db typeorm migration:run',
+    cwd         => $basedir,
+    user        => 'www-data',
+    group       => 'www-data',
+    path        => [ '/usr/local/bin', '/usr/bin', '/bin', $basedir],
+    refreshonly => true,
+    subscribe   => [ Package['uit-api'], File['uit-api-config-db']],
+    require     => Package['yarn']
+  }
 
   if $service_manage {
     if $service_defaults_source {
@@ -70,7 +89,7 @@ class profiles::deployment::uit::api (
       ensure    => $service_ensure,
       enable    => $service_enable,
       require   => [ Package['uit-api'], File['uit-api-log']],
-      subscribe => File['uit-api-config'],
+      subscribe => File['uit-api-config-graphql'],
       hasstatus => true
     }
   }

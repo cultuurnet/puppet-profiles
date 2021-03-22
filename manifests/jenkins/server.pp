@@ -5,7 +5,7 @@ class profiles::jenkins::server (
   $sslkey,
   $sshpublickey,
   $sslchain = '',
-  $jenkinsversion = 'latest',
+  $version = 'latest',
 ) {
   contain ::profiles
   contain ::profiles::java8
@@ -53,7 +53,7 @@ class profiles::jenkins::server (
     cli          => false,
     install_java => false,
     require      => Profiles::Apt::Update['publiq-jenkins'],
-    version      => $jenkinsversion
+    version      => $version
   }
 
   class { '::profiles::jenkins::cli':
