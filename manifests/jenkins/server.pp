@@ -181,6 +181,8 @@ instance.save()' | jenkins-cli groovy =",
   profiles::jenkins::plugin { 'copyartifact': }
   profiles::jenkins::plugin { 'pipeline-utility-steps': }
   profiles::jenkins::plugin { 'slack': }
+  profiles::jenkins::plugin { 'ws-cleanup': }
+  profiles::jenkins::plugin { 'greenballs': }
 
   file { '/var/lib/jenkins/org.jenkinsci.plugins.workflow.libs.GlobalLibraries.xml':
     ensure  => file,
