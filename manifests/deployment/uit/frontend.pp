@@ -1,6 +1,7 @@
 class profiles::deployment::uit::frontend (
   String           $config_source,
   String           $package_version         = 'latest',
+  String           $uitdatabank_api_url     = 'http://localhost',
   Boolean          $service_manage          = true,
   String           $service_ensure          = 'running',
   Boolean          $service_enable          = true,
@@ -29,6 +30,15 @@ class profiles::deployment::uit::frontend (
     group   => 'www-data',
     source  => $config_source,
     require => Package['uit-frontend']
+  }
+
+  file { 'uit-frontend-migration-script':
+    ensure  => 'file',
+    path    => "${basedir}/../../migrate.sh",
+    owner   => 'www-data',
+    group   => 'www-data',
+    mode    => '0755',
+    content => template('profiles/deployment/uit/frontend/migrate.sh.erb')
   }
 
   if $service_manage {
