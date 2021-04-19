@@ -22,7 +22,7 @@ class profiles::udb3::search (
 
   apt::source { 'cultuurnet-search':
     location => "http://apt.uitdatabank.be/search-${environment}",
-    release  => 'trusty',
+    release  => $facts['lsbdistcodename'],
     repos    => 'main',
     require  => Class['profiles::apt::keys'],
     include  => {
