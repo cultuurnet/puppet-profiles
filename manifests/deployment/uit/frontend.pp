@@ -6,6 +6,7 @@ class profiles::deployment::uit::frontend (
   String           $service_ensure          = 'running',
   Boolean          $service_enable          = true,
   Optional[String] $service_defaults_source = undef,
+  Optional[String] $maintenance_source      = undef,
   Optional[String] $puppetdb_url            = undef
 ) {
 
@@ -39,6 +40,18 @@ class profiles::deployment::uit::frontend (
     group   => 'www-data',
     mode    => '0755',
     content => template('profiles/deployment/uit/frontend/migrate.sh.erb')
+  }
+
+  if $maintenance_source {
+    file { 'uit-maintenance-pages':
+      ensure  => 'directory',
+      path    => "${basedir}/../../maintenance",
+      recurse => true,
+      source  => $maintenance_source,
+      owner   => 'www-data',
+      group   => 'www-data',
+      require => Package['uit-frontend']
+    }
   }
 
   if $service_manage {
