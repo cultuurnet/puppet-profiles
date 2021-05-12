@@ -7,6 +7,7 @@ class profiles::aptly (
   $sslkey = '',
   $gpgkey_source = '',
   $gpgkey_fingerprint = '',
+  $data_dir = '/var/aptly',
   $repositories = []
 ) {
 
@@ -20,6 +21,7 @@ class profiles::aptly (
     repo_location        => 'http://repo.aptly.info/', # Where to get the deb file
     repo_keyserver       => 'hkps.pool.sks-keyservers.net', # Where to get the install key
     repo_key             => '26DA9D8630302E0B86A7A2CBED75B5A4483DA07C',
+    root_dir             => $data_dir,
     enable_service       => false,
     enable_api           => true,
     api_nolock           => true,
