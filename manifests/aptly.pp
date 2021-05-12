@@ -45,16 +45,13 @@ class profiles::aptly (
   }
 
   apache::vhost { "${virtual_host}_80":
-    docroot             => '/var/www/html',
-    manage_docroot      => false,
-    port                => '80',
-    servername          => $virtual_host,
-    proxy_preserve_host => true,
-    proxy_pass          =>
-    {
-      path =>  '/',
-      url  => "http://localhost:${aptly_api_port}/"
-    }
+    docroot         => '/var/www/html',
+    manage_docroot  => false,
+    port            => '80',
+    servername      => $virtual_host,
+    redirect_source => '/',
+    redirect_dest   => "https://${virtual_host}",
+    redirect_status => 'permanent'
   }
 
   apache::vhost { "${virtual_host}_443":
