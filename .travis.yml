@@ -8,7 +8,7 @@ script: "bundle exec rake test"
 matrix:
   fast_finish: true
   include:
-  - rvm: 2.7.0
+  - rvm: 2.4.0
     env: PUPPET_GEM_VERSION="= 6.13.0"
 notifications:
   email:
