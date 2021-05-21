@@ -1,5 +1,17 @@
 fixtures:
   forge_modules:
+    augeas_core:
+      repo: 'puppetlabs/augeas_core'
+      ref: '1.0.5'
+    cron_core:
+      repo: 'puppetlabs/cron_core'
+      ref: '1.0.3'
+    mount_core:
+      repo: 'puppetlabs/mount_core'
+      ref: '1.0.4'
+    sshkeys_core:
+      repo: 'puppetlabs/sshkeys_core'
+      ref: '1.0.3'
     stdlib:
       repo: 'puppetlabs/stdlib'
       ref: '4.25.0'
