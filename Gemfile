@@ -9,6 +9,7 @@ group :development, :test do
   gem 'rspec-puppet', :require => false
   gem 'rspec-puppet-facts', :require => false
   gem 'semantic_puppet', :require => false
+  gem 'facter', '< 4.0.0', :require => false
 end
 
 if puppetversion = ENV['PUPPET_GEM_VERSION']
