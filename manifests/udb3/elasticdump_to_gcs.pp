@@ -20,6 +20,8 @@ class profiles::udb3::elasticdump_to_gcs (
 
   if $source_only {
     $option_source_only = '-s'
+  } else {
+    $option_source_only = ''
   }
 
   if $date_specifier {
