@@ -4,6 +4,7 @@ class profiles::udb3::elasticdump_to_gcs (
   String  $index_name,
   Integer $batch_size           = 100,
   Boolean $source_only          = false,
+  String  $date_specifier       = undef,
   String  $local_timezone       = 'UTC'
 ) {
 
@@ -18,10 +19,13 @@ class profiles::udb3::elasticdump_to_gcs (
   realize Package['gcsfuse']
 
   if $source_only {
-    $options = '-s'
-  } else {
-    $options = ''
+    $option_source_only = '-s'
+
+  if $date_specifier {
+    $option_date_specifier = "-d ${date_specifier}"
   }
+
+  $options = join([ $option_source_only, $option_date_specifier])
 
   file { '/mnt/gcs':
     ensure => 'directory'
