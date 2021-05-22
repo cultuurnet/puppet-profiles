@@ -3,6 +3,7 @@ class profiles::udb3::elasticdump_to_gcs (
   String  $gcs_key_file_source,
   String  $index_name,
   Integer $batch_size           = 100,
+  Integer $dump_hour            = 0,
   Boolean $source_only          = false,
   String  $date_specifier       = undef,
   String  $local_timezone       = 'UTC'
@@ -53,19 +54,12 @@ class profiles::udb3::elasticdump_to_gcs (
     require => [ Class['profiles::elasticdump'], Package['gcsfuse'], File['gcs_credentials.json']]
   }
 
-  file { 'midnight_elasticdump_to_gcs':
-    path    => '/usr/local/bin/midnight_elasticdump_to_gcs',
-    content => "test $(date +%0H) -eq 0 && /usr/local/bin/elasticdump_to_gcs ${options}\n",
-    mode    => '0755',
-    require => File['elasticdump_to_gcs']
-  }
-
   cron { 'elasticdump_to_gcs':
-    command     => '/usr/local/bin/midnight_elasticdump_to_gcs',
-    environment => [ 'SHELL=/bin/bash', "TZ=${local_timezone}"],
+    command     => "/usr/bin/test $(date +%0H) -eq ${dump_hour} && /usr/local/bin/elasticdump_to_gcs ${options}",
+    environment => [ 'SHELL=/bin/bash', "TZ=${local_timezone}", 'MAILTO=infra@publiq.be'],
     user        => 'ubuntu',
     hour        => '*',
     minute      => '00',
-    require     => [ File['midnight_elasticdump_to_gcs'], File['/mnt/gcs/cloud-composer']]
+    require     => [ File['elasticdump_to_gcs'], File['/mnt/gcs/cloud-composer']]
   }
 }
