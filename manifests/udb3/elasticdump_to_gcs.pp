@@ -21,14 +21,14 @@ class profiles::udb3::elasticdump_to_gcs (
   if $source_only {
     $option_source_only = '-s'
   } else {
-    $option_source_only = ''
+    $option_source_only = undef
   }
 
   if $date_specifier {
     $option_date_specifier = "-d ${date_specifier}"
   }
 
-  $options = join([ $option_source_only, $option_date_specifier], ' ')
+  $options = join(delete_undef_values([ $option_source_only, $option_date_specifier]), ' ')
 
   file { '/mnt/gcs':
     ensure => 'directory'
