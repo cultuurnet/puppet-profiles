@@ -14,6 +14,20 @@ describe 'profiles::apt::repositories' do
 
         it { is_expected.to contain_class('profiles::apt::keys') }
 
+        it { is_expected.to contain_apt__source('aptly').with(
+          'location' => 'http://repo.aptly.info',
+          'ensure'   => 'present',
+          'repos'    => 'main',
+          'include'  => {
+            'deb' => 'true',
+            'src' => 'false'
+          },
+          'release' => 'squeeze'
+        )
+        }
+
+        it { is_expected.to contain_apt__source('aptly').that_requires('Class[profiles::apt::keys]') }
+
         case facts[:os]['release']['major']
         when '14.04'
           let (:facts) { facts }

@@ -10,4 +10,5 @@ class profiles::apt::updates {
   @profiles::apt::update { 'nodejs_14.x': }
   @profiles::apt::update { 'elasticsearch': }
   @profiles::apt::update { 'yarn': }
+  @profiles::apt::update { 'aptly': }
 }
