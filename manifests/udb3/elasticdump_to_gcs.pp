@@ -55,7 +55,7 @@ class profiles::udb3::elasticdump_to_gcs (
   }
 
   cron { 'elasticdump_to_gcs':
-    command     => "/usr/bin/test $(date +%0H) -eq ${dump_hour} && /usr/local/bin/elasticdump_to_gcs ${options}",
+    command     => "/usr/bin/test $(date +\%0H) -eq ${dump_hour} && /usr/local/bin/elasticdump_to_gcs ${options}",
     environment => [ 'SHELL=/bin/bash', "TZ=${local_timezone}", 'MAILTO=infra@publiq.be'],
     user        => 'ubuntu',
     hour        => '*',
