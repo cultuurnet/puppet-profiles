@@ -1,4 +1,3 @@
-## This profile/module installs and configures aptly.
 class profiles::aptly (
   $awsaccesskeyid = '',
   $awssecretaccesskey = '',
@@ -12,20 +11,20 @@ class profiles::aptly (
 ) {
 
   contain ::profiles
+
   $aptly_api_port = 8081  #By defualt the aptly-puppet module sets the api port to 8081, aptly itself defaults to 8080.
   $virtual_host   = 'aptly.publiq.be'
 
-  # This will install aptly and set the s3_publish_endpoints parameter.
+  realize Profiles::Apt::Update['aptly']
+
   class { 'aptly':
-    install_repo         => true, # Tell aptly to install from a repo
-    repo_location        => 'http://repo.aptly.info/', # Where to get the deb file
-    repo_keyserver       => 'hkps.pool.sks-keyservers.net', # Where to get the install key
-    repo_key             => '26DA9D8630302E0B86A7A2CBED75B5A4483DA07C',
+    install_repo         => false,
     root_dir             => $data_dir,
     enable_service       => false,
     enable_api           => true,
     api_nolock           => true,
     port                 => $aptly_api_port,
+    require              => Profiles::Apt::Update['aptly'],
     s3_publish_endpoints =>
     {
       'apt.publiq.be' =>
