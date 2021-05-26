@@ -12,8 +12,9 @@ class profiles::aptly (
 
   contain ::profiles
 
-  $aptly_api_port = 8081  #By defualt the aptly-puppet module sets the api port to 8081, aptly itself defaults to 8080.
-  $virtual_host   = 'aptly.publiq.be'
+  $api_bind = '127.0.0.1'
+  $api_port = 8081
+  $hostname = 'aptly.publiq.be'
 
   realize Profiles::Apt::Update['aptly']
 
@@ -22,8 +23,9 @@ class profiles::aptly (
     root_dir             => $data_dir,
     enable_service       => false,
     enable_api           => true,
+    api_bind             => $api_bind,
+    api_port             => $api_port,
     api_nolock           => true,
-    port                 => $aptly_api_port,
     require              => Profiles::Apt::Update['aptly'],
     s3_publish_endpoints =>
     {
@@ -45,22 +47,22 @@ class profiles::aptly (
     ensure => 'present'
   }
 
-  apache::vhost { "${virtual_host}_80":
+  apache::vhost { "${hostname}_80":
     docroot         => '/var/www/html',
     manage_docroot  => false,
     port            => '80',
-    servername      => $virtual_host,
+    servername      => $hostname,
     redirect_source => '/',
-    redirect_dest   => "https://${virtual_host}",
+    redirect_dest   => "https://${hostname}",
     redirect_status => 'permanent'
   }
 
-  apache::vhost { "${virtual_host}_443":
+  apache::vhost { "${hostname}_443":
     docroot             => '/var/www/html',
     manage_docroot      => false,
     proxy_preserve_host => true,
     port                => '443',
-    servername          => $virtual_host,
+    servername          => $hostname,
     ssl                 => true,
     ssl_cert            => $sslcert,
     ssl_chain           => $sslchain,
@@ -68,7 +70,7 @@ class profiles::aptly (
     proxy_pass          =>
     {
       path =>  '/',
-      url  => "http://localhost:${aptly_api_port}/"
+      url  => "http://${api_bind}:${api_port}/"
     },
     require             => [
       File[$sslchain],
