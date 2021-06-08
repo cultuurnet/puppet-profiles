@@ -12,21 +12,28 @@ class profiles::aptly (
 
   contain ::profiles
 
+  include ::profiles::users
+  include ::profiles::groups
+
   $api_bind = '127.0.0.1'
   $api_port = 8081
   $hostname = 'aptly.publiq.be'
+
+  realize Group['aptly']
+  realize User['aptly']
 
   realize Profiles::Apt::Update['aptly']
 
   class { 'aptly':
     install_repo         => false,
+    manage_user          => false,
     root_dir             => $data_dir,
     enable_service       => false,
     enable_api           => true,
     api_bind             => $api_bind,
     api_port             => $api_port,
     api_nolock           => true,
-    require              => Profiles::Apt::Update['aptly'],
+    require              => [ Profiles::Apt::Update['aptly'], User['aptly']],
     s3_publish_endpoints =>
     {
       'apt.publiq.be' =>
@@ -36,6 +43,14 @@ class profiles::aptly (
         'awsAccessKeyID'     => $awsaccesskeyid,
         'awsSecretAccessKey' => $awssecretaccesskey
       }
+    }
+  }
+
+  if versioncmp( $facts['os']['major']['release'], '16.04') >= 0 {
+    systemd::unit_file { 'aptly-api.service':
+      content => template('profiles/aptly/aptly-api.service.erb')
+      enable  => true,
+      active  => true
     }
   }
 
@@ -79,19 +94,12 @@ class profiles::aptly (
     ]
   }
 
-  file { '/home/aptly':
-    ensure => 'directory',
-    owner  => 'aptly',
-    group  => 'aptly',
-    mode   => '0755'
-  }
-
   file { '/home/aptly/private.key':
     ensure  => 'file',
     owner   => 'aptly',
     group   => 'aptly',
     mode    => '0644',
-    require => File['/home/aptly'],
+    require => User['aptly'],
     source  => $gpgkey_source
   }
 
