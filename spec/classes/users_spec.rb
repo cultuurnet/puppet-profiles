@@ -14,6 +14,17 @@ describe 'profiles::users' do
       context "with all virtual resources realized" do
         let(:pre_condition) { 'User <| |>' }
 
+        it { is_expected.to contain_user('aptly').with(
+          'ensure'         => 'present',
+          'gid'            => 'aptly',
+          'home'           => '/home/aptly',
+          'managehome'     => true,
+          'purge_ssh_keys' => true,
+          'shell'          => '/bin/bash',
+          'uid'            => '450'
+          )
+        }
+
         it { is_expected.to contain_user('ubuntu').with(
           'ensure'         => 'present',
           'gid'            => 'ubuntu',
