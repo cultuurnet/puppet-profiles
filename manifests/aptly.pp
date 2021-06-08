@@ -48,14 +48,14 @@ class profiles::aptly (
 
   if versioncmp( $facts['os']['major']['release'], '16.04') >= 0 {
     systemd::unit_file { 'aptly-api.service':
-      content => template('profiles/aptly/aptly-api.service.erb')
+      content => template('profiles/aptly/aptly-api.service.erb'),
       enable  => true,
       active  => true
     }
   }
 
   class { 'apache':
-    default_vhost => false,
+    default_vhost => false
   }
 
   package { 'graphviz':
