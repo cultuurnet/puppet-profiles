@@ -168,11 +168,11 @@ instance.save()' | ${clitool} -auth ${adminuser}:${adminpassword} groovy =",
 
   Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> File[$sshdir] -> File['jenkins.model.JenkinsLocationConfiguration.xml']
 
-  realize Package['git']
-  realize Package['groovy']
-
   realize Apt::Source['cultuurnet-tools']
   realize Profiles::Apt::Update['cultuurnet-tools']
+
+  realize Package['git']
+  realize Package['groovy']
   realize Package['composer']
   realize Package['phing']
   realize Package['jq']
