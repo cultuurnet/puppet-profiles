@@ -46,7 +46,7 @@ class profiles::aptly (
     }
   }
 
-  if versioncmp( $facts['os']['major']['release'], '16.04') >= 0 {
+  if versioncmp( $facts['os']['release']['major'], '16.04') >= 0 {
     systemd::unit_file { 'aptly-api.service':
       content => template('profiles/aptly/aptly-api.service.erb'),
       enable  => true,
