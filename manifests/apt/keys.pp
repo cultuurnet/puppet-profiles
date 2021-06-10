@@ -4,7 +4,7 @@ class profiles::apt::keys {
 
   apt::key { 'aptly':
     id     => '26DA9D8630302E0B86A7A2CBED75B5A4483DA07C',
-    server => 'pool.sks-keyservers.net'
+    source => 'https://www.aptly.info/pubkey.txt'
   }
 
   apt::key { 'Infra CultuurNet':
