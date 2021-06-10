@@ -42,6 +42,10 @@ class profiles::packages {
     ensure => 'present'
   }
 
+  @package { 'graphviz':
+    ensure => 'present'
+  }
+
   @package { 'ca-certificates-publiq':
     ensure  => 'present',
     require => Profiles::Apt::Update['cultuurnet-tools']

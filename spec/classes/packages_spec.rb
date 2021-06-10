@@ -54,6 +54,11 @@ describe 'profiles::packages' do
           )
         }
 
+        it { is_expected.to contain_package('graphviz').with(
+          'ensure' => 'present'
+          )
+        }
+
         it { is_expected.to contain_package('ca-certificates-publiq').with(
           'ensure' => 'present'
           )
