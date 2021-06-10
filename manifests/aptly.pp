@@ -1,4 +1,5 @@
 class profiles::aptly (
+  $hostname,
   $awsaccesskeyid = '',
   $awssecretaccesskey = '',
   $sslchain = '',
@@ -14,13 +15,15 @@ class profiles::aptly (
 
   include ::profiles::users
   include ::profiles::groups
+  include ::profiles::packages
 
   $api_bind = '127.0.0.1'
   $api_port = 8081
-  $hostname = 'aptly.publiq.be'
 
   realize Group['aptly']
   realize User['aptly']
+
+  realize Package['graphviz']
 
   realize Profiles::Apt::Update['aptly']
 
@@ -56,10 +59,6 @@ class profiles::aptly (
 
   class { 'apache':
     default_vhost => false
-  }
-
-  package { 'graphviz':
-    ensure => 'present'
   }
 
   apache::vhost { "${hostname}_80":
