@@ -7,7 +7,7 @@ class profiles::firewall::base {
     purge => true
   }
 
-  firewall { '000 accept all icmp traffic':
+  firewall { '000 accept all ICMP traffic':
     proto  => 'icmp',
     action => 'accept'
   }
