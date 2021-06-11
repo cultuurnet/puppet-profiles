@@ -3,7 +3,7 @@ sudo: false
 language: ruby
 branches:
   only:
-  - master
+  - main
 script: "bundle exec rake test"
 matrix:
   fast_finish: true

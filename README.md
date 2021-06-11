@@ -1,5 +1,4 @@
-# profiles
-[![Build Status](https://travis-ci.org/cultuurnet/puppet-profiles.png?branch=master)](https://travis-ci.org/cultuurnet/puppet-profiles)
+# Puppet profiles [![Build Status](https://github.com/cultuurnet/puppet-profiles/actions/workflows/ci.yml/badge.svg)](https://github.com/cultuurnet/puppet-profiles/actions?query=workflow%3ACI)
 
 ## Description
 
