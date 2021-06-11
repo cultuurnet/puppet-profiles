@@ -1,5 +1,17 @@
 fixtures:
   forge_modules:
+    augeas_core:
+      repo: 'puppetlabs/augeas_core'
+      ref: '1.0.5'
+    cron_core:
+      repo: 'puppetlabs/cron_core'
+      ref: '1.0.3'
+    mount_core:
+      repo: 'puppetlabs/mount_core'
+      ref: '1.0.4'
+    sshkeys_core:
+      repo: 'puppetlabs/sshkeys_core'
+      ref: '1.0.3'
     stdlib:
       repo: 'puppetlabs/stdlib'
       ref: '4.25.0'
@@ -57,6 +69,9 @@ fixtures:
     sudo:
       repo: 'saz/sudo'
       ref: '6.0.0'
+    systemd:
+      repo: 'camptocamp/systemd'
+      ref: '2.10.0'
     alternatives:
       repo: 'puppet/alternatives'
       ref: '3.0.0'
@@ -82,5 +97,8 @@ fixtures:
     websockets:
       repo: 'https://github.com/cultuurnet/puppet-websockets.git'
       ref: 'f8a1bb2'
+    aptly:
+      repo: 'https://github.com/tubemogul/puppet-aptly.git'
+      ref: '3de83af'
   symlinks:
     profiles: "#{source_dir}"

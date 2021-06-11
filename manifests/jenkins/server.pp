@@ -158,6 +158,9 @@ instance.save()' | jenkins-cli groovy =",
 
   Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> File[$sshdir] -> File['jenkins.model.JenkinsLocationConfiguration.xml']
 
+  realize Apt::Source['cultuurnet-tools']
+  realize Profiles::Apt::Update['cultuurnet-tools']
+
   realize Package['git']
   realize Package['groovy']
   realize Package['composer']

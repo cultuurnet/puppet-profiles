@@ -14,13 +14,25 @@ describe 'profiles::firewall' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_firewall('100 accept ssh traffic').with(
+        it { is_expected.to contain_firewall('100 accept SSH traffic').with(
           'proto'  => 'tcp',
           'dport'  => '22',
           'action' => 'accept'
         ) }
 
-        it { is_expected.to contain_firewall('300 accept smtp traffic').with(
+        it { is_expected.to contain_firewall('300 accept HTTP traffic').with(
+          'proto' => 'tcp',
+          'dport' => '80',
+          'action' => 'accept'
+        ) }
+
+        it { is_expected.to contain_firewall('300 accept HTTPS traffic').with(
+          'proto' => 'tcp',
+          'dport' => '443',
+          'action' => 'accept'
+        ) }
+
+        it { is_expected.to contain_firewall('300 accept SMTP traffic').with(
           'proto' => 'tcp',
           'dport' => '25',
           'action' => 'accept'

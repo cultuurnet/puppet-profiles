@@ -1,5 +1,5 @@
-## This profile/module installs and configures aptly.
 class profiles::aptly (
+  $hostname,
   $awsaccesskeyid = '',
   $awssecretaccesskey = '',
   $sslchain = '',
@@ -7,23 +7,37 @@ class profiles::aptly (
   $sslkey = '',
   $gpgkey_source = '',
   $gpgkey_fingerprint = '',
+  $data_dir = '/var/aptly',
   $repositories = []
 ) {
 
   contain ::profiles
-  $aptly_api_port = 8081  #By defualt the aptly-puppet module sets the api port to 8081, aptly itself defaults to 8080.
-  $virtual_host   = 'aptly.publiq.be'
 
-  # This will install aptly and set the s3_publish_endpoints parameter.
+  include ::profiles::users
+  include ::profiles::groups
+  include ::profiles::packages
+  include ::profiles::firewall
+
+  $api_bind = '127.0.0.1'
+  $api_port = 8081
+
+  realize Group['aptly']
+  realize User['aptly']
+
+  realize Package['graphviz']
+
+  realize Profiles::Apt::Update['aptly']
+
   class { 'aptly':
-    install_repo         => true, # Tell aptly to install from a repo
-    repo_location        => 'http://repo.aptly.info/', # Where to get the deb file
-    repo_keyserver       => 'hkps.pool.sks-keyservers.net', # Where to get the install key
-    repo_key             => '26DA9D8630302E0B86A7A2CBED75B5A4483DA07C',
+    install_repo         => false,
+    manage_user          => false,
+    root_dir             => $data_dir,
     enable_service       => false,
     enable_api           => true,
+    api_bind             => $api_bind,
+    api_port             => $api_port,
     api_nolock           => true,
-    port                 => $aptly_api_port,
+    require              => [ Profiles::Apt::Update['aptly'], User['aptly']],
     s3_publish_endpoints =>
     {
       'apt.publiq.be' =>
@@ -36,33 +50,37 @@ class profiles::aptly (
     }
   }
 
-  class { 'apache':
-    default_vhost => false,
-  }
-
-  package { 'graphviz':
-    ensure => 'present'
-  }
-
-  apache::vhost { "${virtual_host}_80":
-    docroot             => '/var/www/html',
-    manage_docroot      => false,
-    port                => '80',
-    servername          => $virtual_host,
-    proxy_preserve_host => true,
-    proxy_pass          =>
-    {
-      path =>  '/',
-      url  => "http://localhost:${aptly_api_port}/"
+  if versioncmp( $facts['os']['release']['major'], '16.04') >= 0 {
+    systemd::unit_file { 'aptly-api.service':
+      content => template('profiles/aptly/aptly-api.service.erb'),
+      enable  => true,
+      active  => true
     }
   }
 
-  apache::vhost { "${virtual_host}_443":
+  realize Firewall['300 accept HTTP traffic']
+  realize Firewall['300 accept HTTPS traffic']
+
+  class { 'apache':
+    default_vhost => false
+  }
+
+  apache::vhost { "${hostname}_80":
+    docroot         => '/var/www/html',
+    manage_docroot  => false,
+    port            => '80',
+    servername      => $hostname,
+    redirect_source => '/',
+    redirect_dest   => "https://${hostname}",
+    redirect_status => 'permanent'
+  }
+
+  apache::vhost { "${hostname}_443":
     docroot             => '/var/www/html',
     manage_docroot      => false,
     proxy_preserve_host => true,
     port                => '443',
-    servername          => $virtual_host,
+    servername          => $hostname,
     ssl                 => true,
     ssl_cert            => $sslcert,
     ssl_chain           => $sslchain,
@@ -70,7 +88,7 @@ class profiles::aptly (
     proxy_pass          =>
     {
       path =>  '/',
-      url  => "http://localhost:${aptly_api_port}/"
+      url  => "http://${api_bind}:${api_port}/"
     },
     require             => [
       File[$sslchain],
@@ -79,19 +97,12 @@ class profiles::aptly (
     ]
   }
 
-  file { '/home/aptly':
-    ensure => 'directory',
-    owner  => 'aptly',
-    group  => 'aptly',
-    mode   => '0755'
-  }
-
   file { '/home/aptly/private.key':
     ensure  => 'file',
     owner   => 'aptly',
     group   => 'aptly',
     mode    => '0644',
-    require => File['/home/aptly'],
+    require => User['aptly'],
     source  => $gpgkey_source
   }
 

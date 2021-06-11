@@ -15,7 +15,7 @@ describe 'profiles::firewall::base' do
         'purge' => true
       ) }
 
-      it { is_expected.to contain_firewall('000 accept all icmp traffic').with(
+      it { is_expected.to contain_firewall('000 accept all ICMP traffic').with(
         'proto'  => 'icmp',
         'action' => 'accept'
       ) }

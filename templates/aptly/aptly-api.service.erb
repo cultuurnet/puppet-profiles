@@ -1,0 +1,17 @@
+[Unit]
+Description=Aptly REST API service
+Wants=basic.target
+After=basic.target network.target
+
+[Service]
+User=aptly
+Group=aptly
+PIDFile=/var/run/aptly-api.pid
+WorkingDirectory=<%= @data_dir %>
+ExecStart=/usr/bin/aptly api serve -listen=<%= @api_bind %>:<%= @api_port %> -no-lock
+Restart=on-failure
+RestartSec=15s
+Type=simple
+
+[Install]
+WantedBy=multi-user.target

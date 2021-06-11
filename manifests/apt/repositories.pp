@@ -69,4 +69,10 @@ class profiles::apt::repositories {
     release  => 'stable',
     repos    => 'main'
   }
+
+  @apt::source { 'aptly':
+    location => 'http://repo.aptly.info',
+    release  => 'squeeze',
+    repos    => 'main'
+  }
 }

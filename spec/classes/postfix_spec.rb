@@ -40,7 +40,7 @@ describe 'profiles::postfix' do
 
         it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
 
-        it { is_expected.to contain_firewall('300 accept smtp traffic').with(
+        it { is_expected.to contain_firewall('300 accept SMTP traffic').with(
           'proto' => 'tcp',
           'dport' => '25',
           'action' => 'accept'
@@ -72,7 +72,7 @@ describe 'profiles::postfix' do
           )
         }
 
-        it { is_expected.not_to contain_firewall('300 accept smtp traffic') }
+        it { is_expected.not_to contain_firewall('300 accept SMTP traffic') }
 
         it { is_expected.not_to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
       end
@@ -102,7 +102,7 @@ describe 'profiles::postfix' do
 
         it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
 
-        it { is_expected.to contain_firewall('300 accept smtp traffic').with(
+        it { is_expected.to contain_firewall('300 accept SMTP traffic').with(
           'proto' => 'tcp',
           'dport' => '25',
           'action' => 'accept'
@@ -149,7 +149,7 @@ describe 'profiles::postfix' do
             )
           }
 
-          it { is_expected.not_to contain_firewall('300 accept smtp traffic') }
+          it { is_expected.not_to contain_firewall('300 accept SMTP traffic') }
 
           it { is_expected.not_to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
         end
@@ -190,7 +190,7 @@ describe 'profiles::postfix' do
 
           it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
 
-          it { is_expected.to contain_firewall('300 accept smtp traffic').with(
+          it { is_expected.to contain_firewall('300 accept SMTP traffic').with(
             'proto' => 'tcp',
             'dport' => '25',
             'action' => 'accept'
@@ -230,7 +230,7 @@ describe 'profiles::postfix' do
               )
             }
 
-            it { is_expected.to contain_firewall('300 accept smtp traffic').with(
+            it { is_expected.to contain_firewall('300 accept SMTP traffic').with(
               'proto' => 'tcp',
               'dport' => '25',
               'action' => 'accept'

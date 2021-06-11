@@ -1,5 +1,15 @@
 class profiles::users {
 
+  @user { 'aptly':
+    ensure         => 'present',
+    gid            => 'aptly',
+    home           => '/home/aptly',
+    managehome     => true,
+    purge_ssh_keys => true,
+    shell          => '/bin/bash',
+    uid            => '450'
+  }
+
   @user { 'ubuntu':
     ensure         => 'present',
     gid            => 'ubuntu',

@@ -7,12 +7,15 @@ limit=<%= @batch_size %>
 
 OPTIND=1
 
-while getopts "s?" OPTION
+while getopts "s?d:?" OPTIONS
 do
-    case ${OPTION} in
+    case ${OPTIONS} in
     s)
         source_only=true
         suffix=''
+        ;;
+    d)
+        date_specifier=${OPTARG}
         ;;
     *)
         echo "Incorrect options provided"
@@ -28,10 +31,10 @@ function cleanup()
 
 trap cleanup EXIT
 
-date=$(TZ=UTC date +%Y%m%d)
+date_suffix=$(date +%Y%m%d --date="${date_specifier:-now}")
 
 echo "Mounting GCS bucket ${gcs_bucket_name} on ${bucket_mountpoint}"
 gcsfuse --implicit-dirs --key-file /etc/gcs_credentials.json ${gcs_bucket_name} ${bucket_mountpoint}
 
 echo "Dumping index ${index_name} to file ${bucket_mountpoint}/data/import/${index_name}_${date}.json"
-/usr/local/bin/elasticdump --input http://localhost:9200/${index_name} --type data --limit ${limit} --sourceOnly ${source_only:-false} --output ${bucket_mountpoint}/data/import/${index_name}${suffix:-_full}_${date}.json
+/usr/local/bin/elasticdump --input http://localhost:9200/${index_name} --type data --limit ${limit} --sourceOnly ${source_only:-false} --output ${bucket_mountpoint}/data/import/${index_name}${suffix:-_full}_${date_suffix}.json
