@@ -1,5 +1,4 @@
-# profiles
-![Build Status](https://github.com/cultuurnet/puppet-profiles/actions/workflows/ci.yml/badge.svg)
+# Puppet profiles [![Build Status](https://github.com/cultuurnet/puppet-profiles/actions/workflows/ci.yml/badge.svg)](https://github.com/cultuurnet/puppet-profiles/actions?query=workflow%3ACI)
 
 ## Description
 
