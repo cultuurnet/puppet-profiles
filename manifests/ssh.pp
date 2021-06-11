@@ -49,5 +49,5 @@ class profiles::ssh(
     Ssh_authorized_key <| tag == $tag |>
   }
 
-  realize Firewall['100 accept ssh traffic']
+  realize Firewall['100 accept SSH traffic']
 }

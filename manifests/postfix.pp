@@ -25,7 +25,7 @@ class profiles::postfix (
       notify => Class['::postfix::server']
     }
 
-    realize Firewall['300 accept smtp traffic']
+    realize Firewall['300 accept SMTP traffic']
 
   } else {
     $relay_host  = $relayhost

@@ -16,6 +16,7 @@ class profiles::aptly (
   include ::profiles::users
   include ::profiles::groups
   include ::profiles::packages
+  include ::profiles::firewall
 
   $api_bind = '127.0.0.1'
   $api_port = 8081
@@ -56,6 +57,9 @@ class profiles::aptly (
       active  => true
     }
   }
+
+  realize Firewall['300 accept HTTP traffic']
+  realize Firewall['300 accept HTTPS traffic']
 
   class { 'apache':
     default_vhost => false
