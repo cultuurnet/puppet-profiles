@@ -53,15 +53,15 @@ describe 'profiles::curator' do
           ) }
 
           it { is_expected.to contain_class('profiles::deployment::curator::api').with(
-            'config_source'   => '/baz',
-            'package_version' => 'latest',
-            'puppetdb_url'    => nil
+            'config_source' => '/baz',
+            'version'       => 'latest',
+            'puppetdb_url'  => nil
           ) }
 
           it { is_expected.to contain_class('profiles::deployment::curator::articlelinker').with(
             'config_source'       => '/foo',
             'publishers_source'   => '/bar',
-            'package_version'     => 'latest',
+            'version'             => 'latest',
             'env_defaults_source' => '/defaults',
             'service_manage'      => true,
             'service_ensure'      => 'running',
@@ -81,7 +81,7 @@ describe 'profiles::curator' do
             it { is_expected.to contain_class('profiles::deployment::curator::articlelinker').with(
               'config_source'       => '/foo',
               'publishers_source'   => '/bar',
-              'package_version'     => 'latest',
+              'version'             => 'latest',
               'env_defaults_source' => '/defaults',
               'service_manage'      => false,
               'service_ensure'      => 'stopped',
@@ -90,23 +90,23 @@ describe 'profiles::curator' do
             ) }
           end
 
-          context "with api_package_version => 4.5.6, articlelinker_package_version => 9.8.7 and puppetdb_url => http://localhost:8080" do
+          context "with api_version => 4.5.6, articlelinker_version => 9.8.7 and puppetdb_url => http://localhost:8080" do
             let (:params) {
               super().merge({
-                'api_package_version'           => '4.5.6',
-                'articlelinker_package_version' => '9.8.7',
-                'puppetdb_url'                  => 'http://localhost:8080'
+                'api_version'           => '4.5.6',
+                'articlelinker_version' => '9.8.7',
+                'puppetdb_url'          => 'http://localhost:8080'
               } )
             }
 
             it { is_expected.to contain_class('profiles::deployment::curator::api').with(
-              'package_version' => '4.5.6',
-              'puppetdb_url'    => 'http://localhost:8080'
+              'version'      => '4.5.6',
+              'puppetdb_url' => 'http://localhost:8080'
             ) }
 
             it { is_expected.to contain_class('profiles::deployment::curator::articlelinker').with(
-              'package_version' => '9.8.7',
-              'puppetdb_url'    => 'http://localhost:8080'
+              'version'      => '9.8.7',
+              'puppetdb_url' => 'http://localhost:8080'
             ) }
           end
         end

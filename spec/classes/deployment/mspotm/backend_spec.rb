@@ -65,11 +65,11 @@ describe 'profiles::deployment::mspotm::backend' do
     end
   end
 
-  context "with config_source => /bar, package_version => 1.2.3 and puppetdb_url => http://example.com:8000" do
+  context "with config_source => /bar, version => 1.2.3 and puppetdb_url => http://example.com:8000" do
     let (:params) { {
-      'config_source'       => '/bar',
-      'package_version'     => '1.2.3',
-      'puppetdb_url'        => 'http://example.com:8000'
+      'config_source' => '/bar',
+      'version'       => '1.2.3',
+      'puppetdb_url'  => 'http://example.com:8000'
     } }
 
     on_supported_os.each do |os, facts|

@@ -1,7 +1,7 @@
 class profiles::deployment::mspotm::backend (
   String           $config_source,
-  String           $package_version     = 'latest',
-  Optional[String] $puppetdb_url        = undef
+  String           $version        = 'latest',
+  Optional[String] $puppetdb_url   = undef
 ) {
 
   $basedir = '/var/www/mspotm-backend'
@@ -13,7 +13,7 @@ class profiles::deployment::mspotm::backend (
   realize Profiles::Apt::Update['publiq-mspotm']
 
   package { 'mspotm-backend':
-    ensure  => $package_version,
+    ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
     require => Profiles::Apt::Update['publiq-mspotm']
   }

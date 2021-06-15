@@ -1,6 +1,6 @@
 class profiles::deployment::uit::frontend (
   String           $config_source,
-  String           $package_version         = 'latest',
+  String           $version                 = 'latest',
   String           $uitdatabank_api_url     = 'http://localhost',
   Boolean          $service_manage          = true,
   String           $service_ensure          = 'running',
@@ -19,7 +19,7 @@ class profiles::deployment::uit::frontend (
   realize Profiles::Apt::Update['publiq-uit']
 
   package { 'uit-frontend':
-    ensure  => $package_version,
+    ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
     require => Profiles::Apt::Update['publiq-uit']
   }

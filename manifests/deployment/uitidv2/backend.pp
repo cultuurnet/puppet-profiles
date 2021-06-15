@@ -1,6 +1,6 @@
 class profiles::deployment::uitidv2::backend (
   String           $config_source,
-  String           $package_version     = 'latest',
+  String           $version             = 'latest',
   Optional[String] $env_defaults_source = undef,
   Boolean          $service_manage      = true,
   String           $service_ensure      = 'running',
@@ -17,7 +17,7 @@ class profiles::deployment::uitidv2::backend (
   realize Profiles::Apt::Update['publiq-uitidv2']
 
   package { 'uitid-backend':
-    ensure  => $package_version,
+    ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
     require => Profiles::Apt::Update['publiq-uitidv2']
   }

@@ -1,7 +1,7 @@
 class profiles::deployment::uitpas_be::backend (
   String           $config_source,
-  String           $package_version = 'latest',
-  Optional[String] $puppetdb_url    = undef
+  String           $version        = 'latest',
+  Optional[String] $puppetdb_url   = undef
 ) {
 
   $basedir = '/var/www/uitpasbe-backend'
@@ -16,7 +16,7 @@ class profiles::deployment::uitpas_be::backend (
   # TODO: config file notify Apache::Service ?
 
   package { 'uitpasbe-backend':
-    ensure  => $package_version,
+    ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
     require => Profiles::Apt::Update['publiq-uitpasbe']
   }

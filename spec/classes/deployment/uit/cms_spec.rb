@@ -27,12 +27,12 @@ describe 'profiles::deployment::uit::cms' do
     end
   end
 
-  context "with settings_source => /baz, drush_config_source => /zzz, package_version => 1.2.3, database_version => 4.5.6, files_version => 4 and puppetdb_url => http://example.com:8000" do
+  context "with settings_source => /baz, drush_config_source => /zzz, version => 1.2.3, database_version => 4.5.6, files_version => 4 and puppetdb_url => http://example.com:8000" do
     let (:params) { {
       'settings_source'     => '/baz',
       'hostnames_source'    => '/xyz',
       'drush_config_source' => '/zzz',
-      'package_version'     => '1.2.3',
+      'version'             => '1.2.3',
       'database_version'    => '4.5.6',
       'files_version'       => '4',
       'puppetdb_url'        => 'http://example.com:8000'

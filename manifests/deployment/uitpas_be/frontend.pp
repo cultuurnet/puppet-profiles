@@ -1,6 +1,6 @@
 class profiles::deployment::uitpas_be::frontend (
   String           $config_source,
-  String           $package_version     = 'latest',
+  String           $version             = 'latest',
   Optional[String] $env_defaults_source = undef,
   Boolean          $service_manage      = true,
   String           $service_ensure      = 'running',
@@ -17,7 +17,7 @@ class profiles::deployment::uitpas_be::frontend (
   realize Profiles::Apt::Update['publiq-uitpasbe']
 
   package { 'uitpasbe-frontend':
-    ensure  => $package_version,
+    ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
     require => Profiles::Apt::Update['publiq-uitpasbe']
   }

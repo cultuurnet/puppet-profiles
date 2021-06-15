@@ -1,7 +1,7 @@
 class profiles::deployment::curator::articlelinker (
   String           $config_source,
   String           $publishers_source,
-  String           $package_version     = 'latest',
+  String           $version             = 'latest',
   Optional[String] $env_defaults_source = undef,
   Boolean          $service_manage      = true,
   String           $service_ensure      = 'running',
@@ -18,7 +18,7 @@ class profiles::deployment::curator::articlelinker (
   realize Profiles::Apt::Update['publiq-curator']
 
   package { 'curator-articlelinker':
-    ensure  => $package_version,
+    ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
     require => Profiles::Apt::Update['publiq-curator']
   }

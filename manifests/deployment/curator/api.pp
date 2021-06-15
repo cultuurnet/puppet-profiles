@@ -1,7 +1,7 @@
 class profiles::deployment::curator::api (
   String           $config_source,
-  String           $package_version = 'latest',
-  Optional[String] $puppetdb_url    = undef
+  String           $version        = 'latest',
+  Optional[String] $puppetdb_url   = undef
 ) {
 
   $basedir = '/var/www/curator-api'
@@ -16,7 +16,7 @@ class profiles::deployment::curator::api (
   # TODO: config file notify Apache::Service ?
 
   package { 'curator-api':
-    ensure  => $package_version,
+    ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
     require => Profiles::Apt::Update['publiq-curator']
   }
