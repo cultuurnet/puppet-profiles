@@ -1,4 +1,4 @@
-define profiles::apache::vhost::redirect (
+define profiles::apache::vhost::reverse_proxy (
   Stdlib::Httpurl                $destination,
   Boolean                        $https        = false,
   Variant[String, Array[String]] $aliases      = []
@@ -18,6 +18,12 @@ define profiles::apache::vhost::redirect (
     realize Firewall['300 accept HTTP traffic']
   }
 
+  if $destination =~ /^https/ {
+    $https_destination = true
+  } else {
+    $https_destination = false
+  }
+
   ::apache::vhost { "${title}:${port}":
     servername      => $title,
     serveraliases   => $aliases,
@@ -26,7 +32,10 @@ define profiles::apache::vhost::redirect (
     docroot         => '/var/www/html',
     manage_docroot  => false,
     request_headers => ['unset Proxy early'],
-    redirect_dest   => $destination,
-    redirect_status => 'permanent'
+    ssl_proxyengine => $https_destination,
+    proxy_pass      => {
+                         'path' => '/',
+                         'url'  => $destination
+                       }
   }
 }
