@@ -37,12 +37,17 @@ describe 'profiles::apache::vhost::redirect' do
   context "with title => michelangelo.example.com" do
     let(:title) { 'michelangelo.example.com' }
 
-    context "with https => true, destination => http://buonarotti.example.com and aliases => ['mich.example.com', 'angelo.example.com']" do
+    context "with https => true, certificate => 'wildcard.example.com', destination => http://buonarotti.example.com and aliases => ['mich.example.com', 'angelo.example.com']" do
       let(:params) { {
         'https'       => true,
+        'certificate' => 'wildcard.example.com',
         'destination' => 'http://buonarotti.example.com',
         'aliases'     => ['mich.example.com', 'angelo.example.com']
       } }
+
+      let(:pre_condition) {
+        '@profiles::certificate { "wildcard.example.com": certificate_source => "/tmp/cert/foo", key_source => "/tmp/cert/key"}'
+      }
 
       on_supported_os.each do |os, facts|
         context "on #{os}" do
@@ -50,13 +55,32 @@ describe 'profiles::apache::vhost::redirect' do
 
           it { is_expected.to contain_firewall('300 accept HTTPS traffic') }
 
+          it { is_expected.to contain_profiles__certificate('wildcard.example.com') }
+
           it { is_expected.to contain_apache__vhost('michelangelo.example.com:443').with(
             'servername'    => 'michelangelo.example.com',
             'serveraliases' => ['mich.example.com', 'angelo.example.com'],
             'port'          => 443,
             'ssl'           => true,
+            'ssl_cert'      => '/etc/ssl/certs/wildcard.example.com.bundle.crt',
+            'ssl_key'       => '/etc/ssl/private/wildcard.example.com.key',
             'redirect_dest' => 'http://buonarotti.example.com'
           ) }
+        end
+      end
+    end
+
+    context "with https => true and destination => http://buonarotti.example.com" do
+      let(:params) { {
+        'https'       => true,
+        'destination' => 'http://buonarotti.example.com'
+      } }
+
+      on_supported_os.each do |os, facts|
+        context "on #{os}" do
+          let (:facts) { facts }
+
+          it { expect { catalogue }.to raise_error(Puppet::Error, /expects a value for parameter certificate when using HTTPS/) }
         end
       end
     end
