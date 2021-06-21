@@ -66,6 +66,9 @@ describe 'profiles::apache::vhost::redirect' do
             'ssl_key'       => '/etc/ssl/private/wildcard.example.com.key',
             'redirect_dest' => 'http://buonarotti.example.com'
           ) }
+
+          it { is_expected.to contain_profiles__certificate('wildcard.example.com').that_comes_before('Apache::Vhost[michelangelo.example.com:443]') }
+          it { is_expected.to contain_profiles__certificate('wildcard.example.com').that_notifies('Class[apache::service]') }
         end
       end
     end

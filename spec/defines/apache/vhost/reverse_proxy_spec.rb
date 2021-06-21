@@ -73,6 +73,9 @@ describe 'profiles::apache::vhost::reverse_proxy' do
               'url'  => 'https://buonarotti.example.com/'
             }
           ) }
+
+          it { is_expected.to contain_profiles__certificate('foobar.example.com').that_comes_before('Apache::Vhost[michelangelo.example.com:443]') }
+          it { is_expected.to contain_profiles__certificate('foobar.example.com').that_notifies('Class[apache::service]') }
         end
       end
     end

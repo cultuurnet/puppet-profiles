@@ -22,6 +22,9 @@ define profiles::apache::vhost::reverse_proxy (
 
     realize Profiles::Certificate[$certificate]
     realize Firewall['300 accept HTTPS traffic']
+
+    Profiles::Certificate[$certificate] -> Apache::Vhost["${title}:${port}"]
+    Profiles::Certificate[$certificate] ~> Class['apache::service']
   } else {
     $port = 80
     $ssl_cert = undef
@@ -36,7 +39,7 @@ define profiles::apache::vhost::reverse_proxy (
     $https_destination = false
   }
 
-  ::apache::vhost { "${title}:${port}":
+  apache::vhost { "${title}:${port}":
     servername      => $title,
     serveraliases   => $aliases,
     port            => $port,
