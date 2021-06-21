@@ -75,6 +75,9 @@ fixtures:
     alternatives:
       repo: 'puppet/alternatives'
       ref: '3.0.0'
+    gnupg:
+      repo: 'golja/gnupg'
+      ref: '1.2.3'
   repositories:
     rabbitmq:
       repo: 'https://github.com/willaerk/puppetlabs-rabbitmq.git'
