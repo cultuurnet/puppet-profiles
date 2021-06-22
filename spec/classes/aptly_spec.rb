@@ -1,15 +1,13 @@
 require 'spec_helper'
 
 describe 'profiles::aptly' do
+  let(:hiera_config) { 'spec/fixtures/hiera/hiera.yaml' }
+
   context "with api_hostname => aptly.example.com and certificate => wildcard.example.com" do
     let(:params) { {
       'api_hostname' => 'aptly.example.com',
       'certificate'  => 'wildcard.example.com'
     } }
-
-    let(:pre_condition) {
-      '@profiles::certificate { "wildcard.example.com": certificate_source => "/tmp/cert/foo", key_source => "/tmp/cert/key"}'
-    }
 
     context "without optional parameters" do
       include_examples 'operating system support', 'profiles::aptly'
@@ -78,15 +76,11 @@ describe 'profiles::aptly' do
       end
     end
 
-    context "with api_hostname => foo.example.com and certificate => foo.example.com" do
+    context "with api_hostname => foobar.example.com and certificate => foobar.example.com" do
       let(:params) { {
-        'api_hostname' => 'foo.example.com',
-        'certificate'  => 'foo.example.com'
+        'api_hostname' => 'foobar.example.com',
+        'certificate'  => 'foobar.example.com'
       } }
-
-      let(:pre_condition) {
-        '@profiles::certificate { "foo.example.com": certificate_source => "/tmp/cert/foo", key_source => "/tmp/cert/key"}'
-      }
 
       on_supported_os.each do |os, facts|
         context "on #{os}" do
@@ -119,13 +113,13 @@ describe 'profiles::aptly' do
               'api_port' => 8080
             ) }
 
-            it { is_expected.to contain_profiles__apache__vhost__redirect('foo.example.com').with(
-              'destination' => 'https://foo.example.com'
+            it { is_expected.to contain_profiles__apache__vhost__redirect('foobar.example.com').with(
+              'destination' => 'https://foobar.example.com'
             )}
 
-            it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('foo.example.com').with(
+            it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('foobar.example.com').with(
               'https'       => true,
-              'certificate' => 'foo.example.com',
+              'certificate' => 'foobar.example.com',
               'destination' => 'http://1.2.3.4:8080/'
             )}
 

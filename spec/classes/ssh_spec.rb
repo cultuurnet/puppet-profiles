@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe 'profiles::ssh' do
+  let(:hiera_config) { 'spec/fixtures/hiera/hiera.yaml' }
+
   include_examples 'operating system support', 'profiles::ssh'
 
   on_supported_os.each do |os, facts|
@@ -50,24 +52,12 @@ describe 'profiles::ssh' do
       context "with ssh_authorized_keys_tags => publiq" do
         let(:params) { { 'ssh_authorized_keys_tags' => 'publiq' } }
 
-        let(:pre_condition) { [
-          '@ssh_authorized_key { "publiq first key": tag => "publiq" }',
-          '@ssh_authorized_key { "publiq second key": tag => "publiq" }',
-        ] }
-
         it { is_expected.to contain_ssh_authorized_key('publiq first key') }
         it { is_expected.to contain_ssh_authorized_key('publiq second key') }
       end
 
       context "with ssh_authorized_keys_tags => [ publiq, acme]" do
         let(:params) { { 'ssh_authorized_keys_tags' => [ 'publiq', 'acme'] } }
-
-        let(:pre_condition) { [
-          '@ssh_authorized_key { "publiq first key": tag => "publiq" }',
-          '@ssh_authorized_key { "publiq second key": tag => "publiq" }',
-          '@ssh_authorized_key { "foobar first key": tag => "foobar" }',
-          '@ssh_authorized_key { "acme first key": tag => "acme" }'
-        ] }
 
         it { is_expected.to contain_ssh_authorized_key('publiq first key') }
         it { is_expected.to contain_ssh_authorized_key('publiq second key') }

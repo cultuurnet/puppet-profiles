@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe 'profiles::apache::vhost::redirect' do
+  let(:hiera_config) { 'spec/fixtures/hiera/hiera.yaml' }
+
   context "with title => leonardo.example.com" do
     let(:title) { 'leonardo.example.com' }
 
@@ -44,10 +46,6 @@ describe 'profiles::apache::vhost::redirect' do
         'destination' => 'http://buonarotti.example.com',
         'aliases'     => ['mich.example.com', 'angelo.example.com']
       } }
-
-      let(:pre_condition) {
-        '@profiles::certificate { "wildcard.example.com": certificate_source => "/tmp/cert/foo", key_source => "/tmp/cert/key"}'
-      }
 
       on_supported_os.each do |os, facts|
         context "on #{os}" do

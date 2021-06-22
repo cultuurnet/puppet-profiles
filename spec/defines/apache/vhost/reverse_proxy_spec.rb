@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe 'profiles::apache::vhost::reverse_proxy' do
+  let(:hiera_config) { 'spec/fixtures/hiera/hiera.yaml' }
+
   context "with title => leonardo.example.com" do
     let(:title) { 'leonardo.example.com' }
 
@@ -47,10 +49,6 @@ describe 'profiles::apache::vhost::reverse_proxy' do
         'destination' => 'https://buonarotti.example.com/',
         'aliases'     => ['mich.example.com', 'angelo.example.com']
       } }
-
-      let(:pre_condition) {
-        '@profiles::certificate { "foobar.example.com": certificate_source => "/tmp/cert/foobar", key_source => "/tmp/cert/key"}'
-      }
 
       on_supported_os.each do |os, facts|
         context "on #{os}" do
