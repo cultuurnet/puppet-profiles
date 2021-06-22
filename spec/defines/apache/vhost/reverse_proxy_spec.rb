@@ -20,7 +20,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
 
           it { is_expected.to contain_firewall('300 accept HTTP traffic') }
 
-          it { is_expected.to contain_apache__vhost('leonardo.example.com:80').with(
+          it { is_expected.to contain_apache__vhost('leonardo.example.com_80').with(
             'servername'      => 'leonardo.example.com',
             'serveraliases'   => ['leo.example.com'],
             'docroot'         => '/var/www/html',
@@ -58,7 +58,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
 
           it { is_expected.to contain_profiles__certificate('foobar.example.com') }
 
-          it { is_expected.to contain_apache__vhost('michelangelo.example.com:443').with(
+          it { is_expected.to contain_apache__vhost('michelangelo.example.com_443').with(
             'servername'      => 'michelangelo.example.com',
             'serveraliases'   => ['mich.example.com', 'angelo.example.com'],
             'port'            => 443,
@@ -72,7 +72,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
             }
           ) }
 
-          it { is_expected.to contain_profiles__certificate('foobar.example.com').that_comes_before('Apache::Vhost[michelangelo.example.com:443]') }
+          it { is_expected.to contain_profiles__certificate('foobar.example.com').that_comes_before('Apache::Vhost[michelangelo.example.com_443]') }
           it { is_expected.to contain_profiles__certificate('foobar.example.com').that_notifies('Class[apache::service]') }
         end
       end
