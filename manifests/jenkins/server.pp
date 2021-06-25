@@ -57,9 +57,9 @@ class profiles::jenkins::server (
   }
 
   class { '::profiles::jenkins::cli':
-    admin_user     => $admin_user,
-    admin_password => $admin_password,
-    require        => Profiles::Apt::Update['publiq-jenkins']
+    user     => $admin_user,
+    password => $admin_password,
+    require  => Profiles::Apt::Update['publiq-jenkins']
   }
 
   sudo::conf { 'jenkins':
