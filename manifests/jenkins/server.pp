@@ -186,6 +186,7 @@ instance.save()' | jenkins-cli groovy =",
   profiles::jenkins::plugin { 'slack': }
   profiles::jenkins::plugin { 'ws-cleanup': }
   profiles::jenkins::plugin { 'greenballs': }
+  profiles::jenkins::plugin { 'nodejs': }
 
   file { '/var/lib/jenkins/org.jenkinsci.plugins.workflow.libs.GlobalLibraries.xml':
     ensure  => file,
