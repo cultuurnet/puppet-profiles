@@ -132,11 +132,11 @@ class profiles::jenkins::server (
 
   # Create first user
   exec { 'create-jenkins-user-admin':
-    command   => "cat ${helper_groovy} | jenkins-cli groovy = create_or_update_user ${admin_user} \"jenkins@publiq.be\" ${admin_password} \"${admin_user}\" \"\"",
+    command   => "/bin/cat ${helper_groovy} | /usr/bin/jenkins-cli groovy = create_or_update_user ${admin_user} \"jenkins@publiq.be\" ${admin_password} \"${admin_user}\" \"\"",
     tries     => 10,
     try_sleep => 30,
     require   => [ Class['profiles::jenkins::cli'], Class['jenkins'], File[$helper_groovy], Profiles::Jenkins::Plugin['mailer']],
-    unless    => "cat ${helper_groovy} | jenkins-cli groovy = user_info ${admin_user}"
+    unless    => "/bin/cat ${helper_groovy} | /usr/bin/jenkins-cli groovy = user_info ${admin_user}"
   }
 
   # Set security/strategy policy (jenkins database + no sign up, logged-in uses can do anything + no anonymous read )
@@ -149,8 +149,8 @@ strategy.setAllowAnonymousRead(false)
 instance.setAuthorizationStrategy(strategy)
 def realm = new HudsonPrivateSecurityRealm(false)
 instance.setSecurityRealm(realm)
-instance.save()' | jenkins-cli groovy =",
-    unless    => "cat ${helper_groovy} | jenkins-cli groovy = get_authorization_strategyname | grep -q -e '^${security_model}\$'",
+instance.save()' | /usr/bin/jenkins-cli groovy =",
+    unless    => "/bin/cat ${helper_groovy} | /usr/bin/jenkins-cli groovy = get_authorization_strategyname | grep -q -e '^${security_model}\$'",
     tries     => 10,
     try_sleep => 30,
     require   => [ Class['profiles::jenkins::cli'], Class['jenkins'], Exec['create-jenkins-user-admin']],
@@ -212,7 +212,7 @@ instance.save()' | jenkins-cli groovy =",
   }
 
   exec { 'import-credentials':
-    command   => "jenkins-cli import-credentials-as-xml system::system::jenkins < ${credentials_file}",
+    command   => "/usr/bin/jenkins-cli import-credentials-as-xml system::system::jenkins < ${credentials_file}",
     tries     => 10,
     try_sleep => 30,
     require   => [ Class['profiles::jenkins::cli'], File[$credentials_file]],
