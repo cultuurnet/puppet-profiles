@@ -2,10 +2,10 @@ class profiles::deployment::uit::cms (
   String           $settings_source,
   String           $hostnames_source,
   String           $drush_config_source,
-  String           $package_version         = 'latest',
-  String           $database_version        = 'latest',
-  String           $files_version           = 'latest',
-  Optional[String] $puppetdb_url            = undef
+  String           $version              = 'latest',
+  String           $database_version     = 'latest',
+  String           $files_version        = 'latest',
+  Optional[String] $puppetdb_url         = undef
 ) {
 
   $basedir         = '/var/www/uit-cms'
@@ -19,7 +19,7 @@ class profiles::deployment::uit::cms (
   realize Profiles::Apt::Update['publiq-uit']
 
   package { 'uit-cms':
-    ensure  => $package_version,
+    ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
     require => Profiles::Apt::Update['publiq-uit']
   }

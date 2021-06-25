@@ -60,10 +60,10 @@ describe 'profiles::deployment::uitidv2::backend' do
     end
   end
 
-  context "with config_source => /bar, package_version => 1.2.3, env_defaults_source => /tmp/a, service_ensure => stopped, service_enable = false and puppetdb_url => http://example.com:8000" do
+  context "with config_source => /bar, version => 1.2.3, env_defaults_source => /tmp/a, service_ensure => stopped, service_enable = false and puppetdb_url => http://example.com:8000" do
     let (:params) { {
       'config_source'       => '/bar',
-      'package_version'     => '1.2.3',
+      'version'             => '1.2.3',
       'env_defaults_source' => '/tmp/a',
       'service_ensure'      => 'stopped',
       'service_enable'      => false,

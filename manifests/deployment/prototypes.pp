@@ -1,6 +1,6 @@
 class profiles::deployment::prototypes (
-  String           $package_version = 'latest',
-  Optional[String] $puppetdb_url    = undef
+  String           $version      = 'latest',
+  Optional[String] $puppetdb_url = undef
 ) {
 
   contain ::profiles
@@ -21,7 +21,7 @@ class profiles::deployment::prototypes (
   profiles::apt::update { 'publiq-prototypes': }
 
   package { 'prototypes-publiq':
-    ensure  => $package_version,
+    ensure  => $version,
     require => Profiles::Apt::Update['publiq-prototypes']
   }
 

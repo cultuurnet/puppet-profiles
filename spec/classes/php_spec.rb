@@ -62,7 +62,7 @@ describe 'profiles::php' do
 
         context 'with with_composer_default_version => 2' do
           let(:params) { super().merge({
-             'with_composer_default_version' => 2
+              'with_composer_default_version' => 2
             })
           }
 

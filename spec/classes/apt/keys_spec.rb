@@ -12,7 +12,7 @@ describe 'profiles::apt::keys' do
       it { is_expected.to contain_apt__key('Infra CultuurNet').with(
         'id'     => '2380EA3E50D3776DFC1B03359F4935C80DC9EA95',
         'server' => 'keyserver.ubuntu.com',
-        'source' => 'http://apt.uitdatabank.be/gpgkey/cultuurnet.gpg.key'
+        'source' => 'https://apt.publiq.be/gpgkey/cultuurnet.gpg.key'
         )
       }
 

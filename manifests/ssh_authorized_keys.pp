@@ -3,8 +3,8 @@ class profiles::ssh_authorized_keys(
 ) {
 
   $keys.each | $key, $attributes| {
-    any2array($attributes['key']).each | $index, $attribute_key | {
-      if size(any2array($attributes['key'])) == 1 {
+   [$attributes['key']].flatten.each | $index, $attribute_key | {
+      if size([$attributes['key']].flatten) == 1 {
         $key_title = $key
       } else {
         $key_number = $index + 1

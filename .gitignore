@@ -1,4 +1,5 @@
 /spec/fixtures
+!/spec/fixtures/hiera/*
 vendor
 .bundle
 .ruby-version

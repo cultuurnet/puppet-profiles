@@ -1,6 +1,6 @@
 class profiles::deployment::infrastructure (
-  String           $package_version = 'latest',
-  Optional[String] $puppetdb_url    = undef
+  String           $version      = 'latest',
+  Optional[String] $puppetdb_url = undef
 ) {
 
   contain ::profiles
@@ -22,7 +22,7 @@ class profiles::deployment::infrastructure (
   profiles::apt::update { 'publiq-infrastructure': }
 
   package { 'infrastructure-publiq':
-    ensure  => $package_version,
+    ensure  => $version,
     notify  => Class['profiles::puppetserver::cache_clear'],
     require => Profiles::Apt::Update['publiq-infrastructure']
   }

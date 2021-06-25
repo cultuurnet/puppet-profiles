@@ -1,6 +1,6 @@
 class profiles::deployment::appconfig (
-  String           $package_version = 'latest',
-  Optional[String] $puppetdb_url    = undef
+  String           $version      = 'latest',
+  Optional[String] $puppetdb_url = undef
 ) {
 
   contain ::profiles
@@ -22,7 +22,7 @@ class profiles::deployment::appconfig (
   profiles::apt::update { 'publiq-appconfig': }
 
   package { 'appconfig-publiq':
-    ensure  => $package_version,
+    ensure  => $version,
     notify  => Class['profiles::puppetserver::cache_clear'],
     require => Profiles::Apt::Update['publiq-appconfig']
   }

@@ -1,6 +1,6 @@
 class profiles::deployment::uit::api (
   String           $config_source,
-  String           $package_version         = 'latest',
+  String           $version                 = 'latest',
   Boolean          $service_manage          = true,
   String           $service_ensure          = 'running',
   Boolean          $service_enable          = true,
@@ -21,7 +21,7 @@ class profiles::deployment::uit::api (
   realize Package['yarn']
 
   package { 'uit-api':
-    ensure  => $package_version,
+    ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
     require => Profiles::Apt::Update['publiq-uit']
   }

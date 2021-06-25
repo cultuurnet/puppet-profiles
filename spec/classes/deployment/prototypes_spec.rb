@@ -50,10 +50,10 @@ describe 'profiles::deployment::prototypes' do
         ) }
       end
 
-      context "with package_version => 1.2.3 and puppetdb_url => http://example.com:8000" do
+      context "with version => 1.2.3 and puppetdb_url => http://example.com:8000" do
         let (:params) { {
-          'package_version' => '1.2.3',
-          'puppetdb_url'    => 'http://example.com:8000'
+          'version'      => '1.2.3',
+          'puppetdb_url' => 'http://example.com:8000'
         } }
 
         it { is_expected.to contain_package('prototypes-publiq').with(
