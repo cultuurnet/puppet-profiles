@@ -19,6 +19,7 @@ class profiles::jenkins::cli(
   file { '/etc/jenkins-cli/cli.conf':
     ensure  => 'file',
     mode    => '0644',
-    content => template('profiles/jenkins/cli.conf.erb')
+    content => template('profiles/jenkins/cli.conf.erb'),
+    require => Package['jenkins-cli']
   }
 }

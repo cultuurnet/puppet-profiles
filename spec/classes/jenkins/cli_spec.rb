@@ -33,6 +33,8 @@ describe 'profiles::jenkins::cli' do
         it { is_expected.to contain_file('/etc/jenkins-cli/cli.conf').with_content(/JENKINS_PASSWORD=doe/) }
         it { is_expected.to contain_file('/etc/jenkins-cli/cli.conf').with_content(/SERVER_URL=http:\/\/localhost:8080/) }
 
+        it { is_expected.to contain_file('/etc/jenkins-cli/cli.conf').that_requires('Package[jenkins-cli]') }
+
         context "with version => 1.2.3, server_url => http://remote:5555/" do
           let (:params) {
             super().merge({
