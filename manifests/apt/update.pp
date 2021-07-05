@@ -2,7 +2,7 @@ define profiles::apt::update {
 
   include ::profiles
 
-  contain ::profiles::apt::repositories
+  include ::profiles::apt::repositories
 
   realize Apt::Source[$title]
 
