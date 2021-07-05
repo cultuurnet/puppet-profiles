@@ -1,6 +1,6 @@
 define profiles::apt::update {
 
-  contain ::profiles
+  include ::profiles
 
   contain ::profiles::apt::repositories
 
