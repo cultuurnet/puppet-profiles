@@ -2,7 +2,7 @@ class profiles::apt::repositories {
 
   # TODO: repositories split for trusty and xenial
 
-  include ::profiles::apt::keys
+  contain ::profiles::apt::keys
 
   Apt::Source {
     require => Class['profiles::apt::keys'],
