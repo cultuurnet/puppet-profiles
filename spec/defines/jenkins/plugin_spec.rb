@@ -2,13 +2,9 @@ require 'spec_helper'
 
 describe 'profiles::jenkins::plugin' do
   let(:title) { 'foobar' }
-  let(:pre_condition) { 'package { "jenkins-cli": }' }
 
-  context "with admin_user => john and admin_password => doe" do
-    let(:params) { {
-      'admin_user' => 'john',
-      'admin_password' => 'doe'
-    } }
+  context "without parameters" do
+    let(:params) { {} }
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do
@@ -16,89 +12,59 @@ describe 'profiles::jenkins::plugin' do
 
         it { is_expected.to compile.with_all_deps }
 
+        it { is_expected.to contain_class('profiles::jenkins::cli') }
+
         it { is_expected.to contain_exec('jenkins plugin foobar').with(
-          'command'   => "jenkins-cli -auth john:doe install-plugin foobar -deploy",
+          'command'   => "jenkins-cli install-plugin foobar -deploy",
           'path'      => [ '/usr/local/bin', '/usr/bin'],
-          'unless'    => 'jenkins-cli -auth john:doe list-plugins foobar',
+          'unless'    => 'jenkins-cli list-plugins foobar',
           'logoutput' => 'on_failure'
           )
         }
 
-        it { is_expected.to contain_exec('jenkins plugin foobar').that_requires('Package[jenkins-cli]') }
+        it { is_expected.to contain_exec('jenkins plugin foobar').that_requires('Class[profiles::jenkins::cli]') }
 
         context "with title => guineapig, restart => true and ensure => present" do
           let(:title) { 'guineapig' }
 
           let(:params) {
-            super().merge( {
+            super().merge({
               'restart' => true
-            }
-          ) }
+            })
+          }
 
           it { is_expected.to contain_exec('jenkins plugin guineapig').with(
-            'command'   => "jenkins-cli -auth john:doe install-plugin guineapig -restart",
+            'command'   => "jenkins-cli install-plugin guineapig -restart",
             'path'      => [ '/usr/local/bin', '/usr/bin'],
-            'unless'    => 'jenkins-cli -auth john:doe list-plugins guineapig',
+            'unless'    => 'jenkins-cli list-plugins guineapig',
             'logoutput' => 'on_failure'
             )
           }
 
-          it { is_expected.to contain_exec('jenkins plugin guineapig').that_requires('Package[jenkins-cli]') }
+          it { is_expected.to contain_exec('jenkins plugin guineapig').that_requires('Class[profiles::jenkins::cli]') }
         end
-      end
-    end
-  end
 
-  context "with admin_user => jane and admin_password => roe" do
-    let(:params) { {
-      'admin_user' => 'jane',
-      'admin_password' => 'roe'
-    } }
-
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        let (:facts) { facts }
-
-        it { is_expected.to compile.with_all_deps }
-
-        it { is_expected.to contain_exec('jenkins plugin foobar').with(
-          'command'   => "jenkins-cli -auth jane:roe install-plugin foobar -deploy",
-          'path'      => [ '/usr/local/bin', '/usr/bin'],
-          'unless'    => 'jenkins-cli -auth jane:roe list-plugins foobar',
-          'logoutput' => 'on_failure'
-          )
-        }
-
-        it { is_expected.to contain_exec('jenkins plugin foobar').that_requires('Package[jenkins-cli]') }
-
-        context "with title => guineapig, restart => true and ensure => absent" do
-          let(:title) { 'guineapig' }
+        context "with title => hedgehog, restart => true and ensure => absent" do
+          let(:title) { 'hedgehog' }
 
           let(:params) {
-            super().merge( {
+            super().merge({
               'ensure'  => 'absent',
               'restart' => true
-            }
-          ) }
+            })
+          }
 
-          it { is_expected.to contain_exec('jenkins plugin guineapig').with(
-            'command'   => "jenkins-cli -auth jane:roe disable-plugin guineapig -restart",
+          it { is_expected.to contain_exec('jenkins plugin hedgehog').with(
+            'command'   => "jenkins-cli disable-plugin hedgehog -restart",
             'path'      => [ '/usr/local/bin', '/usr/bin'],
-            'onlyif'    => 'jenkins-cli -auth jane:roe list-plugins guineapig',
+            'onlyif'    => 'jenkins-cli list-plugins hedgehog',
             'logoutput' => 'on_failure'
             )
           }
 
-          it { is_expected.to contain_exec('jenkins plugin guineapig').that_requires('Package[jenkins-cli]') }
+          it { is_expected.to contain_exec('jenkins plugin hedgehog').that_requires('Class[profiles::jenkins::cli]') }
         end
       end
     end
-  end
-
-  context "without parameters" do
-    let(:params) { {} }
-
-    it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'admin_user'/) }
-    it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'admin_password'/) }
   end
 end
