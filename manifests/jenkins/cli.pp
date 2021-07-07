@@ -5,7 +5,7 @@ class profiles::jenkins::cli(
   String $server_url = 'http://localhost:8080'
 ) {
 
-  contain ::profiles
+  include ::profiles
 
   include ::profiles::jenkins
 
