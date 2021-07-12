@@ -4,7 +4,7 @@ class profiles::deployment::uitidv2 {
 
   @apt::source { 'publiq-uitidv2':
     location => "http://apt.uitdatabank.be/uitidv2-${environment}",
-    release  => 'trusty',
+    release  => $facts['lsbdistcodename'],
     repos    => 'main',
     require  => Class['profiles::apt::keys'],
     include  => {

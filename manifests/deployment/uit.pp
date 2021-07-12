@@ -4,7 +4,7 @@ class profiles::deployment::uit {
 
   @apt::source { 'publiq-uit':
     location => "http://apt.uitdatabank.be/uit-${environment}",
-    release  => 'xenial',
+    release  => $facts['lsbdistcodename'],
     repos    => 'main',
     require  => Class['profiles::apt::keys'],
     include  => {

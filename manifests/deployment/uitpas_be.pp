@@ -4,7 +4,7 @@ class profiles::deployment::uitpas_be {
 
   @apt::source { 'publiq-uitpasbe':
     location => "http://apt.uitdatabank.be/uitpas.be-${environment}",
-    release  => 'trusty',
+    release  => $facts['lsbdistcodename'],
     repos    => 'main',
     require  => Class['profiles::apt::keys'],
     include  => {
