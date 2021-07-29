@@ -3,8 +3,8 @@ require 'spec_helper'
 describe 'profiles::apache::vhost::reverse_proxy' do
   let(:hiera_config) { 'spec/fixtures/hiera/hiera.yaml' }
 
-  context "with title => leonardo.example.com" do
-    let(:title) { 'leonardo.example.com' }
+  context "with title => http://leonardo.example.com" do
+    let(:title) { 'http://leonardo.example.com' }
 
     context "with destination => http://davinci.example.com and aliases => leo.example.com" do
       let(:params) { {
@@ -39,12 +39,11 @@ describe 'profiles::apache::vhost::reverse_proxy' do
     end
   end
 
-  context "with title => michelangelo.example.com" do
-    let(:title) { 'michelangelo.example.com' }
+  context "with title => https://michelangelo.example.com" do
+    let(:title) { 'https://michelangelo.example.com' }
 
-    context "with https => true, certificate => 'foobar.example.com', destination => https://buonarotti.example.com/ and aliases => ['mich.example.com', 'angelo.example.com']" do
+    context "with certificate => 'foobar.example.com', destination => https://buonarotti.example.com/ and aliases => ['mich.example.com', 'angelo.example.com']" do
       let(:params) { {
-        'https'       => true,
         'certificate' => 'foobar.example.com',
         'destination' => 'https://buonarotti.example.com/',
         'aliases'     => ['mich.example.com', 'angelo.example.com']
@@ -78,9 +77,8 @@ describe 'profiles::apache::vhost::reverse_proxy' do
       end
     end
 
-    context "with https => true and destination => https://buonarotti.example.com" do
+    context "with destination => https://buonarotti.example.com" do
       let(:params) { {
-        'https'       => true,
         'destination' => 'https://buonarotti.example.com'
       } }
 
@@ -97,6 +95,24 @@ describe 'profiles::apache::vhost::reverse_proxy' do
       let(:params) { {} }
 
       it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'destination'/) }
+    end
+  end
+
+  context "with title => leonardo.example.com" do
+    let(:title) { 'leonardo.example.com' }
+
+    context "with destination => http://buonarotti.example.com" do
+      let(:params) { {
+        'destination' => 'http://buonarotti.example.com'
+      } }
+
+      on_supported_os.each do |os, facts|
+        context "on #{os}" do
+          let (:facts) { facts }
+
+          it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects the title to be a valid HTTP URL/) }
+        end
+      end
     end
   end
 end

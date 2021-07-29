@@ -1,6 +1,5 @@
 define profiles::apache::vhost::reverse_proxy (
   Stdlib::Httpurl                $destination,
-  Boolean                        $https        = false,
   Optional[String]               $certificate  = undef,
   Variant[String, Array[String]] $aliases      = []
 ) {
@@ -10,12 +9,19 @@ define profiles::apache::vhost::reverse_proxy (
   include ::profiles::apache
   include ::profiles::certificates
 
+  unless $title =~ Stdlib::Httpurl {
+    fail("Defined resource type Profiles::Apache::Vhost::Reverse_proxy[${title}] expects the title to be a valid HTTP URL")
+  }
 
-  if $https {
+  $transport = split($title, ':')[0]
+  $servername = split($title, '/')[-1]
+
+  if $transport == 'https' {
     unless $certificate {
-      fail("Class ${name} expects a value for parameter certificate when using HTTPS")
+      fail("Defined resource type Profiles::Apache::Vhost::Reverse_proxy[${title}] expects a value for parameter certificate when using HTTPS")
     }
 
+    $https    = true
     $port     = 443
     $ssl_cert = "/etc/ssl/certs/${certificate}.bundle.crt"
     $ssl_key  = "/etc/ssl/private/${certificate}.key"
@@ -23,10 +29,11 @@ define profiles::apache::vhost::reverse_proxy (
     realize Profiles::Certificate[$certificate]
     realize Firewall['300 accept HTTPS traffic']
 
-    Profiles::Certificate[$certificate] -> Apache::Vhost["${title}_${port}"]
+    Profiles::Certificate[$certificate] -> Apache::Vhost["${servername}_${port}"]
     Profiles::Certificate[$certificate] ~> Class['apache::service']
   } else {
-    $port = 80
+    $https    = false
+    $port     = 80
     $ssl_cert = undef
     $ssl_key  = undef
 
@@ -39,8 +46,8 @@ define profiles::apache::vhost::reverse_proxy (
     $https_destination = false
   }
 
-  apache::vhost { "${title}_${port}":
-    servername      => $title,
+  apache::vhost { "${servername}_${port}":
+    servername      => $servername,
     serveraliases   => $aliases,
     port            => $port,
     ssl             => $https,
