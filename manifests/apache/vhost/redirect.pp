@@ -1,6 +1,5 @@
 define profiles::apache::vhost::redirect (
   Stdlib::Httpurl                $destination,
-  Boolean                        $https        = false,
   Optional[String]               $certificate  = undef,
   Variant[String, Array[String]] $aliases      = []
 ) {
@@ -10,11 +9,19 @@ define profiles::apache::vhost::redirect (
   include ::profiles::apache
   include ::profiles::certificates
 
-  if $https {
+  unless $title =~ Stdlib::Httpurl {
+    fail("Defined resource type Profiles::Apache::Vhost::Redirect[${title}] expects the title to be a valid HTTP URL")
+  }
+
+  $transport = split($title, ':')[0]
+  $servername = split($title, '/')[-1]
+
+  if $transport == 'https' {
     unless $certificate {
-      fail("Class ${name} expects a value for parameter certificate when using HTTPS")
+      fail("Defined resource type Profiles::Apache::Vhost::Redirect[${title}] expects a value for parameter certificate when using HTTPS")
     }
 
+    $https    = true
     $port     = 443
     $ssl_cert = "/etc/ssl/certs/${certificate}.bundle.crt"
     $ssl_key  = "/etc/ssl/private/${certificate}.key"
@@ -22,9 +29,10 @@ define profiles::apache::vhost::redirect (
     realize Profiles::Certificate[$certificate]
     realize Firewall['300 accept HTTPS traffic']
 
-    Profiles::Certificate[$certificate] -> Apache::Vhost["${title}_${port}"]
+    Profiles::Certificate[$certificate] -> Apache::Vhost["${servername}_${port}"]
     Profiles::Certificate[$certificate] ~> Class['apache::service']
   } else {
+    $https    = false
     $port     = 80
     $ssl_cert = undef
     $ssl_key  = undef
@@ -32,8 +40,8 @@ define profiles::apache::vhost::redirect (
     realize Firewall['300 accept HTTP traffic']
   }
 
-  apache::vhost { "${title}_${port}":
-    servername      => $title,
+  apache::vhost { "${servername}_${port}":
+    servername      => $servername,
     serveraliases   => $aliases,
     port            => $port,
     ssl             => $https,
