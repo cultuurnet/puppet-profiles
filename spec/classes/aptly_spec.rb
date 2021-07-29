@@ -41,12 +41,11 @@ describe 'profiles::aptly' do
             's3_publish_endpoints' => {}
           )}
 
-          it { is_expected.to contain_profiles__apache__vhost__redirect('aptly.example.com').with(
+          it { is_expected.to contain_profiles__apache__vhost__redirect('http://aptly.example.com').with(
             'destination' => 'https://aptly.example.com'
           )}
 
-          it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('aptly.example.com').with(
-            'https'       => true,
+          it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('https://aptly.example.com').with(
             'certificate' => 'wildcard.example.com',
             'destination' => 'http://127.0.0.1:8081/'
           )}
@@ -113,12 +112,11 @@ describe 'profiles::aptly' do
               'api_port' => 8080
             ) }
 
-            it { is_expected.to contain_profiles__apache__vhost__redirect('foobar.example.com').with(
+            it { is_expected.to contain_profiles__apache__vhost__redirect('http://foobar.example.com').with(
               'destination' => 'https://foobar.example.com'
             )}
 
-            it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('foobar.example.com').with(
-              'https'       => true,
+            it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('https://foobar.example.com').with(
               'certificate' => 'foobar.example.com',
               'destination' => 'http://1.2.3.4:8080/'
             )}

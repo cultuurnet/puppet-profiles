@@ -58,12 +58,11 @@ class profiles::aptly (
     }
   }
 
-  profiles::apache::vhost::redirect { $api_hostname:
+  profiles::apache::vhost::redirect { "http://${api_hostname}":
     destination => "https://${api_hostname}"
   }
 
-  profiles::apache::vhost::reverse_proxy { $api_hostname:
-    https       => true,
+  profiles::apache::vhost::reverse_proxy { "https://${api_hostname}":
     certificate => $certificate,
     destination => "http://${api_bind}:${api_port}/"
   }
