@@ -28,7 +28,8 @@ describe 'profiles::apache::vhost::redirect' do
             'port'            => 80,
             'ssl'             => false,
             'request_headers' => ['unset Proxy early'],
-            'redirect_dest'   => 'https://davinci.example.com',
+            'redirect_source' => '/',
+            'redirect_dest'   => 'https://davinci.example.com/',
             'redirect_status' => 'permanent'
           ) }
         end
@@ -39,10 +40,10 @@ describe 'profiles::apache::vhost::redirect' do
   context "with title => https://michelangelo.example.com" do
     let(:title) { 'https://michelangelo.example.com' }
 
-    context "with certificate => 'wildcard.example.com', destination => http://buonarotti.example.com and aliases => ['mich.example.com', 'angelo.example.com']" do
+    context "with certificate => 'wildcard.example.com', destination => http://buonarotti.example.com/foo/ and aliases => ['mich.example.com', 'angelo.example.com']" do
       let(:params) { {
         'certificate' => 'wildcard.example.com',
-        'destination' => 'http://buonarotti.example.com',
+        'destination' => 'http://buonarotti.example.com/foo/',
         'aliases'     => ['mich.example.com', 'angelo.example.com']
       } }
 
@@ -61,7 +62,7 @@ describe 'profiles::apache::vhost::redirect' do
             'ssl'           => true,
             'ssl_cert'      => '/etc/ssl/certs/wildcard.example.com.bundle.crt',
             'ssl_key'       => '/etc/ssl/private/wildcard.example.com.key',
-            'redirect_dest' => 'http://buonarotti.example.com'
+            'redirect_dest' => 'http://buonarotti.example.com/foo/'
           ) }
 
           it { is_expected.to contain_profiles__certificate('wildcard.example.com').that_comes_before('Apache::Vhost[michelangelo.example.com_443]') }

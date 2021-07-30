@@ -13,8 +13,9 @@ define profiles::apache::vhost::redirect (
     fail("Defined resource type Profiles::Apache::Vhost::Redirect[${title}] expects the title to be a valid HTTP URL")
   }
 
-  $transport = split($title, ':')[0]
+  $transport  = split($title, ':')[0]
   $servername = split($title, '/')[-1]
+  $dest       = regsubst($destination, /^(.*)\/$/, '\\1')
 
   if $transport == 'https' {
     unless $certificate {
@@ -50,7 +51,8 @@ define profiles::apache::vhost::redirect (
     docroot         => '/var/www/html',
     manage_docroot  => false,
     request_headers => ['unset Proxy early'],
-    redirect_dest   => $destination,
+    redirect_source => '/',
+    redirect_dest   => "${dest}/",
     redirect_status => 'permanent'
   }
 }
