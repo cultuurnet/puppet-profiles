@@ -8,6 +8,7 @@ class profiles::aptly (
   Stdlib::Port::Unprivileged     $api_port          = 8081,
   Hash                           $publish_endpoints = {},
   Variant[String, Array[String]] $repositories      = []
+  Hash                           $mirors            = {},
 ) {
 
   contain ::profiles
@@ -70,6 +71,15 @@ class profiles::aptly (
   [$repositories].flatten.each |$repo| {
     aptly::repo { $repo:
       default_component => 'main'
+    }
+  }
+  
+  $mirors.each |$name, $attributes| {
+    aptly::mirror { $name:
+      location      => $attributes['sources'],
+      distribution  => $attributes['distro'],
+      components    => $attributes['components'],
+      architectures => $attributes['architectures']
     }
   }
 }
