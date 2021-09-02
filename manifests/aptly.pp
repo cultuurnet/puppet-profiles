@@ -7,8 +7,8 @@ class profiles::aptly (
   Stdlib::Ipv4                   $api_bind          = '127.0.0.1',
   Stdlib::Port::Unprivileged     $api_port          = 8081,
   Hash                           $publish_endpoints = {},
-  Variant[String, Array[String]] $repositories      = []
-  Hash                           $mirors            = {},
+  Variant[String, Array[String]] $repositories      = [],
+  Hash                           $mirors            = {}
 ) {
 
   contain ::profiles
