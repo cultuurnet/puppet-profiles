@@ -18,7 +18,6 @@ class profiles::base {
     realize Package['awscli']
   } else {
     $admin_user= 'vagrant'
-    realize Package['ca-certificates-publiq']
   }
 
   realize Group[$admin_user]
