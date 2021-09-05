@@ -76,7 +76,7 @@ class profiles::aptly (
 
   $mirrors.each |$name, $attributes| {
     aptly::mirror { $name:
-      location      => $attributes['sources'],
+      location      => $attributes['location'],
       distribution  => $attributes['distribution'],
       components    => $attributes['components'],
       architectures => $attributes['architectures']
