@@ -8,7 +8,7 @@ class profiles::aptly (
   Stdlib::Port::Unprivileged     $api_port          = 8081,
   Hash                           $publish_endpoints = {},
   Variant[String, Array[String]] $repositories      = [],
-  Hash                           $mirrors            = {}
+  Hash                           $mirrors           = {}
 ) {
 
   contain ::profiles
@@ -77,7 +77,7 @@ class profiles::aptly (
   $mirrors.each |$name, $attributes| {
     aptly::mirror { $name:
       location      => $attributes['sources'],
-      distribution  => $attributes['distro'],
+      distribution  => $attributes['distribution'],
       components    => $attributes['components'],
       architectures => $attributes['architectures']
     }
