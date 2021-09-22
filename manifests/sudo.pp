@@ -1,8 +1,6 @@
 class profiles::sudo (
   Optional[String] $admin_user = undef
-) {
-
-  contain ::profiles
+) inherits ::profiles {
 
   class { '::sudo': }
 

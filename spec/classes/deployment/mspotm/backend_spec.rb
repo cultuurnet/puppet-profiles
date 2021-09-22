@@ -6,7 +6,7 @@ describe 'profiles::deployment::mspotm::backend' do
       'config_source'     => '/foo'
     } }
 
-    include_examples 'operating system support', 'profiles::deployment::mspotm::backend'
+    include_examples 'operating system support'
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do

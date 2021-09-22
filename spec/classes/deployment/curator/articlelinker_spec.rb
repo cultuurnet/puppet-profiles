@@ -7,7 +7,7 @@ describe 'profiles::deployment::curator::articlelinker' do
       'publishers_source' => '/bar'
     } }
 
-    include_examples 'operating system support', 'profiles::deployment::curator::articlelinker'
+    include_examples 'operating system support'
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do

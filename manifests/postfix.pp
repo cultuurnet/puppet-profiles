@@ -6,9 +6,7 @@ class profiles::postfix (
   Boolean                     $aliases          = false,
   Array[String]               $aliases_domains  = [],
   String                      $aliases_source   = 'puppet:///modules/profiles/postfix/virtual'
-) {
-
-  contain ::profiles
+) inherits ::profiles {
 
   include ::profiles::firewall
 

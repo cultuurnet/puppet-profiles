@@ -1,9 +1,7 @@
 class profiles::php (
   Boolean       $with_composer                 = false,
   Integer[1, 2] $with_composer_default_version = 1
-) {
-
-  contain ::profiles
+) inherits ::profiles {
 
   include ::profiles::packages
   include ::profiles::apt::updates

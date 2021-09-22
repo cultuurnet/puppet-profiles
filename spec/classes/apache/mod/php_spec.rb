@@ -3,7 +3,7 @@ require 'spec_helper'
 describe 'profiles::apache::mod::php' do
   let (:pre_condition) { 'include ::profiles; class { apache: mpm_module => "prefork" }' }
 
-  include_examples 'operating system support', 'profiles::apache::mod::php'
+  include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do

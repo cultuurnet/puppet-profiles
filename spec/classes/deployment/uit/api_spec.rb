@@ -6,7 +6,7 @@ describe 'profiles::deployment::uit::api' do
       'config_source'     => '/foo'
     } }
 
-    include_examples 'operating system support', 'profiles::deployment::uit::api'
+    include_examples 'operating system support'
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do

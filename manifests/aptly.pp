@@ -8,9 +8,7 @@ class profiles::aptly (
   Stdlib::Port::Unprivileged     $api_port          = 8081,
   Hash                           $publish_endpoints = {},
   Variant[String, Array[String]] $repositories      = []
-) {
-
-  contain ::profiles
+) inherits ::profiles {
 
   include ::profiles::users
   include ::profiles::groups

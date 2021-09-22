@@ -14,7 +14,7 @@ class profiles::curator (
   Optional[String] $api_local_database_user           = undef,
   Optional[String] $api_local_database_password       = undef,
   Optional[String] $puppetdb_url                      = undef
-) {
+) inherits ::profiles {
 
   # TODO: unit tests
   # TODO: apache vhosts (articlelinker & api)
@@ -30,7 +30,6 @@ class profiles::curator (
   #include apache
   #include mysql::server ??
   #include supervisor
-  contain ::profiles
 
   if $api_local_database {
     mysql::db { $api_local_database_name:

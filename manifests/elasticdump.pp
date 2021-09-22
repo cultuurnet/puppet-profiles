@@ -1,6 +1,4 @@
-class profiles::elasticdump {
-
-  contain ::profiles
+class profiles::elasticdump inherits ::profiles {
 
   include ::profiles::apt::updates
   include ::profiles::nodejs

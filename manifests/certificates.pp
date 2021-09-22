@@ -1,8 +1,6 @@
 class profiles::certificates (
   Hash $certificates = {}
-) {
-
-  contain ::profiles
+) inherits ::profiles {
 
   $certificates.each |$certificate, $sources| {
     @profiles::certificate { $certificate:

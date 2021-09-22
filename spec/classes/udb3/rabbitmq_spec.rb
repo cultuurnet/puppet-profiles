@@ -191,19 +191,19 @@ RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin
 end
 
 describe 'profiles::udb3::rabbitmq' do
-  context "with vhost => 'foo', admin_user => 'bar' and admin_password => 'baz'" do
-    let(:params) { {
-      'vhost'          => 'foo',
-      'admin_user'     => 'bar',
-      'admin_password' => 'baz',
-      'with_tools'     => true
-    } }
+  include_examples 'operating system support'
 
-    include_examples 'operating system support', 'profiles::rabbitmq'
+  on_supported_os.each do |os, facts|
+    context "on #{os}" do
+      let(:facts) { facts }
 
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        let(:facts) { facts }
+      context "with vhost => 'foo', admin_user => 'bar' and admin_password => 'baz'" do
+        let(:params) { {
+          'vhost'          => 'foo',
+          'admin_user'     => 'bar',
+          'admin_password' => 'baz',
+          'with_tools'     => true
+        } }
 
         it { is_expected.to compile.with_all_deps }
 
@@ -216,20 +216,14 @@ describe 'profiles::udb3::rabbitmq' do
 
         include_examples 'UDB3 rabbitmq configuration', 'foo', 'bar', 'baz'
       end
-    end
-  end
 
-  context "with vhost => 'alice', admin_user => 'bob' and admin_password => 'carl'" do
-    let(:params) { {
-      'vhost'          => 'alice',
-      'admin_user'     => 'bob',
-      'admin_password' => 'carl',
-      'with_tools'     => false
-    } }
-
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        let(:facts) { facts }
+      context "with vhost => 'alice', admin_user => 'bob' and admin_password => 'carl'" do
+        let(:params) { {
+          'vhost'          => 'alice',
+          'admin_user'     => 'bob',
+          'admin_password' => 'carl',
+          'with_tools'     => false
+        } }
 
         it { is_expected.to compile.with_all_deps }
 
@@ -242,14 +236,14 @@ describe 'profiles::udb3::rabbitmq' do
 
         include_examples 'UDB3 rabbitmq configuration', 'alice', 'bob', 'carl'
       end
+
+      context "without parameters" do
+        let(:params) { { } }
+
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'vhost'/) }
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'admin_user'/) }
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'admin_password'/) }
+      end
     end
-  end
-
-  context "without parameters" do
-    let(:params) { { } }
-
-    it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'vhost'/) }
-    it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'admin_user'/) }
-    it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'admin_password'/) }
   end
 end

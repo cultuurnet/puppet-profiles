@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'profiles::certificates' do
-  include_examples 'operating system support', 'profiles::certificates'
+  include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do

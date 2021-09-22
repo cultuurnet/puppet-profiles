@@ -3,9 +3,7 @@ class profiles::udb3::rabbitmq (
   String  $admin_user,
   String  $admin_password,
   Boolean $with_tools      = true
-)
-{
-  contain ::profiles
+) inherits ::profiles {
 
   class { '::profiles::rabbitmq':
     admin_user     => $admin_user,

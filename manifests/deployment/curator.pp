@@ -1,6 +1,4 @@
-class profiles::deployment::curator {
-
-  contain ::profiles
+class profiles::deployment::curator inherits ::profiles {
 
   include ::profiles::apt::keys
 

@@ -6,13 +6,11 @@ class profiles::deployment::uitidv2::frontend (
   String           $service_ensure      = 'running',
   Boolean          $service_enable      = true,
   Optional[String] $puppetdb_url        = undef
-) {
-
-  $basedir = '/var/www/uitid-frontend/app'
-
-  contain ::profiles
+) inherits ::profiles {
 
   include ::profiles::deployment::uitidv2
+
+  $basedir = '/var/www/uitid-frontend/app'
 
   realize Profiles::Apt::Update['publiq-uitidv2']
 

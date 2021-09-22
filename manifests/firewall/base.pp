@@ -1,6 +1,5 @@
-class profiles::firewall::base {
+class profiles::firewall::base inherits ::profiles {
 
-  contain ::profiles
   contain ::firewall
 
   resources { 'firewall':

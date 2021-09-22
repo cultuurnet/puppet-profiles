@@ -1,8 +1,7 @@
 class profiles::elasticsearch (
   String $version = 'latest'
-) {
+) inherits ::profiles {
 
-  contain ::profiles
   contain ::profiles::java8
 
   include ::profiles::apt::updates

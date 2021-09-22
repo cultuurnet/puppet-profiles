@@ -8,13 +8,11 @@ class profiles::deployment::uit::frontend (
   Optional[String] $service_defaults_source = undef,
   Optional[String] $maintenance_source      = undef,
   Optional[String] $puppetdb_url            = undef
-) {
-
-  $basedir = '/var/www/uit-frontend/packages/app'
-
-  contain ::profiles
+) inherits ::profiles {
 
   include ::profiles::deployment::uit
+
+  $basedir = '/var/www/uit-frontend/packages/app'
 
   realize Profiles::Apt::Update['publiq-uit']
 

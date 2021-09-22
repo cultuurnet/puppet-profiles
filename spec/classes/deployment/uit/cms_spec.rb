@@ -8,7 +8,7 @@ describe 'profiles::deployment::uit::cms' do
       'drush_config_source' => '/bar'
     } }
 
-    include_examples 'operating system support', 'profiles::deployment::uit::cms'
+    include_examples 'operating system support'
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do

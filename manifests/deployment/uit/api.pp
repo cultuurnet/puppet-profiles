@@ -6,14 +6,12 @@ class profiles::deployment::uit::api (
   Boolean          $service_enable          = true,
   Optional[String] $service_defaults_source = undef,
   Optional[String] $puppetdb_url            = undef
-) {
-
-  $basedir = '/var/www/uit-api'
-
-  contain ::profiles
+) inherits ::profiles {
 
   include ::profiles::apt::updates
   include ::profiles::deployment::uit
+
+  $basedir = '/var/www/uit-api'
 
   realize Profiles::Apt::Update['yarn']
   realize Profiles::Apt::Update['publiq-uit']

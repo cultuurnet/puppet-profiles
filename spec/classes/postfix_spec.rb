@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'profiles::postfix' do
-  include_examples 'operating system support', 'profiles::postfix'
+  include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do

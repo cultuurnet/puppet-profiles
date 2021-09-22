@@ -3,7 +3,7 @@ require 'spec_helper'
 describe 'profiles::ssh' do
   let(:hiera_config) { 'spec/fixtures/hiera/hiera.yaml' }
 
-  include_examples 'operating system support', 'profiles::ssh'
+  include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do

@@ -1,8 +1,6 @@
 class profiles::ntp (
   Optional[Array[String]] $servers = undef,
-) {
-
-  contain ::profiles
+) inherits ::profiles {
 
   $restrict = [
     '-4 default kod nomodify notrap nopeer noquery',

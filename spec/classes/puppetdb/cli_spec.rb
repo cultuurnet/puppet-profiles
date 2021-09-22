@@ -7,7 +7,7 @@ describe 'profiles::puppetdb::cli' do
       'server_urls'     => 'https://example.com:1234'
     } }
 
-    include_examples 'operating system support', 'profiles::puppetdb::cli'
+    include_examples 'operating system support'
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do

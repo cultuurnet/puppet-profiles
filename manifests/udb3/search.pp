@@ -2,9 +2,8 @@ class profiles::udb3::search (
   String $elasticsearch_version           = 'latest',
   String $elasticsearch_initial_heap_size = '512m',
   String $elasticsearch_max_heap_size     = '512m'
-) {
+) inherits ::profiles {
 
-  contain ::profiles
   contain ::deployment::udb3::search
 
   include ::profiles::apt::keys

@@ -1,9 +1,7 @@
 class profiles::backup::client (
   String $private_key,
   Hash   $configuration = {}
-)
-{
-  contain ::profiles
+) inherits ::profiles {
 
   include ::profiles::apt::updates
 

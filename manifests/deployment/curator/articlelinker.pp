@@ -7,13 +7,11 @@ class profiles::deployment::curator::articlelinker (
   String           $service_ensure      = 'running',
   Boolean          $service_enable      = true,
   Optional[String] $puppetdb_url        = undef
-) {
-
-  $basedir = '/var/www/curator-articlelinker'
-
-  contain ::profiles
+) inherits ::profiles {
 
   include ::profiles::deployment::curator
+
+  $basedir = '/var/www/curator-articlelinker'
 
   realize Profiles::Apt::Update['publiq-curator']
 

@@ -12,7 +12,7 @@ describe 'profiles::curator' do
       'api_hostname'                      => 'example.com'
     } }
 
-    include_examples 'operating system support', 'profiles::curator'
+    include_examples 'operating system support'
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do

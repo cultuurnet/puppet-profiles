@@ -1,8 +1,7 @@
 class profiles::glassfish (
   String $flavor = 'payara'
-) {
+) inherits ::profiles {
 
-  contain ::profiles
   contain ::profiles::java8
 
   include ::profiles::packages

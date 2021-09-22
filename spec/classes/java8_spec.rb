@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'profiles::java8' do
-  include_examples 'operating system support', 'profiles::java8'
+  include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do

@@ -1,6 +1,4 @@
-class profiles::resqueweb {
-
-  contain ::profiles
+class profiles::resqueweb inherits ::profiles {
 
   include ::profiles::apt::updates
 

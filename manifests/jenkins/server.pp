@@ -6,8 +6,8 @@ class profiles::jenkins::server (
   $sshpublickey,
   $sslchain = '',
   $version = 'latest',
-) {
-  contain ::profiles
+) inherits ::profiles {
+
   contain ::profiles::java8
 
   include ::profiles::apt::keys

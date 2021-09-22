@@ -3,7 +3,7 @@ require 'spec_helper'
 describe 'profiles::ssh_authorized_keys' do
   let(:pre_condition) { 'include ::profiles' }
 
-  include_examples 'operating system support', 'profiles::ssh_authorized_keys'
+  include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do

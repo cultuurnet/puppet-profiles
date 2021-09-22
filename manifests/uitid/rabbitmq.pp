@@ -2,9 +2,8 @@ class profiles::uitid::rabbitmq (
   String $vhost,
   String $admin_user     = $profiles::rabbitmq::admin_user,
   String $admin_password = $profiles::rabbitmq::admin_password
-)
-{
-  contain ::profiles
+) inherits ::profiles {
+
   contain ::profiles::rabbitmq
 
   rabbitmq_vhost { $vhost:

@@ -1,8 +1,6 @@
 class profiles::nodejs (
   String $version = '10.14.0-1nodesource1'
-) {
-
-  contain ::profiles
+) inherits ::profiles {
 
   include ::profiles::apt::updates
 

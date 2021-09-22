@@ -2,9 +2,7 @@ class profiles::rabbitmq (
   String  $admin_user,
   String  $admin_password,
   Boolean $with_tools      = true
-) {
-
-  contain ::profiles
+) inherits ::profiles {
 
   include ::profiles::packages
   include ::profiles::apt::updates
