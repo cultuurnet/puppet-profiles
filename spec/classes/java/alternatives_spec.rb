@@ -27,7 +27,7 @@ describe 'profiles::java::alternatives' do
         ) }
 
         it { is_expected.to contain_alternatives('java').with(
-          'path' => '/usr/lib/jvm/java-8-oracle/bin/java'
+          'path' => '/usr/lib/jvm/java-8-oracle/jre/bin/java'
           )
         }
       end
