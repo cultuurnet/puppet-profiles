@@ -8,7 +8,7 @@ class profiles::jenkins::server (
   $version = 'latest',
 ) inherits ::profiles {
 
-  contain ::profiles::java8
+  contain ::profiles::java
 
   include ::profiles::apt::keys
   include ::profiles::packages
@@ -156,7 +156,7 @@ instance.save()' | /usr/bin/jenkins-cli groovy =",
     require   => [ Class['profiles::jenkins::cli'], Class['jenkins'], Exec['create-jenkins-user-admin']],
   }
 
-  Package['dpkg'] -> Class['::profiles::java8'] -> Class['jenkins'] -> File[$sshdir] -> File['jenkins.model.JenkinsLocationConfiguration.xml']
+  Package['dpkg'] -> Class['::profiles::java'] -> Class['jenkins'] -> File[$sshdir] -> File['jenkins.model.JenkinsLocationConfiguration.xml']
 
   realize Apt::Source['cultuurnet-tools']
   realize Profiles::Apt::Update['cultuurnet-tools']

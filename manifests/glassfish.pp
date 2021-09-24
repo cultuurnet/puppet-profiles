@@ -2,7 +2,7 @@ class profiles::glassfish (
   String $flavor = 'payara'
 ) inherits ::profiles {
 
-  contain ::profiles::java8
+  contain ::profiles::java
 
   include ::profiles::packages
   include ::profiles::apt::updates
@@ -26,7 +26,7 @@ class profiles::glassfish (
     manage_java         => false,
     parent_dir          => '/opt',
     install_dir         => $flavor,
-    require             => Class['::profiles::java8']
+    require             => Class['::profiles::java']
   }
 
   # Hack to circumvent dependency problems with using glassfish::install_jars
