@@ -47,7 +47,7 @@ describe 'profiles::rabbitmq' do
       end
 
       context "without parameters" do
-        let(:params) { { } }
+        let(:params) { {} }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'admin_user'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'admin_password'/) }

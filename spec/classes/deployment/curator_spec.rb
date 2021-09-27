@@ -5,7 +5,7 @@ describe 'profiles::deployment::curator' do
 
   on_supported_os.each do |os, facts|
    context "on #{os}" do
-      let (:facts) { facts }
+      let(:facts) { facts }
 
       context "with all virtual resources realized" do
         let(:pre_condition) { 'Apt::Source <| |>; Profiles::Apt::Update <| |>' }

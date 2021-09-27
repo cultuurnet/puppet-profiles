@@ -10,7 +10,7 @@ describe 'profiles::ssh' do
       let(:facts) { facts }
 
       context "without parameters" do
-        let(:params) { { } }
+        let(:params) { {} }
 
         it { is_expected.to compile.with_all_deps }
 

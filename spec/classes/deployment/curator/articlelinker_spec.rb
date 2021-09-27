@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe 'profiles::deployment::curator::articlelinker' do
   context "with config_source => /foo and publishers_source => /bar" do
-    let (:params) { {
+    let(:params) { {
       'config_source'     => '/foo',
       'publishers_source' => '/bar'
     } }
@@ -11,7 +11,7 @@ describe 'profiles::deployment::curator::articlelinker' do
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do
-        let (:facts) { facts }
+        let(:facts) { facts }
 
         it { is_expected.to compile.with_all_deps }
 
@@ -61,7 +61,7 @@ describe 'profiles::deployment::curator::articlelinker' do
         ) }
 
         context "with service_manage => false" do
-          let (:params) {
+          let(:params) {
             super().merge({
               'service_manage' => false
             } )
@@ -74,7 +74,7 @@ describe 'profiles::deployment::curator::articlelinker' do
   end
 
   context "with config_source => /bar, publishers_source => /baz, version => 1.2.3, env_defaults_source => /tmp/a, service_ensure => stopped, service_enable = false and puppetdb_url => http://example.com:8000" do
-    let (:params) { {
+    let(:params) { {
       'config_source'       => '/bar',
       'publishers_source'   => '/baz',
       'version'             => '1.2.3',
@@ -86,7 +86,7 @@ describe 'profiles::deployment::curator::articlelinker' do
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do
-        let (:facts) { facts }
+        let(:facts) { facts }
 
         it { is_expected.to contain_file('curator-articlelinker-config').with(
           'source' => '/bar',
@@ -111,11 +111,11 @@ describe 'profiles::deployment::curator::articlelinker' do
   end
 
   context "without parameters" do
-    let (:params) { {} }
+    let(:params) { {} }
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do
-        let (:facts) { facts }
+        let(:facts) { facts }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'publishers_source'/) }

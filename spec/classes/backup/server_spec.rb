@@ -5,7 +5,7 @@ describe 'profiles::backup::server' do
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do
-      let (:facts) { facts }
+      let(:facts) { facts }
 
       context "with public_key => 'xyz9876', hostname => 'foobar', physical_volumes => ['/dev/sdf', '/dev/sdg'] and backupdir => '/mnt'" do
         let(:params) { {
@@ -87,7 +87,7 @@ describe 'profiles::backup::server' do
       end
 
       context "with public_key => 'def456', public_key_type => 'dsa', hostname => 'baz', physical_volumes => '/dev/sdx', size => '100G' and backupdir => '/tmp/bla'" do
-        let (:params) { {
+        let(:params) { {
           'public_key'       => 'def456',
           'public_key_type'  => 'dsa',
           'hostname'         => 'baz',
@@ -151,7 +151,7 @@ describe 'profiles::backup::server' do
       end
 
       context "without parameters" do
-        let(:params) { { } }
+        let(:params) { {} }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'hostname'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'public_key'/) }

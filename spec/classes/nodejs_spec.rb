@@ -10,7 +10,7 @@ describe 'profiles::nodejs' do
       it { is_expected.to compile.with_all_deps }
 
       context "without parameters" do
-        let(:params) { { } }
+        let(:params) { {} }
 
         it { is_expected.to contain_profiles__apt__update('nodejs_10.x') }
 

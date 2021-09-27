@@ -5,7 +5,7 @@ describe 'profiles::backup::client' do
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do
-      let (:facts) { facts }
+      let(:facts) { facts }
 
       context "with private_key => 'abcd1234'" do
         let(:params) { { 'private_key' => 'abcd1234' } }
@@ -40,7 +40,7 @@ describe 'profiles::backup::client' do
       end
 
       context "without parameters" do
-        let(:params) { { } }
+        let(:params) { {} }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'private_key'/) }
       end

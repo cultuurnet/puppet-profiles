@@ -5,7 +5,7 @@ describe 'profiles::jenkins::cli' do
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do
-      let (:facts) { facts }
+      let(:facts) { facts }
 
       context "with admin_user => john and admin_password => doe" do
         let(:params) { {
@@ -36,7 +36,7 @@ describe 'profiles::jenkins::cli' do
         it { is_expected.to contain_file('/etc/jenkins-cli/cli.conf').that_requires('Package[jenkins-cli]') }
 
         context "with version => 1.2.3, server_url => http://remote:5555/" do
-          let (:params) {
+          let(:params) {
             super().merge({
               'version'    => '1.2.3',
               'server_url' => 'http://remote:5555/'

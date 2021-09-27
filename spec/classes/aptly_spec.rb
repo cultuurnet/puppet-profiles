@@ -178,7 +178,7 @@ describe 'profiles::aptly' do
       end
 
       context "without parameters" do
-        let(:params) { { } }
+        let(:params) { {} }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'api_hostname'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'certificate'/) }

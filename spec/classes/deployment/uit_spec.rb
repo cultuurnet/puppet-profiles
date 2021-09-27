@@ -3,7 +3,7 @@ require 'spec_helper'
 describe 'profiles::deployment::uit' do
   on_supported_os.each do |os, facts|
     context "on #{os}" do
-      let (:facts) { facts }
+      let(:facts) { facts }
 
       context "with all virtual resources realized" do
         let(:pre_condition) { 'Apt::Source <| |>; Profiles::Apt::Update <| |>' }
@@ -26,14 +26,14 @@ describe 'profiles::deployment::uit' do
 
         case facts[:os]['release']['major']
         when '14.04'
-          let (:facts) { facts }
+          let(:facts) { facts }
 
           it { is_expected.to contain_apt__source('publiq-uit').with(
             'release' => 'trusty'
           ) }
 
         when '16.04'
-          let (:facts) { facts }
+          let(:facts) { facts }
 
           it { is_expected.to contain_apt__source('publiq-uit').with(
             'release' => 'xenial'

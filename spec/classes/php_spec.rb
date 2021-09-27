@@ -17,7 +17,7 @@ describe 'profiles::php' do
       let(:facts) { facts }
 
       context 'without parameters' do
-        let(:params) { { } }
+        let(:params) { {} }
 
         include_examples 'php'
 

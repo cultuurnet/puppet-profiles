@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe 'profiles::puppetdb::cli' do
   context "on node1.example.com with server_urls => https://example.com:1234" do
-    let (:node) { 'node1.example.com' }
-    let (:params) { {
+    let(:node) { 'node1.example.com' }
+    let(:params) { {
       'server_urls'     => 'https://example.com:1234'
     } }
 
@@ -35,8 +35,8 @@ describe 'profiles::puppetdb::cli' do
   end
 
   context "on node2.example.com with server_urls => [ https://example.com:1234, https://example.com:5678]" do
-    let (:node) { 'node2.example.com' }
-    let (:params) { {
+    let(:node) { 'node2.example.com' }
+    let(:params) { {
       'server_urls'     => [ 'https://example.com:1234', 'https://example.com:5678']
     } }
 
@@ -52,11 +52,11 @@ describe 'profiles::puppetdb::cli' do
   end
 
   context "without parameters" do
-    let (:params) { {} }
+    let(:params) { {} }
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do
-        let (:facts) { facts }
+        let(:facts) { facts }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'server_urls'/) }
       end

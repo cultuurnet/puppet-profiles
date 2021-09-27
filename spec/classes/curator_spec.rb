@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 describe 'profiles::curator' do
-  let (:pre_condition) { 'include ::profiles' }
+  let(:pre_condition) { 'include ::profiles' }
 
   context "with articlelinker_config_source => /foo, articlelinker_publishers_source => /bar, articlelinker_env_defaults_source => /defaults, api_config_source => /baz and api_hostname => example.com" do
-    let (:params) { {
+    let(:params) { {
       'articlelinker_config_source'       => '/foo',
       'articlelinker_publishers_source'   => '/bar',
       'articlelinker_env_defaults_source' => '/defaults',
@@ -16,12 +16,12 @@ describe 'profiles::curator' do
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do
-        let (:facts) { facts }
+        let(:facts) { facts }
 
         it { is_expected.to compile.with_all_deps }
 
         context "with the noop_deploy fact set to true" do
-          let (:facts) do
+          let(:facts) do
             super().merge({ 'noop_deploy' => 'true' })
           end
 
@@ -30,7 +30,7 @@ describe 'profiles::curator' do
         end
 
         context "with api_local_database => true, api_local_database_name => one, api_local_database_user => two and api_local_database_password => three" do
-          let (:params) {
+          let(:params) {
             super().merge({
               'api_local_database'          => true,
               'api_local_database_name'     => 'one',
@@ -70,7 +70,7 @@ describe 'profiles::curator' do
           ) }
 
           context "with articlelinker_service_manage => false, articlelinker_service_ensure => stopped and articlelinker_service_enable => false" do
-            let (:params) {
+            let(:params) {
               super().merge({
                 'articlelinker_service_manage' => false,
                 'articlelinker_service_ensure' => 'stopped',
@@ -91,7 +91,7 @@ describe 'profiles::curator' do
           end
 
           context "with api_version => 4.5.6, articlelinker_version => 9.8.7 and puppetdb_url => http://localhost:8080" do
-            let (:params) {
+            let(:params) {
               super().merge({
                 'api_version'           => '4.5.6',
                 'articlelinker_version' => '9.8.7',
@@ -115,11 +115,11 @@ describe 'profiles::curator' do
   end
 
   context "without parameters" do
-    let (:params) { {} }
+    let(:params) { {} }
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do
-        let (:facts) { facts }
+        let(:facts) { facts }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'articlelinker_config_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'articlelinker_publishers_source'/) }

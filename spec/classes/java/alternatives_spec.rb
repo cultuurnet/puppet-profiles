@@ -8,7 +8,7 @@ describe 'profiles::java::alternatives' do
       let(:facts) { facts }
 
       context "without parameters" do
-        let(:params) { { } }
+        let(:params) { {} }
 
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to contain_class('profiles::java::alternatives') }

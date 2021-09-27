@@ -14,7 +14,7 @@ describe 'profiles::postfix' do
       it { is_expected.to compile.with_all_deps }
 
       context "without parameters" do
-        let(:params) { { } }
+        let(:params) { {} }
 
         it { is_expected.to contain_class('postfix::server').with(
           'inet_protocols'          => 'all',

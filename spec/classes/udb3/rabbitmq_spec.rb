@@ -238,7 +238,7 @@ describe 'profiles::udb3::rabbitmq' do
       end
 
       context "without parameters" do
-        let(:params) { { } }
+        let(:params) { {} }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'vhost'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'admin_user'/) }

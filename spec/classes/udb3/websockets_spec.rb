@@ -8,7 +8,7 @@ describe 'profiles::udb3::websockets' do
       let(:facts) { facts }
 
       context "with config_source => /tmp/config.json" do
-        let (:params) { {
+        let(:params) { {
           'config_source' => '/tmp/config.json'
         } }
 
@@ -25,7 +25,7 @@ describe 'profiles::udb3::websockets' do
       end
 
       context "with config_source => /tmp/bla.json and version => '1.2.3'" do
-        let (:params) { {
+        let(:params) { {
           'config_source' => '/tmp/bla.json',
           'version'       => '1.2.3'
         } }
@@ -37,7 +37,7 @@ describe 'profiles::udb3::websockets' do
       end
 
       context "without parameters" do
-        let (:params) { { } }
+        let(:params) { {} }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }
       end

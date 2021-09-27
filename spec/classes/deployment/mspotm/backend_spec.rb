@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe 'profiles::deployment::mspotm::backend' do
   context "with config_source => /foo" do
-    let (:params) { {
+    let(:params) { {
       'config_source'     => '/foo'
     } }
 
@@ -10,7 +10,7 @@ describe 'profiles::deployment::mspotm::backend' do
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do
-        let (:facts) { facts }
+        let(:facts) { facts }
 
         it { is_expected.to compile.with_all_deps }
 
@@ -66,7 +66,7 @@ describe 'profiles::deployment::mspotm::backend' do
   end
 
   context "with config_source => /bar, version => 1.2.3 and puppetdb_url => http://example.com:8000" do
-    let (:params) { {
+    let(:params) { {
       'config_source' => '/bar',
       'version'       => '1.2.3',
       'puppetdb_url'  => 'http://example.com:8000'
@@ -74,7 +74,7 @@ describe 'profiles::deployment::mspotm::backend' do
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do
-        let (:facts) { facts }
+        let(:facts) { facts }
 
         it { is_expected.to contain_file('mspotm-backend-config').with(
           'source' => '/bar',
@@ -90,11 +90,11 @@ describe 'profiles::deployment::mspotm::backend' do
   end
 
   context "without parameters" do
-    let (:params) { {} }
+    let(:params) { {} }
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do
-        let (:facts) { facts }
+        let(:facts) { facts }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }
       end

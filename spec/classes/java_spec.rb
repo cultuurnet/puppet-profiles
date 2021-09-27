@@ -42,7 +42,7 @@ describe 'profiles::java' do
       end
 
       context "without parameters" do
-        let(:params) { { } }
+        let(:params) { {} }
 
         it { is_expected.to compile.with_all_deps }
 

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'profiles::apache::mod::php' do
-  let (:pre_condition) { 'include ::profiles; class { apache: mpm_module => "prefork" }' }
+  let(:pre_condition) { 'include ::profiles; class { apache: mpm_module => "prefork" }' }
 
   include_examples 'operating system support'
 
