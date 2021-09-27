@@ -1,4 +1,4 @@
-class profiles::jenkins inherits ::profiles {
+class profiles::jenkins::repositories inherits ::profiles {
 
   include ::profiles::apt::keys
 

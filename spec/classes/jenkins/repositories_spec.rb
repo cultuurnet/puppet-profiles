@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'profiles::jenkins' do
+describe 'profiles::jenkins::repositories' do
   include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|

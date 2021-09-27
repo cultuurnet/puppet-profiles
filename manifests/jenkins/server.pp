@@ -10,9 +10,9 @@ class profiles::jenkins::server (
 
   contain ::profiles::java
 
-  include ::profiles::apt::keys
+  include ::profiles::apt::repositories
   include ::profiles::packages
-  include ::profiles::jenkins
+  include ::profiles::jenkins::repositories
   include ruby
 
   $jenkins_port = 8080
