@@ -1,6 +1,6 @@
 define profiles::certificate (
-  $certificate_source,
-  $key_source
+  String $certificate_source,
+  String $key_source
 ) {
 
   include ::profiles
