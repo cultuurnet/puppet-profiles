@@ -14,7 +14,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
 
       on_supported_os.each do |os, facts|
         context "on #{os}" do
-          let (:facts) { facts }
+          let(:facts) { facts }
 
           it { is_expected.to compile.with_all_deps }
 
@@ -51,7 +51,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
 
       on_supported_os.each do |os, facts|
         context "on #{os}" do
-          let (:facts) { facts }
+          let(:facts) { facts }
 
           it { is_expected.to contain_firewall('300 accept HTTPS traffic') }
 
@@ -84,7 +84,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
 
       on_supported_os.each do |os, facts|
         context "on #{os}" do
-          let (:facts) { facts }
+          let(:facts) { facts }
 
           it { expect { catalogue }.to raise_error(Puppet::Error, /expects a value for parameter certificate when using HTTPS/) }
         end
@@ -108,7 +108,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
 
       on_supported_os.each do |os, facts|
         context "on #{os}" do
-          let (:facts) { facts }
+          let(:facts) { facts }
 
           it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects the title to be a valid HTTP URL/) }
         end

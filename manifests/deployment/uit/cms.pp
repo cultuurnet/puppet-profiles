@@ -6,15 +6,13 @@ class profiles::deployment::uit::cms (
   String           $database_version     = 'latest',
   String           $files_version        = 'latest',
   Optional[String] $puppetdb_url         = undef
-) {
+) inherits ::profiles {
+
+  include ::profiles::deployment::uit
 
   $basedir         = '/var/www/uit-cms'
   $database_source = '/data/uit-cms/database/db.sql'
   $files_source    = '/data/uit-cms/files'
-
-  contain ::profiles
-
-  include ::profiles::deployment::uit
 
   realize Profiles::Apt::Update['publiq-uit']
 

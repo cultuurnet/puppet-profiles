@@ -1,6 +1,4 @@
-class profiles::apt::updates {
-
-  contain ::profiles
+class profiles::apt::updates inherits ::profiles {
 
   @profiles::apt::update { 'cultuurnet-tools': }
   @profiles::apt::update { 'php': }

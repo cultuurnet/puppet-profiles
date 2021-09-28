@@ -2,17 +2,17 @@ require 'spec_helper'
 
 describe 'profiles::deployment::uit::cms' do
   context "with settings_source => /foo, hostnames_source => /abc and drush_config_source => /bar" do
-    let (:params) { {
+    let(:params) { {
       'settings_source'     => '/foo',
       'hostnames_source'    => '/abc',
       'drush_config_source' => '/bar'
     } }
 
-    include_examples 'operating system support', 'profiles::deployment::uit::cms'
+    include_examples 'operating system support'
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do
-        let (:facts) { facts }
+        let(:facts) { facts }
 
         it { is_expected.to compile.with_all_deps }
 
@@ -28,7 +28,7 @@ describe 'profiles::deployment::uit::cms' do
   end
 
   context "with settings_source => /baz, drush_config_source => /zzz, version => 1.2.3, database_version => 4.5.6, files_version => 4 and puppetdb_url => http://example.com:8000" do
-    let (:params) { {
+    let(:params) { {
       'settings_source'     => '/baz',
       'hostnames_source'    => '/xyz',
       'drush_config_source' => '/zzz',
@@ -40,7 +40,7 @@ describe 'profiles::deployment::uit::cms' do
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do
-        let (:facts) { facts }
+        let(:facts) { facts }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::cms').with(
           'puppetdb_url' => 'http://example.com:8000'
@@ -56,11 +56,11 @@ describe 'profiles::deployment::uit::cms' do
   end
 
   context "without parameters" do
-    let (:params) { {} }
+    let(:params) { {} }
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do
-        let (:facts) { facts }
+        let(:facts) { facts }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'settings_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'hostnames_source'/) }

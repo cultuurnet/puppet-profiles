@@ -2,13 +2,11 @@ class profiles::deployment::uitpas_be::backend (
   String           $config_source,
   String           $version        = 'latest',
   Optional[String] $puppetdb_url   = undef
-) {
-
-  $basedir = '/var/www/uitpasbe-backend'
-
-  contain ::profiles
+) inherits ::profiles {
 
   include ::profiles::deployment::uitpas_be
+
+  $basedir = '/var/www/uitpasbe-backend'
 
   realize Profiles::Apt::Update['publiq-uitpasbe']
 

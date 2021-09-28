@@ -2,15 +2,15 @@ require 'spec_helper'
 
 describe 'profiles::deployment::uit::frontend' do
   context "with config_source => /foo" do
-    let (:params) { {
+    let(:params) { {
       'config_source'     => '/foo'
     } }
 
-    include_examples 'operating system support', 'profiles::deployment::uit::frontend'
+    include_examples 'operating system support'
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do
-        let (:facts) { facts }
+        let(:facts) { facts }
 
         it { is_expected.to compile.with_all_deps }
 
@@ -48,7 +48,7 @@ describe 'profiles::deployment::uit::frontend' do
         ) }
 
         context "with service_manage => false" do
-          let (:params) {
+          let(:params) {
             super().merge({
               'service_manage' => false
             } )
@@ -61,7 +61,7 @@ describe 'profiles::deployment::uit::frontend' do
   end
 
   context "with config_source => /bar, version => 1.2.3, service_defaults_source => /baz, service_ensure => stopped, service_enable = false and puppetdb_url => http://example.com:8000" do
-    let (:params) { {
+    let(:params) { {
       'config_source'           => '/bar',
       'version'                 => '1.2.3',
       'service_ensure'          => 'stopped',
@@ -72,7 +72,7 @@ describe 'profiles::deployment::uit::frontend' do
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do
-        let (:facts) { facts }
+        let(:facts) { facts }
 
         it { is_expected.to contain_file('uit-frontend-config').with(
           'source' => '/bar',
@@ -103,11 +103,11 @@ describe 'profiles::deployment::uit::frontend' do
   end
 
   context "without parameters" do
-    let (:params) { {} }
+    let(:params) { {} }
 
     on_supported_os.each do |os, facts|
       context "on #{os}" do
-        let (:facts) { facts }
+        let(:facts) { facts }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }
       end

@@ -2,13 +2,11 @@ class profiles::deployment::mspotm::backend (
   String           $config_source,
   String           $version        = 'latest',
   Optional[String] $puppetdb_url   = undef
-) {
-
-  $basedir = '/var/www/mspotm-backend'
-
-  contain ::profiles
+) inherits ::profiles {
 
   include ::profiles::deployment::mspotm
+
+  $basedir = '/var/www/mspotm-backend'
 
   realize Profiles::Apt::Update['publiq-mspotm']
 

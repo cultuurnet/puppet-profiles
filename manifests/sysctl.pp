@@ -1,8 +1,6 @@
 class profiles::sysctl (
   Hash $settings = {}
-) {
-
-  contain ::profiles
+) inherits ::profiles {
 
   $settings.each | $setting, $attributes| {
     sysctl { $setting:

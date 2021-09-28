@@ -1,6 +1,4 @@
-class profiles::apache {
-
-  contain ::profiles
+class profiles::apache inherits ::profiles {
 
   class { '::apache':
 

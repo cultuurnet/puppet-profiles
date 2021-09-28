@@ -1,6 +1,4 @@
-class profiles::apt {
-
-  contain ::profiles
+class profiles::apt inherits ::profiles {
 
   include ::apt
 

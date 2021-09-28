@@ -1,8 +1,7 @@
 class profiles::udb3::websockets (
   String $config_source,
   String $version       = 'latest'
-) {
-  contain ::profiles
+) inherits ::profiles {
 
   include ::profiles::apt::updates
 

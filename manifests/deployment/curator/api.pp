@@ -2,13 +2,11 @@ class profiles::deployment::curator::api (
   String           $config_source,
   String           $version        = 'latest',
   Optional[String] $puppetdb_url   = undef
-) {
-
-  $basedir = '/var/www/curator-api'
-
-  contain ::profiles
+) inherits ::profiles {
 
   include ::profiles::deployment::curator
+
+  $basedir = '/var/www/curator-api'
 
   realize Profiles::Apt::Update['publiq-curator']
 

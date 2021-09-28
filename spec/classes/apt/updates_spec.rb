@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 describe 'profiles::apt::updates' do
-  include_examples 'operating system support', 'profiles::apt::updates'
+  include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
     context "on #{os}, with all virtual resources realized" do
-      let (:facts) { facts }
+      let(:facts) { facts }
       let(:pre_condition) { 'Profiles::Apt::Update <| |>' }
 
       it { is_expected.to compile.with_all_deps }

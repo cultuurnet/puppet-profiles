@@ -6,14 +6,16 @@ class profiles::postfix (
   Boolean                     $aliases          = false,
   Array[String]               $aliases_domains  = [],
   String                      $aliases_source   = 'puppet:///modules/profiles/postfix/virtual'
-) {
-
-  contain ::profiles
+) inherits ::profiles {
 
   include ::profiles::firewall
 
   $config_directory = '/etc/postfix'
-  $mynetworks_file = "${config_directory}/mynetworks"
+  $mynetworks_file  = "${config_directory}/mynetworks"
+  $daemon_directory = $facts['lsbdistcodename'] ? {
+    'trusty' => '/usr/lib/postfix',
+    default  => '/usr/lib/postfix/sbin'
+  }
 
   if $relayhost == '' {
     $relay_host  = false
@@ -41,6 +43,7 @@ class profiles::postfix (
   if $aliases {
     if $tls {
       class { '::postfix::server':
+        daemon_directory        => $daemon_directory,
         inet_protocols          => $inet_protocols,
         inet_interfaces         => $listen_addresses,
         virtual_alias_maps      => [ "hash:${config_directory}/virtual"],
@@ -57,6 +60,7 @@ class profiles::postfix (
       }
     } else {
       class { '::postfix::server':
+        daemon_directory      => $daemon_directory,
         inet_protocols        => $inet_protocols,
         inet_interfaces       => $listen_addresses,
         virtual_alias_maps    => [ "hash:${config_directory}/virtual"],
@@ -76,6 +80,7 @@ class profiles::postfix (
   } else {
     if $tls {
       class { '::postfix::server':
+        daemon_directory        => $daemon_directory,
         inet_protocols          => $inet_protocols,
         inet_interfaces         => $listen_addresses,
         relayhost               => $relay_host,
@@ -90,6 +95,7 @@ class profiles::postfix (
       }
     } else {
       class { '::postfix::server':
+        daemon_directory   => $daemon_directory,
         inet_protocols     => $inet_protocols,
         inet_interfaces    => $listen_addresses,
         relayhost          => $relay_host,

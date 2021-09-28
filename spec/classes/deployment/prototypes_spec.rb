@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 describe 'profiles::deployment::prototypes' do
-  include_examples 'operating system support', 'profiles::deployment::prototypes'
+  include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
    context "on #{os}" do
-      let (:facts) { facts }
+      let(:facts) { facts }
 
       it { is_expected.to compile.with_all_deps }
 
@@ -28,14 +28,14 @@ describe 'profiles::deployment::prototypes' do
 
       case facts[:os]['release']['major']
       when '14.04'
-        let (:facts) { facts }
+        let(:facts) { facts }
 
         it { is_expected.to contain_apt__source('publiq-prototypes').with(
           'release' => 'trusty'
         ) }
 
       when '16.04'
-        let (:facts) { facts }
+        let(:facts) { facts }
 
         it { is_expected.to contain_apt__source('publiq-prototypes').with(
           'release' => 'xenial'
@@ -43,7 +43,7 @@ describe 'profiles::deployment::prototypes' do
       end
 
       context "without parameters" do
-        let (:params) { {} }
+        let(:params) { {} }
 
         it { is_expected.to contain_package('prototypes-publiq').with(
           'ensure' => 'latest'
@@ -51,7 +51,7 @@ describe 'profiles::deployment::prototypes' do
       end
 
       context "with version => 1.2.3 and puppetdb_url => http://example.com:8000" do
-        let (:params) { {
+        let(:params) { {
           'version'      => '1.2.3',
           'puppetdb_url' => 'http://example.com:8000'
         } }

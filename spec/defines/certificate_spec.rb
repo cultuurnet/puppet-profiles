@@ -12,7 +12,7 @@ describe 'profiles::certificate' do
 
       on_supported_os.each do |os, facts|
           context "on #{os}" do
-          let (:facts) { facts }
+          let(:facts) { facts }
 
           it { is_expected.to compile.with_all_deps }
 
@@ -43,7 +43,7 @@ describe 'profiles::certificate' do
 
       on_supported_os.each do |os, facts|
         context "on #{os}" do
-          let (:facts) { facts }
+          let(:facts) { facts }
 
           it { is_expected.to contain_file('michelangelo.example.com.bundle.crt').with(
             'path'   => '/etc/ssl/certs/michelangelo.example.com.bundle.crt',

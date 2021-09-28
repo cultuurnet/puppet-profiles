@@ -1,8 +1,6 @@
 class profiles::puppetdb::cli(
   Variant[String, Array[String]] $server_urls
-) {
-
-  contain profiles
+) inherits ::profiles {
 
   include ::profiles::apt::updates
 

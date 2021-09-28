@@ -5,10 +5,10 @@ describe 'profiles::apt::update' do
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do
-      let (:facts) { facts }
+      let(:facts) { facts }
 
       context "with the correct virtual apt::source resource" do
-        let (:pre_condition) { '@apt::source { "foobar": location => "test" }' }
+        let(:pre_condition) { '@apt::source { "foobar": location => "test" }' }
 
         it { is_expected.to compile.with_all_deps }
 
@@ -26,7 +26,7 @@ describe 'profiles::apt::update' do
 
       context "with title => guineapig and the correct virtual apt::source resource" do
         let(:title) { 'guineapig' }
-        let (:pre_condition) { '@apt::source { "guineapig": location => "test" }' }
+        let(:pre_condition) { '@apt::source { "guineapig": location => "test" }' }
 
         it { is_expected.to contain_apt__source('guineapig') }
 

@@ -1,9 +1,8 @@
 class profiles::elasticsearch (
   String $version = 'latest'
-) {
+) inherits ::profiles {
 
-  contain ::profiles
-  contain ::profiles::java8
+  contain ::profiles::java
 
   include ::profiles::apt::updates
 
@@ -31,6 +30,6 @@ class profiles::elasticsearch (
     api_timeout       => 30,
     restart_on_change => true,
     instances         => {},
-    require           => [ Profiles::Apt::Update['elasticsearch'], Class['::profiles::java8']]
+    require           => [ Profiles::Apt::Update['elasticsearch'], Class['::profiles::java']]
   }
 }

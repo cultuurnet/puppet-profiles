@@ -7,9 +7,7 @@ class profiles::udb3::elasticdump_to_gcs (
   Boolean $source_only          = false,
   String  $date_specifier       = undef,
   String  $local_timezone       = 'UTC'
-) {
-
-  contain ::profiles
+) inherits ::profiles {
 
   include ::profiles::apt::updates
   include ::profiles::packages

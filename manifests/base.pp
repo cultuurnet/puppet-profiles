@@ -1,6 +1,4 @@
-class profiles::base {
-
-  contain ::profiles
+class profiles::base inherits ::profiles {
 
   include ::profiles::groups
   include ::profiles::apt::updates

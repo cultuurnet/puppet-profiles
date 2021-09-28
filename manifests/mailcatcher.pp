@@ -1,6 +1,4 @@
-class profiles::mailcatcher {
-
-  contain ::profiles
+class profiles::mailcatcher inherits ::profiles {
 
   include ::profiles::apt::updates
 

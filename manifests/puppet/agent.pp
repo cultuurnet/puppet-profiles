@@ -1,6 +1,4 @@
-class profiles::puppet::agent {
-
-  contain ::profiles
+class profiles::puppet::agent inherits ::profiles {
 
   Ini_setting {
     ensure  => 'present',

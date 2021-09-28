@@ -3,7 +3,7 @@ require 'spec_helper'
 describe 'profiles::apt::repositories' do
   let(:pre_condition) { 'include ::profiles' }
 
-  include_examples 'operating system support', 'profiles::apt::repositories'
+  include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do
@@ -30,7 +30,7 @@ describe 'profiles::apt::repositories' do
 
         case facts[:os]['release']['major']
         when '14.04'
-          let (:facts) { facts }
+          let(:facts) { facts }
 
           context "in the testing environment" do
             let(:environment) { 'testing' }
@@ -149,7 +149,7 @@ describe 'profiles::apt::repositories' do
           end
 
         when '16.04'
-          let (:facts) { facts }
+          let(:facts) { facts }
 
           context "in the acceptance environment" do
             let(:environment) { 'acceptance' }

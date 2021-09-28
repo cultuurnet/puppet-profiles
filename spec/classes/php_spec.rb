@@ -10,14 +10,14 @@ RSpec.shared_examples "php" do
 end
 
 describe 'profiles::php' do
-  include_examples 'operating system support', 'profiles::php'
+  include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       let(:facts) { facts }
 
       context 'without parameters' do
-        let(:params) { { } }
+        let(:params) { {} }
 
         include_examples 'php'
 

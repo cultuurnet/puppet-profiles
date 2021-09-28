@@ -1,9 +1,7 @@
 class profiles::deployment::prototypes (
   String           $version      = 'latest',
   Optional[String] $puppetdb_url = undef
-) {
-
-  contain ::profiles
+) inherits ::profiles {
 
   include ::profiles::apt::keys
 

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'profiles::sysctl' do
-  include_examples 'operating system support', 'profiles::sysctl'
+  include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do
@@ -16,7 +16,7 @@ describe 'profiles::sysctl' do
       end
 
       context "with settings => { 'vm.overcommit_memory' => { 'value' => '1'}, 'vm.max_map_count => { 'value' => '262144', 'persist' => false } }" do
-        let (:params) {
+        let(:params) {
           {
             'settings' => {
               'vm.overcommit_memory' => { 'value' => '1' },

@@ -1,6 +1,4 @@
-class profiles::apache::mod::php {
-
-  contain ::profiles
+class profiles::apache::mod::php inherits ::profiles {
 
   include ::profiles::apt::updates
 

@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-describe 'profiles::jenkins' do
-  include_examples 'operating system support', 'profiles::jenkins'
+describe 'profiles::jenkins::repositories' do
+  include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
    context "on #{os}" do
-      let (:facts) { facts }
+      let(:facts) { facts }
 
       context "with all virtual resources realized" do
         let(:pre_condition) { 'Apt::Source <| |>; Profiles::Apt::Update <| |>' }
@@ -27,14 +27,14 @@ describe 'profiles::jenkins' do
 
         case facts[:os]['release']['major']
         when '14.04'
-          let (:facts) { facts }
+          let(:facts) { facts }
 
           it { is_expected.to contain_apt__source('publiq-jenkins').with(
             'release' => 'trusty'
           ) }
 
         when '16.04'
-          let (:facts) { facts }
+          let(:facts) { facts }
 
           it { is_expected.to contain_apt__source('publiq-jenkins').with(
             'release' => 'xenial'

@@ -5,9 +5,7 @@ class profiles::backup::server (
   String                         $public_key,
   Enum['rsa', 'dsa']             $public_key_type = 'rsa',
   String                         $size = '1G'
-)
-{
-  contain ::profiles
+) inherits ::profiles {
 
   include ::profiles::groups
   include ::profiles::users

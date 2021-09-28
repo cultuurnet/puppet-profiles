@@ -7,7 +7,7 @@ class profiles::jenkins::cli(
 
   include ::profiles
 
-  include ::profiles::jenkins
+  include ::profiles::jenkins::repositories
 
   realize Profiles::Apt::Update['publiq-jenkins']
 

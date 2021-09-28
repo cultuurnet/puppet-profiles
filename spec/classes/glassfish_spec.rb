@@ -5,7 +5,7 @@ RSpec.shared_examples "glassfish" do |flavor, version|
 
   it { is_expected.to contain_profiles__apt__update('cultuurnet-tools') }
 
-  it { is_expected.to contain_class('profiles::java8') }
+  it { is_expected.to contain_class('profiles::java') }
 
   it { is_expected.to contain_class('glassfish').with(
     'install_method'      => 'package',
@@ -19,7 +19,7 @@ RSpec.shared_examples "glassfish" do |flavor, version|
     )
   }
 
-  it { is_expected.to contain_class('glassfish').that_requires('Class[profiles::java8]') }
+  it { is_expected.to contain_class('glassfish').that_requires('Class[profiles::java]') }
 
   it { is_expected.to contain_package('mysql-connector-java').with(
     'ensure' => 'present'
@@ -41,7 +41,7 @@ RSpec.shared_examples "glassfish" do |flavor, version|
 end
 
 describe 'profiles::glassfish' do
-  include_examples 'operating system support', 'profiles::glassfish'
+  include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do

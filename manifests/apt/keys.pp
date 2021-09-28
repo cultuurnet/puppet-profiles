@@ -1,6 +1,4 @@
-class profiles::apt::keys {
-
-  contain ::profiles
+class profiles::apt::keys inherits ::profiles {
 
   apt::key { 'aptly':
     id     => '26DA9D8630302E0B86A7A2CBED75B5A4483DA07C',
