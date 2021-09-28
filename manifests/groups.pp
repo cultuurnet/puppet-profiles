@@ -5,6 +5,11 @@ class profiles::groups {
     gid    => '450'
   }
 
+  @group { 'jenkins':
+    ensure => 'present',
+    gid    => '451'
+  }
+
   @group { 'ubuntu':
     ensure => 'present',
     gid    => '1000'

@@ -10,6 +10,16 @@ class profiles::users {
     uid            => '450'
   }
 
+  @user { 'jenkins':
+    ensure         => 'present',
+    gid            => 'jenkins',
+    home           => '/var/lib/jenkins',
+    managehome     => false,
+    purge_ssh_keys => true,
+    shell          => '/bin/bash',
+    uid            => '451'
+  }
+
   @user { 'ubuntu':
     ensure         => 'present',
     gid            => 'ubuntu',

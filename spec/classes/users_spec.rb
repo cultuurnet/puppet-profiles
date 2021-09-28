@@ -25,6 +25,17 @@ describe 'profiles::users' do
           )
         }
 
+        it { is_expected.to contain_user('jenkins').with(
+          'ensure'         => 'present',
+          'gid'            => 'jenkins',
+          'home'           => '/var/lib/jenkins',
+          'managehome'     => false,
+          'purge_ssh_keys' => true,
+          'shell'          => '/bin/bash',
+          'uid'            => '451'
+          )
+        }
+
         it { is_expected.to contain_user('ubuntu').with(
           'ensure'         => 'present',
           'gid'            => 'ubuntu',
