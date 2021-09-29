@@ -7,7 +7,8 @@ class profiles::aptly (
   Stdlib::Ipv4                   $api_bind          = '127.0.0.1',
   Stdlib::Port::Unprivileged     $api_port          = 8081,
   Hash                           $publish_endpoints = {},
-  Variant[String, Array[String]] $repositories      = []
+  Variant[String, Array[String]] $repositories      = [],
+  Hash                           $mirrors           = {}
 ) inherits ::profiles {
 
   include ::profiles::users
@@ -68,6 +69,21 @@ class profiles::aptly (
   [$repositories].flatten.each |$repo| {
     aptly::repo { $repo:
       default_component => 'main'
+    }
+  }
+
+  $mirrors.each |$name, $attributes| {
+    aptly::mirror { $name:
+      location      => $attributes['location'],
+      distribution  => $attributes['distribution'],
+      components    => $attributes['components'],
+      architectures => $attributes['architectures']
+    }
+
+    apt::key { $attributes['signingkey']['name']:
+      id     => $attributes['signingkey']['id'],
+      server => 'keyserver.ubuntu.com',
+      source => $attributes['signingkey']['source']
     }
   }
 }

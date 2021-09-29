@@ -23,7 +23,13 @@ describe 'profiles::aptly' do
         it { is_expected.to contain_profiles__apt__update('aptly') }
 
         it { is_expected.to have_gnupg_key_resource_count(0) }
-        it { is_expected.to have_aptly__repo_resource_count(0) }
+        it { is_expected.to have_gnupg_key_resource_count(1) }
+        it { is_expected.to contain_apt__key('Ubuntu Archive Automatic Signing Key (2012) <ftpmaster@ubuntu.com>').with(
+          'id'     => '790BC7277767219C42C86F933B4FE6ACC0B21F32',
+          'server' => 'keyserver.ubuntu.com',
+          'source' => 'http://nl.archive.ubuntu.com/ubuntu/'
+          )
+        }
 
         it { is_expected.to contain_class('aptly').with(
           'version'              => 'latest',
