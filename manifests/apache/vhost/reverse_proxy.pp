@@ -69,10 +69,10 @@ define profiles::apache::vhost::reverse_proxy (
     allow_encoded_slashes => $allow_encoded_slashes,
     proxy_preserve_host   => $preserve_host,
     proxy_pass            => {
-                             'path'         => '/',
-                             'url'          => $destination,
-                             'keywords'     => $proxy_keywords,
-                             'reverse_urls' => $reverse_urls
-                           }
+                               'path'         => '/',
+                               'url'          => $destination,
+                               'keywords'     => $proxy_keywords,
+                               'reverse_urls' => $reverse_urls
+                             }
   }
 }
