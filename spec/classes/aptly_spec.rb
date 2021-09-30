@@ -38,16 +38,16 @@ describe 'profiles::aptly' do
           'api_port'             => '8081',
           'api_nolock'           => true,
           's3_publish_endpoints' => {}
-        )}
+        ) }
 
         it { is_expected.to contain_profiles__apache__vhost__redirect('http://aptly.example.com').with(
           'destination' => 'https://aptly.example.com'
-        )}
+        ) }
 
         it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('https://aptly.example.com').with(
           'certificate' => 'wildcard.example.com',
           'destination' => 'http://127.0.0.1:8081/'
-        )}
+        ) }
 
         case facts[:os]['release']['major']
         when '14.04'
@@ -86,7 +86,7 @@ describe 'profiles::aptly' do
               'api_port'     => 8080,
               'repositories' => [ 'foo', 'bar']
             }
-          )}
+          ) }
 
           it { is_expected.to contain_gnupg_key('test').with(
             'ensure'     => 'present',
@@ -105,12 +105,12 @@ describe 'profiles::aptly' do
 
           it { is_expected.to contain_profiles__apache__vhost__redirect('http://foobar.example.com').with(
             'destination' => 'https://foobar.example.com'
-          )}
+          ) }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('https://foobar.example.com').with(
             'certificate' => 'foobar.example.com',
             'destination' => 'http://1.2.3.4:8080/'
-          )}
+          ) }
 
           it { is_expected.to contain_aptly__repo('foo').with(
             'default_component' => 'main'
