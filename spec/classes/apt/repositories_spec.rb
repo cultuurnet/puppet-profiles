@@ -238,6 +238,20 @@ describe 'profiles::apt::repositories' do
 
             it { is_expected.to contain_apt__source('nodejs_14.x').that_requires('Class[profiles::apt::keys]') }
 
+            it { is_expected.to contain_apt__source('nodejs_16.x').with(
+              'location' => 'http://apt.uitdatabank.be/nodejs_16.x-acceptance',
+              'ensure'   => 'present',
+              'repos'    => 'main',
+              'include'  => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release' => 'xenial'
+            )
+            }
+
+            it { is_expected.to contain_apt__source('nodejs_16.x').that_requires('Class[profiles::apt::keys]') }
+
             it { is_expected.to contain_apt__source('elasticsearch').with(
               'location' => 'http://apt.uitdatabank.be/elasticsearch-acceptance',
               'ensure'   => 'present',

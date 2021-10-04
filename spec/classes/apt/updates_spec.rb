@@ -16,6 +16,7 @@ describe 'profiles::apt::updates' do
       it { is_expected.to contain_profiles__apt__update('nodejs_10.x') }
       it { is_expected.to contain_profiles__apt__update('nodejs_12.x') }
       it { is_expected.to contain_profiles__apt__update('nodejs_14.x') }
+      it { is_expected.to contain_profiles__apt__update('nodejs_16.x') }
       it { is_expected.to contain_profiles__apt__update('elasticsearch') }
       it { is_expected.to contain_profiles__apt__update('yarn') }
       it { is_expected.to contain_profiles__apt__update('aptly') }
