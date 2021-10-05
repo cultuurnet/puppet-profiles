@@ -13,6 +13,7 @@ class profiles::aptly (
   include ::profiles::users
   include ::profiles::groups
   include ::profiles::packages
+  include ::profiles::apt::keys
   include ::profiles::apt::updates
 
   realize Group['aptly']
@@ -20,7 +21,10 @@ class profiles::aptly (
 
   realize Package['graphviz']
 
+  realize Apt::Key['aptly']
   realize Profiles::Apt::Update['aptly']
+
+  Apt::Key['aptly'] -> Profiles::Apt::Update['aptly']
 
   $signing_keys.each |$name, $attributes| {
     gnupg_key { $name:
