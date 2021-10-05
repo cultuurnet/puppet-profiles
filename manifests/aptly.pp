@@ -80,14 +80,10 @@ class profiles::aptly (
     aptly::mirror { $name:
       location      => $attributes['location'],
       distribution  => $attributes['distribution'],
-      components    => $attributes['components'],
-      architectures => $attributes['architectures']
+      components    => [$attributes['components']].flatten,
+      architectures => ['amd64']
     }
 
-    apt::key { $attributes['signingkey']['name']:
-      id     => $attributes['signingkey']['id'],
-      server => 'keyserver.ubuntu.com',
-      source => $attributes['signingkey']['source']
-    }
+    realize Apt::Key[$attributes['key']]
   }
 }
