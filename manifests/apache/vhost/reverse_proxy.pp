@@ -71,7 +71,7 @@ define profiles::apache::vhost::reverse_proxy (
     proxy_pass            => {
                                'path'         => '/',
                                'url'          => $destination,
-                               'keywords'     => $proxy_keywords,
+                               'keywords'     => [$proxy_keywords].flatten,
                                'reverse_urls' => $reverse_urls
                              }
   }

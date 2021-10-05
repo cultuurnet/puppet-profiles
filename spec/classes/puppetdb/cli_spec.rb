@@ -18,11 +18,11 @@ describe 'profiles::puppetdb::cli' do
         it { is_expected.to contain_profiles__apt__update('cultuurnet-tools') }
 
         it { is_expected.to contain_package('rubygem-puppetdb-cli') }
-        it { is_expected.to contain_file('/etc/puppetlabs/client-tools').with('ensure' => 'directory')}
+        it { is_expected.to contain_file('/etc/puppetlabs/client-tools').with('ensure' => 'directory') }
         it { is_expected.to contain_file('puppetdb-cli-config').with(
           'ensure' => 'file',
           'path'   => '/etc/puppetlabs/client-tools/puppetdb.conf',
-        )}
+        ) }
 
         it { is_expected.to contain_file('puppetdb-cli-config').with_content(/"server_urls":\s*"https:\/\/example.com:1234"/) }
         it { is_expected.to contain_file('puppetdb-cli-config').with_content(/"cacert":\s*"\/etc\/puppetlabs\/puppet\/ssl\/certs\/ca.pem"/) }

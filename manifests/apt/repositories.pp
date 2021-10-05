@@ -58,6 +58,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'nodejs_16.x':
+    location => "http://apt.uitdatabank.be/nodejs_16.x-${environment}",
+    release  => 'xenial',
+    repos    => 'main'
+  }
+
   @apt::source { 'elasticsearch':
     location => "http://apt.uitdatabank.be/elasticsearch-${environment}",
     release  => 'stable',
