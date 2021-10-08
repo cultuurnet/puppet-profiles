@@ -101,7 +101,7 @@ fixtures:
       repo: 'https://github.com/cultuurnet/puppet-websockets.git'
       ref: 'f8a1bb2'
     aptly:
-      repo: 'https://github.com/tubemogul/puppet-aptly.git'
-      ref: '3de83af'
+      repo: 'https://github.com/cultuurnet/puppet-aptly.git'
+      ref: '74a1c76'
   symlinks:
     profiles: "#{source_dir}"

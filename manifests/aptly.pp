@@ -77,13 +77,15 @@ class profiles::aptly (
   }
 
   $mirrors.each |$name, $attributes| {
+    realize Apt::Key[$attributes['key']]
+
     aptly::mirror { $name:
       location      => $attributes['location'],
       distribution  => $attributes['distribution'],
       components    => [$attributes['components']].flatten,
-      architectures => ['amd64']
+      architectures => ['amd64'],
+      update        => false,
+      require       => Apt::Key[$attributes['key']]
     }
-
-    realize Apt::Key[$attributes['key']]
   }
 }

@@ -134,7 +134,8 @@ describe 'profiles::aptly' do
             'location'      => 'http://mirror.example.com',
             'distribution'  => 'unstable',
             'components'    => ['main', 'contrib'],
-            'architectures' => ['amd64']
+            'architectures' => ['amd64'],
+            'update'        => false
           ) }
 
           it { is_expected.to contain_apt__key('Ubuntu archive') }
@@ -147,6 +148,7 @@ describe 'profiles::aptly' do
           end
 
           it { is_expected.to contain_gnupg_key('test').that_requires('User[aptly]') }
+          it { is_expected.to contain_aptly__mirror('mirror').that_requires('Apt::Key[Ubuntu archive]') }
         end
 
         context "with signing_keys => { 'test1' => { 'id' => '6789DEFG', 'source' => '/tmp/test1.key' }, 'test2' => { 'id' => '1234ABCD', 'source' => '/tmp/test2.key' }}, publish_endpoints => { 'apt1' => { 'region' => 'eu-west-1', bucket => 'apt1', awsAccessKeyID => '123', awsSecretAccessKey => 'abc' }}, repositories => 'baz' and mirrors => { 'mirror1' => { 'location' => 'http://mirror1.example.com', distribution => 'testing', components => 'nonfree', key => 'Ubuntu archive'}, 'mirror2' => { location => 'http://mirror2.example.com', 'distribution' => 'stable', 'components' => ['bar', 'baz'], 'key' => 'Ubuntu archive'}}" do
@@ -215,17 +217,22 @@ describe 'profiles::aptly' do
             'location'      => 'http://mirror1.example.com',
             'distribution'  => 'testing',
             'components'    => ['nonfree'],
-            'architectures' => ['amd64']
+            'architectures' => ['amd64'],
+            'update'        => false
           ) }
 
           it { is_expected.to contain_aptly__mirror('mirror2').with(
             'location'      => 'http://mirror2.example.com',
             'distribution'  => 'stable',
             'components'    => ['bar', 'baz'],
-            'architectures' => ['amd64']
+            'architectures' => ['amd64'],
+            'update'        => false
           ) }
 
           it { is_expected.to contain_apt__key('Ubuntu archive') }
+
+          it { is_expected.to contain_aptly__mirror('mirror1').that_requires('Apt::Key[Ubuntu archive]') }
+          it { is_expected.to contain_aptly__mirror('mirror2').that_requires('Apt::Key[Ubuntu archive]') }
         end
       end
 
