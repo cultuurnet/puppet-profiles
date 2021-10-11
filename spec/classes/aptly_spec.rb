@@ -135,8 +135,6 @@ describe 'profiles::aptly' do
             'distribution'  => 'unstable',
             'components'    => ['main', 'contrib'],
             'architectures' => ['amd64'],
-            'uid'           => 450,
-            'gid'           => 450,
             'update'        => false
           ) }
 
@@ -220,8 +218,6 @@ describe 'profiles::aptly' do
             'distribution'  => 'testing',
             'components'    => ['nonfree'],
             'architectures' => ['amd64'],
-            'uid'           => 450,
-            'gid'           => 450,
             'update'        => false
           ) }
 
@@ -230,8 +226,6 @@ describe 'profiles::aptly' do
             'distribution'  => 'stable',
             'components'    => ['bar', 'baz'],
             'architectures' => ['amd64'],
-            'uid'           => 450,
-            'gid'           => 450,
             'update'        => false
           ) }
 
