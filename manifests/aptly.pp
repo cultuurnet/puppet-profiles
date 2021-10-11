@@ -84,6 +84,8 @@ class profiles::aptly (
       distribution  => $attributes['distribution'],
       components    => [$attributes['components']].flatten,
       architectures => ['amd64'],
+      uid           => 450,
+      gid           => 450,
       update        => false,
       require       => Apt::Key[$attributes['key']]
     }
