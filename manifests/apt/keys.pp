@@ -17,4 +17,9 @@ class profiles::apt::keys inherits ::profiles {
     server => 'keyserver.ubuntu.com',
     source => 'https://www.aptly.info/pubkey.txt'
   }
+
+  @apt::key { 'Ubuntu archive':
+    id     => '790BC7277767219C42C86F933B4FE6ACC0B21F32',
+    server => 'keyserver.ubuntu.com'
+  }
 }

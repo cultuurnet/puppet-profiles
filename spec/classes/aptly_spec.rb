@@ -24,7 +24,6 @@ describe 'profiles::aptly' do
         it { is_expected.to contain_profiles__apt__update('aptly') }
 
         it { is_expected.to have_gnupg_key_resource_count(0) }
-        it { is_expected.to have_aptly__repo_resource_count(0) }
 
         it { is_expected.to contain_class('aptly').with(
           'version'              => 'latest',
@@ -79,7 +78,7 @@ describe 'profiles::aptly' do
           'certificate'  => 'foobar.example.com'
         } }
 
-        context "with signing_keys => { 'test' => { 'id' => '1234ABCD', 'source' => '/tmp/test.key' }}, version => 1.2.3, data_dir => '/data/aptly', api_bind => 1.2.3.4, api_port => 8080 and repositories => [ 'foo', 'bar']" do
+        context "with signing_keys => { 'test' => { 'id' => '1234ABCD', 'source' => '/tmp/test.key' }}, version => 1.2.3, data_dir => '/data/aptly', api_bind => 1.2.3.4, api_port => 8080, repositories => [ 'foo', 'bar'] and mirrors => { 'mirror' => { 'location => 'http://mirror.example.com', distribution => 'unstable', components => ['main', 'contrib'], key => 'Ubuntu archive' }}" do
           let(:params) { super().merge(
             {
               'signing_keys' => { 'test' => { 'id' => '1234ABCD', 'source' => '/tmp/test.key' }},
@@ -87,7 +86,15 @@ describe 'profiles::aptly' do
               'data_dir'     => '/data/aptly',
               'api_bind'     => '1.2.3.4',
               'api_port'     => 8080,
-              'repositories' => [ 'foo', 'bar']
+              'repositories' => [ 'foo', 'bar'],
+              'mirrors'      => { 'mirror' => {
+                                                 'location'     => 'http://mirror.example.com',
+                                                 'distribution' => 'unstable',
+                                                 'components'   => ['main', 'contrib'],
+                                                 'key'          => 'Ubuntu archive'
+                                              }
+
+                                }
             }
           ) }
 
@@ -119,6 +126,20 @@ describe 'profiles::aptly' do
             'default_component' => 'main'
           ) }
 
+          it { is_expected.to contain_aptly__repo('bar').with(
+            'default_component' => 'main'
+          ) }
+
+          it { is_expected.to contain_aptly__mirror('mirror').with(
+            'location'      => 'http://mirror.example.com',
+            'distribution'  => 'unstable',
+            'components'    => ['main', 'contrib'],
+            'architectures' => ['amd64'],
+            'update'        => false
+          ) }
+
+          it { is_expected.to contain_apt__key('Ubuntu archive') }
+
           case facts[:os]['release']['major']
           when '16.04'
 
@@ -127,9 +148,10 @@ describe 'profiles::aptly' do
           end
 
           it { is_expected.to contain_gnupg_key('test').that_requires('User[aptly]') }
+          it { is_expected.to contain_aptly__mirror('mirror').that_requires('Apt::Key[Ubuntu archive]') }
         end
 
-        context "with signing_keys => { 'test1' => { 'id' => '6789DEFG', 'source' => '/tmp/test1.key' }, 'test2' => { 'id' => '1234ABCD', 'source' => '/tmp/test2.key' }}, publish_endpoints => { 'apt1' => { 'region' => 'eu-west-1', bucket => 'apt1', awsAccessKeyID => '123', awsSecretAccessKey => 'abc' }} and repositories => 'baz'" do
+        context "with signing_keys => { 'test1' => { 'id' => '6789DEFG', 'source' => '/tmp/test1.key' }, 'test2' => { 'id' => '1234ABCD', 'source' => '/tmp/test2.key' }}, publish_endpoints => { 'apt1' => { 'region' => 'eu-west-1', bucket => 'apt1', awsAccessKeyID => '123', awsSecretAccessKey => 'abc' }}, repositories => 'baz' and mirrors => { 'mirror1' => { 'location' => 'http://mirror1.example.com', distribution => 'testing', components => 'nonfree', key => 'Ubuntu archive'}, 'mirror2' => { location => 'http://mirror2.example.com', 'distribution' => 'stable', 'components' => ['bar', 'baz'], 'key' => 'Ubuntu archive'}}" do
           let(:params) { super().merge(
             {
               'signing_keys'      => {
@@ -144,7 +166,20 @@ describe 'profiles::aptly' do
                    'awsSecretAccessKey' => 'abc'
                  }
                },
-              'repositories'      => 'baz'
+              'repositories'      => 'baz',
+              'mirrors'           => { 'mirror1' => {
+                                                      'location'     => 'http://mirror1.example.com' ,
+                                                      'distribution' => 'testing',
+                                                      'components'   => 'nonfree',
+                                                      'key'          => 'Ubuntu archive'
+                                                    },
+                                       'mirror2' => {
+                                                      'location'     => 'http://mirror2.example.com',
+                                                      'distribution' => 'stable',
+                                                      'components'   => ['bar', 'baz'],
+                                                      'key'          => 'Ubuntu archive'
+                                                    }
+                                     }
             }
           ) }
 
@@ -177,6 +212,27 @@ describe 'profiles::aptly' do
           it { is_expected.to contain_aptly__repo('baz').with(
             'default_component' => 'main'
           ) }
+
+          it { is_expected.to contain_aptly__mirror('mirror1').with(
+            'location'      => 'http://mirror1.example.com',
+            'distribution'  => 'testing',
+            'components'    => ['nonfree'],
+            'architectures' => ['amd64'],
+            'update'        => false
+          ) }
+
+          it { is_expected.to contain_aptly__mirror('mirror2').with(
+            'location'      => 'http://mirror2.example.com',
+            'distribution'  => 'stable',
+            'components'    => ['bar', 'baz'],
+            'architectures' => ['amd64'],
+            'update'        => false
+          ) }
+
+          it { is_expected.to contain_apt__key('Ubuntu archive') }
+
+          it { is_expected.to contain_aptly__mirror('mirror1').that_requires('Apt::Key[Ubuntu archive]') }
+          it { is_expected.to contain_aptly__mirror('mirror2').that_requires('Apt::Key[Ubuntu archive]') }
         end
       end
 

@@ -29,6 +29,11 @@ describe 'profiles::apt::keys' do
           'server' => 'keyserver.ubuntu.com',
           'source' => 'https://www.aptly.info/pubkey.txt'
         ) }
+
+        it { is_expected.to contain_apt__key('Ubuntu archive').with(
+          'id'     => '790BC7277767219C42C86F933B4FE6ACC0B21F32',
+          'server' => 'keyserver.ubuntu.com'
+        ) }
       end
     end
   end
