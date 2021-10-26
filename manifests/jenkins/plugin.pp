@@ -1,6 +1,6 @@
 define profiles::jenkins::plugin (
-  Enum['present', 'absent'] $ensure         = 'present',
-  Boolean                   $restart        = false
+  Enum['present', 'absent'] $ensure  = 'present',
+  Boolean                   $restart = false
 ) {
 
   include ::profiles

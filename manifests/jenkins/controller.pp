@@ -20,9 +20,10 @@ class profiles::jenkins::controller (
   }
 
   service { 'jenkins':
-    ensure  => 'running',
-    enable  => true,
-    require => Package['jenkins']
+    ensure    => 'running',
+    hasstatus => true,
+    enable    => true,
+    require   => Package['jenkins']
   }
 
   profiles::apache::vhost::redirect { "http://${hostname}":

@@ -28,8 +28,9 @@ describe 'profiles::jenkins::controller' do
         ) }
 
         it { is_expected.to contain_service('jenkins').with(
-          'ensure' => 'running',
-          'enable' => true
+          'ensure'    => 'running',
+          'enable'    => true,
+          'hasstatus' => true
         ) }
 
         it { is_expected.to contain_profiles__apache__vhost__redirect('http://jenkins.example.com').with(
