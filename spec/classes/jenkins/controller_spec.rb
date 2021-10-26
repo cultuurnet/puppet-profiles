@@ -27,6 +27,11 @@ describe 'profiles::jenkins::controller' do
           'ensure' => 'latest'
         ) }
 
+        it { is_expected.to contain_service('jenkins').with(
+          'ensure' => 'running',
+          'enable' => true
+        ) }
+
         it { is_expected.to contain_profiles__apache__vhost__redirect('http://jenkins.example.com').with(
           'destination' => 'https://jenkins.example.com'
         ) }
@@ -42,6 +47,7 @@ describe 'profiles::jenkins::controller' do
         it { is_expected.to contain_package('jenkins').that_requires('User[jenkins]') }
         it { is_expected.to contain_package('jenkins').that_requires('Profiles::Apt::Update[publiq-jenkins]') }
         it { is_expected.to contain_package('jenkins').that_requires('Class[profiles::java]') }
+        it { is_expected.to contain_package('jenkins').that_comes_before('Package[jenkins]') }
       end
 
       context "with hostname => foobar.example.com and certificate => foobar.example.com" do

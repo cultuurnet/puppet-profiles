@@ -19,6 +19,12 @@ class profiles::jenkins::controller (
     require => [ User['jenkins'], Class['profiles::java'], Profiles::Apt::Update['publiq-jenkins']]
   }
 
+  service { 'jenkins':
+    ensure  => 'running',
+    enable  => true,
+    require => Package['jenkins']
+  }
+
   profiles::apache::vhost::redirect { "http://${hostname}":
     destination => "https://${hostname}"
   }
