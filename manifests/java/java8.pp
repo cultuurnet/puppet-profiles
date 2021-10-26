@@ -1,4 +1,4 @@
-class profiles::java::java8 inherits profiles {
+class profiles::java::java8 inherits ::profiles {
 
   include ::profiles::apt::updates
 

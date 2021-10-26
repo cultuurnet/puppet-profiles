@@ -59,6 +59,11 @@ describe 'profiles::packages' do
           )
         }
 
+        it { is_expected.to contain_package('fontconfig').with(
+          'ensure' => 'present'
+          )
+        }
+
         it { is_expected.to contain_package('ca-certificates-publiq').with(
           'ensure' => 'present'
           )

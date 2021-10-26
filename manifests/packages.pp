@@ -46,6 +46,10 @@ class profiles::packages {
     ensure => 'present'
   }
 
+  @package { 'fontconfig':
+    ensure => 'present'
+  }
+
   @package { 'ca-certificates-publiq':
     ensure  => 'present',
     require => Profiles::Apt::Update['cultuurnet-tools']

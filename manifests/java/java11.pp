@@ -1,4 +1,4 @@
-class profiles::java::java11 inherits profiles {
+class profiles::java::java11 inherits ::profiles {
 
   include ::profiles::apt::updates
 

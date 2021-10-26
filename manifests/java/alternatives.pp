@@ -1,6 +1,6 @@
 class profiles::java::alternatives (
   Optional[Integer[8, 11]] $default_version = undef
-) inherits profiles {
+) inherits ::profiles {
 
   case $default_version {
     8: {
