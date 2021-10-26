@@ -3,17 +3,16 @@ class profiles::jenkins::cli(
   String $password   = lookup('profiles::jenkins::controller::admin_password', String, 'first', ''),
   String $version    = 'latest',
   String $server_url = 'http://localhost:8080'
-) {
+) inherits ::profiles {
 
-  include ::profiles
-
+  include ::profiles::java
   include ::profiles::jenkins::repositories
 
   realize Profiles::Apt::Update['publiq-jenkins']
 
   package { 'jenkins-cli':
     ensure  => $version,
-    require => Profiles::Apt::Update['publiq-jenkins']
+    require => [ Profiles::Apt::Update['publiq-jenkins'], Class['profiles::java']]
   }
 
   file { '/etc/jenkins-cli/cli.conf':

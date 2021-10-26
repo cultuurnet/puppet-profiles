@@ -6,6 +6,7 @@ class profiles::jenkins::controller (
 
   include ::profiles::groups
   include ::profiles::users
+  include ::profiles::java
   include ::profiles::jenkins::repositories
 
   realize Group['jenkins']
@@ -15,7 +16,7 @@ class profiles::jenkins::controller (
 
   package { 'jenkins':
     ensure  => $version,
-    require => [ User['jenkins'], Profiles::Apt::Update['publiq-jenkins']]
+    require => [ User['jenkins'], Class['profiles::java'], Profiles::Apt::Update['publiq-jenkins']]
   }
 
   profiles::apache::vhost::redirect { "http://${hostname}":

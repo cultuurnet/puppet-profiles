@@ -21,6 +21,8 @@ describe 'profiles::jenkins::controller' do
         it { is_expected.to contain_user('jenkins') }
 
         it { is_expected.to contain_profiles__apt__update('publiq-jenkins') }
+        it { is_expected.to contain_class('profiles::java') }
+
         it { is_expected.to contain_package('jenkins').with(
           'ensure' => 'latest'
         ) }
@@ -39,6 +41,7 @@ describe 'profiles::jenkins::controller' do
 
         it { is_expected.to contain_package('jenkins').that_requires('User[jenkins]') }
         it { is_expected.to contain_package('jenkins').that_requires('Profiles::Apt::Update[publiq-jenkins]') }
+        it { is_expected.to contain_package('jenkins').that_requires('Class[profiles::java]') }
       end
 
       context "with hostname => foobar.example.com and certificate => foobar.example.com" do
