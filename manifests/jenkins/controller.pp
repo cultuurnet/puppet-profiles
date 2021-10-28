@@ -44,6 +44,7 @@ class profiles::jenkins::controller (
     certificate           => $certificate,
     preserve_host         => true,
     allow_encoded_slashes => 'nodecode',
-    proxy_keywords        => 'nocanon'
+    proxy_keywords        => 'nocanon',
+    support_websockets    => true
   }
 }
