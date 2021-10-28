@@ -49,7 +49,8 @@ describe 'profiles::jenkins::controller' do
           'certificate'           => 'wildcard.example.com',
           'preserve_host'         => true,
           'allow_encoded_slashes' => 'nodecode',
-          'proxy_keywords'        => 'nocanon'
+          'proxy_keywords'        => 'nocanon',
+          'support_websockets'    => true
         ) }
 
         it { is_expected.to contain_file('casc_config').that_requires('User[jenkins]') }
@@ -84,7 +85,8 @@ describe 'profiles::jenkins::controller' do
             'certificate'           => 'foobar.example.com',
             'preserve_host'         => true,
             'allow_encoded_slashes' => 'nodecode',
-            'proxy_keywords'        => 'nocanon'
+            'proxy_keywords'        => 'nocanon',
+            'support_websockets'    => true
           ) }
         end
       end
