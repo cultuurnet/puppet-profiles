@@ -19,6 +19,15 @@ class profiles::jenkins::controller (
     require => [ User['jenkins'], Class['profiles::java'], Profiles::Apt::Update['publiq-jenkins']]
   }
 
+  file { 'casc_config':
+    ensure  => 'directory',
+    path    => '/var/lib/jenkins/casc_config',
+    owner   => 'jenkins',
+    group   => 'jenkins',
+    require => Package['jenkins'],
+    notify  => Service['jenkins']
+  }
+
   service { 'jenkins':
     ensure    => 'running',
     hasstatus => true,

@@ -27,6 +27,13 @@ describe 'profiles::jenkins::controller' do
           'ensure' => 'latest'
         ) }
 
+        it { is_expected.to contain_file('casc_config').with(
+          'ensure' => 'directory',
+          'path'   => '/var/lib/jenkins/casc_config',
+          'owner'  => 'jenkins',
+          'group'  => 'jenkins'
+        ) }
+
         it { is_expected.to contain_service('jenkins').with(
           'ensure'    => 'running',
           'enable'    => true,
@@ -45,10 +52,12 @@ describe 'profiles::jenkins::controller' do
           'proxy_keywords'        => 'nocanon'
         ) }
 
+        it { is_expected.to contain_file('casc_config').that_requires('User[jenkins]') }
+        it { is_expected.to contain_file('casc_config').that_requires('Package[jenkins]') }
+        it { is_expected.to contain_file('casc_config').that_notifies('Service[jenkins]') }
         it { is_expected.to contain_package('jenkins').that_requires('User[jenkins]') }
         it { is_expected.to contain_package('jenkins').that_requires('Profiles::Apt::Update[publiq-jenkins]') }
         it { is_expected.to contain_package('jenkins').that_requires('Class[profiles::java]') }
-        it { is_expected.to contain_package('jenkins').that_comes_before('Package[jenkins]') }
       end
 
       context "with hostname => foobar.example.com and certificate => foobar.example.com" do
