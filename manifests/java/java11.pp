@@ -23,9 +23,8 @@ class profiles::java::java11 inherits ::profiles {
     }
   }
 
-  java_ks { 'publiq Development CA':
+  java_ks { "publiq Development CA:${javahome}/lib/security/cacerts":
     certificate  => '/usr/local/share/ca-certificates/publiq/publiq-root-ca.crt',
-    target       => "${javahome}/lib/security/cacerts",
     password     => 'changeit',
     trustcacerts => true,
     path         => ["${javahome}/bin", '/usr/bin'],

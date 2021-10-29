@@ -30,9 +30,8 @@ describe 'profiles::java::java11' do
         'altlink'  => '/usr/bin/keytool'
       ) }
 
-      it { is_expected.to contain_java_ks('publiq Development CA').with(
+      it { is_expected.to contain_java_ks('publiq Development CA:/usr/lib/jvm/jdk-11.0.12/lib/security/cacerts').with(
         'certificate'  => '/usr/local/share/ca-certificates/publiq/publiq-root-ca.crt',
-        'target'       => '/usr/lib/jvm/jdk-11.0.12/lib/security/cacerts',
         'password'     => 'changeit',
         'trustcacerts' => true,
         'path'         => ['/usr/lib/jvm/jdk-11.0.12/bin', '/usr/bin']
@@ -43,8 +42,8 @@ describe 'profiles::java::java11' do
 
       it { is_expected.to contain_alternative_entry('/usr/lib/jvm/jdk-11.0.12/bin/java').that_requires('Package[jdk-11.0.12]') }
       it { is_expected.to contain_alternative_entry('/usr/lib/jvm/jdk-11.0.12/bin/keytool').that_requires('Package[jdk-11.0.12]') }
-      it { is_expected.to contain_java_ks('publiq Development CA').that_requires('Package[jdk-11.0.12]') }
-      it { is_expected.to contain_java_ks('publiq Development CA').that_requires('Package[ca-certificates-publiq]') }
+      it { is_expected.to contain_java_ks('publiq Development CA:/usr/lib/jvm/jdk-11.0.12/lib/security/cacerts').that_requires('Package[jdk-11.0.12]') }
+      it { is_expected.to contain_java_ks('publiq Development CA:/usr/lib/jvm/jdk-11.0.12/lib/security/cacerts').that_requires('Package[ca-certificates-publiq]') }
     end
   end
 end

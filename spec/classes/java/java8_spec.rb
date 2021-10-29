@@ -30,9 +30,8 @@ describe 'profiles::java::java8' do
         )
       }
 
-      it { is_expected.to contain_java_ks('publiq Development CA').with(
+      it { is_expected.to contain_java_ks('publiq Development CA:/usr/lib/jvm/java-8-oracle/jre/lib/security/cacerts').with(
         'certificate'  => '/usr/local/share/ca-certificates/publiq/publiq-root-ca.crt',
-        'target'       => '/usr/lib/jvm/java-8-oracle/jre/lib/security/cacerts',
         'password'     => 'changeit',
         'trustcacerts' => true,
         'path'         => ['/usr/lib/jvm/java-8-oracle/jre/bin', '/usr/bin']
@@ -43,8 +42,8 @@ describe 'profiles::java::java8' do
 
       it { is_expected.to contain_package('oracle-java8-installer').that_requires('File[oracle-java8-installer.preseed]') }
       it { is_expected.to contain_package('oracle-java8-installer').that_requires('Package[oracle-jdk8-archive]') }
-      it { is_expected.to contain_java_ks('publiq Development CA').that_requires('Package[oracle-java8-installer]') }
-      it { is_expected.to contain_java_ks('publiq Development CA').that_requires('Package[ca-certificates-publiq]') }
+      it { is_expected.to contain_java_ks('publiq Development CA:/usr/lib/jvm/java-8-oracle/jre/lib/security/cacerts').that_requires('Package[oracle-java8-installer]') }
+      it { is_expected.to contain_java_ks('publiq Development CA:/usr/lib/jvm/java-8-oracle/jre/lib/security/cacerts').that_requires('Package[ca-certificates-publiq]') }
     end
   end
 end

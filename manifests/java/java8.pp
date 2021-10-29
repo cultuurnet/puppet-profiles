@@ -26,9 +26,8 @@ class profiles::java::java8 inherits ::profiles {
     require      => [ Package['oracle-jdk8-archive'], File['oracle-java8-installer.preseed']]
   }
 
-  java_ks { 'publiq Development CA':
+  java_ks { "publiq Development CA:${javahome}/lib/security/cacerts":
     certificate  => '/usr/local/share/ca-certificates/publiq/publiq-root-ca.crt',
-    target       => "${javahome}/lib/security/cacerts",
     password     => 'changeit',
     trustcacerts => true,
     path         => ["${javahome}/bin", '/usr/bin'],
