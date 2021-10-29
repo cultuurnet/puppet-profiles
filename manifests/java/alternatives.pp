@@ -1,6 +1,6 @@
 class profiles::java::alternatives (
   Optional[Integer[8, 11]] $default_version = undef
-) inherits profiles {
+) inherits ::profiles {
 
   case $default_version {
     8: {
@@ -17,8 +17,10 @@ class profiles::java::alternatives (
   }
 
   if $java_home {
-    alternatives { 'java':
-      path    => "${jre_home}/bin/java"
+    ['java', 'keytool'].each |$command| {
+      alternatives { $command:
+        path    => "${jre_home}/bin/${command}"
+      }
     }
 
     shellvar { 'JAVA_HOME':

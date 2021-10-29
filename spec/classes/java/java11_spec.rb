@@ -11,6 +11,7 @@ describe 'profiles::java::java11' do
 
       it { is_expected.to contain_profiles__apt__update('cultuurnet-tools') }
 
+      it { is_expected.to contain_package('ca-certificates-publiq') }
       it { is_expected.to contain_package('jdk-11.0.12').with(
         'ensure' => '11.0.12-1'
       ) }
@@ -22,9 +23,28 @@ describe 'profiles::java::java11' do
         'altlink'  => '/usr/bin/java'
       ) }
 
+      it { is_expected.to contain_alternative_entry('/usr/lib/jvm/jdk-11.0.12/bin/keytool').with(
+        'ensure'  => 'present',
+        'altname' => 'keytool',
+        'priority' => 10,
+        'altlink'  => '/usr/bin/keytool'
+      ) }
+
+      it { is_expected.to contain_java_ks('publiq Development CA').with(
+        'certificate'  => '/usr/local/share/ca-certificates/publiq/publiq-root-ca.crt',
+        'target'       => '/usr/lib/jvm/jdk-11.0.12/lib/security/cacerts',
+        'password'     => 'changeit',
+        'trustcacerts' => true,
+        'path'         => ['/usr/lib/jvm/jdk-11.0.12/bin', '/usr/bin']
+      ) }
+
       it { is_expected.to contain_package('jdk-11.0.12').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
+      it { is_expected.to contain_package('ca-certificates-publiq').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
 
       it { is_expected.to contain_alternative_entry('/usr/lib/jvm/jdk-11.0.12/bin/java').that_requires('Package[jdk-11.0.12]') }
+      it { is_expected.to contain_alternative_entry('/usr/lib/jvm/jdk-11.0.12/bin/keytool').that_requires('Package[jdk-11.0.12]') }
+      it { is_expected.to contain_java_ks('publiq Development CA').that_requires('Package[jdk-11.0.12]') }
+      it { is_expected.to contain_java_ks('publiq Development CA').that_requires('Package[ca-certificates-publiq]') }
     end
   end
 end

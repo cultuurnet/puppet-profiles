@@ -28,8 +28,11 @@ describe 'profiles::java::alternatives' do
 
         it { is_expected.to contain_alternatives('java').with(
           'path' => '/usr/lib/jvm/java-8-oracle/jre/bin/java'
-          )
-        }
+        ) }
+
+        it { is_expected.to contain_alternatives('keytool').with(
+          'path' => '/usr/lib/jvm/java-8-oracle/jre/bin/keytool'
+        ) }
       end
 
       context "with default_version => 11" do
@@ -43,8 +46,11 @@ describe 'profiles::java::alternatives' do
 
         it { is_expected.to contain_alternatives('java').with(
           'path' => '/usr/lib/jvm/jdk-11.0.12/bin/java'
-          )
-        }
+        ) }
+
+        it { is_expected.to contain_alternatives('keytool').with(
+          'path' => '/usr/lib/jvm/jdk-11.0.12/bin/keytool'
+        ) }
       end
     end
   end

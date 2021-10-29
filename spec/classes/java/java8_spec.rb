@@ -11,12 +11,11 @@ describe 'profiles::java::java8' do
 
       it { is_expected.to contain_profiles__apt__update('cultuurnet-tools') }
 
+      it { is_expected.to contain_package('ca-certificates-publiq') }
       it { is_expected.to contain_package('oracle-jdk8-archive').with(
         'ensure' => '8u151'
         )
       }
-
-      it { is_expected.to contain_package('oracle-jdk8-archive').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
 
       it { is_expected.to contain_file('oracle-java8-installer.preseed').with(
         'path'   => '/var/tmp/oracle-java8-installer.preseed',
@@ -31,8 +30,21 @@ describe 'profiles::java::java8' do
         )
       }
 
+      it { is_expected.to contain_java_ks('publiq Development CA').with(
+        'certificate'  => '/usr/local/share/ca-certificates/publiq/publiq-root-ca.crt',
+        'target'       => '/usr/lib/jvm/java-8-oracle/jre/lib/security/cacerts',
+        'password'     => 'changeit',
+        'trustcacerts' => true,
+        'path'         => ['/usr/lib/jvm/java-8-oracle/jre/bin', '/usr/bin']
+      ) }
+
+      it { is_expected.to contain_package('ca-certificates-publiq').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
+      it { is_expected.to contain_package('oracle-jdk8-archive').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
+
       it { is_expected.to contain_package('oracle-java8-installer').that_requires('File[oracle-java8-installer.preseed]') }
       it { is_expected.to contain_package('oracle-java8-installer').that_requires('Package[oracle-jdk8-archive]') }
+      it { is_expected.to contain_java_ks('publiq Development CA').that_requires('Package[oracle-java8-installer]') }
+      it { is_expected.to contain_java_ks('publiq Development CA').that_requires('Package[ca-certificates-publiq]') }
     end
   end
 end

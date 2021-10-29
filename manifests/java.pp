@@ -1,7 +1,7 @@
 class profiles::java (
   Variant[Integer[8, 11], Array[Integer[8, 11]]] $installed_versions = 8,
   Optional[Integer[8, 11]]                       $default_version    = undef
-) inherits profiles {
+) inherits ::profiles {
 
   [$installed_versions].flatten.each | $version | {
 
