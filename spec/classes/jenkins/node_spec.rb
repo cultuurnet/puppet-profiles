@@ -9,20 +9,20 @@ describe 'profiles::jenkins::node' do
 
       context "with user => john, password => doe and url => 'https://jenkins.example.com/'" do
         let(:params) { {
-          'user'       => 'john',
-          'password'   => 'doe',
-          'server_url' => 'https://jenkins.example.com/'
+          'user'           => 'john',
+          'password'       => 'doe',
+          'controller_url' => 'https://jenkins.example.com/'
         } }
 
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::jenkins::node').with(
-          'user'       => 'john',
-          'password'   => 'doe',
-          'version'    => 'latest',
-          'server_url' => 'https://jenkins.example.com/',
-          'executors'  => 1,
-          'labels'     => []
+          'user'           => 'john',
+          'password'       => 'doe',
+          'version'        => 'latest',
+          'controller_url' => 'https://jenkins.example.com/',
+          'executors'      => 1,
+          'labels'         => []
         ) }
 
         it { is_expected.to contain_apt__source('publiq-jenkins') }
@@ -68,7 +68,7 @@ describe 'profiles::jenkins::node' do
         ) }
 
         it { is_expected.to contain_file('jenkins-swarm-client_service-defaults').with_content(/^JENKINS_USER=john$/) }
-        it { is_expected.to contain_file('jenkins-swarm-client_service-defaults').with_content(/^SERVER_URL=https:\/\/jenkins\.example\.com\/$/) }
+        it { is_expected.to contain_file('jenkins-swarm-client_service-defaults').with_content(/^CONTROLLER_URL=https:\/\/jenkins\.example\.com\/$/) }
         it { is_expected.to contain_file('jenkins-swarm-client_service-defaults').with_content(/^BUILD_EXECUTORS=1$/) }
 
         it { is_expected.to contain_service('jenkins-swarm-client').with(
@@ -96,12 +96,12 @@ describe 'profiles::jenkins::node' do
         it { is_expected.to contain_service('jenkins-swarm-client').that_requires('Class[profiles::java]') }
       end
 
-      context "with user => jane, password => roe, server_url => 'http://localhost:5555/' and executors => 4" do
+      context "with user => jane, password => roe, controller_url => 'http://localhost:5555/' and executors => 4" do
         let(:params) { {
-          'user'       => 'jane',
-          'password'   => 'roe',
-          'server_url' => 'http://localhost:5555/',
-          'executors'  => 4
+          'user'           => 'jane',
+          'password'       => 'roe',
+          'controller_url' => 'http://localhost:5555/',
+          'executors'      => 4
         } }
 
         it { is_expected.to contain_file('jenkins-swarm-client_passwordfile').with(
@@ -109,7 +109,7 @@ describe 'profiles::jenkins::node' do
         ) }
 
         it { is_expected.to contain_file('jenkins-swarm-client_service-defaults').with_content(/^JENKINS_USER=jane$/) }
-        it { is_expected.to contain_file('jenkins-swarm-client_service-defaults').with_content(/^SERVER_URL=http:\/\/localhost:5555\/$/) }
+        it { is_expected.to contain_file('jenkins-swarm-client_service-defaults').with_content(/^CONTROLLER_URL=http:\/\/localhost:5555\/$/) }
         it { is_expected.to contain_file('jenkins-swarm-client_service-defaults').with_content(/^BUILD_EXECUTORS=4$/) }
 
         context "with labels => foo" do
@@ -142,12 +142,12 @@ describe 'profiles::jenkins::node' do
         let(:params) { {} }
 
         it { is_expected.to contain_class('profiles::jenkins::node').with(
-          'user'       => 'foo',
-          'password'   => 'bar',
-          'version'    => 'latest',
-          'server_url' => 'https://foobar.com/baz/',
-          'executors'  => 1,
-          'labels'     => []
+          'user'           => 'foo',
+          'password'       => 'bar',
+          'version'        => 'latest',
+          'controller_url' => 'https://foobar.com/baz/',
+          'executors'      => 1,
+          'labels'         => []
         ) }
       end
 
@@ -156,12 +156,12 @@ describe 'profiles::jenkins::node' do
         let(:params) { {} }
 
         it { is_expected.to contain_class('profiles::jenkins::node').with(
-          'user'       => '',
-          'password'   => '',
-          'version'    => 'latest',
-          'server_url' => 'http://localhost:8080/',
-          'executors'  => 1,
-          'labels'     => []
+          'user'           => '',
+          'password'       => '',
+          'version'        => 'latest',
+          'controller_url' => 'http://localhost:8080/',
+          'executors'      => 1,
+          'labels'         => []
         ) }
       end
     end

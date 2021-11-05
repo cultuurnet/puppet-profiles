@@ -39,22 +39,22 @@ describe 'profiles::jenkins::cli' do
           'password' => 'doe'
         ) }
 
-        it { is_expected.to contain_shellvar('JENKINS_URL').with(
+        it { is_expected.to contain_shellvar('CONTROLLER_URL').with(
           'ensure'   => 'present',
-          'variable' => 'JENKINS_URL',
+          'variable' => 'CONTROLLER_URL',
           'target'   => '/etc/jenkins-cli/cli.conf',
           'value'    => 'http://localhost:8080/'
         ) }
 
         it { is_expected.to contain_class('profiles::jenkins::cli::credentials').that_requires('File[jenkins-cli_config]') }
-        it { is_expected.to contain_shellvar('JENKINS_URL').that_requires('File[jenkins-cli_config]') }
+        it { is_expected.to contain_shellvar('CONTROLLER_URL').that_requires('File[jenkins-cli_config]') }
 
-        context "with version => 1.2.3, server_url => http://remote:5555/ and manage_credentials => false" do
+        context "with version => 1.2.3, controller_url => http://remote:5555/ and manage_credentials => false" do
           let(:params) {
             super().merge({
               'manage_credentials' => false,
               'version'            => '1.2.3',
-              'server_url'         => 'http://remote:5555/'
+              'controller_url'     => 'http://remote:5555/'
             })
           }
 
@@ -64,9 +64,9 @@ describe 'profiles::jenkins::cli' do
 
           it { is_expected.to_not contain_class('profiles::jenkins::cli::credentials') }
 
-          it { is_expected.to contain_shellvar('JENKINS_URL').with(
+          it { is_expected.to contain_shellvar('CONTROLLER_URL').with(
             'ensure'   => 'present',
-            'variable' => 'JENKINS_URL',
+            'variable' => 'CONTROLLER_URL',
             'target'   => '/etc/jenkins-cli/cli.conf',
             'value'    => 'http://remote:5555/'
           ) }
@@ -94,7 +94,7 @@ describe 'profiles::jenkins::cli' do
           'user'               => 'foo',
           'password'           => 'bar',
           'version'            => 'latest',
-          'server_url'         => 'https://foobar.com/baz/'
+          'controller_url'     => 'https://foobar.com/baz/'
         ) }
 
         it { is_expected.to contain_class('profiles::jenkins::cli::credentials').with(
@@ -102,9 +102,9 @@ describe 'profiles::jenkins::cli' do
           'password' => 'bar'
         ) }
 
-        it { is_expected.to contain_shellvar('JENKINS_URL').with(
+        it { is_expected.to contain_shellvar('CONTROLLER_URL').with(
           'ensure'   => 'present',
-          'variable' => 'JENKINS_URL',
+          'variable' => 'CONTROLLER_URL',
           'target'   => '/etc/jenkins-cli/cli.conf',
           'value'    => 'https://foobar.com/baz/'
         ) }
@@ -119,7 +119,7 @@ describe 'profiles::jenkins::cli' do
           'user'               => '',
           'password'           => '',
           'version'            => 'latest',
-          'server_url'         => 'http://localhost:8080/'
+          'controller_url'     => 'http://localhost:8080/'
         ) }
 
         it { is_expected.to contain_class('profiles::jenkins::cli::credentials').with(
@@ -127,9 +127,9 @@ describe 'profiles::jenkins::cli' do
           'password' => ''
         ) }
 
-        it { is_expected.to contain_shellvar('JENKINS_URL').with(
+        it { is_expected.to contain_shellvar('CONTROLLER_URL').with(
           'ensure'   => 'present',
-          'variable' => 'JENKINS_URL',
+          'variable' => 'CONTROLLER_URL',
           'target'   => '/etc/jenkins-cli/cli.conf',
           'value'    => 'http://localhost:8080/'
         ) }

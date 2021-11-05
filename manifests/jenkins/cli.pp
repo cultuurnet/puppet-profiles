@@ -3,7 +3,7 @@ class profiles::jenkins::cli(
   String  $version            = 'latest',
   String  $user               = lookup('profiles::jenkins::controller::admin_user', String, 'first', ''),
   String  $password           = lookup('profiles::jenkins::controller::admin_password', String, 'first', ''),
-  String  $server_url         = lookup('profiles::jenkins::controller::server_url', String, 'first', 'http://localhost:8080/')
+  String  $controller_url     = lookup('profiles::jenkins::controller::url', String, 'first', 'http://localhost:8080/')
 ) inherits ::profiles {
 
   include ::profiles::java
@@ -33,10 +33,10 @@ class profiles::jenkins::cli(
     }
   }
 
-  shellvar { 'JENKINS_URL':
+  shellvar { 'CONTROLLER_URL':
     ensure   => 'present',
-    variable => 'JENKINS_URL',
-    value    => $server_url,
+    variable => 'CONTROLLER_URL',
+    value    => $controller_url,
     target   => $config_path,
     require  => File['jenkins-cli_config']
   }

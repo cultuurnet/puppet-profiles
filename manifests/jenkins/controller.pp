@@ -1,13 +1,16 @@
 class profiles::jenkins::controller (
-  String $hostname,
-  String $certificate,
-  String $version     = 'latest'
+  Stdlib::Httpurl $url,
+  String          $certificate,
+  String          $version     = 'latest'
 ) inherits ::profiles {
 
   include ::profiles::groups
   include ::profiles::users
   include ::profiles::java
   include ::profiles::jenkins::repositories
+
+  $transport = split($url, ':')[0]
+  $hostname  = split($url, '/')[2]
 
   realize Group['jenkins']
   realize User['jenkins']

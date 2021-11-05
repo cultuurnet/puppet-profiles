@@ -9,9 +9,9 @@ describe 'profiles::jenkins::controller' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with hostname => jenkins.example.com and certificate => wildcard.example.com" do
+      context "with url => https://jenkins.example.com/ and certificate => wildcard.example.com" do
         let(:params) { {
-          'hostname'    => 'jenkins.example.com',
+          'url'         => 'https://jenkins.example.com/',
           'certificate' => 'wildcard.example.com'
         } }
 
@@ -61,9 +61,9 @@ describe 'profiles::jenkins::controller' do
         it { is_expected.to contain_package('jenkins').that_requires('Class[profiles::java]') }
       end
 
-      context "with hostname => foobar.example.com and certificate => foobar.example.com" do
+      context "with url => https://foobar.example.com/ and certificate => foobar.example.com" do
         let(:params) { {
-          'hostname'    => 'foobar.example.com',
+          'url'         => 'https://foobar.example.com/',
           'certificate' => 'foobar.example.com'
         } }
 
@@ -94,7 +94,7 @@ describe 'profiles::jenkins::controller' do
       context "without parameters" do
         let(:params) { {} }
 
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'hostname'/) }
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'url'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'certificate'/) }
       end
     end
