@@ -1,5 +1,5 @@
 ---
 profiles::jenkins::controller::admin_user: 'foo'
 profiles::jenkins::controller::admin_password: 'bar'
-profiles::jenkins::controller::url: 'https://foobar.com/baz/'
+profiles::jenkins::controller::url: 'https://foobar.com/'
 
