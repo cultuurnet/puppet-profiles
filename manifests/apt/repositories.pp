@@ -48,7 +48,7 @@ class profiles::apt::repositories {
 
   @apt::source { 'nodejs_12.x':
     location => "http://apt.uitdatabank.be/nodejs_12.x-${environment}",
-    release  => 'trusty',
+    release  => $facts['lsbdistcodename'],
     repos    => 'main'
   }
 
