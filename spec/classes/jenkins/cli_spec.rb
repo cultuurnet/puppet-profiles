@@ -7,13 +7,20 @@ describe 'profiles::jenkins::cli' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with user => john and password => doe" do
-        let(:params) { {
-          'user' => 'john',
-          'password' => 'doe'
-        } }
+      context "without params" do
+        let(:params) { { } }
 
         it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to contain_class('profiles::jenkins::cli').with(
+          'manage_credentials' => false,
+          'version'            => 'latest',
+          'user'               => '',
+          'password'           => '',
+          'controller_url'     => 'http://localhost:8080/'
+        ) }
+
+        it { is_expected.to_not contain_class('profiles::jenkins::cli::credentials') }
 
         it { is_expected.to contain_apt__source('publiq-jenkins') }
         it { is_expected.to contain_profiles__apt__update('publiq-jenkins') }
@@ -23,16 +30,37 @@ describe 'profiles::jenkins::cli' do
           'ensure' => 'latest'
         ) }
 
-        it { is_expected.to contain_package('jenkins-cli').that_requires('Profiles::Apt::Update[publiq-jenkins]') }
-        it { is_expected.to contain_package('jenkins-cli').that_requires('Class[profiles::java]') }
-
         it { is_expected.to contain_file('jenkins-cli_config').with(
           'ensure' => 'file',
           'path'   => '/etc/jenkins-cli/cli.conf',
           'mode'   => '0644'
         ) }
 
+        it { is_expected.to contain_shellvar('CONTROLLER_URL').with(
+          'ensure'   => 'present',
+          'variable' => 'CONTROLLER_URL',
+          'target'   => '/etc/jenkins-cli/cli.conf',
+          'value'    => 'http://localhost:8080/'
+        ) }
+
+        it { is_expected.to contain_package('jenkins-cli').that_requires('Profiles::Apt::Update[publiq-jenkins]') }
+        it { is_expected.to contain_package('jenkins-cli').that_requires('Class[profiles::java]') }
         it { is_expected.to contain_file('jenkins-cli_config').that_requires('Package[jenkins-cli]') }
+        it { is_expected.to contain_shellvar('CONTROLLER_URL').that_requires('File[jenkins-cli_config]') }
+      end
+
+      context "with version => 1.2.3, controller_url => http://remote:5555/, manage_credentials => true, user => john and password => doe" do
+        let(:params) { {
+            'manage_credentials' => true,
+            'version'            => '1.2.3',
+            'user'               => 'john',
+            'password'           => 'doe',
+            'controller_url'     => 'http://remote:5555/'
+          } }
+
+        it { is_expected.to contain_package('jenkins-cli').with(
+          'ensure' => '1.2.3'
+        ) }
 
         it { is_expected.to contain_class('profiles::jenkins::cli::credentials').with(
           'user'     => 'john',
@@ -43,40 +71,17 @@ describe 'profiles::jenkins::cli' do
           'ensure'   => 'present',
           'variable' => 'CONTROLLER_URL',
           'target'   => '/etc/jenkins-cli/cli.conf',
-          'value'    => 'http://localhost:8080/'
+          'value'    => 'http://remote:5555/'
         ) }
 
         it { is_expected.to contain_class('profiles::jenkins::cli::credentials').that_requires('File[jenkins-cli_config]') }
-        it { is_expected.to contain_shellvar('CONTROLLER_URL').that_requires('File[jenkins-cli_config]') }
-
-        context "with version => 1.2.3, controller_url => http://remote:5555/ and manage_credentials => false" do
-          let(:params) {
-            super().merge({
-              'manage_credentials' => false,
-              'version'            => '1.2.3',
-              'controller_url'     => 'http://remote:5555/'
-            })
-          }
-
-          it { is_expected.to contain_package('jenkins-cli').with(
-            'ensure' => '1.2.3'
-          ) }
-
-          it { is_expected.to_not contain_class('profiles::jenkins::cli::credentials') }
-
-          it { is_expected.to contain_shellvar('CONTROLLER_URL').with(
-            'ensure'   => 'present',
-            'variable' => 'CONTROLLER_URL',
-            'target'   => '/etc/jenkins-cli/cli.conf',
-            'value'    => 'http://remote:5555/'
-          ) }
-        end
       end
 
-      context "with user => jane and password => roe" do
+      context "manage_credentials => true, user => jane and password => roe" do
         let(:params) { {
-          'user' => 'jane',
-          'password' => 'roe'
+          'manage_credentials' => true,
+          'user'               => 'jane',
+          'password'           => 'roe'
         } }
 
         it { is_expected.to contain_class('profiles::jenkins::cli::credentials').with(
@@ -90,48 +95,20 @@ describe 'profiles::jenkins::cli' do
         let(:params) { {} }
 
         it { is_expected.to contain_class('profiles::jenkins::cli').with(
-          'manage_credentials' => true,
+          'manage_credentials' => false,
           'user'               => 'foo',
           'password'           => 'bar',
           'version'            => 'latest',
-          'controller_url'     => 'https://foobar.com/baz/'
+          'controller_url'     => 'https://foobar.com/'
         ) }
 
-        it { is_expected.to contain_class('profiles::jenkins::cli::credentials').with(
-          'user'     => 'foo',
-          'password' => 'bar'
-        ) }
+        it { is_expected.to_not contain_class('profiles::jenkins::cli::credentials') }
 
         it { is_expected.to contain_shellvar('CONTROLLER_URL').with(
           'ensure'   => 'present',
           'variable' => 'CONTROLLER_URL',
           'target'   => '/etc/jenkins-cli/cli.conf',
-          'value'    => 'https://foobar.com/baz/'
-        ) }
-      end
-
-      context "without parameters and without hieradata" do
-        let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
-        let(:params) { {} }
-
-        it { is_expected.to contain_class('profiles::jenkins::cli').with(
-          'manage_credentials' => true,
-          'user'               => '',
-          'password'           => '',
-          'version'            => 'latest',
-          'controller_url'     => 'http://localhost:8080/'
-        ) }
-
-        it { is_expected.to contain_class('profiles::jenkins::cli::credentials').with(
-          'user'     => '',
-          'password' => ''
-        ) }
-
-        it { is_expected.to contain_shellvar('CONTROLLER_URL').with(
-          'ensure'   => 'present',
-          'variable' => 'CONTROLLER_URL',
-          'target'   => '/etc/jenkins-cli/cli.conf',
-          'value'    => 'http://localhost:8080/'
+          'value'    => 'https://foobar.com/'
         ) }
       end
     end

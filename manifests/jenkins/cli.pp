@@ -1,5 +1,5 @@
 class profiles::jenkins::cli(
-  Boolean $manage_credentials = true,
+  Boolean $manage_credentials = false,
   String  $version            = 'latest',
   String  $user               = lookup('profiles::jenkins::controller::admin_user', String, 'first', ''),
   String  $password           = lookup('profiles::jenkins::controller::admin_password', String, 'first', ''),
