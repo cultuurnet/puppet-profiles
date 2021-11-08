@@ -145,7 +145,7 @@ describe 'profiles::jenkins::node' do
           'user'           => 'foo',
           'password'       => 'bar',
           'version'        => 'latest',
-          'controller_url' => 'https://foobar.com/baz/',
+          'controller_url' => 'https://foobar.com/',
           'executors'      => 1,
           'labels'         => []
         ) }
