@@ -1,0 +1,15 @@
+---
+jenkins:
+  numExecutors: <%= @configuration['executors'] %>
+  slaveAgentPort: 0
+  mode: NORMAL
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: <%= @configuration['admin_user'] %>
+          password: <%= @configuration['admin_password'] %>
+unclassified:
+  location:
+    adminAddress: jenkins@publiq.be
+    url: <%= @configuration['url'] %>
