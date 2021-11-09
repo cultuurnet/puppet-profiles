@@ -1,5 +1,8 @@
 ---
 jenkins:
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
   numExecutors: <%= @configuration['executors'] %>
   slaveAgentPort: 0
   mode: NORMAL
@@ -7,9 +10,9 @@ jenkins:
     local:
       allowsSignup: false
       users:
-        - id: <%= @configuration['admin_user'] %>
-          password: <%= @configuration['admin_password'] %>
+        - id: '<%= @configuration['admin_user'] %>'
+          password: '<%= @configuration['admin_password'] %>'
 unclassified:
   location:
-    adminAddress: jenkins@publiq.be
-    url: <%= @configuration['url'] %>
+    adminAddress: 'jenkins@publiq.be'
+    url: '<%= @configuration['url'] %>'

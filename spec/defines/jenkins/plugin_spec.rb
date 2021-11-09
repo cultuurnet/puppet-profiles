@@ -78,8 +78,8 @@ describe 'profiles::jenkins::plugin' do
             'group'   => 'jenkins'
           ) }
 
-          it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*password: passw0rd$/) }
-          it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*url: https:\/\/foobar\.com\/$/) }
+          it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*password: 'passw0rd'$/) }
+          it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*url: 'https:\/\/foobar\.com\/'$/) }
 
           it { is_expected.to contain_file('configuration-as-code configuration').that_requires('Group[jenkins]') }
           it { is_expected.to contain_file('configuration-as-code configuration').that_requires('User[jenkins]') }
@@ -91,8 +91,8 @@ describe 'profiles::jenkins::plugin' do
               'configuration' => { 'url' => 'https://jenkins.example.com/', 'admin_password' => 'jenkins'}
           } }
 
-          it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*password: jenkins$/) }
-          it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*url: https:\/\/jenkins\.example\.com\/$/) }
+          it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*password: 'jenkins'$/) }
+          it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*url: 'https:\/\/jenkins\.example\.com\/'$/) }
         end
       end
     end
