@@ -9,8 +9,9 @@ class profiles::jenkins::controller (
   include ::profiles::java
   include ::profiles::jenkins::repositories
 
-  $transport = split($url, ':')[0]
-  $hostname  = split($url, '/')[2]
+  $transport  = split($url, ':')[0]
+  $hostname   = split($url, '/')[2]
+  $config_dir = '/var/lib/jenkins/casc_config'
 
   realize Group['jenkins']
   realize User['jenkins']
@@ -19,23 +20,28 @@ class profiles::jenkins::controller (
 
   package { 'jenkins':
     ensure  => $version,
-    require => [ User['jenkins'], Class['profiles::java'], Profiles::Apt::Update['publiq-jenkins']]
+    require => [ User['jenkins'], Class['profiles::java'], Profiles::Apt::Update['publiq-jenkins']],
+    notify  => Class['profiles::jenkins::controller::service']
   }
+
+  class { '::profiles::jenkins::controller::service': }
 
   file { 'casc_config':
     ensure  => 'directory',
-    path    => '/var/lib/jenkins/casc_config',
+    path    => $config_dir,
     owner   => 'jenkins',
     group   => 'jenkins',
     require => Package['jenkins'],
-    notify  => Service['jenkins']
+    notify  => Class['profiles::jenkins::controller::service']
   }
 
-  service { 'jenkins':
-    ensure    => 'running',
-    hasstatus => true,
-    enable    => true,
-    require   => Package['jenkins']
+  shellvar { 'JAVA_ARGS':
+    ensure   => 'present',
+    variable => 'JAVA_ARGS',
+    target   => '/etc/default/jenkins',
+    value    => "-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Dcasc.jenkins.config=${config_dir}",
+    require  => File['casc_config'],
+    notify   => Class['profiles::jenkins::controller::service']
   }
 
   profiles::apache::vhost::redirect { "http://${hostname}":

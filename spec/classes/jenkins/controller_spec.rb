@@ -22,6 +22,7 @@ describe 'profiles::jenkins::controller' do
 
         it { is_expected.to contain_profiles__apt__update('publiq-jenkins') }
         it { is_expected.to contain_class('profiles::java') }
+        it { is_expected.to contain_class('profiles::jenkins::controller::service') }
 
         it { is_expected.to contain_package('jenkins').with(
           'ensure' => 'latest'
@@ -34,10 +35,11 @@ describe 'profiles::jenkins::controller' do
           'group'  => 'jenkins'
         ) }
 
-        it { is_expected.to contain_service('jenkins').with(
-          'ensure'    => 'running',
-          'enable'    => true,
-          'hasstatus' => true
+        it { is_expected.to contain_shellvar('JAVA_ARGS').with(
+          'ensure'   => 'present',
+          'variable' => 'JAVA_ARGS',
+          'target'   => '/etc/default/jenkins',
+          'value'    => '-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Dcasc.jenkins.config=/var/lib/jenkins/casc_config'
         ) }
 
         it { is_expected.to contain_profiles__apache__vhost__redirect('http://jenkins.example.com').with(
@@ -55,10 +57,13 @@ describe 'profiles::jenkins::controller' do
 
         it { is_expected.to contain_file('casc_config').that_requires('User[jenkins]') }
         it { is_expected.to contain_file('casc_config').that_requires('Package[jenkins]') }
-        it { is_expected.to contain_file('casc_config').that_notifies('Service[jenkins]') }
+        it { is_expected.to contain_file('casc_config').that_notifies('Class[profiles::jenkins::controller::service]') }
+        it { is_expected.to contain_shellvar('JAVA_ARGS').that_requires('File[casc_config]') }
+        it { is_expected.to contain_shellvar('JAVA_ARGS').that_notifies('Class[profiles::jenkins::controller::service]') }
         it { is_expected.to contain_package('jenkins').that_requires('User[jenkins]') }
         it { is_expected.to contain_package('jenkins').that_requires('Profiles::Apt::Update[publiq-jenkins]') }
         it { is_expected.to contain_package('jenkins').that_requires('Class[profiles::java]') }
+        it { is_expected.to contain_package('jenkins').that_notifies('Class[profiles::jenkins::controller::service]') }
       end
 
       context "with url => https://foobar.example.com/ and certificate => foobar.example.com" do
