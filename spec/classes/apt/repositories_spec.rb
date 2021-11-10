@@ -218,7 +218,7 @@ describe 'profiles::apt::repositories' do
                 'deb' => 'true',
                 'src' => 'false'
               },
-              'release' => 'trusty'
+              'release' => 'xenial'
             )
             }
 
