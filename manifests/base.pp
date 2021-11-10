@@ -10,6 +10,7 @@ class profiles::base inherits ::profiles {
   }
 
   realize Profiles::Apt::Update['cultuurnet-tools']
+  realize Package['ca-certificates-publiq']
 
   if $facts['ec2_metadata'] {
     $admin_user = 'ubuntu'
