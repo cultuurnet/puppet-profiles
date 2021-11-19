@@ -22,10 +22,16 @@ describe 'profiles::jenkins::controller' do
 
         it { is_expected.to contain_profiles__apt__update('publiq-jenkins') }
         it { is_expected.to contain_class('profiles::java') }
+        it { is_expected.to contain_class('profiles::jenkins::controller::configuration') }
         it { is_expected.to contain_class('profiles::jenkins::controller::service') }
 
         it { is_expected.to contain_package('jenkins').with(
           'ensure' => 'latest'
+        ) }
+
+        it { is_expected.to contain_class('profiles::jenkins::cli').with(
+          'version'        => 'latest',
+          'controller_url' => 'https://jenkins.example.com/'
         ) }
 
         it { is_expected.to contain_file('casc_config').with(
@@ -79,6 +85,11 @@ describe 'profiles::jenkins::controller' do
 
           it { is_expected.to contain_package('jenkins').with(
             'ensure' => '1.2.3'
+          ) }
+
+          it { is_expected.to contain_class('profiles::jenkins::cli').with(
+            'version'        => '1.2.3',
+            'controller_url' => 'https://foobar.example.com/'
           ) }
 
           it { is_expected.to contain_profiles__apache__vhost__redirect('http://foobar.example.com').with(

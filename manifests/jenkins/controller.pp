@@ -24,7 +24,10 @@ class profiles::jenkins::controller (
     notify  => Class['profiles::jenkins::controller::service']
   }
 
-  class { '::profiles::jenkins::controller::service': }
+  class { '::profiles::jenkins::cli':
+    version        => $version,
+    controller_url => $url
+  }
 
   file { 'casc_config':
     ensure  => 'directory',
@@ -43,6 +46,9 @@ class profiles::jenkins::controller (
     require  => File['casc_config'],
     notify   => Class['profiles::jenkins::controller::service']
   }
+
+  class { '::profiles::jenkins::controller::configuration': }
+  class { '::profiles::jenkins::controller::service': }
 
   profiles::apache::vhost::redirect { "http://${hostname}":
     destination => "https://${hostname}"
