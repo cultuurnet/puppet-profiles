@@ -30,6 +30,12 @@ describe 'profiles::jenkins::cli' do
           'ensure' => 'latest'
         ) }
 
+        it { is_expected.to contain_file('jenkins-cli_configdir').with(
+          'ensure' => 'directory',
+          'path'   => '/etc/jenkins-cli',
+          'mode'   => '0755'
+        ) }
+
         it { is_expected.to contain_file('jenkins-cli_config').with(
           'ensure' => 'file',
           'path'   => '/etc/jenkins-cli/cli.conf',
@@ -45,6 +51,7 @@ describe 'profiles::jenkins::cli' do
 
         it { is_expected.to contain_package('jenkins-cli').that_requires('Profiles::Apt::Update[publiq-jenkins]') }
         it { is_expected.to contain_package('jenkins-cli').that_requires('Class[profiles::java]') }
+        it { is_expected.to contain_file('jenkins-cli_configdir').that_requires('Package[jenkins-cli]') }
         it { is_expected.to contain_file('jenkins-cli_config').that_requires('Package[jenkins-cli]') }
         it { is_expected.to contain_shellvar('CONTROLLER_URL').that_requires('File[jenkins-cli_config]') }
       end

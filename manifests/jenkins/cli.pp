@@ -18,6 +18,13 @@ class profiles::jenkins::cli(
     require => [ Profiles::Apt::Update['publiq-jenkins'], Class['profiles::java']]
   }
 
+  file { 'jenkins-cli_configdir':
+    ensure  => 'directory',
+    path    => dirname($config_path),
+    mode    => '0755',
+    require => Package['jenkins-cli']
+  }
+
   file { 'jenkins-cli_config':
     ensure  => 'file',
     path    => $config_path,
