@@ -14,8 +14,8 @@ define profiles::jenkins::plugin (
   $default_exec_attributes = {
     path      => ['/usr/local/bin', '/usr/bin', '/bin'],
     logoutput => 'on_failure',
-    tries     => 12,
-    try_sleep => 30,
+    tries     => 5,
+    try_sleep => 10,
     require   => Class['profiles::jenkins::cli']
   }
 

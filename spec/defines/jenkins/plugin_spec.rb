@@ -25,6 +25,8 @@ describe 'profiles::jenkins::plugin' do
             'command'   => "jenkins-cli install-plugin foobar -deploy",
             'path'      => [ '/usr/local/bin', '/usr/bin', '/bin'],
             'unless'    => 'jenkins-cli list-plugins foobar',
+            'tries'     => 5,
+            'try_sleep' => 10,
             'logoutput' => 'on_failure'
             )
           }
@@ -45,6 +47,8 @@ describe 'profiles::jenkins::plugin' do
             'command'   => "jenkins-cli disable-plugin foobar -restart",
             'path'      => [ '/usr/local/bin', '/usr/bin', '/bin'],
             'onlyif'    => 'jenkins-cli list-plugins foobar',
+            'tries'     => 5,
+            'try_sleep' => 10,
             'logoutput' => 'on_failure'
             )
           }
@@ -64,6 +68,8 @@ describe 'profiles::jenkins::plugin' do
             'command'   => "jenkins-cli install-plugin configuration-as-code -restart",
             'path'      => [ '/usr/local/bin', '/usr/bin', '/bin'],
             'unless'    => 'jenkins-cli list-plugins configuration-as-code',
+            'tries'     => 5,
+            'try_sleep' => 10,
             'logoutput' => 'on_failure'
             )
           }
