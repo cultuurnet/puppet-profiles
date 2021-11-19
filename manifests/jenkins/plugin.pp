@@ -12,7 +12,7 @@ define profiles::jenkins::plugin (
   $config_dir = '/var/lib/jenkins/casc_config'
 
   $default_exec_attributes = {
-    path      => ['/usr/local/bin', '/usr/bin'],
+    path      => ['/usr/local/bin', '/usr/bin', '/bin'],
     logoutput => 'on_failure',
     tries     => 12,
     try_sleep => 30,

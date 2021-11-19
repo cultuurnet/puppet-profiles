@@ -23,7 +23,7 @@ describe 'profiles::jenkins::plugin' do
 
           it { is_expected.to contain_exec('jenkins plugin foobar').with(
             'command'   => "jenkins-cli install-plugin foobar -deploy",
-            'path'      => [ '/usr/local/bin', '/usr/bin'],
+            'path'      => [ '/usr/local/bin', '/usr/bin', '/bin'],
             'unless'    => 'jenkins-cli list-plugins foobar',
             'logoutput' => 'on_failure'
             )
@@ -43,7 +43,7 @@ describe 'profiles::jenkins::plugin' do
 
           it { is_expected.to contain_exec('jenkins plugin foobar').with(
             'command'   => "jenkins-cli disable-plugin foobar -restart",
-            'path'      => [ '/usr/local/bin', '/usr/bin'],
+            'path'      => [ '/usr/local/bin', '/usr/bin', '/bin'],
             'onlyif'    => 'jenkins-cli list-plugins foobar',
             'logoutput' => 'on_failure'
             )
@@ -62,7 +62,7 @@ describe 'profiles::jenkins::plugin' do
 
           it { is_expected.to contain_exec('jenkins plugin configuration-as-code').with(
             'command'   => "jenkins-cli install-plugin configuration-as-code -restart",
-            'path'      => [ '/usr/local/bin', '/usr/bin'],
+            'path'      => [ '/usr/local/bin', '/usr/bin', '/bin'],
             'unless'    => 'jenkins-cli list-plugins configuration-as-code',
             'logoutput' => 'on_failure'
             )
