@@ -1,14 +1,15 @@
-class profiles::jenkins::controller::configuration inherits ::profiles {
+class profiles::jenkins::controller::configuration(
+  Stdlib::Httpurl $url
+) inherits ::profiles {
 
-  profiles::jenkins::plugin { 'configuration-as-code': }
   profiles::jenkins::plugin { 'swarm': }
+  profiles::jenkins::plugin { 'configuration-as-code':
+    configuration => {
+                       'url'        => $url
+                     }
+  }
 
-  exec { 'jenkins configuration-as-code reload':
-    command     => 'jenkins-cli reload-jcasc-configuration',
-    user        => 'jenkins',
-    refreshonly => true,
-    logoutput   => 'on_failure',
-    path        => [ '/usr/local/bin', '/usr/bin', '/bin'],
-    require     => Profiles::Jenkins::Plugin['configuration-as-code']
+  class { '::profiles::jenkins::controller::configuration::reload':
+    require => Profiles::Jenkins::Plugin['configuration-as-code']
   }
 }

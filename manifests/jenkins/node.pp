@@ -1,6 +1,6 @@
 class profiles::jenkins::node(
   String                         $version        = 'latest',
-  String                         $user           = lookup('profiles::jenkins::controller::admin_user', String, 'first', ''),
+  String                         $user           = 'admin',
   String                         $password       = lookup('profiles::jenkins::controller::admin_password', String, 'first', ''),
   String                         $controller_url = lookup('profiles::jenkins::controller::url', String, 'first', 'http://localhost:8080/'),
   Integer                        $executors      = 1,

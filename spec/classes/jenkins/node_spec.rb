@@ -142,7 +142,7 @@ describe 'profiles::jenkins::node' do
         let(:params) { {} }
 
         it { is_expected.to contain_class('profiles::jenkins::node').with(
-          'user'           => 'foo',
+          'user'           => 'admin',
           'password'       => 'bar',
           'version'        => 'latest',
           'controller_url' => 'https://foobar.com/',
@@ -156,7 +156,7 @@ describe 'profiles::jenkins::node' do
         let(:params) { {} }
 
         it { is_expected.to contain_class('profiles::jenkins::node').with(
-          'user'           => '',
+          'user'           => 'admin',
           'password'       => '',
           'version'        => 'latest',
           'controller_url' => 'http://localhost:8080/',

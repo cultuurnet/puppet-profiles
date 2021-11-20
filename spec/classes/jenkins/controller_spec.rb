@@ -17,13 +17,21 @@ describe 'profiles::jenkins::controller' do
 
         it { is_expected.to compile.with_all_deps }
 
+        it { is_expected.to contain_class('profiles::jenkins::controller').with(
+          'url'         => 'https://jenkins.example.com/',
+          'certificate' => 'wildcard.example.com'
+        ) }
+
         it { is_expected.to contain_group('jenkins') }
         it { is_expected.to contain_user('jenkins') }
 
         it { is_expected.to contain_profiles__apt__update('publiq-jenkins') }
         it { is_expected.to contain_class('profiles::java') }
-        it { is_expected.to contain_class('profiles::jenkins::controller::configuration') }
         it { is_expected.to contain_class('profiles::jenkins::controller::service') }
+
+        it { is_expected.to contain_class('profiles::jenkins::controller::configuration').with(
+          'url'        => 'https://jenkins.example.com/'
+        ) }
 
         it { is_expected.to contain_package('jenkins').with(
           'ensure' => 'latest'
@@ -75,36 +83,37 @@ describe 'profiles::jenkins::controller' do
       context "with url => https://foobar.example.com/ and certificate => foobar.example.com" do
         let(:params) { {
           'url'         => 'https://foobar.example.com/',
-          'certificate' => 'foobar.example.com'
+          'certificate' => 'foobar.example.com',
+          'version'     => '1.2.3'
         } }
 
-        context "with version => 1.2.3" do
-          let(:params) { super().merge( { 'version' => '1.2.3' } ) }
+        it { is_expected.to compile.with_all_deps }
 
-          it { is_expected.to compile.with_all_deps }
+        it { is_expected.to contain_package('jenkins').with(
+          'ensure' => '1.2.3'
+        ) }
 
-          it { is_expected.to contain_package('jenkins').with(
-            'ensure' => '1.2.3'
-          ) }
+        it { is_expected.to contain_class('profiles::jenkins::controller::configuration').with(
+          'url'        => 'https://foobar.example.com/'
+        ) }
 
-          it { is_expected.to contain_class('profiles::jenkins::cli').with(
-            'version'        => '1.2.3',
-            'controller_url' => 'https://foobar.example.com/'
-          ) }
+        it { is_expected.to contain_class('profiles::jenkins::cli').with(
+          'version'        => '1.2.3',
+          'controller_url' => 'https://foobar.example.com/'
+        ) }
 
-          it { is_expected.to contain_profiles__apache__vhost__redirect('http://foobar.example.com').with(
-            'destination' => 'https://foobar.example.com'
-          ) }
+        it { is_expected.to contain_profiles__apache__vhost__redirect('http://foobar.example.com').with(
+          'destination' => 'https://foobar.example.com'
+        ) }
 
-          it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('https://foobar.example.com').with(
-            'destination'           => 'http://127.0.0.1:8080/',
-            'certificate'           => 'foobar.example.com',
-            'preserve_host'         => true,
-            'allow_encoded_slashes' => 'nodecode',
-            'proxy_keywords'        => 'nocanon',
-            'support_websockets'    => true
-          ) }
-        end
+        it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('https://foobar.example.com').with(
+          'destination'           => 'http://127.0.0.1:8080/',
+          'certificate'           => 'foobar.example.com',
+          'preserve_host'         => true,
+          'allow_encoded_slashes' => 'nodecode',
+          'proxy_keywords'        => 'nocanon',
+          'support_websockets'    => true
+        ) }
       end
 
       context "without parameters" do

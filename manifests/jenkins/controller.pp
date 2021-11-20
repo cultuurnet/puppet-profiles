@@ -47,7 +47,10 @@ class profiles::jenkins::controller (
     notify   => Class['profiles::jenkins::controller::service']
   }
 
-  class { '::profiles::jenkins::controller::configuration': }
+  class { '::profiles::jenkins::controller::configuration':
+    url        => $url
+  }
+
   class { '::profiles::jenkins::controller::service': }
 
   profiles::apache::vhost::redirect { "http://${hostname}":

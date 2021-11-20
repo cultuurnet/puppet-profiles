@@ -15,7 +15,7 @@ describe 'profiles::jenkins::cli' do
         it { is_expected.to contain_class('profiles::jenkins::cli').with(
           'manage_credentials' => false,
           'version'            => 'latest',
-          'user'               => '',
+          'user'               => 'admin',
           'password'           => '',
           'controller_url'     => 'http://localhost:8080/'
         ) }
@@ -103,7 +103,7 @@ describe 'profiles::jenkins::cli' do
 
         it { is_expected.to contain_class('profiles::jenkins::cli').with(
           'manage_credentials' => false,
-          'user'               => 'foo',
+          'user'               => 'admin',
           'password'           => 'bar',
           'version'            => 'latest',
           'controller_url'     => 'https://foobar.com/'
