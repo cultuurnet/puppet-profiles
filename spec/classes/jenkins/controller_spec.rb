@@ -9,17 +9,20 @@ describe 'profiles::jenkins::controller' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with url => https://jenkins.example.com/ and certificate => wildcard.example.com" do
+      context "with url => https://jenkins.example.com/, admin_password => passw0rd and certificate => wildcard.example.com" do
         let(:params) { {
-          'url'         => 'https://jenkins.example.com/',
-          'certificate' => 'wildcard.example.com'
+          'url'            => 'https://jenkins.example.com/',
+          'admin_password' => 'passw0rd',
+          'certificate'    => 'wildcard.example.com'
         } }
 
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::jenkins::controller').with(
-          'url'         => 'https://jenkins.example.com/',
-          'certificate' => 'wildcard.example.com'
+          'url'            => 'https://jenkins.example.com/',
+          'admin_password' => 'passw0rd',
+          'certificate'    => 'wildcard.example.com',
+          'version'        => 'latest'
         ) }
 
         it { is_expected.to contain_group('jenkins') }
@@ -30,7 +33,8 @@ describe 'profiles::jenkins::controller' do
         it { is_expected.to contain_class('profiles::jenkins::controller::service') }
 
         it { is_expected.to contain_class('profiles::jenkins::controller::configuration').with(
-          'url'        => 'https://jenkins.example.com/'
+          'url'            => 'https://jenkins.example.com/',
+          'admin_password' => 'passw0rd'
         ) }
 
         it { is_expected.to contain_package('jenkins').with(
@@ -80,11 +84,12 @@ describe 'profiles::jenkins::controller' do
         it { is_expected.to contain_package('jenkins').that_notifies('Class[profiles::jenkins::controller::service]') }
       end
 
-      context "with url => https://foobar.example.com/ and certificate => foobar.example.com" do
+      context "with url => https://foobar.example.com/, admin_password => letmein and certificate => foobar.example.com" do
         let(:params) { {
-          'url'         => 'https://foobar.example.com/',
-          'certificate' => 'foobar.example.com',
-          'version'     => '1.2.3'
+          'url'            => 'https://foobar.example.com/',
+          'admin_password' => 'letmein',
+          'certificate'    => 'foobar.example.com',
+          'version'        => '1.2.3'
         } }
 
         it { is_expected.to compile.with_all_deps }
@@ -94,7 +99,8 @@ describe 'profiles::jenkins::controller' do
         ) }
 
         it { is_expected.to contain_class('profiles::jenkins::controller::configuration').with(
-          'url'        => 'https://foobar.example.com/'
+          'url'            => 'https://foobar.example.com/',
+          'admin_password' => 'letmein'
         ) }
 
         it { is_expected.to contain_class('profiles::jenkins::cli').with(
@@ -120,6 +126,7 @@ describe 'profiles::jenkins::controller' do
         let(:params) { {} }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'url'/) }
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'admin_password'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'certificate'/) }
       end
     end

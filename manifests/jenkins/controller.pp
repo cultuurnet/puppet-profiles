@@ -1,5 +1,6 @@
 class profiles::jenkins::controller (
   Stdlib::Httpurl $url,
+  String          $admin_password,
   String          $certificate,
   String          $version     = 'latest'
 ) inherits ::profiles {
@@ -48,7 +49,8 @@ class profiles::jenkins::controller (
   }
 
   class { '::profiles::jenkins::controller::configuration':
-    url        => $url
+    url            => $url,
+    admin_password => $admin_password
   }
 
   class { '::profiles::jenkins::controller::service': }
