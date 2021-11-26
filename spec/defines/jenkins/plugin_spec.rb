@@ -101,6 +101,26 @@ describe 'profiles::jenkins::plugin' do
           it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*url: 'https:\/\/jenkins\.example\.com\/'$/) }
         end
       end
+
+      context "with title plain-credentials" do
+        let(:title) { 'plain-credentials' }
+
+        context "with configuration => {'mytoken' => {'type' => 'string', 'secret' => 'foobar'}}" do
+          let(:params) { {
+              'configuration' => {'mytoken' => {'type' => 'string', 'secret' => 'foobar'}}
+          } }
+
+          it { is_expected.to contain_file('plain-credentials configuration').with(
+            'ensure'  => 'file',
+            'path'    => '/var/lib/jenkins/casc_config/plain-credentials.yaml',
+            'owner'   => 'jenkins',
+            'group'   => 'jenkins'
+          ) }
+
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*id: 'mytoken'$/) }
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*secret: 'foobar'$/) }
+        end
+      end
     end
   end
 end
