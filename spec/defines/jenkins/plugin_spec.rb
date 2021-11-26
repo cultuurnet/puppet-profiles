@@ -105,9 +105,9 @@ describe 'profiles::jenkins::plugin' do
       context "with title plain-credentials" do
         let(:title) { 'plain-credentials' }
 
-        context "with configuration => {'mytoken' => {'type' => 'string', 'secret' => 'foobar'}}" do
+        context "with configuration => {'credentials' => {'id' => 'mytoken', 'type' => 'string', 'secret' => 'foobar'}}" do
           let(:params) { {
-              'configuration' => {'mytoken' => {'type' => 'string', 'secret' => 'foobar'}}
+              'configuration' => { 'credentials' => {'id' => 'mytoken', 'type' => 'string', 'secret' => 'foobar'}}
           } }
 
           it { is_expected.to contain_file('plain-credentials configuration').with(
@@ -119,6 +119,61 @@ describe 'profiles::jenkins::plugin' do
 
           it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*id: 'mytoken'$/) }
           it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*secret: 'foobar'$/) }
+        end
+
+        context "with configuration => {'credentials' => [{'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'}, {'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'}]}" do
+          let(:params) { {
+              'configuration' => { 'credentials' => [
+                                    {'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'},
+                                    {'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'}
+                                   ]
+                                 }
+          } }
+
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*id: 'token1'$/) }
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*secret: 'secret1'$/) }
+
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*id: 'token2'$/) }
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*secret: 'secret2'$/) }
+        end
+      end
+
+      context "with title ssh-credentials" do
+        let(:title) { 'ssh-credentials' }
+
+        context "with configuration => {'credentials' => {'id' => 'mykey', 'type' => 'private_key', 'key' => 'abc123'}}" do
+          let(:params) { {
+              'configuration' => { 'credentials' => {'id' => 'mykey', 'type' => 'private_key', 'key' => 'abc123'}}
+          } }
+
+          it { is_expected.to contain_file('ssh-credentials configuration').with(
+            'ensure'  => 'file',
+            'path'    => '/var/lib/jenkins/casc_config/ssh-credentials.yaml',
+            'owner'   => 'jenkins',
+            'group'   => 'jenkins'
+          ) }
+
+          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^\s*id: 'mykey'$/) }
+          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^\s*privateKey: 'abc123'$/) }
+          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^\s*username: 'mykey'$/) }
+        end
+
+        context "with configuration => {'credentials' => [{'id' => 'key1', 'type' => 'private_key', 'key' => 'def456'}, {'id' => 'key2', 'type' => 'private_key', 'secret' => 'ghi789'}]}" do
+          let(:params) { {
+              'configuration' => { 'credentials' => [
+                                    {'id' => 'key1', 'type' => 'private_key', 'key' => 'def456'},
+                                    {'id' => 'key2', 'type' => 'private_key', 'key' => 'ghi789'}
+                                   ]
+                                 }
+          } }
+
+          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^\s*id: 'key1'$/) }
+          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^\s*privateKey: 'def456'$/) }
+          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^\s*username: 'key1'$/) }
+
+          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^\s*id: 'key2'$/) }
+          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^\s*privateKey: 'ghi789'$/) }
+          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^\s*username: 'key2'$/) }
         end
       end
     end
