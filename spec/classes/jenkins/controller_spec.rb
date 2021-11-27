@@ -22,7 +22,8 @@ describe 'profiles::jenkins::controller' do
           'url'            => 'https://jenkins.example.com/',
           'admin_password' => 'passw0rd',
           'certificate'    => 'wildcard.example.com',
-          'version'        => 'latest'
+          'version'        => 'latest',
+          'credentials'    => []
         ) }
 
         it { is_expected.to contain_class('profiles::java') }
@@ -33,7 +34,8 @@ describe 'profiles::jenkins::controller' do
 
         it { is_expected.to contain_class('profiles::jenkins::controller::configuration').with(
           'url'            => 'https://jenkins.example.com/',
-          'admin_password' => 'passw0rd'
+          'admin_password' => 'passw0rd',
+          'credentials'    => []
         ) }
 
         it { is_expected.to contain_class('profiles::jenkins::controller::service') }
@@ -60,12 +62,16 @@ describe 'profiles::jenkins::controller' do
         it { is_expected.to contain_class('profiles::jenkins::controller::install').that_notifies('Class[profiles::jenkins::controller::service]') }
       end
 
-      context "with url => https://foobar.example.com/, admin_password => letmein and certificate => foobar.example.com" do
+      context "with url => https://foobar.example.com/, admin_password => letmein, certificate => foobar.example.com, version => 1.2.3 and credentials => [{ id => 'token1', type => 'string', secret => 'secret1'}, { id => 'token2', type => 'string', secret => 'secret2'}]" do
         let(:params) { {
           'url'            => 'https://foobar.example.com/',
           'admin_password' => 'letmein',
           'certificate'    => 'foobar.example.com',
-          'version'        => '1.2.3'
+          'version'        => '1.2.3',
+          'credentials'    => [
+                                { 'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'},
+                                { 'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'}
+                              ]
         } }
 
         it { is_expected.to compile.with_all_deps }
@@ -76,7 +82,11 @@ describe 'profiles::jenkins::controller' do
 
         it { is_expected.to contain_class('profiles::jenkins::controller::configuration').with(
           'url'            => 'https://foobar.example.com/',
-          'admin_password' => 'letmein'
+          'admin_password' => 'letmein',
+          'credentials'    => [
+                                { 'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'},
+                                { 'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'}
+                              ]
         ) }
 
         it { is_expected.to contain_class('profiles::jenkins::cli').with(
