@@ -1,7 +1,11 @@
 class profiles::jenkins::controller::configuration(
-  Stdlib::Httpurl $url,
-  String          $admin_password
+  Stdlib::Httpurl            $url,
+  String                     $admin_password,
+  Variant[Hash, Array[Hash]] $credentials    = []
 ) inherits ::profiles {
+
+  $string_credentials      = [$credentials].flatten.filter |$credential| { $credential['type'] == 'string' }
+  $private_key_credentials = [$credentials].flatten.filter |$credential| { $credential['type'] == 'private_key' }
 
   profiles::jenkins::plugin { 'swarm': }
   profiles::jenkins::plugin { 'configuration-as-code':
@@ -11,6 +15,14 @@ class profiles::jenkins::controller::configuration(
                      },
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
+  profiles::jenkins::plugin { 'plain-credentials':
+    configuration => $string_credentials,
+    notify        => Class['profiles::jenkins::controller::configuration::reload']
+  }
+  profiles::jenkins::plugin { 'ssh-credentials':
+    configuration => $private_key_credentials,
+    notify        => Class['profiles::jenkins::controller::configuration::reload']
+  }
 
   class { '::profiles::jenkins::controller::configuration::reload': }
 
@@ -18,12 +30,5 @@ class profiles::jenkins::controller::configuration(
     user     => 'admin',
     password => $admin_password,
     require  => Class['profiles::jenkins::controller::configuration::reload']
-  }
-
-  profiles::jenkins::plugin { 'plain-credentials':
-    configuration => {
-                       'credentials' => $credentials.filter |$credential| { $credential['type'] == 'string' }
-                     },
-    notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
 }
