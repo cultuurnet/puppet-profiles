@@ -1,7 +1,7 @@
 define profiles::jenkins::plugin (
-  Enum['present', 'absent'] $ensure        = 'present',
-  Boolean                   $restart       = false,
-  Optional[Hash]            $configuration = undef
+  Enum['present', 'absent']     $ensure        = 'present',
+  Boolean                       $restart       = false,
+  Optional[Variant[Array,Hash]] $configuration = undef
 ) {
 
   include ::profiles
@@ -39,7 +39,7 @@ define profiles::jenkins::plugin (
       *       => $default_exec_attributes
     }
 
-    if $configuration {
+    unless empty($configuration) {
       realize Group['jenkins']
       realize User['jenkins']
 

@@ -53,6 +53,34 @@ describe 'profiles::jenkins::plugin' do
             )
           }
         end
+
+        context "with configuration => []" do
+          let(:params) { {
+            'configuration' => [],
+          } }
+
+          it { is_expected.to contain_profiles__jenkins__plugin('foobar').with(
+            'ensure'        => 'present',
+            'restart'       => false,
+            'configuration' => []
+          ) }
+
+          it { is_expected.to_not contain_file('foobar configuration') }
+        end
+
+        context "with configuration => {}" do
+          let(:params) { {
+            'configuration' => {},
+          } }
+
+          it { is_expected.to contain_profiles__jenkins__plugin('foobar').with(
+            'ensure'        => 'present',
+            'restart'       => false,
+            'configuration' => {}
+          ) }
+
+          it { is_expected.to_not contain_file('foobar configuration') }
+        end
       end
 
       context "with title configuration-as-code" do
@@ -105,9 +133,9 @@ describe 'profiles::jenkins::plugin' do
       context "with title plain-credentials" do
         let(:title) { 'plain-credentials' }
 
-        context "with configuration => {'credentials' => {'id' => 'mytoken', 'type' => 'string', 'secret' => 'foobar'}}" do
+        context "with configuration => {'id' => 'mytoken', 'type' => 'string', 'secret' => 'foobar'}" do
           let(:params) { {
-              'configuration' => { 'credentials' => {'id' => 'mytoken', 'type' => 'string', 'secret' => 'foobar'}}
+              'configuration' => {'id' => 'mytoken', 'type' => 'string', 'secret' => 'foobar'}
           } }
 
           it { is_expected.to contain_file('plain-credentials configuration').with(
@@ -121,13 +149,12 @@ describe 'profiles::jenkins::plugin' do
           it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*secret: 'foobar'$/) }
         end
 
-        context "with configuration => {'credentials' => [{'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'}, {'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'}]}" do
+        context "with configuration => [{'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'}, {'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'}]" do
           let(:params) { {
-              'configuration' => { 'credentials' => [
-                                    {'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'},
-                                    {'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'}
-                                   ]
-                                 }
+              'configuration' => [
+                                   {'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'},
+                                   {'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'}
+                                 ]
           } }
 
           it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*id: 'token1'$/) }
@@ -143,7 +170,7 @@ describe 'profiles::jenkins::plugin' do
 
         context "with configuration => {'credentials' => {'id' => 'mykey', 'type' => 'private_key', 'key' => 'abc123'}}" do
           let(:params) { {
-              'configuration' => { 'credentials' => {'id' => 'mykey', 'type' => 'private_key', 'key' => 'abc123'}}
+              'configuration' => {'id' => 'mykey', 'type' => 'private_key', 'key' => 'abc123'}
           } }
 
           it { is_expected.to contain_file('ssh-credentials configuration').with(
@@ -160,11 +187,10 @@ describe 'profiles::jenkins::plugin' do
 
         context "with configuration => {'credentials' => [{'id' => 'key1', 'type' => 'private_key', 'key' => 'def456'}, {'id' => 'key2', 'type' => 'private_key', 'secret' => 'ghi789'}]}" do
           let(:params) { {
-              'configuration' => { 'credentials' => [
-                                    {'id' => 'key1', 'type' => 'private_key', 'key' => 'def456'},
-                                    {'id' => 'key2', 'type' => 'private_key', 'key' => 'ghi789'}
-                                   ]
-                                 }
+              'configuration' => [
+                                   {'id' => 'key1', 'type' => 'private_key', 'key' => 'def456'},
+                                   {'id' => 'key2', 'type' => 'private_key', 'key' => 'ghi789'}
+                                 ]
           } }
 
           it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^\s*id: 'key1'$/) }
