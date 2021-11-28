@@ -202,6 +202,35 @@ describe 'profiles::jenkins::plugin' do
           it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^\s*username: 'key2'$/) }
         end
       end
+
+      context "with title git" do
+        let(:title) { 'git' }
+
+        context "with configuration => {'user_name' => 'foobar', 'user_email' => 'myuser@example.com'}" do
+          let(:params) { {
+              'configuration' => {'user_name' => 'foobar', 'user_email' => 'myuser@example.com'}
+          } }
+
+          it { is_expected.to contain_file('git configuration').with(
+            'ensure'  => 'file',
+            'path'    => '/var/lib/jenkins/casc_config/git.yaml',
+            'owner'   => 'jenkins',
+            'group'   => 'jenkins'
+          ) }
+
+          it { is_expected.to contain_file('git configuration').with_content(/^\s*globalConfigName: 'foobar'$/) }
+          it { is_expected.to contain_file('git configuration').with_content(/^\s*globalConfigEmail: 'myuser@example.com'$/) }
+        end
+
+        context "with configuration => {'user_name' => 'testuser', 'user_email' => 'testuser@foobar.com'}" do
+          let(:params) { {
+              'configuration' => {'user_name' => 'testuser', 'user_email' => 'testuser@foobar.com'}
+          } }
+
+          it { is_expected.to contain_file('git configuration').with_content(/^\s*globalConfigName: 'testuser'$/) }
+          it { is_expected.to contain_file('git configuration').with_content(/^\s*globalConfigEmail: 'testuser@foobar.com'$/) }
+        end
+      end
     end
   end
 end

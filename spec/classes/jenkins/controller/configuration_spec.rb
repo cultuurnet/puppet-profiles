@@ -31,6 +31,15 @@ describe 'profiles::jenkins::controller::configuration' do
                              }
         ) }
 
+        it { is_expected.to contain_profiles__jenkins__plugin('git').with(
+          'ensure'        => 'present',
+          'restart'       => false,
+          'configuration' => {
+                               'user_name'  => 'publiq Jenkins',
+                               'user_email' => 'jenkins@publiq.be'
+                             }
+        ) }
+
         it { is_expected.to contain_profiles__jenkins__plugin('swarm').with(
           'ensure'        => 'present',
           'restart'       => false,
@@ -55,6 +64,7 @@ describe 'profiles::jenkins::controller::configuration' do
           'password' => 'passw0rd'
         ) }
 
+        it { is_expected.to contain_profiles__jenkins__plugin('git').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
         it { is_expected.to contain_profiles__jenkins__plugin('configuration-as-code').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
         it { is_expected.to contain_class('profiles::jenkins::cli::credentials').that_requires('Class[profiles::jenkins::controller::configuration::reload]') }
       end

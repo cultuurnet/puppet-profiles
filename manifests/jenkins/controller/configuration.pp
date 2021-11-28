@@ -8,6 +8,13 @@ class profiles::jenkins::controller::configuration(
   $private_key_credentials = [$credentials].flatten.filter |$credential| { $credential['type'] == 'private_key' }
 
   profiles::jenkins::plugin { 'swarm': }
+  profiles::jenkins::plugin { 'git':
+    configuration => {
+                       'user_name'  => 'publiq Jenkins',
+                       'user_email' => 'jenkins@publiq.be'
+                     },
+    notify        => Class['profiles::jenkins::controller::configuration::reload']
+  }
   profiles::jenkins::plugin { 'configuration-as-code':
     configuration => {
                        'url'            => $url,
