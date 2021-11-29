@@ -16,9 +16,10 @@ describe 'profiles::jenkins::controller::configuration' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::jenkins::controller::configuration').with(
-          'url'            =>  'https://jenkins.foobar.com/',
-          'admin_password' => 'passw0rd',
-          'credentials'    => []
+          'url'              =>  'https://jenkins.foobar.com/',
+          'admin_password'   => 'passw0rd',
+          'credentials'      => [],
+          'global_libraries' => []
         ) }
 
 
@@ -58,22 +59,31 @@ describe 'profiles::jenkins::controller::configuration' do
           'configuration' => []
         ) }
 
+        it { is_expected.to contain_profiles__jenkins__plugin('workflow-cps-global-lib').with(
+          'ensure'        => 'present',
+          'restart'       => false,
+          'configuration' => []
+        ) }
+
         it { is_expected.to contain_class('profiles::jenkins::controller::configuration::reload') }
         it { is_expected.to contain_class('profiles::jenkins::cli::credentials').with(
           'user'     => 'admin',
           'password' => 'passw0rd'
         ) }
 
+        it { is_expected.to contain_profiles__jenkins__plugin('git').that_comes_before('Profiles::Jenkins::Plugin[workflow-cps-global-lib]') }
+        it { is_expected.to contain_profiles__jenkins__plugin('ssh-credentials').that_comes_before('Profiles::Jenkins::Plugin[workflow-cps-global-lib]') }
         it { is_expected.to contain_profiles__jenkins__plugin('git').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
         it { is_expected.to contain_profiles__jenkins__plugin('configuration-as-code').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
         it { is_expected.to contain_class('profiles::jenkins::cli::credentials').that_requires('Class[profiles::jenkins::controller::configuration::reload]') }
       end
 
-      context "with url => https://builds.foobar.com/, admin_password => letmein and credentials => { id => 'foo', type => 'string', secret => 'bla'}" do
+      context "with url => https://builds.foobar.com/, admin_password => letmein, credentials => { id => 'foo', type => 'string', secret => 'bla'} and global_libraries => { git_url => 'git@example.com:org/repo.git', git_ref => 'main', credential_id => 'mygitcred'}" do
         let(:params) { {
-          'url'            =>  'https://builds.foobar.com/',
-          'admin_password' => 'letmein',
-          'credentials'    => { 'id' => 'foo', 'type' => 'string', 'secret' => 'bla'}
+          'url'              =>  'https://builds.foobar.com/',
+          'admin_password'   => 'letmein',
+          'credentials'      => { 'id' => 'foo', 'type' => 'string', 'secret' => 'bla'},
+          'global_libraries' => { 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}
         } }
 
         it { is_expected.to contain_profiles__jenkins__plugin('configuration-as-code').with(
@@ -89,6 +99,12 @@ describe 'profiles::jenkins::controller::configuration' do
           'configuration' => [{ 'id' => 'foo', 'type' => 'string', 'secret' => 'bla'}]
         ) }
 
+        it { is_expected.to contain_profiles__jenkins__plugin('workflow-cps-global-lib').with(
+          'ensure'        => 'present',
+          'restart'       => false,
+          'configuration' => [{ 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}]
+        ) }
+
         it { is_expected.to contain_class('profiles::jenkins::cli::credentials').with(
           'user'     => 'admin',
           'password' => 'letmein'
@@ -98,16 +114,28 @@ describe 'profiles::jenkins::controller::configuration' do
         it { is_expected.to contain_profiles__jenkins__plugin('ssh-credentials').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
       end
 
-      context "with url => https://builds.foobar.com/, admin_password => letmein and credentials => [{ id => 'token1', type => 'string', secret => 'secret1'}, { id => 'token2', type => 'string', secret => 'secret2'}, { id => 'key1', type => 'private_key', key => 'privkey1'}, { id => 'key2', type => 'private_key', key => 'privkey2'}]" do
+      context "with url => https://builds.foobar.com/, admin_password => letmein, credentials => [{ id => 'token1', type => 'string', secret => 'secret1'}, { id => 'token2', type => 'string', secret => 'secret2'}, { id => 'key1', type => 'private_key', key => 'privkey1'}, { id => 'key2', type => 'private_key', key => 'privkey2'}] and global_libraries => [{'git_url' => 'git@foo.com:bar/baz.git', 'git_ref' => 'develop', 'credential_id' => 'gitkey'}, {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}]" do
         let(:params) { {
-          'url'            =>  'https://builds.foobar.com/',
-          'admin_password' => 'letmein',
-          'credentials'    => [
-                                { 'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'},
-                                { 'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'},
-                                { 'id' => 'key1', 'type' => 'private_key', 'secret' => 'privkey1'},
-                                { 'id' => 'key2', 'type' => 'private_key', 'secret' => 'privkey2'}
-                              ]
+          'url'              =>  'https://builds.foobar.com/',
+          'admin_password'   => 'letmein',
+          'credentials'      => [
+                                  { 'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'},
+                                  { 'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'},
+                                  { 'id' => 'key1', 'type' => 'private_key', 'secret' => 'privkey1'},
+                                  { 'id' => 'key2', 'type' => 'private_key', 'secret' => 'privkey2'}
+                                ],
+          'global_libraries' => [
+                                  {
+                                    'git_url'       => 'git@foo.com:bar/baz.git',
+                                    'git_ref'       => 'develop',
+                                    'credential_id' => 'gitkey'
+                                  },
+                                  {
+                                    'git_url'       => 'git@example.com:org/repo.git',
+                                    'git_ref'       => 'main',
+                                    'credential_id' => 'mygitcred'
+                                  }
+                                ]
         } }
 
         it { is_expected.to contain_profiles__jenkins__plugin('configuration-as-code').with(
@@ -132,6 +160,23 @@ describe 'profiles::jenkins::controller::configuration' do
           'configuration' => [
                                { 'id' => 'key1', 'type' => 'private_key', 'secret' => 'privkey1'},
                                { 'id' => 'key2', 'type' => 'private_key', 'secret' => 'privkey2'}
+                             ]
+        ) }
+
+        it { is_expected.to contain_profiles__jenkins__plugin('workflow-cps-global-lib').with(
+          'ensure'        => 'present',
+          'restart'       => false,
+          'configuration' => [
+                               {
+                                 'git_url'       => 'git@foo.com:bar/baz.git',
+                                 'git_ref'       => 'develop',
+                                 'credential_id' => 'gitkey'
+                               },
+                               {
+                                 'git_url'       => 'git@example.com:org/repo.git',
+                                 'git_ref'       => 'main',
+                                 'credential_id' => 'mygitcred'
+                               }
                              ]
         ) }
 

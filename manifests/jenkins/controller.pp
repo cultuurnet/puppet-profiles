@@ -2,8 +2,9 @@ class profiles::jenkins::controller (
   Stdlib::Httpurl     $url,
   String              $admin_password,
   String              $certificate,
-  String              $version        = 'latest',
-  Variant[Array,Hash] $credentials    = []
+  String              $version          = 'latest',
+  Variant[Array,Hash] $credentials      = [],
+  Variant[Array,Hash] $global_libraries = []
 ) inherits ::profiles {
 
   include ::profiles::java
@@ -25,10 +26,11 @@ class profiles::jenkins::controller (
   }
 
   class { '::profiles::jenkins::controller::configuration':
-    url            => $url,
-    admin_password => $admin_password,
-    credentials    => $credentials,
-    require        => [ Class['profiles::jenkins::controller::service'], Class['profiles::jenkins::cli']]
+    url              => $url,
+    admin_password   => $admin_password,
+    credentials      => $credentials,
+    global_libraries => $global_libraries,
+    require          => [ Class['profiles::jenkins::controller::service'], Class['profiles::jenkins::cli']]
   }
 
   profiles::apache::vhost::redirect { "http://${hostname}":

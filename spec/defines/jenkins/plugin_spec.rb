@@ -231,6 +231,53 @@ describe 'profiles::jenkins::plugin' do
           it { is_expected.to contain_file('git configuration').with_content(/^\s*globalConfigEmail: 'testuser@foobar.com'$/) }
         end
       end
+
+      context "with title workflow-cps-global-lib" do
+        let(:title) { 'workflow-cps-global-lib' }
+
+        context "with configuration => {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}" do
+          let(:params) { {
+              'configuration' => {
+                                   'git_url'       => 'git@example.com:org/repo.git',
+                                   'git_ref'       => 'main',
+                                   'credential_id' => 'mygitcred'
+                                 }
+          } }
+
+          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with(
+            'ensure'  => 'file',
+            'path'    => '/var/lib/jenkins/casc_config/workflow-cps-global-lib.yaml',
+            'owner'   => 'jenkins',
+            'group'   => 'jenkins'
+          ) }
+
+          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*remote: 'git@example.com:org\/repo.git'$/) }
+          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*defaultVersion: 'main'$/) }
+          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*credentialsId: 'mygitcred'$/) }
+        end
+
+        context "with configuration => [{'git_url' => 'git@foo.com:bar/baz.git', 'git_ref' => 'develop', 'credential_id' => 'gitkey'}, {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}]" do
+          let(:params) { {
+              'configuration' => [{
+                                   'git_url'       => 'git@foo.com:bar/baz.git',
+                                   'git_ref'       => 'develop',
+                                   'credential_id' => 'gitkey'
+                                 },
+                                 {
+                                   'git_url'       => 'git@example.com:org/repo.git',
+                                   'git_ref'       => 'main',
+                                   'credential_id' => 'mygitcred'
+                                 }]
+          } }
+
+          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*remote: 'git@foo.com:bar\/baz.git'$/) }
+          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*defaultVersion: 'develop'$/) }
+          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*credentialsId: 'gitkey'$/) }
+          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*remote: 'git@example.com:org\/repo.git'$/) }
+          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*defaultVersion: 'main'$/) }
+          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*credentialsId: 'mygitcred'$/) }
+        end
+      end
     end
   end
 end

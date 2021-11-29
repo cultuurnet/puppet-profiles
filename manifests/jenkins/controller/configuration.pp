@@ -1,7 +1,8 @@
 class profiles::jenkins::controller::configuration(
   Stdlib::Httpurl            $url,
   String                     $admin_password,
-  Variant[Hash, Array[Hash]] $credentials    = []
+  Variant[Hash, Array[Hash]] $credentials      = [],
+  Variant[Hash, Array[Hash]] $global_libraries = []
 ) inherits ::profiles {
 
   $string_credentials      = [$credentials].flatten.filter |$credential| { $credential['type'] == 'string' }
@@ -28,6 +29,11 @@ class profiles::jenkins::controller::configuration(
   }
   profiles::jenkins::plugin { 'ssh-credentials':
     configuration => $private_key_credentials,
+    notify        => Class['profiles::jenkins::controller::configuration::reload']
+  }
+  profiles::jenkins::plugin { 'workflow-cps-global-lib':
+    configuration => [$global_libraries].flatten,
+    require       => [ Profiles::Jenkins::Plugin['git'], Profiles::Jenkins::Plugin['ssh-credentials']],
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
 

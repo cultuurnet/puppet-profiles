@@ -19,11 +19,12 @@ describe 'profiles::jenkins::controller' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::jenkins::controller').with(
-          'url'            => 'https://jenkins.example.com/',
-          'admin_password' => 'passw0rd',
-          'certificate'    => 'wildcard.example.com',
-          'version'        => 'latest',
-          'credentials'    => []
+          'url'              => 'https://jenkins.example.com/',
+          'admin_password'   => 'passw0rd',
+          'certificate'      => 'wildcard.example.com',
+          'version'          => 'latest',
+          'credentials'      => [],
+          'global_libraries' => []
         ) }
 
         it { is_expected.to contain_class('profiles::java') }
@@ -33,9 +34,10 @@ describe 'profiles::jenkins::controller' do
         ) }
 
         it { is_expected.to contain_class('profiles::jenkins::controller::configuration').with(
-          'url'            => 'https://jenkins.example.com/',
-          'admin_password' => 'passw0rd',
-          'credentials'    => []
+          'url'              => 'https://jenkins.example.com/',
+          'admin_password'   => 'passw0rd',
+          'credentials'      => [],
+          'global_libraries' => []
         ) }
 
         it { is_expected.to contain_class('profiles::jenkins::controller::service') }
@@ -65,16 +67,28 @@ describe 'profiles::jenkins::controller' do
         it { is_expected.to contain_class('profiles::jenkins::cli').that_requires('Profiles::Apache::Vhost::Reverse_proxy[https://jenkins.example.com]') }
       end
 
-      context "with url => https://foobar.example.com/, admin_password => letmein, certificate => foobar.example.com, version => 1.2.3 and credentials => [{ id => 'token1', type => 'string', secret => 'secret1'}, { id => 'token2', type => 'string', secret => 'secret2'}]" do
+      context "with url => https://foobar.example.com/, admin_password => letmein, certificate => foobar.example.com, version => 1.2.3, credentials => [{ id => 'token1', type => 'string', secret => 'secret1'}, { id => 'token2', type => 'string', secret => 'secret2'}] and global_libraries => [{'git_url' => 'git@foo.com:bar/baz.git', 'git_ref' => 'develop', 'credential_id' => 'gitkey'}, {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}]" do
         let(:params) { {
-          'url'            => 'https://foobar.example.com/',
-          'admin_password' => 'letmein',
-          'certificate'    => 'foobar.example.com',
-          'version'        => '1.2.3',
-          'credentials'    => [
-                                { 'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'},
-                                { 'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'}
-                              ]
+          'url'              => 'https://foobar.example.com/',
+          'admin_password'   => 'letmein',
+          'certificate'      => 'foobar.example.com',
+          'version'          => '1.2.3',
+          'credentials'      => [
+                                  { 'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'},
+                                  { 'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'}
+                                ],
+          'global_libraries' => [
+                                  {
+                                    'git_url'       => 'git@foo.com:bar/baz.git',
+                                    'git_ref'       => 'develop',
+                                    'credential_id' => 'gitkey'
+                                  },
+                                  {
+                                    'git_url'       => 'git@example.com:org/repo.git',
+                                    'git_ref'       => 'main',
+                                    'credential_id' => 'mygitcred'
+                                  }
+                                ]
         } }
 
         it { is_expected.to compile.with_all_deps }
@@ -84,12 +98,24 @@ describe 'profiles::jenkins::controller' do
         ) }
 
         it { is_expected.to contain_class('profiles::jenkins::controller::configuration').with(
-          'url'            => 'https://foobar.example.com/',
-          'admin_password' => 'letmein',
-          'credentials'    => [
-                                { 'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'},
-                                { 'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'}
-                              ]
+          'url'              => 'https://foobar.example.com/',
+          'admin_password'   => 'letmein',
+          'credentials'      => [
+                                  { 'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'},
+                                  { 'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'}
+                                ],
+          'global_libraries' => [
+                                  {
+                                    'git_url'       => 'git@foo.com:bar/baz.git',
+                                    'git_ref'       => 'develop',
+                                    'credential_id' => 'gitkey'
+                                  },
+                                  {
+                                    'git_url'       => 'git@example.com:org/repo.git',
+                                    'git_ref'       => 'main',
+                                    'credential_id' => 'mygitcred'
+                                  }
+                                ]
         ) }
 
         it { is_expected.to contain_class('profiles::jenkins::cli').with(
