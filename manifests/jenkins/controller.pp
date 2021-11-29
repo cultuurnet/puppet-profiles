@@ -16,17 +16,19 @@ class profiles::jenkins::controller (
     notify  => Class['profiles::jenkins::controller::service']
   }
 
-  class { '::profiles::jenkins::controller::configuration':
-    url            => $url,
-    admin_password => $admin_password,
-    credentials    => $credentials
-  }
-
   class { '::profiles::jenkins::controller::service': }
 
   class { '::profiles::jenkins::cli':
     version        => $version,
-    controller_url => $url
+    controller_url => $url,
+    require        => Profiles::Apache::Vhost::Reverse_proxy["https://${hostname}"]
+  }
+
+  class { '::profiles::jenkins::controller::configuration':
+    url            => $url,
+    admin_password => $admin_password,
+    credentials    => $credentials,
+    require        => [ Class['profiles::jenkins::controller::service'], Class['profiles::jenkins::cli']]
   }
 
   profiles::apache::vhost::redirect { "http://${hostname}":

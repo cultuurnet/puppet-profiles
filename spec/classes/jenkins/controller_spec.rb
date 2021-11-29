@@ -60,6 +60,9 @@ describe 'profiles::jenkins::controller' do
 
         it { is_expected.to contain_class('profiles::jenkins::controller::install').that_requires('Class[profiles::java]') }
         it { is_expected.to contain_class('profiles::jenkins::controller::install').that_notifies('Class[profiles::jenkins::controller::service]') }
+        it { is_expected.to contain_class('profiles::jenkins::controller::configuration').that_requires('Class[profiles::jenkins::controller::service]') }
+        it { is_expected.to contain_class('profiles::jenkins::controller::configuration').that_requires('Class[profiles::jenkins::cli]') }
+        it { is_expected.to contain_class('profiles::jenkins::cli').that_requires('Profiles::Apache::Vhost::Reverse_proxy[https://jenkins.example.com]') }
       end
 
       context "with url => https://foobar.example.com/, admin_password => letmein, certificate => foobar.example.com, version => 1.2.3 and credentials => [{ id => 'token1', type => 'string', secret => 'secret1'}, { id => 'token2', type => 'string', secret => 'secret2'}]" do
@@ -106,6 +109,8 @@ describe 'profiles::jenkins::controller' do
           'proxy_keywords'        => 'nocanon',
           'support_websockets'    => true
         ) }
+
+        it { is_expected.to contain_class('profiles::jenkins::cli').that_requires('Profiles::Apache::Vhost::Reverse_proxy[https://foobar.example.com]') }
       end
 
       context "without parameters" do
