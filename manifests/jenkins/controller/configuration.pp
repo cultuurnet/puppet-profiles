@@ -9,6 +9,15 @@ class profiles::jenkins::controller::configuration(
   $private_key_credentials = [$credentials].flatten.filter |$credential| { $credential['type'] == 'private_key' }
 
   profiles::jenkins::plugin { 'swarm': }
+  profiles::jenkins::plugin { 'mailer': }
+  profiles::jenkins::plugin { 'copy-artifact': }
+  profiles::jenkins::plugin { 'ws-cleanup': }
+  profiles::jenkins::plugin { 'slack': }
+  profiles::jenkins::plugin { 'workflow-aggregator': }
+  profiles::jenkins::plugin { 'pipeline-utility-steps': }
+  profiles::jenkins::plugin { 'ssh-steps': }
+  profiles::jenkins::plugin { 'blueocean': }
+
   profiles::jenkins::plugin { 'git':
     configuration => {
                        'user_name'  => 'publiq Jenkins',
@@ -16,6 +25,7 @@ class profiles::jenkins::controller::configuration(
                      },
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
+
   profiles::jenkins::plugin { 'configuration-as-code':
     configuration => {
                        'url'            => $url,
@@ -23,14 +33,17 @@ class profiles::jenkins::controller::configuration(
                      },
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
+
   profiles::jenkins::plugin { 'plain-credentials':
     configuration => $string_credentials,
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
+
   profiles::jenkins::plugin { 'ssh-credentials':
     configuration => $private_key_credentials,
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
+
   profiles::jenkins::plugin { 'workflow-cps-global-lib':
     configuration => [$global_libraries].flatten,
     require       => [ Profiles::Jenkins::Plugin['git'], Profiles::Jenkins::Plugin['ssh-credentials']],

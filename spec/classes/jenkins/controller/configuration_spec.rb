@@ -47,6 +47,54 @@ describe 'profiles::jenkins::controller::configuration' do
           'configuration' => nil
         ) }
 
+        it { is_expected.to contain_profiles__jenkins__plugin('mailer').with(
+          'ensure'        => 'present',
+          'restart'       => false,
+          'configuration' => nil
+        ) }
+
+        it { is_expected.to contain_profiles__jenkins__plugin('copy-artifact').with(
+          'ensure'        => 'present',
+          'restart'       => false,
+          'configuration' => nil
+        ) }
+
+        it { is_expected.to contain_profiles__jenkins__plugin('ws-cleanup').with(
+          'ensure'        => 'present',
+          'restart'       => false,
+          'configuration' => nil
+        ) }
+
+        it { is_expected.to contain_profiles__jenkins__plugin('slack').with(
+          'ensure'        => 'present',
+          'restart'       => false,
+          'configuration' => nil
+        ) }
+
+        it { is_expected.to contain_profiles__jenkins__plugin('workflow-aggregator').with(
+          'ensure'        => 'present',
+          'restart'       => false,
+          'configuration' => nil
+        ) }
+
+        it { is_expected.to contain_profiles__jenkins__plugin('pipeline-utility-steps').with(
+          'ensure'        => 'present',
+          'restart'       => false,
+          'configuration' => nil
+        ) }
+
+        it { is_expected.to contain_profiles__jenkins__plugin('ssh-steps').with(
+          'ensure'        => 'present',
+          'restart'       => false,
+          'configuration' => nil
+        ) }
+
+        it { is_expected.to contain_profiles__jenkins__plugin('blueocean').with(
+          'ensure'        => 'present',
+          'restart'       => false,
+          'configuration' => nil
+        ) }
+
         it { is_expected.to contain_profiles__jenkins__plugin('plain-credentials').with(
           'ensure'        => 'present',
           'restart'       => false,
