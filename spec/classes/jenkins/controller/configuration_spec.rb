@@ -53,7 +53,7 @@ describe 'profiles::jenkins::controller::configuration' do
           'configuration' => nil
         ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('copy-artifact').with(
+        it { is_expected.to contain_profiles__jenkins__plugin('copyartifact').with(
           'ensure'        => 'present',
           'restart'       => false,
           'configuration' => nil

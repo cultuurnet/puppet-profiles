@@ -10,7 +10,7 @@ class profiles::jenkins::controller::configuration(
 
   profiles::jenkins::plugin { 'swarm': }
   profiles::jenkins::plugin { 'mailer': }
-  profiles::jenkins::plugin { 'copy-artifact': }
+  profiles::jenkins::plugin { 'copyartifact': }
   profiles::jenkins::plugin { 'ws-cleanup': }
   profiles::jenkins::plugin { 'slack': }
   profiles::jenkins::plugin { 'workflow-aggregator': }
