@@ -1,4 +1,4 @@
-class profiles::packages {
+class profiles::packages inherits ::profiles {
 
   include ::profiles::apt::updates
 

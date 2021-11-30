@@ -1,4 +1,4 @@
-class profiles::users {
+class profiles::users inherits ::profiles {
 
   @user { 'aptly':
     ensure         => 'present',

@@ -1,8 +1,6 @@
 require 'spec_helper'
 
 describe 'profiles::users' do
-  let(:pre_condition) { 'include ::profiles' }
-
   include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
@@ -22,8 +20,7 @@ describe 'profiles::users' do
           'purge_ssh_keys' => true,
           'shell'          => '/bin/bash',
           'uid'            => '450'
-          )
-        }
+        ) }
 
         it { is_expected.to contain_user('jenkins').with(
           'ensure'         => 'present',
@@ -33,8 +30,7 @@ describe 'profiles::users' do
           'purge_ssh_keys' => true,
           'shell'          => '/bin/bash',
           'uid'            => '451'
-          )
-        }
+        ) }
 
         it { is_expected.to contain_user('ubuntu').with(
           'ensure'         => 'present',
@@ -44,8 +40,7 @@ describe 'profiles::users' do
           'purge_ssh_keys' => true,
           'shell'          => '/bin/bash',
           'uid'            => '1000'
-          )
-        }
+        ) }
 
         it { is_expected.to contain_user('vagrant').with(
           'ensure'         => 'present',
@@ -55,8 +50,7 @@ describe 'profiles::users' do
           'purge_ssh_keys' => false,
           'shell'          => '/bin/bash',
           'uid'            => '1000'
-          )
-        }
+        ) }
 
         it { is_expected.to contain_user('borgbackup').with(
           'ensure'         => 'present',
@@ -66,8 +60,7 @@ describe 'profiles::users' do
           'purge_ssh_keys' => true,
           'shell'          => '/bin/bash',
           'uid'            => '1001'
-          )
-        }
+        ) }
       end
     end
   end
