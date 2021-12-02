@@ -15,7 +15,12 @@ describe 'profiles::rabbitmq' do
 
         it { is_expected.to compile.with_all_deps }
 
+        it { is_expected.to contain_profiles__apt__update('erlang') }
         it { is_expected.to contain_profiles__apt__update('rabbitmq') }
+
+        it { is_expected.to contain_package('erlang-nox').with(
+          'ensure' => 'latest'
+        ) }
 
         it { is_expected.to contain_class('rabbitmq').with(
           'manage_repos'      => false,
@@ -34,7 +39,9 @@ describe 'profiles::rabbitmq' do
           )
         }
 
+        it { is_expected.to contain_profiles__apt__update('erlang').that_comes_before('Package[erlang-nox]') }
         it { is_expected.to contain_profiles__apt__update('rabbitmq').that_comes_before('Class[rabbitmq]') }
+        it { is_expected.to contain_package('erlang-nox').that_comes_before('Class[rabbitmq]') }
         it { is_expected.to contain_class('rabbitmq').that_comes_before('Rabbitmq_user[foo]') }
 
         context "with with_tools => false" do
