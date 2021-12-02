@@ -31,6 +31,7 @@ class profiles::jenkins::controller::configuration(
                        'url'            => $url,
                        'admin_password' => $admin_password
                      },
+    require       => Profiles::Jenkins::Plugin['mailer'],
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
 

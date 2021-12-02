@@ -10,8 +10,12 @@ jenkins:
     local:
       allowsSignup: false
       users:
-        - id: 'admin'
-          password: '<%= @configuration['admin_password'] %>'
+      - id: 'admin'
+        name: 'Administrator'
+        password: '<%= @configuration['admin_password'] %>'
+        properties:
+        - mailer:
+            emailAddress: 'jenkins@publiq.be'
 unclassified:
   location:
     adminAddress: 'jenkins@publiq.be'
