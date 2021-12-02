@@ -181,7 +181,7 @@ describe 'profiles::jenkins::plugin' do
           ) }
 
           it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^[-\s]*id: 'mykey'$/) }
-          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^[-\s]*privateKey: 'abc123'$/) }
+          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^[-\s]*privateKey: \|\n\s*abc123$/) }
           it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^[-\s]*username: 'mykey'$/) }
         end
 
@@ -194,11 +194,11 @@ describe 'profiles::jenkins::plugin' do
           } }
 
           it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^[-\s]*id: 'key1'$/) }
-          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^[-\s]*privateKey: 'def456'$/) }
+          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^[-\s]*privateKey: \|\n\s*def456$/) }
           it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^[-\s]*username: 'key1'$/) }
 
           it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^[-\s]*id: 'key2'$/) }
-          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^[-\s]*privateKey: 'ghi789'$/) }
+          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^[-\s]*privateKey: \|\n\s*ghi789$/) }
           it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^[-\s]*username: 'key2'$/) }
         end
       end
