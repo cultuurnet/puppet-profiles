@@ -1,8 +1,6 @@
 require 'spec_helper'
 
 describe 'profiles::apt::repositories' do
-  let(:pre_condition) { 'include ::profiles' }
-
   include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
@@ -146,6 +144,20 @@ describe 'profiles::apt::repositories' do
             }
 
             it { is_expected.to contain_apt__source('yarn').that_requires('Class[profiles::apt::keys]') }
+
+            it { is_expected.to contain_apt__source('erlang').with(
+              'location' => 'http://apt.uitdatabank.be/erlang-testing',
+              'ensure'   => 'present',
+              'repos'    => 'main',
+              'include'  => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release' => 'trusty'
+            )
+            }
+
+            it { is_expected.to contain_apt__source('erlang').that_requires('Class[profiles::apt::keys]') }
           end
 
         when '16.04'
@@ -279,6 +291,20 @@ describe 'profiles::apt::repositories' do
             }
 
             it { is_expected.to contain_apt__source('yarn').that_requires('Class[profiles::apt::keys]') }
+
+            it { is_expected.to contain_apt__source('erlang').with(
+              'location' => 'http://apt.uitdatabank.be/erlang-acceptance',
+              'ensure'   => 'present',
+              'repos'    => 'main',
+              'include'  => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release' => 'xenial'
+            )
+            }
+
+            it { is_expected.to contain_apt__source('erlang').that_requires('Class[profiles::apt::keys]') }
           end
         end
       end
