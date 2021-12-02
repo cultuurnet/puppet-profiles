@@ -170,7 +170,7 @@ describe 'profiles::jenkins::plugin' do
 
         context "with configuration => {'credentials' => {'id' => 'mykey', 'type' => 'private_key', 'key' => 'abc123'}}" do
           let(:params) { {
-              'configuration' => {'id' => 'mykey', 'type' => 'private_key', 'key' => 'abc123'}
+              'configuration' => {'id' => 'mykey', 'type' => 'private_key', 'key' => "abc123\n"}
           } }
 
           it { is_expected.to contain_file('ssh-credentials configuration').with(
@@ -188,8 +188,8 @@ describe 'profiles::jenkins::plugin' do
         context "with configuration => {'credentials' => [{'id' => 'key1', 'type' => 'private_key', 'key' => 'def456'}, {'id' => 'key2', 'type' => 'private_key', 'secret' => 'ghi789'}]}" do
           let(:params) { {
               'configuration' => [
-                                   {'id' => 'key1', 'type' => 'private_key', 'key' => 'def456'},
-                                   {'id' => 'key2', 'type' => 'private_key', 'key' => 'ghi789'}
+                                   {'id' => 'key1', 'type' => 'private_key', 'key' => "def456\n"},
+                                   {'id' => 'key2', 'type' => 'private_key', 'key' => "ghi789\n"}
                                  ]
           } }
 

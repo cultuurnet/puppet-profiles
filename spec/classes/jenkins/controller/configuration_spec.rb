@@ -179,15 +179,15 @@ describe 'profiles::jenkins::controller::configuration' do
         it { is_expected.to contain_file('jenkins users').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
       end
 
-      context "with url => https://builds.foobar.com/, admin_password => letmein, credentials => [{ id => 'token1', type => 'string', secret => 'secret1'}, { id => 'token2', type => 'string', secret => 'secret2'}, { id => 'key1', type => 'private_key', key => 'privkey1'}, { id => 'key2', type => 'private_key', key => 'privkey2'}], global_libraries => [{'git_url' => 'git@foo.com:bar/baz.git', 'git_ref' => 'develop', 'credential_id' => 'gitkey'}, {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}] and [{'id' => 'user1', 'name' => 'User One', 'password' => 'passw0rd1', 'email' => 'user1@example.com'}, {'id' => 'user2', 'name' => 'User Two', 'password' => 'passw0rd2', 'email' => 'user2@example.com'}]" do
+      context "with url => https://builds.foobar.com/, admin_password => letmein, credentials => [{ id => 'token1', type => 'string', secret => 'secret1'}, { id => 'token2', type => 'string', secret => 'secret2'}, { id => 'key1', type => 'private_key', key => 'privkey1'}, { id => 'key2', type => 'private_key', key => 'privkey2'}], global_libraries => [{'git_url' => 'git@foo.com:bar/baz.git', 'git_ref' => 'develop', 'credential_id' => 'gitkey'}, {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}] and users => [{'id' => 'user1', 'name' => 'User One', 'password' => 'passw0rd1', 'email' => 'user1@example.com'}, {'id' => 'user2', 'name' => 'User Two', 'password' => 'passw0rd2', 'email' => 'user2@example.com'}]" do
         let(:params) { {
           'url'              =>  'https://builds.foobar.com/',
           'admin_password'   => 'letmein',
           'credentials'      => [
                                   { 'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'},
                                   { 'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'},
-                                  { 'id' => 'key1', 'type' => 'private_key', 'secret' => 'privkey1'},
-                                  { 'id' => 'key2', 'type' => 'private_key', 'secret' => 'privkey2'}
+                                  { 'id' => 'key1', 'type' => 'private_key', 'key' => 'privkey1'},
+                                  { 'id' => 'key2', 'type' => 'private_key', 'key' => 'privkey2'}
                                 ],
           'global_libraries' => [
                                   {
@@ -227,8 +227,8 @@ describe 'profiles::jenkins::controller::configuration' do
           'ensure'        => 'present',
           'restart'       => false,
           'configuration' => [
-                               { 'id' => 'key1', 'type' => 'private_key', 'secret' => 'privkey1'},
-                               { 'id' => 'key2', 'type' => 'private_key', 'secret' => 'privkey2'}
+                               { 'id' => 'key1', 'type' => 'private_key', 'key' => 'privkey1'},
+                               { 'id' => 'key2', 'type' => 'private_key', 'key' => 'privkey2'}
                              ]
         ) }
 
