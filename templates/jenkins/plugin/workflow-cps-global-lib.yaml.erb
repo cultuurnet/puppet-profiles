@@ -1,3 +1,5 @@
+<%- if ! @configuration.empty? -%>
+---
 unclassified:
   globalLibraries:
     libraries:
@@ -14,3 +16,4 @@ unclassified:
               traits:
               - 'gitBranchDiscovery'
     <%- end -%>
+<%- end -%>
