@@ -1,3 +1,4 @@
+<%- if ! @users.empty? -%>
 ---
 jenkins:
   securityRealm:
@@ -11,3 +12,4 @@ jenkins:
         - mailer:
             emailAddress: '<%= user['email'] %>'
       <%- end -%>
+<%- end -%>
