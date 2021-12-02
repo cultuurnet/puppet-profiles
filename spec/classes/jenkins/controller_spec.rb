@@ -24,7 +24,8 @@ describe 'profiles::jenkins::controller' do
           'certificate'      => 'wildcard.example.com',
           'version'          => 'latest',
           'credentials'      => [],
-          'global_libraries' => []
+          'global_libraries' => [],
+          'users'            => []
         ) }
 
         it { is_expected.to contain_class('profiles::java') }
@@ -37,7 +38,8 @@ describe 'profiles::jenkins::controller' do
           'url'              => 'https://jenkins.example.com/',
           'admin_password'   => 'passw0rd',
           'credentials'      => [],
-          'global_libraries' => []
+          'global_libraries' => [],
+          'users'            => []
         ) }
 
         it { is_expected.to contain_class('profiles::jenkins::controller::service') }
@@ -67,7 +69,7 @@ describe 'profiles::jenkins::controller' do
         it { is_expected.to contain_class('profiles::jenkins::cli').that_requires('Profiles::Apache::Vhost::Reverse_proxy[https://jenkins.example.com]') }
       end
 
-      context "with url => https://foobar.example.com/, admin_password => letmein, certificate => foobar.example.com, version => 1.2.3, credentials => [{ id => 'token1', type => 'string', secret => 'secret1'}, { id => 'token2', type => 'string', secret => 'secret2'}] and global_libraries => [{'git_url' => 'git@foo.com:bar/baz.git', 'git_ref' => 'develop', 'credential_id' => 'gitkey'}, {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}]" do
+      context "with url => https://foobar.example.com/, admin_password => letmein, certificate => foobar.example.com, version => 1.2.3, credentials => [{ id => 'token1', type => 'string', secret => 'secret1'}, { id => 'token2', type => 'string', secret => 'secret2'}], global_libraries => [{'git_url' => 'git@foo.com:bar/baz.git', 'git_ref' => 'develop', 'credential_id' => 'gitkey'}, {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}] and users => [{'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'}, {'id' => 'user1', 'name' => 'User One', 'password' => 'passw0rd', 'email' => 'user1@example.com'}]" do
         let(:params) { {
           'url'              => 'https://foobar.example.com/',
           'admin_password'   => 'letmein',
@@ -88,6 +90,10 @@ describe 'profiles::jenkins::controller' do
                                     'git_ref'       => 'main',
                                     'credential_id' => 'mygitcred'
                                   }
+                                ],
+          'users'            => [
+                                  {'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'},
+                                  {'id' => 'user1', 'name' => 'User One', 'password' => 'passw0rd', 'email' => 'user1@example.com'}
                                 ]
         } }
 
@@ -115,6 +121,10 @@ describe 'profiles::jenkins::controller' do
                                     'git_ref'       => 'main',
                                     'credential_id' => 'mygitcred'
                                   }
+                                ],
+          'users'            => [
+                                  {'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'},
+                                  {'id' => 'user1', 'name' => 'User One', 'password' => 'passw0rd', 'email' => 'user1@example.com'}
                                 ]
         ) }
 

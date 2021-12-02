@@ -2,7 +2,8 @@ class profiles::jenkins::controller::configuration(
   Stdlib::Httpurl            $url,
   String                     $admin_password,
   Variant[Hash, Array[Hash]] $credentials      = [],
-  Variant[Hash, Array[Hash]] $global_libraries = []
+  Variant[Hash, Array[Hash]] $global_libraries = [],
+  Variant[Hash, Array[Hash]] $users            = []
 ) inherits ::profiles {
 
   $string_credentials      = [$credentials].flatten.filter |$credential| { $credential['type'] == 'string' }
@@ -49,6 +50,16 @@ class profiles::jenkins::controller::configuration(
     configuration => [$global_libraries].flatten,
     require       => [ Profiles::Jenkins::Plugin['git'], Profiles::Jenkins::Plugin['ssh-credentials']],
     notify        => Class['profiles::jenkins::controller::configuration::reload']
+  }
+
+  unless empty($users) {
+    file { 'jenkins users':
+      ensure  => 'file',
+      path    => '/var/lib/jenkins/casc_config/users.yaml',
+      content => template('profiles/jenkins/users.yaml.erb'),
+      require => Profiles::Jenkins::Plugin['mailer'],
+      notify  => Class['profiles::jenkins::controller::configuration::reload']
+    }
   }
 
   class { '::profiles::jenkins::controller::configuration::reload': }

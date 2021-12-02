@@ -19,7 +19,8 @@ describe 'profiles::jenkins::controller::configuration' do
           'url'              =>  'https://jenkins.foobar.com/',
           'admin_password'   => 'passw0rd',
           'credentials'      => [],
-          'global_libraries' => []
+          'global_libraries' => [],
+          'users'            => []
         ) }
 
 
@@ -113,6 +114,8 @@ describe 'profiles::jenkins::controller::configuration' do
           'configuration' => []
         ) }
 
+        it { is_expected.to_not contain_file('jenkins users') }
+
         it { is_expected.to contain_class('profiles::jenkins::controller::configuration::reload') }
         it { is_expected.to contain_class('profiles::jenkins::cli::credentials').with(
           'user'     => 'admin',
@@ -127,12 +130,13 @@ describe 'profiles::jenkins::controller::configuration' do
         it { is_expected.to contain_class('profiles::jenkins::cli::credentials').that_requires('Class[profiles::jenkins::controller::configuration::reload]') }
       end
 
-      context "with url => https://builds.foobar.com/, admin_password => letmein, credentials => { id => 'foo', type => 'string', secret => 'bla'} and global_libraries => { git_url => 'git@example.com:org/repo.git', git_ref => 'main', credential_id => 'mygitcred'}" do
+      context "with url => https://builds.foobar.com/, admin_password => letmein, credentials => { id => 'foo', type => 'string', secret => 'bla'}, global_libraries => { git_url => 'git@example.com:org/repo.git', git_ref => 'main', credential_id => 'mygitcred'} and users => {'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'}" do
         let(:params) { {
           'url'              =>  'https://builds.foobar.com/',
           'admin_password'   => 'letmein',
           'credentials'      => { 'id' => 'foo', 'type' => 'string', 'secret' => 'bla'},
-          'global_libraries' => { 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}
+          'global_libraries' => { 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'},
+          'users'            => {'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'}
         } }
 
         it { is_expected.to contain_profiles__jenkins__plugin('configuration-as-code').with(
@@ -154,6 +158,16 @@ describe 'profiles::jenkins::controller::configuration' do
           'configuration' => [{ 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}]
         ) }
 
+        it { is_expected.to contain_file('jenkins users').with(
+          'ensure' => 'file',
+          'path'   => '/var/lib/jenkins/casc_config/users.yaml'
+        ) }
+
+        it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*id: 'foo'$/) }
+        it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*name: 'Foo Bar'$/) }
+        it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*password: 'baz'$/) }
+        it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*emailAddress: 'foo@example.com'$/) }
+
         it { is_expected.to contain_class('profiles::jenkins::cli::credentials').with(
           'user'     => 'admin',
           'password' => 'letmein'
@@ -161,9 +175,11 @@ describe 'profiles::jenkins::controller::configuration' do
 
         it { is_expected.to contain_profiles__jenkins__plugin('plain-credentials').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
         it { is_expected.to contain_profiles__jenkins__plugin('ssh-credentials').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
+        it { is_expected.to contain_file('jenkins users').that_requires('Profiles::Jenkins::Plugin[mailer]') }
+        it { is_expected.to contain_file('jenkins users').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
       end
 
-      context "with url => https://builds.foobar.com/, admin_password => letmein, credentials => [{ id => 'token1', type => 'string', secret => 'secret1'}, { id => 'token2', type => 'string', secret => 'secret2'}, { id => 'key1', type => 'private_key', key => 'privkey1'}, { id => 'key2', type => 'private_key', key => 'privkey2'}] and global_libraries => [{'git_url' => 'git@foo.com:bar/baz.git', 'git_ref' => 'develop', 'credential_id' => 'gitkey'}, {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}]" do
+      context "with url => https://builds.foobar.com/, admin_password => letmein, credentials => [{ id => 'token1', type => 'string', secret => 'secret1'}, { id => 'token2', type => 'string', secret => 'secret2'}, { id => 'key1', type => 'private_key', key => 'privkey1'}, { id => 'key2', type => 'private_key', key => 'privkey2'}], global_libraries => [{'git_url' => 'git@foo.com:bar/baz.git', 'git_ref' => 'develop', 'credential_id' => 'gitkey'}, {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}] and [{'id' => 'user1', 'name' => 'User One', 'password' => 'passw0rd1', 'email' => 'user1@example.com'}, {'id' => 'user2', 'name' => 'User Two', 'password' => 'passw0rd2', 'email' => 'user2@example.com'}]" do
         let(:params) { {
           'url'              =>  'https://builds.foobar.com/',
           'admin_password'   => 'letmein',
@@ -184,6 +200,10 @@ describe 'profiles::jenkins::controller::configuration' do
                                     'git_ref'       => 'main',
                                     'credential_id' => 'mygitcred'
                                   }
+                                ],
+          'users'            => [
+                                  {'id' => 'user1', 'name' => 'User One', 'password' => 'passw0rd1', 'email' => 'user1@example.com'},
+                                  {'id' => 'user2', 'name' => 'User Two', 'password' => 'passw0rd2', 'email' => 'user2@example.com'}
                                 ]
         } }
 
@@ -228,6 +248,16 @@ describe 'profiles::jenkins::controller::configuration' do
                                }
                              ]
         ) }
+
+        it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*id: 'user1'$/) }
+        it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*name: 'User One'$/) }
+        it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*password: 'passw0rd1'$/) }
+        it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*emailAddress: 'user1@example.com'$/) }
+
+        it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*id: 'user2'$/) }
+        it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*name: 'User Two'$/) }
+        it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*password: 'passw0rd2'$/) }
+        it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*emailAddress: 'user2@example.com'$/) }
 
         it { is_expected.to contain_class('profiles::jenkins::cli::credentials').with(
           'user'     => 'admin',

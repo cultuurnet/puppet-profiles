@@ -4,7 +4,8 @@ class profiles::jenkins::controller (
   String              $certificate,
   String              $version          = 'latest',
   Variant[Array,Hash] $credentials      = [],
-  Variant[Array,Hash] $global_libraries = []
+  Variant[Array,Hash] $global_libraries = [],
+  Variant[Array,Hash] $users            = []
 ) inherits ::profiles {
 
   include ::profiles::java
@@ -30,6 +31,7 @@ class profiles::jenkins::controller (
     admin_password   => $admin_password,
     credentials      => $credentials,
     global_libraries => $global_libraries,
+    users            => $users,
     require          => [ Class['profiles::jenkins::controller::service'], Class['profiles::jenkins::cli']]
   }
 

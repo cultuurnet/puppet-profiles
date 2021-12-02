@@ -1,0 +1,13 @@
+---
+jenkins:
+  securityRealm:
+    local:
+      users:
+      <%- [@users].flatten.each do |user| -%>
+      - id: '<%= user['id'] %>'
+        name: '<%= user['name'] %>'
+        password: '<%= user['password'] %>'
+        properties:
+        - mailer:
+            emailAddress: '<%= user['email'] %>'
+      <%- end -%>
