@@ -1,7 +1,9 @@
 class profiles::rabbitmq (
   String  $admin_user,
   String  $admin_password,
-  Boolean $with_tools      = true
+  Boolean $with_tools     = true,
+  String  $erlang_version = 'latest',
+  String  $version        = 'latest'
 ) inherits ::profiles {
 
   include ::profiles::packages
@@ -15,12 +17,13 @@ class profiles::rabbitmq (
   }
 
   package { 'erlang-nox':
-    ensure  => 'latest',
+    ensure  => $erlang_version,
     require => Profiles::Apt::Update['erlang']
   }
 
   class { '::rabbitmq':
     manage_repos      => false,
+    package_ensure    => $version,
     delete_guest_user => true,
     require           => [ Profiles::Apt::Update['rabbitmq'], Package['erlang-nox']]
   }
