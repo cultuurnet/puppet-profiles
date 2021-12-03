@@ -20,6 +20,7 @@ describe 'profiles::apt::updates' do
       it { is_expected.to contain_profiles__apt__update('elasticsearch') }
       it { is_expected.to contain_profiles__apt__update('yarn') }
       it { is_expected.to contain_profiles__apt__update('aptly') }
+      it { is_expected.to contain_profiles__apt__update('erlang') }
     end
   end
 end

@@ -81,4 +81,10 @@ class profiles::apt::repositories inherits ::profiles {
     release  => 'squeeze',
     repos    => 'main'
   }
+
+  @apt::source { 'erlang':
+    location => "http://apt.uitdatabank.be/erlang-${environment}",
+    release  => $facts['lsbdistcodename'],
+    repos    => 'main'
+  }
 }
