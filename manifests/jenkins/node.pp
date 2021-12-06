@@ -54,7 +54,7 @@ class profiles::jenkins::node(
     owner   => 'jenkins',
     group   => 'jenkins',
     mode    => '0644',
-    content => [$labels].flatten.join("\n"),
+    content => [concat([$facts['lsbdistcodename']], $labels)].flatten.join("\n"),
     *      => $default_file_attributes
   }
 

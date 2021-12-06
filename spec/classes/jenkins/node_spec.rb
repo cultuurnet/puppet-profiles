@@ -57,9 +57,19 @@ describe 'profiles::jenkins::node' do
           'owner'   => 'jenkins',
           'group'   => 'jenkins',
           'path'    => '/etc/jenkins-swarm-client/node-labels.conf',
-          'mode'    => '0644',
-          'content' => ''
+          'mode'    => '0644'
         ) }
+
+        case facts[:os]['release']['major']
+        when '14.04'
+          it { is_expected.to contain_file('jenkins-swarm-client_node-labels').with(
+            'content' => "trusty"
+          ) }
+        when '16.04'
+          it { is_expected.to contain_file('jenkins-swarm-client_node-labels').with(
+            'content' => "xenial"
+          ) }
+        end
 
         it { is_expected.to contain_file('jenkins-swarm-client_service-defaults').with(
           'ensure'  => 'file',
@@ -119,9 +129,16 @@ describe 'profiles::jenkins::node' do
             })
           }
 
-          it { is_expected.to contain_file('jenkins-swarm-client_node-labels').with(
-            'content' => 'foo'
-          ) }
+          case facts[:os]['release']['major']
+          when '14.04'
+            it { is_expected.to contain_file('jenkins-swarm-client_node-labels').with(
+              'content' => "trusty\nfoo"
+            ) }
+          when '16.04'
+            it { is_expected.to contain_file('jenkins-swarm-client_node-labels').with(
+              'content' => "xenial\nfoo"
+            ) }
+          end
         end
 
         context "with labels => [bar, baz, oomph]" do
@@ -131,9 +148,16 @@ describe 'profiles::jenkins::node' do
             })
           }
 
-          it { is_expected.to contain_file('jenkins-swarm-client_node-labels').with(
-            'content' => "bar\nbaz\noomph"
-          ) }
+          case facts[:os]['release']['major']
+          when '14.04'
+            it { is_expected.to contain_file('jenkins-swarm-client_node-labels').with(
+              'content' => "trusty\nbar\nbaz\noomph"
+            ) }
+          when '16.04'
+            it { is_expected.to contain_file('jenkins-swarm-client_node-labels').with(
+              'content' => "xenial\nbar\nbaz\noomph"
+            ) }
+          end
         end
       end
 
