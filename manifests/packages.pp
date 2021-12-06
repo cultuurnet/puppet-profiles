@@ -78,4 +78,8 @@ class profiles::packages inherits ::profiles {
     ensure  => 'present',
     require => Profiles::Apt::Update['yarn']
   }
+
+  @package { 'bundler':
+    ensure => 'present'
+  }
 }
