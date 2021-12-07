@@ -12,6 +12,7 @@ class profiles::jenkins::node(
   include ::profiles::users
   include ::profiles::java
   include ::profiles::jenkins::repositories
+  include ::profiles::jenkins::buildtools
 
   $default_file_attributes = {
     require => Package['jenkins-swarm-client'],
