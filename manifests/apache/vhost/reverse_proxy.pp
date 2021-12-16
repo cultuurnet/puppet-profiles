@@ -3,6 +3,7 @@ define profiles::apache::vhost::reverse_proxy (
   Optional[String]               $certificate           = undef,
   Enum['on', 'off', 'nodecode']  $allow_encoded_slashes = 'off',
   Boolean                        $preserve_host         = false,
+  Boolean                        $support_websockets    = false,
   Variant[String, Array[String]] $proxy_keywords        = [],
   Variant[String, Array[String]] $aliases               = []
 ) {
@@ -46,9 +47,23 @@ define profiles::apache::vhost::reverse_proxy (
   }
 
   if $destination =~ /^https/ {
-    $https_destination = true
+    $https_destination    = true
   } else {
-    $https_destination = false
+    $https_destination    = false
+  }
+
+  if $support_websockets {
+    include apache::mod::proxy_wstunnel
+
+    $websockets_destination = regsubst($destination,'^http(.*)/?$','ws\\1')
+
+    $rewrites = [ {
+                    'comment'      => 'Proxy Websocket support',
+                    'rewrite_cond' => [ '%{HTTP:Upgrade} =websocket [NC]'],
+                    'rewrite_rule' => "^/(.*) ${websockets_destination}\$1 [P,L]"
+                } ]
+  } else {
+    $rewrites = undef
   }
 
   apache::vhost { "${servername}_${port}":
@@ -68,6 +83,7 @@ define profiles::apache::vhost::reverse_proxy (
     ssl_proxyengine       => $https_destination,
     allow_encoded_slashes => $allow_encoded_slashes,
     proxy_preserve_host   => $preserve_host,
+    rewrites              => $rewrites,
     proxy_pass            => {
                                'path'         => '/',
                                'url'          => $destination,

@@ -1,6 +1,6 @@
 class profiles::ssh_authorized_keys(
   Hash $keys = {}
-) {
+) inherits ::profiles {
 
   $keys.each | $key, $attributes| {
    [$attributes['key']].flatten.each | $index, $attribute_key | {

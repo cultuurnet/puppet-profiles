@@ -1,4 +1,4 @@
-class profiles::packages {
+class profiles::packages inherits ::profiles {
 
   include ::profiles::apt::updates
 
@@ -46,6 +46,10 @@ class profiles::packages {
     ensure => 'present'
   }
 
+  @package { 'fontconfig':
+    ensure => 'present'
+  }
+
   @package { 'ca-certificates-publiq':
     ensure  => 'present',
     require => Profiles::Apt::Update['cultuurnet-tools']
@@ -73,5 +77,9 @@ class profiles::packages {
   @package { 'yarn':
     ensure  => 'present',
     require => Profiles::Apt::Update['yarn']
+  }
+
+  @package { 'bundler':
+    ensure => 'present'
   }
 }
