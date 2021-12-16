@@ -13,7 +13,6 @@ class profiles::jenkins::server (
   include ::profiles::apt::repositories
   include ::profiles::packages
   include ::profiles::jenkins::repositories
-  include ruby
 
   $jenkins_port = 8080
   $apache_server = 'jenkins.publiq.be'
@@ -25,16 +24,8 @@ class profiles::jenkins::server (
   realize Profiles::Apt::Update['cultuurnet-tools']
   realize Profiles::Apt::Update['yarn']
 
-  # This will install the ruby dev package and bundler
-  class{'ruby::dev':
-    bundler_provider => 'apt',
-  }
-
-  # we have to install this manually because of https://github.com/ffi/ffi/issues/607
-  package { 'libffi-dev':
-    name     => 'libffi-dev',
-    provider => apt,
-    require  => Class['ruby::dev']
+  class {'::profiles::ruby':
+    with_dev => true
   }
 
   package { 'dpkg':       #we need to upgrade dpkg 1.17.5ubuntu5.7 to 1.17.5ubuntu5.8 so the jenkins install will work correctly.
