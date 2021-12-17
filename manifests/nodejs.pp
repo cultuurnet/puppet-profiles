@@ -3,10 +3,14 @@ class profiles::nodejs (
 ) inherits ::profiles {
 
   include ::profiles::apt::updates
+  include ::profiles::packages
 
   $major_version = split($version, /\./)[0]
 
   realize Profiles::Apt::Update["nodejs_${major_version}.x"]
+  realize Profiles::Apt::Update['yarn']
+
+  realize Package['yarn']
 
   class { '::nodejs':
     manage_package_repo   => false,
@@ -14,4 +18,5 @@ class profiles::nodejs (
   }
 
   Profiles::Apt::Update["nodejs_${major_version}.x"] -> Class['nodejs']
+  Class['nodejs'] -> Package['yarn']
 }

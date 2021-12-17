@@ -13,13 +13,20 @@ describe 'profiles::nodejs' do
         let(:params) { {} }
 
         it { is_expected.to contain_profiles__apt__update('nodejs_10.x') }
+        it { is_expected.to contain_profiles__apt__update('yarn') }
 
         it { is_expected.to contain_class('nodejs').with(
           'manage_package_repo'   => false,
           'nodejs_package_ensure' => '10.14.0-1nodesource1'
         ) }
 
+        it { is_expected.to contain_package('yarn').with(
+          'ensure' => 'present'
+        ) }
+
         it { is_expected.to contain_class('nodejs').that_requires('Profiles::Apt::Update[nodejs_10.x]') }
+        it { is_expected.to contain_package('yarn').that_requires('Profiles::Apt::Update[yarn]') }
+        it { is_expected.to contain_package('yarn').that_requires('Class[nodejs]') }
       end
 
       context "with version => 12.18.3-1nodesource1" do
