@@ -7,7 +7,6 @@ class profiles::jenkins::buildtools inherits ::profiles {
   realize Profiles::Apt::Update['yarn']
 
   realize Package['git']
-  realize Package['phing']
   realize Package['jq']
   realize Package['yarn']
 

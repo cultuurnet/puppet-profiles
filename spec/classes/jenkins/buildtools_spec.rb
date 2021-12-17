@@ -13,7 +13,6 @@ describe 'profiles::jenkins::buildtools' do
       it { is_expected.to contain_profiles__apt__update('yarn') }
 
       it { is_expected.to contain_package('git').with( {'ensure' => 'present'}) }
-      it { is_expected.to contain_package('phing').with( {'ensure' => 'present'}) }
       it { is_expected.to contain_package('jq').with( {'ensure' => 'present'}) }
       it { is_expected.to contain_package('yarn').with( {'ensure' => 'present'}) }
 
