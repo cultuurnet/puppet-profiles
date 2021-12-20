@@ -18,6 +18,11 @@ jenkins:
         properties:
         - mailer:
             emailAddress: 'jenkins@publiq.be'
+  globalNodeProperties:
+  - envVars:
+      env:
+      - key: 'CI'
+        value: 'true'
 unclassified:
   location:
     adminAddress: 'jenkins@publiq.be'
