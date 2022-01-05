@@ -43,6 +43,11 @@ describe 'profiles::puppetdb::cli' do
           'private_key' => 'def456'
         } }
 
+        it { is_expected.to_not contain_user('root') }
+
+        it { is_expected.to contain_group('jenkins') }
+        it { is_expected.to contain_user('jenkins') }
+
         it { is_expected.to contain_profiles__puppetdb__cli__config('root').with(
           'server_urls' => [ 'https://example.com:1234', 'https://example.com:5678'],
           'certificate' => 'abc123',
@@ -54,6 +59,8 @@ describe 'profiles::puppetdb::cli' do
           'certificate' => 'abc123',
           'private_key' => 'def456'
         ) }
+
+        it { is_expected.to contain_user('jenkins').that_comes_before('Profiles::Puppetdb::Cli::Config[jenkins]') }
       end
 
       context "without parameters" do

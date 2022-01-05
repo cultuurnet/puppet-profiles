@@ -7,6 +7,8 @@ class profiles::puppetdb::cli(
 ) inherits ::profiles {
 
   include ::profiles::apt::updates
+  include ::profiles::groups
+  include ::profiles::users
 
   realize Profiles::Apt::Update['cultuurnet-tools']
 
@@ -15,6 +17,13 @@ class profiles::puppetdb::cli(
   }
 
   [$users].flatten.each |$user| {
+    unless $user == 'root' {
+      realize Group[$user]
+      realize User[$user]
+
+      User[$user] -> Profiles::Puppetdb::Cli::Config[$user]
+    }
+
     profiles::puppetdb::cli::config { $user:
       server_urls => $server_urls,
       certificate => $certificate,
