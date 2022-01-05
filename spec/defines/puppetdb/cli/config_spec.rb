@@ -41,7 +41,8 @@ RSpec.shared_examples "puppetdb-cli config file structure" do |user, rootdir|
 
   it { is_expected.to contain_file("#{rootdir}/puppet/ssl/private_keys/puppetdb-cli.key").with(
     'ensure' => 'file',
-    'owner'  => user
+    'owner'  => user,
+    'mode'   => '0400'
   ) }
 
   it { is_expected.to contain_file("#{rootdir}/client-tools").with(

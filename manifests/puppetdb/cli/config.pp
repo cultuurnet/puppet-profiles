@@ -69,6 +69,7 @@ define profiles::puppetdb::cli::config (
     file { "${config_rootdir}/puppet/ssl/private_keys/puppetdb-cli.key":
       ensure  => 'file',
       owner   => $title,
+      mode    => '0400',
       content => $private_key
     }
   }
