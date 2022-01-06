@@ -5,54 +5,64 @@ RSpec.shared_examples "puppetdb-cli config file structure" do |user, rootdir|
 
   it { is_expected.to contain_file(rootdir).with(
     'ensure' => 'directory',
-    'owner'  => user
+    'owner'  => user,
+    'group'  => user
   ) }
 
   it { is_expected.to contain_file("#{rootdir}/puppet").with(
     'ensure' => 'directory',
-    'owner'  => user
+    'owner'  => user,
+    'group'  => user
   ) }
 
   it { is_expected.to contain_file("#{rootdir}/puppet/ssl").with(
     'ensure' => 'directory',
-    'owner'  => user
+    'owner'  => user,
+    'group'  => user
   ) }
 
   it { is_expected.to contain_file("#{rootdir}/puppet/ssl/certs").with(
     'ensure' => 'directory',
-    'owner'  => user
+    'owner'  => user,
+    'group'  => user
   ) }
 
   it { is_expected.to contain_file("#{rootdir}/puppet/ssl/private_keys").with(
     'ensure' => 'directory',
-    'owner'  => user
+    'owner'  => user,
+    'group'  => user
   ) }
 
   it { is_expected.to contain_file("#{rootdir}/puppet/ssl/certs/ca.pem").with(
     'ensure' => 'file',
     'owner'  => user,
+    'group'  => user,
     'source' => '/etc/puppetlabs/puppet/ssl/certs/ca.pem'
   ) }
 
   it { is_expected.to contain_file("#{rootdir}/puppet/ssl/certs/puppetdb-cli.crt").with(
     'ensure' => 'file',
-    'owner'  => user
+    'owner'  => user,
+    'group'  => user
   ) }
 
   it { is_expected.to contain_file("#{rootdir}/puppet/ssl/private_keys/puppetdb-cli.key").with(
     'ensure' => 'file',
     'owner'  => user,
+    'group'  => user,
     'mode'   => '0400'
   ) }
 
   it { is_expected.to contain_file("#{rootdir}/client-tools").with(
     'ensure' => 'directory',
-    'owner'  => user
+    'owner'  => user,
+    'group'  => user
   ) }
 
   it { is_expected.to contain_file("puppetdb-cli-config #{user}").with(
     'ensure' => 'file',
     'owner'  => user,
+    'group'  => user,
     'path'   => "#{rootdir}/client-tools/puppetdb.conf"
   ) }
 end

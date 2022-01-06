@@ -38,7 +38,11 @@ define profiles::puppetdb::cli::config (
                }
   }
 
-  $ssl_dir = "${config_rootdir}/puppet/ssl"
+  $ssl_dir                 = "${config_rootdir}/puppet/ssl"
+  $default_file_attributes = {
+    owner => $title,
+    group => $title
+  }
 
   if ($certificate and $private_key) {
     [
@@ -50,39 +54,39 @@ define profiles::puppetdb::cli::config (
     ].each |$directory| {
       file { $directory:
         ensure => 'directory',
-        owner  => $title
+        *      => $default_file_attributes
       }
     }
 
     file { "${config_rootdir}/puppet/ssl/certs/ca.pem":
       ensure => 'file',
-      owner  => $title,
-      source => '/etc/puppetlabs/puppet/ssl/certs/ca.pem'
+      source => '/etc/puppetlabs/puppet/ssl/certs/ca.pem',
+      *      => $default_file_attributes
     }
 
     file { "${config_rootdir}/puppet/ssl/certs/puppetdb-cli.crt":
       ensure  => 'file',
-      owner   => $title,
-      content => $certificate
+      content => $certificate,
+      *       => $default_file_attributes
     }
 
     file { "${config_rootdir}/puppet/ssl/private_keys/puppetdb-cli.key":
       ensure  => 'file',
-      owner   => $title,
       mode    => '0400',
-      content => $private_key
+      content => $private_key,
+      *       => $default_file_attributes
     }
   }
 
   file { "${config_rootdir}/client-tools":
     ensure => 'directory',
-    owner  => $title
+    *      => $default_file_attributes
   }
 
   file { "puppetdb-cli-config ${title}":
     ensure  => 'file',
-    owner   => $title,
     path    => "${config_rootdir}/client-tools/puppetdb.conf",
-    content => template('profiles/puppetdb/cli.conf.erb')
+    content => template('profiles/puppetdb/cli.conf.erb'),
+    *       => $default_file_attributes
   }
 }
