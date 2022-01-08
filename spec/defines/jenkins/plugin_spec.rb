@@ -278,6 +278,69 @@ describe 'profiles::jenkins::plugin' do
           it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^[-\s]*credentialsId: 'mygitcred'$/) }
         end
       end
+
+      context "with title job-dsl" do
+        let(:title) { 'job-dsl' }
+
+        context "with configuration => { 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'keep_builds' => 5 }" do
+          let(:params) { {
+              'configuration' => {
+                                   'name'          => 'myrepo',
+                                   'git_url'       => 'git@example.com:org/myrepo.git',
+                                   'git_ref'       => 'refs/heads/main',
+                                   'credential_id' => 'mygitcred',
+                                   'keep_builds'   => 5
+                                 }
+          } }
+
+          it { is_expected.to contain_file('job-dsl configuration').with(
+            'ensure'  => 'file',
+            'path'    => '/var/lib/jenkins/casc_config/job-dsl.yaml',
+            'owner'   => 'jenkins',
+            'group'   => 'jenkins'
+          ) }
+
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*pipelineJob\('myrepo'\)/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*url\('git@example.com:org\/myrepo.git'\)$/) }
+          it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^[-\s]*githubProjectUrl/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*branch\('refs\/heads\/main'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*credentials\('mygitcred'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*numToKeepStr\('5'\)$/) }
+        end
+
+        context "with configuration => [{ 'name' => 'baz', 'git_url' => 'git@github.com:bar/baz.git', 'git_ref' => 'refs/heads/develop', 'credential_id' => 'gitkey', keep_builds => 10 }, { 'name' => 'repo', 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred', keep_builds => '2' }]" do
+          let(:params) { {
+              'configuration' => [{
+                                   'name'          => 'baz',
+                                   'git_url'       => 'git@github.com:bar/baz.git',
+                                   'git_ref'       => 'refs/heads/develop',
+                                   'credential_id' => 'gitkey',
+                                   'keep_builds'   => 10
+                                 },
+                                 {
+                                   'name'          => 'repo',
+                                   'git_url'       => 'git@example.com:org/repo.git',
+                                   'git_ref'       => 'main',
+                                   'credential_id' => 'mygitcred',
+                                   'keep_builds'   => 2
+                                 }]
+          } }
+
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*pipelineJob\('baz'\)/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*url\('git@github.com:bar\/baz.git'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*githubProjectUrl\('https:\/\/github.com\/bar\/baz'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*branch\('refs\/heads\/develop'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*credentials\('gitkey'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*numToKeepStr\('10'\)$/) }
+
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*pipelineJob\('repo'\)/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*url\('git@example.com:org\/repo.git'\)$/) }
+          it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^[-\s]*githubProjectUrl\('https:\/\/github.com\/org\/repo'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*branch\('main'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*credentials\('mygitcred'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*numToKeepStr\('2'\)$/) }
+        end
+      end
     end
   end
 end
