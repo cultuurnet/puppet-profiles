@@ -3,6 +3,7 @@ class profiles::jenkins::controller::configuration(
   String                     $admin_password,
   Variant[Hash, Array[Hash]] $credentials      = [],
   Variant[Hash, Array[Hash]] $global_libraries = [],
+  Variant[Hash, Array[Hash]] $pipelines        = [],
   Variant[Hash, Array[Hash]] $users            = []
 ) inherits ::profiles {
 
@@ -48,6 +49,12 @@ class profiles::jenkins::controller::configuration(
 
   profiles::jenkins::plugin { 'workflow-cps-global-lib':
     configuration => [$global_libraries].flatten,
+    require       => [ Profiles::Jenkins::Plugin['git'], Profiles::Jenkins::Plugin['ssh-credentials']],
+    notify        => Class['profiles::jenkins::controller::configuration::reload']
+  }
+
+  profiles::jenkins::plugin { 'job-dsl':
+    configuration => [$pipelines].flatten,
     require       => [ Profiles::Jenkins::Plugin['git'], Profiles::Jenkins::Plugin['ssh-credentials']],
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
