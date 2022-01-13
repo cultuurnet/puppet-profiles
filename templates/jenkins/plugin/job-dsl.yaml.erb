@@ -1,0 +1,44 @@
+<%- if ! @configuration.empty? -%>
+---
+jobs:
+  <%- [@configuration].flatten.each do |pipeline| -%>
+  - script: >
+      pipelineJob('<%= pipeline['name'] %>') {
+          properties {
+              <%- if pipeline['git_url'] =~ /^git@github.com:/ -%>
+                githubProjectUrl('https://github.com/<%= pipeline['git_url'][/^.*:(.*).git$/, 1] %>')
+              <%- end -%>
+              disableConcurrentBuilds()
+              pipelineTriggers {
+                  triggers {
+                      githubPush()
+                  }
+              }
+              buildDiscarder {
+                  strategy {
+                      logRotator {
+                          numToKeepStr('<%= pipeline['keep_builds'] %>')
+                          artifactNumToKeepStr('')
+                          daysToKeepStr('')
+                          artifactDaysToKeepStr('')
+                      }
+                  }
+              }
+          }
+          definition {
+              cpsScm {
+                  scm {
+                      git {
+                          remote {
+                              url('<%= pipeline['git_url'] %>')
+                              credentials('<%= pipeline['credential_id'] %>')
+                          }
+                          branch('<%= pipeline['git_ref'] %>')
+                      }
+                  }
+                  lightweight(true)
+              }
+          }
+      }
+  <%- end -%>
+<%- end -%>

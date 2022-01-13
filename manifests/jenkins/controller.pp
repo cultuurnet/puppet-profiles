@@ -5,6 +5,7 @@ class profiles::jenkins::controller (
   String              $version          = 'latest',
   Variant[Array,Hash] $credentials      = [],
   Variant[Array,Hash] $global_libraries = [],
+  Variant[Array,Hash] $pipelines        = [],
   Variant[Array,Hash] $users            = []
 ) inherits ::profiles {
 
@@ -31,6 +32,7 @@ class profiles::jenkins::controller (
     admin_password   => $admin_password,
     credentials      => $credentials,
     global_libraries => $global_libraries,
+    pipelines        => $pipelines,
     users            => $users,
     require          => [ Class['profiles::jenkins::controller::service'], Class['profiles::jenkins::cli']]
   }

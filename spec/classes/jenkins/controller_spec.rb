@@ -25,6 +25,7 @@ describe 'profiles::jenkins::controller' do
           'version'          => 'latest',
           'credentials'      => [],
           'global_libraries' => [],
+          'pipelines'        => [],
           'users'            => []
         ) }
 
@@ -69,7 +70,7 @@ describe 'profiles::jenkins::controller' do
         it { is_expected.to contain_class('profiles::jenkins::cli').that_requires('Profiles::Apache::Vhost::Reverse_proxy[https://jenkins.example.com]') }
       end
 
-      context "with url => https://foobar.example.com/, admin_password => letmein, certificate => foobar.example.com, version => 1.2.3, credentials => [{ id => 'token1', type => 'string', secret => 'secret1'}, { id => 'token2', type => 'string', secret => 'secret2'}], global_libraries => [{'git_url' => 'git@foo.com:bar/baz.git', 'git_ref' => 'develop', 'credential_id' => 'gitkey'}, {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}] and users => [{'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'}, {'id' => 'user1', 'name' => 'User One', 'password' => 'passw0rd', 'email' => 'user1@example.com'}]" do
+      context "with url => https://foobar.example.com/, admin_password => letmein, certificate => foobar.example.com, version => 1.2.3, credentials => [{ id => 'token1', type => 'string', secret => 'secret1'}, { id => 'token2', type => 'string', secret => 'secret2'}], global_libraries => [{'git_url' => 'git@foo.com:bar/baz.git', 'git_ref' => 'develop', 'credential_id' => 'gitkey'}, {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}], pipelines => [{ 'name' => 'baz', 'git_url' => 'git@github.com:bar/baz.git', 'git_ref' => 'refs/heads/develop', 'credential_id' => 'gitkey', keep_builds => 10 }, { 'name' => 'repo', 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred', keep_builds => '2' }] and users => [{'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'}, {'id' => 'user1', 'name' => 'User One', 'password' => 'passw0rd', 'email' => 'user1@example.com'}]" do
         let(:params) { {
           'url'              => 'https://foobar.example.com/',
           'admin_password'   => 'letmein',
@@ -89,6 +90,22 @@ describe 'profiles::jenkins::controller' do
                                     'git_url'       => 'git@example.com:org/repo.git',
                                     'git_ref'       => 'main',
                                     'credential_id' => 'mygitcred'
+                                  }
+                                ],
+          'pipelines'        => [
+                                  {
+                                    'name'          => 'baz',
+                                    'git_url'       => 'git@github.com:bar/baz.git',
+                                    'git_ref'       => 'refs/heads/develop',
+                                    'credential_id' => 'gitkey',
+                                    'keep_builds'   => 10
+                                  },
+                                  {
+                                    'name'          => 'repo',
+                                    'git_url'       => 'git@example.com:org/repo.git',
+                                    'git_ref'       => 'main',
+                                    'credential_id' => 'mygitcred',
+                                    'keep_builds'   => 2
                                   }
                                 ],
           'users'            => [
@@ -120,6 +137,22 @@ describe 'profiles::jenkins::controller' do
                                     'git_url'       => 'git@example.com:org/repo.git',
                                     'git_ref'       => 'main',
                                     'credential_id' => 'mygitcred'
+                                  }
+                                ],
+          'pipelines'        => [
+                                  {
+                                    'name'          => 'baz',
+                                    'git_url'       => 'git@github.com:bar/baz.git',
+                                    'git_ref'       => 'refs/heads/develop',
+                                    'credential_id' => 'gitkey',
+                                    'keep_builds'   => 10
+                                  },
+                                  {
+                                    'name'          => 'repo',
+                                    'git_url'       => 'git@example.com:org/repo.git',
+                                    'git_ref'       => 'main',
+                                    'credential_id' => 'mygitcred',
+                                    'keep_builds'   => 2
                                   }
                                 ],
           'users'            => [
