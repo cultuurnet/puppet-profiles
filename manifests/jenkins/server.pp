@@ -13,6 +13,8 @@ class profiles::jenkins::server (
   include ::profiles::apt::repositories
   include ::profiles::packages
   include ::profiles::jenkins::repositories
+  include ::profiles::groups
+  include ::profiles::users
 
   $jenkins_port = 8080
   $apache_server = 'jenkins.publiq.be'
@@ -23,6 +25,8 @@ class profiles::jenkins::server (
   realize Profiles::Apt::Update['publiq-jenkins']
   realize Profiles::Apt::Update['cultuurnet-tools']
   realize Profiles::Apt::Update['yarn']
+  realize Group['jenkins']
+  realize User['jenkins']
 
   class {'::profiles::ruby':
     with_dev => true
@@ -43,7 +47,9 @@ class profiles::jenkins::server (
     repo         => false,
     cli          => false,
     install_java => false,
-    require      => Profiles::Apt::Update['publiq-jenkins'],
+    manage_group => false,
+    manage_user  => false,
+    require      => [ Profiles::Apt::Update['publiq-jenkins'], Group['jenkins'], User['jenkins']],
     version      => $version
   }
 
