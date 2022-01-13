@@ -5,7 +5,7 @@ unclassified:
     libraries:
     <%- [@configuration].flatten.each do |library| -%>
     - name: 'jenkins-global-library'
-      defaultVersion: '<%= library['git_ref'] %>'
+      defaultVersion: '<%= library['git_ref'][/^(refs\/)?(.*)$/,2] %>'
       implicit: true
       retriever:
         modernSCM:
