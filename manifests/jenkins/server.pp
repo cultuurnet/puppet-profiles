@@ -161,7 +161,6 @@ instance.save()' | /usr/bin/jenkins-cli groovy =",
   realize Package['git']
   realize Package['groovy']
   realize Package['composer']
-  realize Package['phing']
   realize Package['jq']
   realize Package['yarn']
 
