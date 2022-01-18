@@ -30,13 +30,6 @@ class profiles::deployment::uit::mail_subscriptions (
     require => Package['uit-mail-subscriptions']
   }
 
-  file { 'uit-mail-subscriptions-log':
-    ensure => 'directory',
-    path   => '/var/log/uit-mail-subscriptions',
-    owner  => 'www-data',
-    group  => 'www-data'
-  }
-
   if $service_manage {
     if $service_defaults_source {
       file { 'uit-mail-subscriptions-service-defaults':
@@ -52,7 +45,7 @@ class profiles::deployment::uit::mail_subscriptions (
     service { 'uit-mail-subscriptions':
       ensure    => $service_ensure,
       enable    => $service_enable,
-      require   => [ Package['uit-mail-subscriptions'], File['uit-mail-subscriptions-log']],
+      require   => Package['uit-mail-subscriptions'],
       subscribe => File['uit-mail-subscriptions-config'],
       hasstatus => true
     }

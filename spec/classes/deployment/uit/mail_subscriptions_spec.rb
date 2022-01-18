@@ -30,13 +30,6 @@ describe 'profiles::deployment::uit::mail_subscriptions' do
           'group'  => 'www-data'
         ) }
 
-        it { is_expected.to contain_file('uit-mail-subscriptions-log').with(
-          'ensure' => 'directory',
-          'path'   => '/var/log/uit-mail-subscriptions',
-          'owner'  => 'www-data',
-          'group'  => 'www-data'
-        ) }
-
         it { is_expected.to contain_file('uit-mail-subscriptions-config').that_requires('Package[uit-mail-subscriptions]') }
 
         it { is_expected.not_to contain_file('/etc/default/uit-mail-subscriptions') }
@@ -48,7 +41,6 @@ describe 'profiles::deployment::uit::mail_subscriptions' do
         ) }
 
         it { is_expected.to contain_service('uit-mail-subscriptions').that_requires('Package[uit-mail-subscriptions]') }
-        it { is_expected.to contain_service('uit-mail-subscriptions').that_requires('File[uit-mail-subscriptions-log]') }
         it { is_expected.to contain_file('uit-mail-subscriptions-config').that_notifies('Service[uit-mail-subscriptions]') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::mail_subscriptions').with(
