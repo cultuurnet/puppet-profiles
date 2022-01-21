@@ -1,8 +1,6 @@
 require 'spec_helper'
 
 describe 'profiles::curator' do
-  let(:pre_condition) { 'include ::profiles' }
-
   context "with articlelinker_config_source => /foo, articlelinker_publishers_source => /bar, articlelinker_env_defaults_source => /defaults, api_config_source => /baz and api_hostname => example.com" do
     let(:params) { {
       'articlelinker_config_source'       => '/foo',

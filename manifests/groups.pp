@@ -1,8 +1,13 @@
-class profiles::groups {
+class profiles::groups inherits ::profiles {
 
   @group { 'aptly':
     ensure => 'present',
     gid    => '450'
+  }
+
+  @group { 'jenkins':
+    ensure => 'present',
+    gid    => '451'
   }
 
   @group { 'ubuntu':

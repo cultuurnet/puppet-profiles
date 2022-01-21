@@ -1,4 +1,4 @@
-class profiles::packages {
+class profiles::packages inherits ::profiles {
 
   include ::profiles::apt::updates
 
@@ -29,11 +29,6 @@ class profiles::packages {
     ensure => 'present'
   }
 
-  @package { 'phing':
-    ensure  => 'present',
-    require => Profiles::Apt::Update['cultuurnet-tools']
-  }
-
   @package { 'amqp-tools':
     ensure => 'present'
   }
@@ -43,6 +38,10 @@ class profiles::packages {
   }
 
   @package { 'graphviz':
+    ensure => 'present'
+  }
+
+  @package { 'fontconfig':
     ensure => 'present'
   }
 
@@ -73,5 +72,9 @@ class profiles::packages {
   @package { 'yarn':
     ensure  => 'present',
     require => Profiles::Apt::Update['yarn']
+  }
+
+  @package { 'bundler':
+    ensure => 'present'
   }
 }

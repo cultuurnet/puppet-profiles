@@ -15,11 +15,14 @@ describe 'profiles::java' do
 
         it { is_expected.to compile.with_all_deps }
 
+        it { is_expected.to contain_package('fontconfig') }
+
         it { is_expected.to contain_class('profiles::java::java8') }
         it { is_expected.to contain_class('profiles::java::alternatives').with(
           'default_version' => 8
         ) }
 
+        it { is_expected.to contain_package('fontconfig').that_comes_before('Class[profiles::java::java8]') }
         it { is_expected.to contain_class('profiles::java::java8').that_comes_before('Class[profiles::java::alternatives]') }
       end
 
@@ -31,12 +34,16 @@ describe 'profiles::java' do
 
         it { is_expected.to compile.with_all_deps }
 
+        it { is_expected.to contain_package('fontconfig') }
+
         it { is_expected.to contain_class('profiles::java::java8') }
         it { is_expected.to contain_class('profiles::java::java11') }
         it { is_expected.to contain_class('profiles::java::alternatives').with(
           'default_version' => 11
         ) }
 
+        it { is_expected.to contain_package('fontconfig').that_comes_before('Class[profiles::java::java8]') }
+        it { is_expected.to contain_package('fontconfig').that_comes_before('Class[profiles::java::java11]') }
         it { is_expected.to contain_class('profiles::java::java8').that_comes_before('Class[profiles::java::alternatives]') }
         it { is_expected.to contain_class('profiles::java::java11').that_comes_before('Class[profiles::java::alternatives]') }
       end
@@ -46,11 +53,14 @@ describe 'profiles::java' do
 
         it { is_expected.to compile.with_all_deps }
 
+        it { is_expected.to contain_package('fontconfig') }
+
         it { is_expected.to contain_class('profiles::java::java8') }
         it { is_expected.to contain_class('profiles::java::alternatives').with(
           'default_version' => nil
         ) }
 
+        it { is_expected.to contain_package('fontconfig').that_comes_before('Class[profiles::java::java8]') }
         it { is_expected.to contain_class('profiles::java::java8').that_comes_before('Class[profiles::java::alternatives]') }
       end
     end

@@ -1,4 +1,4 @@
-class profiles::apt::repositories {
+class profiles::apt::repositories inherits ::profiles {
 
   # TODO: repositories split for trusty and xenial
 
@@ -79,6 +79,12 @@ class profiles::apt::repositories {
   @apt::source { 'aptly':
     location => 'http://repo.aptly.info',
     release  => 'squeeze',
+    repos    => 'main'
+  }
+
+  @apt::source { 'erlang':
+    location => "http://apt.uitdatabank.be/erlang-${environment}",
+    release  => $facts['lsbdistcodename'],
     repos    => 'main'
   }
 }

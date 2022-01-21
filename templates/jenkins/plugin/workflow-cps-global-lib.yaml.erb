@@ -1,0 +1,19 @@
+<%- if ! @configuration.empty? -%>
+---
+unclassified:
+  globalLibraries:
+    libraries:
+    <%- [@configuration].flatten.each do |library| -%>
+    - name: 'jenkins-global-library'
+      defaultVersion: '<%= library['git_ref'][/^(refs\/)?(.*)$/,2] %>'
+      implicit: true
+      retriever:
+        modernSCM:
+          scm:
+            git:
+              credentialsId: '<%= library['credential_id'] %>'
+              remote: '<%= library['git_url'] %>'
+              traits:
+              - 'gitBranchDiscovery'
+    <%- end -%>
+<%- end -%>

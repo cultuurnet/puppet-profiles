@@ -10,4 +10,5 @@ class profiles::apt::updates inherits ::profiles {
   @profiles::apt::update { 'elasticsearch': }
   @profiles::apt::update { 'yarn': }
   @profiles::apt::update { 'aptly': }
+  @profiles::apt::update { 'erlang': }
 }
