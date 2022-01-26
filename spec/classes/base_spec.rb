@@ -18,6 +18,10 @@ describe 'profiles::base' do
 
       it { is_expected.to contain_package('ca-certificates-publiq') }
 
+      it { is_expected.to contain_package('policykit-1').with(
+        'ensure' => 'latest'
+      ) }
+
       it { is_expected.to contain_class('lvm').with(
         'manage_pkg' => true
         )

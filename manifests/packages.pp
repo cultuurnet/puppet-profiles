@@ -77,4 +77,9 @@ class profiles::packages inherits ::profiles {
   @package { 'bundler':
     ensure => 'present'
   }
+
+  @package { 'policykit-1':
+    ensure  => 'latest',
+    require => Profiles::Apt::Update['cultuurnet-tools']
+  }
 }

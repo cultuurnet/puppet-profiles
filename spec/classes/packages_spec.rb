@@ -76,6 +76,10 @@ describe 'profiles::packages' do
           'ensure' => 'present'
         ) }
 
+        it { is_expected.to contain_package('policykit-1').with(
+          'ensure' => 'latest'
+        ) }
+
         it { is_expected.to contain_package('composer1').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
         it { is_expected.to contain_package('composer2').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
         it { is_expected.to contain_package('drush').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
@@ -84,6 +88,7 @@ describe 'profiles::packages' do
         it { is_expected.to contain_package('liquibase').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
         it { is_expected.to contain_package('mysql-connector-java').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
         it { is_expected.to contain_package('yarn').that_requires('Profiles::Apt::Update[yarn]') }
+        it { is_expected.to contain_package('policykit-1').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
       end
     end
   end
