@@ -10,16 +10,14 @@ class profiles::deployment::uit::frontend (
   Optional[String] $puppetdb_url            = undef
 ) inherits ::profiles {
 
-  include ::profiles::deployment::uit
-
   $basedir = '/var/www/uit-frontend/packages/app'
 
-  realize Profiles::Apt::Update['publiq-uit']
+  realize Apt::Source['publiq-uit']
 
   package { 'uit-frontend':
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Profiles::Apt::Update['publiq-uit']
+    require => Apt::Source['publiq-uit']
   }
 
   file { 'uit-frontend-config':

@@ -1,4 +1,4 @@
-class profiles::jenkins::repositories inherits ::profiles {
+class profiles::jenkins::repositories {
 
   include ::profiles::apt::keys
 
@@ -12,6 +12,4 @@ class profiles::jenkins::repositories inherits ::profiles {
       'src' => false
     }
   }
-
-  @profiles::apt::update { 'publiq-jenkins': }
 }

@@ -1,14 +1,12 @@
 require 'spec_helper'
 
 describe 'profiles::jenkins::repositories' do
-  include_examples 'operating system support'
-
   on_supported_os.each do |os, facts|
    context "on #{os}" do
       let(:facts) { facts }
 
       context "with all virtual resources realized" do
-        let(:pre_condition) { 'Apt::Source <| |>; Profiles::Apt::Update <| |>' }
+        let(:pre_condition) { 'Apt::Source <| |>; Apt::Source <| |>' }
 
         it { is_expected.to compile.with_all_deps }
 

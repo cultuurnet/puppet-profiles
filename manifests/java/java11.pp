@@ -1,16 +1,15 @@
 class profiles::java::java11 inherits ::profiles {
 
   include ::profiles::packages
-  include ::profiles::apt::updates
 
   $javahome = '/usr/lib/jvm/jdk-11.0.12'
 
+  realize Apt::Source['cultuurnet-tools']
   realize Package['ca-certificates-publiq']
-  realize Profiles::Apt::Update['cultuurnet-tools']
 
   package { 'jdk-11.0.12':
     ensure  => '11.0.12-1',
-    require => Profiles::Apt::Update['cultuurnet-tools']
+    require => Apt::Source['cultuurnet-tools']
   }
 
   ['java', 'keytool'].each |$command| {

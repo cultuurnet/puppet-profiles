@@ -14,11 +14,11 @@ describe 'profiles::deployment::uitpas_be::backend' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_profiles__apt__update('publiq-uitpasbe') }
+        it { is_expected.to contain_apt__source('publiq-uitpasbe') }
 
         it { is_expected.to contain_package('uitpasbe-backend').with( 'ensure' => 'latest') }
         it { is_expected.to contain_package('uitpasbe-backend').that_notifies('Profiles::Deployment::Versions[profiles::deployment::uitpas_be::backend]') }
-        it { is_expected.to contain_package('uitpasbe-backend').that_requires('Profiles::Apt::Update[publiq-uitpasbe]') }
+        it { is_expected.to contain_package('uitpasbe-backend').that_requires('Apt::Source[publiq-uitpasbe]') }
 
         it { is_expected.to contain_file('uitpasbe-backend-config').with(
           'ensure' => 'file',

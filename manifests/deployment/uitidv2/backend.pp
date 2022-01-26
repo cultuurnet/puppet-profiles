@@ -8,16 +8,14 @@ class profiles::deployment::uitidv2::backend (
   Optional[String] $puppetdb_url        = undef
 ) inherits ::profiles {
 
-  include ::profiles::deployment::uitidv2
-
   $basedir = '/var/www/uitid-backend'
 
-  realize Profiles::Apt::Update['publiq-uitidv2']
+  realize Apt::Source['publiq-uitidv2']
 
   package { 'uitid-backend':
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Profiles::Apt::Update['publiq-uitidv2']
+    require => Apt::Source['publiq-uitidv2']
   }
 
   file { 'uitid-backend-config':

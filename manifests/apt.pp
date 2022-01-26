@@ -1,6 +1,9 @@
 class profiles::apt inherits ::profiles {
 
-  include ::apt
+  class { '::apt':
+    update => { 'frequency' => 'always' },
+    stage  => 'pre'
+  }
 
   cron { 'apt clean daily':
     command     => '/usr/bin/apt-get clean',

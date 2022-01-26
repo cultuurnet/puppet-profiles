@@ -26,7 +26,7 @@ describe 'profiles::jenkins::node' do
         ) }
 
         it { is_expected.to contain_apt__source('publiq-jenkins') }
-        it { is_expected.to contain_profiles__apt__update('publiq-jenkins') }
+        it { is_expected.to contain_apt__source('publiq-jenkins') }
         it { is_expected.to contain_class('profiles::java') }
         it { is_expected.to contain_class('profiles::jenkins::buildtools') }
         it { is_expected.to contain_group('jenkins') }
@@ -87,7 +87,7 @@ describe 'profiles::jenkins::node' do
           'enable' => true
         ) }
 
-        it { is_expected.to contain_package('jenkins-swarm-client').that_requires('Profiles::Apt::Update[publiq-jenkins]') }
+        it { is_expected.to contain_package('jenkins-swarm-client').that_requires('Apt::Source[publiq-jenkins]') }
         it { is_expected.to contain_package('jenkins-swarm-client').that_notifies('Service[jenkins-swarm-client]') }
         it { is_expected.to contain_file('jenkins-swarm-client_fsroot').that_requires('User[jenkins]') }
         it { is_expected.to contain_file('jenkins-swarm-client_fsroot').that_requires('Group[jenkins]') }

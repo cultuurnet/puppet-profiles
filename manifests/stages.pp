@@ -1,4 +1,4 @@
-class profiles::stages inherits ::profiles {
+class profiles::stages {
 
   stage {'pre':
     before => Stage['main']

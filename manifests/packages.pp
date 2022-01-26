@@ -1,24 +1,22 @@
 class profiles::packages inherits ::profiles {
 
-  include ::profiles::apt::updates
-
   @package { 'composer':
     ensure  => 'absent'
   }
 
   @package { 'composer1':
     ensure  => 'present',
-    require => Profiles::Apt::Update['cultuurnet-tools']
+    require => Apt::Source['cultuurnet-tools']
   }
 
   @package { 'composer2':
     ensure  => 'present',
-    require => Profiles::Apt::Update['cultuurnet-tools']
+    require => Apt::Source['cultuurnet-tools']
   }
 
   @package { 'drush':
     ensure  => 'present',
-    require => Profiles::Apt::Update['cultuurnet-tools']
+    require => Apt::Source['cultuurnet-tools']
   }
 
   @package { 'git':
@@ -47,7 +45,7 @@ class profiles::packages inherits ::profiles {
 
   @package { 'ca-certificates-publiq':
     ensure  => 'present',
-    require => Profiles::Apt::Update['cultuurnet-tools']
+    require => Apt::Source['cultuurnet-tools']
   }
 
   @package { 'jq':
@@ -56,22 +54,22 @@ class profiles::packages inherits ::profiles {
 
   @package { 'gcsfuse':
     ensure  => 'present',
-    require => Profiles::Apt::Update['cultuurnet-tools']
+    require => Apt::Source['cultuurnet-tools']
   }
 
   @package { 'liquibase':
     ensure  => 'present',
-    require => Profiles::Apt::Update['cultuurnet-tools']
+    require => Apt::Source['cultuurnet-tools']
   }
 
   @package { 'mysql-connector-java':
     ensure  => 'present',
-    require => Profiles::Apt::Update['cultuurnet-tools']
+    require => Apt::Source['cultuurnet-tools']
   }
 
   @package { 'yarn':
     ensure  => 'present',
-    require => Profiles::Apt::Update['yarn']
+    require => Apt::Source['yarn']
   }
 
   @package { 'bundler':

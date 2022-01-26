@@ -1,4 +1,4 @@
-class profiles::apt::repositories inherits ::profiles {
+class profiles::apt::repositories {
 
   # TODO: repositories split for trusty and xenial
 

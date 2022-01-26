@@ -1,8 +1,6 @@
 require 'spec_helper'
 
 describe 'profiles::apt::repositories' do
-  include_examples 'operating system support'
-
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       context "with all virtual resources realized" do

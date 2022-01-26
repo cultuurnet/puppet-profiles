@@ -1,11 +1,10 @@
 class profiles::elasticdump inherits ::profiles {
 
-  include ::profiles::apt::updates
   include ::profiles::nodejs
 
-  realize Profiles::Apt::Update['cultuurnet-tools']
+  realize Apt::Source['cultuurnet-tools']
 
   package { 'elasticdump':
-    require => [ Profiles::Apt::Update['cultuurnet-tools'], Class['profiles::nodejs']]
+    require => [ Apt::Source['cultuurnet-tools'], Class['profiles::nodejs']]
   }
 }

@@ -16,11 +16,11 @@ describe 'profiles::deployment::uit::mail_subscriptions' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_profiles__apt__update('publiq-uit') }
+        it { is_expected.to contain_apt__source('publiq-uit') }
 
         it { is_expected.to contain_package('uit-mail-subscriptions').with( 'ensure' => 'latest') }
         it { is_expected.to contain_package('uit-mail-subscriptions').that_notifies('Profiles::Deployment::Versions[profiles::deployment::uit::mail_subscriptions]') }
-        it { is_expected.to contain_package('uit-mail-subscriptions').that_requires('Profiles::Apt::Update[publiq-uit]') }
+        it { is_expected.to contain_package('uit-mail-subscriptions').that_requires('Apt::Source[publiq-uit]') }
 
         it { is_expected.to contain_file('uit-mail-subscriptions-config').with(
           'ensure' => 'file',

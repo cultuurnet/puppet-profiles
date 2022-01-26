@@ -1,12 +1,10 @@
 class profiles::mailcatcher inherits ::profiles {
 
-  include ::profiles::apt::updates
-
-  realize Profiles::Apt::Update['cultuurnet-tools']
+  realize Apt::Source['cultuurnet-tools']
 
   class { '::mailcatcher':
     manage_repo => false
   }
 
-  Profiles::Apt::Update['cultuurnet-tools'] -> Class['mailcatcher']
+  Apt::Source['cultuurnet-tools'] -> Class['mailcatcher']
 }

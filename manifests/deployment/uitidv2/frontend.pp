@@ -8,16 +8,14 @@ class profiles::deployment::uitidv2::frontend (
   Optional[String] $puppetdb_url        = undef
 ) inherits ::profiles {
 
-  include ::profiles::deployment::uitidv2
-
   $basedir = '/var/www/uitid-frontend/app'
 
-  realize Profiles::Apt::Update['publiq-uitidv2']
+  realize Apt::Source['publiq-uitidv2']
 
   package { 'uitid-frontend':
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Profiles::Apt::Update['publiq-uitidv2']
+    require => Apt::Source['publiq-uitidv2']
   }
 
   file { 'uitid-frontend-config':

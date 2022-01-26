@@ -22,8 +22,8 @@ describe 'profiles::rabbitmq' do
           'version'        => 'latest'
         ) }
 
-        it { is_expected.to contain_profiles__apt__update('erlang') }
-        it { is_expected.to contain_profiles__apt__update('rabbitmq') }
+        it { is_expected.to contain_apt__source('erlang') }
+        it { is_expected.to contain_apt__source('rabbitmq') }
 
         it { is_expected.to contain_package('erlang-nox').with(
           'ensure' => 'latest'
@@ -44,8 +44,8 @@ describe 'profiles::rabbitmq' do
           'ensure' => 'present',
         ) }
 
-        it { is_expected.to contain_profiles__apt__update('erlang').that_comes_before('Package[erlang-nox]') }
-        it { is_expected.to contain_profiles__apt__update('rabbitmq').that_comes_before('Class[rabbitmq]') }
+        it { is_expected.to contain_apt__source('erlang').that_comes_before('Package[erlang-nox]') }
+        it { is_expected.to contain_apt__source('rabbitmq').that_comes_before('Class[rabbitmq]') }
         it { is_expected.to contain_package('erlang-nox').that_comes_before('Class[rabbitmq]') }
         it { is_expected.to contain_class('rabbitmq').that_comes_before('Rabbitmq_user[foo]') }
 

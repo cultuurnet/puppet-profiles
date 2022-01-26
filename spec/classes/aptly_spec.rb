@@ -21,7 +21,7 @@ describe 'profiles::aptly' do
         it { is_expected.to contain_user('aptly') }
         it { is_expected.to contain_package('graphviz') }
         it { is_expected.to contain_apt__key('aptly') }
-        it { is_expected.to contain_profiles__apt__update('aptly') }
+        it { is_expected.to contain_apt__source('aptly') }
 
         it { is_expected.to have_gnupg_key_resource_count(0) }
 
@@ -68,8 +68,8 @@ describe 'profiles::aptly' do
 
         it { is_expected.to contain_class('aptly').that_requires('User[aptly]') }
 
-        it { is_expected.to contain_apt__key('aptly').that_comes_before('Profiles::Apt::Update[aptly]') }
-        it { is_expected.to contain_class('aptly').that_requires('Profiles::Apt::Update[aptly]') }
+        it { is_expected.to contain_apt__key('aptly').that_comes_before('Apt::Source[aptly]') }
+        it { is_expected.to contain_class('aptly').that_requires('Apt::Source[aptly]') }
       end
 
       context "with api_hostname => foobar.example.com and certificate => foobar.example.com" do
