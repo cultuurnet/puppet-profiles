@@ -17,6 +17,11 @@ class profiles {
           class { 'profiles::deployment::repositories':
             stage => 'pre'
           }
+
+          # TODO: Integrate in class above when incorporating deployment module
+          class { 'deployment::repositories':
+            stage => 'pre'
+          }
         }
         default: {
           fail("Ubuntu ${::operatingsystemrelease} not supported")
