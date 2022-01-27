@@ -12,7 +12,6 @@ describe 'profiles::packages' do
       context "with all virtual resources realized" do
         let(:pre_condition) { [
           'Package <| |>',
-          'Apt::Source <| |>',
           'Apt::Source <| |>'
         ] }
 
@@ -84,6 +83,9 @@ describe 'profiles::packages' do
         it { is_expected.to contain_package('liquibase').that_requires('Apt::Source[cultuurnet-tools]') }
         it { is_expected.to contain_package('mysql-connector-java').that_requires('Apt::Source[cultuurnet-tools]') }
         it { is_expected.to contain_package('yarn').that_requires('Apt::Source[yarn]') }
+        it { is_expected.to contain_package('policykit-1').with(
+          'ensure' => 'latest'
+        ) }
       end
     end
   end
