@@ -156,6 +156,20 @@ describe 'profiles::apt::repositories' do
             }
 
             it { is_expected.to contain_apt__source('erlang').that_requires('Class[profiles::apt::keys]') }
+
+            it { is_expected.to contain_apt__source('publiq-jenkins').with(
+              'location' => 'http://apt.uitdatabank.be/jenkins-testing',
+              'ensure'   => 'present',
+              'repos'    => 'main',
+              'include'  => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release' => 'trusty'
+            )
+            }
+
+            it { is_expected.to contain_apt__source('publiq-jenkins').that_requires('Class[profiles::apt::keys]') }
           end
 
         when '16.04'
@@ -303,6 +317,20 @@ describe 'profiles::apt::repositories' do
             }
 
             it { is_expected.to contain_apt__source('erlang').that_requires('Class[profiles::apt::keys]') }
+
+            it { is_expected.to contain_apt__source('publiq-jenkins').with(
+              'location' => 'http://apt.uitdatabank.be/jenkins-acceptance',
+              'ensure'   => 'present',
+              'repos'    => 'main',
+              'include'  => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release' => 'xenial'
+            )
+            }
+
+            it { is_expected.to contain_apt__source('publiq-jenkins').that_requires('Class[profiles::apt::keys]') }
           end
         end
       end

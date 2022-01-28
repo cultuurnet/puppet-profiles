@@ -7,7 +7,6 @@ class profiles::jenkins::cli(
 ) inherits ::profiles {
 
   include ::profiles::java
-  include ::profiles::jenkins::repositories
 
   $config_path                 = '/etc/jenkins-cli/cli.conf'
 

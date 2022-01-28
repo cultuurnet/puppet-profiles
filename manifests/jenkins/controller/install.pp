@@ -4,7 +4,6 @@ class profiles::jenkins::controller::install (
 
   include ::profiles::groups
   include ::profiles::users
-  include ::profiles::jenkins::repositories
 
   $config_dir = '/var/lib/jenkins/casc_config'
 

@@ -87,4 +87,10 @@ class profiles::apt::repositories {
     release  => $facts['lsbdistcodename'],
     repos    => 'main'
   }
+
+  @apt::source { 'publiq-jenkins':
+    location => "http://apt.uitdatabank.be/jenkins-${environment}",
+    release  => $facts['lsbdistcodename'],
+    repos    => 'main',
+  }
 }

@@ -10,9 +10,7 @@ class profiles::jenkins::server (
 
   contain ::profiles::java
 
-  include ::profiles::apt::repositories
   include ::profiles::packages
-  include ::profiles::jenkins::repositories
 
   $jenkins_port = 8080
   $apache_server = 'jenkins.publiq.be'

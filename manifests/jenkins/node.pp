@@ -11,7 +11,6 @@ class profiles::jenkins::node(
   include ::profiles::groups
   include ::profiles::users
   include ::profiles::java
-  include ::profiles::jenkins::repositories
   include ::profiles::jenkins::buildtools
 
   $default_file_attributes = {
