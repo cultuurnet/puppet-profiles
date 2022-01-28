@@ -10,10 +10,6 @@ class profiles {
             stage => 'pre'
           }
 
-          class { 'profiles::jenkins::repositories':
-            stage => 'pre'
-          }
-
           class { 'profiles::deployment::repositories':
             stage => 'pre'
           }
