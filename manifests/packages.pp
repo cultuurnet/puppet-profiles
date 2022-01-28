@@ -78,6 +78,6 @@ class profiles::packages inherits ::profiles {
 
   @package { 'policykit-1':
     ensure  => 'latest',
-    require => Profiles::Apt::Update['cultuurnet-tools']
+    require => Apt::Source['cultuurnet-tools']
   }
 }
