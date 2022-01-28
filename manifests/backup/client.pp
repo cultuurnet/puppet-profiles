@@ -3,9 +3,7 @@ class profiles::backup::client (
   Hash   $configuration = {}
 ) inherits ::profiles {
 
-  include ::profiles::apt::updates
-
-  realize Profiles::Apt::Update['cultuurnet-tools']
+  realize Apt::Source['cultuurnet-tools']
 
   Sshkey <<| title == 'backup' |>>
 
@@ -28,5 +26,5 @@ class profiles::backup::client (
     content => $private_key
   }
 
-  Profiles::Apt::Update['cultuurnet-tools'] -> Class['borgbackup']
+  Apt::Source['cultuurnet-tools'] -> Class['borgbackup']
 }

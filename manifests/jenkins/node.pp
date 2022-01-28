@@ -11,7 +11,6 @@ class profiles::jenkins::node(
   include ::profiles::groups
   include ::profiles::users
   include ::profiles::java
-  include ::profiles::jenkins::repositories
   include ::profiles::jenkins::buildtools
 
   $default_file_attributes = {
@@ -22,11 +21,11 @@ class profiles::jenkins::node(
   realize Group['jenkins']
   realize User['jenkins']
 
-  realize Profiles::Apt::Update['publiq-jenkins']
+  realize Apt::Source['publiq-jenkins']
 
   package { 'jenkins-swarm-client':
     ensure  => $version,
-    require => Profiles::Apt::Update['publiq-jenkins'],
+    require => Apt::Source['publiq-jenkins'],
     notify  => Service['jenkins-swarm-client']
   }
 

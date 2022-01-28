@@ -14,14 +14,14 @@ describe 'profiles::udb3::websockets' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_profiles__apt__update('cultuurnet-tools') }
+        it { is_expected.to contain_apt__source('cultuurnet-tools') }
 
         it { is_expected.to contain_class('websockets::udb3').with(
           'package_version' => 'latest',
           'config_source'   => '/tmp/config.json'
         ) }
 
-        it { is_expected.to contain_class('websockets::udb3').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
+        it { is_expected.to contain_class('websockets::udb3').that_requires('Apt::Source[cultuurnet-tools]') }
       end
 
       context "with config_source => /tmp/bla.json and version => '1.2.3'" do

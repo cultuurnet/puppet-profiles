@@ -4,18 +4,17 @@ class profiles::jenkins::controller::install (
 
   include ::profiles::groups
   include ::profiles::users
-  include ::profiles::jenkins::repositories
 
   $config_dir = '/var/lib/jenkins/casc_config'
 
   realize Group['jenkins']
   realize User['jenkins']
 
-  realize Profiles::Apt::Update['publiq-jenkins']
+  realize Apt::Source['publiq-jenkins']
 
   package { 'jenkins':
     ensure  => $version,
-    require => [ User['jenkins'], Profiles::Apt::Update['publiq-jenkins']]
+    require => [ User['jenkins'], Apt::Source['publiq-jenkins']]
   }
 
   file { 'casc_config':

@@ -3,24 +3,11 @@ class profiles::deployment::prototypes (
   Optional[String] $puppetdb_url = undef
 ) inherits ::profiles {
 
-  include ::profiles::apt::keys
-
-  apt::source { 'publiq-prototypes':
-    location => 'https://apt.publiq.be/prototypes-production',
-    release  => $facts['lsbdistcodename'],
-    repos    => 'main',
-    require  => Class['profiles::apt::keys'],
-    include  => {
-      'deb' => true,
-      'src' => false
-    }
-  }
-
-  profiles::apt::update { 'publiq-prototypes': }
+  realize Apt::Source['publiq-prototypes']
 
   package { 'prototypes-publiq':
     ensure  => $version,
-    require => Profiles::Apt::Update['publiq-prototypes']
+    require => Apt::Source['publiq-prototypes']
   }
 
   profiles::deployment::versions { $title:

@@ -1,4 +1,4 @@
-class profiles::apt::repositories inherits ::profiles {
+class profiles::apt::repositories {
 
   # TODO: repositories split for trusty and xenial
 
@@ -86,5 +86,11 @@ class profiles::apt::repositories inherits ::profiles {
     location => "http://apt.uitdatabank.be/erlang-${environment}",
     release  => $facts['lsbdistcodename'],
     repos    => 'main'
+  }
+
+  @apt::source { 'publiq-jenkins':
+    location => "http://apt.uitdatabank.be/jenkins-${environment}",
+    release  => $facts['lsbdistcodename'],
+    repos    => 'main',
   }
 }

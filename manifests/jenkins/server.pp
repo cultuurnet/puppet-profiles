@@ -10,9 +10,7 @@ class profiles::jenkins::server (
 
   contain ::profiles::java
 
-  include ::profiles::apt::repositories
   include ::profiles::packages
-  include ::profiles::jenkins::repositories
 
   $jenkins_port = 8080
   $apache_server = 'jenkins.publiq.be'
@@ -20,9 +18,9 @@ class profiles::jenkins::server (
   $security_model = 'full_control'
   $helper_groovy = '/usr/share/jenkins/puppet_helper.groovy'
 
-  realize Profiles::Apt::Update['publiq-jenkins']
-  realize Profiles::Apt::Update['cultuurnet-tools']
-  realize Profiles::Apt::Update['yarn']
+  realize Apt::Source['publiq-jenkins']
+  realize Apt::Source['cultuurnet-tools']
+  realize Apt::Source['yarn']
 
   class {'::profiles::ruby':
     with_dev => true
@@ -45,14 +43,14 @@ class profiles::jenkins::server (
     install_java => false,
     manage_group => false,
     manage_user  => false,
-    require      => Profiles::Apt::Update['publiq-jenkins'],
+    require      => Apt::Source['publiq-jenkins'],
     version      => $version
   }
 
   class { '::profiles::jenkins::cli':
     user     => $admin_user,
     password => $admin_password,
-    require  => Profiles::Apt::Update['publiq-jenkins']
+    require  => Apt::Source['publiq-jenkins']
   }
 
   sudo::conf { 'jenkins':
@@ -152,7 +150,7 @@ instance.save()' | /usr/bin/jenkins-cli groovy =",
   Package['dpkg'] -> Class['::profiles::java'] -> Class['jenkins'] -> File[$sshdir] -> File['jenkins.model.JenkinsLocationConfiguration.xml']
 
   realize Apt::Source['cultuurnet-tools']
-  realize Profiles::Apt::Update['cultuurnet-tools']
+  realize Apt::Source['cultuurnet-tools']
 
   realize Package['git']
   realize Package['groovy']

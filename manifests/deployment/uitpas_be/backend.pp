@@ -4,11 +4,9 @@ class profiles::deployment::uitpas_be::backend (
   Optional[String] $puppetdb_url   = undef
 ) inherits ::profiles {
 
-  include ::profiles::deployment::uitpas_be
-
   $basedir = '/var/www/uitpasbe-backend'
 
-  realize Profiles::Apt::Update['publiq-uitpasbe']
+  realize Apt::Source['publiq-uitpasbe']
 
   # TODO: package notify Apache::Service ?
   # TODO: config file notify Apache::Service ?
@@ -16,7 +14,7 @@ class profiles::deployment::uitpas_be::backend (
   package { 'uitpasbe-backend':
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Profiles::Apt::Update['publiq-uitpasbe']
+    require => Apt::Source['publiq-uitpasbe']
   }
 
   file { 'uitpasbe-backend-config':

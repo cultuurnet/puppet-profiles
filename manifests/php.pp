@@ -3,10 +3,9 @@ class profiles::php (
 ) inherits ::profiles {
 
   include ::profiles::packages
-  include ::profiles::apt::updates
 
-  realize Profiles::Apt::Update['cultuurnet-tools']
-  realize Profiles::Apt::Update['php']
+  realize Apt::Source['cultuurnet-tools']
+  realize Apt::Source['php']
 
   contain ::php::globals
   contain ::php
@@ -26,5 +25,5 @@ class profiles::php (
     require => [ Package['composer1'], Package['composer2']]
   }
 
-  Profiles::Apt::Update['php'] -> Class['php::globals'] -> Class['php']
+  Apt::Source['php'] -> Class['php::globals'] -> Class['php']
 }

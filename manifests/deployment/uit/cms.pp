@@ -8,18 +8,16 @@ class profiles::deployment::uit::cms (
   Optional[String] $puppetdb_url         = undef
 ) inherits ::profiles {
 
-  include ::profiles::deployment::uit
-
   $basedir         = '/var/www/uit-cms'
   $database_source = '/data/uit-cms/database/db.sql'
   $files_source    = '/data/uit-cms/files'
 
-  realize Profiles::Apt::Update['publiq-uit']
+  realize Apt::Source['publiq-uit']
 
   package { 'uit-cms':
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Profiles::Apt::Update['publiq-uit']
+    require => Apt::Source['publiq-uit']
   }
 
   file { 'hostnames.txt':

@@ -3,13 +3,11 @@ class profiles::udb3::websockets (
   String $version       = 'latest'
 ) inherits ::profiles {
 
-  include ::profiles::apt::updates
-
-  realize Profiles::Apt::Update['cultuurnet-tools']
+  realize Apt::Source['cultuurnet-tools']
 
   class { '::websockets::udb3':
     package_version => $version,
     config_source   => $config_source,
-    require         => Profiles::Apt::Update['cultuurnet-tools']
+    require         => Apt::Source['cultuurnet-tools']
   }
 }

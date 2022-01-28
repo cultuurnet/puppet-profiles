@@ -5,9 +5,8 @@ class profiles::glassfish (
   contain ::profiles::java
 
   include ::profiles::packages
-  include ::profiles::apt::updates
 
-  realize Profiles::Apt::Update['cultuurnet-tools']
+  realize Apt::Source['cultuurnet-tools']
 
   realize Package['ca-certificates-publiq']
   realize Package['mysql-connector-java']

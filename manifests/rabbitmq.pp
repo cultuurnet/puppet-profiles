@@ -7,10 +7,9 @@ class profiles::rabbitmq (
 ) inherits ::profiles {
 
   include ::profiles::packages
-  include ::profiles::apt::updates
 
-  realize Profiles::Apt::Update['erlang']
-  realize Profiles::Apt::Update['rabbitmq']
+  realize Apt::Source['erlang']
+  realize Apt::Source['rabbitmq']
 
   if $with_tools {
     realize Package['amqp-tools']
@@ -18,14 +17,14 @@ class profiles::rabbitmq (
 
   package { 'erlang-nox':
     ensure  => $erlang_version,
-    require => Profiles::Apt::Update['erlang']
+    require => Apt::Source['erlang']
   }
 
   class { '::rabbitmq':
     manage_repos      => false,
     package_ensure    => $version,
     delete_guest_user => true,
-    require           => [ Profiles::Apt::Update['rabbitmq'], Package['erlang-nox']]
+    require           => [ Apt::Source['rabbitmq'], Package['erlang-nox']]
   }
 
   rabbitmq_user { $admin_user:

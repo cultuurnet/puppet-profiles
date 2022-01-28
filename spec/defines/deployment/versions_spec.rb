@@ -19,7 +19,7 @@ describe 'profiles::deployment::versions' do
           )
         }
 
-        it { is_expected.to have_exec_resource_count(0) }
+        it { is_expected.to have_exec_resource_count(1) }
 
         context "with packages => foo and destination_dir => /tmp" do
           let(:pre_condition) { 'package { "foo":}' }

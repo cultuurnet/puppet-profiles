@@ -14,11 +14,11 @@ describe 'profiles::deployment::mspotm::backend' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_profiles__apt__update('publiq-mspotm') }
+        it { is_expected.to contain_apt__source('publiq-mspotm') }
 
         it { is_expected.to contain_package('mspotm-backend').with( 'ensure' => 'latest') }
         it { is_expected.to contain_package('mspotm-backend').that_notifies('Profiles::Deployment::Versions[profiles::deployment::mspotm::backend]') }
-        it { is_expected.to contain_package('mspotm-backend').that_requires('Profiles::Apt::Update[publiq-mspotm]') }
+        it { is_expected.to contain_package('mspotm-backend').that_requires('Apt::Source[publiq-mspotm]') }
 
         it { is_expected.to contain_file('mspotm-backend-config').with(
           'ensure' => 'file',

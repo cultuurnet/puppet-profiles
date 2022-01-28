@@ -30,8 +30,6 @@ class profiles::udb3::search (
     }
   }
 
-  profiles::apt::update { 'cultuurnet-search': }
-
   if $facts['ec2_metadata'] {
     $http_hosts = [ $facts['ipaddress_eth0'], '127.0.0.1']
   } else {
@@ -55,5 +53,5 @@ class profiles::udb3::search (
 
   Class['profiles::elasticsearch'] -> Elasticsearch::Instance['es01']
   Elasticsearch::Instance['es01'] -> Class['deployment::udb3::search']
-  Profiles::Apt::Update['cultuurnet-search'] -> Class['deployment::udb3::search']
+  Apt::Source['cultuurnet-search'] -> Class['deployment::udb3::search']
 }

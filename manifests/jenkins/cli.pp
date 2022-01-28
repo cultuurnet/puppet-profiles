@@ -7,15 +7,14 @@ class profiles::jenkins::cli(
 ) inherits ::profiles {
 
   include ::profiles::java
-  include ::profiles::jenkins::repositories
 
   $config_path                 = '/etc/jenkins-cli/cli.conf'
 
-  realize Profiles::Apt::Update['publiq-jenkins']
+  realize Apt::Source['publiq-jenkins']
 
   package { 'jenkins-cli':
     ensure  => $version,
-    require => [ Profiles::Apt::Update['publiq-jenkins'], Class['profiles::java']]
+    require => [ Apt::Source['publiq-jenkins'], Class['profiles::java']]
   }
 
   file { 'jenkins-cli_configdir':

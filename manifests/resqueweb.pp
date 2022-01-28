@@ -1,10 +1,8 @@
 class profiles::resqueweb inherits ::profiles {
 
-  include ::profiles::apt::updates
-
-  realize Profiles::Apt::Update['cultuurnet-tools']
+  realize Apt::Source['cultuurnet-tools']
 
   contain ::resqueweb
 
-  Profiles::Apt::Update['cultuurnet-tools'] -> Class['resqueweb']
+  Apt::Source['cultuurnet-tools'] -> Class['resqueweb']
 }

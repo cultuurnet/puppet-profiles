@@ -23,7 +23,7 @@ describe 'profiles::jenkins::cli' do
         it { is_expected.to_not contain_class('profiles::jenkins::cli::credentials') }
 
         it { is_expected.to contain_apt__source('publiq-jenkins') }
-        it { is_expected.to contain_profiles__apt__update('publiq-jenkins') }
+        it { is_expected.to contain_apt__source('publiq-jenkins') }
         it { is_expected.to contain_class('profiles::java') }
 
         it { is_expected.to contain_package('jenkins-cli').with(
@@ -49,7 +49,7 @@ describe 'profiles::jenkins::cli' do
           'value'    => 'http://localhost:8080/'
         ) }
 
-        it { is_expected.to contain_package('jenkins-cli').that_requires('Profiles::Apt::Update[publiq-jenkins]') }
+        it { is_expected.to contain_package('jenkins-cli').that_requires('Apt::Source[publiq-jenkins]') }
         it { is_expected.to contain_package('jenkins-cli').that_requires('Class[profiles::java]') }
         it { is_expected.to contain_file('jenkins-cli_configdir').that_requires('Package[jenkins-cli]') }
         it { is_expected.to contain_file('jenkins-cli_config').that_requires('Package[jenkins-cli]') }

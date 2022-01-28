@@ -9,7 +9,7 @@ describe 'profiles::java::java11' do
 
       it { is_expected.to compile.with_all_deps }
 
-      it { is_expected.to contain_profiles__apt__update('cultuurnet-tools') }
+      it { is_expected.to contain_apt__source('cultuurnet-tools') }
 
       it { is_expected.to contain_package('ca-certificates-publiq') }
       it { is_expected.to contain_package('jdk-11.0.12').with(
@@ -37,8 +37,8 @@ describe 'profiles::java::java11' do
         'path'         => ['/usr/lib/jvm/jdk-11.0.12/bin', '/usr/bin']
       ) }
 
-      it { is_expected.to contain_package('jdk-11.0.12').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
-      it { is_expected.to contain_package('ca-certificates-publiq').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
+      it { is_expected.to contain_package('jdk-11.0.12').that_requires('Apt::Source[cultuurnet-tools]') }
+      it { is_expected.to contain_package('ca-certificates-publiq').that_requires('Apt::Source[cultuurnet-tools]') }
 
       it { is_expected.to contain_alternative_entry('/usr/lib/jvm/jdk-11.0.12/bin/java').that_requires('Package[jdk-11.0.12]') }
       it { is_expected.to contain_alternative_entry('/usr/lib/jvm/jdk-11.0.12/bin/keytool').that_requires('Package[jdk-11.0.12]') }

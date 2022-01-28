@@ -8,20 +8,17 @@ class profiles::deployment::uit::api (
   Optional[String] $puppetdb_url            = undef
 ) inherits ::profiles {
 
-  include ::profiles::apt::updates
-  include ::profiles::deployment::uit
-
   $basedir = '/var/www/uit-api'
 
-  realize Profiles::Apt::Update['yarn']
-  realize Profiles::Apt::Update['publiq-uit']
+  realize Apt::Source['yarn']
+  realize Apt::Source['publiq-uit']
 
   realize Package['yarn']
 
   package { 'uit-api':
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Profiles::Apt::Update['publiq-uit']
+    require => Apt::Source['publiq-uit']
   }
 
   file { 'uit-api-config-graphql':

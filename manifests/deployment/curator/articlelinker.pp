@@ -9,16 +9,14 @@ class profiles::deployment::curator::articlelinker (
   Optional[String] $puppetdb_url        = undef
 ) inherits ::profiles {
 
-  include ::profiles::deployment::curator
-
   $basedir = '/var/www/curator-articlelinker'
 
-  realize Profiles::Apt::Update['publiq-curator']
+  realize Apt::Source['publiq-curator']
 
   package { 'curator-articlelinker':
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Profiles::Apt::Update['publiq-curator']
+    require => Apt::Source['publiq-curator']
   }
 
   file { 'curator-articlelinker-config':

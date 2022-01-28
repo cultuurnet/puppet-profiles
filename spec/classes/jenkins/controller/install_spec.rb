@@ -19,7 +19,7 @@ describe 'profiles::jenkins::controller::install' do
         it { is_expected.to contain_group('jenkins') }
         it { is_expected.to contain_user('jenkins') }
 
-        it { is_expected.to contain_profiles__apt__update('publiq-jenkins') }
+        it { is_expected.to contain_apt__source('publiq-jenkins') }
 
         it { is_expected.to contain_package('jenkins').with(
           'ensure' => 'latest'
@@ -43,7 +43,7 @@ describe 'profiles::jenkins::controller::install' do
         it { is_expected.to contain_file('casc_config').that_requires('Package[jenkins]') }
         it { is_expected.to contain_shellvar('JAVA_ARGS').that_requires('File[casc_config]') }
         it { is_expected.to contain_package('jenkins').that_requires('User[jenkins]') }
-        it { is_expected.to contain_package('jenkins').that_requires('Profiles::Apt::Update[publiq-jenkins]') }
+        it { is_expected.to contain_package('jenkins').that_requires('Apt::Source[publiq-jenkins]') }
       end
 
       context "with version => 1.2.3" do

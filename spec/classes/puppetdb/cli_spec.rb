@@ -22,7 +22,7 @@ describe 'profiles::puppetdb::cli' do
           'private_key' => nil
         ) }
 
-        it { is_expected.to contain_profiles__apt__update('cultuurnet-tools') }
+        it { is_expected.to contain_apt__source('cultuurnet-tools') }
 
         it { is_expected.to contain_package('rubygem-puppetdb-cli') }
 
@@ -32,7 +32,7 @@ describe 'profiles::puppetdb::cli' do
           'private_key' => nil
         ) }
 
-        it { is_expected.to contain_package('rubygem-puppetdb-cli').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
+        it { is_expected.to contain_package('rubygem-puppetdb-cli').that_requires('Apt::Source[cultuurnet-tools]') }
       end
 
       context "with server_urls => [ https://example.com:1234, https://example.com:5678], users => [ 'root', 'jenkins'], certificate => abc123 and private_key => def456" do

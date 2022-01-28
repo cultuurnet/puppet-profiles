@@ -23,9 +23,9 @@ describe 'profiles::deployment::infrastructure' do
       ) }
 
       it { is_expected.to contain_apt__source('publiq-infrastructure').that_requires('Class[profiles::apt::keys]') }
-      it { is_expected.to contain_profiles__apt__update('publiq-infrastructure') }
+      it { is_expected.to contain_apt__source('publiq-infrastructure') }
 
-      it { is_expected.to contain_package('infrastructure-publiq').that_requires('Profiles::Apt::Update[publiq-infrastructure]') }
+      it { is_expected.to contain_package('infrastructure-publiq').that_requires('Apt::Source[publiq-infrastructure]') }
       it { is_expected.to contain_package('infrastructure-publiq').that_notifies('Class[profiles::puppetserver::cache_clear]') }
       it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::infrastructure').that_requires('Class[profiles::puppetserver::cache_clear]') }
 

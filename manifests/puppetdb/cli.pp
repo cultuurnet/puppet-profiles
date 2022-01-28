@@ -6,14 +6,13 @@ class profiles::puppetdb::cli(
 
 ) inherits ::profiles {
 
-  include ::profiles::apt::updates
   include ::profiles::groups
   include ::profiles::users
 
-  realize Profiles::Apt::Update['cultuurnet-tools']
+  realize Apt::Source['cultuurnet-tools']
 
   package { 'rubygem-puppetdb-cli':
-    require => Profiles::Apt::Update['cultuurnet-tools']
+    require => Apt::Source['cultuurnet-tools']
   }
 
   [$users].flatten.each |$user| {

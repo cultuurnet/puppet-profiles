@@ -8,17 +8,14 @@ class profiles::deployment::uit::mail_subscriptions (
   Optional[String] $puppetdb_url            = undef
 ) inherits ::profiles {
 
-  include ::profiles::apt::updates
-  include ::profiles::deployment::uit
-
   $basedir = '/var/www/uit-mail-subscriptions'
 
-  realize Profiles::Apt::Update['publiq-uit']
+  realize Apt::Source['publiq-uit']
 
   package { 'uit-mail-subscriptions':
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Profiles::Apt::Update['publiq-uit']
+    require => Apt::Source['publiq-uit']
   }
 
   file { 'uit-mail-subscriptions-config':
