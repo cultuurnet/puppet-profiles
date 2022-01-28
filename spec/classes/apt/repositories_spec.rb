@@ -1,5 +1,17 @@
 require 'spec_helper'
 
+RSpec.shared_examples "apt repositories" do |repository|
+  it { is_expected.to contain_apt__source(repository).with(
+    'ensure'  => 'present',
+    'include' => {
+      'deb' => 'true',
+      'src' => 'false'
+    },
+  ) }
+
+  it { is_expected.to contain_apt__source(repository).that_requires('Class[profiles::apt::keys]') }
+end
+
 describe 'profiles::apt::repositories' do
   on_supported_os.each do |os, facts|
     context "on #{os}" do
@@ -10,19 +22,23 @@ describe 'profiles::apt::repositories' do
 
         it { is_expected.to contain_class('profiles::apt::keys') }
 
+        include_examples 'apt repositories', 'cultuurnet-tools'
+        include_examples 'apt repositories', 'php'
+        include_examples 'apt repositories', 'rabbitmq'
+        include_examples 'apt repositories', 'nodejs_10.x'
+        include_examples 'apt repositories', 'nodejs_12.x'
+        include_examples 'apt repositories', 'nodejs_14.x'
+        include_examples 'apt repositories', 'elasticsearch'
+        include_examples 'apt repositories', 'yarn'
+        include_examples 'apt repositories', 'erlang'
+        include_examples 'apt repositories', 'publiq-jenkins'
+        include_examples 'apt repositories', 'aptly'
+
         it { is_expected.to contain_apt__source('aptly').with(
           'location' => 'http://repo.aptly.info',
-          'ensure'   => 'present',
           'repos'    => 'main',
-          'include'  => {
-            'deb' => 'true',
-            'src' => 'false'
-          },
           'release' => 'squeeze'
-        )
-        }
-
-        it { is_expected.to contain_apt__source('aptly').that_requires('Class[profiles::apt::keys]') }
+        ) }
 
         case facts[:os]['release']['major']
         when '14.04'
@@ -33,143 +49,63 @@ describe 'profiles::apt::repositories' do
 
             it { is_expected.to contain_apt__source('cultuurnet-tools').with(
               'location' => 'http://apt.uitdatabank.be/tools-legacy-testing',
-              'ensure'   => 'present',
               'repos'    => 'main',
-              'include'  => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'trusty'
-            )
-            }
-
-            it { is_expected.to contain_apt__source('cultuurnet-tools').that_requires('Class[profiles::apt::keys]') }
+              'release'  => 'trusty'
+            ) }
 
             it { is_expected.to contain_apt__source('php').with(
               'location' => 'http://apt.uitdatabank.be/php-legacy-testing',
-              'ensure'   => 'present',
               'repos'    => 'main',
-              'include'  => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'trusty'
-            )
-            }
-
-            it { is_expected.to contain_apt__source('php').that_requires('Class[profiles::apt::keys]') }
+              'release'  => 'trusty'
+            ) }
 
             it { is_expected.to contain_apt__source('rabbitmq').with(
               'location' => 'http://apt.uitdatabank.be/rabbitmq-testing',
-              'ensure'   => 'present',
               'repos'    => 'main',
-              'include'  => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'testing'
-            )
-            }
-
-            it { is_expected.to contain_apt__source('rabbitmq').that_requires('Class[profiles::apt::keys]') }
+              'release'  => 'testing'
+            ) }
 
             it { is_expected.to contain_apt__source('nodejs_10.x').with(
               'location' => 'http://apt.uitdatabank.be/nodejs_10.x-testing',
-              'ensure'   => 'present',
               'repos'    => 'main',
-              'include'  => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'trusty'
-            )
-            }
-
-            it { is_expected.to contain_apt__source('nodejs_10.x').that_requires('Class[profiles::apt::keys]') }
+              'release'  => 'trusty'
+            ) }
 
             it { is_expected.to contain_apt__source('nodejs_12.x').with(
               'location' => 'http://apt.uitdatabank.be/nodejs_12.x-testing',
-              'ensure'   => 'present',
               'repos'    => 'main',
-              'include'  => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'trusty'
-            )
-            }
-
-            it { is_expected.to contain_apt__source('nodejs_12.x').that_requires('Class[profiles::apt::keys]') }
+              'release'  => 'trusty'
+            ) }
 
             it { is_expected.to contain_apt__source('nodejs_14.x').with(
               'location' => 'http://apt.uitdatabank.be/nodejs_14.x-testing',
-              'ensure'   => 'present',
               'repos'    => 'main',
-              'include'  => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'trusty'
-            )
-            }
-
-            it { is_expected.to contain_apt__source('nodejs_14.x').that_requires('Class[profiles::apt::keys]') }
+              'release'  => 'trusty'
+            ) }
 
             it { is_expected.to contain_apt__source('elasticsearch').with(
               'location' => 'http://apt.uitdatabank.be/elasticsearch-testing',
-              'ensure'   => 'present',
               'repos'    => 'main',
-              'include'  => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'stable'
-            )
-            }
-
-            it { is_expected.to contain_apt__source('elasticsearch').that_requires('Class[profiles::apt::keys]') }
+              'release'  => 'stable'
+            ) }
 
             it { is_expected.to contain_apt__source('yarn').with(
               'location' => 'http://apt.uitdatabank.be/yarn-testing',
-              'ensure'   => 'present',
               'repos'    => 'main',
-              'include'  => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'stable'
-            )
-            }
-
-            it { is_expected.to contain_apt__source('yarn').that_requires('Class[profiles::apt::keys]') }
+              'release'  => 'stable'
+            ) }
 
             it { is_expected.to contain_apt__source('erlang').with(
               'location' => 'http://apt.uitdatabank.be/erlang-testing',
-              'ensure'   => 'present',
               'repos'    => 'main',
-              'include'  => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'trusty'
-            )
-            }
-
-            it { is_expected.to contain_apt__source('erlang').that_requires('Class[profiles::apt::keys]') }
+              'release'  => 'trusty'
+            ) }
 
             it { is_expected.to contain_apt__source('publiq-jenkins').with(
               'location' => 'http://apt.uitdatabank.be/jenkins-testing',
-              'ensure'   => 'present',
               'repos'    => 'main',
-              'include'  => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'trusty'
-            )
-            }
-
-            it { is_expected.to contain_apt__source('publiq-jenkins').that_requires('Class[profiles::apt::keys]') }
+              'release'  => 'trusty'
+            ) }
           end
 
         when '16.04'
@@ -180,87 +116,63 @@ describe 'profiles::apt::repositories' do
 
             it { is_expected.to contain_apt__source('cultuurnet-tools').with(
               'location' => 'http://apt.uitdatabank.be/tools-acceptance',
-              'ensure'  => 'present',
-              'repos'   => 'main',
-              'include' => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'xenial'
-            )
-            }
-
-            it { is_expected.to contain_apt__source('cultuurnet-tools').that_requires('Class[profiles::apt::keys]') }
+              'repos'    => 'main',
+              'release'  => 'xenial'
+            ) }
 
             it { is_expected.to contain_apt__source('php').with(
               'location' => 'http://apt.uitdatabank.be/php-acceptance',
-              'ensure'   => 'present',
               'repos'    => 'main',
-              'include'  => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'xenial'
-            )
-            }
-
-            it { is_expected.to contain_apt__source('php').that_requires('Class[profiles::apt::keys]') }
+              'release'  => 'xenial'
+            ) }
 
             it { is_expected.to contain_apt__source('rabbitmq').with(
               'location' => 'http://apt.uitdatabank.be/rabbitmq-acceptance',
-              'ensure'   => 'present',
               'repos'    => 'main',
-              'include'  => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'testing'
-            )
-            }
-
-            it { is_expected.to contain_apt__source('rabbitmq').that_requires('Class[profiles::apt::keys]') }
+              'release'  => 'testing'
+            ) }
 
             it { is_expected.to contain_apt__source('nodejs_10.x').with(
               'location' => 'http://apt.uitdatabank.be/nodejs_10.x-acceptance',
-              'ensure'   => 'present',
               'repos'    => 'main',
-              'include'  => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'trusty'
-            )
-            }
-
-            it { is_expected.to contain_apt__source('nodejs_10.x').that_requires('Class[profiles::apt::keys]') }
+              'release'  => 'trusty'
+            ) }
 
             it { is_expected.to contain_apt__source('nodejs_12.x').with(
               'location' => 'http://apt.uitdatabank.be/nodejs_12.x-acceptance',
-              'ensure'   => 'present',
               'repos'    => 'main',
-              'include'  => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'xenial'
-            )
-            }
-
-            it { is_expected.to contain_apt__source('nodejs_12.x').that_requires('Class[profiles::apt::keys]') }
+              'release'  => 'xenial'
+            ) }
 
             it { is_expected.to contain_apt__source('nodejs_14.x').with(
               'location' => 'http://apt.uitdatabank.be/nodejs_14.x-acceptance',
-              'ensure'   => 'present',
               'repos'    => 'main',
-              'include'  => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'trusty'
-            )
-            }
+              'release'  => 'trusty'
+            ) }
 
-            it { is_expected.to contain_apt__source('nodejs_14.x').that_requires('Class[profiles::apt::keys]') }
+            it { is_expected.to contain_apt__source('elasticsearch').with(
+              'location' => 'http://apt.uitdatabank.be/elasticsearch-acceptance',
+              'repos'    => 'main',
+              'release'  => 'stable'
+            ) }
+
+            it { is_expected.to contain_apt__source('yarn').with(
+              'location' => 'http://apt.uitdatabank.be/yarn-acceptance',
+              'repos'    => 'main',
+              'release'  => 'stable'
+            ) }
+
+            it { is_expected.to contain_apt__source('erlang').with(
+              'location' => 'http://apt.uitdatabank.be/erlang-acceptance',
+              'repos'    => 'main',
+              'release'  => 'xenial'
+            ) }
+
+            it { is_expected.to contain_apt__source('publiq-jenkins').with(
+              'location' => 'http://apt.uitdatabank.be/jenkins-acceptance',
+              'repos'    => 'main',
+              'release'  => 'xenial'
+            ) }
 
             it { is_expected.to contain_apt__source('nodejs_16.x').with(
               'location' => 'http://apt.uitdatabank.be/nodejs_16.x-acceptance',
@@ -271,66 +183,7 @@ describe 'profiles::apt::repositories' do
                 'src' => 'false'
               },
               'release' => 'xenial'
-            )
-            }
-
-            it { is_expected.to contain_apt__source('nodejs_16.x').that_requires('Class[profiles::apt::keys]') }
-
-            it { is_expected.to contain_apt__source('elasticsearch').with(
-              'location' => 'http://apt.uitdatabank.be/elasticsearch-acceptance',
-              'ensure'   => 'present',
-              'repos'    => 'main',
-              'include'  => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'stable'
-            )
-            }
-
-            it { is_expected.to contain_apt__source('elasticsearch').that_requires('Class[profiles::apt::keys]') }
-
-            it { is_expected.to contain_apt__source('yarn').with(
-              'location' => 'http://apt.uitdatabank.be/yarn-acceptance',
-              'ensure'   => 'present',
-              'repos'    => 'main',
-              'include'  => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'stable'
-            )
-            }
-
-            it { is_expected.to contain_apt__source('yarn').that_requires('Class[profiles::apt::keys]') }
-
-            it { is_expected.to contain_apt__source('erlang').with(
-              'location' => 'http://apt.uitdatabank.be/erlang-acceptance',
-              'ensure'   => 'present',
-              'repos'    => 'main',
-              'include'  => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'xenial'
-            )
-            }
-
-            it { is_expected.to contain_apt__source('erlang').that_requires('Class[profiles::apt::keys]') }
-
-            it { is_expected.to contain_apt__source('publiq-jenkins').with(
-              'location' => 'http://apt.uitdatabank.be/jenkins-acceptance',
-              'ensure'   => 'present',
-              'repos'    => 'main',
-              'include'  => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'xenial'
-            )
-            }
-
-            it { is_expected.to contain_apt__source('publiq-jenkins').that_requires('Class[profiles::apt::keys]') }
+            ) }
           end
         end
       end
