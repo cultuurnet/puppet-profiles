@@ -106,6 +106,6 @@ class profiles::curator (
       Mysql::Db[$api_local_database_name] -> Class['::profiles::deployment::curator::api']
     }
 
-    #Class['php'] -> Class['profiles::deployment::curator::api']
+    Class['php'] -> Class['profiles::deployment::curator::api']
   }
 }
