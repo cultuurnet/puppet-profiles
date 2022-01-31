@@ -37,6 +37,8 @@ describe 'profiles::curator' do
             } )
           }
 
+          it { is_expected.to contain_class('profiles::php') }
+
           it { is_expected.to contain_file('/var/www/curator-api').with(
             'ensure' => 'directory'
           ) }

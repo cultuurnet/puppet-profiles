@@ -26,7 +26,7 @@ class profiles::curator (
   $api_basedir = '/var/www/curator-api'
   $articlelinker_basedir = '/var/www/curator-articlelinker'
 
-  #include php
+  include ::profiles::php
   #include apache
   #include mysql::server ??
   #include supervisor
@@ -106,6 +106,6 @@ class profiles::curator (
       Mysql::Db[$api_local_database_name] -> Class['::profiles::deployment::curator::api']
     }
 
-    Class['php'] -> Class['profiles::deployment::curator::api']
+    Class['profiles::php'] -> Class['profiles::deployment::curator::api']
   }
 }
