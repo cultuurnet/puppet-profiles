@@ -108,6 +108,6 @@ fixtures:
       ref: '74a1c76'
     deployment:
       repo: 'https://github.com/cultuurnet/puppet-deployment.git'
-      ref: 'b3d1471'
+      ref: 'd8672cf'
   symlinks:
     profiles: "#{source_dir}"

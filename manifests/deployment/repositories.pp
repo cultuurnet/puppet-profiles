@@ -43,4 +43,8 @@ class profiles::deployment::repositories {
   @apt::source { 'publiq-uitpasbe':
     location => "http://apt.uitdatabank.be/uitpas.be-${environment}"
   }
+
+  @apt::source { 'cultuurnet-search':
+    location => "http://apt.uitdatabank.be/search-${environment}"
+  }
 }
