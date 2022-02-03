@@ -51,7 +51,7 @@ class profiles::jenkins::node(
     group   => 'jenkins',
     mode    => '0600',
     content => $password,
-    *      => $default_file_attributes
+    *       => $default_file_attributes
   }
 
   file { 'jenkins-swarm-client_node-labels':
@@ -61,7 +61,7 @@ class profiles::jenkins::node(
     group   => 'jenkins',
     mode    => '0644',
     content => [concat($default_labels, $labels)].flatten.join("\n").downcase,
-    *      => $default_file_attributes
+    *       => $default_file_attributes
   }
 
   file { 'jenkins-swarm-client_service-defaults':
@@ -69,7 +69,7 @@ class profiles::jenkins::node(
     path    => '/etc/default/jenkins-swarm-client',
     mode    => '0644',
     content => template('profiles/jenkins/jenkins-swarm-client_service-defaults.erb'),
-    *      => $default_file_attributes
+    *       => $default_file_attributes
   }
 
   service { 'jenkins-swarm-client':
