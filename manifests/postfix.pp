@@ -12,7 +12,7 @@ class profiles::postfix (
 
   $config_directory = '/etc/postfix'
   $mynetworks_file  = "${config_directory}/mynetworks"
-  $daemon_directory = $facts['lsbdistcodename'] ? {
+  $daemon_directory = $facts['os']['distro']['codename'] ? {
     'trusty' => '/usr/lib/postfix',
     default  => '/usr/lib/postfix/sbin'
   }

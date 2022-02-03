@@ -3,7 +3,7 @@ class profiles::deployment::repositories {
   contain ::profiles::apt::keys
 
   Apt::Source {
-    release => $facts['lsbdistcodename'],
+    release => $facts['os']['distro']['codename'],
     repos   => 'main',
     include => {
       'deb' => true,
