@@ -18,6 +18,12 @@ class profiles::jenkins::node(
     notify  => Service['jenkins-swarm-client']
   }
 
+  $default_labels = [
+    $facts['os']['name'],
+    $facts['os']['release']['major'],
+    $facts['os']['distro']['codename']
+  ]
+
   realize Group['jenkins']
   realize User['jenkins']
 
@@ -54,7 +60,7 @@ class profiles::jenkins::node(
     owner   => 'jenkins',
     group   => 'jenkins',
     mode    => '0644',
-    content => [concat([$facts['lsbdistcodename']], $labels)].flatten.join("\n"),
+    content => [concat($default_labels, $labels)].flatten.join("\n").downcase,
     *      => $default_file_attributes
   }
 

@@ -64,11 +64,11 @@ describe 'profiles::jenkins::node' do
         case facts[:os]['release']['major']
         when '14.04'
           it { is_expected.to contain_file('jenkins-swarm-client_node-labels').with(
-            'content' => "trusty"
+            'content' => "ubuntu\n14.04\ntrusty"
           ) }
         when '16.04'
           it { is_expected.to contain_file('jenkins-swarm-client_node-labels').with(
-            'content' => "xenial"
+            'content' => "ubuntu\n16.04\nxenial"
           ) }
         end
 
@@ -133,11 +133,11 @@ describe 'profiles::jenkins::node' do
           case facts[:os]['release']['major']
           when '14.04'
             it { is_expected.to contain_file('jenkins-swarm-client_node-labels').with(
-              'content' => "trusty\nfoo"
+              'content' => "ubuntu\n14.04\ntrusty\nfoo"
             ) }
           when '16.04'
             it { is_expected.to contain_file('jenkins-swarm-client_node-labels').with(
-              'content' => "xenial\nfoo"
+              'content' => "ubuntu\n16.04\nxenial\nfoo"
             ) }
           end
         end
@@ -145,18 +145,18 @@ describe 'profiles::jenkins::node' do
         context "with labels => [bar, baz, oomph]" do
           let(:params) {
             super().merge({
-              'labels' => ['bar', 'baz', 'oomph']
+              'labels' => ['bar', 'BAZ', 'oomph']
             })
           }
 
           case facts[:os]['release']['major']
           when '14.04'
             it { is_expected.to contain_file('jenkins-swarm-client_node-labels').with(
-              'content' => "trusty\nbar\nbaz\noomph"
+              'content' => "ubuntu\n14.04\ntrusty\nbar\nbaz\noomph"
             ) }
           when '16.04'
             it { is_expected.to contain_file('jenkins-swarm-client_node-labels').with(
-              'content' => "xenial\nbar\nbaz\noomph"
+              'content' => "ubuntu\n16.04\nxenial\nbar\nbaz\noomph"
             ) }
           end
         end
