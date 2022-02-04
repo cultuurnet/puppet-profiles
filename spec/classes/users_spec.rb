@@ -26,7 +26,7 @@ describe 'profiles::users' do
           'ensure'         => 'present',
           'gid'            => 'jenkins',
           'home'           => '/var/lib/jenkins',
-          'managehome'     => false,
+          'managehome'     => true,
           'purge_ssh_keys' => true,
           'shell'          => '/bin/bash',
           'uid'            => '451'
