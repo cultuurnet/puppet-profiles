@@ -80,4 +80,9 @@ class profiles::packages inherits ::profiles {
     ensure  => 'latest',
     require => Apt::Source['cultuurnet-tools']
   }
+
+  @package { 'jtm':
+    ensure  => 'present',
+    require => Apt::Source['cultuurnet-tools']
+  }
 }
