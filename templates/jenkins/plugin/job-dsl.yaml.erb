@@ -5,13 +5,15 @@ jobs:
   - script: >
       pipelineJob('<%= pipeline['name'] %>') {
           properties {
-              <%- if pipeline['git_url'] =~ /^git@github.com:/ -%>
-                githubProjectUrl('https://github.com/<%= pipeline['git_url'][/^.*:(.*).git$/, 1] %>')
-              <%- end -%>
+            <%- if pipeline['git_url'] =~ /^git@github.com:/ -%>
+              githubProjectUrl('https://github.com/<%= pipeline['git_url'][/^.*:(.*).git$/, 1] %>')
+            <%- end -%>
               disableConcurrentBuilds()
               pipelineTriggers {
                   triggers {
+                    <%- if pipeline['auto_build'] -%>
                       githubPush()
+                    <%- end -%>
                   }
               }
               buildDiscarder {

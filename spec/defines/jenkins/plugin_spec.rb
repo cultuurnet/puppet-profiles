@@ -112,8 +112,8 @@ describe 'profiles::jenkins::plugin' do
             'group'   => 'jenkins'
           ) }
 
-          it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^[-\s]*password: 'passw0rd'$/) }
-          it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^[-\s]*url: 'https:\/\/foobar\.com\/'$/) }
+          it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*password: 'passw0rd'$/) }
+          it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*url: 'https:\/\/foobar\.com\/'$/) }
 
           it { is_expected.to contain_file('configuration-as-code configuration').that_requires('Group[jenkins]') }
           it { is_expected.to contain_file('configuration-as-code configuration').that_requires('User[jenkins]') }
@@ -125,8 +125,8 @@ describe 'profiles::jenkins::plugin' do
               'configuration' => { 'url' => 'https://jenkins.example.com/', 'admin_password' => 'jenkins'}
           } }
 
-          it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^[-\s]*password: 'jenkins'$/) }
-          it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^[-\s]*url: 'https:\/\/jenkins\.example\.com\/'$/) }
+          it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*password: 'jenkins'$/) }
+          it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*url: 'https:\/\/jenkins\.example\.com\/'$/) }
         end
       end
 
@@ -145,8 +145,8 @@ describe 'profiles::jenkins::plugin' do
             'group'   => 'jenkins'
           ) }
 
-          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^[-\s]*id: 'mytoken'$/) }
-          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^[-\s]*secret: 'foobar'$/) }
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*id: 'mytoken'$/) }
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*secret: 'foobar'$/) }
         end
 
         context "with configuration => [{'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'}, {'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'}]" do
@@ -157,11 +157,11 @@ describe 'profiles::jenkins::plugin' do
                                  ]
           } }
 
-          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^[-\s]*id: 'token1'$/) }
-          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^[-\s]*secret: 'secret1'$/) }
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*id: 'token1'$/) }
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*secret: 'secret1'$/) }
 
-          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^[-\s]*id: 'token2'$/) }
-          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^[-\s]*secret: 'secret2'$/) }
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*id: 'token2'$/) }
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*secret: 'secret2'$/) }
         end
       end
 
@@ -180,9 +180,9 @@ describe 'profiles::jenkins::plugin' do
             'group'   => 'jenkins'
           ) }
 
-          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^[-\s]*id: 'mykey'$/) }
-          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^[-\s]*privateKey: \|\n\s*abc123$/) }
-          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^[-\s]*username: 'mykey'$/) }
+          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^\s*id: 'mykey'$/) }
+          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^\s*privateKey: \|\n\s*abc123$/) }
+          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^\s*username: 'mykey'$/) }
         end
 
         context "with configuration => {'credentials' => [{'id' => 'key1', 'type' => 'private_key', 'key' => 'def456'}, {'id' => 'key2', 'type' => 'private_key', 'secret' => 'ghi789'}]}" do
@@ -193,13 +193,13 @@ describe 'profiles::jenkins::plugin' do
                                  ]
           } }
 
-          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^[-\s]*id: 'key1'$/) }
-          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^[-\s]*privateKey: \|\n\s*def456$/) }
-          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^[-\s]*username: 'key1'$/) }
+          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^\s*id: 'key1'$/) }
+          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^\s*privateKey: \|\n\s*def456$/) }
+          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^\s*username: 'key1'$/) }
 
-          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^[-\s]*id: 'key2'$/) }
-          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^[-\s]*privateKey: \|\n\s*ghi789$/) }
-          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^[-\s]*username: 'key2'$/) }
+          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^\s*id: 'key2'$/) }
+          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^\s*privateKey: \|\n\s*ghi789$/) }
+          it { is_expected.to contain_file('ssh-credentials configuration').with_content(/^\s*username: 'key2'$/) }
         end
       end
 
@@ -251,9 +251,9 @@ describe 'profiles::jenkins::plugin' do
             'group'   => 'jenkins'
           ) }
 
-          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^[-\s]*remote: 'git@example.com:org\/repo.git'$/) }
-          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^[-\s]*defaultVersion: 'main'$/) }
-          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^[-\s]*credentialsId: 'mygitcred'$/) }
+          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*remote: 'git@example.com:org\/repo.git'$/) }
+          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*defaultVersion: 'main'$/) }
+          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*credentialsId: 'mygitcred'$/) }
         end
 
         context "with configuration => [{'git_url' => 'git@foo.com:bar/baz.git', 'git_ref' => 'refs/heads/develop', 'credential_id' => 'gitkey'}, {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'feature/magic', 'credential_id' => 'mygitcred'}]" do
@@ -270,25 +270,26 @@ describe 'profiles::jenkins::plugin' do
                                  }]
           } }
 
-          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^[-\s]*remote: 'git@foo.com:bar\/baz.git'$/) }
-          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^[-\s]*defaultVersion: 'heads\/develop'$/) }
-          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^[-\s]*credentialsId: 'gitkey'$/) }
-          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^[-\s]*remote: 'git@example.com:org\/repo.git'$/) }
-          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^[-\s]*defaultVersion: 'feature\/magic'$/) }
-          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^[-\s]*credentialsId: 'mygitcred'$/) }
+          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*remote: 'git@foo.com:bar\/baz.git'$/) }
+          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*defaultVersion: 'heads\/develop'$/) }
+          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*credentialsId: 'gitkey'$/) }
+          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*remote: 'git@example.com:org\/repo.git'$/) }
+          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*defaultVersion: 'feature\/magic'$/) }
+          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*credentialsId: 'mygitcred'$/) }
         end
       end
 
       context "with title job-dsl" do
         let(:title) { 'job-dsl' }
 
-        context "with configuration => { 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'keep_builds' => 5 }" do
+        context "with configuration => { 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'auto_build' => true, 'keep_builds' => 5 }" do
           let(:params) { {
               'configuration' => {
                                    'name'          => 'myrepo',
                                    'git_url'       => 'git@example.com:org/myrepo.git',
                                    'git_ref'       => 'refs/heads/main',
                                    'credential_id' => 'mygitcred',
+                                   'auto_build'    => true,
                                    'keep_builds'   => 5
                                  }
           } }
@@ -300,12 +301,13 @@ describe 'profiles::jenkins::plugin' do
             'group'   => 'jenkins'
           ) }
 
-          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*pipelineJob\('myrepo'\)/) }
-          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*url\('git@example.com:org\/myrepo.git'\)$/) }
-          it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^[-\s]*githubProjectUrl/) }
-          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*branch\('refs\/heads\/main'\)$/) }
-          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*credentials\('mygitcred'\)$/) }
-          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*numToKeepStr\('5'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*pipelineJob\('myrepo'\)/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*url\('git@example.com:org\/myrepo.git'\)$/) }
+          it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^\s*githubProjectUrl/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*branch\('refs\/heads\/main'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*credentials\('mygitcred'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*githubPush\(\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*numToKeepStr\('5'\)$/) }
         end
 
         context "with configuration => [{ 'name' => 'baz', 'git_url' => 'git@github.com:bar/baz.git', 'git_ref' => 'refs/heads/develop', 'credential_id' => 'gitkey', keep_builds => 10 }, { 'name' => 'repo', 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred', keep_builds => '2' }]" do
@@ -326,19 +328,21 @@ describe 'profiles::jenkins::plugin' do
                                  }]
           } }
 
-          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*pipelineJob\('baz'\)/) }
-          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*url\('git@github.com:bar\/baz.git'\)$/) }
-          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*githubProjectUrl\('https:\/\/github.com\/bar\/baz'\)$/) }
-          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*branch\('refs\/heads\/develop'\)$/) }
-          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*credentials\('gitkey'\)$/) }
-          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*numToKeepStr\('10'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*pipelineJob\('baz'\)/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*url\('git@github.com:bar\/baz.git'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*githubProjectUrl\('https:\/\/github.com\/bar\/baz'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*branch\('refs\/heads\/develop'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*credentials\('gitkey'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*numToKeepStr\('10'\)$/) }
 
-          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*pipelineJob\('repo'\)/) }
-          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*url\('git@example.com:org\/repo.git'\)$/) }
-          it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^[-\s]*githubProjectUrl\('https:\/\/github.com\/org\/repo'\)$/) }
-          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*branch\('main'\)$/) }
-          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*credentials\('mygitcred'\)$/) }
-          it { is_expected.to contain_file('job-dsl configuration').with_content(/^[-\s]*numToKeepStr\('2'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*pipelineJob\('repo'\)/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*url\('git@example.com:org\/repo.git'\)$/) }
+          it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^\s*githubProjectUrl\('https:\/\/github.com\/org\/repo'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*branch\('main'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*credentials\('mygitcred'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*numToKeepStr\('2'\)$/) }
+
+          it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^\s*githubPush\(\)$/) }
         end
       end
     end
