@@ -1,7 +1,10 @@
-RSpec.configure do |c|
-  c.mock_with :rspec
-  c.after(:suite) do
+RSpec.configure do |rspec|
+  rspec.mock_with :rspec
+  rspec.after(:suite) do
     RSpec::Puppet::Coverage.report!
+  end
+  rspec.expect_with :rspec do |c|
+    c.max_formatted_output_length = nil
   end
 end
 
