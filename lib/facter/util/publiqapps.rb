@@ -10,8 +10,8 @@ module Facter
         versions.split("\n").inject({}) do |result, string|
           component = string[/(.*):/,1]
           version = string[/:(.*)$/,1]
-          pipeline = version[/(\d*)\+?/,1]
-          commit = version[/\+sha.(.*)$/,1]
+          pipeline = version[/([.\d]+)\+?.*$/,1]
+          commit = version[/\+sha\.(.*)$/,1]
 
           version_hash = { 'version' => version, 'pipeline' => pipeline, 'commit' => commit }.reject { |k, v| v.nil? }
           result.merge({ component => version_hash })
