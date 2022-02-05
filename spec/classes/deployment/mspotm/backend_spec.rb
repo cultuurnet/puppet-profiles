@@ -1,16 +1,16 @@
 require 'spec_helper'
 
 describe 'profiles::deployment::mspotm::backend' do
-  context "with config_source => /foo" do
-    let(:params) { {
-      'config_source'     => '/foo'
-    } }
+  on_supported_os.each do |os, facts|
+    context "on #{os}" do
+      let(:facts) { facts }
 
-    include_examples 'operating system support'
+      include_examples 'operating system support'
 
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        let(:facts) { facts }
+      context "with config_source => /foo" do
+        let(:params) { {
+          'config_source'     => '/foo'
+        } }
 
         it { is_expected.to compile.with_all_deps }
 
@@ -62,19 +62,13 @@ describe 'profiles::deployment::mspotm::backend' do
           'puppetdb_url' => nil
         ) }
       end
-    end
-  end
 
-  context "with config_source => /bar, version => 1.2.3 and puppetdb_url => http://example.com:8000" do
-    let(:params) { {
-      'config_source' => '/bar',
-      'version'       => '1.2.3',
-      'puppetdb_url'  => 'http://example.com:8000'
-    } }
-
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        let(:facts) { facts }
+      context "with config_source => /bar, version => 1.2.3 and puppetdb_url => http://example.com:8000" do
+        let(:params) { {
+          'config_source' => '/bar',
+          'version'       => '1.2.3',
+          'puppetdb_url'  => 'http://example.com:8000'
+        } }
 
         it { is_expected.to contain_file('mspotm-backend-config').with(
           'source' => '/bar',
@@ -86,15 +80,9 @@ describe 'profiles::deployment::mspotm::backend' do
           'puppetdb_url' => 'http://example.com:8000'
         ) }
       end
-    end
-  end
 
-  context "without parameters" do
-    let(:params) { {} }
-
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        let(:facts) { facts }
+      context "without parameters" do
+        let(:params) { {} }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }
       end
