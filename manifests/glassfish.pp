@@ -4,8 +4,6 @@ class profiles::glassfish (
 
   contain ::profiles::java
 
-  include ::profiles::packages
-
   realize Apt::Source['cultuurnet-tools']
 
   realize Package['ca-certificates-publiq']

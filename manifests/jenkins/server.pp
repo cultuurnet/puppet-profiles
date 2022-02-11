@@ -10,8 +10,6 @@ class profiles::jenkins::server (
 
   contain ::profiles::java
 
-  include ::profiles::packages
-
   $jenkins_port = 8080
   $apache_server = 'jenkins.publiq.be'
   $admin_user = 'admin'

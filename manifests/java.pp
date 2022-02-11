@@ -3,8 +3,6 @@ class profiles::java (
   Optional[Integer[8, 11]]                       $default_version    = undef
 ) inherits ::profiles {
 
-  include ::profiles::packages
-
   realize Package['fontconfig']
 
   [$installed_versions].flatten.each | $version | {

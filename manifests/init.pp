@@ -5,6 +5,7 @@ class profiles {
         '14.04','16.04': {
           contain ::profiles::groups
           contain ::profiles::users
+          contain ::profiles::packages
           contain ::profiles::stages
           contain ::profiles::apt
 

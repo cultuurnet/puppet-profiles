@@ -1,7 +1,5 @@
 class profiles::base inherits ::profiles {
 
-  include ::profiles::packages
-
   Shellvar {
     target  => '/etc/environment'
   }

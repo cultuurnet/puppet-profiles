@@ -2,8 +2,6 @@ class profiles::ruby (
   Boolean $with_dev = false
 ) inherits ::profiles {
 
-  include ::profiles::packages
-
   if $with_dev {
     realize Package['bundler']
     realize Package['git']

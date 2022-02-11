@@ -1,7 +1,5 @@
 class profiles::java::java8 inherits ::profiles {
 
-  include ::profiles::packages
-
   $javahome = '/usr/lib/jvm/java-8-oracle/jre'
 
   realize Package['ca-certificates-publiq']

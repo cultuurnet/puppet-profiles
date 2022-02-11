@@ -1,7 +1,5 @@
 class profiles::java::java11 inherits ::profiles {
 
-  include ::profiles::packages
-
   $javahome = '/usr/lib/jvm/jdk-11.0.12'
 
   realize Apt::Source['cultuurnet-tools']

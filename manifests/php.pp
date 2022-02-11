@@ -2,8 +2,6 @@ class profiles::php (
   Integer[1, 2] $with_composer_default_version = 1
 ) inherits ::profiles {
 
-  include ::profiles::packages
-
   realize Apt::Source['cultuurnet-tools']
   realize Apt::Source['php']
 

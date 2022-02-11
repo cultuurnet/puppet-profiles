@@ -1,7 +1,5 @@
 class profiles::jenkins::buildtools inherits ::profiles {
 
-  include ::profiles::packages
-
   realize Apt::Source['cultuurnet-tools']
 
   realize Package['git']

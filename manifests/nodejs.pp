@@ -2,8 +2,6 @@ class profiles::nodejs (
   String $version = '10.14.0-1nodesource1'
 ) inherits ::profiles {
 
-  include ::profiles::packages
-
   $major_version = split($version, /\./)[0]
 
   realize Apt::Source["nodejs_${major_version}.x"]

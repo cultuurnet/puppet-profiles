@@ -6,8 +6,6 @@ class profiles::rabbitmq (
   String  $version        = 'latest'
 ) inherits ::profiles {
 
-  include ::profiles::packages
-
   realize Apt::Source['erlang']
   realize Apt::Source['rabbitmq']
 

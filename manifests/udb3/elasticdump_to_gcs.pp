@@ -9,7 +9,6 @@ class profiles::udb3::elasticdump_to_gcs (
   String  $local_timezone       = 'UTC'
 ) inherits ::profiles {
 
-  include ::profiles::packages
   include ::profiles::elasticdump
 
   realize Apt::Source['cultuurnet-tools']
