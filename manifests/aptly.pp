@@ -11,10 +11,7 @@ class profiles::aptly (
   Hash                           $mirrors           = {}
 ) inherits ::profiles {
 
-  include ::profiles::users
-  include ::profiles::groups
   include ::profiles::packages
-  include ::profiles::apt::keys
 
   realize Group['aptly']
   realize User['aptly']

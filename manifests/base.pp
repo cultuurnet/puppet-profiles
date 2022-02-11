@@ -1,7 +1,5 @@
 class profiles::base inherits ::profiles {
 
-  include ::profiles::groups
-  include ::profiles::users
   include ::profiles::packages
 
   Shellvar {

@@ -1,8 +1,6 @@
 require 'spec_helper'
 
 describe 'profiles::groups' do
-  include_examples 'operating system support'
-
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       let(:facts) { facts }

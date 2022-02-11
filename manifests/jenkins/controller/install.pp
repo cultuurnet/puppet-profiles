@@ -2,9 +2,6 @@ class profiles::jenkins::controller::install (
   String          $version     = 'latest'
 ) inherits ::profiles {
 
-  include ::profiles::groups
-  include ::profiles::users
-
   $config_dir = '/var/lib/jenkins/casc_config'
 
   realize Group['jenkins']

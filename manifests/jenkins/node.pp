@@ -8,8 +8,6 @@ class profiles::jenkins::node(
 
 ) inherits ::profiles {
 
-  include ::profiles::groups
-  include ::profiles::users
   include ::profiles::java
   include ::profiles::jenkins::buildtools
 

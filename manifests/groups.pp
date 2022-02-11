@@ -1,4 +1,4 @@
-class profiles::groups inherits ::profiles {
+class profiles::groups {
 
   @group { 'aptly':
     ensure => 'present',

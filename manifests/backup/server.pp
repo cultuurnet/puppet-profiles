@@ -7,9 +7,6 @@ class profiles::backup::server (
   String                         $size = '1G'
 ) inherits ::profiles {
 
-  include ::profiles::groups
-  include ::profiles::users
-
   realize(Group['borgbackup'])
   realize(User['borgbackup'])
 

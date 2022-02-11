@@ -6,9 +6,6 @@ class profiles::puppetdb::cli(
 
 ) inherits ::profiles {
 
-  include ::profiles::groups
-  include ::profiles::users
-
   realize Apt::Source['cultuurnet-tools']
 
   package { 'rubygem-puppetdb-cli':
