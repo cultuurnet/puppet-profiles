@@ -54,7 +54,7 @@ class profiles::apt::repositories {
 
   @apt::source { 'nodejs_14.x':
     location => "http://apt.uitdatabank.be/nodejs_14.x-${environment}",
-    release  => 'trusty',
+    release  => $facts['os']['distro']['codename'],
     repos    => 'main'
   }
 
