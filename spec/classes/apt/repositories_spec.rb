@@ -147,7 +147,7 @@ describe 'profiles::apt::repositories' do
             it { is_expected.to contain_apt__source('nodejs_14.x').with(
               'location' => 'http://apt.uitdatabank.be/nodejs_14.x-acceptance',
               'repos'    => 'main',
-              'release'  => 'trusty'
+              'release'  => 'xenial'
             ) }
 
             it { is_expected.to contain_apt__source('elasticsearch').with(
