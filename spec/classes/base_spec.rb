@@ -22,6 +22,10 @@ describe 'profiles::base' do
         'ensure' => 'latest'
       ) }
 
+      it { is_expected.to contain_package('snapd').with(
+        'ensure' => 'latest'
+      ) }
+
       it { is_expected.to contain_class('lvm').with(
         'manage_pkg' => true
         )

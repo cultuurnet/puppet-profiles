@@ -7,6 +7,7 @@ class profiles::base inherits ::profiles {
   realize Apt::Source['cultuurnet-tools']
   realize Package['ca-certificates-publiq']
   realize Package['policykit-1']
+  realize Package['snapd']
 
   if $facts['ec2_metadata'] {
     $admin_user = 'ubuntu'
