@@ -37,6 +37,11 @@ jobs:
                           }
                           branch('<%= pipeline['git_ref'] %>')
                       }
+                    <%- if pipeline['jenkinsfile_path'] -%>
+                      scriptPath('<%= pipeline['jenkinsfile_path'] %>')
+                    <%- else -%>
+                      scriptPath('Jenkinsfile')
+                    <%- end -%>
                   }
                   lightweight(true)
               }
