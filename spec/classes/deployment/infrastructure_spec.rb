@@ -25,8 +25,8 @@ describe 'profiles::deployment::infrastructure' do
       it { is_expected.to contain_apt__source('publiq-infrastructure').that_requires('Class[profiles::apt::keys]') }
       it { is_expected.to contain_apt__source('publiq-infrastructure') }
 
-      it { is_expected.to contain_package('infrastructure-publiq').that_requires('Apt::Source[publiq-infrastructure]') }
-      it { is_expected.to contain_package('infrastructure-publiq').that_notifies('Class[profiles::puppetserver::cache_clear]') }
+      it { is_expected.to contain_package('publiq-infrastructure').that_requires('Apt::Source[publiq-infrastructure]') }
+      it { is_expected.to contain_package('publiq-infrastructure').that_notifies('Class[profiles::puppetserver::cache_clear]') }
       it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::infrastructure').that_requires('Class[profiles::puppetserver::cache_clear]') }
 
       case facts[:os]['release']['major']
@@ -48,13 +48,13 @@ describe 'profiles::deployment::infrastructure' do
       context "without parameters" do
         let(:params) { {} }
 
-        it { is_expected.to contain_package('infrastructure-publiq').with(
+        it { is_expected.to contain_package('publiq-infrastructure').with(
           'ensure' => 'latest'
         ) }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::infrastructure').with(
           'project'      => 'infrastructure',
-          'packages'     => 'infrastructure-publiq',
+          'packages'     => 'publiq-infrastructure',
           'puppetdb_url' => nil
         ) }
       end
@@ -65,13 +65,13 @@ describe 'profiles::deployment::infrastructure' do
           'puppetdb_url'    => 'http://example.com:8000'
         } }
 
-        it { is_expected.to contain_package('infrastructure-publiq').with(
+        it { is_expected.to contain_package('publiq-infrastructure').with(
           'ensure' => '1.2.3'
         ) }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::infrastructure').with(
           'project'         => 'infrastructure',
-          'packages'        => 'infrastructure-publiq',
+          'packages'        => 'publiq-infrastructure',
           'destination_dir' => '/var/run',
           'puppetdb_url'    => 'http://example.com:8000'
         ) }

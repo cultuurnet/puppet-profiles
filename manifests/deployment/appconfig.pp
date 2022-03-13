@@ -7,7 +7,7 @@ class profiles::deployment::appconfig (
 
   realize Apt::Source['publiq-appconfig']
 
-  package { 'appconfig-publiq':
+  package { 'publiq-appconfig':
     ensure  => $version,
     notify  => Class['profiles::puppetserver::cache_clear'],
     require => Apt::Source['publiq-appconfig']
@@ -15,7 +15,7 @@ class profiles::deployment::appconfig (
 
   profiles::deployment::versions { $title:
     project         => 'appconfig',
-    packages        => 'appconfig-publiq',
+    packages        => 'publiq-appconfig',
     destination_dir => '/var/run',
     puppetdb_url    => $puppetdb_url,
     require         => Class['profiles::puppetserver::cache_clear']

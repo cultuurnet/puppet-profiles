@@ -7,7 +7,7 @@ class profiles::deployment::infrastructure (
 
   realize Apt::Source['publiq-infrastructure']
 
-  package { 'infrastructure-publiq':
+  package { 'publiq-infrastructure':
     ensure  => $version,
     notify  => Class['profiles::puppetserver::cache_clear'],
     require => Apt::Source['publiq-infrastructure']
@@ -15,7 +15,7 @@ class profiles::deployment::infrastructure (
 
   profiles::deployment::versions { $title:
     project         => 'infrastructure',
-    packages        => 'infrastructure-publiq',
+    packages        => 'publiq-infrastructure',
     destination_dir => '/var/run',
     puppetdb_url    => $puppetdb_url,
     require         => Class['profiles::puppetserver::cache_clear']
