@@ -303,6 +303,7 @@ describe 'profiles::jenkins::plugin' do
 
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*pipelineJob\('myrepo'\)/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*url\('git@example.com:org\/myrepo.git'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*scriptPath\('Jenkinsfile'\)$/) }
           it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^\s*githubProjectUrl/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*branch\('refs\/heads\/main'\)$/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*credentials\('mygitcred'\)$/) }
@@ -310,26 +311,29 @@ describe 'profiles::jenkins::plugin' do
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*numToKeepStr\('5'\)$/) }
         end
 
-        context "with configuration => [{ 'name' => 'baz', 'git_url' => 'git@github.com:bar/baz.git', 'git_ref' => 'refs/heads/develop', 'credential_id' => 'gitkey', keep_builds => 10 }, { 'name' => 'repo', 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred', keep_builds => '2' }]" do
+        context "with configuration => [{ 'name' => 'baz', 'git_url' => 'git@github.com:bar/baz.git', 'git_ref' => 'refs/heads/develop', 'jenkinsfile_path' => 'Jenkinsfile.baz', 'credential_id' => 'gitkey', keep_builds => 10 }, { 'name' => 'repo', 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'jenkinsfile_path' => 'pipelines/Jenkinsfile.repo', 'credential_id' => 'mygitcred', keep_builds => '2' }]" do
           let(:params) { {
               'configuration' => [{
-                                   'name'          => 'baz',
-                                   'git_url'       => 'git@github.com:bar/baz.git',
-                                   'git_ref'       => 'refs/heads/develop',
-                                   'credential_id' => 'gitkey',
-                                   'keep_builds'   => 10
+                                   'name'             => 'baz',
+                                   'git_url'          => 'git@github.com:bar/baz.git',
+                                   'git_ref'          => 'refs/heads/develop',
+                                   'jenkinsfile_path' => 'Jenkinsfile.baz',
+                                   'credential_id'    => 'gitkey',
+                                   'keep_builds'      => 10
                                  },
                                  {
-                                   'name'          => 'repo',
-                                   'git_url'       => 'git@example.com:org/repo.git',
-                                   'git_ref'       => 'main',
-                                   'credential_id' => 'mygitcred',
-                                   'keep_builds'   => 2
+                                   'name'             => 'repo',
+                                   'git_url'          => 'git@example.com:org/repo.git',
+                                   'git_ref'          => 'main',
+                                   'jenkinsfile_path' => 'pipelines/Jenkinsfile.repo',
+                                   'credential_id'    => 'mygitcred',
+                                   'keep_builds'      => 2
                                  }]
           } }
 
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*pipelineJob\('baz'\)/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*url\('git@github.com:bar\/baz.git'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*scriptPath\('Jenkinsfile.baz'\)$/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*githubProjectUrl\('https:\/\/github.com\/bar\/baz'\)$/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*branch\('refs\/heads\/develop'\)$/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*credentials\('gitkey'\)$/) }
@@ -337,6 +341,7 @@ describe 'profiles::jenkins::plugin' do
 
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*pipelineJob\('repo'\)/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*url\('git@example.com:org\/repo.git'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*scriptPath\('pipelines\/Jenkinsfile.repo'\)$/) }
           it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^\s*githubProjectUrl\('https:\/\/github.com\/org\/repo'\)$/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*branch\('main'\)$/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*credentials\('mygitcred'\)$/) }
