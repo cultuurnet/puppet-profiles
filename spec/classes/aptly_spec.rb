@@ -126,7 +126,15 @@ describe 'profiles::aptly' do
             'default_component' => 'main'
           ) }
 
+          it { is_expected.to contain_aptly__repo('foo-archive').with(
+            'default_component' => 'main'
+          ) }
+
           it { is_expected.to contain_aptly__repo('bar').with(
+            'default_component' => 'main'
+          ) }
+
+          it { is_expected.to contain_aptly__repo('bar-archive').with(
             'default_component' => 'main'
           ) }
 
@@ -210,6 +218,10 @@ describe 'profiles::aptly' do
           ) }
 
           it { is_expected.to contain_aptly__repo('baz').with(
+            'default_component' => 'main'
+          ) }
+
+          it { is_expected.to contain_aptly__repo('baz-archive').with(
             'default_component' => 'main'
           ) }
 
