@@ -68,6 +68,10 @@ class profiles::aptly (
     aptly::repo { $repo:
       default_component => 'main'
     }
+
+    aptly::repo { "${repo}-archive":
+      default_component => 'main'
+    }
   }
 
   $mirrors.each |$name, $attributes| {
