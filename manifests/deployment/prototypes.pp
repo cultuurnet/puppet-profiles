@@ -5,14 +5,14 @@ class profiles::deployment::prototypes (
 
   realize Apt::Source['publiq-prototypes']
 
-  package { 'prototypes-publiq':
+  package { 'publiq-prototypes':
     ensure  => $version,
     require => Apt::Source['publiq-prototypes']
   }
 
   profiles::deployment::versions { $title:
     project         => 'prototypes',
-    packages        => 'prototypes-publiq',
+    packages        => 'publiq-prototypes',
     destination_dir => '/var/run',
     puppetdb_url    => $puppetdb_url
   }
