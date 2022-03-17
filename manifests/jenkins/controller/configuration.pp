@@ -9,6 +9,7 @@ class profiles::jenkins::controller::configuration(
 
   $string_credentials      = [$credentials].flatten.filter |$credential| { $credential['type'] == 'string' }
   $private_key_credentials = [$credentials].flatten.filter |$credential| { $credential['type'] == 'private_key' }
+  $aws_credentials         = [$credentials].flatten.filter |$credential| { $credential['type'] == 'aws' }
 
   profiles::jenkins::plugin { 'swarm': }
   profiles::jenkins::plugin { 'mailer': }
@@ -44,6 +45,11 @@ class profiles::jenkins::controller::configuration(
 
   profiles::jenkins::plugin { 'ssh-credentials':
     configuration => $private_key_credentials,
+    notify        => Class['profiles::jenkins::controller::configuration::reload']
+  }
+
+  profiles::jenkins::plugin { 'aws-credentials':
+    configuration => $aws_credentials,
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
 

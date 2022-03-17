@@ -203,6 +203,44 @@ describe 'profiles::jenkins::plugin' do
         end
       end
 
+      context "with title aws-credentials" do
+        let(:title) { 'aws-credentials' }
+
+        context "with configuration => {'id' => 'awscred', 'type' => 'aws', 'access_key' => 'mykey', 'secret_key' => 'mysecret'}" do
+          let(:params) { {
+              'configuration' => {'id' => 'awscred', 'type' => 'aws', 'access_key' => 'mykey', 'secret_key' => 'mysecret'}
+          } }
+
+          it { is_expected.to contain_file('aws-credentials configuration').with(
+            'ensure'  => 'file',
+            'path'    => '/var/lib/jenkins/casc_config/aws-credentials.yaml',
+            'owner'   => 'jenkins',
+            'group'   => 'jenkins'
+          ) }
+
+          it { is_expected.to contain_file('aws-credentials configuration').with_content(/^\s*id: 'awscred'$/) }
+          it { is_expected.to contain_file('aws-credentials configuration').with_content(/^\s*accessKey: 'mykey'$/) }
+          it { is_expected.to contain_file('aws-credentials configuration').with_content(/^\s*secretKey: 'mysecret'$/) }
+        end
+
+        context "with configuration => [{'id' => 'awscred1', 'type' => 'aws', 'access_key' => 'awskey1', 'secret_key' => 'secretkey1'}, {'id' => 'awscred2', 'type' => 'aws', 'access_key' => 'awskey2', 'secret_key' => 'secretkey2'}]" do
+          let(:params) { {
+              'configuration' => [
+                                   {'id' => 'awscred1', 'type' => 'aws', 'access_key' => 'awskey1', 'secret_key' => 'secretkey1'},
+                                   {'id' => 'awscred2', 'type' => 'aws', 'access_key' => 'awskey2', 'secret_key' => 'secretkey2'}
+                                 ]
+          } }
+
+          it { is_expected.to contain_file('aws-credentials configuration').with_content(/^\s*id: 'awscred1'$/) }
+          it { is_expected.to contain_file('aws-credentials configuration').with_content(/^\s*accessKey: 'awskey1'$/) }
+          it { is_expected.to contain_file('aws-credentials configuration').with_content(/^\s*secretKey: 'secretkey1'$/) }
+
+          it { is_expected.to contain_file('aws-credentials configuration').with_content(/^\s*id: 'awscred2'$/) }
+          it { is_expected.to contain_file('aws-credentials configuration').with_content(/^\s*accessKey: 'awskey2'$/) }
+          it { is_expected.to contain_file('aws-credentials configuration').with_content(/^\s*secretKey: 'secretkey2'$/) }
+        end
+      end
+
       context "with title git" do
         let(:title) { 'git' }
 
