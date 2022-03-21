@@ -12,25 +12,25 @@ class profiles::apt::repositories {
     }
   }
 
-  $php_repository = $facts['lsbdistcodename'] ? {
+  $php_repository = $facts['os']['distro']['codename'] ? {
     'trusty' => 'php-legacy',
     'xenial' => 'php'
   }
 
-  $tools_repository = $facts['lsbdistcodename'] ? {
+  $tools_repository = $facts['os']['distro']['codename'] ? {
     'trusty' => 'tools-legacy',
     'xenial' => 'tools'
   }
 
   @apt::source { 'cultuurnet-tools':
     location => "http://apt.uitdatabank.be/${tools_repository}-${environment}",
-    release  => $facts['lsbdistcodename'],
+    release  => $facts['os']['distro']['codename'],
     repos    => 'main'
   }
 
   @apt::source { 'php':
     location => "http://apt.uitdatabank.be/${php_repository}-${environment}",
-    release  => $facts['lsbdistcodename'],
+    release  => $facts['os']['distro']['codename'],
     repos    => 'main'
   }
 
@@ -48,13 +48,13 @@ class profiles::apt::repositories {
 
   @apt::source { 'nodejs_12.x':
     location => "http://apt.uitdatabank.be/nodejs_12.x-${environment}",
-    release  => $facts['lsbdistcodename'],
+    release  => $facts['os']['distro']['codename'],
     repos    => 'main'
   }
 
   @apt::source { 'nodejs_14.x':
     location => "http://apt.uitdatabank.be/nodejs_14.x-${environment}",
-    release  => 'trusty',
+    release  => $facts['os']['distro']['codename'],
     repos    => 'main'
   }
 
@@ -80,5 +80,17 @@ class profiles::apt::repositories {
     location => 'http://repo.aptly.info',
     release  => 'squeeze',
     repos    => 'main'
+  }
+
+  @apt::source { 'erlang':
+    location => "http://apt.uitdatabank.be/erlang-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
+  @apt::source { 'publiq-jenkins':
+    location => "http://apt.uitdatabank.be/jenkins-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main',
   }
 }

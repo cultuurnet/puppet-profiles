@@ -1,22 +1,29 @@
 class profiles::puppetdb::cli(
-  Variant[String, Array[String]] $server_urls
+  Variant[String, Array[String]] $server_urls,
+  Variant[String, Array[String]] $users       = 'root',
+  Optional[String]               $certificate = undef,
+  Optional[String]               $private_key = undef
+
 ) inherits ::profiles {
 
-  include ::profiles::apt::updates
-
-  realize Profiles::Apt::Update['cultuurnet-tools']
+  realize Apt::Source['cultuurnet-tools']
 
   package { 'rubygem-puppetdb-cli':
-    require => Profiles::Apt::Update['cultuurnet-tools']
+    require => Apt::Source['cultuurnet-tools']
   }
 
-  file { '/etc/puppetlabs/client-tools':
-    ensure  => 'directory'
-  }
+  [$users].flatten.each |$user| {
+    unless $user == 'root' {
+      realize Group[$user]
+      realize User[$user]
 
-  file { 'puppetdb-cli-config':
-    ensure  => 'file',
-    path    => '/etc/puppetlabs/client-tools/puppetdb.conf',
-    content => template('profiles/puppetdb/cli.conf.erb')
+      User[$user] -> Profiles::Puppetdb::Cli::Config[$user]
+    }
+
+    profiles::puppetdb::cli::config { $user:
+      server_urls => $server_urls,
+      certificate => $certificate,
+      private_key => $private_key
+    }
   }
 }

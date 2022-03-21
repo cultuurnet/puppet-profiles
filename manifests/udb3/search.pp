@@ -6,7 +6,6 @@ class profiles::udb3::search (
 
   contain ::deployment::udb3::search
 
-  include ::profiles::apt::keys
   include ::profiles::elasticdump
 
   # TODO: parameterize memory settings for instance
@@ -19,18 +18,7 @@ class profiles::udb3::search (
   # TODO: solution for certificates/HTTPS vhosts
   # TODO: firewall rules
 
-  apt::source { 'cultuurnet-search':
-    location => "http://apt.uitdatabank.be/search-${environment}",
-    release  => $facts['lsbdistcodename'],
-    repos    => 'main',
-    require  => Class['profiles::apt::keys'],
-    include  => {
-      'deb' => true,
-      'src' => false
-    }
-  }
-
-  profiles::apt::update { 'cultuurnet-search': }
+  realize Apt::Source['cultuurnet-search']
 
   if $facts['ec2_metadata'] {
     $http_hosts = [ $facts['ipaddress_eth0'], '127.0.0.1']
@@ -55,5 +43,5 @@ class profiles::udb3::search (
 
   Class['profiles::elasticsearch'] -> Elasticsearch::Instance['es01']
   Elasticsearch::Instance['es01'] -> Class['deployment::udb3::search']
-  Profiles::Apt::Update['cultuurnet-search'] -> Class['deployment::udb3::search']
+  Apt::Source['cultuurnet-search'] -> Class['deployment::udb3::search']
 }

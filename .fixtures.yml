@@ -93,7 +93,7 @@ fixtures:
       ref: 'be6c31f'
     php:
       repo: 'https://github.com/willaerk/puppet-php.git'
-      ref: '15a1818'
+      ref: 'f47aff9'
     mailcatcher:
       repo: 'https://github.com/cultuurnet/puppet-mailcatcher.git'
       ref: '9752479'
@@ -102,9 +102,12 @@ fixtures:
       ref: '7353dd0'
     websockets:
       repo: 'https://github.com/cultuurnet/puppet-websockets.git'
-      ref: 'f8a1bb2'
+      ref: '5ea8ce2'
     aptly:
       repo: 'https://github.com/cultuurnet/puppet-aptly.git'
       ref: '74a1c76'
+    deployment:
+      repo: 'https://github.com/cultuurnet/puppet-deployment.git'
+      ref: 'd8672cf'
   symlinks:
     profiles: "#{source_dir}"

@@ -11,21 +11,15 @@ class profiles::aptly (
   Hash                           $mirrors           = {}
 ) inherits ::profiles {
 
-  include ::profiles::users
-  include ::profiles::groups
-  include ::profiles::packages
-  include ::profiles::apt::keys
-  include ::profiles::apt::updates
-
   realize Group['aptly']
   realize User['aptly']
 
   realize Package['graphviz']
 
   realize Apt::Key['aptly']
-  realize Profiles::Apt::Update['aptly']
+  realize Apt::Source['aptly']
 
-  Apt::Key['aptly'] -> Profiles::Apt::Update['aptly']
+  Apt::Key['aptly'] -> Apt::Source['aptly']
 
   $signing_keys.each |$name, $attributes| {
     gnupg_key { $name:
@@ -48,7 +42,7 @@ class profiles::aptly (
     api_bind             => $api_bind,
     api_port             => $api_port,
     api_nolock           => true,
-    require              => [ Profiles::Apt::Update['aptly'], User['aptly']],
+    require              => [ Apt::Source['aptly'], User['aptly']],
     s3_publish_endpoints => $publish_endpoints
   }
 
@@ -72,6 +66,10 @@ class profiles::aptly (
 
   [$repositories].flatten.each |$repo| {
     aptly::repo { $repo:
+      default_component => 'main'
+    }
+
+    aptly::repo { "${repo}-archive":
       default_component => 'main'
     }
   }

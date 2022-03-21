@@ -1,4 +1,4 @@
-class profiles::apt::keys inherits ::profiles {
+class profiles::apt::keys {
 
   apt::key { 'Infra CultuurNet':
     id     => '2380EA3E50D3776DFC1B03359F4935C80DC9EA95',

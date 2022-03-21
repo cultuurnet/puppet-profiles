@@ -1,19 +1,16 @@
 require 'spec_helper'
 
 describe 'profiles::apache::mod::php' do
-  let(:pre_condition) { 'include ::profiles; class { apache: mpm_module => "prefork" }' }
-
   include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       let(:facts) { facts }
+      let(:pre_condition) { 'class { apache: mpm_module => "prefork" }' }
 
       it { is_expected.to compile.with_all_deps }
-
-      it { is_expected.to contain_profiles__apt__update('php') }
-
-      it { is_expected.to contain_class('apache::mod::php').that_requires('Profiles::Apt::Update[php]') }
+      it { is_expected.to contain_apt__source('php') }
+      it { is_expected.to contain_class('apache::mod::php').that_requires('Apt::Source[php]') }
     end
   end
 end

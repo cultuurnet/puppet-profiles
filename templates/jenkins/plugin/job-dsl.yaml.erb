@@ -1,0 +1,51 @@
+<%- if ! @configuration.empty? -%>
+---
+jobs:
+  <%- [@configuration].flatten.each do |pipeline| -%>
+  - script: >
+      pipelineJob('<%= pipeline['name'] %>') {
+          properties {
+            <%- if pipeline['git_url'] =~ /^git@github.com:/ -%>
+              githubProjectUrl('https://github.com/<%= pipeline['git_url'][/^.*:(.*).git$/, 1] %>')
+            <%- end -%>
+              disableConcurrentBuilds()
+              pipelineTriggers {
+                  triggers {
+                    <%- if pipeline['auto_build'] -%>
+                      githubPush()
+                    <%- end -%>
+                  }
+              }
+              buildDiscarder {
+                  strategy {
+                      logRotator {
+                          numToKeepStr('<%= pipeline['keep_builds'] %>')
+                          artifactNumToKeepStr('')
+                          daysToKeepStr('')
+                          artifactDaysToKeepStr('')
+                      }
+                  }
+              }
+          }
+          definition {
+              cpsScm {
+                  scm {
+                      git {
+                          remote {
+                              url('<%= pipeline['git_url'] %>')
+                              credentials('<%= pipeline['credential_id'] %>')
+                          }
+                          branch('<%= pipeline['git_ref'] %>')
+                      }
+                    <%- if pipeline['jenkinsfile_path'] -%>
+                      scriptPath('<%= pipeline['jenkinsfile_path'] %>')
+                    <%- else -%>
+                      scriptPath('Jenkinsfile')
+                    <%- end -%>
+                  }
+                  lightweight(true)
+              }
+          }
+      }
+  <%- end -%>
+<%- end -%>

@@ -1,6 +1,4 @@
-class profiles::packages {
-
-  include ::profiles::apt::updates
+class profiles::packages inherits ::profiles {
 
   @package { 'composer':
     ensure  => 'absent'
@@ -8,17 +6,17 @@ class profiles::packages {
 
   @package { 'composer1':
     ensure  => 'present',
-    require => Profiles::Apt::Update['cultuurnet-tools']
+    require => Apt::Source['cultuurnet-tools']
   }
 
   @package { 'composer2':
     ensure  => 'present',
-    require => Profiles::Apt::Update['cultuurnet-tools']
+    require => Apt::Source['cultuurnet-tools']
   }
 
   @package { 'drush':
     ensure  => 'present',
-    require => Profiles::Apt::Update['cultuurnet-tools']
+    require => Apt::Source['cultuurnet-tools']
   }
 
   @package { 'git':
@@ -27,11 +25,6 @@ class profiles::packages {
 
   @package { 'groovy':
     ensure => 'present'
-  }
-
-  @package { 'phing':
-    ensure  => 'present',
-    require => Profiles::Apt::Update['cultuurnet-tools']
   }
 
   @package { 'amqp-tools':
@@ -46,9 +39,13 @@ class profiles::packages {
     ensure => 'present'
   }
 
+  @package { 'fontconfig':
+    ensure => 'present'
+  }
+
   @package { 'ca-certificates-publiq':
     ensure  => 'present',
-    require => Profiles::Apt::Update['cultuurnet-tools']
+    require => Apt::Source['cultuurnet-tools']
   }
 
   @package { 'jq':
@@ -57,21 +54,40 @@ class profiles::packages {
 
   @package { 'gcsfuse':
     ensure  => 'present',
-    require => Profiles::Apt::Update['cultuurnet-tools']
+    require => Apt::Source['cultuurnet-tools']
   }
 
   @package { 'liquibase':
     ensure  => 'present',
-    require => Profiles::Apt::Update['cultuurnet-tools']
+    require => Apt::Source['cultuurnet-tools']
   }
 
   @package { 'mysql-connector-java':
     ensure  => 'present',
-    require => Profiles::Apt::Update['cultuurnet-tools']
+    require => Apt::Source['cultuurnet-tools']
   }
 
   @package { 'yarn':
     ensure  => 'present',
-    require => Profiles::Apt::Update['yarn']
+    require => Apt::Source['yarn']
+  }
+
+  @package { 'bundler':
+    ensure => 'present'
+  }
+
+  @package { 'policykit-1':
+    ensure  => 'latest',
+    require => Apt::Source['cultuurnet-tools']
+  }
+
+  @package { 'snapd':
+    ensure  => 'latest',
+    require => Apt::Source['cultuurnet-tools']
+  }
+
+  @package { 'jtm':
+    ensure  => 'present',
+    require => Apt::Source['cultuurnet-tools']
   }
 }

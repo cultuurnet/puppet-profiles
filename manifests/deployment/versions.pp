@@ -7,7 +7,6 @@ define profiles::deployment::versions (
 
   include ::profiles
   include ::profiles::deployment
-  include ::profiles::packages
 
   realize Package['jq']
 

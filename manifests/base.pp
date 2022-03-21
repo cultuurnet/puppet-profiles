@@ -1,16 +1,13 @@
 class profiles::base inherits ::profiles {
 
-  include ::profiles::groups
-  include ::profiles::apt::updates
-  include ::profiles::users
-  include ::profiles::packages
-
   Shellvar {
     target  => '/etc/environment'
   }
 
-  realize Profiles::Apt::Update['cultuurnet-tools']
+  realize Apt::Source['cultuurnet-tools']
   realize Package['ca-certificates-publiq']
+  realize Package['policykit-1']
+  realize Package['snapd']
 
   if $facts['ec2_metadata'] {
     $admin_user = 'ubuntu'

@@ -14,10 +14,10 @@ describe 'profiles::elasticdump' do
 
         it { is_expected.to contain_class('profiles::nodejs') }
 
-        it { is_expected.to contain_profiles__apt__update('cultuurnet-tools') }
+        it { is_expected.to contain_apt__source('cultuurnet-tools') }
         it { is_expected.to contain_package('elasticdump') }
 
-        it { is_expected.to contain_package('elasticdump').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
+        it { is_expected.to contain_package('elasticdump').that_requires('Apt::Source[cultuurnet-tools]') }
         it { is_expected.to contain_package('elasticdump').that_requires('Class[profiles::nodejs]') }
       end
     end

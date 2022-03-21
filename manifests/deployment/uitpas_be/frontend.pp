@@ -8,16 +8,14 @@ class profiles::deployment::uitpas_be::frontend (
   Optional[String] $puppetdb_url        = undef
 ) inherits ::profiles {
 
-  include ::profiles::deployment::uitpas_be
-
   $basedir = '/var/www/uitpasbe-frontend'
 
-  realize Profiles::Apt::Update['publiq-uitpasbe']
+  realize Apt::Source['publiq-uitpasbe']
 
   package { 'uitpasbe-frontend':
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Profiles::Apt::Update['publiq-uitpasbe']
+    require => Apt::Source['publiq-uitpasbe']
   }
 
   file { 'uitpasbe-frontend-config':

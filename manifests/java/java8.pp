@@ -1,16 +1,13 @@
 class profiles::java::java8 inherits ::profiles {
 
-  include ::profiles::packages
-  include ::profiles::apt::updates
-
   $javahome = '/usr/lib/jvm/java-8-oracle/jre'
 
   realize Package['ca-certificates-publiq']
-  realize Profiles::Apt::Update['cultuurnet-tools']
+  realize Apt::Source['cultuurnet-tools']
 
   package { 'oracle-jdk8-archive':
     ensure  => '8u151',
-    require => Profiles::Apt::Update['cultuurnet-tools']
+    require => Apt::Source['cultuurnet-tools']
   }
 
   file { 'oracle-java8-installer.preseed':

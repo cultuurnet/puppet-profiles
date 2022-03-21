@@ -23,10 +23,10 @@ describe 'profiles::deployment::appconfig' do
       ) }
 
       it { is_expected.to contain_apt__source('publiq-appconfig').that_requires('Class[profiles::apt::keys]') }
-      it { is_expected.to contain_profiles__apt__update('publiq-appconfig') }
+      it { is_expected.to contain_apt__source('publiq-appconfig') }
 
-      it { is_expected.to contain_package('appconfig-publiq').that_requires('Profiles::Apt::Update[publiq-appconfig]') }
-      it { is_expected.to contain_package('appconfig-publiq').that_notifies('Class[profiles::puppetserver::cache_clear]') }
+      it { is_expected.to contain_package('publiq-appconfig').that_requires('Apt::Source[publiq-appconfig]') }
+      it { is_expected.to contain_package('publiq-appconfig').that_notifies('Class[profiles::puppetserver::cache_clear]') }
       it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::appconfig').that_requires('Class[profiles::puppetserver::cache_clear]') }
 
       case facts[:os]['release']['major']
@@ -48,13 +48,13 @@ describe 'profiles::deployment::appconfig' do
       context "without parameters" do
         let(:params) { {} }
 
-        it { is_expected.to contain_package('appconfig-publiq').with(
+        it { is_expected.to contain_package('publiq-appconfig').with(
           'ensure' => 'latest'
         ) }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::appconfig').with(
           'project'      => 'appconfig',
-          'packages'     => 'appconfig-publiq',
+          'packages'     => 'publiq-appconfig',
           'puppetdb_url' => nil
         ) }
       end
@@ -65,13 +65,13 @@ describe 'profiles::deployment::appconfig' do
           'puppetdb_url'    => 'http://example.com:8000'
         } }
 
-        it { is_expected.to contain_package('appconfig-publiq').with(
+        it { is_expected.to contain_package('publiq-appconfig').with(
           'ensure' => '1.2.3'
         ) }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::appconfig').with(
           'project'         => 'appconfig',
-          'packages'        => 'appconfig-publiq',
+          'packages'        => 'publiq-appconfig',
           'destination_dir' => '/var/run',
           'puppetdb_url'    => 'http://example.com:8000'
         ) }

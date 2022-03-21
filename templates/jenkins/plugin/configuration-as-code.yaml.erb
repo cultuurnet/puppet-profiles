@@ -1,0 +1,29 @@
+---
+jenkins:
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+  numExecutors: 0
+  slaveAgentPort: 0
+  mode: NORMAL
+  remotingSecurity:
+    enabled: true
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+      - id: 'admin'
+        name: 'Administrator'
+        password: '<%= @configuration['admin_password'] %>'
+        properties:
+        - mailer:
+            emailAddress: 'jenkins@publiq.be'
+  globalNodeProperties:
+  - envVars:
+      env:
+      - key: 'CI'
+        value: 'true'
+unclassified:
+  location:
+    adminAddress: 'jenkins@publiq.be'
+    url: '<%= @configuration['url'] %>'

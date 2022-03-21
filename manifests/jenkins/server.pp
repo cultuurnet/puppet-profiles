@@ -10,31 +10,18 @@ class profiles::jenkins::server (
 
   contain ::profiles::java
 
-  include ::profiles::apt::repositories
-  include ::profiles::packages
-  include ::profiles::jenkins::repositories
-  include ruby
-
   $jenkins_port = 8080
   $apache_server = 'jenkins.publiq.be'
   $admin_user = 'admin'
   $security_model = 'full_control'
   $helper_groovy = '/usr/share/jenkins/puppet_helper.groovy'
 
-  realize Profiles::Apt::Update['publiq-jenkins']
-  realize Profiles::Apt::Update['cultuurnet-tools']
-  realize Profiles::Apt::Update['yarn']
+  realize Apt::Source['publiq-jenkins']
+  realize Apt::Source['cultuurnet-tools']
+  realize Apt::Source['yarn']
 
-  # This will install the ruby dev package and bundler
-  class{'ruby::dev':
-    bundler_provider => 'apt',
-  }
-
-  # we have to install this manually because of https://github.com/ffi/ffi/issues/607
-  package { 'libffi-dev':
-    name     => 'libffi-dev',
-    provider => apt,
-    require  => Class['ruby::dev']
+  class {'::profiles::ruby':
+    with_dev => true
   }
 
   package { 'dpkg':       #we need to upgrade dpkg 1.17.5ubuntu5.7 to 1.17.5ubuntu5.8 so the jenkins install will work correctly.
@@ -52,14 +39,16 @@ class profiles::jenkins::server (
     repo         => false,
     cli          => false,
     install_java => false,
-    require      => Profiles::Apt::Update['publiq-jenkins'],
+    manage_group => false,
+    manage_user  => false,
+    require      => Apt::Source['publiq-jenkins'],
     version      => $version
   }
 
   class { '::profiles::jenkins::cli':
     user     => $admin_user,
     password => $admin_password,
-    require  => Profiles::Apt::Update['publiq-jenkins']
+    require  => Apt::Source['publiq-jenkins']
   }
 
   sudo::conf { 'jenkins':
@@ -159,12 +148,11 @@ instance.save()' | /usr/bin/jenkins-cli groovy =",
   Package['dpkg'] -> Class['::profiles::java'] -> Class['jenkins'] -> File[$sshdir] -> File['jenkins.model.JenkinsLocationConfiguration.xml']
 
   realize Apt::Source['cultuurnet-tools']
-  realize Profiles::Apt::Update['cultuurnet-tools']
+  realize Apt::Source['cultuurnet-tools']
 
   realize Package['git']
   realize Package['groovy']
   realize Package['composer']
-  realize Package['phing']
   realize Package['jq']
   realize Package['yarn']
 

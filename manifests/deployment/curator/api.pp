@@ -4,11 +4,9 @@ class profiles::deployment::curator::api (
   Optional[String] $puppetdb_url   = undef
 ) inherits ::profiles {
 
-  include ::profiles::deployment::curator
-
   $basedir = '/var/www/curator-api'
 
-  realize Profiles::Apt::Update['publiq-curator']
+  realize Apt::Source['publiq-curator']
 
   # TODO: package notify Apache::Service ?
   # TODO: config file notify Apache::Service ?
@@ -16,7 +14,7 @@ class profiles::deployment::curator::api (
   package { 'curator-api':
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Profiles::Apt::Update['publiq-curator']
+    require => Apt::Source['publiq-curator']
   }
 
   file { 'curator-api-config':

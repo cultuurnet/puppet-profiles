@@ -3,31 +3,19 @@ class profiles::deployment::appconfig (
   Optional[String] $puppetdb_url = undef
 ) inherits ::profiles {
 
-  include ::profiles::apt::keys
   include ::profiles::puppetserver::cache_clear
 
-  apt::source { 'publiq-appconfig':
-    location => 'https://apt.publiq.be/appconfig-production',
-    release  => $facts['lsbdistcodename'],
-    repos    => 'main',
-    require  => Class['profiles::apt::keys'],
-    include  => {
-      'deb' => true,
-      'src' => false
-    }
-  }
+  realize Apt::Source['publiq-appconfig']
 
-  profiles::apt::update { 'publiq-appconfig': }
-
-  package { 'appconfig-publiq':
+  package { 'publiq-appconfig':
     ensure  => $version,
     notify  => Class['profiles::puppetserver::cache_clear'],
-    require => Profiles::Apt::Update['publiq-appconfig']
+    require => Apt::Source['publiq-appconfig']
   }
 
   profiles::deployment::versions { $title:
     project         => 'appconfig',
-    packages        => 'appconfig-publiq',
+    packages        => 'publiq-appconfig',
     destination_dir => '/var/run',
     puppetdb_url    => $puppetdb_url,
     require         => Class['profiles::puppetserver::cache_clear']

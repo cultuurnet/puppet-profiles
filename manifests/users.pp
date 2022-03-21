@@ -1,4 +1,4 @@
-class profiles::users {
+class profiles::users inherits ::profiles {
 
   @user { 'aptly':
     ensure         => 'present',
@@ -8,6 +8,16 @@ class profiles::users {
     purge_ssh_keys => true,
     shell          => '/bin/bash',
     uid            => '450'
+  }
+
+  @user { 'jenkins':
+    ensure         => 'present',
+    gid            => 'jenkins',
+    home           => '/var/lib/jenkins',
+    managehome     => true,
+    purge_ssh_keys => true,
+    shell          => '/bin/bash',
+    uid            => '451'
   }
 
   @user { 'ubuntu':

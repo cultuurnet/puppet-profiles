@@ -22,9 +22,9 @@ describe 'profiles::deployment::prototypes' do
       ) }
 
       it { is_expected.to contain_apt__source('publiq-prototypes').that_requires('Class[profiles::apt::keys]') }
-      it { is_expected.to contain_profiles__apt__update('publiq-prototypes') }
+      it { is_expected.to contain_apt__source('publiq-prototypes') }
 
-      it { is_expected.to contain_package('prototypes-publiq').that_requires('Profiles::Apt::Update[publiq-prototypes]') }
+      it { is_expected.to contain_package('publiq-prototypes').that_requires('Apt::Source[publiq-prototypes]') }
 
       case facts[:os]['release']['major']
       when '14.04'
@@ -45,7 +45,7 @@ describe 'profiles::deployment::prototypes' do
       context "without parameters" do
         let(:params) { {} }
 
-        it { is_expected.to contain_package('prototypes-publiq').with(
+        it { is_expected.to contain_package('publiq-prototypes').with(
           'ensure' => 'latest'
         ) }
       end
@@ -56,13 +56,13 @@ describe 'profiles::deployment::prototypes' do
           'puppetdb_url' => 'http://example.com:8000'
         } }
 
-        it { is_expected.to contain_package('prototypes-publiq').with(
+        it { is_expected.to contain_package('publiq-prototypes').with(
           'ensure' => '1.2.3'
         ) }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::prototypes').with(
           'project'         => 'prototypes',
-          'packages'        => 'prototypes-publiq',
+          'packages'        => 'publiq-prototypes',
           'destination_dir' => '/var/run',
           'puppetdb_url'    => 'http://example.com:8000'
         ) }

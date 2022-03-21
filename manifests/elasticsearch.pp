@@ -4,9 +4,7 @@ class profiles::elasticsearch (
 
   contain ::profiles::java
 
-  include ::profiles::apt::updates
-
-  realize Profiles::Apt::Update['elasticsearch']
+  realize Apt::Source['elasticsearch']
 
   # TODO: parameterize this profile (version, ...)
   # TODO: add /data/backups/elasticsearch directory
@@ -30,6 +28,6 @@ class profiles::elasticsearch (
     api_timeout       => 30,
     restart_on_change => true,
     instances         => {},
-    require           => [ Profiles::Apt::Update['elasticsearch'], Class['::profiles::java']]
+    require           => [ Apt::Source['elasticsearch'], Class['::profiles::java']]
   }
 }

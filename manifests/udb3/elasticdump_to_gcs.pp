@@ -9,11 +9,9 @@ class profiles::udb3::elasticdump_to_gcs (
   String  $local_timezone       = 'UTC'
 ) inherits ::profiles {
 
-  include ::profiles::apt::updates
-  include ::profiles::packages
   include ::profiles::elasticdump
 
-  realize Profiles::Apt::Update['cultuurnet-tools']
+  realize Apt::Source['cultuurnet-tools']
 
   realize Package['gcsfuse']
 

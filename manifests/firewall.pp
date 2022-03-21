@@ -1,4 +1,4 @@
-class profiles::firewall {
+class profiles::firewall inherits ::profiles {
 
   @firewall { '100 accept SSH traffic':
     proto  => 'tcp',

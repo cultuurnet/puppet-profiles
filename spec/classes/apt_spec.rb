@@ -9,7 +9,10 @@ describe 'profiles::apt' do
 
       it { is_expected.to compile.with_all_deps }
 
-      it { is_expected.to contain_class('apt') }
+      it { is_expected.to contain_class('apt').with(
+        'update' => { 'frequency' => 'always' },
+        'stage'  => 'pre'
+      ) }
 
       it { is_expected.to contain_cron('apt clean daily').with(
         'environment' => [ 'MAILTO=infra@publiq.be'],

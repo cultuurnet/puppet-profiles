@@ -14,11 +14,11 @@ describe 'profiles::deployment::uitidv2::backend' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_profiles__apt__update('publiq-uitidv2') }
+        it { is_expected.to contain_apt__source('publiq-uitidv2') }
 
         it { is_expected.to contain_package('uitid-backend').with( 'ensure' => 'latest') }
         it { is_expected.to contain_package('uitid-backend').that_notifies('Profiles::Deployment::Versions[profiles::deployment::uitidv2::backend]') }
-        it { is_expected.to contain_package('uitid-backend').that_requires('Profiles::Apt::Update[publiq-uitidv2]') }
+        it { is_expected.to contain_package('uitid-backend').that_requires('Apt::Source[publiq-uitidv2]') }
 
         it { is_expected.to contain_file('uitid-backend-config').with(
           'ensure' => 'file',

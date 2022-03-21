@@ -9,7 +9,7 @@ describe 'profiles::java::java8' do
 
       it { is_expected.to compile.with_all_deps }
 
-      it { is_expected.to contain_profiles__apt__update('cultuurnet-tools') }
+      it { is_expected.to contain_apt__source('cultuurnet-tools') }
 
       it { is_expected.to contain_package('ca-certificates-publiq') }
       it { is_expected.to contain_package('oracle-jdk8-archive').with(
@@ -37,8 +37,8 @@ describe 'profiles::java::java8' do
         'path'         => ['/usr/lib/jvm/java-8-oracle/jre/bin', '/usr/bin']
       ) }
 
-      it { is_expected.to contain_package('ca-certificates-publiq').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
-      it { is_expected.to contain_package('oracle-jdk8-archive').that_requires('Profiles::Apt::Update[cultuurnet-tools]') }
+      it { is_expected.to contain_package('ca-certificates-publiq').that_requires('Apt::Source[cultuurnet-tools]') }
+      it { is_expected.to contain_package('oracle-jdk8-archive').that_requires('Apt::Source[cultuurnet-tools]') }
 
       it { is_expected.to contain_package('oracle-java8-installer').that_requires('File[oracle-java8-installer.preseed]') }
       it { is_expected.to contain_package('oracle-java8-installer').that_requires('Package[oracle-jdk8-archive]') }
