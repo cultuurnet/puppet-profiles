@@ -151,7 +151,8 @@ describe 'profiles::jenkins::controller::configuration' do
           'admin_password'   => 'letmein',
           'credentials'      => [
                                   { 'id' => 'foo', 'type' => 'string', 'secret' => 'bla'},
-                                  { 'id' => 'awscred', 'type' => 'aws', 'access_key' => 'aws_key', 'secret_key' => 'aws_secret'}
+                                  { 'id' => 'awscred', 'type' => 'aws', 'access_key' => 'aws_key', 'secret_key' => 'aws_secret'},
+                                  { 'id' => 'filecred', 'type' => 'file', 'filename' => 'my_file.txt', 'content' => 'filecontent'}
                                 ],
           'global_libraries' => { 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'},
           'pipelines'        => { 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'keep_builds' => 5},
@@ -168,7 +169,10 @@ describe 'profiles::jenkins::controller::configuration' do
         it { is_expected.to contain_profiles__jenkins__plugin('plain-credentials').with(
           'ensure'        => 'present',
           'restart'       => false,
-          'configuration' => [{ 'id' => 'foo', 'type' => 'string', 'secret' => 'bla'}]
+          'configuration' => [
+                               { 'id' => 'foo', 'type' => 'string', 'secret' => 'bla'},
+                               { 'id' => 'filecred', 'type' => 'file', 'filename' => 'my_file.txt', 'content' => 'filecontent'}
+                             ]
         ) }
 
         it { is_expected.to contain_profiles__jenkins__plugin('aws-credentials').with(

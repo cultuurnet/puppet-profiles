@@ -7,7 +7,7 @@ class profiles::jenkins::controller::configuration(
   Variant[Hash, Array[Hash]] $users            = []
 ) inherits ::profiles {
 
-  $string_credentials      = [$credentials].flatten.filter |$credential| { $credential['type'] == 'string' }
+  $plain_credentials       = [$credentials].flatten.filter |$credential| { $credential['type'] == 'string' or $credential['type'] == 'file' }
   $private_key_credentials = [$credentials].flatten.filter |$credential| { $credential['type'] == 'private_key' }
   $aws_credentials         = [$credentials].flatten.filter |$credential| { $credential['type'] == 'aws' }
 
@@ -39,7 +39,7 @@ class profiles::jenkins::controller::configuration(
   }
 
   profiles::jenkins::plugin { 'plain-credentials':
-    configuration => $string_credentials,
+    configuration => $plain_credentials,
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
 

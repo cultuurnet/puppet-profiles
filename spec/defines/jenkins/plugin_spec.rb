@@ -133,9 +133,12 @@ describe 'profiles::jenkins::plugin' do
       context "with title plain-credentials" do
         let(:title) { 'plain-credentials' }
 
-        context "with configuration => {'id' => 'mytoken', 'type' => 'string', 'secret' => 'foobar'}" do
+        context "with configuration => [{'id' => 'mytoken', 'type' => 'string', 'secret' => 'foobar'},{'id' => 'myfile', 'type' => 'file', 'filename' => 'my_file.txt', 'content' => 'spec testfile content'}]" do
           let(:params) { {
-              'configuration' => {'id' => 'mytoken', 'type' => 'string', 'secret' => 'foobar'}
+              'configuration' => [
+                                   {'id' => 'mytoken', 'type' => 'string', 'secret' => 'foobar'},
+                                   {'id' => 'myfile', 'type' => 'file', 'filename' => 'my_file.txt', 'content' => 'spec testfile content'}
+                                 ]
           } }
 
           it { is_expected.to contain_file('plain-credentials configuration').with(
@@ -147,13 +150,18 @@ describe 'profiles::jenkins::plugin' do
 
           it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*id: 'mytoken'$/) }
           it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*secret: 'foobar'$/) }
+
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*id: 'myfile'$/) }
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*secretBytes: 'spec testfile content'$/) }
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*fileName: 'my_file.txt'$/) }
         end
 
-        context "with configuration => [{'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'}, {'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'}]" do
+        context "with configuration => [{'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'}, {'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'},{'id' => 'myfile', 'type' => 'file', 'filename' => 'my_file2.txt', 'content' => 'spec testfile content'}]" do
           let(:params) { {
               'configuration' => [
                                    {'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'},
-                                   {'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'}
+                                   {'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'},
+                                   {'id' => 'myfile2', 'type' => 'file', 'filename' => 'my_file2.txt', 'content' => 'spec testfile content 2'}
                                  ]
           } }
 
@@ -162,6 +170,10 @@ describe 'profiles::jenkins::plugin' do
 
           it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*id: 'token2'$/) }
           it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*secret: 'secret2'$/) }
+
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*id: 'myfile2'$/) }
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*secretBytes: 'spec testfile content 2'$/) }
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*fileName: 'my_file2.txt'$/) }
         end
       end
 
