@@ -12,7 +12,7 @@ group :development, :test do
   gem 'rspec-puppet-facts', :require => false
   gem 'semantic_puppet', :require => false
   gem 'facter', '< 4.0.0', :require => false
-  gem 'puppet', '= 6.13.0', :require => false
+  gem 'puppet', '6.25.1', :require => false
 end
 
 # vim:ft=ruby
