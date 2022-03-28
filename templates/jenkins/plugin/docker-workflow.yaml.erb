@@ -1,0 +1,12 @@
+unclassified:
+  pipeline-model-docker:
+    dockerLabel: '<%= @configuration['docker_label'] %>'
+    <%- if @configuration['docker_registry_url'] || @configuration['docker_registry_credential_id'] -%>
+    registry:
+    <%- end -%>
+      <%- if @configuration['docker_registry_url'] -%>
+      url: '<%= @configuration['docker_registry_url'] %>'
+      <%- end -%>
+      <%- if @configuration['docker_registry_credentialid'] -%>
+      credentialsId: '<%= @configuration['docker_registry_credentialid'] %>'
+      <%- end -%>

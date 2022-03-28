@@ -1,10 +1,12 @@
 class profiles::jenkins::controller::configuration(
   Stdlib::Httpurl            $url,
   String                     $admin_password,
-  Variant[Hash, Array[Hash]] $credentials      = [],
-  Variant[Hash, Array[Hash]] $global_libraries = [],
-  Variant[Hash, Array[Hash]] $pipelines        = [],
-  Variant[Hash, Array[Hash]] $users            = []
+  Optional[Stdlib::Httpurl]  $docker_registry_url          = undef,
+  Optional[String]           $docker_registry_credentialid = undef,
+  Variant[Hash, Array[Hash]] $credentials                  = [],
+  Variant[Hash, Array[Hash]] $global_libraries             = [],
+  Variant[Hash, Array[Hash]] $pipelines                    = [],
+  Variant[Hash, Array[Hash]] $users                        = []
 ) inherits ::profiles {
 
   $plain_credentials       = [$credentials].flatten.filter |$credential| { $credential['type'] == 'string' or $credential['type'] == 'file' }
@@ -20,6 +22,7 @@ class profiles::jenkins::controller::configuration(
   profiles::jenkins::plugin { 'pipeline-utility-steps': }
   profiles::jenkins::plugin { 'ssh-steps': }
   profiles::jenkins::plugin { 'blueocean': }
+  profiles::jenkins::plugin { 'amazon-ecr': }
 
   profiles::jenkins::plugin { 'git':
     configuration => {
@@ -62,6 +65,16 @@ class profiles::jenkins::controller::configuration(
   profiles::jenkins::plugin { 'job-dsl':
     configuration => [$pipelines].flatten,
     require       => [ Profiles::Jenkins::Plugin['git'], Profiles::Jenkins::Plugin['ssh-credentials']],
+    notify        => Class['profiles::jenkins::controller::configuration::reload']
+  }
+
+  profiles::jenkins::plugin { 'docker-workflow':
+    configuration => {
+                       'docker_label'                 => 'docker',
+                       'docker_registry_url'          => $docker_registry_url,
+                       'docker_registry_credentialid' => $docker_registry_credentialid
+                     },
+    require       => Profiles::Jenkins::Plugin['amazon-ecr'],
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
 
