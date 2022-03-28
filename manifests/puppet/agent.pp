@@ -1,4 +1,7 @@
-class profiles::puppet::agent inherits ::profiles {
+class profiles::puppet::agent (
+  Enum['running', 'stopped'] $ensure = 'running',
+  Boolean                    $enable = true
+) inherits ::profiles {
 
   Ini_setting {
     ensure  => 'present',
@@ -25,8 +28,8 @@ class profiles::puppet::agent inherits ::profiles {
   }
 
   service { 'puppet':
-    ensure    => 'running',
-    enable    => true,
+    ensure    => $ensure,
+    enable    => $enable,
     hasstatus => true
   }
 }

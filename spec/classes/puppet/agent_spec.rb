@@ -50,6 +50,19 @@ describe 'profiles::puppet::agent' do
         it { is_expected.to contain_ini_setting('agent usecacheonfailure').that_notifies('Service[puppet]') }
         it { is_expected.to contain_ini_setting('agent preferred_serialization_format').that_notifies('Service[puppet]') }
       end
+
+      context "with ensure => stopped and enable => false" do
+        let(:params) { {
+          'ensure' => 'stopped',
+          'enable' => false
+        } }
+
+        it { is_expected.to contain_service('puppet').with(
+          'ensure' => 'stopped',
+          'enable' => false
+          )
+        }
+      end
     end
   end
 end
