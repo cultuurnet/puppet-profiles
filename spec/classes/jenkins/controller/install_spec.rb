@@ -13,7 +13,7 @@ describe 'profiles::jenkins::controller::install' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::jenkins::controller::install').with(
-          'version'        => 'latest'
+          'version' => 'latest'
         ) }
 
         it { is_expected.to contain_group('jenkins') }
@@ -37,6 +37,11 @@ describe 'profiles::jenkins::controller::install' do
           'variable' => 'JAVA_ARGS',
           'target'   => '/etc/default/jenkins',
           'value'    => '-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Dcasc.jenkins.config=/var/lib/jenkins/casc_config'
+        ) }
+
+        it { is_expected.to contain_systemd__dropin_file('override.conf').with(
+          'unit'    => 'jenkins.service',
+          'content' => "[Service]\nEnvironment=\"JAVA_OPTS=-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Dcasc.jenkins.config=/var/lib/jenkins/casc_config\""
         ) }
 
         it { is_expected.to contain_file('casc_config').that_requires('User[jenkins]') }
