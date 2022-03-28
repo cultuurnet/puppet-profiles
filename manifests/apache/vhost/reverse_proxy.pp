@@ -9,7 +9,7 @@ define profiles::apache::vhost::reverse_proxy (
 ) {
 
   include ::profiles
-  include ::profiles::firewall
+  include ::profiles::firewall::rules
   include ::profiles::apache
   include ::profiles::certificates
 

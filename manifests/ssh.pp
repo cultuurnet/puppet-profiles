@@ -2,7 +2,7 @@ class profiles::ssh(
   Variant[String, Array[String]] $ssh_authorized_keys_tags = []
 ) inherits ::profiles {
 
-  include ::profiles::firewall
+  include ::profiles::firewall::rules
   include ::profiles::ssh_authorized_keys
 
   Sshd_config {
