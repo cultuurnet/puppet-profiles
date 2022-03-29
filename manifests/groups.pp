@@ -1,5 +1,10 @@
 class profiles::groups inherits ::profiles {
 
+  @group { 'docker':
+    ensure => 'present',
+    gid    => '300'
+  }
+
   @group { 'aptly':
     ensure => 'present',
     gid    => '450'
