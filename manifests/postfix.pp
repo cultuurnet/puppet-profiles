@@ -8,7 +8,7 @@ class profiles::postfix (
   String                      $aliases_source   = 'puppet:///modules/profiles/postfix/virtual'
 ) inherits ::profiles {
 
-  include ::profiles::firewall
+  include ::profiles::firewall::rules
 
   $config_directory = '/etc/postfix'
   $mynetworks_file  = "${config_directory}/mynetworks"

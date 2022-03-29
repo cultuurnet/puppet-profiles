@@ -1,12 +1,14 @@
 class profiles::jenkins::controller (
-  Stdlib::Httpurl     $url,
-  String              $admin_password,
-  String              $certificate,
-  String              $version          = 'latest',
-  Variant[Array,Hash] $credentials      = [],
-  Variant[Array,Hash] $global_libraries = [],
-  Variant[Array,Hash] $pipelines        = [],
-  Variant[Array,Hash] $users            = []
+  Stdlib::Httpurl           $url,
+  String                    $admin_password,
+  String                    $certificate,
+  String                    $version                      = 'latest',
+  Optional[Stdlib::Httpurl] $docker_registry_url          = undef,
+  Optional[String]          $docker_registry_credentialid = undef,
+  Variant[Array,Hash]       $credentials                  = [],
+  Variant[Array,Hash]       $global_libraries             = [],
+  Variant[Array,Hash]       $pipelines                    = [],
+  Variant[Array,Hash]       $users                        = []
 ) inherits ::profiles {
 
   include ::profiles::java
@@ -28,13 +30,15 @@ class profiles::jenkins::controller (
   }
 
   class { '::profiles::jenkins::controller::configuration':
-    url              => $url,
-    admin_password   => $admin_password,
-    credentials      => $credentials,
-    global_libraries => $global_libraries,
-    pipelines        => $pipelines,
-    users            => $users,
-    require          => [ Class['profiles::jenkins::controller::service'], Class['profiles::jenkins::cli']]
+    url                          => $url,
+    admin_password               => $admin_password,
+    docker_registry_url          => $docker_registry_url,
+    docker_registry_credentialid => $docker_registry_credentialid,
+    credentials                  => $credentials,
+    global_libraries             => $global_libraries,
+    pipelines                    => $pipelines,
+    users                        => $users,
+    require                      => [ Class['profiles::jenkins::controller::service'], Class['profiles::jenkins::cli']]
   }
 
   profiles::apache::vhost::redirect { "http://${hostname}":

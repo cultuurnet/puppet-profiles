@@ -5,7 +5,7 @@ define profiles::apache::vhost::redirect (
 ) {
 
   include ::profiles
-  include ::profiles::firewall
+  include ::profiles::firewall::rules
   include ::profiles::apache
   include ::profiles::certificates
 

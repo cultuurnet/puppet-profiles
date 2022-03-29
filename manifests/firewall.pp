@@ -1,27 +1,40 @@
-class profiles::firewall inherits ::profiles {
+class profiles::firewall (
+  Boolean $purge_unmanaged = true
+) inherits ::profiles {
 
-  @firewall { '100 accept SSH traffic':
-    proto  => 'tcp',
-    dport  => '22',
+  contain ::firewall
+
+  resources { 'firewall':
+    purge => $purge_unmanaged
+  }
+
+  firewall { '000 accept all ICMP traffic':
+    proto  => 'icmp',
     action => 'accept'
   }
 
-  @firewall { '300 accept HTTP traffic':
-    proto  => 'tcp',
-    dport  => '80',
+  firewall { '001 accept all traffic to lo interface':
+    proto   => 'all',
+    iniface => 'lo',
+    action  => 'accept'
+  }
+
+  firewall { '002 reject local traffic not on loopback interface':
+    proto       => 'all',
+    iniface     => '! lo',
+    destination => '127.0.0.0/8',
+    action      => 'reject'
+  }
+
+  firewall { '003 accept related established rules':
+    proto  => 'all',
+    state  => ['RELATED', 'ESTABLISHED'],
     action => 'accept'
   }
 
-  @firewall { '300 accept HTTPS traffic':
-    proto  => 'tcp',
-    dport  => '443',
-    action => 'accept'
+  firewall { '999 drop all':
+    proto  => 'all',
+    action => 'drop',
+    before => undef
   }
-
-  @firewall { '300 accept SMTP traffic':
-    proto  => 'tcp',
-    dport  => '25',
-    action => 'accept'
-  }
-
 }

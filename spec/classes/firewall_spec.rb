@@ -7,33 +7,59 @@ describe 'profiles::firewall' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with all virtual resources realized" do
-        let(:pre_condition) { 'Firewall <| |>' }
+      context "without parameters" do
+        let(:params) { {} }
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_firewall('100 accept SSH traffic').with(
-          'proto'  => 'tcp',
-          'dport'  => '22',
+        it { is_expected.to contain_class('profiles::firewall').with(
+          'purge_unmanaged' => true
+        ) }
+
+        it { is_expected.to contain_class('firewall') }
+
+        it { is_expected.to contain_resources('firewall').with(
+          'purge' => true
+        ) }
+
+        it { is_expected.to contain_firewall('000 accept all ICMP traffic').with(
+          'proto'  => 'icmp',
           'action' => 'accept'
         ) }
 
-        it { is_expected.to contain_firewall('300 accept HTTP traffic').with(
-          'proto' => 'tcp',
-          'dport' => '80',
+        it { is_expected.to contain_firewall('001 accept all traffic to lo interface').with(
+          'proto'   => 'all',
+          'iniface' => 'lo',
+          'action'  => 'accept'
+        ) }
+
+        it { is_expected.to contain_firewall('002 reject local traffic not on loopback interface').with(
+          'proto'       => 'all',
+          'iniface'     => '! lo',
+          'destination' => '127.0.0.0/8',
+          'action'      => 'reject'
+        ) }
+
+        it { is_expected.to contain_firewall('003 accept related established rules').with(
+          'proto'  => 'all',
+          'state'  => ['RELATED', 'ESTABLISHED'],
           'action' => 'accept'
         ) }
 
-        it { is_expected.to contain_firewall('300 accept HTTPS traffic').with(
-          'proto' => 'tcp',
-          'dport' => '443',
-          'action' => 'accept'
+        it { is_expected.to contain_firewall('999 drop all').with(
+          'proto'  => 'all',
+          'action' => 'drop',
+          'before' => nil
         ) }
+      end
 
-        it { is_expected.to contain_firewall('300 accept SMTP traffic').with(
-          'proto' => 'tcp',
-          'dport' => '25',
-          'action' => 'accept'
+      context "with purge_unmanaged => false" do
+        let(:params) { {
+          'purge_unmanaged' =>  false
+        } }
+
+        it { is_expected.to contain_resources('firewall').with(
+          'purge' => false
         ) }
       end
     end
