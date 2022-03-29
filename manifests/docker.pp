@@ -5,14 +5,20 @@ class profiles::docker (
   [$users].flatten.each |$user| {
     realize User[$user]
 
-    User[$user] -> Class['docker']
+    User[$user] -> Package['docker.io']
+    #User[$user] -> Class['docker']
   }
 
   Group <| title == 'docker' |> { members +> [$users].flatten }
 
-  class { '::docker':
-    use_upstream_package_source => false,
-    docker_users                => [],
-    require                     => Group['docker']
+  package { 'docker.io':
+    ensure  => 'present',
+    require => Group['docker']
   }
+
+  #class { '::docker':
+  #  use_upstream_package_source => false,
+  #  docker_users                => [],
+  #  require                     => Group['docker']
+  #}
 }

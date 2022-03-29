@@ -27,12 +27,17 @@ describe 'profiles::docker' do
             'users' => []
           ) }
 
-          it { is_expected.to contain_class('docker').with(
-            'use_upstream_package_source' => false,
-            'docker_users'                => []
+          it { is_expected.to contain_package('docker.io').with(
+            'ensure' => 'present'
           ) }
 
-          it { is_expected.to contain_group('docker').that_comes_before('Class[docker]') }
+          #it { is_expected.to contain_class('docker').with(
+          #  'use_upstream_package_source' => false,
+          #  'docker_users'                => []
+          #) }
+
+          it { is_expected.to contain_group('docker').that_comes_before('Package[docker.io]') }
+          #it { is_expected.to contain_group('docker').that_comes_before('Class[docker]') }
         end
 
         context "with users => myuser" do
@@ -42,18 +47,24 @@ describe 'profiles::docker' do
 
           it { is_expected.to compile.with_all_deps }
 
-          it { is_expected.to contain_class('docker').with(
-            'use_upstream_package_source' => false,
-            'docker_users'                => []
+          it { is_expected.to contain_package('docker.io').with(
+            'ensure' => 'present'
           ) }
+
+          #it { is_expected.to contain_class('docker').with(
+          #  'use_upstream_package_source' => false,
+          #  'docker_users'                => []
+          #) }
 
           it { is_expected.to contain_user('myuser') }
           it { is_expected.to contain_group('docker').with(
             'members' => ['myuser']
           ) }
 
-          it { is_expected.to contain_user('myuser').that_comes_before('Class[docker]') }
-          it { is_expected.to contain_group('docker').that_comes_before('Class[docker]') }
+          it { is_expected.to contain_user('myuser').that_comes_before('Package[docker.io]') }
+          it { is_expected.to contain_group('docker').that_comes_before('Package[docker.io]') }
+          #it { is_expected.to contain_user('myuser').that_comes_before('Class[docker]') }
+          #it { is_expected.to contain_group('docker').that_comes_before('Class[docker]') }
         end
 
         context "with users => ['alice', 'bob']" do
@@ -63,10 +74,14 @@ describe 'profiles::docker' do
 
           it { is_expected.to compile.with_all_deps }
 
-          it { is_expected.to contain_class('docker').with(
-            'use_upstream_package_source' => false,
-            'docker_users'                => []
+          it { is_expected.to contain_package('docker.io').with(
+            'ensure' => 'present'
           ) }
+
+          #it { is_expected.to contain_class('docker').with(
+          #  'use_upstream_package_source' => false,
+          #  'docker_users'                => []
+          #) }
 
           it { is_expected.to contain_user('alice') }
           it { is_expected.to contain_user('bob') }
@@ -74,8 +89,10 @@ describe 'profiles::docker' do
             'members' => ['alice', 'bob']
           ) }
 
-          it { is_expected.to contain_user('alice').that_comes_before('Class[docker]') }
-          it { is_expected.to contain_user('bob').that_comes_before('Class[docker]') }
+          it { is_expected.to contain_user('alice').that_comes_before('Package[docker.io]') }
+          it { is_expected.to contain_user('bob').that_comes_before('Package[docker.io]') }
+          #it { is_expected.to contain_user('alice').that_comes_before('Class[docker]') }
+          #it { is_expected.to contain_user('bob').that_comes_before('Class[docker]') }
         end
       end
     end
