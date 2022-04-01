@@ -184,6 +184,17 @@ describe 'profiles::apt::repositories' do
               },
               'release' => 'xenial'
             ) }
+
+            it { is_expected.to contain_apt__source('docker').with(
+              'location' => 'https://apt.publiq.be/docker-acceptance',
+              'ensure'   => 'present',
+              'repos'    => 'stable',
+              'include'  => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'  => 'xenial'
+            ) }
           end
         end
       end
