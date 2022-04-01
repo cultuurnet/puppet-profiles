@@ -55,8 +55,8 @@ describe 'profiles::docker' do
 
           it { is_expected.to contain_exec('Add user myuser to docker group').with(
             'command' => 'usermod -aG docker myuser',
-            'path'    => [ '/usr/sbin', '/usr/bin'],
-            'unless'  => 'getent group docker | cut -d \':\' -f 4 | tr \',\' \'\n\' | grep -q myuser'
+            'path'    => [ '/usr/sbin', '/usr/bin', '/bin'],
+            'unless'  => 'getent group docker | cut -d \':\' -f 4 | tr \',\' \'\n\' | grep -q \'^myuser$\''
           ) }
 
           it { is_expected.to contain_user('myuser').that_comes_before('Exec[Add user myuser to docker group]') }
@@ -83,14 +83,14 @@ describe 'profiles::docker' do
 
           it { is_expected.to contain_exec('Add user alice to docker group').with(
             'command' => 'usermod -aG docker alice',
-            'path'    => [ '/usr/sbin', '/usr/bin'],
-            'unless'  => 'getent group docker | cut -d \':\' -f 4 | tr \',\' \'\n\' | grep -q alice'
+            'path'    => [ '/usr/sbin', '/usr/bin', '/bin'],
+            'unless'  => 'getent group docker | cut -d \':\' -f 4 | tr \',\' \'\n\' | grep -q \'^alice$\''
           ) }
 
           it { is_expected.to contain_exec('Add user bob to docker group').with(
             'command' => 'usermod -aG docker bob',
-            'path'    => [ '/usr/sbin', '/usr/bin'],
-            'unless'  => 'getent group docker | cut -d \':\' -f 4 | tr \',\' \'\n\' | grep -q bob'
+            'path'    => [ '/usr/sbin', '/usr/bin', '/bin'],
+            'unless'  => 'getent group docker | cut -d \':\' -f 4 | tr \',\' \'\n\' | grep -q \'^bob$\''
           ) }
 
           it { is_expected.to contain_user('alice').that_comes_before('Exec[Add user alice to docker group]') }
