@@ -1,5 +1,6 @@
 class profiles::docker (
-  Variant[String, Array[String]] $users = []
+  Variant[String, Array[String]] $users        = [],
+  Boolean                        $experimental = false
 ) inherits ::profiles {
 
   realize Apt::Source['docker']
@@ -21,6 +22,7 @@ class profiles::docker (
   class { '::docker':
     use_upstream_package_source => false,
     docker_users                => [],
+    extra_parameters            => [ "--experimental=${experimental}"],
     require                     => [ Apt::Source['docker'], Group['docker']]
   }
 }

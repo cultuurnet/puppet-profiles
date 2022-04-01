@@ -24,11 +24,13 @@ describe 'profiles::docker' do
           it { is_expected.to contain_group('docker') }
 
           it { is_expected.to contain_class('profiles::docker').with(
-            'users' => []
+            'experimental' => false,
+            'users'        => []
           ) }
 
           it { is_expected.to contain_class('docker').with(
             'use_upstream_package_source' => false,
+            'extra_parameters'            => [ '--experimental=false'],
             'docker_users'                => []
           ) }
 
@@ -47,6 +49,7 @@ describe 'profiles::docker' do
 
           it { is_expected.to contain_class('docker').with(
             'use_upstream_package_source' => false,
+            'extra_parameters'            => [ '--experimental=false'],
             'docker_users'                => []
           ) }
 
@@ -68,13 +71,15 @@ describe 'profiles::docker' do
 
         context "with users => [ 'alice', 'bob']" do
           let(:params) { {
-            'users' => [ 'alice', 'bob']
+            'users'        => [ 'alice', 'bob'],
+            'experimental' => true
           } }
 
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_class('docker').with(
             'use_upstream_package_source' => false,
+            'extra_parameters'            => [ '--experimental=true'],
             'docker_users'                => []
           ) }
 
