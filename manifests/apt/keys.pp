@@ -22,4 +22,10 @@ class profiles::apt::keys {
     id     => '790BC7277767219C42C86F933B4FE6ACC0B21F32',
     server => 'keyserver.ubuntu.com'
   }
+
+  @apt::key { 'docker':
+    id     => '9DC858229FC7DD38854AE2D88D81803C0EBFCD88',
+    server => 'keyserver.ubuntu.com',
+    source => 'https://download.docker.com/linux/ubuntu/gpg'
+  }
 }
