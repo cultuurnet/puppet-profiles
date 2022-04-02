@@ -93,4 +93,10 @@ class profiles::apt::repositories {
     release  => $facts['os']['distro']['codename'],
     repos    => 'main',
   }
+
+  @apt::source { 'docker':
+    location => "https://apt.publiq.be/docker-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'stable'
+  }
 }

@@ -12,6 +12,12 @@ describe 'profiles::groups' do
       context "with all virtual resources realized" do
         let(:pre_condition) { 'Group <| |>' }
 
+        it { is_expected.to contain_group('docker').with(
+          'ensure' => 'present',
+          'gid'    => '300'
+          )
+        }
+
         it { is_expected.to contain_group('aptly').with(
           'ensure' => 'present',
           'gid'    => '450'
