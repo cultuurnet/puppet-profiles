@@ -95,8 +95,9 @@ class profiles::apt::repositories {
   }
 
   @apt::source { 'docker':
-    location => "https://apt.publiq.be/docker-${environment}",
-    release  => $facts['os']['distro']['codename'],
-    repos    => 'stable'
+    location     => "https://apt.publiq.be/docker-${environment}",
+    release      => $facts['os']['distro']['codename'],
+    architecture => 'amd64',
+    repos        => 'stable'
   }
 }
