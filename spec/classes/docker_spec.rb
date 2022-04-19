@@ -34,6 +34,8 @@ describe 'profiles::docker' do
             'docker_users'                => []
           ) }
 
+          it { is_expected.to_not contain_package('qemu-user-static') }
+
           it { is_expected.to contain_group('docker').that_comes_before('Class[docker]') }
           it { is_expected.to contain_apt__source('docker').that_comes_before('Class[docker]') }
         end
@@ -53,6 +55,8 @@ describe 'profiles::docker' do
             'docker_users'                => []
           ) }
 
+          it { is_expected.to_not contain_package('qemu-user-static') }
+
           it { is_expected.to contain_user('myuser') }
           it { is_expected.to contain_group('docker') }
 
@@ -69,7 +73,7 @@ describe 'profiles::docker' do
           it { is_expected.to contain_group('docker').that_comes_before('Class[docker]') }
         end
 
-        context "with users => [ 'alice', 'bob']" do
+        context "with users => [ 'alice', 'bob'] and experimental => true" do
           let(:params) { {
             'users'        => [ 'alice', 'bob'],
             'experimental' => true
@@ -82,6 +86,8 @@ describe 'profiles::docker' do
             'extra_parameters'            => [ '--experimental=true'],
             'docker_users'                => []
           ) }
+
+          it { is_expected.to contain_package('qemu-user-static') }
 
           it { is_expected.to contain_user('alice') }
           it { is_expected.to contain_user('bob') }

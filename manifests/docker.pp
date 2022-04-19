@@ -25,4 +25,8 @@ class profiles::docker (
     extra_parameters            => [ "--experimental=${experimental}"],
     require                     => [ Apt::Source['docker'], Group['docker']]
   }
+
+  if $experimental {
+    realize Package['qemu-user-static']
+  }
 }

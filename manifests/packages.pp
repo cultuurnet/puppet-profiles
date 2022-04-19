@@ -90,4 +90,8 @@ class profiles::packages inherits ::profiles {
     ensure  => 'present',
     require => Apt::Source['cultuurnet-tools']
   }
+
+  @package { 'qemu-user-static':
+    ensure  => 'present'
+  }
 }
