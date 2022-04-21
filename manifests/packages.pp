@@ -86,11 +86,6 @@ class profiles::packages inherits ::profiles {
     require => Apt::Source['cultuurnet-tools']
   }
 
-  @package { 'jtm':
-    ensure  => 'present',
-    require => Apt::Source['cultuurnet-tools']
-  }
-
   @package { 'qemu-user-static':
     ensure  => 'present'
   }
