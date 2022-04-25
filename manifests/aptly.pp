@@ -64,6 +64,15 @@ class profiles::aptly (
     destination => "http://${api_bind}:${api_port}/"
   }
 
+  cron { 'aptly db cleanup daily':
+    command     => '/usr/bin/aptly db cleanup',
+    environment => [ 'MAILTO=infra@publiq.be'],
+    user        => 'aptly',
+    hour        => '4',
+    minute      => '0',
+    require     => [ Class['aptly'], User['aptly']]
+  }
+
   [$repositories].flatten.each |$repo| {
     aptly::repo { $repo:
       default_component => 'main'

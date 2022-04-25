@@ -49,6 +49,14 @@ describe 'profiles::aptly' do
           'destination' => 'http://127.0.0.1:8081/'
         ) }
 
+        it { is_expected.to contain_cron('aptly db cleanup daily').with(
+          'environment' => [ 'MAILTO=infra@publiq.be'],
+          'command'     => '/usr/bin/aptly db cleanup',
+          'user'        => 'aptly',
+          'hour'        => '4',
+          'minute'      => '0'
+        ) }
+
         case facts[:os]['release']['major']
         when '14.04'
 
@@ -70,6 +78,9 @@ describe 'profiles::aptly' do
 
         it { is_expected.to contain_apt__key('aptly').that_comes_before('Apt::Source[aptly]') }
         it { is_expected.to contain_class('aptly').that_requires('Apt::Source[aptly]') }
+
+        it { is_expected.to contain_cron('aptly db cleanup daily').that_requires('Class[aptly]') }
+        it { is_expected.to contain_cron('aptly db cleanup daily').that_requires('User[aptly]') }
       end
 
       context "with api_hostname => foobar.example.com and certificate => foobar.example.com" do
