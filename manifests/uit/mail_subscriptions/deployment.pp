@@ -10,12 +10,12 @@ class profiles::uit::mail_subscriptions::deployment (
 
   $basedir = '/var/www/uit-mail-subscriptions'
 
-  realize Apt::Source['publiq-uit']
+  realize Apt::Source['uit-mail-subscriptions']
 
   package { 'uit-mail-subscriptions':
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Apt::Source['publiq-uit']
+    require => Apt::Source['uit-mail-subscriptions']
   }
 
   file { 'uit-mail-subscriptions-config':
