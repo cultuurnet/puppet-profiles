@@ -1,4 +1,4 @@
-class profiles::deployment::uit::mail_subscriptions (
+class profiles::uit::mail_subscriptions::deployment (
   String           $config_source,
   String           $version                 = 'latest',
   Boolean          $service_manage          = true,

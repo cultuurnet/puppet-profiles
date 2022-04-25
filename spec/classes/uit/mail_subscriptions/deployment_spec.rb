@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'profiles::deployment::uit::mail_subscriptions' do
+describe 'profiles::uit::mail_subscriptions::deployment' do
 
   include_examples 'operating system support'
 
@@ -19,7 +19,7 @@ describe 'profiles::deployment::uit::mail_subscriptions' do
         it { is_expected.to contain_apt__source('publiq-uit') }
 
         it { is_expected.to contain_package('uit-mail-subscriptions').with( 'ensure' => 'latest') }
-        it { is_expected.to contain_package('uit-mail-subscriptions').that_notifies('Profiles::Deployment::Versions[profiles::deployment::uit::mail_subscriptions]') }
+        it { is_expected.to contain_package('uit-mail-subscriptions').that_notifies('Profiles::Deployment::Versions[profiles::uit::mail_subscriptions::deployment]') }
         it { is_expected.to contain_package('uit-mail-subscriptions').that_requires('Apt::Source[publiq-uit]') }
 
         it { is_expected.to contain_file('uit-mail-subscriptions-config').with(
@@ -43,7 +43,7 @@ describe 'profiles::deployment::uit::mail_subscriptions' do
         it { is_expected.to contain_service('uit-mail-subscriptions').that_requires('Package[uit-mail-subscriptions]') }
         it { is_expected.to contain_file('uit-mail-subscriptions-config').that_notifies('Service[uit-mail-subscriptions]') }
 
-        it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::mail_subscriptions').with(
+        it { is_expected.to contain_profiles__deployment__versions('profiles::uit::mail_subscriptions::deployment').with(
           'project'      => 'uit',
           'packages'     => 'uit-mail-subscriptions',
           'puppetdb_url' => nil
@@ -89,7 +89,7 @@ describe 'profiles::deployment::uit::mail_subscriptions' do
           'enable'    => false
         ) }
 
-        it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::mail_subscriptions').with(
+        it { is_expected.to contain_profiles__deployment__versions('profiles::uit::mail_subscriptions::deployment').with(
           'puppetdb_url' => 'http://example.com:8000'
         ) }
 
