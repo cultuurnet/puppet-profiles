@@ -196,6 +196,17 @@ describe 'profiles::apt::repositories' do
               },
               'release'      => 'xenial'
             ) }
+
+            it { is_expected.to contain_apt__source('uit-mail-subscriptions').with(
+              'location'     => 'https://apt.publiq.be/uit-mail-subscriptions-acceptance',
+              'ensure'       => 'present',
+              'repos'        => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'      => 'xenial'
+            ) }
           end
         end
       end

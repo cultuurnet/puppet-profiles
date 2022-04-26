@@ -91,7 +91,7 @@ class profiles::apt::repositories {
   @apt::source { 'publiq-jenkins':
     location => "http://apt.uitdatabank.be/jenkins-${environment}",
     release  => $facts['os']['distro']['codename'],
-    repos    => 'main',
+    repos    => 'main'
   }
 
   @apt::source { 'docker':
@@ -99,5 +99,11 @@ class profiles::apt::repositories {
     release      => $facts['os']['distro']['codename'],
     architecture => 'amd64',
     repos        => 'stable'
+  }
+
+  @apt::source { 'uit-mail-subscriptions':
+    location => "https://apt.publiq.be/uit-mail-subscriptions-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
   }
 }

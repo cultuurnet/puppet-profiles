@@ -1,4 +1,4 @@
-class profiles::deployment::uit::mail_subscriptions (
+class profiles::uit::mail_subscriptions::deployment (
   String           $config_source,
   String           $version                 = 'latest',
   Boolean          $service_manage          = true,
@@ -10,12 +10,12 @@ class profiles::deployment::uit::mail_subscriptions (
 
   $basedir = '/var/www/uit-mail-subscriptions'
 
-  realize Apt::Source['publiq-uit']
+  realize Apt::Source['uit-mail-subscriptions']
 
   package { 'uit-mail-subscriptions':
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Apt::Source['publiq-uit']
+    require => Apt::Source['uit-mail-subscriptions']
   }
 
   file { 'uit-mail-subscriptions-config':
