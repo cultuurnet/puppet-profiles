@@ -45,9 +45,14 @@ WSGISocketPrefix <%= scope.lookupvar('graphite::params::apache_wsgi_socket_prefi
 	OIDCRedirectURI <%= scope.lookupvar('graphite::gr_OIDCRedirectURI') %>
 	OIDCCryptoPassphrase <%= scope.lookupvar('graphite::gr_OIDCCryptoPassphrase') %>
 
+	# require a valid @publiq.be google authenticated user
+	# OR allow the Icinga server (54.171.78.165) to connect without authentication
 	<Location "/">
-		Require valid-user
 		AuthType openid-connect
+		<RequireAny>
+			Require ip 54.171.78.165
+			Require valid-user
+		</RequireAny>
 	</Location>
 
 	Alias /content/ <%= scope.lookupvar('graphite::graphiteweb_webapp_dir_REAL') %>/content/
