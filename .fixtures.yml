@@ -47,7 +47,7 @@ fixtures:
       ref: '6.1.0'
     apache:
       repo: 'puppetlabs/apache'
-      ref: '2.1.0'
+      ref: '6.3.0'
     mysql:
       repo: 'puppetlabs/mysql'
       ref: '6.2.0'
