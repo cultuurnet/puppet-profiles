@@ -13,11 +13,12 @@ class profiles::deployment::uit::frontend (
   $basedir = '/var/www/uit-frontend/packages/app'
 
   realize Apt::Source['publiq-uit']
+  realize Apt::Source['uit-frontend']
 
   package { 'uit-frontend':
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Apt::Source['publiq-uit']
+    require => [Apt::Source['publiq-uit'], Apt::Source['uit-frontend']]
   }
 
   file { 'uit-frontend-config':
