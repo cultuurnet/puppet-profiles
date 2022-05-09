@@ -15,10 +15,12 @@ describe 'profiles::deployment::uit::frontend' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_apt__source('publiq-uit') }
+        it { is_expected.to contain_apt__source('uit-frontend') }
 
         it { is_expected.to contain_package('uit-frontend').with( 'ensure' => 'latest') }
         it { is_expected.to contain_package('uit-frontend').that_notifies('Profiles::Deployment::Versions[profiles::deployment::uit::frontend]') }
         it { is_expected.to contain_package('uit-frontend').that_requires('Apt::Source[publiq-uit]') }
+        it { is_expected.to contain_package('uit-frontend').that_requires('Apt::Source[uit-frontend]') }
 
         it { is_expected.to contain_file('uit-frontend-config').with(
           'ensure' => 'file',
