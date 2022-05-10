@@ -39,11 +39,11 @@ WSGISocketPrefix <%= scope.lookupvar('graphite::params::apache_wsgi_socket_prefi
 	# Google OAuth Config
 	LoadModule auth_openidc_module /usr/lib/apache2/modules/mod_auth_openidc.so
 
-	OIDCProviderMetadataURL <%= scope.function_hiera(['graphite_oauth_OIDCProviderMetadataURL']) %>
-	OIDCClientID <%= scope.function_hiera(['graphite_oauth_OIDCClientID']) %>
-	OIDCClientSecret <%= scope.function_hiera(['graphite_oauth_OIDCClientSecret']) %>
-	OIDCRedirectURI <%= scope.function_hiera(['graphite_oauth_OIDCRedirectURI']) %>
-	OIDCCryptoPassphrase <%= scope.function_hiera(['graphite_oauth_OIDCCryptoPassphrase']) %>
+	OIDCProviderMetadataURL <%= scope().call_function('hiera',['graphite_oauth_OIDCProviderMetadataURL']) %>
+	OIDCClientID <%= scope().call_function('hiera',['graphite_oauth_OIDCClientID']) %>
+	OIDCClientSecret <%= scope().call_function('hiera',['graphite_oauth_OIDCClientSecret']) %>
+	OIDCRedirectURI <%= scope().call_function('hiera',['graphite_oauth_OIDCRedirectURI']) %>
+	OIDCCryptoPassphrase <%= scope().call_function('hiera',['graphite_oauth_OIDCCryptoPassphrase']) %>
 
 	# require a valid @publiq.be google authenticated user
 	# OR allow the Icinga server (54.171.78.165) to connect without authentication
