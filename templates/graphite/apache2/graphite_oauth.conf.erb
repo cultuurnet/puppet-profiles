@@ -39,11 +39,11 @@ WSGISocketPrefix <%= scope.lookupvar('graphite::params::apache_wsgi_socket_prefi
 	# Google OAuth Config
 	LoadModule auth_openidc_module /usr/lib/apache2/modules/mod_auth_openidc.so
 
-	OIDCProviderMetadataURL <%= scope.lookupvar('graphite_oauth_OIDCProviderMetadataURL') %>
-	OIDCClientID <%= scope.lookupvar('graphite_oauth_OIDCClientID') %>
-	OIDCClientSecret <%= scope.lookupvar('graphite_oauth_OIDCClientSecret') %>
-	OIDCRedirectURI <%= scope.lookupvar('graphite_oauth_OIDCRedirectURI') %>
-	OIDCCryptoPassphrase <%= scope.lookupvar('graphite_oauth_OIDCCryptoPassphrase') %>
+	OIDCProviderMetadataURL <%= scope.function_hiera(['graphite_oauth_OIDCProviderMetadataURL']) %>
+	OIDCClientID <%= scope.function_hiera(['graphite_oauth_OIDCClientID']) %>
+	OIDCClientSecret <%= scope.function_hiera(['graphite_oauth_OIDCClientSecret']) %>
+	OIDCRedirectURI <%= scope.function_hiera(['graphite_oauth_OIDCRedirectURI']) %>
+	OIDCCryptoPassphrase <%= scope.function_hiera(['graphite_oauth_OIDCCryptoPassphrase']) %>
 
 	# require a valid @publiq.be google authenticated user
 	# OR allow the Icinga server (54.171.78.165) to connect without authentication
@@ -51,6 +51,10 @@ WSGISocketPrefix <%= scope.lookupvar('graphite::params::apache_wsgi_socket_prefi
 		AuthType openid-connect
 		<RequireAny>
 			Require ip 54.171.78.165
+			Require ip 52.17.169.223
+			Require ip 194.78.13.220
+			Require ip 172.30.0.0/16
+			Require ip 172.40.0.0/16
 			Require valid-user
 		</RequireAny>
 	</Location>
