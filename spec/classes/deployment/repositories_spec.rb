@@ -17,7 +17,10 @@ describe 'profiles::deployment::repositories' do
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       context "with all virtual resources realized" do
-        let(:pre_condition) { 'Apt::Source <| |>' }
+        let(:pre_condition) { [
+          'include ::apt',
+          'Apt::Source <| |>'
+        ] }
 
         it { is_expected.to compile.with_all_deps }
 
