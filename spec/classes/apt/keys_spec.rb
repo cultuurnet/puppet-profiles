@@ -6,7 +6,10 @@ describe 'profiles::apt::keys' do
       let(:facts) { facts }
 
       context "with all virtual resources realized" do
-        let(:pre_condition) { 'Apt::Key <| |>' }
+        let(:pre_condition) { [
+          'include ::apt',
+          'Apt::Key <| |>'
+        ] }
 
         it { is_expected.to compile.with_all_deps }
 
