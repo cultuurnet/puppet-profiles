@@ -57,7 +57,6 @@ class profiles::deployment::uit::cms (
     source  => $files_source,
     owner   => 'www-data',
     group   => 'www-data',
-    recurse => true,
     require => [ Package['uit-cms'], Package['uit-cms-files']]
   }
 
