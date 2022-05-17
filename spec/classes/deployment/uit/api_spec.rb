@@ -15,12 +15,14 @@ describe 'profiles::deployment::uit::api' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_apt__source('publiq-uit') }
+        it { is_expected.to contain_apt__source('uit-api') }
 
         it { is_expected.to contain_package('yarn') }
 
         it { is_expected.to contain_package('uit-api').with( 'ensure' => 'latest') }
         it { is_expected.to contain_package('uit-api').that_notifies('Profiles::Deployment::Versions[profiles::deployment::uit::api]') }
         it { is_expected.to contain_package('uit-api').that_requires('Apt::Source[publiq-uit]') }
+        it { is_expected.to contain_package('uit-api').that_requires('Apt::Source[uit-api]') }
 
         it { is_expected.to contain_file('uit-api-config-graphql').with(
           'ensure' => 'file',

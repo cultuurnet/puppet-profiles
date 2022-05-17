@@ -112,4 +112,10 @@ class profiles::apt::repositories {
     release  => $facts['os']['distro']['codename'],
     repos    => 'main'
   }
+
+  @apt::source { 'uit-api':
+    location => "https://apt.publiq.be/uit-api-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
 }

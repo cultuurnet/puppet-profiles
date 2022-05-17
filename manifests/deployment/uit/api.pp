@@ -12,13 +12,14 @@ class profiles::deployment::uit::api (
 
   realize Apt::Source['yarn']
   realize Apt::Source['publiq-uit']
+  realize Apt::Source['uit-api']
 
   realize Package['yarn']
 
   package { 'uit-api':
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Apt::Source['publiq-uit']
+    require => [Apt::Source['publiq-uit'], Apt::Source['uit-api']]
   }
 
   file { 'uit-api-config-graphql':
