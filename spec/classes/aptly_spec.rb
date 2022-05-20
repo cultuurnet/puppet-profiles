@@ -39,6 +39,8 @@ describe 'profiles::aptly' do
           's3_publish_endpoints' => {}
         ) }
 
+        it { is_expected.to_not contain_profiles__apache__vhost__redirect('http://foobar.example.com') }
+
         it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://aptly.example.com').with(
           'destination' => 'http://127.0.0.1:8081/'
         ) }
