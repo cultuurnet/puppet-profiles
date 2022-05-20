@@ -1,8 +1,8 @@
 class profiles::jenkins::controller (
   Stdlib::Httpurl           $url,
   String                    $admin_password,
-  String                    $certificate,
   String                    $version                      = 'latest',
+  Optional[String]          $certificate                  = undef,
   Optional[Stdlib::Httpurl] $docker_registry_url          = undef,
   Optional[String]          $docker_registry_credentialid = undef,
   Variant[Array,Hash]       $credentials                  = [],
@@ -25,8 +25,7 @@ class profiles::jenkins::controller (
 
   class { '::profiles::jenkins::cli':
     version        => $version,
-    controller_url => $url,
-    require        => Profiles::Apache::Vhost::Reverse_proxy["https://${hostname}"]
+    controller_url => $url
   }
 
   class { '::profiles::jenkins::controller::configuration':
@@ -41,16 +40,31 @@ class profiles::jenkins::controller (
     require                      => [ Class['profiles::jenkins::controller::service'], Class['profiles::jenkins::cli']]
   }
 
-  profiles::apache::vhost::redirect { "http://${hostname}":
-    destination => "https://${hostname}"
-  }
+  if $certificate {
+    profiles::apache::vhost::redirect { "http://${hostname}":
+      destination => "https://${hostname}"
+    }
 
-  profiles::apache::vhost::reverse_proxy { "https://${hostname}":
-    destination           => 'http://127.0.0.1:8080/',
-    certificate           => $certificate,
-    preserve_host         => true,
-    allow_encoded_slashes => 'nodecode',
-    proxy_keywords        => 'nocanon',
-    support_websockets    => true
+    profiles::apache::vhost::reverse_proxy { "https://${hostname}":
+      destination           => 'http://127.0.0.1:8080/',
+      certificate           => $certificate,
+      preserve_host         => true,
+      allow_encoded_slashes => 'nodecode',
+      proxy_keywords        => 'nocanon',
+      support_websockets    => true
+    }
+
+    Profiles::Apache::Vhost::Reverse_proxy["https://${hostname}"] -> Class['profiles::jenkins::cli']
+  } else {
+    profiles::apache::vhost::reverse_proxy { "http://${hostname}":
+      destination           => 'http://127.0.0.1:8080/',
+      certificate           => $certificate,
+      preserve_host         => true,
+      allow_encoded_slashes => 'nodecode',
+      proxy_keywords        => 'nocanon',
+      support_websockets    => true
+    }
+
+    Profiles::Apache::Vhost::Reverse_proxy["http://${hostname}"] -> Class['profiles::jenkins::cli']
   }
 }
