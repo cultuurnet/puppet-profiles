@@ -12,7 +12,6 @@ describe 'profiles::aptly' do
       context "with api_hostname => aptly.example.com and certificate => wildcard.example.com" do
         let(:params) { {
           'api_hostname' => 'aptly.example.com',
-          'certificate'  => 'wildcard.example.com'
         } }
 
         it { is_expected.to compile.with_all_deps }
@@ -40,12 +39,9 @@ describe 'profiles::aptly' do
           's3_publish_endpoints' => {}
         ) }
 
-        it { is_expected.to contain_profiles__apache__vhost__redirect('http://aptly.example.com').with(
-          'destination' => 'https://aptly.example.com'
-        ) }
+        it { is_expected.to_not contain_profiles__apache__vhost__redirect('http://foobar.example.com') }
 
-        it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('https://aptly.example.com').with(
-          'certificate' => 'wildcard.example.com',
+        it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://aptly.example.com').with(
           'destination' => 'http://127.0.0.1:8081/'
         ) }
 
@@ -263,7 +259,6 @@ describe 'profiles::aptly' do
         let(:params) { {} }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'api_hostname'/) }
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'certificate'/) }
       end
     end
   end

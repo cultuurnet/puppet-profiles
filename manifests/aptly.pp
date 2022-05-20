@@ -1,6 +1,6 @@
 class profiles::aptly (
   String                         $api_hostname,
-  String                         $certificate,
+  Optional[String]               $certificate       = undef,
   Hash                           $signing_keys      = {},
   String                         $version           = 'latest',
   String                         $data_dir          = '/var/aptly',
@@ -55,13 +55,19 @@ class profiles::aptly (
     }
   }
 
-  profiles::apache::vhost::redirect { "http://${api_hostname}":
-    destination => "https://${api_hostname}"
-  }
+  if $certificate {
+    profiles::apache::vhost::redirect { "http://${api_hostname}":
+      destination => "https://${api_hostname}"
+    }
 
-  profiles::apache::vhost::reverse_proxy { "https://${api_hostname}":
-    certificate => $certificate,
-    destination => "http://${api_bind}:${api_port}/"
+    profiles::apache::vhost::reverse_proxy { "https://${api_hostname}":
+      certificate => $certificate,
+      destination => "http://${api_bind}:${api_port}/"
+    }
+  } else {
+    profiles::apache::vhost::reverse_proxy { "http://${api_hostname}":
+      destination => "http://${api_bind}:${api_port}/"
+    }
   }
 
   cron { 'aptly db cleanup daily':
