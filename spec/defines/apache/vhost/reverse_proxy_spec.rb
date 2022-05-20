@@ -40,8 +40,8 @@ describe 'profiles::apache::vhost::reverse_proxy' do
             'ssl_proxyengine'       => false,
             'request_headers'       => [
                                          'unset Proxy early',
-                                         'set X-Forwarded-Port "80"',
-                                         'set X-Forwarded-Proto "http"'
+                                         'setifempty X-Forwarded-Port "80"',
+                                         'setifempty X-Forwarded-Proto "http"'
                                        ],
             'allow_encoded_slashes' => 'off',
             'proxy_preserve_host'   => false,
@@ -78,8 +78,8 @@ describe 'profiles::apache::vhost::reverse_proxy' do
             'ssl_proxyengine'       => false,
             'request_headers'       => [
                                          'unset Proxy early',
-                                         'set X-Forwarded-Port "80"',
-                                         'set X-Forwarded-Proto "http"'
+                                         'setifempty X-Forwarded-Port "80"',
+                                         'setifempty X-Forwarded-Proto "http"'
                                        ],
             'allow_encoded_slashes' => 'off',
             'proxy_preserve_host'   => false,
@@ -134,8 +134,8 @@ describe 'profiles::apache::vhost::reverse_proxy' do
             'ssl_proxyengine'       => true,
             'request_headers'       => [
                                          'unset Proxy early',
-                                         'set X-Forwarded-Port "443"',
-                                         'set X-Forwarded-Proto "https"'
+                                         'setifempty X-Forwarded-Port "443"',
+                                         'setifempty X-Forwarded-Proto "https"'
                                        ],
             'proxy_preserve_host'   => true,
             'allow_encoded_slashes' => 'nodecode',

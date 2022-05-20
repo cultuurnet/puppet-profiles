@@ -77,8 +77,8 @@ define profiles::apache::vhost::reverse_proxy (
     manage_docroot        => false,
     request_headers       => [
                                'unset Proxy early',
-                               "set X-Forwarded-Port \"${port}\"",
-                               "set X-Forwarded-Proto \"${transport}\""
+                               "setifempty X-Forwarded-Port \"${port}\"",
+                               "setifempty X-Forwarded-Proto \"${transport}\""
                              ],
     ssl_proxyengine       => $https_destination,
     allow_encoded_slashes => $allow_encoded_slashes,
