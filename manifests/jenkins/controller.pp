@@ -58,7 +58,6 @@ class profiles::jenkins::controller (
   } else {
     profiles::apache::vhost::reverse_proxy { "http://${hostname}":
       destination           => 'http://127.0.0.1:8080/',
-      certificate           => $certificate,
       preserve_host         => true,
       allow_encoded_slashes => 'nodecode',
       proxy_keywords        => 'nocanon',
