@@ -130,4 +130,10 @@ class profiles::apt::repositories {
     release  => $facts['os']['distro']['codename'],
     repos    => 'main'
   }
+
+  @apt::source { 'projectaanvraag-frontend':
+    location => "https://apt.publiq.be/projectaanvraag-frontend-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
 }
