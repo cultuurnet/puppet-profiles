@@ -123,7 +123,7 @@ describe 'profiles::jenkins::controller::configuration' do
           'configuration' => []
         ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('workflow-cps-global-lib').with(
+        it { is_expected.to contain_profiles__jenkins__plugin('pipeline-groovy-lib').with(
           'ensure'        => 'present',
           'restart'       => false,
           'configuration' => []
@@ -154,10 +154,10 @@ describe 'profiles::jenkins::controller::configuration' do
         ) }
 
         it { is_expected.to contain_profiles__jenkins__plugin('mailer').that_comes_before('Profiles::Jenkins::Plugin[configuration-as-code]') }
-        it { is_expected.to contain_profiles__jenkins__plugin('git').that_comes_before('Profiles::Jenkins::Plugin[workflow-cps-global-lib]') }
+        it { is_expected.to contain_profiles__jenkins__plugin('git').that_comes_before('Profiles::Jenkins::Plugin[pipeline-groovy-lib]') }
         it { is_expected.to contain_profiles__jenkins__plugin('git').that_comes_before('Profiles::Jenkins::Plugin[job-dsl]') }
         it { is_expected.to contain_profiles__jenkins__plugin('ssh-credentials').that_comes_before('Profiles::Jenkins::Plugin[job-dsl]') }
-        it { is_expected.to contain_profiles__jenkins__plugin('ssh-credentials').that_comes_before('Profiles::Jenkins::Plugin[workflow-cps-global-lib]') }
+        it { is_expected.to contain_profiles__jenkins__plugin('ssh-credentials').that_comes_before('Profiles::Jenkins::Plugin[pipeline-groovy-lib]') }
         it { is_expected.to contain_profiles__jenkins__plugin('amazon-ecr').that_comes_before('Profiles::Jenkins::Plugin[docker-workflow]') }
         it { is_expected.to contain_profiles__jenkins__plugin('git').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
         it { is_expected.to contain_profiles__jenkins__plugin('configuration-as-code').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
@@ -203,7 +203,7 @@ describe 'profiles::jenkins::controller::configuration' do
           'configuration' => [{ 'id' => 'awscred', 'type' => 'aws', 'access_key' => 'aws_key', 'secret_key' => 'aws_secret'}]
         ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('workflow-cps-global-lib').with(
+        it { is_expected.to contain_profiles__jenkins__plugin('pipeline-groovy-lib').with(
           'ensure'        => 'present',
           'restart'       => false,
           'configuration' => [{ 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}]
@@ -333,7 +333,7 @@ describe 'profiles::jenkins::controller::configuration' do
                              ]
         ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('workflow-cps-global-lib').with(
+        it { is_expected.to contain_profiles__jenkins__plugin('pipeline-groovy-lib').with(
           'ensure'        => 'present',
           'restart'       => false,
           'configuration' => [
