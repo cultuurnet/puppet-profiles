@@ -282,8 +282,8 @@ describe 'profiles::jenkins::plugin' do
         end
       end
 
-      context "with title workflow-cps-global-lib" do
-        let(:title) { 'workflow-cps-global-lib' }
+      context "with title pipeline-groovy-lib" do
+        let(:title) { 'pipeline-groovy-lib' }
 
         context "with configuration => {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}" do
           let(:params) { {
@@ -294,16 +294,16 @@ describe 'profiles::jenkins::plugin' do
                                  }
           } }
 
-          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with(
+          it { is_expected.to contain_file('pipeline-groovy-lib configuration').with(
             'ensure'  => 'file',
-            'path'    => '/var/lib/jenkins/casc_config/workflow-cps-global-lib.yaml',
+            'path'    => '/var/lib/jenkins/casc_config/pipeline-groovy-lib.yaml',
             'owner'   => 'jenkins',
             'group'   => 'jenkins'
           ) }
 
-          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*remote: 'git@example.com:org\/repo.git'$/) }
-          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*defaultVersion: 'main'$/) }
-          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*credentialsId: 'mygitcred'$/) }
+          it { is_expected.to contain_file('pipeline-groovy-lib configuration').with_content(/^\s*remote: 'git@example.com:org\/repo.git'$/) }
+          it { is_expected.to contain_file('pipeline-groovy-lib configuration').with_content(/^\s*defaultVersion: 'main'$/) }
+          it { is_expected.to contain_file('pipeline-groovy-lib configuration').with_content(/^\s*credentialsId: 'mygitcred'$/) }
         end
 
         context "with configuration => [{'git_url' => 'git@foo.com:bar/baz.git', 'git_ref' => 'refs/heads/develop', 'credential_id' => 'gitkey'}, {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'feature/magic', 'credential_id' => 'mygitcred'}]" do
@@ -320,12 +320,12 @@ describe 'profiles::jenkins::plugin' do
                                  }]
           } }
 
-          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*remote: 'git@foo.com:bar\/baz.git'$/) }
-          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*defaultVersion: 'heads\/develop'$/) }
-          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*credentialsId: 'gitkey'$/) }
-          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*remote: 'git@example.com:org\/repo.git'$/) }
-          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*defaultVersion: 'feature\/magic'$/) }
-          it { is_expected.to contain_file('workflow-cps-global-lib configuration').with_content(/^\s*credentialsId: 'mygitcred'$/) }
+          it { is_expected.to contain_file('pipeline-groovy-lib configuration').with_content(/^\s*remote: 'git@foo.com:bar\/baz.git'$/) }
+          it { is_expected.to contain_file('pipeline-groovy-lib configuration').with_content(/^\s*defaultVersion: 'heads\/develop'$/) }
+          it { is_expected.to contain_file('pipeline-groovy-lib configuration').with_content(/^\s*credentialsId: 'gitkey'$/) }
+          it { is_expected.to contain_file('pipeline-groovy-lib configuration').with_content(/^\s*remote: 'git@example.com:org\/repo.git'$/) }
+          it { is_expected.to contain_file('pipeline-groovy-lib configuration').with_content(/^\s*defaultVersion: 'feature\/magic'$/) }
+          it { is_expected.to contain_file('pipeline-groovy-lib configuration').with_content(/^\s*credentialsId: 'mygitcred'$/) }
         end
       end
 

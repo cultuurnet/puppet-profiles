@@ -56,7 +56,7 @@ class profiles::jenkins::controller::configuration(
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
 
-  profiles::jenkins::plugin { 'workflow-cps-global-lib':
+  profiles::jenkins::plugin { 'pipeline-groovy-lib':
     configuration => [$global_libraries].flatten,
     require       => [ Profiles::Jenkins::Plugin['git'], Profiles::Jenkins::Plugin['ssh-credentials']],
     notify        => Class['profiles::jenkins::controller::configuration::reload']
