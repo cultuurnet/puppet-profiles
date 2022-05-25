@@ -4,17 +4,17 @@ class profiles::deployment::uitpas_be::backend (
   Optional[String] $puppetdb_url   = undef
 ) inherits ::profiles {
 
-  $basedir = '/var/www/uitpasbe-backend'
+  $basedir = '/var/www/uitpas-website-api'
 
-  realize Apt::Source['publiq-uitpasbe']
+  realize Apt::Source['uitpas-website-api']
 
   # TODO: package notify Apache::Service ?
   # TODO: config file notify Apache::Service ?
 
-  package { 'uitpasbe-backend':
+  package { 'uitpas-website-api':
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Apt::Source['publiq-uitpasbe']
+    require => Apt::Source['uitpas-website-api']
   }
 
   file { 'uitpasbe-backend-config':
@@ -23,7 +23,7 @@ class profiles::deployment::uitpas_be::backend (
     source  => $config_source,
     owner   => 'www-data',
     group   => 'www-data',
-    require => Package['uitpasbe-backend']
+    require => Package['uitpas-website-api']
   }
 
   exec { 'uitpasbe-backend_cache_clear':
@@ -32,13 +32,13 @@ class profiles::deployment::uitpas_be::backend (
     user        => 'www-data',
     group       => 'www-data',
     path        => [ '/usr/local/bin', '/usr/bin', '/bin', $basedir],
-    subscribe   => Package['uitpasbe-backend'],
+    subscribe   => Package['uitpas-website-api'],
     refreshonly => true
   }
 
   profiles::deployment::versions { $title:
     project      => 'uitpasbe',
-    packages     => 'uitpasbe-backend',
+    packages     => 'uitpas-website-api',
     puppetdb_url => $puppetdb_url
   }
 }
