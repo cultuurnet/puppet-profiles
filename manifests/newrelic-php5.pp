@@ -1,5 +1,7 @@
 class profiles::newrelic-php5 (
-  String $package_name = 'newrelic-php5'
+  String $package_name = 'newrelic-php5',
+  String $newrelic_app_name,
+  String $newrelic_license_key
 ) inherits ::profiles {
 
   realize Apt::Source["newrelic"]
@@ -9,7 +11,7 @@ class profiles::newrelic-php5 (
   # https://docs.newrelic.com/docs/apm/agents/php-agent/installation/php-agent-installation-ubuntu-debian/
   #
   exec { 'update_newrelic_app_name':
-    command     => "echo ${package_name} ${package_name}/application-name string \"${newrelic_app_name} \" | debconf-set-selections",
+    command     => "echo ${package_name} ${package_name}/application-name string \"${newrelic_app_name}\" | debconf-set-selections",
     path        => ['/usr/bin'],
     onlyif      => "test 0 -eq $(debconf-show ${package_name} | grep ${package_name/application-name | wc -l)",
     refreshonly => true
