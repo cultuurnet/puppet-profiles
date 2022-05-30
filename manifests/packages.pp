@@ -89,4 +89,10 @@ class profiles::packages inherits ::profiles {
   @package { 'qemu-user-static':
     ensure  => 'present'
   }
+
+  @package { 'newrelic-php5':
+    ensure  => 'latest',
+    require => Apt::Source['newrelic-php5']
+  }
+
 }
