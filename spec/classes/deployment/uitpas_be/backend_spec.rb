@@ -14,36 +14,36 @@ describe 'profiles::deployment::uitpas_be::backend' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_apt__source('publiq-uitpasbe') }
+        it { is_expected.to contain_apt__source('uitpas-website-api') }
 
-        it { is_expected.to contain_package('uitpasbe-backend').with( 'ensure' => 'latest') }
-        it { is_expected.to contain_package('uitpasbe-backend').that_notifies('Profiles::Deployment::Versions[profiles::deployment::uitpas_be::backend]') }
-        it { is_expected.to contain_package('uitpasbe-backend').that_requires('Apt::Source[publiq-uitpasbe]') }
+        it { is_expected.to contain_package('uitpas-website-api').with( 'ensure' => 'latest') }
+        it { is_expected.to contain_package('uitpas-website-api').that_notifies('Profiles::Deployment::Versions[profiles::deployment::uitpas_be::backend]') }
+        it { is_expected.to contain_package('uitpas-website-api').that_requires('Apt::Source[uitpas-website-api]') }
 
         it { is_expected.to contain_file('uitpasbe-backend-config').with(
           'ensure' => 'file',
-          'path'   => '/var/www/uitpasbe-backend/.env',
+          'path'   => '/var/www/uitpas-website-api/.env',
           'source' => '/foo',
           'owner'  => 'www-data',
           'group'  => 'www-data'
         ) }
 
-        it { is_expected.to contain_file('uitpasbe-backend-config').that_requires('Package[uitpasbe-backend]') }
+        it { is_expected.to contain_file('uitpasbe-backend-config').that_requires('Package[uitpas-website-api]') }
 
         it { is_expected.to contain_exec('uitpasbe-backend_cache_clear').with(
           'command'     => 'php bin/console cache:clear',
-          'cwd'         => '/var/www/uitpasbe-backend',
+          'cwd'         => '/var/www/uitpas-website-api',
           'user'        => 'www-data',
           'group'       => 'www-data',
-          'path'        => [ '/usr/local/bin', '/usr/bin', '/bin', '/var/www/uitpasbe-backend'],
+          'path'        => [ '/usr/local/bin', '/usr/bin', '/bin', '/var/www/uitpas-website-api'],
           'refreshonly' => true
         ) }
 
-        it { is_expected.to contain_exec('uitpasbe-backend_cache_clear').that_subscribes_to('Package[uitpasbe-backend]') }
+        it { is_expected.to contain_exec('uitpasbe-backend_cache_clear').that_subscribes_to('Package[uitpas-website-api]') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uitpas_be::backend').with(
           'project'      => 'uitpasbe',
-          'packages'     => 'uitpasbe-backend',
+          'packages'     => 'uitpas-website-api',
           'puppetdb_url' => nil
         ) }
       end
@@ -65,7 +65,7 @@ describe 'profiles::deployment::uitpas_be::backend' do
           'source' => '/bar',
         ) }
 
-        it { is_expected.to contain_package('uitpasbe-backend').with( 'ensure' => '9.8.7') }
+        it { is_expected.to contain_package('uitpas-website-api').with( 'ensure' => '9.8.7') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uitpas_be::backend').with(
           'puppetdb_url' => 'http://example.com:8000'
