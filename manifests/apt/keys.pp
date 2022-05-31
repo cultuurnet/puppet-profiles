@@ -24,4 +24,9 @@ class profiles::apt::keys {
     id     => '9DC858229FC7DD38854AE2D88D81803C0EBFCD88',
     source => 'https://download.docker.com/linux/ubuntu/gpg'
   }
+
+  @apt::key { 'newrelic':
+    id     => 'B60A3EC9BC013B9C23790EC8B31B29E5548C16BF',
+    source => 'https://download.newrelic.com/548C16BF.gpg'
+  }
 }
