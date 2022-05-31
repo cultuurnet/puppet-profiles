@@ -280,7 +280,7 @@ describe 'profiles::apt::repositories' do
             it { is_expected.to contain_apt__source('newrelic').with(
               'location'     => 'https://apt.publiq.be/newrelic-acceptance',
               'ensure'       => 'present',
-              'repos'        => 'main',
+              'repos'        => 'non-free',
               'include'      => {
                 'deb' => 'true',
                 'src' => 'false'
