@@ -142,4 +142,12 @@ class profiles::apt::repositories {
     release  => $facts['os']['distro']['codename'],
     repos    => 'main'
   }
+
+  @apt::source { 'newrelic':
+    location     => "https://apt.publiq.be/newrelic-${environment}",
+    release      => $facts['os']['distro']['codename'],
+    architecture => 'amd64',
+    repos        => 'non-free'
+  }
+
 }

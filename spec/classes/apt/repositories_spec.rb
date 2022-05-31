@@ -276,6 +276,17 @@ describe 'profiles::apt::repositories' do
               },
               'release'      => 'xenial'
             ) }
+
+            it { is_expected.to contain_apt__source('newrelic').with(
+              'location'     => 'https://apt.publiq.be/newrelic-acceptance',
+              'ensure'       => 'present',
+              'repos'        => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'      => 'xenial'
+            ) }
           end
         end
       end
