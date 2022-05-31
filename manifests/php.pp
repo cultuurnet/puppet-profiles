@@ -1,8 +1,8 @@
 class profiles::php (
-  Integer[1, 2] $with_composer_default_version = 1,
-  Boolean       $newrelic_agent_enabled        = false,
-  String        $newrelic_app_name             = $fqdn,
-  String        $newrelic_license_key          = undef
+  Integer[1, 2]    $with_composer_default_version = 1,
+  Boolean          $newrelic_agent_enabled        = false,
+  String           $newrelic_app_name             = ${facts['networking']['hostname']}.machines.publiq.be},
+  Optional[String] $newrelic_license_key          = undef
 ) inherits ::profiles {
 
   realize Apt::Source['cultuurnet-tools']
