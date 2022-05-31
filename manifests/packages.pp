@@ -89,5 +89,4 @@ class profiles::packages inherits ::profiles {
   @package { 'qemu-user-static':
     ensure  => 'present'
   }
-
 }
