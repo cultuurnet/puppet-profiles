@@ -33,7 +33,6 @@ describe 'profiles::apt::repositories' do
         include_examples 'apt repositories', 'nodejs_14.x'
         include_examples 'apt repositories', 'elasticsearch'
         include_examples 'apt repositories', 'yarn'
-        include_examples 'apt repositories', 'newrelic-php5'
         include_examples 'apt repositories', 'erlang'
         include_examples 'apt repositories', 'publiq-jenkins'
         include_examples 'apt repositories', 'aptly'
@@ -95,12 +94,6 @@ describe 'profiles::apt::repositories' do
 
             it { is_expected.to contain_apt__source('yarn').with(
               'location' => 'http://apt.uitdatabank.be/yarn-testing',
-              'repos'    => 'main',
-              'release'  => 'stable'
-            ) }
-
-            it { is_expected.to contain_apt__source('newrelic-php5').with(
-              'location' => 'http://apt.uitdatabank.be/newrelic-php5-testing',
               'repos'    => 'main',
               'release'  => 'stable'
             ) }
@@ -168,12 +161,6 @@ describe 'profiles::apt::repositories' do
 
             it { is_expected.to contain_apt__source('yarn').with(
               'location' => 'http://apt.uitdatabank.be/yarn-acceptance',
-              'repos'    => 'main',
-              'release'  => 'stable'
-            ) }
-
-            it { is_expected.to contain_apt__source('newrelic-php5').with(
-              'location' => 'http://apt.uitdatabank.be/newrelic-php5-acceptance',
               'repos'    => 'main',
               'release'  => 'stable'
             ) }
