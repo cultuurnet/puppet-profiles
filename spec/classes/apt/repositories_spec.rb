@@ -277,6 +277,17 @@ describe 'profiles::apt::repositories' do
               'release'      => 'xenial'
             ) }
 
+            it { is_expected.to contain_apt__source('uitpas-website-frontend').with(
+              'location'     => 'https://apt.publiq.be/uitpas-website-frontend-acceptance',
+              'ensure'       => 'present',
+              'repos'        => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'      => 'xenial'
+            ) }
+
             it { is_expected.to contain_apt__source('newrelic').with(
               'location'     => 'https://apt.publiq.be/newrelic-acceptance',
               'ensure'       => 'present',
