@@ -143,6 +143,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'uitpas-website-frontend':
+    location => "https://apt.publiq.be/uitpas-website-frontend-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   @apt::source { 'newrelic':
     location     => "https://apt.publiq.be/newrelic-${environment}",
     release      => $facts['os']['distro']['codename'],

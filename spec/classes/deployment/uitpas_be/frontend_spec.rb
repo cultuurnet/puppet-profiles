@@ -14,36 +14,36 @@ describe 'profiles::deployment::uitpas_be::frontend' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_apt__source('publiq-uitpasbe') }
+        it { is_expected.to contain_apt__source('uitpas-website-frontend') }
 
-        it { is_expected.to contain_package('uitpasbe-frontend').with( 'ensure' => 'latest') }
-        it { is_expected.to contain_package('uitpasbe-frontend').that_notifies('Profiles::Deployment::Versions[profiles::deployment::uitpas_be::frontend]') }
-        it { is_expected.to contain_package('uitpasbe-frontend').that_requires('Apt::Source[publiq-uitpasbe]') }
+        it { is_expected.to contain_package('uitpas-website-frontend').with( 'ensure' => 'latest') }
+        it { is_expected.to contain_package('uitpas-website-frontend').that_notifies('Profiles::Deployment::Versions[profiles::deployment::uitpas_be::frontend]') }
+        it { is_expected.to contain_package('uitpas-website-frontend').that_requires('Apt::Source[uitpas-website-frontend]') }
 
-        it { is_expected.to contain_file('uitpasbe-frontend-config').with(
+        it { is_expected.to contain_file('uitpas-website-frontend-config').with(
           'ensure' => 'file',
-          'path'   => '/var/www/uitpasbe-frontend/.env',
+          'path'   => '/var/www/uitpas-website-frontend/.env',
           'source' => '/foo',
           'owner'  => 'www-data',
           'group'  => 'www-data'
         ) }
 
-        it { is_expected.to contain_file('uitpasbe-frontend-config').that_requires('Package[uitpasbe-frontend]') }
+        it { is_expected.to contain_file('uitpas-website-frontend-config').that_requires('Package[uitpas-website-frontend]') }
 
-        it { is_expected.not_to contain_file('/etc/defaults/uitpasbe-frontend') }
+        it { is_expected.not_to contain_file('/etc/defaults/uitpas-website-frontend') }
 
-        it { is_expected.to contain_service('uitpasbe-frontend').with(
+        it { is_expected.to contain_service('uitpas-website-frontend').with(
           'ensure'    => 'running',
           'enable'    => true,
           'hasstatus' => true
         ) }
 
-        it { is_expected.to contain_service('uitpasbe-frontend').that_requires('Package[uitpasbe-frontend]') }
-        it { is_expected.to contain_file('uitpasbe-frontend-config').that_notifies('Service[uitpasbe-frontend]') }
+        it { is_expected.to contain_service('uitpas-website-frontend').that_requires('Package[uitpas-website-frontend]') }
+        it { is_expected.to contain_file('uitpas-website-frontend-config').that_notifies('Service[uitpas-website-frontend]') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uitpas_be::frontend').with(
           'project'      => 'uitpasbe',
-          'packages'     => 'uitpasbe-frontend',
+          'packages'     => 'uitpas-website-frontend',
           'puppetdb_url' => nil
         ) }
 
@@ -54,7 +54,7 @@ describe 'profiles::deployment::uitpas_be::frontend' do
             } )
           }
 
-          it { is_expected.not_to contain_service('uitpasbe-frontend') }
+          it { is_expected.not_to contain_service('uitpas-website-frontend') }
         end
       end
     end
@@ -74,13 +74,13 @@ describe 'profiles::deployment::uitpas_be::frontend' do
       context "on #{os}" do
         let(:facts) { facts }
 
-        it { is_expected.to contain_file('uitpasbe-frontend-config').with(
+        it { is_expected.to contain_file('uitpas-website-frontend-config').with(
           'source' => '/bar',
         ) }
 
-        it { is_expected.to contain_package('uitpasbe-frontend').with( 'ensure' => '1.2.3') }
+        it { is_expected.to contain_package('uitpas-website-frontend').with( 'ensure' => '1.2.3') }
 
-        it { is_expected.to contain_service('uitpasbe-frontend').with(
+        it { is_expected.to contain_service('uitpas-website-frontend').with(
           'ensure'    => 'stopped',
           'enable'    => false
         ) }

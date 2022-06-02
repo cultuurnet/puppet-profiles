@@ -8,49 +8,49 @@ class profiles::deployment::uitpas_be::frontend (
   Optional[String] $puppetdb_url        = undef
 ) inherits ::profiles {
 
-  $basedir = '/var/www/uitpasbe-frontend'
+  $basedir = '/var/www/uitpas-website-frontend'
 
-  realize Apt::Source['publiq-uitpasbe']
+  realize Apt::Source['uitpas-website-frontend']
 
-  package { 'uitpasbe-frontend':
+  package { 'uitpas-website-frontend':
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Apt::Source['publiq-uitpasbe']
+    require => Apt::Source['uitpas-website-frontend']
   }
 
-  file { 'uitpasbe-frontend-config':
+  file { 'uitpas-website-frontend-config':
     ensure  => 'file',
     path    => "${basedir}/.env",
     owner   => 'www-data',
     group   => 'www-data',
     source  => $config_source,
-    require => Package['uitpasbe-frontend']
+    require => Package['uitpas-website-frontend']
   }
 
   if $service_manage {
     if $env_defaults_source {
-      file { '/etc/default/uitpasbe-frontend':
+      file { '/etc/default/uitpas-website-frontend':
         ensure => 'file',
         owner  => 'root',
         group  => 'root',
         source => $env_defaults_source,
-        notify => Service['uitpasbe-frontend']
+        notify => Service['uitpas-website-frontend']
       }
     }
 
-    service { 'uitpasbe-frontend':
+    service { 'uitpas-website-frontend':
       ensure    => $service_ensure,
       enable    => $service_enable,
-      require   => Package['uitpasbe-frontend'],
+      require   => Package['uitpas-website-frontend'],
       hasstatus => true
     }
 
-    File['uitpasbe-frontend-config'] ~> Service['uitpasbe-frontend']
+    File['uitpas-website-frontend-config'] ~> Service['uitpas-website-frontend']
   }
 
   profiles::deployment::versions { $title:
     project      => 'uitpasbe',
-    packages     => 'uitpasbe-frontend',
+    packages     => 'uitpas-website-frontend',
     puppetdb_url => $puppetdb_url
   }
 }
