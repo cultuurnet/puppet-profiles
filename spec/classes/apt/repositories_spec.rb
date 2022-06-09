@@ -233,6 +233,17 @@ describe 'profiles::apt::repositories' do
               'release'      => 'xenial'
             ) }
 
+            it { is_expected.to contain_apt__source('uit-cms').with(
+              'location'     => 'https://apt.publiq.be/uit-cms-acceptance',
+              'ensure'       => 'present',
+              'repos'        => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'      => 'xenial'
+            ) }
+
             it { is_expected.to contain_apt__source('widgetbeheer-frontend').with(
               'location'     => 'https://apt.publiq.be/widgetbeheer-frontend-acceptance',
               'ensure'       => 'present',

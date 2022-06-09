@@ -13,11 +13,12 @@ class profiles::deployment::uit::cms (
   $files_source    = '/data/uit-cms/files'
 
   realize Apt::Source['publiq-uit']
+  realize Apt::Source['uit-cms']
 
   package { 'uit-cms':
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Apt::Source['publiq-uit']
+    require => [Apt::Source['publiq-uit'], Apt::Source['uit-cms']]
   }
 
   file { 'hostnames.txt':
