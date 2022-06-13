@@ -13,7 +13,7 @@ define profiles::deployment::versions (
   if $packages {
     any2array($packages).each |$package| {
       exec { "update versions.${project} file for package ${package}":
-        command     => "facter -pj ${project}_version | jq '.[\"${project}_version\"]' > ${destination_dir}/versions.${project}",
+        command     => "facter -pj ${project}_deployment_version | jq '.[\"${project}_deployment_version\"]' > ${destination_dir}/versions.${project}",
         path        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
         require     => Package['jq'],
         subscribe   => Package[$package],
@@ -21,7 +21,7 @@ define profiles::deployment::versions (
       }
 
       exec { "update versions.${project}.${package} file for package ${package}":
-        command     => "facter -pj ${project}_version.${package} | jq '.[\"${project}_version.${package}\"]' > ${destination_dir}/versions.${project}.${package}",
+        command     => "facter -pj ${project}_deployment_version.${package} | jq '.[\"${project}_deployment_version.${package}\"]' > ${destination_dir}/versions.${project}.${package}",
         path        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
         require     => Package['jq'],
         subscribe   => Package[$package],
