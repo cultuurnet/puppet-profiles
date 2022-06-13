@@ -6,7 +6,7 @@ describe Facter::Util::Fact do
   describe 'balie_deployment_version' do
     context 'without packages' do
       before :each do
-        expect(Facter::Util::Resolution).to receive(:exec).with("dpkg-query -f='${binary:Package}:${Version}:${Pipeline-Version}:${Git-Ref}\\n' -W 'balie*' 2> /dev/null") { '' }
+        expect(Facter::Util::Resolution).to receive(:exec).with("dpkg-query -f='${binary:Package}:${Version}:${Pipeline-Version}:${Git-Ref}\\n' -W 'balie-*' 2> /dev/null") { '' }
       end
 
       it do
@@ -16,7 +16,7 @@ describe Facter::Util::Fact do
 
     context 'with package balie-silex:20200728152530+sha.a926ff3 and no custom metadata' do
       before :each do
-        expect(Facter::Util::Resolution).to receive(:exec).with("dpkg-query -f='${binary:Package}:${Version}:${Pipeline-Version}:${Git-Ref}\\n' -W 'balie*' 2> /dev/null") { 'balie-silex:20200728152530+sha.a926ff3::' }
+        expect(Facter::Util::Resolution).to receive(:exec).with("dpkg-query -f='${binary:Package}:${Version}:${Pipeline-Version}:${Git-Ref}\\n' -W 'balie-*' 2> /dev/null") { 'balie-silex:20200728152530+sha.a926ff3::' }
       end
 
       it do
@@ -26,7 +26,7 @@ describe Facter::Util::Fact do
 
     context 'with package balie-silex:20200728152530+sha.a926ff3 and custom metadata' do
       before :each do
-        expect(Facter::Util::Resolution).to receive(:exec).with("dpkg-query -f='${binary:Package}:${Version}:${Pipeline-Version}:${Git-Ref}\\n' -W 'balie*' 2> /dev/null") { 'balie-silex:20200728152530+sha.a926ff3:20200728152530:a926ff3' }
+        expect(Facter::Util::Resolution).to receive(:exec).with("dpkg-query -f='${binary:Package}:${Version}:${Pipeline-Version}:${Git-Ref}\\n' -W 'balie-*' 2> /dev/null") { 'balie-silex:20200728152530+sha.a926ff3:20200728152530:a926ff3' }
       end
 
       it do
@@ -36,7 +36,7 @@ describe Facter::Util::Fact do
 
     context 'with package balie-angular-app:20200729132510+sha.e3c29b6 and balie-silex:20200728152530+sha.a926ff3 and no custom metadata' do
       before :each do
-        expect(Facter::Util::Resolution).to receive(:exec).with("dpkg-query -f='${binary:Package}:${Version}:${Pipeline-Version}:${Git-Ref}\\n' -W 'balie*' 2> /dev/null") {
+        expect(Facter::Util::Resolution).to receive(:exec).with("dpkg-query -f='${binary:Package}:${Version}:${Pipeline-Version}:${Git-Ref}\\n' -W 'balie-*' 2> /dev/null") {
           "balie-angular-app:20200729132510+sha.e3c29b6::\nbalie-silex:20200728152530+sha.a926ff3::"
         }
       end
@@ -53,7 +53,7 @@ describe Facter::Util::Fact do
 
     context 'with package balie-angular-app:20200729132510+sha.e3c29b6 and balie-silex:20200728152530+sha.a926ff3 and custom metadata' do
       before :each do
-        expect(Facter::Util::Resolution).to receive(:exec).with("dpkg-query -f='${binary:Package}:${Version}:${Pipeline-Version}:${Git-Ref}\\n' -W 'balie*' 2> /dev/null") {
+        expect(Facter::Util::Resolution).to receive(:exec).with("dpkg-query -f='${binary:Package}:${Version}:${Pipeline-Version}:${Git-Ref}\\n' -W 'balie-*' 2> /dev/null") {
           "balie-angular-app:20200729132510+sha.e3c29b6:20200729132510:e3c29b6\nbalie-silex:20200728152530+sha.a926ff3:20200728152530:a926ff3"
         }
       end
