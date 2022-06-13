@@ -14,7 +14,7 @@ class profiles::deployment::appconfig (
   }
 
   profiles::deployment::versions { $title:
-    project         => 'appconfig',
+    project         => 'publiq',
     packages        => 'publiq-appconfig',
     destination_dir => '/var/run',
     puppetdb_url    => $puppetdb_url,

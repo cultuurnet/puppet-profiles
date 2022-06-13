@@ -14,7 +14,7 @@ class profiles::deployment::infrastructure (
   }
 
   profiles::deployment::versions { $title:
-    project         => 'infrastructure',
+    project         => 'publiq',
     packages        => 'publiq-infrastructure',
     destination_dir => '/var/run',
     puppetdb_url    => $puppetdb_url,

@@ -61,7 +61,7 @@ describe 'profiles::deployment::prototypes' do
         ) }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::prototypes').with(
-          'project'         => 'prototypes',
+          'project'         => 'publiq',
           'packages'        => 'publiq-prototypes',
           'destination_dir' => '/var/run',
           'puppetdb_url'    => 'http://example.com:8000'
