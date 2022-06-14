@@ -1,11 +1,15 @@
 class profiles::newrelic_infra (
   String $license_key,
-  Optional[Variant[Hash]] $integrations = undef
+  Optional[Variant[Hash]] $integrations = undef,
+  Boolean $manage_repo = false
 ) {
+
+  realize Apt::Source['newrelic-infra']
 
   class { 'newrelic_infra::agent':
     ensure      => 'latest',
-    license_key => $license_key
+    license_key => $license_key,
+    manage_repo => $manage_repo
   }
 
   if $integrations {
