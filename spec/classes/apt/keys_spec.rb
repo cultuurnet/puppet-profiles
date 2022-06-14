@@ -37,6 +37,11 @@ describe 'profiles::apt::keys' do
           'id'     => 'B60A3EC9BC013B9C23790EC8B31B29E5548C16BF',
           'source' => 'https://download.newrelic.com/548C16BF.gpg'
         ) }
+
+        it { is_expected.to contain_apt__key('newrelic-infra').with(
+          'id'     => 'A758B3FBCD43BE8D123A3476BB29EE038ECCE87C',
+          'source' => 'https://download.newrelic.com/infrastructure_agent/gpg/newrelic-infra.gpg'
+        ) }
       end
     end
   end
