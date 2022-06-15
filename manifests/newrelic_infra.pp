@@ -110,35 +110,39 @@ class profiles::newrelic_infra (
 
     if $configfiles {
       $configfiles.each |$key,$value| {
-        if $value['integration_config']['ensure'] == "present" {
-          file { "${key}-config.yaml":
-            ensure  => file,
-            path    => "/etc/newrelic-infra/integrations.d/${key}-config.yaml",
-            content => $value['integration_config']['configfile'],
-            notify  => Service['newrelic-infra']
+        if $value['integration_config'] {
+          if $value['integration_config']['ensure'] == "present" {
+            file { "${key}-config.yaml":
+              ensure  => file,
+              path    => "/etc/newrelic-infra/integrations.d/${key}-config.yaml",
+              content => $value['integration_config']['configfile'],
+              notify  => Service['newrelic-infra']
+            }
           }
-        }
-        else {
-          file { "${key}-config.yaml":
-            ensure  => absent,
-            path    => "/etc/newrelic-infra/integrations.d/${key}-config.yaml",
-            notify  => Service['newrelic-infra']
+          else {
+            file { "${key}-config.yaml":
+              ensure  => absent,
+              path    => "/etc/newrelic-infra/integrations.d/${key}-config.yaml",
+              notify  => Service['newrelic-infra']
+            }
           }
         }
 
-        if $value['logging_config']['ensure'] == "present" {
-          file { "${key}-log.yaml":
-            ensure  => file,
-            path    => "/etc/newrelic-infra/logging.d/${key}-log.yaml",
-            content => $value['logging_config']['configfile'],
-            notify  => Service['newrelic-infra']
+        if $value['logging_config'] {
+          if $value['logging_config']['ensure'] == "present" {
+            file { "${key}-log.yaml":
+              ensure  => file,
+              path    => "/etc/newrelic-infra/logging.d/${key}-log.yaml",
+              content => $value['logging_config']['configfile'],
+              notify  => Service['newrelic-infra']
+            }
           }
-        }
-        else {
-          file { "${key}-log.yaml":
-            ensure  => absent,
-            path    => "/etc/newrelic-infra/logging.d/${key}-log.yaml",
-            notify  => Service['newrelic-infra']
+          else {
+            file { "${key}-log.yaml":
+              ensure  => absent,
+              path    => "/etc/newrelic-infra/logging.d/${key}-log.yaml",
+              notify  => Service['newrelic-infra']
+            }
           }
         }
       }
