@@ -155,6 +155,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'curator-articlelinker':
+    location => "https://apt.publiq.be/curator-articlelinker-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   @apt::source { 'newrelic':
     location     => "https://apt.publiq.be/newrelic-${environment}",
     release      => $facts['os']['distro']['codename'],
