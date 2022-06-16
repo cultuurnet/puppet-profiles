@@ -11,12 +11,12 @@ class profiles::deployment::curator::articlelinker (
 
   $basedir = '/var/www/curator-articlelinker'
 
-  realize Apt::Source['publiq-curator']
+  realize Apt::Source['curator-articlelinker']
 
   package { 'curator-articlelinker':
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Apt::Source['publiq-curator']
+    require => Apt::Source['curator-articlelinker']
   }
 
   file { 'curator-articlelinker-config':
