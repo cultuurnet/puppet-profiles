@@ -53,7 +53,7 @@ describe 'profiles::deployment::infrastructure' do
         ) }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::infrastructure').with(
-          'project'      => 'infrastructure',
+          'project'      => 'publiq',
           'packages'     => 'publiq-infrastructure',
           'puppetdb_url' => nil
         ) }
@@ -70,7 +70,7 @@ describe 'profiles::deployment::infrastructure' do
         ) }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::infrastructure').with(
-          'project'         => 'infrastructure',
+          'project'         => 'publiq',
           'packages'        => 'publiq-infrastructure',
           'destination_dir' => '/var/run',
           'puppetdb_url'    => 'http://example.com:8000'

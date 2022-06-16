@@ -11,7 +11,7 @@ class profiles::deployment::prototypes (
   }
 
   profiles::deployment::versions { $title:
-    project         => 'prototypes',
+    project         => 'publiq',
     packages        => 'publiq-prototypes',
     destination_dir => '/var/run',
     puppetdb_url    => $puppetdb_url
