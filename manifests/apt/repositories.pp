@@ -119,6 +119,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'uit-cms':
+    location => "https://apt.publiq.be/uit-cms-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   @apt::source { 'widgetbeheer-frontend':
     location => "https://apt.publiq.be/widgetbeheer-frontend-${environment}",
     release  => $facts['os']['distro']['codename'],
