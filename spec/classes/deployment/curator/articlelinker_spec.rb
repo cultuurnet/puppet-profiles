@@ -15,11 +15,11 @@ describe 'profiles::deployment::curator::articlelinker' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_apt__source('publiq-curator') }
+        it { is_expected.to contain_apt__source('curator-articlelinker') }
 
         it { is_expected.to contain_package('curator-articlelinker').with( 'ensure' => 'latest') }
         it { is_expected.to contain_package('curator-articlelinker').that_notifies('Profiles::Deployment::Versions[profiles::deployment::curator::articlelinker]') }
-        it { is_expected.to contain_package('curator-articlelinker').that_requires('Apt::Source[publiq-curator]') }
+        it { is_expected.to contain_package('curator-articlelinker').that_requires('Apt::Source[curator-articlelinker]') }
 
         it { is_expected.to contain_file('curator-articlelinker-config').with(
           'ensure' => 'file',
