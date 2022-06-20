@@ -1,13 +1,11 @@
 require 'spec_helper'
 
 describe 'profiles::curator' do
-  context "with articlelinker_config_source => /foo, articlelinker_publishers_source => /bar, articlelinker_env_defaults_source => /defaults, api_config_source => /baz and api_hostname => example.com" do
+  context "with articlelinker_config_source => /foo, articlelinker_publishers_source => /bar and articlelinker_env_defaults_source => /defaults" do
     let(:params) { {
       'articlelinker_config_source'       => '/foo',
       'articlelinker_publishers_source'   => '/bar',
       'articlelinker_env_defaults_source' => '/defaults',
-      'api_config_source'                 => '/baz',
-      'api_hostname'                      => 'example.com'
     } }
 
     include_examples 'operating system support'
@@ -23,92 +21,53 @@ describe 'profiles::curator' do
             super().merge({ 'noop_deploy' => 'true' })
           end
 
-          it { is_expected.not_to contain_class('profiles::deployment::curator::api') }
           it { is_expected.not_to contain_class('profiles::deployment::curator::articlelinker') }
         end
 
-        context "with api_local_database => true, api_local_database_name => one, api_local_database_user => two and api_local_database_password => three" do
+        it { is_expected.to contain_class('profiles::deployment::curator::articlelinker').with(
+          'config_source'       => '/foo',
+          'publishers_source'   => '/bar',
+          'version'             => 'latest',
+          'env_defaults_source' => '/defaults',
+          'service_manage'      => true,
+          'service_ensure'      => 'running',
+          'service_enable'      => true,
+          'puppetdb_url'        => nil
+        ) }
+
+        context "with articlelinker_service_manage => false, articlelinker_service_ensure => stopped and articlelinker_service_enable => false" do
           let(:params) {
             super().merge({
-              'api_local_database'          => true,
-              'api_local_database_name'     => 'one',
-              'api_local_database_user'     => 'two',
-              'api_local_database_password' => 'three'
+              'articlelinker_service_manage' => false,
+              'articlelinker_service_ensure' => 'stopped',
+              'articlelinker_service_enable' => false
             } )
           }
-
-          it { is_expected.to contain_class('profiles::php') }
-
-          it { is_expected.to contain_file('/var/www/curator-api').with(
-            'ensure' => 'directory'
-          ) }
-
-          it { is_expected.to contain_file('/var/www/curator-api').that_comes_before('Class[profiles::deployment::curator::api]') }
-
-          it { is_expected.to contain_mysql__db('one').with(
-            'user'     => 'two',
-            'password' => 'three',
-            'host'     => 'localhost',
-            'grant'    => ['ALL']
-          ) }
-
-          it { is_expected.to contain_class('profiles::deployment::curator::api').with(
-            'config_source' => '/baz',
-            'version'       => 'latest',
-            'puppetdb_url'  => nil
-          ) }
 
           it { is_expected.to contain_class('profiles::deployment::curator::articlelinker').with(
             'config_source'       => '/foo',
             'publishers_source'   => '/bar',
             'version'             => 'latest',
             'env_defaults_source' => '/defaults',
-            'service_manage'      => true,
-            'service_ensure'      => 'running',
-            'service_enable'      => true,
+            'service_manage'      => false,
+            'service_ensure'      => 'stopped',
+            'service_enable'      => false,
             'puppetdb_url'        => nil
           ) }
+        end
 
-          context "with articlelinker_service_manage => false, articlelinker_service_ensure => stopped and articlelinker_service_enable => false" do
-            let(:params) {
-              super().merge({
-                'articlelinker_service_manage' => false,
-                'articlelinker_service_ensure' => 'stopped',
-                'articlelinker_service_enable' => false
-              } )
-            }
+        context "with articlelinker_version => 9.8.7 and puppetdb_url => http://localhost:8080" do
+          let(:params) {
+            super().merge({
+              'articlelinker_version' => '9.8.7',
+              'puppetdb_url'          => 'http://localhost:8080'
+            } )
+          }
 
-            it { is_expected.to contain_class('profiles::deployment::curator::articlelinker').with(
-              'config_source'       => '/foo',
-              'publishers_source'   => '/bar',
-              'version'             => 'latest',
-              'env_defaults_source' => '/defaults',
-              'service_manage'      => false,
-              'service_ensure'      => 'stopped',
-              'service_enable'      => false,
-              'puppetdb_url'        => nil
-            ) }
-          end
-
-          context "with api_version => 4.5.6, articlelinker_version => 9.8.7 and puppetdb_url => http://localhost:8080" do
-            let(:params) {
-              super().merge({
-                'api_version'           => '4.5.6',
-                'articlelinker_version' => '9.8.7',
-                'puppetdb_url'          => 'http://localhost:8080'
-              } )
-            }
-
-            it { is_expected.to contain_class('profiles::deployment::curator::api').with(
-              'version'      => '4.5.6',
-              'puppetdb_url' => 'http://localhost:8080'
-            ) }
-
-            it { is_expected.to contain_class('profiles::deployment::curator::articlelinker').with(
-              'version'      => '9.8.7',
-              'puppetdb_url' => 'http://localhost:8080'
-            ) }
-          end
+          it { is_expected.to contain_class('profiles::deployment::curator::articlelinker').with(
+            'version'      => '9.8.7',
+            'puppetdb_url' => 'http://localhost:8080'
+          ) }
         end
       end
     end
@@ -123,8 +82,6 @@ describe 'profiles::curator' do
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'articlelinker_config_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'articlelinker_publishers_source'/) }
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'api_config_source'/) }
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'api_hostname'/) }
       end
     end
   end
