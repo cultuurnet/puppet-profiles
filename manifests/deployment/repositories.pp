@@ -24,10 +24,6 @@ class profiles::deployment::repositories {
     location => 'https://apt.publiq.be/prototypes-production'
   }
 
-  @apt::source { 'publiq-curator':
-    location => "http://apt.uitdatabank.be/curator-${environment}"
-  }
-
   @apt::source { 'publiq-mspotm':
     location => "http://apt.uitdatabank.be/mspotm-${environment}"
   }
