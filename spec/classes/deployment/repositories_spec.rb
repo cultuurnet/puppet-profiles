@@ -29,7 +29,6 @@ describe 'profiles::deployment::repositories' do
         include_examples 'deployment repositories', 'publiq-appconfig'
         include_examples 'deployment repositories', 'publiq-infrastructure'
         include_examples 'deployment repositories', 'publiq-prototypes'
-        include_examples 'deployment repositories', 'publiq-curator'
         include_examples 'deployment repositories', 'publiq-mspotm'
         include_examples 'deployment repositories', 'publiq-uit'
         include_examples 'deployment repositories', 'publiq-uitidv2'
@@ -55,11 +54,6 @@ describe 'profiles::deployment::repositories' do
 
             it { is_expected.to contain_apt__source('publiq-prototypes').with(
               'location' => 'https://apt.publiq.be/prototypes-production',
-              'release'  => 'trusty'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-curator').with(
-              'location' => 'http://apt.uitdatabank.be/curator-testing',
               'release'  => 'trusty'
             ) }
 
@@ -107,11 +101,6 @@ describe 'profiles::deployment::repositories' do
 
             it { is_expected.to contain_apt__source('publiq-prototypes').with(
               'location' => 'https://apt.publiq.be/prototypes-production',
-              'release'  => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-curator').with(
-              'location' => 'http://apt.uitdatabank.be/curator-acceptance',
               'release'  => 'xenial'
             ) }
 
