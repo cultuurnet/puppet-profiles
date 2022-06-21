@@ -8,6 +8,24 @@
 #   Optionally disable creating any of the repo resources and control outside
 #   of this module.
 #
+# [*logging*]
+#   Optional configurtaion hash for handling logfile forwarding into newrelic.
+#
+#   The below example will tail the mysql slow query logfile and send it's content
+#   into new relic
+#
+#   Hiera config example:
+#   ---
+#   profiles::newrelic_infra::logging:
+#     'mysql-slow-query-log':
+#       ensure: 'present'
+#       configfile: |
+#         logs:
+#           - name: "mysql-slow-query-log"
+#             file: /var/log/mysql/slow-query.log
+#             attributes:
+#               logtype: mysql-slow-query-log
+#
 # [*integrations*]
 #   Optional configuration hash for an integration.
 #   If undefined, only basic system metrics will be monitored by the
@@ -19,8 +37,8 @@
 #     'nri-mysql':
 #       ensure: 'present'
 #
-# [*configfiles*]
-#   When $integrations are defined, $configfiles are required to configure
+# [*integration_configfiles*]
+#   When $integrations are defined, $integration_configfiles are required to configure
 #   the integration.
 #   two types of configfile exist:
 #   'integration_config' takes care of the config for the service you are monitoring
@@ -28,7 +46,7 @@
 #
 #   Hiera config example:
 #   ---
-#   profiles::newrelic_infra::configfiles:
+#   profiles::newrelic_infra::integration_configfiles:
 #     'nri-mysql':
 #       integration_config:
 #         ensure: 'present'
@@ -90,9 +108,10 @@
 #
 class profiles::newrelic_infra (
   String                  $license_key,
-  Boolean                 $manage_repo  = false,
-  Optional[Variant[Hash]] $integrations = undef,
-  Optional[Variant[Hash]] $configfiles  = undef
+  Boolean                 $manage_repo              = false,
+  Optional[Variant[Hash]] $logging                  = undef,
+  Optional[Variant[Hash]] $integrations             = undef,
+  Optional[Variant[Hash]] $integration_configfiles  = undef
 ) {
 
   realize Apt::Source['newrelic-infra']
@@ -103,13 +122,33 @@ class profiles::newrelic_infra (
     manage_repo => $manage_repo
   }
 
+  if $logging {
+    $logging.each |$key,$value| {
+      if $value['ensure'] == "present" {
+        file { "${key}.yaml":
+          ensure  => file,
+          path    => "/etc/newrelic-infra/logging.d/${key}.yaml",
+          content => $value['configfile'],
+          notify  => Service['newrelic-infra']
+        }
+      }
+      else {
+        file { "${key}.yaml":
+          ensure  => absent,
+          path    => "/etc/newrelic-infra/logging.d/${key}.yaml",
+          notify  => Service['newrelic-infra']
+        }
+      }
+    }
+  }
+
   if $integrations {
     class { 'newrelic_infra::integrations':
       integrations => $integrations
     }
 
-    if $configfiles {
-      $configfiles.each |$key,$value| {
+    if $integration_configfiles {
+      $integration_configfiles.each |$key,$value| {
         if $value['integration_config'] {
           if $value['integration_config']['ensure'] == "present" {
             file { "${key}-config.yaml":
