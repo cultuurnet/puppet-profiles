@@ -31,7 +31,6 @@ describe 'profiles::deployment::repositories' do
         include_examples 'deployment repositories', 'publiq-prototypes'
         include_examples 'deployment repositories', 'publiq-curator'
         include_examples 'deployment repositories', 'publiq-mspotm'
-        include_examples 'deployment repositories', 'publiq-uit'
         include_examples 'deployment repositories', 'publiq-uitidv2'
         include_examples 'deployment repositories', 'publiq-uitpasbe'
         include_examples 'deployment repositories', 'cultuurnet-search'
@@ -65,11 +64,6 @@ describe 'profiles::deployment::repositories' do
 
             it { is_expected.to contain_apt__source('publiq-mspotm').with(
               'location' => 'http://apt.uitdatabank.be/mspotm-testing',
-              'release'  => 'trusty'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-uit').with(
-              'location' => 'http://apt.uitdatabank.be/uit-testing',
               'release'  => 'trusty'
             ) }
 
@@ -117,11 +111,6 @@ describe 'profiles::deployment::repositories' do
 
             it { is_expected.to contain_apt__source('publiq-mspotm').with(
               'location' => 'http://apt.uitdatabank.be/mspotm-acceptance',
-              'release'  => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-uit').with(
-              'location' => 'http://apt.uitdatabank.be/uit-acceptance',
               'release'  => 'xenial'
             ) }
 
