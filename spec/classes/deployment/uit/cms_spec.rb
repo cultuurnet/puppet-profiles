@@ -16,7 +16,7 @@ describe 'profiles::deployment::uit::cms' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_apt__source('publiq-uit') }
+        it { is_expected.to contain_apt__source('uit-cms') }
 
         it { is_expected.to contain_file('hostnames.txt').with(
           'ensure' => 'file',

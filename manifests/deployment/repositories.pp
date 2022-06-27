@@ -28,10 +28,6 @@ class profiles::deployment::repositories {
     location => "http://apt.uitdatabank.be/mspotm-${environment}"
   }
 
-  @apt::source { 'publiq-uit':
-    location => "http://apt.uitdatabank.be/uit-${environment}"
-  }
-
   @apt::source { 'publiq-uitidv2':
     location => "http://apt.uitdatabank.be/uitidv2-${environment}"
   }
