@@ -8,9 +8,7 @@ class profiles::deployment::uit::cms (
   Optional[String] $puppetdb_url         = undef
 ) inherits ::profiles {
 
-  $basedir         = '/var/www/uit-cms'
-  $database_source = '/data/uit-cms/database/db.sql'
-  $files_source    = '/data/uit-cms/files'
+  $basedir = '/var/www/uit-cms'
 
   realize Apt::Source['uit-cms']
 
@@ -28,14 +26,27 @@ class profiles::deployment::uit::cms (
 
   if $database_version {
     package { 'uit-cms-database':
-      ensure => $database_version
+      ensure => $database_version,
+      notify => [
+                  Exec['uit-cms-db-install'],
+                  Exec['uit-cms-cache-rebuild pre'],
+                  Exec['uit-cms-updatedb'],
+                  Exec['uit-cms-config-import'],
+                  Exec['uit-cms-cache-rebuild post']
+                ]
     }
 
-    Package['uit-cms-database'] ~> Exec['uit-cms-db-install']
-    Package['uit-cms-database'] ~> Exec['uit-cms-cache-rebuild pre']
-    Package['uit-cms-database'] ~> Exec['uit-cms-updatedb']
-    Package['uit-cms-database'] ~> Exec['uit-cms-config-import']
-    Package['uit-cms-database'] ~> Exec['uit-cms-cache-rebuild post']
+    exec { 'uit-cms-db-install':
+      command     => 'drush sql:cli < /data/uit-cms/database/db.sql',
+      cwd         => $basedir,
+      path        => [ '/usr/local/bin', '/usr/bin', '/bin', "${basedir}/vendor/bin"],
+      onlyif      => 'test 0 -eq $(vendor/bin/drush sql-query "show tables" | sed -e "/^$/d" | wc -l)',
+      environment => [ 'HOME=/'],
+      user        => 'www-data',
+      refreshonly => true,
+      subscribe   => [ Package['uit-cms'], File['uit-cms-settings'], File['uit-cms-drush-config']],
+      before      => Exec['uit-cms-cache-rebuild pre']
+    }
   }
 
   if $files_version {
@@ -43,7 +54,21 @@ class profiles::deployment::uit::cms (
       ensure  => $files_version
     }
 
-    Package['uit-cms-files'] -> File["${basedir}/web/sites/default/files"]
+    file { "${basedir}/web/sites/default/files":
+      ensure  => 'directory',
+      source  => '/data/uit-cms/files',
+      recurse => true,
+      owner   => 'www-data',
+      group   => 'www-data',
+      require => [ Package['uit-cms'], Package['uit-cms-files']]
+    }
+  } else {
+    file { "${basedir}/web/sites/default/files":
+      ensure  => 'directory',
+      owner   => 'www-data',
+      group   => 'www-data',
+      require => Package['uit-cms']
+    }
   }
 
   file { 'uit-cms-settings':
@@ -64,25 +89,6 @@ class profiles::deployment::uit::cms (
     require => Package['uit-cms']
   }
 
-  file { "${basedir}/web/sites/default/files":
-    ensure  => 'directory',
-    source  => $files_source,
-    owner   => 'www-data',
-    group   => 'www-data',
-    require => Package['uit-cms']
-  }
-
-  exec { 'uit-cms-db-install':
-    command     => "drush sql:cli < ${database_source}",
-    cwd         => $basedir,
-    path        => [ '/usr/local/bin', '/usr/bin', '/bin', "${basedir}/vendor/bin"],
-    onlyif      => 'test 0 -eq $(vendor/bin/drush sql-query "show tables" | sed -e "/^$/d" | wc -l)',
-    environment => [ 'HOME=/'],
-    user        => 'www-data',
-    refreshonly => true,
-    subscribe   => [ Package['uit-cms'], File['uit-cms-settings'], File['uit-cms-drush-config']]
-  }
-
   exec { 'uit-cms-cache-rebuild pre':
     command     => 'drush cache:rebuild',
     cwd         => $basedir,
@@ -90,8 +96,7 @@ class profiles::deployment::uit::cms (
     environment => [ 'HOME=/'],
     user        => 'www-data',
     refreshonly => true,
-    subscribe   => [ Package['uit-cms'], File['uit-cms-settings'], File['uit-cms-drush-config']],
-    require     => Exec['uit-cms-db-install']
+    subscribe   => [ Package['uit-cms'], File['uit-cms-settings'], File['uit-cms-drush-config']]
   }
 
   exec { 'uit-cms-updatedb':
