@@ -29,4 +29,9 @@ class profiles::groups inherits ::profiles {
     ensure => 'present',
     gid    => '1001'
   }
+
+  @group { 'www-data':
+    ensure => 'present',
+    gid    => '33'
+  }
 }

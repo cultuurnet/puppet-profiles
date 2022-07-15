@@ -49,4 +49,14 @@ class profiles::users inherits ::profiles {
     shell          => '/bin/bash',
     uid            => '1001'
   }
+
+  @user { 'www-data':
+    ensure         => 'present',
+    gid            => 'www-data',
+    home           => '/var/www',
+    managehome     => true,
+    purge_ssh_keys => true,
+    shell          => '/usr/sbin/nologin',
+    uid            => '33'
+  }
 }
