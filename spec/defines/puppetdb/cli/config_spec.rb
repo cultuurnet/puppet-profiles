@@ -98,15 +98,15 @@ describe 'profiles::puppetdb::cli::config' do
             'path'   => '/etc/puppetlabs/client-tools/puppetdb.conf',
           ) }
 
-          it { is_expected.to contain_file('puppetdb-cli-config root').with_content(/"server_urls":\s*"https:\/\/example.com:1234"/) }
+          it { is_expected.to contain_file('puppetdb-cli-config root').with_content(/"server_urls":\s*\[\s*"https:\/\/example.com:1234"\s*\]/) }
           it { is_expected.to contain_file('puppetdb-cli-config root').with_content(/"cacert":\s*"\/etc\/puppetlabs\/puppet\/ssl\/certs\/ca.pem"/) }
           it { is_expected.to contain_file('puppetdb-cli-config root').with_content(/"cert":\s*"\/etc\/puppetlabs\/puppet\/ssl\/certs\/node1.example.com.pem"/) }
           it { is_expected.to contain_file('puppetdb-cli-config root').with_content(/"key":\s*"\/etc\/puppetlabs\/puppet\/ssl\/private_keys\/node1.example.com.pem"/) }
         end
 
-        context "with server_urls => [ https://example.com:1234, https://example.com:5678], certificate => abc123 and private_key => def456" do
+        context "with server_urls => [https://example.com:1234, https://example.com:5678], certificate => abc123 and private_key => def456" do
           let(:params) { {
-            'server_urls' => [ 'https://example.com:1234', 'https://example.com:5678'],
+            'server_urls' => ['https://example.com:1234', 'https://example.com:5678'],
             'certificate' => 'abc123',
             'private_key' => 'def456'
           } }
@@ -138,9 +138,9 @@ describe 'profiles::puppetdb::cli::config' do
         let(:node) { 'node2.example.com' }
         let(:title) { 'jenkins' }
 
-        context "with server_urls => [ https://example.com:1234, https://example.com:5678], certificate => abc123 and private_key => def456" do
+        context "with server_urls => [https://example.com:1234, https://example.com:5678], certificate => abc123 and private_key => def456" do
           let(:params) { {
-            'server_urls' => [ 'https://example.com:1234', 'https://example.com:5678'],
+            'server_urls' => ['https://example.com:1234', 'https://example.com:5678'],
             'certificate' => '123abc',
             'private_key' => '456def'
           } }
@@ -191,7 +191,7 @@ describe 'profiles::puppetdb::cli::config' do
             'content' => 'xyz789'
           ) }
 
-          it { is_expected.to contain_file('puppetdb-cli-config foobar').with_content(/"server_urls":\s*"https:\/\/foobar.example.com:8080"/) }
+          it { is_expected.to contain_file('puppetdb-cli-config foobar').with_content(/"server_urls":\s*\[\s*"https:\/\/foobar.example.com:8080"\s*\]/) }
           it { is_expected.to contain_file('puppetdb-cli-config foobar').with_content(/"cacert":\s*"\/home\/foobar\/.puppetlabs\/puppet\/ssl\/certs\/ca.pem"/) }
           it { is_expected.to contain_file('puppetdb-cli-config foobar').with_content(/"cert":\s*"\/home\/foobar\/.puppetlabs\/puppet\/ssl\/certs\/puppetdb-cli.crt"/) }
           it { is_expected.to contain_file('puppetdb-cli-config foobar').with_content(/"key":\s*"\/home\/foobar\/.puppetlabs\/puppet\/ssl\/private_keys\/puppetdb-cli.key"/) }

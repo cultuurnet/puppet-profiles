@@ -1,6 +1,6 @@
 {
   "puppetdb": {
-    "server_urls": <%- if @server_urls.is_a?(String) %>"<%= @server_urls %>"<%- else %><%= @server_urls %><%- end %>,
+    "server_urls": <%= [@server_urls].flatten %>,
     "cacert": "<%= @ssl_dir %>/certs/ca.pem",
     "cert": "<%= @ssl_dir %>/certs/<%= @certificate_filename %>",
     "key": "<%= @ssl_dir %>/private_keys/<%= @private_key_filename %>"
