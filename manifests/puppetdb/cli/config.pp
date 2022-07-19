@@ -27,6 +27,15 @@ define profiles::puppetdb::cli::config (
                    fail("Profiles::Puppetdb::Cli::Config[${title}] expects a value for parameters 'certificate' and 'private_key'")
                  }
                }
+    'www-data': {
+                 if ($certificate and $private_key) {
+                   $config_rootdir = '/var/www/.puppetlabs'
+                   $certificate_filename = 'puppetdb-cli.crt'
+                   $private_key_filename = 'puppetdb-cli.key'
+                 } else {
+                   fail("Profiles::Puppetdb::Cli::Config[${title}] expects a value for parameters 'certificate' and 'private_key'")
+                 }
+               }
     default:   {
                  if ($certificate and $private_key) {
                    $config_rootdir = "/home/${title}/.puppetlabs"
