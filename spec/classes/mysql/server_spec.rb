@@ -25,7 +25,8 @@ describe 'profiles::mysql::server' do
 
         it { is_expected.to contain_class('mysql::server') }
 
-        it { is_expected.to contain_systemd__dropin_file('mysql override.conf').that_notifies('Class[mysql::server]') }
+        it { is_expected.to contain_systemd__dropin_file('mysql override.conf').that_comes_before('Class[mysql::server]') }
+        it { is_expected.to contain_systemd__dropin_file('mysql override.conf').that_notifies('Class[mysql::server::service]') }
       end
 
       context "with max_open_files => 5120" do

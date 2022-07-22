@@ -11,5 +11,6 @@ class profiles::mysql::server (
 
   include ::mysql::server
 
-  Systemd::Dropin_file['mysql override.conf'] ~> Class['mysql::server']
+  Systemd::Dropin_file['mysql override.conf'] -> Class['mysql::server']
+  Systemd::Dropin_file['mysql override.conf'] ~> Class['mysql::server::service']
 }
