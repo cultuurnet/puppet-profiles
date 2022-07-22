@@ -138,7 +138,7 @@ class profiles::deployment::uit::cms (
     require     => Exec['uit-cms-cache-rebuild post'],
     user        => 'www-data',
     hour        => '*',
-    minute      => [ '15', '45']
+    minute      => [ '0', '30']
   }
 
   cron { 'uit-cms-curator-sync':
