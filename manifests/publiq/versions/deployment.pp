@@ -1,37 +1,27 @@
 class profiles::publiq::versions::deployment (
-  String                     $version                 = 'latest',
-  Boolean                    $service_manage          = true,
-  String                     $service_ensure          = 'running',
-  Boolean                    $service_enable          = true,
-  Stdlib::Ipv4               $service_address         = '127.0.0.1',
-  Stdlib::Port::Unprivileged $service_port            = 3000,
-  Optional[String]           $puppetdb_url            = undef
+  String                     $version         = 'latest',
+  Stdlib::Ipv4               $service_address = '127.0.0.1',
+  Stdlib::Port::Unprivileged $service_port    = 3000,
+  Optional[String]           $puppetdb_url    = undef
 ) inherits ::profiles {
 
   realize Apt::Source['publiq-versions']
 
+  include profiles::publiq::versions::service
+
   package { 'publiq-versions':
     ensure  => $version,
-    notify  => Profiles::Deployment::Versions[$title],
+    notify  => [Class['profiles::publiq::versions::service'], Profiles::Deployment::Versions[$title]],
     require => Apt::Source['publiq-versions']
   }
 
-  if $service_manage {
-    file { 'publiq-versions-service-defaults':
-      ensure  => 'file',
-      path    => '/etc/default/publiq-versions',
-      owner   => 'root',
-      group   => 'root',
-      content => template('profiles/publiq/versions/deployment.erb'),
-      notify  => Service['publiq-versions']
-    }
-
-    service { 'publiq-versions':
-      ensure    => $service_ensure,
-      enable    => $service_enable,
-      require   => Package['publiq-versions'],
-      hasstatus => true
-    }
+  file { 'publiq-versions-service-defaults':
+    ensure  => 'file',
+    path    => '/etc/default/publiq-versions',
+    owner   => 'root',
+    group   => 'root',
+    content => template('profiles/publiq/versions/deployment.erb'),
+    notify  => Class['profiles::publiq::versions::service']
   }
 
   profiles::deployment::versions { $title:
