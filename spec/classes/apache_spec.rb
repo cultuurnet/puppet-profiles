@@ -13,6 +13,7 @@ describe 'profiles::apache' do
       it { is_expected.to contain_user('www-data') }
 
       it { is_expected.to contain_class('apache').with(
+        'mpm_module'   => 'prefork',
         'manage_group' => false,
         'manage_user'  => false
       ) }

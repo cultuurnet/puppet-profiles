@@ -4,6 +4,7 @@ class profiles::apache inherits ::profiles {
   realize User['www-data']
 
   class { '::apache':
+    mpm_module   => 'prefork',
     manage_group => false,
     manage_user  => false,
     require      => [Group['www-data'], User['www-data']]
