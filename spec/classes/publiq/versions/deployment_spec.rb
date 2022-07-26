@@ -27,6 +27,17 @@ describe 'profiles::publiq::versions::deployment' do
         it { is_expected.to contain_package('publiq-versions').that_notifies('Class[profiles::publiq::versions::service]') }
         it { is_expected.to contain_package('publiq-versions').that_requires('Apt::Source[publiq-versions]') }
 
+        it { is_expected.to contain_file('publiq-versions-env').with(
+          'ensure' => 'file',
+          'path'   => '/var/www/publiq-versions/.env',
+          'owner'  => 'www-data',
+          'group'  => 'www-data'
+        ) }
+
+        it { is_expected.to contain_file('publiq-versions-env').with_content('PUPPETDB_CONFIG_SOURCE=\'/var/www/.puppetlabs/client-tools/puppetdb.conf\'') }
+
+        it { is_expected.to contain_file('publiq-versions-env').that_notifies('Class[profiles::publiq::versions::service]') }
+
         it { is_expected.to contain_file('publiq-versions-service-defaults').with(
           'ensure' => 'file',
           'path'   => '/etc/default/publiq-versions',

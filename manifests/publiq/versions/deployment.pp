@@ -15,6 +15,15 @@ class profiles::publiq::versions::deployment (
     require => Apt::Source['publiq-versions']
   }
 
+  file { 'publiq-versions-env':
+    ensure  => 'file',
+    path    => '/var/www/publiq-versions/.env',
+    owner   => 'www-data',
+    group   => 'www-data',
+    content => 'PUPPETDB_CONFIG_SOURCE=\'/var/www/.puppetlabs/client-tools/puppetdb.conf\'',
+    notify  => Class['profiles::publiq::versions::service']
+  }
+
   file { 'publiq-versions-service-defaults':
     ensure  => 'file',
     path    => '/etc/default/publiq-versions',

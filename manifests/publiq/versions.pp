@@ -19,7 +19,6 @@ class profiles::publiq::versions (
     certificate => $certificate,
     private_key => $private_key,
     require     => [Group['www-data'], User['www-data']]
-
   }
 
   if $deployment {
