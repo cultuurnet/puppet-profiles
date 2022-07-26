@@ -47,6 +47,12 @@ describe 'profiles::groups' do
           'gid'    => '1001'
           )
         }
+
+        it { is_expected.to contain_group('www-data').with(
+          'ensure' => 'present',
+          'gid'    => '33'
+          )
+        }
       end
     end
   end

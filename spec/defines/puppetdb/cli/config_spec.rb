@@ -205,6 +205,42 @@ describe 'profiles::puppetdb::cli::config' do
           it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameters 'certificate' and 'private_key'/) }
         end
       end
+
+      context "on node4.example.com with title www-data" do
+        let(:node) { 'node4.example.com' }
+        let(:title) { 'www-data' }
+
+        context "with server_urls => https://example.com:1234, certificate => abc123 and private_key => def456" do
+          let(:params) { {
+            'server_urls' => 'https://example.com:1234',
+            'certificate' => '123abc',
+            'private_key' => '456def'
+          } }
+
+          include_examples 'puppetdb-cli config file structure', 'www-data', '/var/www/.puppetlabs'
+
+          it { is_expected.to contain_file('/var/www/.puppetlabs/puppet/ssl/certs/puppetdb-cli.crt').with(
+            'content' => '123abc'
+          ) }
+
+          it { is_expected.to contain_file('/var/www/.puppetlabs/puppet/ssl/private_keys/puppetdb-cli.key').with(
+            'content' => '456def'
+          ) }
+
+          it { is_expected.to contain_file('puppetdb-cli-config www-data').with_content(/"server_urls":\s*\[\s*"https:\/\/example.com:1234"\s*\]/) }
+          it { is_expected.to contain_file('puppetdb-cli-config www-data').with_content(/"cacert":\s*"\/var\/www\/.puppetlabs\/puppet\/ssl\/certs\/ca.pem"/) }
+          it { is_expected.to contain_file('puppetdb-cli-config www-data').with_content(/"cert":\s*"\/var\/www\/.puppetlabs\/puppet\/ssl\/certs\/puppetdb-cli.crt"/) }
+          it { is_expected.to contain_file('puppetdb-cli-config www-data').with_content(/"key":\s*"\/var\/www\/.puppetlabs\/puppet\/ssl\/private_keys\/puppetdb-cli.key"/) }
+        end
+
+        context "with server_urls => https://example.com:1234" do
+          let(:params) { {
+            'server_urls' => 'https://example.com:1234'
+          } }
+
+          it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameters 'certificate' and 'private_key'/) }
+        end
+      end
     end
   end
 end

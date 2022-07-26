@@ -61,6 +61,16 @@ describe 'profiles::users' do
           'shell'          => '/bin/bash',
           'uid'            => '1001'
         ) }
+
+        it { is_expected.to contain_user('www-data').with(
+          'ensure'         => 'present',
+          'gid'            => 'www-data',
+          'home'           => '/var/www',
+          'managehome'     => true,
+          'purge_ssh_keys' => true,
+          'shell'          => '/usr/sbin/nologin',
+          'uid'            => '33'
+        ) }
       end
     end
   end
