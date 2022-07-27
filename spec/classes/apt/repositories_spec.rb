@@ -321,6 +321,17 @@ describe 'profiles::apt::repositories' do
               'release'      => 'xenial'
             ) }
 
+            it { is_expected.to contain_apt__source('elastic-8.x').with(
+              'location'     => 'https://apt.publiq.be/elastic-8.x-acceptance',
+              'ensure'       => 'present',
+              'repos'        => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'      => 'xenial'
+            ) }
+
             it { is_expected.to contain_apt__source('curator-articlelinker').with(
               'location'     => 'https://apt.publiq.be/curator-articlelinker-acceptance',
               'ensure'       => 'present',

@@ -42,6 +42,11 @@ describe 'profiles::apt::keys' do
           'id'     => 'A758B3FBCD43BE8D123A3476BB29EE038ECCE87C',
           'source' => 'https://download.newrelic.com/infrastructure_agent/gpg/newrelic-infra.gpg'
         ) }
+
+        it { is_expected.to contain_apt__key('elasticsearch').with(
+          'id'     => '46095ACC8548582C1A2699A9D27D666CD88E42B4',
+          'source' => 'https://artifacts.elastic.co/GPG-KEY-elasticsearch'
+        ) }
       end
     end
   end

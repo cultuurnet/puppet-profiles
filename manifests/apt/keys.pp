@@ -34,4 +34,9 @@ class profiles::apt::keys {
     id     => 'A758B3FBCD43BE8D123A3476BB29EE038ECCE87C',
     source => 'https://download.newrelic.com/infrastructure_agent/gpg/newrelic-infra.gpg'
   }
+
+  @apt::key { 'elasticsearch':
+    id     => '46095ACC8548582C1A2699A9D27D666CD88E42B4',
+    source => 'https://artifacts.elastic.co/GPG-KEY-elasticsearch'
+  }
 }
