@@ -329,7 +329,7 @@ describe 'profiles::apt::repositories' do
                 'deb' => 'true',
                 'src' => 'false'
               },
-              'release'      => 'stable'
+              'release'      => 'xenial'
             ) }
 
             it { is_expected.to contain_apt__source('curator-articlelinker').with(
