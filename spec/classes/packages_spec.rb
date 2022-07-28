@@ -87,6 +87,10 @@ describe 'profiles::packages' do
           'ensure' => 'present'
         ) }
 
+        it { is_expected.to contain_package('libssl1.1').with(
+          'ensure' => 'present'
+        ) }
+
         it { is_expected.to contain_package('composer1').that_requires('Apt::Source[cultuurnet-tools]') }
         it { is_expected.to contain_package('composer2').that_requires('Apt::Source[cultuurnet-tools]') }
         it { is_expected.to contain_package('drush').that_requires('Apt::Source[cultuurnet-tools]') }
@@ -97,6 +101,7 @@ describe 'profiles::packages' do
         it { is_expected.to contain_package('yarn').that_requires('Apt::Source[yarn]') }
         it { is_expected.to contain_package('policykit-1').that_requires('Apt::Source[cultuurnet-tools]') }
         it { is_expected.to contain_package('snapd').that_requires('Apt::Source[cultuurnet-tools]') }
+        it { is_expected.to contain_package('libssl1.1').that_requires('Apt::Source[cultuurnet-tools]') }
       end
     end
   end
