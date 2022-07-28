@@ -91,6 +91,7 @@ class profiles::packages inherits ::profiles {
   }
 
   @package { 'libssl1.1':
-    ensure  => 'present'
+    ensure  => 'present',
+    require => Apt::Source['cultuurnet-tools']
   }
 }
