@@ -26,6 +26,15 @@ describe 'profiles::base' do
         'ensure' => 'latest'
       ) }
 
+      case facts[:os]['release']['major']
+        when '14.04'
+
+          it { is_expected.not_to contain_package('libssl1.1') }
+        when '16.04'
+
+          it { is_expected.to contain_package('libssl1.1') }
+      end
+
       it { is_expected.to contain_class('lvm').with(
         'manage_pkg' => true
         )

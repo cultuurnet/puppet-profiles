@@ -89,4 +89,8 @@ class profiles::packages inherits ::profiles {
   @package { 'qemu-user-static':
     ensure  => 'present'
   }
+
+  @package { 'libssl1.1':
+    ensure  => 'present'
+  }
 }
