@@ -16,7 +16,6 @@ class profiles::deployment::infrastructure (
   profiles::deployment::versions { $title:
     project         => 'publiq',
     packages        => 'publiq-infrastructure',
-    destination_dir => '/var/run',
     puppetdb_url    => $puppetdb_url,
     require         => Class['profiles::puppetserver::cache_clear']
   }

@@ -14,44 +14,16 @@ describe 'profiles::deployment::versions' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_package('jq').with(
-          'ensure' => 'present'
-          )
-        }
-
-        it { is_expected.to have_exec_resource_count(1) }
-
-        context "with packages => foo and destination_dir => /tmp" do
+        context "with packages => foo" do
           let(:pre_condition) { 'package { "foo":}' }
 
           let(:params) {
             super().merge( {
-              'packages'        => 'foo',
-              'destination_dir' => '/tmp'
+              'packages'        => 'foo'
             } )
           }
 
-          it { is_expected.to contain_exec('update versions.example file for package foo').with(
-            'command'     => 'facter -pj example_deployment_version | jq \'.["example_deployment_version"]\' > /tmp/versions.example',
-            'path'        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
-            'refreshonly' => true
-            )
-          }
-
-          it { is_expected.to contain_exec('update versions.example.foo file for package foo').with(
-            'command'     => 'facter -pj example_deployment_version.foo | jq \'.["example_deployment_version.foo"]\' > /tmp/versions.example.foo',
-            'path'        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
-            'refreshonly' => true
-            )
-          }
-
           it { is_expected.not_to contain_exec('update facts for package foo') }
-
-          it { is_expected.to contain_exec('update versions.example file for package foo').that_subscribes_to('Package[foo]') }
-          it { is_expected.to contain_exec('update versions.example.foo file for package foo').that_subscribes_to('Package[foo]') }
-
-          it { is_expected.to contain_package('jq').that_comes_before('Exec[update versions.example file for package foo]') }
-          it { is_expected.to contain_package('jq').that_comes_before('Exec[update versions.example.foo file for package foo]') }
         end
 
         context "with packages => [ 'bar', 'baz'] and puppetdb_url => http://localhost:8080" do
@@ -62,34 +34,6 @@ describe 'profiles::deployment::versions' do
               'packages'     => [ 'bar', 'baz'],
               'puppetdb_url' => 'http://localhost:8080'
             } )
-          }
-
-          it { is_expected.to contain_exec('update versions.example file for package bar').with(
-            'command'     => 'facter -pj example_deployment_version | jq \'.["example_deployment_version"]\' > /var/www/versions.example',
-            'path'        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
-            'refreshonly' => true
-            )
-          }
-
-          it { is_expected.to contain_exec('update versions.example file for package baz').with(
-            'command'     => 'facter -pj example_deployment_version | jq \'.["example_deployment_version"]\' > /var/www/versions.example',
-            'path'        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
-            'refreshonly' => true
-            )
-          }
-
-          it { is_expected.to contain_exec('update versions.example.bar file for package bar').with(
-            'command'     => 'facter -pj example_deployment_version.bar | jq \'.["example_deployment_version.bar"]\' > /var/www/versions.example.bar',
-            'path'        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
-            'refreshonly' => true
-            )
-          }
-
-          it { is_expected.to contain_exec('update versions.example.baz file for package baz').with(
-            'command'     => 'facter -pj example_deployment_version.baz | jq \'.["example_deployment_version.baz"]\' > /var/www/versions.example.baz',
-            'path'        => [ '/bin', '/usr/local/bin', '/usr/bin', '/opt/puppetlabs/bin'],
-            'refreshonly' => true
-            )
           }
 
           it { is_expected.to contain_exec('update facts for package bar').with(
@@ -106,18 +50,8 @@ describe 'profiles::deployment::versions' do
             )
           }
 
-          it { is_expected.to contain_exec('update versions.example file for package bar').that_subscribes_to('Package[bar]') }
-          it { is_expected.to contain_exec('update versions.example.bar file for package bar').that_subscribes_to('Package[bar]') }
           it { is_expected.to contain_exec('update facts for package bar').that_subscribes_to('Package[bar]') }
-
-          it { is_expected.to contain_exec('update versions.example file for package baz').that_subscribes_to('Package[baz]') }
-          it { is_expected.to contain_exec('update versions.example.baz file for package baz').that_subscribes_to('Package[baz]') }
           it { is_expected.to contain_exec('update facts for package baz').that_subscribes_to('Package[baz]') }
-
-          it { is_expected.to contain_package('jq').that_comes_before('Exec[update versions.example file for package bar]') }
-          it { is_expected.to contain_package('jq').that_comes_before('Exec[update versions.example file for package baz]') }
-          it { is_expected.to contain_package('jq').that_comes_before('Exec[update versions.example.bar file for package bar]') }
-          it { is_expected.to contain_package('jq').that_comes_before('Exec[update versions.example.baz file for package baz]') }
 
           it { is_expected.to contain_exec('update facts for package bar').that_subscribes_to('Class[profiles::deployment]') }
           it { is_expected.to contain_exec('update facts for package baz').that_subscribes_to('Class[profiles::deployment]') }
