@@ -1,4 +1,5 @@
 class profiles::publiq::versions (
+  Stdlib::Httpurl            $url,
   String                     $certificate,
   String                     $private_key,
   String                     $puppetdb_url,
@@ -32,7 +33,7 @@ class profiles::publiq::versions (
     Profiles::Puppetdb::Cli::Config['www-data'] ~> Class['profiles::publiq::versions::service']
   }
 
-  profiles::apache::vhost::reverse_proxy { 'http://versions.publiq.be':
+  profiles::apache::vhost::reverse_proxy { $url:
     destination => "http://${service_address}:${service_port}/"
   }
 
