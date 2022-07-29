@@ -198,4 +198,10 @@ class profiles::apt::repositories {
     release  => $facts['os']['distro']['codename'],
     repos    => 'main'
   }
+
+  @apt::source { 'publiq-prototypes':
+    location => "https://apt.publiq.be/publiq-prototypes-${environment}",
+    release => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
 }

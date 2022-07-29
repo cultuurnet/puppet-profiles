@@ -109,6 +109,16 @@ describe 'profiles::apt::repositories' do
               'repos'    => 'main',
               'release'  => 'trusty'
             ) }
+
+            it { is_expected.to contain_apt__source('publiq-prototypes').with(
+              'location' => 'https://apt.publiq.be/publiq-prototypes-testing',
+              'repos'    => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'  => 'trusty'
+            ) }
           end
 
         when '16.04'
@@ -367,6 +377,17 @@ describe 'profiles::apt::repositories' do
 
             it { is_expected.to contain_apt__source('publiq-versions').with(
               'location'     => 'https://apt.publiq.be/publiq-versions-acceptance',
+              'ensure'       => 'present',
+              'repos'        => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'      => 'xenial'
+            ) }
+
+            it { is_expected.to contain_apt__source('publiq-prototypes').with(
+              'location'     => 'https://apt.publiq.be/publiq-prototypes-acceptance',
               'ensure'       => 'present',
               'repos'        => 'main',
               'include'      => {
