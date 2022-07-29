@@ -179,6 +179,46 @@ describe 'profiles::apache::vhost::reverse_proxy' do
     end
   end
 
+  context "with title => http://leonardo.example.com/" do
+    let(:title) { 'http://leonardo.example.com/' }
+
+    context "with destination => http://buonarotti.example.com/" do
+      let(:params) { {
+        'destination' => 'http://buonarotti.example.com/'
+      } }
+
+      on_supported_os.each do |os, facts|
+        context "on #{os}" do
+          let(:facts) { facts }
+
+          it { is_expected.to contain_apache__vhost('leonardo.example.com_80').with(
+            'servername'            => 'leonardo.example.com',
+            'serveraliases'         => [],
+            'docroot'               => '/var/www/html',
+            'manage_docroot'        => false,
+            'port'                  => 80,
+            'ssl'                   => false,
+            'ssl_proxyengine'       => false,
+            'request_headers'       => [
+                                         'unset Proxy early',
+                                         'setifempty X-Forwarded-Port "80"',
+                                         'setifempty X-Forwarded-Proto "http"'
+                                       ],
+            'allow_encoded_slashes' => 'off',
+            'proxy_preserve_host'   => false,
+            'rewrites'              => nil,
+            'proxy_pass'            => {
+                                         'path'         => '/',
+                                         'url'          => 'http://buonarotti.example.com/',
+                                         'keywords'     => [],
+                                         'reverse_urls' => 'http://buonarotti.example.com/'
+                                       }
+          ) }
+        end
+      end
+    end
+  end
+
   context "with title => leonardo.example.com" do
     let(:title) { 'leonardo.example.com' }
 
