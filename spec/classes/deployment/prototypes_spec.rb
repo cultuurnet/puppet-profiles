@@ -11,19 +11,9 @@ describe 'profiles::deployment::prototypes' do
 
       it { is_expected.to contain_class('profiles::apt::keys') }
 
-      it { is_expected.to contain_apt__source('publiq-prototypes').with(
-        'location' => 'https://apt.publiq.be/prototypes-production',
-        'ensure'   => 'present',
-        'repos'    => 'main',
-        'include'  => {
-           'deb' => 'true',
-           'src' => 'false'
-        }
-      ) }
-
-      it { is_expected.to contain_apt__source('publiq-prototypes').that_requires('Class[profiles::apt::keys]') }
       it { is_expected.to contain_apt__source('publiq-prototypes') }
 
+      it { is_expected.to contain_apt__source('publiq-prototypes').that_requires('Class[profiles::apt::keys]') }
       it { is_expected.to contain_package('publiq-prototypes').that_requires('Apt::Source[publiq-prototypes]') }
 
       case facts[:os]['release']['major']
