@@ -27,7 +27,6 @@ describe 'profiles::deployment::repositories' do
         it { is_expected.to contain_class('profiles::apt::keys') }
 
         include_examples 'deployment repositories', 'publiq-appconfig'
-        include_examples 'deployment repositories', 'publiq-infrastructure'
         include_examples 'deployment repositories', 'publiq-mspotm'
         include_examples 'deployment repositories', 'publiq-uitidv2'
         include_examples 'deployment repositories', 'publiq-uitpasbe'
@@ -42,11 +41,6 @@ describe 'profiles::deployment::repositories' do
 
             it { is_expected.to contain_apt__source('publiq-appconfig').with(
               'location' => 'https://apt.publiq.be/appconfig-production',
-              'release'  => 'trusty'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-infrastructure').with(
-              'location' => 'https://apt.publiq.be/infrastructure-production',
               'release'  => 'trusty'
             ) }
 
@@ -79,11 +73,6 @@ describe 'profiles::deployment::repositories' do
 
             it { is_expected.to contain_apt__source('publiq-appconfig').with(
               'location' => 'https://apt.publiq.be/appconfig-production',
-              'release'  => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-infrastructure').with(
-              'location' => 'https://apt.publiq.be/infrastructure-production',
               'release'  => 'xenial'
             ) }
 

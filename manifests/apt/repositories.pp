@@ -204,4 +204,10 @@ class profiles::apt::repositories {
     release => $facts['os']['distro']['codename'],
     repos    => 'main'
   }
+
+  @apt::source { 'publiq-infrastructure':
+    location => "https://apt.publiq.be/publiq-infrastructure-${environment}",
+    release => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
 }
