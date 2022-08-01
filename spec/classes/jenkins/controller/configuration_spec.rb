@@ -45,6 +45,12 @@ describe 'profiles::jenkins::controller::configuration' do
                              }
         ) }
 
+        it { is_expected.to contain_profiles__jenkins__plugin('git-client').with(
+          'ensure'        => 'present',
+          'restart'       => false,
+          'configuration' => { 'hostkey_verification_strategy' => 'noHostKeyVerificationStrategy' }
+        ) }
+
         it { is_expected.to contain_profiles__jenkins__plugin('swarm').with(
           'ensure'        => 'present',
           'restart'       => false,
@@ -160,6 +166,7 @@ describe 'profiles::jenkins::controller::configuration' do
         it { is_expected.to contain_profiles__jenkins__plugin('ssh-credentials').that_comes_before('Profiles::Jenkins::Plugin[pipeline-groovy-lib]') }
         it { is_expected.to contain_profiles__jenkins__plugin('amazon-ecr').that_comes_before('Profiles::Jenkins::Plugin[docker-workflow]') }
         it { is_expected.to contain_profiles__jenkins__plugin('git').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
+        it { is_expected.to contain_profiles__jenkins__plugin('git-client').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
         it { is_expected.to contain_profiles__jenkins__plugin('configuration-as-code').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
         it { is_expected.to contain_profiles__jenkins__plugin('docker-workflow').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
         it { is_expected.to contain_class('profiles::jenkins::cli::credentials').that_requires('Class[profiles::jenkins::controller::configuration::reload]') }
