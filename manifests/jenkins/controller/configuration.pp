@@ -32,6 +32,11 @@ class profiles::jenkins::controller::configuration(
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
 
+  profiles::jenkins::plugin { 'git-client':
+    configuration => { 'hostkey_verification_strategy' => 'noHostKeyVerificationStrategy' },
+    notify        => Class['profiles::jenkins::controller::configuration::reload']
+  }
+
   profiles::jenkins::plugin { 'configuration-as-code':
     configuration => {
                        'url'            => $url,
