@@ -129,6 +129,16 @@ describe 'profiles::apt::repositories' do
               },
               'release'  => 'trusty'
             ) }
+
+            it { is_expected.to contain_apt__source('publiq-appconfig').with(
+              'location' => 'https://apt.publiq.be/publiq-appconfig-testing',
+              'repos'    => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'  => 'trusty'
+            ) }
           end
 
         when '16.04'
@@ -409,6 +419,17 @@ describe 'profiles::apt::repositories' do
 
             it { is_expected.to contain_apt__source('publiq-infrastructure').with(
               'location'     => 'https://apt.publiq.be/publiq-infrastructure-acceptance',
+              'ensure'       => 'present',
+              'repos'        => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'      => 'xenial'
+            ) }
+
+            it { is_expected.to contain_apt__source('publiq-appconfig').with(
+              'location'     => 'https://apt.publiq.be/publiq-appconfig-acceptance',
               'ensure'       => 'present',
               'repos'        => 'main',
               'include'      => {

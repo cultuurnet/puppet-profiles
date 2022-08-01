@@ -12,10 +12,6 @@ class profiles::deployment::repositories {
     require => Class['profiles::apt::keys']
   }
 
-  @apt::source { 'publiq-appconfig':
-    location => 'https://apt.publiq.be/appconfig-production'
-  }
-
   @apt::source { 'publiq-mspotm':
     location => "http://apt.uitdatabank.be/mspotm-${environment}"
   }

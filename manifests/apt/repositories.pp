@@ -188,9 +188,9 @@ class profiles::apt::repositories {
   }
 
   @apt::source { 'elastic-8.x':
-    location     => "https://apt.publiq.be/elastic-8.x-${environment}",
-    release      => $facts['os']['distro']['codename'],
-    repos        => 'main'
+    location => "https://apt.publiq.be/elastic-8.x-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
   }
 
   @apt::source { 'publiq-versions':
@@ -201,13 +201,19 @@ class profiles::apt::repositories {
 
   @apt::source { 'publiq-prototypes':
     location => "https://apt.publiq.be/publiq-prototypes-${environment}",
-    release => $facts['os']['distro']['codename'],
+    release  => $facts['os']['distro']['codename'],
     repos    => 'main'
   }
 
   @apt::source { 'publiq-infrastructure':
     location => "https://apt.publiq.be/publiq-infrastructure-${environment}",
-    release => $facts['os']['distro']['codename'],
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
+  @apt::source { 'publiq-appconfig':
+    location => "https://apt.publiq.be/publiq-appconfig-${environment}",
+    release  => $facts['os']['distro']['codename'],
     repos    => 'main'
   }
 }
