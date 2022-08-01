@@ -16,10 +16,6 @@ class profiles::deployment::repositories {
     location => 'https://apt.publiq.be/appconfig-production'
   }
 
-  @apt::source { 'publiq-infrastructure':
-    location => 'https://apt.publiq.be/infrastructure-production'
-  }
-
   @apt::source { 'publiq-mspotm':
     location => "http://apt.uitdatabank.be/mspotm-${environment}"
   }
