@@ -451,6 +451,34 @@ describe 'profiles::jenkins::plugin' do
           it { is_expected.to contain_file('docker-workflow configuration').with_content(/^\s*credentialsId: 'my_docker_cred2'$/) }
         end
       end
+
+      context "with title git-client" do
+        let(:title) { 'git-client' }
+
+        context "with configuration => {'hostkey_verification_strategy' => 'noHostKeyVerificationStrategy' }" do
+          let(:params) { {
+            'configuration' => { 'hostkey_verification_strategy' => 'noHostKeyVerificationStrategy' }
+          } }
+
+          it { is_expected.to contain_file('git-client configuration').with(
+            'ensure'  => 'file',
+            'path'    => '/var/lib/jenkins/casc_config/git-client.yaml',
+            'owner'   => 'jenkins',
+            'group'   => 'jenkins'
+          ) }
+
+          it { is_expected.to contain_file('git-client configuration').with_content(/^\s*sshHostKeyVerificationStrategy: 'noHostKeyVerificationStrategy'$/) }
+        end
+
+        context "with configuration => {'hostkey_verification_strategy' => 'acceptFirstConnectionStrategy' }" do
+          let(:params) { {
+            'configuration' => { 'hostkey_verification_strategy' => 'acceptFirstConnectionStrategy' }
+          } }
+
+          it { is_expected.to contain_file('git-client configuration').with_content(/^\s*sshHostKeyVerificationStrategy: 'acceptFirstConnectionStrategy'$/) }
+        end
+      end
+
     end
   end
 end
