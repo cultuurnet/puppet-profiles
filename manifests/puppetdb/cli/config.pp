@@ -26,6 +26,9 @@ define profiles::puppetdb::cli::config (
                  } else {
                    fail("Profiles::Puppetdb::Cli::Config[${title}] expects a value for parameters 'certificate' and 'private_key'")
                  }
+
+                 realize Group['jenkins']
+                 realize User['jenkins']
                }
     'www-data': {
                  if ($certificate and $private_key) {
@@ -35,6 +38,9 @@ define profiles::puppetdb::cli::config (
                  } else {
                    fail("Profiles::Puppetdb::Cli::Config[${title}] expects a value for parameters 'certificate' and 'private_key'")
                  }
+
+                 realize Group['www-data']
+                 realize User['www-data']
                }
     default:   {
                  if ($certificate and $private_key) {

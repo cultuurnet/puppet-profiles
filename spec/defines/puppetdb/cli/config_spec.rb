@@ -147,6 +147,9 @@ describe 'profiles::puppetdb::cli::config' do
 
           include_examples 'puppetdb-cli config file structure', 'jenkins', '/var/lib/jenkins/.puppetlabs'
 
+          it { is_expected.to contain_group('jenkins') }
+          it { is_expected.to contain_user('jenkins') }
+
           it { is_expected.to contain_file('/var/lib/jenkins/.puppetlabs/puppet/ssl/certs/puppetdb-cli.crt').with(
             'content' => '123abc'
           ) }
@@ -155,6 +158,7 @@ describe 'profiles::puppetdb::cli::config' do
             'content' => '456def'
           ) }
 
+          it { is_expected.to contain_user('jenkins').that_comes_before('File[puppetdb-cli-config jenkins]') }
           it { is_expected.to contain_file('puppetdb-cli-config jenkins').with_content(/"server_urls":\s*\[\s*"https:\/\/example.com:1234",\s*"https:\/\/example.com:5678"\s*\]/) }
           it { is_expected.to contain_file('puppetdb-cli-config jenkins').with_content(/"cacert":\s*"\/var\/lib\/jenkins\/.puppetlabs\/puppet\/ssl\/certs\/ca.pem"/) }
           it { is_expected.to contain_file('puppetdb-cli-config jenkins').with_content(/"cert":\s*"\/var\/lib\/jenkins\/.puppetlabs\/puppet\/ssl\/certs\/puppetdb-cli.crt"/) }
@@ -182,6 +186,9 @@ describe 'profiles::puppetdb::cli::config' do
           } }
 
           include_examples 'puppetdb-cli config file structure', 'foobar', '/home/foobar/.puppetlabs'
+
+          it { is_expected.to_not contain_group('foobar') }
+          it { is_expected.to_not contain_user('foobar') }
 
           it { is_expected.to contain_file('/home/foobar/.puppetlabs/puppet/ssl/certs/puppetdb-cli.crt').with(
             'content' => '987zyx'
@@ -219,6 +226,9 @@ describe 'profiles::puppetdb::cli::config' do
 
           include_examples 'puppetdb-cli config file structure', 'www-data', '/var/www/.puppetlabs'
 
+          it { is_expected.to contain_group('www-data') }
+          it { is_expected.to contain_user('www-data') }
+
           it { is_expected.to contain_file('/var/www/.puppetlabs/puppet/ssl/certs/puppetdb-cli.crt').with(
             'content' => '123abc'
           ) }
@@ -227,6 +237,7 @@ describe 'profiles::puppetdb::cli::config' do
             'content' => '456def'
           ) }
 
+          it { is_expected.to contain_user('www-data').that_comes_before('File[puppetdb-cli-config www-data]') }
           it { is_expected.to contain_file('puppetdb-cli-config www-data').with_content(/"server_urls":\s*\[\s*"https:\/\/example.com:1234"\s*\]/) }
           it { is_expected.to contain_file('puppetdb-cli-config www-data').with_content(/"cacert":\s*"\/var\/www\/.puppetlabs\/puppet\/ssl\/certs\/ca.pem"/) }
           it { is_expected.to contain_file('puppetdb-cli-config www-data').with_content(/"cert":\s*"\/var\/www\/.puppetlabs\/puppet\/ssl\/certs\/puppetdb-cli.crt"/) }
