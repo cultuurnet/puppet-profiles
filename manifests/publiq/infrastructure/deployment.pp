@@ -1,4 +1,4 @@
-class profiles::deployment::infrastructure (
+class profiles::publiq::infrastructure::deployment (
   String           $version      = 'latest',
   Optional[String] $puppetdb_url = undef
 ) inherits ::profiles {
