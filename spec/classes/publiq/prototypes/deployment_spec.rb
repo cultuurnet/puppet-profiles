@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'profiles::deployment::prototypes' do
+describe 'profiles::publiq::prototypes::deployment' do
   include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
@@ -50,7 +50,7 @@ describe 'profiles::deployment::prototypes' do
           'ensure' => '1.2.3'
         ) }
 
-        it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::prototypes').with(
+        it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::prototypes::deployment').with(
           'project'         => 'publiq',
           'packages'        => 'publiq-prototypes',
           'puppetdb_url'    => 'http://example.com:8000'
