@@ -1,13 +1,13 @@
 require 'spec_helper'
 
 describe 'profiles::jenkins::controller' do
-  let(:hiera_config) { 'spec/fixtures/hiera/hiera.yaml' }
 
   include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       let(:facts) { facts }
+      let(:hiera_config) { 'spec/support/hiera/hiera.yaml' }
 
       context "with url => https://jenkins.example.com/ and admin_password => passw0rd" do
         let(:params) { {
@@ -186,8 +186,9 @@ describe 'profiles::jenkins::controller' do
         it { is_expected.to contain_class('profiles::jenkins::cli').that_requires('Profiles::Apache::Vhost::Reverse_proxy[https://foobar.example.com]') }
       end
 
-      context "without parameters" do
+      context "without parameters and without hieradata" do
         let(:params) { {} }
+        let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'url'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'admin_password'/) }

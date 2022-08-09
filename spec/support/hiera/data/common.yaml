@@ -7,3 +7,21 @@ profiles::uit::mail_subscriptions::deployment::config_source: '/path/to/config/s
 profiles::publiq::versions::url: 'http://abc.xyz'
 profiles::publiq::versions::service_address: '127.0.1.1'
 profiles::publiq::versions::service_port: 6000
+
+profiles::certificates::certificates:
+  'wildcard.example.com':
+    certificate_source: '/tmp/cert/wildcard.example.com.bundle.crt'
+    key_source: '/tmp/cert/wildcard.example.com.key'
+  'foobar.example.com':
+    certificate_source: '/tmp/cert/foobar.example.com.bundle.crt'
+    key_source: '/tmp/cert/foobar.example.com.key'
+
+profiles::ssh_authorized_keys::keys:
+  'publiq first key':
+    tag: 'publiq'
+  'publiq second key':
+    tag: 'publiq'
+  'foobar first key':
+    tag: 'foobar'
+  'acme first key':
+    tag: 'acme'

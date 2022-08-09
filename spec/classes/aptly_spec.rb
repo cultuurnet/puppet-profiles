@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'profiles::aptly' do
-  let(:hiera_config) { 'spec/fixtures/hiera/hiera.yaml' }
+  let(:hiera_config) { 'spec/support/hiera/hiera.yaml' }
 
   include_examples 'operating system support'
 
