@@ -6,7 +6,14 @@ class profiles::php (
 ) inherits ::profiles {
 
   realize Apt::Source['cultuurnet-tools']
-  realize Apt::Source['php']
+
+  case $::operatingsystemrelease {
+    '14.04', '16.04': {
+      realize Apt::Source['php']
+
+      Apt::Source['php'] -> Class['php::globals']
+    }
+  }
 
   contain ::php::globals
   contain ::php
@@ -43,5 +50,5 @@ class profiles::php (
     }
   }
 
-  Apt::Source['php'] -> Class['php::globals'] -> Class['php']
+  Class['php::globals'] -> Class['php']
 }

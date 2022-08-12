@@ -28,7 +28,6 @@ describe 'profiles::apt::repositories' do
         it { is_expected.to contain_class('profiles::apt::keys') }
 
         include_examples 'apt repositories', 'cultuurnet-tools'
-        include_examples 'apt repositories', 'php'
         include_examples 'apt repositories', 'rabbitmq'
         include_examples 'apt repositories', 'nodejs_10.x'
         include_examples 'apt repositories', 'nodejs_12.x'
