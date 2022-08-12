@@ -1,14 +1,5 @@
 require 'spec_helper'
 
-RSpec.shared_examples "php" do
-  it { is_expected.to compile.with_all_deps }
-
-  it { is_expected.to contain_apt__source('php') }
-
-  it { is_expected.to contain_class('php::globals').that_requires('Apt::Source[php]') }
-  it { is_expected.to contain_class('php').that_requires('Class[php::globals]') }
-end
-
 describe 'profiles::php' do
   include_examples 'operating system support'
 
@@ -25,9 +16,13 @@ describe 'profiles::php' do
           'with_composer_default_version' => 1
         ) }
 
-        it { is_expected.to contain_apt__source('php') }
+        case facts[:os]['release']['major']
+        when '14.04', '16.04'
+          it { is_expected.to contain_apt__source('php') }
 
-        it { is_expected.to contain_class('php::globals').that_requires('Apt::Source[php]') }
+          it { is_expected.to contain_class('php::globals').that_requires('Apt::Source[php]') }
+        end
+
         it { is_expected.to contain_class('php').that_requires('Class[php::globals]') }
 
         it { is_expected.to contain_package('composer').with(
