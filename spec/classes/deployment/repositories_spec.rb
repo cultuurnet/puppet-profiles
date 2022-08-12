@@ -16,6 +16,8 @@ end
 describe 'profiles::deployment::repositories' do
   on_supported_os.each do |os, facts|
     context "on #{os}" do
+      let(:facts) { facts }
+
       context "with all virtual resources realized" do
         let(:pre_condition) { [
           'include ::apt',
@@ -33,8 +35,6 @@ describe 'profiles::deployment::repositories' do
 
         case facts[:os]['release']['major']
         when '14.04'
-          let(:facts) { facts }
-
           context "in the testing environment" do
             let(:environment) { 'testing' }
 
@@ -60,8 +60,6 @@ describe 'profiles::deployment::repositories' do
           end
 
         when '16.04'
-          let(:facts) { facts }
-
           context "in the acceptance environment" do
             let(:environment) { 'acceptance' }
 
