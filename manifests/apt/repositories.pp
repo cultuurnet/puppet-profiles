@@ -12,26 +12,42 @@ class profiles::apt::repositories {
     }
   }
 
-  $php_repository = $facts['os']['distro']['codename'] ? {
-    'trusty' => 'php-legacy',
-    'xenial' => 'php'
-  }
+  # Legacy repositories on apt.uitdatabank.be
 
-  $tools_repository = $facts['os']['distro']['codename'] ? {
-    'trusty' => 'tools-legacy',
-    'xenial' => 'tools'
-  }
+  case $::operatingsystemrelease {
+    '14.04': {
+      @apt::source { 'php':
+        location => "http://apt.uitdatabank.be/php-legacy-${environment}",
+        release  => $facts['os']['distro']['codename'],
+        repos    => 'main'
+      }
 
-  @apt::source { 'cultuurnet-tools':
-    location => "http://apt.uitdatabank.be/${tools_repository}-${environment}",
-    release  => $facts['os']['distro']['codename'],
-    repos    => 'main'
-  }
+      @apt::source { 'cultuurnet-tools':
+        location => "http://apt.uitdatabank.be/tools-legacy-${environment}",
+        release  => $facts['os']['distro']['codename'],
+        repos    => 'main'
+      }
+    }
+    '16.04': {
+      @apt::source { 'php':
+        location => "http://apt.uitdatabank.be/php-${environment}",
+        release  => $facts['os']['distro']['codename'],
+        repos    => 'main'
+      }
 
-  @apt::source { 'php':
-    location => "http://apt.uitdatabank.be/${php_repository}-${environment}",
-    release  => $facts['os']['distro']['codename'],
-    repos    => 'main'
+      @apt::source { 'cultuurnet-tools':
+        location => "http://apt.uitdatabank.be/tools-${environment}",
+        release  => $facts['os']['distro']['codename'],
+        repos    => 'main'
+      }
+    }
+    default: {
+      @apt::source { 'cultuurnet-tools':
+        location => "http://apt.uitdatabank.be/tools-${environment}",
+        release  => $facts['os']['distro']['codename'],
+        repos    => 'main'
+      }
+    }
   }
 
   @apt::source { 'rabbitmq':
@@ -76,12 +92,6 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
-  @apt::source { 'aptly':
-    location => 'http://repo.aptly.info',
-    release  => 'squeeze',
-    repos    => 'main'
-  }
-
   @apt::source { 'erlang':
     location => "http://apt.uitdatabank.be/erlang-${environment}",
     release  => $facts['os']['distro']['codename'],
@@ -91,6 +101,14 @@ class profiles::apt::repositories {
   @apt::source { 'publiq-jenkins':
     location => "http://apt.uitdatabank.be/jenkins-${environment}",
     release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
+  # End legacy repositories on apt.uitdatabank.be
+
+  @apt::source { 'aptly':
+    location => 'http://repo.aptly.info',
+    release  => 'squeeze',
     repos    => 'main'
   }
 
