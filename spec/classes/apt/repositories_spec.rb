@@ -20,7 +20,8 @@ describe 'profiles::apt::repositories' do
       context "with all virtual resources realized" do
         let(:pre_condition) { [
           'include ::apt',
-          'Apt::Source <| |>'
+          'Apt::Source <| |>',
+          'Apt::Ppa <| |>',
         ] }
 
         it { is_expected.to compile.with_all_deps }
@@ -48,6 +49,8 @@ describe 'profiles::apt::repositories' do
         when '14.04'
           context "in the testing environment" do
             let(:environment) { 'testing' }
+
+            it { is_expected.not_to contain_apt__ppa('ppa:deadsnakes/ppa') }
 
             it { is_expected.to contain_apt__source('cultuurnet-tools').with(
               'location' => 'http://apt.uitdatabank.be/tools-legacy-testing',
@@ -143,6 +146,8 @@ describe 'profiles::apt::repositories' do
         when '16.04'
           context "in the acceptance environment" do
             let(:environment) { 'acceptance' }
+
+            it { is_expected.not_to contain_apt__ppa('ppa:deadsnakes/ppa') }
 
             it { is_expected.to contain_apt__source('cultuurnet-tools').with(
               'location' => 'http://apt.uitdatabank.be/tools-acceptance',
@@ -436,6 +441,9 @@ describe 'profiles::apt::repositories' do
               'release'      => 'xenial'
             ) }
           end
+
+        when '18.04'
+          it { is_expected.to contain_apt__ppa('ppa:deadsnakes/ppa') }
         end
       end
     end

@@ -47,6 +47,8 @@ class profiles::apt::repositories {
         release  => $facts['os']['distro']['codename'],
         repos    => 'main'
       }
+
+      @apt::ppa { 'ppa:deadsnakes/ppa': }
     }
   }
 
