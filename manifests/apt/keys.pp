@@ -39,4 +39,9 @@ class profiles::apt::keys {
     id     => '46095ACC8548582C1A2699A9D27D666CD88E42B4',
     source => 'https://artifacts.elastic.co/GPG-KEY-elasticsearch'
   }
+
+  @apt::key { 'nodejs':
+    id     => '9FD3B784BC1C6FC31A8A0A1C1655A0AB68576280',
+    source => 'https://deb.nodesource.com/gpgkey/nodesource.gpg.key'
+  }
 }
