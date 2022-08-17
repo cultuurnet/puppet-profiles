@@ -4,8 +4,10 @@ class profiles::aptly (
   Hash                           $signing_keys      = {},
   String                         $version           = 'latest',
   String                         $data_dir          = '/var/aptly',
-  Stdlib::Ipv4                   $api_bind          = '127.0.0.1',
-  Stdlib::Port::Unprivileged     $api_port          = 8081,
+  # Stdlib::Ipv4                   $api_bind          = '127.0.0.1',
+  # Stdlib::Port::Unprivileged     $api_port          = 8081,
+  String                         $api_bind          = '127.0.0.1',
+  Integer                        $api_port          = 8081,
   Hash                           $publish_endpoints = {},
   Variant[String, Array[String]] $repositories      = [],
   Hash                           $mirrors           = {}

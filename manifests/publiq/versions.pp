@@ -1,7 +1,10 @@
 class profiles::publiq::versions (
-  Stdlib::Httpurl            $url,
-  Stdlib::Ipv4               $service_address = '127.0.0.1',
-  Stdlib::Port::Unprivileged $service_port    = 3000,
+  # Stdlib::Httpurl            $url,
+  # Stdlib::Ipv4               $service_address = '127.0.0.1',
+  # Stdlib::Port::Unprivileged $service_port    = 3000,
+  String                     $url,
+  String                     $service_address = '127.0.0.1',
+  Integer                    $service_port    = 3000,
   Boolean                    $deployment      = true
 ) inherits ::profiles {
 
