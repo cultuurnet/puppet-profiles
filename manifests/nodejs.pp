@@ -4,7 +4,21 @@ class profiles::nodejs (
 
   $major_version = split($version, /\./)[0]
 
-  realize Apt::Source["nodejs_${major_version}.x"]
+  case $::operatingsystemrelease {
+    '14.04', '16.04': {
+      # original apt.uitdatabank.be repo
+      $apt_repo = "nodejs_${major_version}.x"
+    }
+    '18.04': {
+      # new apt.publiq.be repo
+      $apt_repo = "nodejs_${major_version}"
+    }
+    default: {
+      fail("ERROR: No nodejs apt repository available for OS ${::operatingsystem}")
+    }
+  }
+
+  realize Apt::Source[$apt_repo]
   realize Apt::Source['yarn']
 
   realize Package['yarn']
@@ -14,6 +28,6 @@ class profiles::nodejs (
     nodejs_package_ensure => $version
   }
 
-  Apt::Source["nodejs_${major_version}.x"] -> Class['nodejs']
+  Apt::Source[$apt_repo] -> Class['nodejs']
   Class['nodejs'] -> Package['yarn']
 }
