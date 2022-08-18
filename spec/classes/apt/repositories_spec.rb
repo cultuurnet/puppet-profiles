@@ -364,6 +364,17 @@ describe 'profiles::apt::repositories' do
               'release'      => 'xenial'
             ) }
 
+            it { is_expected.to contain_apt__source('nodejs_16').with(
+              'location'     => 'https://apt.publiq.be/nodejs_16-acceptance',
+              'ensure'       => 'present',
+              'repos'        => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'      => 'xenial'
+            ) }
+
             it { is_expected.to contain_apt__source('curator-articlelinker').with(
               'location'     => 'https://apt.publiq.be/curator-articlelinker-acceptance',
               'ensure'       => 'present',
@@ -388,6 +399,17 @@ describe 'profiles::apt::repositories' do
 
             it { is_expected.to contain_apt__source('uitpas-balie-api').with(
               'location'     => 'https://apt.publiq.be/uitpas-balie-api-acceptance',
+              'ensure'       => 'present',
+              'repos'        => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'      => 'xenial'
+            ) }
+
+            it { is_expected.to contain_apt__source('publiq-tools').with(
+              'location'     => 'https://apt.publiq.be/publiq-tools-acceptance',
               'ensure'       => 'present',
               'repos'        => 'main',
               'include'      => {
