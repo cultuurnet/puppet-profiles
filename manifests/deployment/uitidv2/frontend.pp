@@ -10,12 +10,12 @@ class profiles::deployment::uitidv2::frontend (
 
   $basedir = '/var/www/uitid-frontend/app'
 
-  realize Apt::Source['publiq-uitidv2']
+  realize Apt::Source['uitid-frontend']
 
   package { 'uitid-frontend':
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Apt::Source['publiq-uitidv2']
+    require => Apt::Source['uitid-frontend']
   }
 
   file { 'uitid-frontend-config':
