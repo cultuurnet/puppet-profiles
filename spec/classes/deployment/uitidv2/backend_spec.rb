@@ -14,7 +14,6 @@ describe 'profiles::deployment::uitidv2::backend' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_apt__source('publiq-uitidv2') }
         it { is_expected.to contain_apt__source('uitid-api') }
 
         it { is_expected.to contain_package('uitid-api').with( 'ensure' => 'latest') }
