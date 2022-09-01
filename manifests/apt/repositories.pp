@@ -145,6 +145,18 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'uitid-frontend':
+    location => "https://apt.publiq.be/uitid-frontend-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
+  @apt::source { 'uitid-api':
+    location => "https://apt.publiq.be/uitid-api-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   @apt::source { 'widgetbeheer-frontend':
     location => "https://apt.publiq.be/widgetbeheer-frontend-${environment}",
     release  => $facts['os']['distro']['codename'],

@@ -15,10 +15,12 @@ describe 'profiles::deployment::uitidv2::frontend' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_apt__source('publiq-uitidv2') }
+        it { is_expected.to contain_apt__source('uitid-frontend') }
 
         it { is_expected.to contain_package('uitid-frontend').with( 'ensure' => 'latest') }
         it { is_expected.to contain_package('uitid-frontend').that_notifies('Profiles::Deployment::Versions[profiles::deployment::uitidv2::frontend]') }
         it { is_expected.to contain_package('uitid-frontend').that_requires('Apt::Source[publiq-uitidv2]') }
+        it { is_expected.to contain_package('uitid-frontend').that_requires('Apt::Source[uitid-frontend]') }
 
         it { is_expected.to contain_file('uitid-frontend-config').with(
           'ensure' => 'file',
