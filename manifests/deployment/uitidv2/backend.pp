@@ -8,49 +8,49 @@ class profiles::deployment::uitidv2::backend (
   Optional[String] $puppetdb_url        = undef
 ) inherits ::profiles {
 
-  $basedir = '/var/www/uitid-backend'
+  $basedir = '/var/www/uitid-api'
 
-  realize Apt::Source['publiq-uitidv2']
+  realize Apt::Source['uitid-api']
 
-  package { 'uitid-backend':
+  package { 'uitid-api':
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Apt::Source['publiq-uitidv2']
+    require => Apt::Source['uitid-api']
   }
 
-  file { 'uitid-backend-config':
+  file { 'uitid-api-config':
     ensure  => 'file',
     path    => "${basedir}/.env",
     owner   => 'www-data',
     group   => 'www-data',
     source  => $config_source,
-    require => Package['uitid-backend']
+    require => Package['uitid-api']
   }
 
   if $service_manage {
     if $env_defaults_source {
-      file { '/etc/default/uitid-backend':
+      file { '/etc/default/uitid-api':
         ensure => 'file',
         owner  => 'root',
         group  => 'root',
         source => $env_defaults_source,
-        notify => Service['uitid-backend']
+        notify => Service['uitid-api']
       }
     }
 
-    service { 'uitid-backend':
+    service { 'uitid-api':
       ensure    => $service_ensure,
       enable    => $service_enable,
-      require   => Package['uitid-backend'],
+      require   => Package['uitid-api'],
       hasstatus => true
     }
 
-    File['uitid-backend-config'] ~> Service['uitid-backend']
+    File['uitid-api-config'] ~> Service['uitid-api']
   }
 
   profiles::deployment::versions { $title:
     project      => 'uitid',
-    packages     => 'uitid-backend',
+    packages     => 'uitid-api',
     puppetdb_url => $puppetdb_url
   }
 }

@@ -14,38 +14,36 @@ describe 'profiles::deployment::uitidv2::backend' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_apt__source('publiq-uitidv2') }
         it { is_expected.to contain_apt__source('uitid-api') }
 
-        it { is_expected.to contain_package('uitid-backend').with( 'ensure' => 'latest') }
-        it { is_expected.to contain_package('uitid-backend').that_notifies('Profiles::Deployment::Versions[profiles::deployment::uitidv2::backend]') }
-        it { is_expected.to contain_package('uitid-backend').that_requires('Apt::Source[publiq-uitidv2]') }
+        it { is_expected.to contain_package('uitid-api').with( 'ensure' => 'latest') }
+        it { is_expected.to contain_package('uitid-api').that_notifies('Profiles::Deployment::Versions[profiles::deployment::uitidv2::backend]') }
         it { is_expected.to contain_package('uitid-api').that_requires('Apt::Source[uitid-api]') }
 
-        it { is_expected.to contain_file('uitid-backend-config').with(
+        it { is_expected.to contain_file('uitid-api-config').with(
           'ensure' => 'file',
-          'path'   => '/var/www/uitid-backend/.env',
+          'path'   => '/var/www/uitid-api/.env',
           'source' => '/foo',
           'owner'  => 'www-data',
           'group'  => 'www-data'
         ) }
 
-        it { is_expected.to contain_file('uitid-backend-config').that_requires('Package[uitid-backend]') }
+        it { is_expected.to contain_file('uitid-api-config').that_requires('Package[uitid-api]') }
 
-        it { is_expected.not_to contain_file('/etc/defaults/uitid-backend') }
+        it { is_expected.not_to contain_file('/etc/defaults/uitid-api') }
 
-        it { is_expected.to contain_service('uitid-backend').with(
+        it { is_expected.to contain_service('uitid-api').with(
           'ensure'    => 'running',
           'enable'    => true,
           'hasstatus' => true
         ) }
 
-        it { is_expected.to contain_service('uitid-backend').that_requires('Package[uitid-backend]') }
-        it { is_expected.to contain_file('uitid-backend-config').that_notifies('Service[uitid-backend]') }
+        it { is_expected.to contain_service('uitid-api').that_requires('Package[uitid-api]') }
+        it { is_expected.to contain_file('uitid-api-config').that_notifies('Service[uitid-api]') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uitidv2::backend').with(
           'project'      => 'uitid',
-          'packages'     => 'uitid-backend',
+          'packages'     => 'uitid-api',
           'puppetdb_url' => nil
         ) }
 
@@ -56,7 +54,7 @@ describe 'profiles::deployment::uitidv2::backend' do
             } )
           }
 
-          it { is_expected.not_to contain_service('uitid-backend') }
+          it { is_expected.not_to contain_service('uitid-api') }
         end
       end
     end
@@ -76,13 +74,13 @@ describe 'profiles::deployment::uitidv2::backend' do
       context "on #{os}" do
         let(:facts) { facts }
 
-        it { is_expected.to contain_file('uitid-backend-config').with(
+        it { is_expected.to contain_file('uitid-api-config').with(
           'source' => '/bar',
         ) }
 
-        it { is_expected.to contain_package('uitid-backend').with( 'ensure' => '1.2.3') }
+        it { is_expected.to contain_package('uitid-api').with( 'ensure' => '1.2.3') }
 
-        it { is_expected.to contain_service('uitid-backend').with(
+        it { is_expected.to contain_service('uitid-api').with(
           'ensure'    => 'stopped',
           'enable'    => false
         ) }
