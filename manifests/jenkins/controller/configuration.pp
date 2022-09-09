@@ -11,7 +11,7 @@ class profiles::jenkins::controller::configuration(
   Variant[Hash, Array[Hash]] $users                        = []
 ) inherits ::profiles {
 
-  $plain_credentials       = [$credentials].flatten.filter |$credential| { $credential['type'] == 'string' or $credential['type'] == 'file' }
+  $plain_credentials       = [$credentials].flatten.filter |$credential| { $credential['type'] == 'string' or $credential['type'] == 'file' or $credential['type'] == 'username_password' }
   $private_key_credentials = [$credentials].flatten.filter |$credential| { $credential['type'] == 'private_key' }
   $aws_credentials         = [$credentials].flatten.filter |$credential| { $credential['type'] == 'aws' }
 

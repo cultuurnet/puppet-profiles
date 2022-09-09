@@ -133,11 +133,12 @@ describe 'profiles::jenkins::plugin' do
       context "with title plain-credentials" do
         let(:title) { 'plain-credentials' }
 
-        context "with configuration => [{'id' => 'mytoken', 'type' => 'string', 'secret' => 'foobar'}, {'id' => 'myfile', 'type' => 'file', 'filename' => 'my_file.txt', 'content' => 'spec testfile content'}]" do
+        context "with configuration => [{'id' => 'mytoken', 'type' => 'string', 'secret' => 'foobar'}, {'id' => 'myfile', 'type' => 'file', 'filename' => 'my_file.txt', 'content' => 'spec testfile content'}, { id => 'userpass', type => 'username_password', username => 'foo', password => 'bar'}]" do
           let(:params) { {
               'configuration' => [
                                    {'id' => 'mytoken', 'type' => 'string', 'secret' => 'foobar'},
-                                   {'id' => 'myfile', 'type' => 'file', 'filename' => 'my_file.txt', 'content' => 'spec testfile content'}
+                                   {'id' => 'myfile', 'type' => 'file', 'filename' => 'my_file.txt', 'content' => 'spec testfile content'},
+                                   {'id' => 'userpass', 'type' => 'username_password', 'username' => 'foo', 'password' => 'bar'}
                                  ]
           } }
 
@@ -154,14 +155,20 @@ describe 'profiles::jenkins::plugin' do
           it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*id: 'myfile'$/) }
           it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*secretBytes: 'spec testfile content'$/) }
           it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*fileName: 'my_file.txt'$/) }
+
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*id: 'userpass'$/) }
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*username: 'foo'$/) }
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*password: 'bar'$/) }
         end
 
-        context "with configuration => [{'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'}, {'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'}, {'id' => 'myfile', 'type' => 'file', 'filename' => 'my_file2.txt', 'content' => 'spec testfile content'}]" do
+        context "with configuration => [{'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'}, {'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'}, {'id' => 'myfile', 'type' => 'file', 'filename' => 'my_file2.txt', 'content' => 'spec testfile content'}, {id => 'userpass1', type => 'username_password', username => 'foo1', password => 'bar1'}, {id => 'userpass2', type => 'username_password', username => 'foo2', password => 'bar2'}]" do
           let(:params) { {
               'configuration' => [
                                    {'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'},
                                    {'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'},
-                                   {'id' => 'myfile2', 'type' => 'file', 'filename' => 'my_file2.txt', 'content' => 'spec testfile content 2'}
+                                   {'id' => 'myfile2', 'type' => 'file', 'filename' => 'my_file2.txt', 'content' => 'spec testfile content 2'},
+                                   {'id' => 'userpass1', 'type' => 'username_password', 'username' => 'foo1', 'password' => 'bar1'},
+                                   {'id' => 'userpass2', 'type' => 'username_password', 'username' => 'foo2', 'password' => 'bar2'}
                                  ]
           } }
 
@@ -174,6 +181,14 @@ describe 'profiles::jenkins::plugin' do
           it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*id: 'myfile2'$/) }
           it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*secretBytes: 'spec testfile content 2'$/) }
           it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*fileName: 'my_file2.txt'$/) }
+
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*id: 'userpass1'$/) }
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*username: 'foo1'$/) }
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*password: 'bar1'$/) }
+
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*id: 'userpass2'$/) }
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*username: 'foo2'$/) }
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*password: 'bar2'$/) }
         end
       end
 
