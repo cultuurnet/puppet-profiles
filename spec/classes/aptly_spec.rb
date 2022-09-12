@@ -85,7 +85,7 @@ describe 'profiles::aptly' do
           'certificate'  => 'foobar.example.com'
         } }
 
-        context "with signing_keys => { 'test' => { 'id' => '1234ABCD', 'source' => '/tmp/test.key' }}, version => 1.2.3, data_dir => '/data/aptly', api_bind => 1.2.3.4, api_port => 8080, repositories => [ 'foo', 'bar'] and mirrors => { 'mirror' => { 'location => 'http://mirror.example.com', distribution => 'unstable', components => ['main', 'contrib'], key => 'Ubuntu archive' }}" do
+        context "with signing_keys => { 'test' => { 'id' => '1234ABCD', 'source' => '/tmp/test.key' }}, version => 1.2.3, data_dir => '/data/aptly', api_bind => 1.2.3.4, api_port => 8080, repositories => { 'foo' => {'archive' => false}, 'bar' => {'archive' => true}} and mirrors => {'mirror' => {'location => 'http://mirror.example.com', distribution => 'unstable', components => ['main', 'contrib'], key => 'Ubuntu archive'}}" do
           let(:params) { super().merge(
             {
               'signing_keys' => { 'test' => { 'id' => '1234ABCD', 'source' => '/tmp/test.key' }},
@@ -93,7 +93,7 @@ describe 'profiles::aptly' do
               'data_dir'     => '/data/aptly',
               'api_bind'     => '1.2.3.4',
               'api_port'     => 8080,
-              'repositories' => [ 'foo', 'bar'],
+              'repositories' => {'foo' => {'archive' => false}, 'bar' => {'archive' => true}},
               'mirrors'      => { 'mirror' => {
                                                  'location'     => 'http://mirror.example.com',
                                                  'distribution' => 'unstable',
@@ -133,9 +133,7 @@ describe 'profiles::aptly' do
             'default_component' => 'main'
           ) }
 
-          it { is_expected.to contain_aptly__repo('foo-archive').with(
-            'default_component' => 'main'
-          ) }
+          it { is_expected.not_to contain_aptly__repo('foo-archive') }
 
           it { is_expected.to contain_aptly__repo('bar').with(
             'default_component' => 'main'
@@ -181,7 +179,7 @@ describe 'profiles::aptly' do
                    'awsSecretAccessKey' => 'abc'
                  }
                },
-              'repositories'      => 'baz',
+              'repositories'      => {'baz' => {}},
               'mirrors'           => { 'mirror1' => {
                                                       'location'     => 'http://mirror1.example.com' ,
                                                       'distribution' => 'testing',
@@ -228,9 +226,7 @@ describe 'profiles::aptly' do
             'default_component' => 'main'
           ) }
 
-          it { is_expected.to contain_aptly__repo('baz-archive').with(
-            'default_component' => 'main'
-          ) }
+          it { is_expected.not_to contain_aptly__repo('baz-archive') }
 
           it { is_expected.to contain_aptly__mirror('mirror1').with(
             'location'      => 'http://mirror1.example.com',

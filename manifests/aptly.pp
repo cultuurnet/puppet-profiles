@@ -9,7 +9,7 @@ class profiles::aptly (
   String                         $api_bind          = '127.0.0.1',
   Integer                        $api_port          = 8081,
   Hash                           $publish_endpoints = {},
-  Variant[String, Array[String]] $repositories      = [],
+  Hash                           $repositories      = {},
   Hash                           $mirrors           = {}
 ) inherits ::profiles {
 
@@ -81,13 +81,17 @@ class profiles::aptly (
     require     => [ Class['aptly'], User['aptly']]
   }
 
-  [$repositories].flatten.each |$repo| {
+  $repositories.each |$repo, $attributes| {
+    $archive = $attributes['archive']
+
     aptly::repo { $repo:
       default_component => 'main'
     }
 
-    aptly::repo { "${repo}-archive":
-      default_component => 'main'
+    if $archive {
+      aptly::repo { "${repo}-archive":
+        default_component => 'main'
+      }
     }
   }
 
