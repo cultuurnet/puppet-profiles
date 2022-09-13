@@ -145,6 +145,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'uitid-app':
+    location => "https://apt.publiq.be/uitid-app-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   @apt::source { 'uitid-frontend':
     location => "https://apt.publiq.be/uitid-frontend-${environment}",
     release  => $facts['os']['distro']['codename'],

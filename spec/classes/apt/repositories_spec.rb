@@ -276,6 +276,17 @@ describe 'profiles::apt::repositories' do
               'release'      => 'xenial'
             ) }
 
+            it { is_expected.to contain_apt__source('uitid-app').with(
+              'location'     => 'https://apt.publiq.be/uitid-app-acceptance',
+              'ensure'       => 'present',
+              'repos'        => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'      => 'xenial'
+            ) }
+
             it { is_expected.to contain_apt__source('uitid-frontend').with(
               'location'     => 'https://apt.publiq.be/uitid-frontend-acceptance',
               'ensure'       => 'present',
