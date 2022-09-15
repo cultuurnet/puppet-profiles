@@ -16,23 +16,23 @@ describe 'profiles::deployment::mspotm::backend' do
 
         it { is_expected.to contain_apt__source('publiq-mspotm') }
 
-        it { is_expected.to contain_package('mspotm-backend').with( 'ensure' => 'latest') }
-        it { is_expected.to contain_package('mspotm-backend').that_notifies('Profiles::Deployment::Versions[profiles::deployment::mspotm::backend]') }
-        it { is_expected.to contain_package('mspotm-backend').that_requires('Apt::Source[publiq-mspotm]') }
+        it { is_expected.to contain_package('mspotm-api').with( 'ensure' => 'latest') }
+        it { is_expected.to contain_package('mspotm-api').that_notifies('Profiles::Deployment::Versions[profiles::deployment::mspotm::backend]') }
+        it { is_expected.to contain_package('mspotm-api').that_requires('Apt::Source[publiq-mspotm]') }
 
         it { is_expected.to contain_file('mspotm-backend-config').with(
           'ensure' => 'file',
-          'path'   => '/var/www/mspotm-backend/.env',
+          'path'   => '/var/www/mspotm-api/.env',
           'source' => '/foo',
           'owner'  => 'www-data',
           'group'  => 'www-data'
         ) }
 
-        it { is_expected.to contain_file('mspotm-backend-config').that_requires('Package[mspotm-backend]') }
+        it { is_expected.to contain_file('mspotm-backend-config').that_requires('Package[mspotm-api]') }
 
         it { is_expected.to contain_exec('mspotm composer script post-autoload-dump').with(
           'command'     => 'composer run-script post-autoload-dump',
-          'cwd'         => '/var/www/mspotm-backend',
+          'cwd'         => '/var/www/mspotm-api',
           'path'        => [ '/usr/local/bin', '/usr/bin', '/bin'],
           'user'        => 'www-data',
           'environment' => [ 'HOME=/'],
@@ -40,12 +40,12 @@ describe 'profiles::deployment::mspotm::backend' do
           'refreshonly' => true
         ) }
 
-        it { is_expected.to contain_exec('mspotm composer script post-autoload-dump').that_subscribes_to('Package[mspotm-backend]') }
+        it { is_expected.to contain_exec('mspotm composer script post-autoload-dump').that_subscribes_to('Package[mspotm-api]') }
         it { is_expected.to contain_exec('mspotm composer script post-autoload-dump').that_requires('File[mspotm-backend-config]') }
 
         it { is_expected.to contain_exec('run mspotm database migrations').with(
           'command'     => 'php artisan migrate',
-          'cwd'         => '/var/www/mspotm-backend',
+          'cwd'         => '/var/www/mspotm-api',
           'path'        => [ '/usr/local/bin', '/usr/bin', '/bin'],
           'user'        => 'www-data',
           'environment' => [ 'HOME=/'],
@@ -53,12 +53,12 @@ describe 'profiles::deployment::mspotm::backend' do
           'refreshonly' => true
         ) }
 
-        it { is_expected.to contain_exec('run mspotm database migrations').that_subscribes_to('Package[mspotm-backend]') }
+        it { is_expected.to contain_exec('run mspotm database migrations').that_subscribes_to('Package[mspotm-api]') }
         it { is_expected.to contain_exec('run mspotm database migrations').that_requires('File[mspotm-backend-config]') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::mspotm::backend').with(
           'project'      => 'mspotm',
-          'packages'     => 'mspotm-backend',
+          'packages'     => 'mspotm-api',
           'puppetdb_url' => nil
         ) }
       end
@@ -74,7 +74,7 @@ describe 'profiles::deployment::mspotm::backend' do
           'source' => '/bar',
         ) }
 
-        it { is_expected.to contain_package('mspotm-backend').with( 'ensure' => '1.2.3') }
+        it { is_expected.to contain_package('mspotm-api').with( 'ensure' => '1.2.3') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::mspotm::backend').with(
           'puppetdb_url' => 'http://example.com:8000'

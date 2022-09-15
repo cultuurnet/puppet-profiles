@@ -49,7 +49,7 @@ class profiles::deployment::mspotm::backend (
 
   profiles::deployment::versions { $title:
     project      => 'mspotm',
-    packages     => 'mspotm-backend',
+    packages     => 'mspotm-api',
     puppetdb_url => $puppetdb_url
   }
 }
