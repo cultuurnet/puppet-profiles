@@ -14,11 +14,11 @@ describe 'profiles::deployment::mspotm::backend' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_apt__source('publiq-mspotm') }
+        it { is_expected.to contain_apt__source('museumpas-mspotm') }
 
         it { is_expected.to contain_package('mspotm-api').with( 'ensure' => 'latest') }
         it { is_expected.to contain_package('mspotm-api').that_notifies('Profiles::Deployment::Versions[profiles::deployment::mspotm::backend]') }
-        it { is_expected.to contain_package('mspotm-api').that_requires('Apt::Source[publiq-mspotm]') }
+        it { is_expected.to contain_package('mspotm-api').that_requires('Apt::Source[museumpas-mspotm]') }
 
         it { is_expected.to contain_file('mspotm-backend-config').with(
           'ensure' => 'file',
