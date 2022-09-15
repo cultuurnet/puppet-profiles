@@ -4,14 +4,14 @@ class profiles::deployment::mspotm::backend (
   Optional[String] $puppetdb_url   = undef
 ) inherits ::profiles {
 
-  $basedir = '/var/www/mspotm-backend'
+  $basedir = '/var/www/mspotm-api'
 
-  realize Apt::Source['publiq-mspotm']
+  realize Apt::Source['museumpas-mspotm']
 
-  package { 'mspotm-backend':
+  package { 'mspotm-api':
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Apt::Source['publiq-mspotm']
+    require => Apt::Source['museumpas-mspotm']
   }
 
   file { 'mspotm-backend-config':
@@ -20,7 +20,7 @@ class profiles::deployment::mspotm::backend (
     owner   => 'www-data',
     group   => 'www-data',
     source  => $config_source,
-    require => Package['mspotm-backend']
+    require => Package['mspotm-api']
   }
 
   exec { 'mspotm composer script post-autoload-dump':
@@ -30,7 +30,7 @@ class profiles::deployment::mspotm::backend (
     user        => 'www-data',
     environment => [ 'HOME=/'],
     logoutput   => true,
-    subscribe   => Package['mspotm-backend'],
+    subscribe   => Package['mspotm-api'],
     refreshonly => true,
     require     => File['mspotm-backend-config']
   }
@@ -42,7 +42,7 @@ class profiles::deployment::mspotm::backend (
     user        => 'www-data',
     environment => [ 'HOME=/'],
     logoutput   => true,
-    subscribe   => Package['mspotm-backend'],
+    subscribe   => Package['mspotm-api'],
     refreshonly => true,
     require     => File['mspotm-backend-config'],
   }
