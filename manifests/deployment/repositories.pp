@@ -12,10 +12,6 @@ class profiles::deployment::repositories {
     require => Class['profiles::apt::keys']
   }
 
-  @apt::source { 'museumpas-mspotm':
-    location => "http://apt.uitdatabank.be/museumpas-mspotm-${environment}"
-  }
-
   @apt::source { 'publiq-uitidv2':
     location => "http://apt.uitdatabank.be/uitidv2-${environment}"
   }
