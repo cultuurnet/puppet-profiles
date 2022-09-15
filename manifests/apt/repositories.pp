@@ -272,4 +272,10 @@ class profiles::apt::repositories {
     release  => $facts['os']['distro']['codename'],
     repos    => 'main'
   }
+
+  @apt::source { 'museumpas-mspotm':
+    location => "https://apt.publiq.be/museumpas-mspotm-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
 }
