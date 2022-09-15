@@ -145,6 +145,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'uitid-app':
+    location => "https://apt.publiq.be/uitid-app-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   @apt::source { 'uitid-frontend':
     location => "https://apt.publiq.be/uitid-frontend-${environment}",
     release  => $facts['os']['distro']['codename'],
@@ -171,6 +177,12 @@ class profiles::apt::repositories {
 
   @apt::source { 'projectaanvraag-frontend':
     location => "https://apt.publiq.be/projectaanvraag-frontend-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
+  @apt::source { 'uitpas-app':
+    location => "https://apt.publiq.be/uitpas-app-${environment}",
     release  => $facts['os']['distro']['codename'],
     repos    => 'main'
   }
