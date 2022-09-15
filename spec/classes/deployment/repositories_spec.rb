@@ -28,7 +28,6 @@ describe 'profiles::deployment::repositories' do
 
         it { is_expected.to contain_class('profiles::apt::keys') }
 
-        include_examples 'deployment repositories', 'museumpas-mspotm'
         include_examples 'deployment repositories', 'publiq-uitidv2'
         include_examples 'deployment repositories', 'publiq-uitpasbe'
         include_examples 'deployment repositories', 'cultuurnet-search'
@@ -37,11 +36,6 @@ describe 'profiles::deployment::repositories' do
         when '14.04'
           context "in the testing environment" do
             let(:environment) { 'testing' }
-
-            it { is_expected.to contain_apt__source('museumpas-mspotm').with(
-              'location' => 'http://apt.uitdatabank.be/mspotm-testing',
-              'release'  => 'trusty'
-            ) }
 
             it { is_expected.to contain_apt__source('publiq-uitidv2').with(
               'location' => 'http://apt.uitdatabank.be/uitidv2-testing',
