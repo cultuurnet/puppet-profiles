@@ -249,6 +249,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'publiq-tools-xenial':
+    location => "https://apt.publiq.be/publiq-tools-xenial-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   @apt::source { 'publiq-versions':
     location => "https://apt.publiq.be/publiq-versions-${environment}",
     release  => $facts['os']['distro']['codename'],
