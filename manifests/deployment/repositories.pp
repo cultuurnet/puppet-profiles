@@ -12,10 +12,6 @@ class profiles::deployment::repositories {
     require => Class['profiles::apt::keys']
   }
 
-  @apt::source { 'publiq-mspotm':
-    location => "http://apt.uitdatabank.be/mspotm-${environment}"
-  }
-
   @apt::source { 'publiq-uitidv2':
     location => "http://apt.uitdatabank.be/uitidv2-${environment}"
   }

@@ -519,6 +519,21 @@ describe 'profiles::apt::repositories' do
             ) }
           end
 
+          context "in the production environment" do
+            let(:environment) { 'production' }
+
+            it { is_expected.to contain_apt__source('museumpas-mspotm').with(
+              'location'     => 'https://apt.publiq.be/museumpas-mspotm-production',
+              'ensure'       => 'present',
+              'repos'        => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'      => 'xenial'
+            ) }
+          end
+
         when '18.04'
           it { is_expected.to contain_apt__ppa('ppa:deadsnakes/ppa') }
         end
