@@ -12,33 +12,33 @@ describe 'profiles::nodejs' do
       context "without parameters" do
         let(:params) { {} }
 
-        it { is_expected.to contain_apt__source('nodejs_10.x') }
+        it { is_expected.to contain_apt__source('publiq-nodejs-14') }
         it { is_expected.to contain_apt__source('yarn') }
 
         it { is_expected.to contain_class('nodejs').with(
           'manage_package_repo'   => false,
-          'nodejs_package_ensure' => '10.14.0-1nodesource1'
+          'nodejs_package_ensure' => '14.16.1-1nodesource1'
         ) }
 
         it { is_expected.to contain_package('yarn').with(
           'ensure' => 'present'
         ) }
 
-        it { is_expected.to contain_class('nodejs').that_requires('Apt::Source[nodejs_10.x]') }
+        it { is_expected.to contain_class('nodejs').that_requires('Apt::Source[publiq-nodejs-14]') }
         it { is_expected.to contain_package('yarn').that_requires('Apt::Source[yarn]') }
         it { is_expected.to contain_package('yarn').that_requires('Class[nodejs]') }
       end
 
-      context "with version => 12.18.3-1nodesource1" do
-        let(:params) { { 'version' => '12.18.3-1nodesource1' } }
+      context "with version => 16.17.0-1nodesource1" do
+        let(:params) { { 'version' => '16.17.0-1nodesource1' } }
 
-        it { is_expected.to contain_apt__source('nodejs_12.x') }
+        it { is_expected.to contain_apt__source('publiq-nodejs-16') }
 
         it { is_expected.to contain_class('nodejs').with(
-          'nodejs_package_ensure' => '12.18.3-1nodesource1'
+          'nodejs_package_ensure' => '16.17.0-1nodesource1'
         ) }
 
-        it { is_expected.to contain_class('nodejs').that_requires('Apt::Source[nodejs_12.x]') }
+        it { is_expected.to contain_class('nodejs').that_requires('Apt::Source[publiq-nodejs-16]') }
       end
     end
   end
