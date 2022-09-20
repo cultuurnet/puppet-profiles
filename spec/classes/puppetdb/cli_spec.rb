@@ -15,14 +15,21 @@ describe 'profiles::puppetdb::cli' do
 
         it { is_expected.to compile.with_all_deps }
 
+        case facts[:os]['release']['major']
+        when '14.04', '16.04'
+          it { is_expected.to contain_apt__source('cultuurnet-tools') }
+          it { is_expected.to contain_package('rubygem-puppetdb-cli').that_requires('Apt::Source[cultuurnet-tools]') }
+        when '18.04'
+          it { is_expected.to contain_apt__source('publiq-tools') }
+          it { is_expected.to contain_package('rubygem-puppetdb-cli').that_requires('Apt::Source[publiq-tools]') }
+        end
+
         it { is_expected.to contain_class('profiles::puppetdb::cli').with(
           'server_urls' => 'https://example.com:1234',
           'users'       => 'root',
           'certificate' => nil,
           'private_key' => nil
         ) }
-
-        it { is_expected.to contain_apt__source('cultuurnet-tools') }
 
         it { is_expected.to contain_package('rubygem-puppetdb-cli') }
 
@@ -31,8 +38,6 @@ describe 'profiles::puppetdb::cli' do
           'certificate' => nil,
           'private_key' => nil
         ) }
-
-        it { is_expected.to contain_package('rubygem-puppetdb-cli').that_requires('Apt::Source[cultuurnet-tools]') }
       end
 
       context "with server_urls => [ https://example.com:1234, https://example.com:5678], users => [ 'root', 'jenkins'], certificate => abc123 and private_key => def456" do
