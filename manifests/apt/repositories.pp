@@ -238,7 +238,7 @@ class profiles::apt::repositories {
   }
 
   @apt::source { 'nodejs_16':
-    location => "http://apt.publiq.be/nodejs_16-${environment}",
+    location => "https://apt.publiq.be/nodejs_16-${environment}",
     release  => $facts['os']['distro']['codename'],
     repos    => 'main'
   }
