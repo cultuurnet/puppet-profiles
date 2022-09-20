@@ -1,9 +1,7 @@
 class profiles::publiq::versions::deployment (
   String                     $version         = 'latest',
-  # Stdlib::Ipv4               $service_address = lookup('profiles::publiq::versions::service_address', Stdlib::Ipv4, 'first', '127.0.0.1'),
-  # Stdlib::Port::Unprivileged $service_port    = lookup('profiles::publiq::versions::service_port', Stdlib::Port::Unprivileged, 'first', 3000),
-  String                     $service_address = lookup('profiles::publiq::versions::service_address', String, 'first', '127.0.0.1'),
-  Integer                    $service_port    = lookup('profiles::publiq::versions::service_port', Integer, 'first', 3000),
+  Stdlib::Ipv4               $service_address = lookup('profiles::publiq::versions::service_address', Stdlib::Ipv4, 'first', '127.0.0.1'),
+  Stdlib::Port::Unprivileged $service_port    = lookup('profiles::publiq::versions::service_port', Stdlib::Port::Unprivileged, 'first', 3000),
   Optional[String]           $certificate     = undef,
   Optional[String]           $private_key     = undef,
   Optional[String]           $puppetdb_url    = undef

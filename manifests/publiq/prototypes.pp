@@ -1,6 +1,5 @@
 class profiles::publiq::prototypes (
-  # Stdlib::Httpurl  $url,
-  String           $url,
+  Stdlib::Httpurl  $url,
   Optional[String] $certificate = undef,
   Boolean          $deployment  = true
 ) inherits ::profiles {

@@ -1,9 +1,7 @@
 class profiles::jenkins::controller::configuration(
-  # Stdlib::Httpurl          $url,
-  String                     $url,
+  Stdlib::Httpurl            $url,
   String                     $admin_password,
-  # Optional[Stdlib::Httpurl]  $docker_registry_url          = undef,
-  Optional[String]           $docker_registry_url          = undef,
+  Optional[Stdlib::Httpurl]  $docker_registry_url          = undef,
   Optional[String]           $docker_registry_credentialid = undef,
   Variant[Hash, Array[Hash]] $credentials                  = [],
   Variant[Hash, Array[Hash]] $global_libraries             = [],

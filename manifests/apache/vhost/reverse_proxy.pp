@@ -1,6 +1,5 @@
 define profiles::apache::vhost::reverse_proxy (
-  # Stdlib::Httpurl              $destination,
-  String                         $destination,
+  Stdlib::Httpurl              $destination,
   Optional[String]               $certificate           = undef,
   Enum['on', 'off', 'nodecode']  $allow_encoded_slashes = 'off',
   Boolean                        $preserve_host         = false,
@@ -14,11 +13,9 @@ define profiles::apache::vhost::reverse_proxy (
   include ::profiles::apache
   include ::profiles::certificates
 
-  # 2022-08-16 paul: Puppetserver can't find STDLIB module. Implementing temp workaround
-  #
-  # unless $title =~ Stdlib::Httpurl {
-  #   fail("Defined resource type Profiles::Apache::Vhost::Reverse_proxy[${title}] expects the title to be a valid HTTP URL")
-  # }
+  unless $title =~ Stdlib::Httpurl {
+    fail("Defined resource type Profiles::Apache::Vhost::Reverse_proxy[${title}] expects the title to be a valid HTTP URL")
+  }
 
   $transport = split($title, ':')[0]
   $servername = split($title, '/')[-1]

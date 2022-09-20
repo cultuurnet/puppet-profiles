@@ -1,6 +1,5 @@
 define profiles::apache::vhost::redirect (
-  # Stdlib::Httpurl              $destination,
-  String                         $destination,
+  Stdlib::Httpurl                $destination,
   Optional[String]               $certificate  = undef,
   Variant[String, Array[String]] $aliases      = []
 ) {
@@ -10,11 +9,9 @@ define profiles::apache::vhost::redirect (
   include ::profiles::apache
   include ::profiles::certificates
 
-  # 2022-08-17 paul: Puppetserver can't find STDLIB module. Implementing temp workaround
-  #
-  # unless $title =~ Stdlib::Httpurl {
-  #   fail("Defined resource type Profiles::Apache::Vhost::Redirect[${title}] expects the title to be a valid HTTP URL")
-  # }
+  unless $title =~ Stdlib::Httpurl {
+    fail("Defined resource type Profiles::Apache::Vhost::Redirect[${title}] expects the title to be a valid HTTP URL")
+  }
 
   $transport  = split($title, ':')[0]
   $servername = split($title, '/')[-1]
