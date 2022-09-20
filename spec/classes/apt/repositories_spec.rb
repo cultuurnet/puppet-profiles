@@ -517,6 +517,28 @@ describe 'profiles::apt::repositories' do
               },
               'release'      => 'xenial'
             ) }
+
+            it { is_expected.to contain_apt__source('publiq-nodejs-14').with(
+              'location'     => 'https://apt.publiq.be/publiq-nodejs-14-acceptance',
+              'ensure'       => 'present',
+              'repos'        => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'      => 'xenial'
+            ) }
+
+            it { is_expected.to contain_apt__source('publiq-nodejs-16').with(
+              'location'     => 'https://apt.publiq.be/publiq-nodejs-16-acceptance',
+              'ensure'       => 'present',
+              'repos'        => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'      => 'xenial'
+            ) }
           end
 
           context "in the production environment" do
@@ -535,7 +557,33 @@ describe 'profiles::apt::repositories' do
           end
 
         when '18.04'
-          it { is_expected.to contain_apt__ppa('ppa:deadsnakes/ppa') }
+          context "in the testing environment" do
+            let(:environment) { 'testing' }
+
+            it { is_expected.to contain_apt__ppa('ppa:deadsnakes/ppa') }
+
+            it { is_expected.to contain_apt__source('publiq-nodejs-14').with(
+              'location'     => 'https://apt.publiq.be/publiq-nodejs-14-testing',
+              'ensure'       => 'present',
+              'repos'        => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'      => 'bionic'
+            ) }
+
+            it { is_expected.to contain_apt__source('publiq-nodejs-16').with(
+              'location'     => 'https://apt.publiq.be/publiq-nodejs-16-testing',
+              'ensure'       => 'present',
+              'repos'        => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'      => 'bionic'
+            ) }
+          end
         end
       end
     end

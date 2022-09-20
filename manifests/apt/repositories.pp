@@ -243,6 +243,18 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'publiq-nodejs-14':
+    location => "https://apt.publiq.be/publiq-nodejs-14-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
+  @apt::source { 'publiq-nodejs-16':
+    location => "https://apt.publiq.be/publiq-nodejs-16-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   @apt::source { 'publiq-tools':
     location => "https://apt.publiq.be/publiq-tools-${environment}",
     release  => $facts['os']['distro']['codename'],
