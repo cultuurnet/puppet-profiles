@@ -4,12 +4,6 @@ class profiles::nodejs (
 
   $major_version = split($version, /\./)[0]
 
-  realize Apt::Source['nodejs_10.x']
-  realize Apt::Source['nodejs_12.x']
-  realize Apt::Source['nodejs_14.x']
-  realize Apt::Source['nodejs_16.x']
-  realize Apt::Source['nodejs_16']
-
   realize Apt::Source["publiq-nodejs-${major_version}"]
   realize Apt::Source['yarn']
 

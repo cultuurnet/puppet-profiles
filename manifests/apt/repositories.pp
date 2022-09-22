@@ -58,22 +58,6 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
-  @apt::source { 'nodejs_10.x':
-    ensure => 'absent'
-  }
-
-  @apt::source { 'nodejs_12.x':
-    ensure => 'absent'
-  }
-
-  @apt::source { 'nodejs_14.x':
-    ensure => 'absent'
-  }
-
-  @apt::source { 'nodejs_16.x':
-    ensure => 'absent'
-  }
-
   @apt::source { 'elasticsearch':
     location => "http://apt.uitdatabank.be/elasticsearch-${environment}",
     release  => 'stable',
@@ -227,10 +211,6 @@ class profiles::apt::repositories {
     location => "https://apt.publiq.be/elastic-8.x-${environment}",
     release  => $facts['os']['distro']['codename'],
     repos    => 'main'
-  }
-
-  @apt::source { 'nodejs_16':
-    ensure   => 'absent'
   }
 
   @apt::source { 'publiq-nodejs-14':
