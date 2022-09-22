@@ -30,9 +30,6 @@ describe 'profiles::apt::repositories' do
 
         include_examples 'apt repositories', 'cultuurnet-tools'
         include_examples 'apt repositories', 'rabbitmq'
-        include_examples 'apt repositories', 'nodejs_10.x'
-        include_examples 'apt repositories', 'nodejs_12.x'
-        include_examples 'apt repositories', 'nodejs_14.x'
         include_examples 'apt repositories', 'elasticsearch'
         include_examples 'apt repositories', 'yarn'
         include_examples 'apt repositories', 'erlang'
@@ -68,24 +65,6 @@ describe 'profiles::apt::repositories' do
               'location' => 'http://apt.uitdatabank.be/rabbitmq-testing',
               'repos'    => 'main',
               'release'  => 'testing'
-            ) }
-
-            it { is_expected.to contain_apt__source('nodejs_10.x').with(
-              'location' => 'http://apt.uitdatabank.be/nodejs_10.x-testing',
-              'repos'    => 'main',
-              'release'  => 'trusty'
-            ) }
-
-            it { is_expected.to contain_apt__source('nodejs_12.x').with(
-              'location' => 'http://apt.uitdatabank.be/nodejs_12.x-testing',
-              'repos'    => 'main',
-              'release'  => 'trusty'
-            ) }
-
-            it { is_expected.to contain_apt__source('nodejs_14.x').with(
-              'location' => 'http://apt.uitdatabank.be/nodejs_14.x-testing',
-              'repos'    => 'main',
-              'release'  => 'trusty'
             ) }
 
             it { is_expected.to contain_apt__source('elasticsearch').with(
@@ -167,24 +146,6 @@ describe 'profiles::apt::repositories' do
               'release'  => 'testing'
             ) }
 
-            it { is_expected.to contain_apt__source('nodejs_10.x').with(
-              'location' => 'http://apt.uitdatabank.be/nodejs_10.x-acceptance',
-              'repos'    => 'main',
-              'release'  => 'trusty'
-            ) }
-
-            it { is_expected.to contain_apt__source('nodejs_12.x').with(
-              'location' => 'http://apt.uitdatabank.be/nodejs_12.x-acceptance',
-              'repos'    => 'main',
-              'release'  => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('nodejs_14.x').with(
-              'location' => 'http://apt.uitdatabank.be/nodejs_14.x-acceptance',
-              'repos'    => 'main',
-              'release'  => 'xenial'
-            ) }
-
             it { is_expected.to contain_apt__source('elasticsearch').with(
               'location' => 'http://apt.uitdatabank.be/elasticsearch-acceptance',
               'repos'    => 'main',
@@ -207,17 +168,6 @@ describe 'profiles::apt::repositories' do
               'location' => 'http://apt.uitdatabank.be/jenkins-acceptance',
               'repos'    => 'main',
               'release'  => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('nodejs_16.x').with(
-              'location' => 'http://apt.uitdatabank.be/nodejs_16.x-acceptance',
-              'ensure'   => 'present',
-              'repos'    => 'main',
-              'include'  => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release' => 'xenial'
             ) }
 
             it { is_expected.to contain_apt__source('docker').with(
@@ -399,17 +349,6 @@ describe 'profiles::apt::repositories' do
 
             it { is_expected.to contain_apt__source('elastic-8.x').with(
               'location'     => 'https://apt.publiq.be/elastic-8.x-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('nodejs_16').with(
-              'location'     => 'https://apt.publiq.be/nodejs_16-acceptance',
               'ensure'       => 'present',
               'repos'        => 'main',
               'include'      => {

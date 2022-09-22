@@ -59,27 +59,19 @@ class profiles::apt::repositories {
   }
 
   @apt::source { 'nodejs_10.x':
-    location => "http://apt.uitdatabank.be/nodejs_10.x-${environment}",
-    release  => 'trusty',
-    repos    => 'main'
+    ensure => 'absent'
   }
 
   @apt::source { 'nodejs_12.x':
-    location => "http://apt.uitdatabank.be/nodejs_12.x-${environment}",
-    release  => $facts['os']['distro']['codename'],
-    repos    => 'main'
+    ensure => 'absent'
   }
 
   @apt::source { 'nodejs_14.x':
-    location => "http://apt.uitdatabank.be/nodejs_14.x-${environment}",
-    release  => $facts['os']['distro']['codename'],
-    repos    => 'main'
+    ensure => 'absent'
   }
 
   @apt::source { 'nodejs_16.x':
-    location => "http://apt.uitdatabank.be/nodejs_16.x-${environment}",
-    release  => 'xenial',
-    repos    => 'main'
+    ensure => 'absent'
   }
 
   @apt::source { 'elasticsearch':
@@ -238,9 +230,7 @@ class profiles::apt::repositories {
   }
 
   @apt::source { 'nodejs_16':
-    location => "https://apt.publiq.be/nodejs_16-${environment}",
-    release  => $facts['os']['distro']['codename'],
-    repos    => 'main'
+    ensure   => 'absent'
   }
 
   @apt::source { 'publiq-nodejs-14':
