@@ -391,6 +391,17 @@ describe 'profiles::apt::repositories' do
               'release'      => 'xenial'
             ) }
 
+            it { is_expected.to contain_apt__source('uitdatabank-newsletter-api').with(
+              'location'     => 'https://apt.publiq.be/uitdatabank-newsletter-api-acceptance',
+              'ensure'       => 'present',
+              'repos'        => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'      => 'xenial'
+            ) }
+
             it { is_expected.to contain_apt__source('publiq-tools').with(
               'location'     => 'https://apt.publiq.be/publiq-tools-acceptance',
               'ensure'       => 'present',
