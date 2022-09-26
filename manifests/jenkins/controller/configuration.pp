@@ -23,6 +23,7 @@ class profiles::jenkins::controller::configuration(
   profiles::jenkins::plugin { 'ssh-steps': }
   profiles::jenkins::plugin { 'blueocean': }
   profiles::jenkins::plugin { 'amazon-ecr': }
+  profiles::jenkins::plugin { 'uno-choice': }
 
   profiles::jenkins::plugin { 'git':
     configuration => {
