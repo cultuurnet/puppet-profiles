@@ -94,4 +94,8 @@ class profiles::packages inherits ::profiles {
     ensure  => 'present',
     require => Apt::Source['cultuurnet-tools']
   }
+
+  @package { 'build-essential':
+    ensure  => 'present'
+  }
 }

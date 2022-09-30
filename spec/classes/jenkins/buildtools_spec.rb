@@ -13,6 +13,7 @@ describe 'profiles::jenkins::buildtools' do
 
       it { is_expected.to contain_package('git').with( {'ensure' => 'present'}) }
       it { is_expected.to contain_package('jq').with( {'ensure' => 'present'}) }
+      it { is_expected.to contain_package('build-essential').with( {'ensure' => 'present'}) }
 
       it { is_expected.to contain_class('profiles::ruby').with( { 'with_dev' => true }) }
     end
