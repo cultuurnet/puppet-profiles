@@ -63,7 +63,7 @@ describe 'profiles::jenkins::controller::configuration' do
           'configuration' => nil
         ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('mailer-ext').with(
+        it { is_expected.to contain_profiles__jenkins__plugin('email-ext').with(
           'ensure'        => 'present',
           'restart'       => false,
           'configuration' => nil
