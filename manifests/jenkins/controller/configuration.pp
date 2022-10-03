@@ -15,6 +15,7 @@ class profiles::jenkins::controller::configuration(
 
   profiles::jenkins::plugin { 'swarm': }
   profiles::jenkins::plugin { 'mailer': }
+  profiles::jenkins::plugin { 'mailer-ext': }
   profiles::jenkins::plugin { 'copyartifact': }
   profiles::jenkins::plugin { 'ws-cleanup': }
   profiles::jenkins::plugin { 'slack': }
