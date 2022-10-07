@@ -24,7 +24,7 @@ describe 'profiles::puppet::agent' do
         it { is_expected.to contain_ini_setting('puppetserver').with(
           'ensure'  => 'present',
           'path'    => '/etc/puppetlabs/puppet/puppet.conf',
-          'section' => '',
+          'section' => 'agent',
           'setting' => 'server',
           'value'   => 'puppet.example.com'
           )
@@ -72,7 +72,7 @@ describe 'profiles::puppet::agent' do
         it { is_expected.to contain_ini_setting('puppetserver').with(
           'ensure'  => 'present',
           'path'    => '/etc/puppetlabs/puppet/puppet.conf',
-          'section' => '',
+          'section' => 'agent',
           'setting' => 'server',
           'value'   => 'foo.bar.com'
           )
