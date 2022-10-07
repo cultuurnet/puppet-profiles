@@ -1,4 +1,5 @@
 class profiles::puppet::agent (
+  String                     $puppetserver,
   Enum['running', 'stopped'] $ensure = 'running',
   Boolean                    $enable = true
 ) inherits ::profiles {
@@ -7,6 +8,12 @@ class profiles::puppet::agent (
     ensure  => 'present',
     path    => '/etc/puppetlabs/puppet/puppet.conf',
     notify  => Service['puppet']
+  }
+
+  ini_setting { 'puppetserver':
+    section => '',
+    setting => 'server',
+    value   => $puppetserver
   }
 
   ini_setting { 'agent certificate_revocation':
