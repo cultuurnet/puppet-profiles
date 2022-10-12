@@ -205,6 +205,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'uitdatabank-frontend':
+    location => "https://apt.publiq.be/uitdatabank-frontend-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   @apt::source { 'curator-articlelinker':
     location => "https://apt.publiq.be/curator-articlelinker-${environment}",
     release  => $facts['os']['distro']['codename'],
