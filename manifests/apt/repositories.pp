@@ -211,6 +211,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'uitdatabank-movie-api-fetcher':
+    location => "https://apt.publiq.be/uitdatabank-movie-api-fetcher-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   @apt::source { 'curator-articlelinker':
     location => "https://apt.publiq.be/curator-articlelinker-${environment}",
     release  => $facts['os']['distro']['codename'],

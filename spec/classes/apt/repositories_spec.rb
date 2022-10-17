@@ -435,6 +435,17 @@ describe 'profiles::apt::repositories' do
               'release'      => 'xenial'
             ) }
 
+            it { is_expected.to contain_apt__source('uitdatabank-movie-api-fetcher').with(
+              'location'     => 'https://apt.publiq.be/uitdatabank-movie-api-fetcher-acceptance',
+              'ensure'       => 'present',
+              'repos'        => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'      => 'xenial'
+            ) }
+
             it { is_expected.to contain_apt__source('publiq-tools').with(
               'location'     => 'https://apt.publiq.be/publiq-tools-acceptance',
               'ensure'       => 'present',
