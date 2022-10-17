@@ -117,6 +117,12 @@ describe 'profiles::jenkins::controller::configuration' do
           'configuration' => nil
         ) }
 
+        it { is_expected.to contain_profiles__jenkins__plugin('parameterized-scheduler').with(
+          'ensure'        => 'present',
+          'restart'       => false,
+          'configuration' => nil
+        ) }
+
         it { is_expected.to contain_profiles__jenkins__plugin('amazon-ecr').with(
           'ensure'        => 'present',
           'restart'       => false,

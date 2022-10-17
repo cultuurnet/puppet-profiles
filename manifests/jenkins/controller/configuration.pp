@@ -25,6 +25,7 @@ class profiles::jenkins::controller::configuration(
   profiles::jenkins::plugin { 'blueocean': }
   profiles::jenkins::plugin { 'amazon-ecr': }
   profiles::jenkins::plugin { 'uno-choice': }
+  profiles::jenkins::plugin { 'parameterized-scheduler': }
 
   profiles::jenkins::plugin { 'git':
     configuration => {
