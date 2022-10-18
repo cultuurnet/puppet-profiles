@@ -30,7 +30,6 @@ describe 'profiles::deployment::repositories' do
 
         include_examples 'deployment repositories', 'publiq-uitidv2'
         include_examples 'deployment repositories', 'publiq-uitpasbe'
-        include_examples 'deployment repositories', 'cultuurnet-search'
 
         case facts[:os]['release']['major']
         when '14.04'
@@ -46,11 +45,6 @@ describe 'profiles::deployment::repositories' do
               'location' => 'http://apt.uitdatabank.be/uitpas.be-testing',
               'release'  => 'trusty'
             ) }
-
-            it { is_expected.to contain_apt__source('cultuurnet-search').with(
-              'location' => 'http://apt.uitdatabank.be/search-testing',
-              'release'  => 'trusty'
-            ) }
           end
 
         when '16.04'
@@ -64,11 +58,6 @@ describe 'profiles::deployment::repositories' do
 
             it { is_expected.to contain_apt__source('publiq-uitpasbe').with(
               'location' => 'http://apt.uitdatabank.be/uitpas.be-acceptance',
-              'release'  => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('cultuurnet-search').with(
-              'location' => 'http://apt.uitdatabank.be/search-acceptance',
               'release'  => 'xenial'
             ) }
           end
