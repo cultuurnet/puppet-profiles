@@ -103,6 +103,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'uit-recommender-frontend':
+    location => "https://apt.publiq.be/uit-recommender-frontend-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   @apt::source { 'uit-frontend':
     location => "https://apt.publiq.be/uit-frontend-${environment}",
     release  => $facts['os']['distro']['codename'],

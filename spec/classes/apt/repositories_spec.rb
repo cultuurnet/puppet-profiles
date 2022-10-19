@@ -193,6 +193,17 @@ describe 'profiles::apt::repositories' do
               'release'      => 'xenial'
             ) }
 
+            it { is_expected.to contain_apt__source('uit-recommender-frontend').with(
+              'location'     => 'https://apt.publiq.be/uit-recommender-frontend-acceptance',
+              'ensure'       => 'present',
+              'repos'        => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'      => 'xenial'
+            ) }
+
             it { is_expected.to contain_apt__source('uit-frontend').with(
               'location'     => 'https://apt.publiq.be/uit-frontend-acceptance',
               'ensure'       => 'present',
