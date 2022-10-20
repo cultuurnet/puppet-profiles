@@ -1,9 +1,10 @@
-class profiles::deployment::uit::recommender_frontend (
+class profiles::uit::recommender_frontend::deployment (
   String           $config_source,
   String           $version                 = 'latest',
   Boolean          $service_manage          = true,
   String           $service_ensure          = 'running',
   Boolean          $service_enable          = true,
+  Optional[String] $service_defaults_source = undef,
   Optional[String] $puppetdb_url            = undef
 ) inherits ::profiles {
 
@@ -30,6 +31,17 @@ class profiles::deployment::uit::recommender_frontend (
   }
 
   if $service_manage {
+    if $service_defaults_source {
+      file { 'uit-recommender-frontend-service-defaults':
+        ensure => 'file',
+        path   => '/etc/default/uit-recommender-frontend',
+        owner  => 'root',
+        group  => 'root',
+        source => $service_defaults_source,
+        notify => Service['uit-recommender-frontend']
+      }
+    }
+
     service { 'uit-recommender-frontend':
       ensure    => $service_ensure,
       enable    => $service_enable,
