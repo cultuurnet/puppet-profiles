@@ -38,8 +38,8 @@ describe 'profiles::uit::recommender_frontend::deployment' do
           'hasstatus' => true
         ) }
 
-        it { is_expected.to contain_service('uit-recommender-frontend').that_requires('Package[uit-recommender-frontend]') }
-        it { is_expected.to contain_service('uit-recommender-frontend').that_requires('File[uit-recommender-frontend-config]') }
+        it { is_expected.to contain_service('uit-recommender-frontend').that_subscribes_to('Package[uit-recommender-frontend]') }
+        it { is_expected.to contain_service('uit-recommender-frontend').that_subscribes_to('File[uit-recommender-frontend-config]') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::uit::recommender_frontend::deployment').with(
           'project'      => 'uit',
@@ -61,6 +61,8 @@ describe 'profiles::uit::recommender_frontend::deployment' do
             'owner'  => 'root',
             'group'  => 'root'
           ) }
+
+          it { is_expected.to contain_file('uit-recommender-frontend-service-defaults').that_notifies('Service[uit-recommender-frontend]') }
         end
 
         context "with service_manage => false" do
