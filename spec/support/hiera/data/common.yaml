@@ -4,6 +4,8 @@ profiles::jenkins::controller::url: 'https://foobar.com/'
 
 profiles::uit::mail_subscriptions::deployment::config_source: '/path/to/config/source'
 
+profiles::uit::recommender_frontend::deployment::config_source: '/path/to/config/source'
+
 profiles::publiq::versions::url: 'http://abc.xyz'
 profiles::publiq::versions::service_address: '127.0.1.1'
 profiles::publiq::versions::service_port: 6000
