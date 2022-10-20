@@ -559,6 +559,17 @@ describe 'profiles::apt::repositories' do
               },
               'release'      => 'xenial'
             ) }
+
+            it { is_expected.to contain_apt__source('museumpas-website').with(
+              'location'     => 'https://apt.publiq.be/museumpas-website-production',
+              'ensure'       => 'present',
+              'repos'        => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'      => 'xenial'
+            ) }
           end
 
         when '18.04'
