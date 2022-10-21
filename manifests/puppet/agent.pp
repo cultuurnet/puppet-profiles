@@ -21,7 +21,7 @@ class profiles::puppet::agent (
     ini_setting { 'agent puppetserver':
       ensure  => 'absent',
       setting => 'server',
-      section => 'agent'
+      section => 'agent',
       path    => '/etc/puppetlabs/puppet/puppet.conf',
       notify  => Service['puppet']
     }
