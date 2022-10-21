@@ -27,6 +27,23 @@ class profiles::puppet::agent (
     }
   }
 
+  if $facts['ec2_metadata'] {
+    ini_setting { 'environment':
+      setting => 'environment',
+      section => 'main',
+      value   => $facts['ec2_tags']['environment'],
+      *       => $default_ini_setting_attributes
+    }
+
+    ini_setting { 'environment':
+      ensure  => 'absent',
+      setting => 'environment',
+      section => '',
+      path    => '/etc/puppetlabs/puppet/puppet.conf',
+      notify  => Service['puppet']
+    }
+  }
+
   ini_setting { 'agent certificate_revocation':
     setting => 'certificate_revocation',
     section => 'agent',
