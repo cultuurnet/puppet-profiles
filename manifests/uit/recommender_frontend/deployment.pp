@@ -10,10 +10,7 @@ class profiles::uit::recommender_frontend::deployment (
 
   $basedir = '/var/www/uit-recommender-frontend'
 
-  realize Apt::Source['yarn']
   realize Apt::Source['uit-recommender-frontend']
-
-  realize Package['yarn']
 
   package { 'uit-recommender-frontend':
     ensure  => $version,
@@ -45,8 +42,7 @@ class profiles::uit::recommender_frontend::deployment (
     service { 'uit-recommender-frontend':
       ensure    => $service_ensure,
       enable    => $service_enable,
-      require   => [ Package['uit-recommender-frontend'], File['uit-recommender-frontend-config'], Package['yarn'] ],
-      subscribe => File['uit-recommender-frontend-config'],
+      subscribe => [Package['uit-recommender-frontend'], File['uit-recommender-frontend-config']],
       hasstatus => true
     }
   }
