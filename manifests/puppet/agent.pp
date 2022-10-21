@@ -1,39 +1,54 @@
 class profiles::puppet::agent (
-  String                     $puppetserver,
-  Enum['running', 'stopped'] $ensure = 'running',
-  Boolean                    $enable = true
+  Optional[String]           $puppetserver   = undef,
+  Enum['running', 'stopped'] $service_ensure = 'stopped',
+  Boolean                    $service_enable = false
 ) inherits ::profiles {
 
-  Ini_setting {
+  $default_ini_setting_attributes = {
     ensure  => 'present',
     path    => '/etc/puppetlabs/puppet/puppet.conf',
-    section => 'agent',
     notify  => Service['puppet']
   }
 
-  ini_setting { 'puppetserver':
-    setting => 'server',
-    value   => $puppetserver
+  if $puppetserver {
+    ini_setting { 'puppetserver':
+      setting => 'server',
+      section => 'main',
+      value   => $puppetserver,
+      *       => $default_ini_setting_attributes
+    }
+
+    ini_setting { 'agent puppetserver':
+      ensure  => 'absent',
+      setting => 'server',
+      section => 'agent',
+    }
   }
 
   ini_setting { 'agent certificate_revocation':
     setting => 'certificate_revocation',
-    value   => false
+    section => 'agent',
+    value   => false,
+    *       => $default_ini_setting_attributes
   }
 
   ini_setting { 'agent usecacheonfailure':
     setting => 'usecacheonfailure',
-    value   => false
+    section => 'agent',
+    value   => false,
+    *       => $default_ini_setting_attributes
   }
 
   ini_setting { 'agent preferred_serialization_format':
     setting => 'preferred_serialization_format',
-    value   => 'pson'
+    section => 'agent',
+    value   => 'pson',
+    *       => $default_ini_setting_attributes
   }
 
   service { 'puppet':
-    ensure    => $ensure,
-    enable    => $enable,
+    ensure    => $service_ensure,
+    enable    => $service_enable,
     hasstatus => true
   }
 }

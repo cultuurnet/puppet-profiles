@@ -7,26 +7,23 @@ describe 'profiles::puppet::agent' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with puppetserver => puppet.example.com" do
-        let(:params) { {
-          'puppetserver' => 'puppet.example.com'
-        } }
+      context "without parameters" do
+        let(:params) { {} }
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_service('puppet').with(
-          'ensure'    => 'running',
-          'enable'    => true,
-          'hasstatus' => true
-          )
-        }
+        it { is_expected.to contain_class('profiles::puppet::agent').with(
+          'puppetserver'   => nil,
+          'service_ensure' => 'stopped',
+          'service_enable' => false
+        ) }
 
-        it { is_expected.to contain_ini_setting('puppetserver').with(
-          'ensure'  => 'present',
-          'path'    => '/etc/puppetlabs/puppet/puppet.conf',
-          'section' => 'agent',
-          'setting' => 'server',
-          'value'   => 'puppet.example.com'
+        it { is_expected.not_to contain_ini_setting('puppetserver') }
+
+        it { is_expected.to contain_service('puppet').with(
+          'ensure'    => 'stopped',
+          'enable'    => false,
+          'hasstatus' => true
           )
         }
 
@@ -62,33 +59,32 @@ describe 'profiles::puppet::agent' do
         it { is_expected.to contain_ini_setting('agent preferred_serialization_format').that_notifies('Service[puppet]') }
       end
 
-      context "with puppetserver => foo.bar.com, ensure => stopped and enable => false" do
+      context "with puppetserver => puppet.example.com, service_ensure => running and service_enable => true" do
         let(:params) { {
-          'puppetserver' => 'foo.bar.com',
-          'ensure'       => 'stopped',
-          'enable'       => false
+          'puppetserver'   => 'puppet.example.com',
+          'service_ensure' => 'running',
+          'service_enable' => true
         } }
+
+        it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to contain_service('puppet').with(
+          'ensure'    => 'running',
+          'enable'    => true,
+          'hasstatus' => true
+          )
+        }
 
         it { is_expected.to contain_ini_setting('puppetserver').with(
           'ensure'  => 'present',
           'path'    => '/etc/puppetlabs/puppet/puppet.conf',
-          'section' => 'agent',
+          'section' => 'main',
           'setting' => 'server',
-          'value'   => 'foo.bar.com'
+          'value'   => 'puppet.example.com'
           )
         }
 
-        it { is_expected.to contain_service('puppet').with(
-          'ensure' => 'stopped',
-          'enable' => false
-          )
-        }
-      end
-
-      context "without parameters" do
-        let(:params) { {} }
-
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'puppetserver'/) }
+        it { is_expected.to contain_ini_setting('puppetserver').that_notifies('Service[puppet]') }
       end
     end
   end
