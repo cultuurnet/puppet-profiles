@@ -35,7 +35,7 @@ class profiles::puppet::agent (
       *       => $default_ini_setting_attributes
     }
 
-    ini_setting { 'environment':
+    ini_setting { 'global environment':
       ensure  => 'absent',
       setting => 'environment',
       section => '',
