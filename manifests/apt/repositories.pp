@@ -223,6 +223,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'uitdatabank-jwt-provider-uitidv1':
+    location => "https://apt.publiq.be/uitdatabank-jwt-provider-uitidv1-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   @apt::source { 'uitdatabank-movie-api-fetcher':
     location => "https://apt.publiq.be/uitdatabank-movie-api-fetcher-${environment}",
     release  => $facts['os']['distro']['codename'],
