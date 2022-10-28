@@ -17,14 +17,6 @@ class profiles::puppet::agent (
       value   => $puppetserver,
       *       => $default_ini_setting_attributes
     }
-
-    ini_setting { 'agent puppetserver':
-      ensure  => 'absent',
-      setting => 'server',
-      section => 'agent',
-      path    => '/etc/puppetlabs/puppet/puppet.conf',
-      notify  => Service['puppet']
-    }
   }
 
   if $facts['ec2_metadata'] {
@@ -33,14 +25,6 @@ class profiles::puppet::agent (
       section => 'main',
       value   => $facts['ec2_tags']['environment'],
       *       => $default_ini_setting_attributes
-    }
-
-    ini_setting { 'global environment':
-      ensure  => 'absent',
-      setting => 'environment',
-      section => '',
-      path    => '/etc/puppetlabs/puppet/puppet.conf',
-      notify  => Service['puppet']
     }
   }
 
