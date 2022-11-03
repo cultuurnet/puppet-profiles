@@ -16,10 +16,6 @@ describe 'profiles' do
         'stage' => 'pre'
       ) }
 
-      it { is_expected.to contain_class('profiles::deployment::repositories').with(
-        'stage' => 'pre'
-      ) }
-
       it { is_expected.to contain_class('deployment::repositories').with(
         'stage' => 'pre'
       ) }
