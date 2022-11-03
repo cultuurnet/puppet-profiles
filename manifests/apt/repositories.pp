@@ -235,6 +235,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'uitdatabank-entry-api':
+    location => "https://apt.publiq.be/uitdatabank-entry-api-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   @apt::source { 'curator-articlelinker':
     location => "https://apt.publiq.be/curator-articlelinker-${environment}",
     release  => $facts['os']['distro']['codename'],
