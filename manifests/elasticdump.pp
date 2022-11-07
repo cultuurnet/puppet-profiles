@@ -2,11 +2,10 @@ class profiles::elasticdump inherits ::profiles {
 
   include ::profiles::nodejs
 
-  realize Apt::Source['cultuurnet-tools']
-  realize Apt::Source['publiq-tools-xenial']
+  realize Apt::Source['publiq-tools']
 
   package { 'elasticdump':
-    require => [Apt::Source['cultuurnet-tools'], Apt::Source['publiq-tools-xenial'], Class['profiles::nodejs']]
+    require => [Apt::Source['publiq-tools'], Class['profiles::nodejs']]
   }
 
   alternative_entry { '/opt/elasticdump/node_modules/elasticdump/bin/elasticdump':

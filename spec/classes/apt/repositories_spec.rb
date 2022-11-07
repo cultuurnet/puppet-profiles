@@ -527,17 +527,6 @@ describe 'profiles::apt::repositories' do
             ) }
 
             it { is_expected.to contain_apt__source('publiq-tools').with(
-              'location'     => 'https://apt.publiq.be/publiq-tools-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-tools-xenial').with(
               'location'     => 'https://apt.publiq.be/publiq-tools-xenial-acceptance',
               'ensure'       => 'present',
               'repos'        => 'main',
@@ -649,6 +638,17 @@ describe 'profiles::apt::repositories' do
 
             it { is_expected.to contain_apt__source('publiq-nodejs-14').with(
               'location'     => 'https://apt.publiq.be/publiq-nodejs-14-testing',
+              'ensure'       => 'present',
+              'repos'        => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'      => 'bionic'
+            ) }
+
+            it { is_expected.to contain_apt__source('publiq-tools').with(
+              'location'     => 'https://apt.publiq.be/publiq-tools-bionic-testing',
               'ensure'       => 'present',
               'repos'        => 'main',
               'include'      => {
