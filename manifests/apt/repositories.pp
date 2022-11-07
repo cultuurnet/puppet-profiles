@@ -82,6 +82,24 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'cultuurnet-groepspas':
+    location => "http://apt.uitdatabank.be/groepspas-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
+  @apt::source { 'cultuurnet-omd':
+    location => "http://apt.uitdatabank.be/omd-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
+  @apt::source { 'cultuurnet-udb3':
+    location => "http://apt.uitdatabank.be/udb3-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   # End legacy repositories on apt.uitdatabank.be
 
   @apt::source { 'aptly':

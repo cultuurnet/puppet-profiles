@@ -15,14 +15,6 @@ describe 'profiles' do
       it { is_expected.to contain_class('profiles::apt::repositories').with(
         'stage' => 'pre'
       ) }
-
-      it { is_expected.to contain_class('profiles::deployment::repositories').with(
-        'stage' => 'pre'
-      ) }
-
-      it { is_expected.to contain_class('deployment::repositories').with(
-        'stage' => 'pre'
-      ) }
     end
   end
 end
