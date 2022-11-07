@@ -211,6 +211,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'uitdatabank-angular-app':
+    location => "https://apt.publiq.be/uitdatabank-angular-app-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   @apt::source { 'uitdatabank-newsletter-api':
     location => "https://apt.publiq.be/uitdatabank-newsletter-api-${environment}",
     release  => $facts['os']['distro']['codename'],
