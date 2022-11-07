@@ -14,12 +14,10 @@ describe 'profiles::elasticdump' do
 
         it { is_expected.to contain_class('profiles::nodejs') }
 
-        it { is_expected.to contain_apt__source('cultuurnet-tools') }
-        it { is_expected.to contain_apt__source('publiq-tools-xenial') }
+        it { is_expected.to contain_apt__source('publiq-tools') }
         it { is_expected.to contain_package('elasticdump') }
 
-        it { is_expected.to contain_package('elasticdump').that_requires('Apt::Source[cultuurnet-tools]') }
-        it { is_expected.to contain_package('elasticdump').that_requires('Apt::Source[publiq-tools-xenial]') }
+        it { is_expected.to contain_package('elasticdump').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('elasticdump').that_requires('Class[profiles::nodejs]') }
 
         it { is_expected.to contain_alternative_entry('/opt/elasticdump/node_modules/elasticdump/bin/elasticdump').with(
