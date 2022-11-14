@@ -3,7 +3,9 @@ require 'spec_helper'
 describe 'profiles::deployment::uit::notifications' do
   context "with settings_source => /foo" do
     let(:params) { {
-      'settings_source'     => '/foo',
+      'settings_source'       => '/foo',
+      'aws_access_key_id'     => 'secret_key_id',
+      'aws_secret_access_key' => 'secret_access_key'
     } }
 
     include_examples 'operating system support'
@@ -44,6 +46,8 @@ describe 'profiles::deployment::uit::notifications' do
   context "with settings_source => /bar, version => 1.2.3 and puppetdb_url => http://example.com:8000" do
     let(:params) { {
       'settings_source'         => '/bar',
+      'aws_access_key_id'       => 'secret_key_id',
+      'aws_secret_access_key'   => 'secret_access_key',
       'version'                 => '1.2.3',
       'puppetdb_url'            => 'http://example.com:8000'
     } }
