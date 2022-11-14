@@ -121,6 +121,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'uit-notifications':
+    location => "https://apt.publiq.be/uit-notifications-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   @apt::source { 'uit-recommender-frontend':
     location => "https://apt.publiq.be/uit-recommender-frontend-${environment}",
     release  => $facts['os']['distro']['codename'],
