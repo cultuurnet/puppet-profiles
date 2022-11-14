@@ -1,6 +1,8 @@
 class profiles::deployment::uit::notifications (
   String           $settings_source,
   String           $version          = 'latest',
+  String           $aws_access_key_id,
+  String           $aws_secret_access_key,
   Optional[String] $puppetdb_url     = undef
 ) inherits ::profiles {
 
@@ -24,9 +26,10 @@ class profiles::deployment::uit::notifications (
   }
 
   exec { 'uit-notifications-deploy':
-    command     => 'yarn notifications deploy',
+    command     => '/usr/bin/yarn notifications deploy',
     cwd         => $basedir,
-    path        => [ '/usr/local/bin', '/usr/bin', '/bin'],
+    path        => [ "${basedir}", '/usr/local/bin', '/usr/bin', '/bin'],
+    environment => [ "AWS_ACCESS_KEY_ID=${aws_access_key_id}", "AWS_SECRET_ACCESS_KEY=${aws_secret_access_key}"],
     user        => 'www-data',
     refreshonly => true,
     subscribe   => [ Package['uit-notifications'], File['uit-notifications-settings']]
