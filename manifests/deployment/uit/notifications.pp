@@ -1,8 +1,8 @@
 class profiles::deployment::uit::notifications (
   String           $settings_source,
-  String           $version          = 'latest',
   String           $aws_access_key_id,
   String           $aws_secret_access_key,
+  String           $version          = 'latest',
   Optional[String] $puppetdb_url     = undef
 ) inherits ::profiles {
 
