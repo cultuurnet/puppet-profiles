@@ -121,6 +121,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'uit-notifications':
+    location => "https://apt.publiq.be/uit-notifications-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   @apt::source { 'uit-recommender-frontend':
     location => "https://apt.publiq.be/uit-recommender-frontend-${environment}",
     release  => $facts['os']['distro']['codename'],
@@ -207,6 +213,12 @@ class profiles::apt::repositories {
 
   @apt::source { 'uitpas-balie-api':
     location => "https://apt.publiq.be/uitpas-balie-api-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
+  @apt::source { 'uitpas-groepspas-frontend':
+    location => "https://apt.publiq.be/uitpas-groepspas-frontend-${environment}",
     release  => $facts['os']['distro']['codename'],
     repos    => 'main'
   }

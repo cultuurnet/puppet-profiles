@@ -7,6 +7,7 @@ class profiles::deployment::uit::frontend (
   Boolean          $service_enable          = true,
   Optional[String] $service_defaults_source = undef,
   Optional[String] $maintenance_source      = undef,
+  Optional[String] $deployment_source       = undef,
   Optional[String] $puppetdb_url            = undef
 ) inherits ::profiles {
 
@@ -44,6 +45,18 @@ class profiles::deployment::uit::frontend (
       path    => "${basedir}/../../maintenance",
       recurse => true,
       source  => $maintenance_source,
+      owner   => 'www-data',
+      group   => 'www-data',
+      require => Package['uit-frontend']
+    }
+  }
+
+  if $deployment_source {
+    file { 'uit-deployment-pages':
+      ensure  => 'directory',
+      path    => "${basedir}/../../deployment",
+      recurse => true,
+      source  => $deployment_source,
       owner   => 'www-data',
       group   => 'www-data',
       require => Package['uit-frontend']
