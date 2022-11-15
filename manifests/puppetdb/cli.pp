@@ -6,24 +6,10 @@ class profiles::puppetdb::cli(
 
 ) inherits ::profiles {
 
-  case $::operatingsystemrelease {
-    '14.04', '16.04': {
-      # original apt.uitdatabank.be repo
-      $apt_repo = "cultuurnet-tools"
-    }
-    '18.04': {
-      # new apt.publiq.be repo
-      $apt_repo = "publiq-tools"
-    }
-    default: {
-      fail("ERROR: No tools apt repository available for OS ${::operatingsystem}")
-    }
-  }
-
-  realize Apt::Source[$apt_repo]
+  realize Apt::Source['publiq-tools']
 
   package { 'rubygem-puppetdb-cli':
-    require => Apt::Source[$apt_repo]
+    require => Apt::Source['publiq-tools']
   }
 
   [$users].flatten.each |$user| {

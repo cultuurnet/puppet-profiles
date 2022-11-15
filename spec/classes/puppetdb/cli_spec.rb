@@ -15,14 +15,8 @@ describe 'profiles::puppetdb::cli' do
 
         it { is_expected.to compile.with_all_deps }
 
-        case facts[:os]['release']['major']
-        when '14.04', '16.04'
-          it { is_expected.to contain_apt__source('cultuurnet-tools') }
-          it { is_expected.to contain_package('rubygem-puppetdb-cli').that_requires('Apt::Source[cultuurnet-tools]') }
-        when '18.04'
-          it { is_expected.to contain_apt__source('publiq-tools') }
-          it { is_expected.to contain_package('rubygem-puppetdb-cli').that_requires('Apt::Source[publiq-tools]') }
-        end
+        it { is_expected.to contain_apt__source('publiq-tools') }
+        it { is_expected.to contain_package('rubygem-puppetdb-cli').that_requires('Apt::Source[publiq-tools]') }
 
         it { is_expected.to contain_class('profiles::puppetdb::cli').with(
           'server_urls' => 'https://example.com:1234',
