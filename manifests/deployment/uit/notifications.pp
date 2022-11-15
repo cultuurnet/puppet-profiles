@@ -30,6 +30,7 @@ class profiles::deployment::uit::notifications (
     cwd         => $basedir,
     path        => [ "${basedir}", '/usr/local/bin', '/usr/bin', '/bin'],
     environment => [ "AWS_ACCESS_KEY_ID=${aws_access_key_id}", "AWS_SECRET_ACCESS_KEY=${aws_secret_access_key}"],
+    logoutput   => true,
     user        => 'www-data',
     refreshonly => true,
     subscribe   => [ Package['uit-notifications'], File['uit-notifications-settings']]
