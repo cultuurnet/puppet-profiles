@@ -49,8 +49,6 @@ class profiles::deployment::uitidv2::backend (
   }
 
   profiles::deployment::versions { $title:
-    project      => 'uitid',
-    packages     => 'uitid-api',
     puppetdb_url => $puppetdb_url
   }
 }

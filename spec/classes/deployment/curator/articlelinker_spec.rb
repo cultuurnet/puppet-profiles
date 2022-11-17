@@ -55,8 +55,6 @@ describe 'profiles::deployment::curator::articlelinker' do
         it { is_expected.to contain_file('curator-articlelinker-publishers').that_notifies('Service[curator-articlelinker]') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::curator::articlelinker').with(
-          'project'      => 'curator',
-          'packages'     => 'curator-articlelinker',
           'puppetdb_url' => nil
         ) }
 

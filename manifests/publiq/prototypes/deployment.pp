@@ -7,12 +7,11 @@ class profiles::publiq::prototypes::deployment (
 
   package { 'publiq-prototypes':
     ensure  => $version,
+    notify  => Profiles::Deployment::Versions[$title],
     require => Apt::Source['publiq-prototypes']
   }
 
   profiles::deployment::versions { $title:
-    project         => 'publiq',
-    packages        => 'publiq-prototypes',
     puppetdb_url    => $puppetdb_url
   }
 }

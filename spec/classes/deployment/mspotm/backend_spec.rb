@@ -57,8 +57,6 @@ describe 'profiles::deployment::mspotm::backend' do
         it { is_expected.to contain_exec('run mspotm database migrations').that_requires('File[mspotm-backend-config]') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::mspotm::backend').with(
-          'project'      => 'mspotm',
-          'packages'     => 'mspotm-api',
           'puppetdb_url' => nil
         ) }
       end

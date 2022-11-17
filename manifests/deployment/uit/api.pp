@@ -90,8 +90,6 @@ class profiles::deployment::uit::api (
   }
 
   profiles::deployment::versions { $title:
-    project      => 'uit',
-    packages     => 'uit-api',
     puppetdb_url => $puppetdb_url
   }
 }

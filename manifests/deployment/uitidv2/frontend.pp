@@ -49,8 +49,6 @@ class profiles::deployment::uitidv2::frontend (
   }
 
   profiles::deployment::versions { $title:
-    project      => 'uitid',
-    packages     => 'uitid-frontend',
     puppetdb_url => $puppetdb_url
   }
 }

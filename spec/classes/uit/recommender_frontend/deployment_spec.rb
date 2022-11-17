@@ -42,8 +42,6 @@ describe 'profiles::uit::recommender_frontend::deployment' do
         it { is_expected.to contain_service('uit-recommender-frontend').that_subscribes_to('File[uit-recommender-frontend-config]') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::uit::recommender_frontend::deployment').with(
-          'project'      => 'uit',
-          'packages'     => 'uit-recommender-frontend',
           'puppetdb_url' => nil
         ) }
 

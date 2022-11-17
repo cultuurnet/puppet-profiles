@@ -85,8 +85,6 @@ class profiles::deployment::uit::frontend (
   }
 
   profiles::deployment::versions { $title:
-    project      => 'uit',
-    packages     => 'uit-frontend',
     puppetdb_url => $puppetdb_url
   }
 }

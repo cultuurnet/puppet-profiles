@@ -42,8 +42,6 @@ describe 'profiles::deployment::uitidv2::backend' do
         it { is_expected.to contain_file('uitid-api-config').that_notifies('Service[uitid-api]') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uitidv2::backend').with(
-          'project'      => 'uitid',
-          'packages'     => 'uitid-api',
           'puppetdb_url' => nil
         ) }
 

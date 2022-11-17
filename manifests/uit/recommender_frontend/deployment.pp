@@ -48,8 +48,6 @@ class profiles::uit::recommender_frontend::deployment (
   }
 
   profiles::deployment::versions { $title:
-    project      => 'uit',
-    packages     => 'uit-recommender-frontend',
     puppetdb_url => $puppetdb_url
   }
 }

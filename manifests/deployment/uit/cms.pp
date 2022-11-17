@@ -151,8 +151,6 @@ class profiles::deployment::uit::cms (
   }
 
   profiles::deployment::versions { $title:
-    project      => 'uit',
-    packages     => ['uit-cms'],
     puppetdb_url => $puppetdb_url
   }
 }

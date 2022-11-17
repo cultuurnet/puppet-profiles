@@ -35,8 +35,6 @@ describe 'profiles::deployment::uit::notifications' do
         it { is_expected.not_to contain_file('/etc/default/uit-notifications') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::notifications').with(
-          'project'      => 'uit',
-          'packages'     => 'uit-notifications',
           'puppetdb_url' => nil
         ) }
       end

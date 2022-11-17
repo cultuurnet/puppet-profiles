@@ -21,13 +21,12 @@ describe 'profiles::publiq::infrastructure::deployment' do
         ) }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::infrastructure::deployment').with(
-          'project'      => 'publiq',
-          'packages'     => 'publiq-infrastructure',
           'puppetdb_url' => nil
         ) }
 
         it { is_expected.to contain_package('publiq-infrastructure').that_requires('Apt::Source[publiq-infrastructure]') }
         it { is_expected.to contain_package('publiq-infrastructure').that_notifies('Class[profiles::puppetserver::cache_clear]') }
+        it { is_expected.to contain_package('publiq-infrastructure').that_notifies('Profiles::Deployment::Versions[profiles::publiq::infrastructure::deployment]') }
         it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::infrastructure::deployment').that_requires('Class[profiles::puppetserver::cache_clear]') }
       end
 
@@ -42,8 +41,6 @@ describe 'profiles::publiq::infrastructure::deployment' do
         ) }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::infrastructure::deployment').with(
-          'project'         => 'publiq',
-          'packages'        => 'publiq-infrastructure',
           'puppetdb_url'    => 'http://example.com:8000'
         ) }
       end

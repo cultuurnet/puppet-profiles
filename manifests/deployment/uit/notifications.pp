@@ -36,8 +36,6 @@ class profiles::deployment::uit::notifications (
   }
 
   profiles::deployment::versions { $title:
-    project      => 'uit',
-    packages     => 'uit-notifications',
     puppetdb_url => $puppetdb_url
   }
 }

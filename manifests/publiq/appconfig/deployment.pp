@@ -9,13 +9,11 @@ class profiles::publiq::appconfig::deployment (
 
   package { 'publiq-appconfig':
     ensure  => $version,
-    notify  => Class['profiles::puppetserver::cache_clear'],
+    notify  => [ Class['profiles::puppetserver::cache_clear'], Profiles::Deployment::Versions[$title]],
     require => Apt::Source['publiq-appconfig']
   }
 
   profiles::deployment::versions { $title:
-    project         => 'publiq',
-    packages        => 'publiq-appconfig',
     puppetdb_url    => $puppetdb_url,
     require         => Class['profiles::puppetserver::cache_clear']
   }

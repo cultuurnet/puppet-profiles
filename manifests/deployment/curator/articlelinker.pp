@@ -60,8 +60,6 @@ class profiles::deployment::curator::articlelinker (
   }
 
   profiles::deployment::versions { $title:
-    project      => 'curator',
-    packages     => 'curator-articlelinker',
     puppetdb_url => $puppetdb_url
   }
 }

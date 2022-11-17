@@ -37,8 +37,6 @@ class profiles::deployment::uitpas_be::backend (
   }
 
   profiles::deployment::versions { $title:
-    project      => 'uitpasbe',
-    packages     => 'uitpas-website-api',
     puppetdb_url => $puppetdb_url
   }
 }

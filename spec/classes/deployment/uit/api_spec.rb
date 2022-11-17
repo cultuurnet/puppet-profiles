@@ -87,8 +87,6 @@ describe 'profiles::deployment::uit::api' do
         it { is_expected.to contain_file('uit-api-config-graphql').that_notifies('Service[uit-api]') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::api').with(
-          'project'      => 'uit',
-          'packages'     => 'uit-api',
           'puppetdb_url' => nil
         ) }
 

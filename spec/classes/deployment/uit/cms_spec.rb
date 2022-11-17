@@ -23,6 +23,11 @@ describe 'profiles::deployment::uit::cms' do
           'path'   => '/var/www/uit-cms/hostnames.txt',
           'source' => '/abc'
         ) }
+
+        it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::cms').with(
+          'puppetdb_url' => nil
+        ) }
+
       end
     end
   end

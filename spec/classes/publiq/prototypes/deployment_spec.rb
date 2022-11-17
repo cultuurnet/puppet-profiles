@@ -13,8 +13,14 @@ describe 'profiles::publiq::prototypes::deployment' do
 
       it { is_expected.to contain_apt__source('publiq-prototypes') }
 
+      it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::prototypes::deployment').with(
+        'puppetdb_url'    => nil
+      ) }
+
       it { is_expected.to contain_apt__source('publiq-prototypes').that_requires('Class[profiles::apt::keys]') }
       it { is_expected.to contain_package('publiq-prototypes').that_requires('Apt::Source[publiq-prototypes]') }
+
+      it { is_expected.to contain_package('publiq-prototypes').that_notifies('Profiles::Deployment::Versions[profiles::publiq::prototypes::deployment]') }
 
       case facts[:os]['release']['major']
       when '14.04'
@@ -51,8 +57,6 @@ describe 'profiles::publiq::prototypes::deployment' do
         ) }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::prototypes::deployment').with(
-          'project'         => 'publiq',
-          'packages'        => 'publiq-prototypes',
           'puppetdb_url'    => 'http://example.com:8000'
         ) }
       end

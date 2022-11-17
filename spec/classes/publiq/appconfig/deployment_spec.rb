@@ -21,13 +21,12 @@ describe 'profiles::publiq::appconfig::deployment' do
         ) }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::appconfig::deployment').with(
-          'project'      => 'publiq',
-          'packages'     => 'publiq-appconfig',
           'puppetdb_url' => nil
         ) }
 
         it { is_expected.to contain_package('publiq-appconfig').that_requires('Apt::Source[publiq-appconfig]') }
         it { is_expected.to contain_package('publiq-appconfig').that_notifies('Class[profiles::puppetserver::cache_clear]') }
+        it { is_expected.to contain_package('publiq-appconfig').that_notifies('Profiles::Deployment::Versions[profiles::publiq::appconfig::deployment]') }
         it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::appconfig::deployment').that_requires('Class[profiles::puppetserver::cache_clear]') }
       end
 
@@ -42,8 +41,6 @@ describe 'profiles::publiq::appconfig::deployment' do
         ) }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::appconfig::deployment').with(
-          'project'         => 'publiq',
-          'packages'        => 'publiq-appconfig',
           'puppetdb_url'    => 'http://example.com:8000'
         ) }
       end

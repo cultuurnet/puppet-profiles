@@ -58,8 +58,6 @@ describe 'profiles::publiq::versions::deployment' do
           ) }
 
           it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::versions::deployment').with(
-            'project'      => 'publiq',
-            'packages'     => 'publiq-versions',
             'puppetdb_url' => nil
           ) }
         end

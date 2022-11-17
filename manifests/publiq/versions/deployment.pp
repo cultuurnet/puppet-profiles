@@ -51,8 +51,6 @@ class profiles::publiq::versions::deployment (
   }
 
   profiles::deployment::versions { $title:
-    project      => 'publiq',
-    packages     => 'publiq-versions',
     puppetdb_url => $puppetdb_url
   }
 }

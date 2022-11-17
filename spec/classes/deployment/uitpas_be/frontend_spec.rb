@@ -42,8 +42,6 @@ describe 'profiles::deployment::uitpas_be::frontend' do
         it { is_expected.to contain_file('uitpas-website-frontend-config').that_notifies('Service[uitpas-website-frontend]') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uitpas_be::frontend').with(
-          'project'      => 'uitpasbe',
-          'packages'     => 'uitpas-website-frontend',
           'puppetdb_url' => nil
         ) }
 

@@ -42,8 +42,6 @@ describe 'profiles::deployment::uitpas_be::backend' do
         it { is_expected.to contain_exec('uitpasbe-backend_cache_clear').that_subscribes_to('Package[uitpas-website-api]') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uitpas_be::backend').with(
-          'project'      => 'uitpasbe',
-          'packages'     => 'uitpas-website-api',
           'puppetdb_url' => nil
         ) }
       end

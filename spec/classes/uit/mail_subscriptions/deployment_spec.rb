@@ -44,8 +44,6 @@ describe 'profiles::uit::mail_subscriptions::deployment' do
         it { is_expected.to contain_file('uit-mail-subscriptions-config').that_notifies('Service[uit-mail-subscriptions]') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::uit::mail_subscriptions::deployment').with(
-          'project'      => 'uit',
-          'packages'     => 'uit-mail-subscriptions',
           'puppetdb_url' => nil
         ) }
 

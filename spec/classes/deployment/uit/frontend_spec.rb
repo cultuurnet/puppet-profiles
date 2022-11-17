@@ -42,8 +42,6 @@ describe 'profiles::deployment::uit::frontend' do
         it { is_expected.to contain_file('uit-frontend-config').that_notifies('Service[uit-frontend]') }
 
         it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::frontend').with(
-          'project'      => 'uit',
-          'packages'     => 'uit-frontend',
           'puppetdb_url' => nil
         ) }
 

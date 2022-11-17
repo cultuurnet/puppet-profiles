@@ -49,8 +49,6 @@ class profiles::uit::mail_subscriptions::deployment (
   }
 
   profiles::deployment::versions { $title:
-    project      => 'uit',
-    packages     => 'uit-mail-subscriptions',
     puppetdb_url => $puppetdb_url
   }
 }

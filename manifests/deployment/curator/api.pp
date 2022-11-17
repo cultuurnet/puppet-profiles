@@ -56,8 +56,6 @@ class profiles::deployment::curator::api (
   }
 
   profiles::deployment::versions { $title:
-    project      => 'curator',
-    packages     => 'curator-api',
     puppetdb_url => $puppetdb_url
   }
 }
