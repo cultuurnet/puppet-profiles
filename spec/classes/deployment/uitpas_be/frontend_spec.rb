@@ -41,9 +41,21 @@ describe 'profiles::deployment::uitpas_be::frontend' do
         it { is_expected.to contain_service('uitpas-website-frontend').that_requires('Package[uitpas-website-frontend]') }
         it { is_expected.to contain_file('uitpas-website-frontend-config').that_notifies('Service[uitpas-website-frontend]') }
 
-        it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uitpas_be::frontend').with(
-          'puppetdb_url' => nil
-        ) }
+        context "without hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uitpas_be::frontend').with(
+            'puppetdb_url' => nil
+          ) }
+        end
+
+        context "with hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uitpas_be::frontend').with(
+            'puppetdb_url' => 'http://localhost:8081'
+          ) }
+        end
 
         context "with service_manage => false" do
           let(:params) {

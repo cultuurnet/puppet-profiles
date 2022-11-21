@@ -1,7 +1,7 @@
 class profiles::deployment::curator::api (
   String           $config_source,
   String           $version        = 'latest',
-  Optional[String] $puppetdb_url   = undef
+  Optional[String] $puppetdb_url   = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $basedir = '/var/www/curator-api'

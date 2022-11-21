@@ -8,7 +8,7 @@ class profiles::deployment::uit::frontend (
   Optional[String] $service_defaults_source = undef,
   Optional[String] $maintenance_source      = undef,
   Optional[String] $deployment_source       = undef,
-  Optional[String] $puppetdb_url            = undef
+  Optional[String] $puppetdb_url            = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $basedir = '/var/www/uit-frontend/packages/app'

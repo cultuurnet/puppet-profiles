@@ -86,9 +86,21 @@ describe 'profiles::deployment::uit::api' do
         it { is_expected.to contain_service('uit-api').that_requires('File[uit-api-log]') }
         it { is_expected.to contain_file('uit-api-config-graphql').that_notifies('Service[uit-api]') }
 
-        it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::api').with(
-          'puppetdb_url' => nil
-        ) }
+        context "without hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::api').with(
+            'puppetdb_url' => nil
+          ) }
+        end
+
+        context "with hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::api').with(
+            'puppetdb_url' => 'http://localhost:8081'
+          ) }
+        end
 
         context "with service_manage => false" do
           let(:params) {

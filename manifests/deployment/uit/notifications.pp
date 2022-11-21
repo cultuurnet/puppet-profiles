@@ -2,8 +2,8 @@ class profiles::deployment::uit::notifications (
   String           $settings_source,
   String           $aws_access_key_id,
   String           $aws_secret_access_key,
-  String           $version          = 'latest',
-  Optional[String] $puppetdb_url     = undef
+  String           $version               = 'latest',
+  Optional[String] $puppetdb_url          = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $basedir = '/var/www/uit-notifications'

@@ -4,7 +4,7 @@ class profiles::publiq::versions::deployment (
   Stdlib::Port::Unprivileged $service_port    = lookup('profiles::publiq::versions::service_port', Stdlib::Port::Unprivileged, 'first', 3000),
   Optional[String]           $certificate     = undef,
   Optional[String]           $private_key     = undef,
-  Optional[String]           $puppetdb_url    = undef
+  Optional[String]           $puppetdb_url    = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   realize Apt::Source['publiq-versions']

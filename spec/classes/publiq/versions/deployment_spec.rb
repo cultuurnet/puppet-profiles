@@ -67,6 +67,10 @@ describe 'profiles::publiq::versions::deployment' do
 
           it { is_expected.to contain_file('publiq-versions-service-defaults').with_content(/^LISTEN_ADDRESS=127\.0\.1\.1$/) }
           it { is_expected.to contain_file('publiq-versions-service-defaults').with_content(/^LISTEN_PORT=6000$/) }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::versions::deployment').with(
+            'puppetdb_url' => 'http://localhost:8081'
+          ) }
         end
       end
 

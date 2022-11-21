@@ -41,9 +41,21 @@ describe 'profiles::deployment::uitidv2::backend' do
         it { is_expected.to contain_service('uitid-api').that_requires('Package[uitid-api]') }
         it { is_expected.to contain_file('uitid-api-config').that_notifies('Service[uitid-api]') }
 
-        it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uitidv2::backend').with(
-          'puppetdb_url' => nil
-        ) }
+        context "without hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uitidv2::backend').with(
+            'puppetdb_url' => nil
+          ) }
+        end
+
+        context "with hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uitidv2::backend').with(
+            'puppetdb_url' => 'http://localhost:8081'
+          ) }
+        end
 
         context "with service_manage => false" do
           let(:params) {

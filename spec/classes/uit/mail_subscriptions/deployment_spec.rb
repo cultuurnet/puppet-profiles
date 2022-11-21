@@ -43,9 +43,21 @@ describe 'profiles::uit::mail_subscriptions::deployment' do
         it { is_expected.to contain_service('uit-mail-subscriptions').that_requires('Package[uit-mail-subscriptions]') }
         it { is_expected.to contain_file('uit-mail-subscriptions-config').that_notifies('Service[uit-mail-subscriptions]') }
 
-        it { is_expected.to contain_profiles__deployment__versions('profiles::uit::mail_subscriptions::deployment').with(
-          'puppetdb_url' => nil
-        ) }
+        context "without hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::uit::mail_subscriptions::deployment').with(
+            'puppetdb_url' => nil
+          ) }
+        end
+
+        context "with hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::uit::mail_subscriptions::deployment').with(
+            'puppetdb_url' => 'http://localhost:8081'
+          ) }
+        end
 
         context "with service_manage => false" do
           let(:params) {

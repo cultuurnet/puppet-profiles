@@ -31,8 +31,7 @@ describe 'profiles::curator' do
           'env_defaults_source' => '/defaults',
           'service_manage'      => true,
           'service_ensure'      => 'running',
-          'service_enable'      => true,
-          'puppetdb_url'        => nil
+          'service_enable'      => true
         ) }
 
         context "with articlelinker_service_manage => false, articlelinker_service_ensure => stopped and articlelinker_service_enable => false" do
@@ -51,22 +50,19 @@ describe 'profiles::curator' do
             'env_defaults_source' => '/defaults',
             'service_manage'      => false,
             'service_ensure'      => 'stopped',
-            'service_enable'      => false,
-            'puppetdb_url'        => nil
+            'service_enable'      => false
           ) }
         end
 
-        context "with articlelinker_version => 9.8.7 and puppetdb_url => http://localhost:8080" do
+        context "with articlelinker_version => 9.8.7" do
           let(:params) {
             super().merge({
-              'articlelinker_version' => '9.8.7',
-              'puppetdb_url'          => 'http://localhost:8080'
+              'articlelinker_version' => '9.8.7'
             } )
           }
 
           it { is_expected.to contain_class('profiles::deployment::curator::articlelinker').with(
-            'version'      => '9.8.7',
-            'puppetdb_url' => 'http://localhost:8080'
+            'version'      => '9.8.7'
           ) }
         end
       end

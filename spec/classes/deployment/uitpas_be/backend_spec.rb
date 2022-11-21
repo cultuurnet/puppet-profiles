@@ -41,9 +41,21 @@ describe 'profiles::deployment::uitpas_be::backend' do
 
         it { is_expected.to contain_exec('uitpasbe-backend_cache_clear').that_subscribes_to('Package[uitpas-website-api]') }
 
-        it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uitpas_be::backend').with(
-          'puppetdb_url' => nil
-        ) }
+        context "without hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uitpas_be::backend').with(
+            'puppetdb_url' => nil
+          ) }
+        end
+
+        context "with hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uitpas_be::backend').with(
+            'puppetdb_url' => 'http://localhost:8081'
+          ) }
+        end
       end
     end
   end

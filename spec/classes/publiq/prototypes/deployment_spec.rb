@@ -7,43 +7,33 @@ describe 'profiles::publiq::prototypes::deployment' do
    context "on #{os}" do
       let(:facts) { facts }
 
-      it { is_expected.to compile.with_all_deps }
-
-      it { is_expected.to contain_class('profiles::apt::keys') }
-
-      it { is_expected.to contain_apt__source('publiq-prototypes') }
-
-      it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::prototypes::deployment').with(
-        'puppetdb_url'    => nil
-      ) }
-
-      it { is_expected.to contain_apt__source('publiq-prototypes').that_requires('Class[profiles::apt::keys]') }
-      it { is_expected.to contain_package('publiq-prototypes').that_requires('Apt::Source[publiq-prototypes]') }
-
-      it { is_expected.to contain_package('publiq-prototypes').that_notifies('Profiles::Deployment::Versions[profiles::publiq::prototypes::deployment]') }
-
-      case facts[:os]['release']['major']
-      when '14.04'
-        let(:facts) { facts }
-
-        it { is_expected.to contain_apt__source('publiq-prototypes').with(
-          'release' => 'trusty'
-        ) }
-
-      when '16.04'
-        let(:facts) { facts }
-
-        it { is_expected.to contain_apt__source('publiq-prototypes').with(
-          'release' => 'xenial'
-        ) }
-      end
-
       context "without parameters" do
         let(:params) { {} }
+
+        it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_package('publiq-prototypes').with(
           'ensure' => 'latest'
         ) }
+
+        context "without hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::prototypes::deployment').with(
+            'puppetdb_url' => nil
+          ) }
+        end
+
+        context "with hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::prototypes::deployment').with(
+            'puppetdb_url' => 'http://localhost:8081'
+          ) }
+        end
+
+        it { is_expected.to contain_package('publiq-prototypes').that_requires('Apt::Source[publiq-prototypes]') }
+        it { is_expected.to contain_package('publiq-prototypes').that_notifies('Profiles::Deployment::Versions[profiles::publiq::prototypes::deployment]') }
       end
 
       context "with version => 1.2.3 and puppetdb_url => http://example.com:8000" do
