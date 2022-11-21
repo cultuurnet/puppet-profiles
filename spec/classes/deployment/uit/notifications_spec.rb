@@ -34,9 +34,21 @@ describe 'profiles::deployment::uit::notifications' do
 
         it { is_expected.not_to contain_file('/etc/default/uit-notifications') }
 
-        it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::notifications').with(
-          'puppetdb_url' => nil
-        ) }
+        context "without hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::notifications').with(
+            'puppetdb_url' => nil
+          ) }
+        end
+
+        context "with hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::notifications').with(
+            'puppetdb_url' => 'http://localhost:8081'
+          ) }
+        end
       end
     end
   end

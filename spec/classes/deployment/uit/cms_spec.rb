@@ -24,10 +24,21 @@ describe 'profiles::deployment::uit::cms' do
           'source' => '/abc'
         ) }
 
-        it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::cms').with(
-          'puppetdb_url' => nil
-        ) }
+        context "without hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
 
+          it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::cms').with(
+            'puppetdb_url' => nil
+          ) }
+        end
+
+        context "with hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::cms').with(
+            'puppetdb_url' => 'http://localhost:8081'
+          ) }
+        end
       end
     end
   end

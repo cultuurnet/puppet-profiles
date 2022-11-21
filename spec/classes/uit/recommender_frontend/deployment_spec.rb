@@ -41,9 +41,21 @@ describe 'profiles::uit::recommender_frontend::deployment' do
         it { is_expected.to contain_service('uit-recommender-frontend').that_subscribes_to('Package[uit-recommender-frontend]') }
         it { is_expected.to contain_service('uit-recommender-frontend').that_subscribes_to('File[uit-recommender-frontend-config]') }
 
-        it { is_expected.to contain_profiles__deployment__versions('profiles::uit::recommender_frontend::deployment').with(
-          'puppetdb_url' => nil
-        ) }
+        context "without hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::uit::recommender_frontend::deployment').with(
+            'puppetdb_url' => nil
+          ) }
+        end
+
+        context "with hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::uit::recommender_frontend::deployment').with(
+            'puppetdb_url' => 'http://localhost:8081'
+          ) }
+        end
 
         context "with service_defaults_source => '/tmp/service_defaults'" do
           let(:params) {

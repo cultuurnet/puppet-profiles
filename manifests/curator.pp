@@ -6,7 +6,6 @@ class profiles::curator (
   Boolean          $articlelinker_service_manage      = true,
   String           $articlelinker_service_ensure      = 'running',
   Boolean          $articlelinker_service_enable      = true,
-  Optional[String] $puppetdb_url                      = undef
 ) inherits ::profiles {
 
   # TODO: unit tests
@@ -28,8 +27,7 @@ class profiles::curator (
       env_defaults_source => $articlelinker_env_defaults_source,
       service_manage      => $articlelinker_service_manage,
       service_ensure      => $articlelinker_service_ensure,
-      service_enable      => $articlelinker_service_enable,
-      puppetdb_url        => $puppetdb_url
+      service_enable      => $articlelinker_service_enable
     }
   }
 }

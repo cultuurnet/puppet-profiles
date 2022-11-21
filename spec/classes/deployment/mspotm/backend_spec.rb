@@ -56,9 +56,21 @@ describe 'profiles::deployment::mspotm::backend' do
         it { is_expected.to contain_exec('run mspotm database migrations').that_subscribes_to('Package[mspotm-api]') }
         it { is_expected.to contain_exec('run mspotm database migrations').that_requires('File[mspotm-backend-config]') }
 
-        it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::mspotm::backend').with(
-          'puppetdb_url' => nil
-        ) }
+        context "without hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::mspotm::backend').with(
+            'puppetdb_url' => nil
+          ) }
+        end
+
+        context "with hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::mspotm::backend').with(
+            'puppetdb_url' => 'http://localhost:8081'
+          ) }
+        end
       end
 
       context "with config_source => /bar, version => 1.2.3 and puppetdb_url => http://example.com:8000" do

@@ -27,3 +27,5 @@ profiles::ssh_authorized_keys::keys:
     tag: 'foobar'
   'acme first key':
     tag: 'acme'
+
+data::puppet::puppetdb::url: 'http://localhost:8081'

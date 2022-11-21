@@ -5,7 +5,7 @@ class profiles::deployment::uit::api (
   String           $service_ensure          = 'running',
   Boolean          $service_enable          = true,
   Optional[String] $service_defaults_source = undef,
-  Optional[String] $puppetdb_url            = undef
+  Optional[String] $puppetdb_url            = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $basedir = '/var/www/uit-api'

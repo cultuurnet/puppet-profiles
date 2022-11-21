@@ -1,6 +1,6 @@
 class profiles::publiq::infrastructure::deployment (
   String           $version      = 'latest',
-  Optional[String] $puppetdb_url = undef
+  Optional[String] $puppetdb_url = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   include ::profiles::puppetserver::cache_clear

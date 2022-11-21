@@ -20,9 +20,21 @@ describe 'profiles::publiq::appconfig::deployment' do
           'ensure' => 'latest'
         ) }
 
-        it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::appconfig::deployment').with(
-          'puppetdb_url' => nil
-        ) }
+        context "without hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::appconfig::deployment').with(
+            'puppetdb_url' => nil
+          ) }
+        end
+
+        context "with hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::appconfig::deployment').with(
+            'puppetdb_url' => 'http://localhost:8081'
+          ) }
+        end
 
         it { is_expected.to contain_package('publiq-appconfig').that_requires('Apt::Source[publiq-appconfig]') }
         it { is_expected.to contain_package('publiq-appconfig').that_notifies('Class[profiles::puppetserver::cache_clear]') }

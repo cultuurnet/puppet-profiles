@@ -2,10 +2,10 @@ class profiles::deployment::uit::cms (
   String           $settings_source,
   String           $hostnames_source,
   String           $drush_config_source,
-  String           $version              = 'latest',
-  Optional[String] $database_version     = undef,
-  Optional[String] $files_version        = undef,
-  Optional[String] $puppetdb_url         = undef
+  String           $version             = 'latest',
+  Optional[String] $database_version    = undef,
+  Optional[String] $files_version       = undef,
+  Optional[String] $puppetdb_url        = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $basedir = '/var/www/uit-cms'
