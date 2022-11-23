@@ -12,6 +12,35 @@ class profiles::apt::repositories {
     }
   }
 
+  # Ubuntu OS repositories
+  case $::operatingsystemrelease {
+    '20.04': {
+      @apt::source { 'focal':
+        location => "https://apt.publiq.be/focal-${environment}",
+        release  => 'focal',
+        repos    => 'main universe'
+      }
+
+      @apt::source { 'focal-updates':
+        location => "https://apt.publiq.be/focal-updates-${environment}",
+        release  => 'focal',
+        repos    => 'main universe'
+      }
+
+      @apt::source { 'focal-security':
+        location => "https://apt.publiq.be/focal-security-${environment}",
+        release  => 'focal',
+        repos    => 'main universe'
+      }
+
+      @apt::source { 'focal-backports':
+        location => "https://apt.publiq.be/focal-backports-${environment}",
+        release  => 'focal',
+        repos    => 'main universe'
+      }
+    }
+  }
+
   # Legacy repositories on apt.uitdatabank.be
 
   case $::operatingsystemrelease {

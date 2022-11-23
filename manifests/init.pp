@@ -2,7 +2,7 @@ class profiles {
   case $::operatingsystem {
     'Ubuntu': {
       case $::operatingsystemrelease {
-        '14.04','16.04','18.04': {
+        '14.04','16.04','18.04','20.04': {
           contain ::profiles::groups
           contain ::profiles::users
           contain ::profiles::packages
