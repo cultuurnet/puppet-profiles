@@ -702,6 +702,35 @@ describe 'profiles::apt::repositories' do
               'release'      => 'bionic'
             ) }
           end
+
+        when '20.04'
+          context "in the testing environment" do
+            let(:environment) { 'testing' }
+
+            it { is_expected.to contain_apt__source('focal').with(
+              'location' => 'https://apt.publiq.be/focal-testing',
+              'repos'    => 'main universe',
+              'release'  => 'focal'
+            ) }
+
+            it { is_expected.to contain_apt__source('focal-updates').with(
+              'location' => 'https://apt.publiq.be/focal-updates-testing',
+              'repos'    => 'main universe',
+              'release'  => 'focal'
+            ) }
+
+            it { is_expected.to contain_apt__source('focal-security').with(
+              'location' => 'https://apt.publiq.be/focal-security-testing',
+              'repos'    => 'main universe',
+              'release'  => 'focal'
+            ) }
+
+            it { is_expected.to contain_apt__source('focal-backports').with(
+              'location' => 'https://apt.publiq.be/focal-backports-testing',
+              'repos'    => 'main universe',
+              'release'  => 'focal'
+            ) }
+          end
         end
       end
     end
