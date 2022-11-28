@@ -105,12 +105,6 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
-  @apt::source { 'publiq-jenkins':
-    location => "http://apt.uitdatabank.be/jenkins-${environment}",
-    release  => $facts['os']['distro']['codename'],
-    repos    => 'main'
-  }
-
   @apt::source { 'cultuurnet-groepspas':
     location => "http://apt.uitdatabank.be/groepspas-${environment}",
     release  => $facts['os']['distro']['codename'],
@@ -370,6 +364,12 @@ class profiles::apt::repositories {
 
   @apt::source { 'publiq-appconfig':
     location => "https://apt.publiq.be/publiq-appconfig-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
+  @apt::source { 'publiq-jenkins':
+    location => "https://apt.publiq.be/jenkins-${environment}",
     release  => $facts['os']['distro']['codename'],
     repos    => 'main'
   }
