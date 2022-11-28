@@ -91,12 +91,6 @@ describe 'profiles::apt::repositories' do
               'release'  => 'trusty'
             ) }
 
-            it { is_expected.to contain_apt__source('cultuurnet-groepspas').with(
-              'location' => 'http://apt.uitdatabank.be/groepspas-testing',
-              'repos'    => 'main',
-              'release'  => 'trusty'
-            ) }
-
             it { is_expected.to contain_apt__source('cultuurnet-omd').with(
               'location' => 'http://apt.uitdatabank.be/omd-testing',
               'repos'    => 'main',
@@ -184,12 +178,6 @@ describe 'profiles::apt::repositories' do
 
             it { is_expected.to contain_apt__source('publiq-jenkins').with(
               'location' => 'https://apt.publiq.be/publiq-jenkins-acceptance',
-              'repos'    => 'main',
-              'release'  => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('cultuurnet-groepspas').with(
-              'location' => 'http://apt.uitdatabank.be/groepspas-acceptance',
               'repos'    => 'main',
               'release'  => 'xenial'
             ) }
