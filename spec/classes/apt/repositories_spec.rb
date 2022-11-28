@@ -86,7 +86,7 @@ describe 'profiles::apt::repositories' do
             ) }
 
             it { is_expected.to contain_apt__source('publiq-jenkins').with(
-              'location' => 'https://apt.publiq.be/jenkins-testing',
+              'location' => 'https://apt.publiq.be/publiq-jenkins-testing',
               'repos'    => 'main',
               'release'  => 'trusty'
             ) }
@@ -183,7 +183,7 @@ describe 'profiles::apt::repositories' do
             ) }
 
             it { is_expected.to contain_apt__source('publiq-jenkins').with(
-              'location' => 'https://apt.publiq.be/jenkins-acceptance',
+              'location' => 'https://apt.publiq.be/publiq-jenkins-acceptance',
               'repos'    => 'main',
               'release'  => 'xenial'
             ) }

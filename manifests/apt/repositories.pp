@@ -369,7 +369,7 @@ class profiles::apt::repositories {
   }
 
   @apt::source { 'publiq-jenkins':
-    location => "https://apt.publiq.be/jenkins-${environment}",
+    location => "https://apt.publiq.be/publiq-jenkins-${environment}",
     release  => $facts['os']['distro']['codename'],
     repos    => 'main'
   }
