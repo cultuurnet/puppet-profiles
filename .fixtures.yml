@@ -109,8 +109,5 @@ fixtures:
     aptly:
       repo: 'https://github.com/cultuurnet/puppet-aptly.git'
       ref: '74a1c76'
-    deployment:
-      repo: 'https://github.com/cultuurnet/puppet-deployment.git'
-      ref: 'd8672cf'
   symlinks:
     profiles: "#{source_dir}"
