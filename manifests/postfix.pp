@@ -1,11 +1,12 @@
 class profiles::postfix (
-  Boolean                     $tls              = true,
-  Enum['ipv4', 'ipv6', 'all'] $inet_protocols   = 'all',
-  String                      $listen_addresses = 'all',
-  String                      $relayhost        = '',
-  Boolean                     $aliases          = false,
-  Array[String]               $aliases_domains  = [],
-  String                      $aliases_source   = 'puppet:///modules/profiles/postfix/virtual'
+  Boolean                     $tls                   = true,
+  Enum['ipv4', 'ipv6', 'all'] $inet_protocols        = 'all',
+  String                      $listen_addresses      = 'all',
+  String                      $relayhost             = '',
+  Boolean                     $aliases               = false,
+  Array[String]               $aliases_domains       = [],
+  Array[String]               $additional_mynetworks = [],
+  String                      $aliases_source        = 'puppet:///modules/profiles/postfix/virtual'
 ) inherits ::profiles {
 
   include ::profiles::firewall::rules
@@ -20,6 +21,14 @@ class profiles::postfix (
   if $relayhost == '' {
     $relay_host  = false
     $my_networks = "${config_directory}/mynetworks"
+
+    $additional_mynetworks.each |$mynetwork| {
+      @@concat::fragment { "postfix_additional_network_${mynetwork}":
+        target  => $mynetworks_file,
+        content => "${mynetwork}\n",
+        tag     => 'postfix_mynetworks'
+      }
+    }
 
     Concat::Fragment <<| tag == 'postfix_mynetworks' |>>
 

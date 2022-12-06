@@ -164,7 +164,8 @@ describe 'profiles::postfix' do
           let(:params) {
             super().merge(
               {
-                'aliases' => true
+                'aliases' => true,
+                'additional_mynetworks' => ["5.6.7.8", "9.10.11.12"]
               }
             )
           }
@@ -190,6 +191,20 @@ describe 'profiles::postfix' do
           it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_1.2.3.4').with(
             'target'  => '/etc/postfix/mynetworks',
             'content' => "1.2.3.4\n",
+            'tag'     => 'postfix_mynetworks'
+            )
+          }
+
+          it { expect(exported_resources).to contain_concat__fragment('postfix_additional_network_5.6.7.8').with(
+            'target'  => '/etc/postfix/mynetworks',
+            'content' => "5.6.7.8\n",
+            'tag'     => 'postfix_mynetworks'
+            )
+          }
+
+          it { expect(exported_resources).to contain_concat__fragment('postfix_additional_network_9.10.11.12').with(
+            'target'  => '/etc/postfix/mynetworks',
+            'content' => "9.10.11.12\n",
             'tag'     => 'postfix_mynetworks'
             )
           }
