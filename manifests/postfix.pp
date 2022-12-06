@@ -1,12 +1,12 @@
 class profiles::postfix (
-  Boolean                     $tls                   = true,
-  Enum['ipv4', 'ipv6', 'all'] $inet_protocols        = 'all',
-  String                      $listen_addresses      = 'all',
-  String                      $relayhost             = '',
-  Boolean                     $aliases               = false,
-  Array[String]               $aliases_domains       = [],
-  Array[String]               $additional_mynetworks = [],
-  String                      $aliases_source        = 'puppet:///modules/profiles/postfix/virtual'
+  Boolean                        $tls                   = true,
+  Enum['ipv4', 'ipv6', 'all']    $inet_protocols        = 'all',
+  String                         $listen_addresses      = 'all',
+  String                         $relayhost             = '',
+  Boolean                        $aliases               = false,
+  Variant[String, Array[String]] $aliases_domains       = [],
+  Variant[String, Array[String]] $additional_mynetworks = [],
+  String                         $aliases_source        = 'puppet:///modules/profiles/postfix/virtual'
 ) inherits ::profiles {
 
   include ::profiles::firewall::rules
@@ -22,7 +22,7 @@ class profiles::postfix (
     $relay_host  = false
     $my_networks = "${config_directory}/mynetworks"
 
-    $additional_mynetworks.each |$mynetwork| {
+    [$additional_mynetworks].flatten.each |$mynetwork| {
       @@concat::fragment { "postfix_additional_network_${mynetwork}":
         target  => $mynetworks_file,
         content => "${mynetwork}\n",
@@ -56,7 +56,7 @@ class profiles::postfix (
         inet_protocols          => $inet_protocols,
         inet_interfaces         => $listen_addresses,
         virtual_alias_maps      => [ "hash:${config_directory}/virtual"],
-        virtual_alias_domains   => $aliases_domains,
+        virtual_alias_domains   => [$aliases_domains].flatten,
         relayhost               => $relay_host,
         mynetworks              => $my_networks,
         message_size_limit      => '0',
@@ -73,7 +73,7 @@ class profiles::postfix (
         inet_protocols        => $inet_protocols,
         inet_interfaces       => $listen_addresses,
         virtual_alias_maps    => [ "hash:${config_directory}/virtual"],
-        virtual_alias_domains => $aliases_domains,
+        virtual_alias_domains => [$aliases_domains].flatten,
         relayhost             => $relay_host,
         mynetworks            => $my_networks,
         message_size_limit    => '0',

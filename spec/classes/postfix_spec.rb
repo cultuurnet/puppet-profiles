@@ -160,12 +160,12 @@ describe 'profiles::postfix' do
           it { is_expected.not_to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
         end
 
-        context "with aliases" do
+        context "with aliases and additional_mynetworks => ['5.6.7.8', '9.10.11.12']" do
           let(:params) {
             super().merge(
               {
                 'aliases' => true,
-                'additional_mynetworks' => ["5.6.7.8", "9.10.11.12"]
+                'additional_mynetworks' => ['5.6.7.8', '9.10.11.12']
               }
             )
           }
@@ -217,11 +217,11 @@ describe 'profiles::postfix' do
             'action' => 'accept'
           ) }
 
-          context "with aliases_domains => [ foo.com, bar.com ]" do
+          context "with aliases_domains => [foo.com, bar.com]" do
             let(:params) {
               super().merge(
                 {
-                  'aliases_domains' => [ 'foo.com', 'bar.com' ]
+                  'aliases_domains' => ['foo.com', 'bar.com']
                 }
               )
             }
@@ -234,8 +234,8 @@ describe 'profiles::postfix' do
               'mynetworks'            => '/etc/postfix/mynetworks',
               'message_size_limit'    => '0',
               'mailbox_size_limit'    => '0',
-              'virtual_alias_maps'    => [ 'hash:/etc/postfix/virtual'],
-              'virtual_alias_domains' => [ 'foo.com', 'bar.com' ]
+              'virtual_alias_maps'    => ['hash:/etc/postfix/virtual'],
+              'virtual_alias_domains' => ['foo.com', 'bar.com']
               )
             }
 
@@ -274,6 +274,38 @@ describe 'profiles::postfix' do
             )
             }
           end
+        end
+
+        context "with aliases => true, aliases_domains => baz.com and additional_mynetworks => '1.2.3.4'" do
+          let(:params) {
+            super().merge(
+              {
+                'aliases'               => true,
+                'aliases_domains'       => 'baz.com',
+                'additional_mynetworks' => '1.2.3.4'
+              }
+            )
+          }
+
+          it { is_expected.to contain_class('postfix::server').with(
+            'inet_protocols'        => 'all',
+            'inet_interfaces'       => 'all',
+            'smtp_use_tls'          => 'no',
+            'relayhost'             => false,
+            'mynetworks'            => '/etc/postfix/mynetworks',
+            'message_size_limit'    => '0',
+            'mailbox_size_limit'    => '0',
+            'virtual_alias_maps'    => ['hash:/etc/postfix/virtual'],
+            'virtual_alias_domains' => ['baz.com']
+            )
+          }
+
+          it { expect(exported_resources).to contain_concat__fragment('postfix_additional_network_1.2.3.4').with(
+            'target'  => '/etc/postfix/mynetworks',
+            'content' => "1.2.3.4\n",
+            'tag'     => 'postfix_mynetworks'
+            )
+          }
         end
       end
     end
