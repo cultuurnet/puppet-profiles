@@ -13,6 +13,8 @@ describe 'profiles::museumpas::automatic_renewal_mail' do
           'jwt_token' => 'abc'
         } }
 
+        it { is_expected.to compile.with_all_deps }
+
         it { is_expected.to contain_class('profiles::museumpas::automatic_renewal_mail').with(
           'ensure'    => 'present',
           'api_url'   => 'https://museumpas.example.com',
@@ -37,6 +39,8 @@ describe 'profiles::museumpas::automatic_renewal_mail' do
           'hour'      => 3,
           'minute'    => 14
         } }
+
+        it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::museumpas::automatic_renewal_mail').with(
           'ensure'    => 'present',
