@@ -14,6 +14,7 @@ describe 'profiles::museumpas::automatic_renewal_mail' do
         } }
 
         it { is_expected.to contain_class('profiles::museumpas::automatic_renewal_mail').with(
+          'ensure'    => 'present',
           'api_url'   => 'https://museumpas.example.com',
           'jwt_token' => 'abc',
           'hour'      => '0',
@@ -21,6 +22,7 @@ describe 'profiles::museumpas::automatic_renewal_mail' do
         ) }
 
         it { is_expected.to contain_cron('profiles::museumpas::automatic_renewal_mail').with(
+          'ensure'      => 'present',
           'environment' => [ 'MAILTO=infra@publiq.be'],
           'command'     => "/usr/bin/curl -X 'POST' -H 'Authorization: Bearer abc' https://museumpas.example.com/rest/system/autorenewalReminder",
           'hour'        => 0,
@@ -37,6 +39,7 @@ describe 'profiles::museumpas::automatic_renewal_mail' do
         } }
 
         it { is_expected.to contain_class('profiles::museumpas::automatic_renewal_mail').with(
+          'ensure'    => 'present',
           'api_url'   => 'https://foo.example.com',
           'jwt_token' => 'def',
           'hour'      => 3,
@@ -44,6 +47,7 @@ describe 'profiles::museumpas::automatic_renewal_mail' do
         ) }
 
         it { is_expected.to contain_cron('profiles::museumpas::automatic_renewal_mail').with(
+          'ensure'      => 'present',
           'environment' => [ 'MAILTO=infra@publiq.be'],
           'command'     => "/usr/bin/curl -X 'POST' -H 'Authorization: Bearer def' https://foo.example.com/rest/system/autorenewalReminder",
           'hour'        => 3,
@@ -51,10 +55,29 @@ describe 'profiles::museumpas::automatic_renewal_mail' do
         ) }
       end
 
-      context 'without parameters' do
-        let(:params) { {} }
+      context 'with ensure => absent' do
+        let(:params) { {
+          'ensure' => 'absent'
+        } }
+
+        it { is_expected.to contain_cron('profiles::museumpas::automatic_renewal_mail').with(
+          'ensure' => 'absent'
+        ) }
+      end
+
+      context 'without api_url' do
+        let(:params) { {
+          'jwt_token' => 'xyz'
+        } }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'api_url'/) }
+      end
+
+      context 'without jwt_token' do
+        let(:params) { {
+          'api_url' => 'https://foo.example.com'
+        } }
+
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'jwt_token'/) }
       end
     end
