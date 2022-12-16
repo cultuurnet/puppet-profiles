@@ -41,7 +41,7 @@ class profiles::udb3::rabbitmq (
     user             => $admin_user,
     password         => $admin_password,
     destination_type => 'queue',
-    routing_key      => '#',
+    routing_key      => 'api',
     arguments        => {}
   }
 
@@ -56,7 +56,7 @@ class profiles::udb3::rabbitmq (
     user             => $admin_user,
     password         => $admin_password,
     destination_type => 'queue',
-    routing_key      => '#',
+    routing_key      => 'cli',
     arguments        => {}
   }
 
@@ -71,7 +71,7 @@ class profiles::udb3::rabbitmq (
     user             => $admin_user,
     password         => $admin_password,
     destination_type => 'queue',
-    routing_key      => '#',
+    routing_key      => 'related',
     arguments        => {}
   }
 
@@ -95,7 +95,7 @@ class profiles::udb3::rabbitmq (
     user             => $admin_user,
     password         => $admin_password,
     destination_type => 'queue',
-    routing_key      => '#',
+    routing_key      => 'api',
     arguments        => {}
   }
 
@@ -103,7 +103,7 @@ class profiles::udb3::rabbitmq (
     user             => $admin_user,
     password         => $admin_password,
     destination_type => 'queue',
-    routing_key      => '#',
+    routing_key      => 'api',
     arguments        => {}
   }
 
@@ -118,7 +118,7 @@ class profiles::udb3::rabbitmq (
     user             => $admin_user,
     password         => $admin_password,
     destination_type => 'queue',
-    routing_key      => '#',
+    routing_key      => 'cli',
     arguments        => {}
   }
 
@@ -126,7 +126,7 @@ class profiles::udb3::rabbitmq (
     user             => $admin_user,
     password         => $admin_password,
     destination_type => 'queue',
-    routing_key      => '#',
+    routing_key      => 'cli',
     arguments        => {}
   }
 
@@ -141,7 +141,7 @@ class profiles::udb3::rabbitmq (
     user             => $admin_user,
     password         => $admin_password,
     destination_type => 'queue',
-    routing_key      => '#',
+    routing_key      => 'related',
     arguments        => {}
   }
 
@@ -149,7 +149,7 @@ class profiles::udb3::rabbitmq (
     user             => $admin_user,
     password         => $admin_password,
     destination_type => 'queue',
-    routing_key      => '#',
+    routing_key      => 'related',
     arguments        => {}
   }
 

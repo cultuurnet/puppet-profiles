@@ -32,7 +32,7 @@ RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin
     'user'             => admin_user,
     'password'         => admin_password,
     'destination_type' => 'queue',
-    'routing_key'      => '#',
+    'routing_key'      => 'api',
     'arguments'        => {}
     )
   }
@@ -49,7 +49,7 @@ RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin
     'user'             => admin_user,
     'password'         => admin_password,
     'destination_type' => 'queue',
-    'routing_key'      => '#',
+    'routing_key'      => 'cli',
     'arguments'        => {}
     )
   }
@@ -66,7 +66,7 @@ RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin
     'user'             => admin_user,
     'password'         => admin_password,
     'destination_type' => 'queue',
-    'routing_key'      => '#',
+    'routing_key'      => 'related',
     'arguments'        => {}
     )
   }
@@ -120,7 +120,7 @@ RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin
     'user'             => admin_user,
     'password'         => admin_password,
     'destination_type' => 'queue',
-    'routing_key'      => '#',
+    'routing_key'      => 'api',
     'arguments'        => {}
     )
   }
@@ -129,7 +129,7 @@ RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin
     'user'             => admin_user,
     'password'         => admin_password,
     'destination_type' => 'queue',
-    'routing_key'      => '#',
+    'routing_key'      => 'api',
     'arguments'        => {}
     )
   }
@@ -146,7 +146,7 @@ RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin
     'user'             => admin_user,
     'password'         => admin_password,
     'destination_type' => 'queue',
-    'routing_key'      => '#',
+    'routing_key'      => 'cli',
     'arguments'        => {}
     )
   }
@@ -155,7 +155,7 @@ RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin
     'user'             => admin_user,
     'password'         => admin_password,
     'destination_type' => 'queue',
-    'routing_key'      => '#',
+    'routing_key'      => 'cli',
     'arguments'        => {}
     )
   }
@@ -172,7 +172,7 @@ RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin
     'user'             => admin_user,
     'password'         => admin_password,
     'destination_type' => 'queue',
-    'routing_key'      => '#',
+    'routing_key'      => 'related',
     'arguments'        => {}
     )
   }
@@ -181,7 +181,7 @@ RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin
     'user'             => admin_user,
     'password'         => admin_password,
     'destination_type' => 'queue',
-    'routing_key'      => '#',
+    'routing_key'      => 'related',
     'arguments'        => {}
     )
   }
