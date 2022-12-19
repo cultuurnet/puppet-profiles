@@ -10,16 +10,6 @@ RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin
     )
   }
 
-  it { is_expected.to contain_rabbitmq_exchange("udb2.x.entry@#{vhost}").with(
-    'user'        => admin_user,
-    'password'    => admin_password,
-    'type'        => 'topic',
-    'internal'    => false,
-    'auto_delete' => false,
-    'durable'     => true
-    )
-  }
-
   it { is_expected.to contain_rabbitmq_exchange("udb3.x.domain-events@#{vhost}").with(
     'user'        => admin_user,
     'password'    => admin_password,
@@ -30,17 +20,7 @@ RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin
     )
   }
 
-  it { is_expected.to contain_rabbitmq_exchange("cdbxml.x.entry@#{vhost}").with(
-    'user'        => admin_user,
-    'password'    => admin_password,
-    'type'        => 'topic',
-    'internal'    => false,
-    'auto_delete' => false,
-    'durable'     => true
-    )
-  }
-
-  it { is_expected.to contain_rabbitmq_queue("udb3.q.udb2-entry@#{vhost}").with(
+  it { is_expected.to contain_rabbitmq_queue("uitpas.q.udb3-domain-events-api@#{vhost}").with(
     'user'        => admin_user,
     'password'    => admin_password,
     'durable'     => true,
@@ -48,16 +28,16 @@ RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin
     )
   }
 
-  it { is_expected.to contain_rabbitmq_binding("udb2.x.entry@udb3.q.udb2-entry@#{vhost}").with(
+  it { is_expected.to contain_rabbitmq_binding("udb3.x.domain-events@uitpas.q.udb3-domain-events-api@#{vhost}").with(
     'user'             => admin_user,
     'password'         => admin_password,
     'destination_type' => 'queue',
-    'routing_key'      => '#',
+    'routing_key'      => 'api',
     'arguments'        => {}
     )
   }
 
-  it { is_expected.to contain_rabbitmq_queue("cdbxml.q.udb3-domain-events@#{vhost}").with(
+  it { is_expected.to contain_rabbitmq_queue("uitpas.q.udb3-domain-events-cli@#{vhost}").with(
     'user'        => admin_user,
     'password'    => admin_password,
     'durable'     => true,
@@ -65,7 +45,16 @@ RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin
     )
   }
 
-  it { is_expected.to contain_rabbitmq_queue("uitpas.q.udb3-domain-events@#{vhost}").with(
+  it { is_expected.to contain_rabbitmq_binding("udb3.x.domain-events@uitpas.q.udb3-domain-events-cli@#{vhost}").with(
+    'user'             => admin_user,
+    'password'         => admin_password,
+    'destination_type' => 'queue',
+    'routing_key'      => 'cli',
+    'arguments'        => {}
+    )
+  }
+
+  it { is_expected.to contain_rabbitmq_queue("uitpas.q.udb3-domain-events-related@#{vhost}").with(
     'user'        => admin_user,
     'password'    => admin_password,
     'durable'     => true,
@@ -73,42 +62,16 @@ RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin
     )
   }
 
-  it { is_expected.to contain_rabbitmq_binding("udb3.x.domain-events@cdbxml.q.udb3-domain-events@#{vhost}").with(
+  it { is_expected.to contain_rabbitmq_binding("udb3.x.domain-events@uitpas.q.udb3-domain-events-related@#{vhost}").with(
     'user'             => admin_user,
     'password'         => admin_password,
     'destination_type' => 'queue',
-    'routing_key'      => '#',
+    'routing_key'      => 'related',
     'arguments'        => {}
     )
   }
 
-  it { is_expected.to contain_rabbitmq_binding("udb3.x.domain-events@uitpas.q.udb3-domain-events@#{vhost}").with(
-    'user'             => admin_user,
-    'password'         => admin_password,
-    'destination_type' => 'queue',
-    'routing_key'      => '#',
-    'arguments'        => {}
-    )
-  }
-
-  it { is_expected.to contain_rabbitmq_queue("solr.q.udb3-cdbxml@#{vhost}").with(
-    'user'        => admin_user,
-    'password'    => admin_password,
-    'durable'     => true,
-    'auto_delete' => false
-    )
-  }
-
-  it { is_expected.to contain_rabbitmq_binding("cdbxml.x.entry@solr.q.udb3-cdbxml@#{vhost}").with(
-    'user'             => admin_user,
-    'password'         => admin_password,
-    'destination_type' => 'queue',
-    'routing_key'      => '#',
-    'arguments'        => {}
-    )
-  }
-
-  it { is_expected.to contain_rabbitmq_exchange("uitid.x.uitpas-events@#{vhost}").with(
+  it { is_expected.to contain_rabbitmq_exchange("uitpas.x.uitpas-events@#{vhost}").with(
     'user'        => admin_user,
     'password'    => admin_password,
     'type'        => 'topic',
@@ -126,7 +89,7 @@ RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin
     )
   }
 
-  it { is_expected.to contain_rabbitmq_binding("uitid.x.uitpas-events@udb3.q.uitpas-events@#{vhost}").with(
+  it { is_expected.to contain_rabbitmq_binding("uitpas.x.uitpas-events@udb3.q.uitpas-events@#{vhost}").with(
     'user'             => admin_user,
     'password'         => admin_password,
     'destination_type' => 'queue',
@@ -135,7 +98,7 @@ RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin
     )
   }
 
-  it { is_expected.to contain_rabbitmq_exchange("imports.x.entry@#{vhost}").with(
+  it { is_expected.to contain_rabbitmq_exchange("search.x.domain-events@#{vhost}").with(
     'user'        => admin_user,
     'password'    => admin_password,
     'type'        => 'topic',
@@ -145,7 +108,7 @@ RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin
     )
   }
 
-  it { is_expected.to contain_rabbitmq_queue("udb3.q.imports-entry@#{vhost}").with(
+  it { is_expected.to contain_rabbitmq_queue("search.q.udb3-domain-events-api@#{vhost}").with(
     'user'        => admin_user,
     'password'    => admin_password,
     'durable'     => true,
@@ -153,26 +116,25 @@ RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin
     )
   }
 
-  it { is_expected.to contain_rabbitmq_binding("imports.x.entry@udb3.q.imports-entry@#{vhost}").with(
+  it { is_expected.to contain_rabbitmq_binding("udb3.x.domain-events@search.q.udb3-domain-events-api@#{vhost}").with(
     'user'             => admin_user,
     'password'         => admin_password,
     'destination_type' => 'queue',
-    'routing_key'      => '#',
+    'routing_key'      => 'api',
     'arguments'        => {}
     )
   }
 
-  it { is_expected.to contain_rabbitmq_exchange("curators.x.events@#{vhost}").with(
-    'user'        => admin_user,
-    'password'    => admin_password,
-    'type'        => 'topic',
-    'internal'    => false,
-    'auto_delete' => false,
-    'durable'     => true
+  it { is_expected.to contain_rabbitmq_binding("search.x.domain-events@search.q.udb3-domain-events-api@#{vhost}").with(
+    'user'             => admin_user,
+    'password'         => admin_password,
+    'destination_type' => 'queue',
+    'routing_key'      => 'api',
+    'arguments'        => {}
     )
   }
 
-  it { is_expected.to contain_rabbitmq_queue("udb3.q.curators-events@#{vhost}").with(
+  it { is_expected.to contain_rabbitmq_queue("search.q.udb3-domain-events-cli@#{vhost}").with(
     'user'        => admin_user,
     'password'    => admin_password,
     'durable'     => true,
@@ -180,11 +142,46 @@ RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin
     )
   }
 
-  it { is_expected.to contain_rabbitmq_binding("curators.x.events@udb3.q.curators-events@#{vhost}").with(
+  it { is_expected.to contain_rabbitmq_binding("udb3.x.domain-events@search.q.udb3-domain-events-cli@#{vhost}").with(
     'user'             => admin_user,
     'password'         => admin_password,
     'destination_type' => 'queue',
-    'routing_key'      => '#',
+    'routing_key'      => 'cli',
+    'arguments'        => {}
+    )
+  }
+
+  it { is_expected.to contain_rabbitmq_binding("search.x.domain-events@search.q.udb3-domain-events-cli@#{vhost}").with(
+    'user'             => admin_user,
+    'password'         => admin_password,
+    'destination_type' => 'queue',
+    'routing_key'      => 'cli',
+    'arguments'        => {}
+    )
+  }
+
+  it { is_expected.to contain_rabbitmq_queue("search.q.udb3-domain-events-related@#{vhost}").with(
+    'user'        => admin_user,
+    'password'    => admin_password,
+    'durable'     => true,
+    'auto_delete' => false
+    )
+  }
+
+  it { is_expected.to contain_rabbitmq_binding("udb3.x.domain-events@search.q.udb3-domain-events-related@#{vhost}").with(
+    'user'             => admin_user,
+    'password'         => admin_password,
+    'destination_type' => 'queue',
+    'routing_key'      => 'related',
+    'arguments'        => {}
+    )
+  }
+
+  it { is_expected.to contain_rabbitmq_binding("search.x.domain-events@search.q.udb3-domain-events-related@#{vhost}").with(
+    'user'             => admin_user,
+    'password'         => admin_password,
+    'destination_type' => 'queue',
+    'routing_key'      => 'related',
     'arguments'        => {}
     )
   }
