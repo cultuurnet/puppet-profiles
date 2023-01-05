@@ -7,8 +7,8 @@ jobs:
         <%- if pipeline['parameters'] -%>
           parameters {
             <%- pipeline['parameters'].each_line do |line| -%>
-              <%= line -%>
-            <%- end %>
+              <%= line %>
+            <%- end -%>
           }
         <%- end -%>
           properties {
