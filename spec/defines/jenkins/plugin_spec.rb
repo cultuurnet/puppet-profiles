@@ -374,9 +374,10 @@ describe 'profiles::jenkins::plugin' do
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*credentials\('mygitcred'\)$/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*githubPush\(\)$/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*numToKeepStr\('5'\)$/) }
+          it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^\s*parameters {\n\s*}$/) }
         end
 
-        context "with configuration => [{ 'name' => 'baz', 'git_url' => 'git@github.com:bar/baz.git', 'git_ref' => 'refs/heads/develop', 'jenkinsfile_path' => 'Jenkinsfile.baz', 'credential_id' => 'gitkey', keep_builds => 10 }, { 'name' => 'repo', 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'jenkinsfile_path' => 'pipelines/Jenkinsfile.repo', 'credential_id' => 'mygitcred', keep_builds => '2' }]" do
+        context "with configuration => [{ 'name' => 'baz', 'git_url' => 'git@github.com:bar/baz.git', 'git_ref' => 'refs/heads/develop', 'jenkinsfile_path' => 'Jenkinsfile.baz', 'credential_id' => 'gitkey', keep_builds => 10, parameters => booleanParam { name('Flag') defaultValue(true) description('Boolean flag')} }, { 'name' => 'repo', 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'jenkinsfile_path' => 'pipelines/Jenkinsfile.repo', 'credential_id' => 'mygitcred', keep_builds => '2', parameters => parameters => stringParam { name('String') defaultValue('') description('String parameter example') trim(true)} booleanParam { name('Myflag') defaultValue(true) description('Boolean flag example')} }]" do
           let(:params) { {
               'configuration' => [{
                                    'name'             => 'baz',
@@ -384,7 +385,12 @@ describe 'profiles::jenkins::plugin' do
                                    'git_ref'          => 'refs/heads/develop',
                                    'jenkinsfile_path' => 'Jenkinsfile.baz',
                                    'credential_id'    => 'gitkey',
-                                   'keep_builds'      => 10
+                                   'keep_builds'      => 10,
+                                   'parameters'       => "booleanParam {
+                                                            name('Flag')
+                                                            defaultValue(true)
+                                                            description('Boolean flag')
+                                                          }"
                                  },
                                  {
                                    'name'             => 'repo',
@@ -392,7 +398,18 @@ describe 'profiles::jenkins::plugin' do
                                    'git_ref'          => 'main',
                                    'jenkinsfile_path' => 'pipelines/Jenkinsfile.repo',
                                    'credential_id'    => 'mygitcred',
-                                   'keep_builds'      => 2
+                                   'keep_builds'      => 2,
+                                   'parameters'       => "stringParam {
+                                                            name('String')
+                                                            defaultValue('')
+                                                            description('String parameter example')
+                                                            trim(true)
+                                                          }
+                                                          booleanParam {
+                                                            name('Myflag')
+                                                            defaultValue(false)
+                                                            description('Boolean flag example')
+                                                          }"
                                  }]
           } }
 
@@ -403,6 +420,7 @@ describe 'profiles::jenkins::plugin' do
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*branch\('refs\/heads\/develop'\)$/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*credentials\('gitkey'\)$/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*numToKeepStr\('10'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*parameters {\n\s*booleanParam {\n\s*name\('Flag'\)\n\s*defaultValue\(true\)\n\s*description\('Boolean flag'\)\n\s*}\n\s*}$/) }
 
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*pipelineJob\('repo'\)/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*url\('git@example.com:org\/repo.git'\)$/) }
@@ -411,6 +429,7 @@ describe 'profiles::jenkins::plugin' do
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*branch\('main'\)$/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*credentials\('mygitcred'\)$/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*numToKeepStr\('2'\)$/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*parameters {\n\s*stringParam {\n\s*name\('String'\)\n\s*defaultValue\(''\)\n\s*description\('String parameter example'\)\n\s*trim\(true\)\n\s*}\n\s*booleanParam {\n\s*name\('Myflag'\)\n\s*defaultValue\(false\)\n\s*description\('Boolean flag example'\)\n\s*}\n\s*}$/) }
 
           it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^\s*githubPush\(\)$/) }
         end
