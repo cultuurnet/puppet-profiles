@@ -3,7 +3,7 @@ require 'spec_helper'
 describe 'profiles::deployment::uit::api' do
   context "with config_source => /foo" do
     let(:params) { {
-      'config_source'     => '/foo'
+      'config_source' => '/foo'
     } }
 
     include_examples 'operating system support'
@@ -15,6 +15,7 @@ describe 'profiles::deployment::uit::api' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_apt__source('uit-api') }
+        it { is_expected.to contain_apt__source('publiq-tools') }
 
         it { is_expected.to contain_package('yarn') }
 
@@ -55,7 +56,7 @@ describe 'profiles::deployment::uit::api' do
           'cwd'         => '/var/www/uit-api',
           'user'        => 'www-data',
           'group'       => 'www-data',
-          'path'        => [ '/usr/local/bin', '/usr/bin', '/bin', '/var/www/uit-api'],
+          'path'        => ['/usr/local/bin', '/usr/bin', '/bin', '/var/www/uit-api'],
           'refreshonly' => true
         ) }
 
@@ -68,7 +69,7 @@ describe 'profiles::deployment::uit::api' do
           'cwd'         => '/var/www/uit-api',
           'user'        => 'www-data',
           'group'       => 'www-data',
-          'path'        => [ '/usr/local/bin', '/usr/bin', '/bin', '/var/www/uit-api'],
+          'path'        => ['/usr/local/bin', '/usr/bin', '/bin', '/var/www/uit-api'],
           'refreshonly' => true
         ) }
 

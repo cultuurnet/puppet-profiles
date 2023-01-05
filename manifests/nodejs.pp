@@ -5,7 +5,7 @@ class profiles::nodejs (
   $major_version = split($version, /\./)[0]
 
   realize Apt::Source["publiq-nodejs-${major_version}"]
-  realize Apt::Source['yarn']
+  realize Apt::Source['publiq-tools']
 
   realize Package['yarn']
 
