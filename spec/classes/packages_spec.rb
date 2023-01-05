@@ -102,7 +102,7 @@ describe 'profiles::packages' do
         it { is_expected.to contain_package('gcsfuse').that_requires('Apt::Source[cultuurnet-tools]') }
         it { is_expected.to contain_package('liquibase').that_requires('Apt::Source[cultuurnet-tools]') }
         it { is_expected.to contain_package('mysql-connector-java').that_requires('Apt::Source[cultuurnet-tools]') }
-        it { is_expected.to contain_package('yarn').that_requires('Apt::Source[yarn]') }
+        it { is_expected.to contain_package('yarn').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('policykit-1').that_requires('Apt::Source[cultuurnet-tools]') }
         it { is_expected.to contain_package('snapd').that_requires('Apt::Source[cultuurnet-tools]') }
         it { is_expected.to contain_package('libssl1.1').that_requires('Apt::Source[cultuurnet-tools]') }

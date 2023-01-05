@@ -10,7 +10,7 @@ class profiles::deployment::uit::api (
 
   $basedir = '/var/www/uit-api'
 
-  realize Apt::Source['yarn']
+  realize Apt::Source['publiq-tools']
   realize Apt::Source['uit-api']
 
   realize Package['yarn']

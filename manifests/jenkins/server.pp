@@ -18,7 +18,7 @@ class profiles::jenkins::server (
 
   realize Apt::Source['publiq-jenkins']
   realize Apt::Source['cultuurnet-tools']
-  realize Apt::Source['yarn']
+  realize Apt::Source['publiq-tools']
 
   class {'::profiles::ruby':
     with_dev => true

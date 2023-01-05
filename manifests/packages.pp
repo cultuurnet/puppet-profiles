@@ -69,7 +69,7 @@ class profiles::packages inherits ::profiles {
 
   @package { 'yarn':
     ensure  => 'present',
-    require => Apt::Source['yarn']
+    require => Apt::Source['publiq-tools']
   }
 
   @package { 'bundler':

@@ -9,6 +9,9 @@ class profiles::deployment::uit::notifications (
   $basedir = '/var/www/uit-notifications'
 
   realize Apt::Source['uit-notifications']
+  realize Apt::Source['publiq-tools']
+
+  realize Package['yarn']
 
   package { 'uit-notifications':
     ensure  => $version,
@@ -26,14 +29,15 @@ class profiles::deployment::uit::notifications (
   }
 
   exec { 'uit-notifications-deploy':
-    command     => '/usr/bin/yarn notifications deploy',
+    command     => 'yarn notifications deploy',
     cwd         => $basedir,
-    path        => [ "${basedir}", '/usr/local/bin', '/usr/bin', '/bin'],
-    environment => [ "AWS_ACCESS_KEY_ID=${aws_access_key_id}", "AWS_SECRET_ACCESS_KEY=${aws_secret_access_key}"],
+    path        => ['/usr/local/bin', '/usr/bin', '/bin', $basedir],
+    environment => ["AWS_ACCESS_KEY_ID=${aws_access_key_id}", "AWS_SECRET_ACCESS_KEY=${aws_secret_access_key}"],
     logoutput   => true,
     user        => 'www-data',
     refreshonly => true,
-    subscribe   => [ Package['uit-notifications'], File['uit-notifications-settings']]
+    subscribe   => [Package['uit-notifications'], File['uit-notifications-settings']],
+    require     => Package['yarn']
   }
 
   profiles::deployment::versions { $title:

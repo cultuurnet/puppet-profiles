@@ -13,7 +13,7 @@ describe 'profiles::nodejs' do
         let(:params) { {} }
 
         it { is_expected.to contain_apt__source('publiq-nodejs-14') }
-        it { is_expected.to contain_apt__source('yarn') }
+        it { is_expected.to contain_apt__source('publiq-tools') }
 
         it { is_expected.to contain_class('nodejs').with(
           'manage_package_repo'   => false,
@@ -25,7 +25,7 @@ describe 'profiles::nodejs' do
         ) }
 
         it { is_expected.to contain_class('nodejs').that_requires('Apt::Source[publiq-nodejs-14]') }
-        it { is_expected.to contain_package('yarn').that_requires('Apt::Source[yarn]') }
+        it { is_expected.to contain_package('yarn').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('yarn').that_requires('Class[nodejs]') }
       end
 

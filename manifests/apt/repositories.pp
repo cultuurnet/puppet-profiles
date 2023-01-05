@@ -93,10 +93,8 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
-  @apt::source { 'yarn':
-    location => "http://apt.uitdatabank.be/yarn-${environment}",
-    release  => 'stable',
-    repos    => 'main'
+  apt::source { 'yarn':
+    ensure => 'absent'
   }
 
   @apt::source { 'erlang':
