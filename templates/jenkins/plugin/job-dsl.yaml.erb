@@ -6,9 +6,9 @@ jobs:
       pipelineJob('<%= pipeline['name'] %>') {
         <%- if pipeline['parameters'] -%>
           parameters {
-            <%- pipeline['parameters'].each_line do |line| -%>
+            <%- pipeline['parameters'].strip.each_line do |line| -%>
               <%= line -%>
-            <%- end -%>
+            <%- end %>
           }
         <%- end -%>
           properties {
