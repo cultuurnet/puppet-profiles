@@ -26,16 +26,6 @@ describe 'profiles::udb3::websocket_server' do
           it { is_expected.to contain_class('profiles::udb3::websocket_server::deployment').that_requires('Class[profiles::nodejs]') }
         end
 
-        context "with listen_port => 3456" do
-          let(:params) { {
-            'listen_port' => 3456
-          } }
-
-          it { is_expected.to contain_class('profiles::udb3::websocket_server::deployment').with(
-            'listen_port' => 3456
-          ) }
-        end
-
         context "with deployment => false" do
           let(:params) { {
             'deployment' => false
