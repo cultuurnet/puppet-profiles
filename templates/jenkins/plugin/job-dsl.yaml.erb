@@ -11,6 +11,7 @@ jobs:
             <%- end %>
           }
         <%- end -%>
+
           properties {
             <%- if pipeline['git_url'] =~ /^git@github.com:/ -%>
               githubProjectUrl('https://github.com/<%= pipeline['git_url'][/^.*:(.*).git$/, 1] %>')
@@ -20,6 +21,11 @@ jobs:
                   triggers {
                     <%- if pipeline['auto_build'] -%>
                       githubPush()
+                    <%- end -%>
+                    <%- if pipeline['schedule'] -%>
+                      <%- pipeline['schedule'].strip.each_line do |line| -%>
+                      <%= line -%>
+                      <%- end %>
                     <%- end -%>
                   }
               }
