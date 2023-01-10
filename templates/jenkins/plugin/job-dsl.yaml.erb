@@ -21,6 +21,11 @@ jobs:
                     <%- if pipeline['auto_build'] -%>
                       githubPush()
                     <%- end -%>
+                    <%- if pipeline['schedule'] -%>
+                      <%- pipeline['schedule'].strip.each_line do |line| -%>
+                      <%= line -%>
+                      <%- end %>
+                    <%- end -%>
                   }
               }
               buildDiscarder {
