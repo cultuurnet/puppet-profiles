@@ -1,5 +1,5 @@
 class profiles::elasticsearch (
-  String $version = 'latest'
+  String $version = '5.2.2'
 ) inherits ::profiles {
 
   contain ::profiles::java
