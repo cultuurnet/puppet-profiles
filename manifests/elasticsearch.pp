@@ -2,9 +2,11 @@ class profiles::elasticsearch (
   String $version = '5.2.2'
 ) inherits ::profiles {
 
+  $major_version = split($version, /\./)[0]
+
   contain ::profiles::java
 
-  realize Apt::Source['elasticsearch']
+  realize Apt::Source["elastic-${major_version}.x"]
 
   # TODO: parameterize this profile (version, ...)
   # TODO: add /data/backups/elasticsearch directory
@@ -28,6 +30,6 @@ class profiles::elasticsearch (
     api_timeout       => 30,
     restart_on_change => true,
     instances         => {},
-    require           => [ Apt::Source['elasticsearch'], Class['::profiles::java']]
+    require           => [ Apt::Source["elastic-${major_version}.x"], Class['::profiles::java']]
   }
 }
