@@ -21,6 +21,8 @@ class profiles::aptly (
 
   Apt::Key['aptly'] -> Apt::Source['aptly']
 
+  $proxy_timeout = 3600
+
   $signing_keys.each |$name, $attributes| {
     gnupg_key { $name:
       ensure     => 'present',
@@ -61,12 +63,14 @@ class profiles::aptly (
     }
 
     profiles::apache::vhost::reverse_proxy { "https://${api_hostname}":
-      certificate => $certificate,
-      destination => "http://${api_bind}:${api_port}/"
+      certificate  => $certificate,
+      destination  => "http://${api_bind}:${api_port}/",
+      proxy_params => { 'timeout' => $proxy_timeout }
     }
   } else {
     profiles::apache::vhost::reverse_proxy { "http://${api_hostname}":
-      destination => "http://${api_bind}:${api_port}/"
+      destination  => "http://${api_bind}:${api_port}/",
+      proxy_params => { 'timeout' => $proxy_timeout }
     }
   }
 

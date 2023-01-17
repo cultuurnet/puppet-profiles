@@ -1,9 +1,10 @@
 define profiles::apache::vhost::reverse_proxy (
-  Stdlib::Httpurl              $destination,
+  Stdlib::Httpurl                $destination,
   Optional[String]               $certificate           = undef,
   Enum['on', 'off', 'nodecode']  $allow_encoded_slashes = 'off',
   Boolean                        $preserve_host         = false,
   Boolean                        $support_websockets    = false,
+  Hash                           $proxy_params          = {},
   Variant[String, Array[String]] $proxy_keywords        = [],
   Variant[String, Array[String]] $aliases               = []
 ) {
@@ -88,7 +89,8 @@ define profiles::apache::vhost::reverse_proxy (
                                'path'         => '/',
                                'url'          => $destination,
                                'keywords'     => [$proxy_keywords].flatten,
-                               'reverse_urls' => $reverse_urls
+                               'reverse_urls' => $reverse_urls,
+                               'params'       => $proxy_params
                              }
   }
 }
