@@ -42,7 +42,8 @@ describe 'profiles::aptly' do
         it { is_expected.to_not contain_profiles__apache__vhost__redirect('http://foobar.example.com') }
 
         it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://aptly.example.com').with(
-          'destination' => 'http://127.0.0.1:8081/'
+          'destination'  => 'http://127.0.0.1:8081/',
+          'proxy_params' => { 'timeout' => 3600 }
         ) }
 
         it { is_expected.to contain_cron('aptly db cleanup daily').with(
@@ -125,8 +126,9 @@ describe 'profiles::aptly' do
           ) }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('https://foobar.example.com').with(
-            'certificate' => 'foobar.example.com',
-            'destination' => 'http://1.2.3.4:8080/'
+            'certificate'  => 'foobar.example.com',
+            'destination'  => 'http://1.2.3.4:8080/',
+            'proxy_params' => { 'timeout' => 3600 }
           ) }
 
           it { is_expected.to contain_aptly__repo('foo').with(
