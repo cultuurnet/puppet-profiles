@@ -50,7 +50,8 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                          'path'         => '/',
                                          'url'          => 'http://davinci.example.com/',
                                          'keywords'     => [],
-                                         'reverse_urls' => 'http://davinci.example.com/'
+                                         'reverse_urls' => 'http://davinci.example.com/',
+                                         'params'       => {}
                                        }
           ) }
         end
@@ -92,7 +93,8 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                          'path'         => '/',
                                          'url'          => 'http://davinci.example.com/',
                                          'keywords'     => [],
-                                         'reverse_urls' => 'http://davinci.example.com/'
+                                         'reverse_urls' => 'http://davinci.example.com/',
+                                         'params'       => {}
                                        }
           ) }
         end
@@ -148,7 +150,8 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                          'path'         => '/',
                                          'url'          => 'https://buonarotti.example.com/',
                                          'keywords'     => ['interpolate', 'noquery'],
-                                         'reverse_urls' => ['https://buonarotti.example.com/', 'http://michelangelo.example.com/']
+                                         'reverse_urls' => ['https://buonarotti.example.com/', 'http://michelangelo.example.com/'],
+                                         'params'       => {}
                                        }
           ) }
 
@@ -211,7 +214,8 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                          'path'         => '/',
                                          'url'          => 'http://buonarotti.example.com/',
                                          'keywords'     => [],
-                                         'reverse_urls' => 'http://buonarotti.example.com/'
+                                         'reverse_urls' => 'http://buonarotti.example.com/',
+                                         'params'       => {}
                                        }
           ) }
         end
@@ -224,7 +228,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
 
     context "with destination => http://buonarotti.example.com" do
       let(:params) { {
-        'destination' => 'http://buonarotti.example.com'
+        'destination' => 'http://buonarotti.example.com',
       } }
 
       on_supported_os.each do |os, facts|
