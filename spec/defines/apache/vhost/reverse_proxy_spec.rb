@@ -27,6 +27,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
             'allow_encoded_slashes' => 'off',
             'aliases'               => 'leo.example.com',
             'proxy_keywords'        => [],
+            'proxy_params'          => {},
             'support_websockets'    => false
           ) }
 
@@ -58,9 +59,10 @@ describe 'profiles::apache::vhost::reverse_proxy' do
       end
     end
 
-    context "with destination => http://davinci.example.com and support_websockets => true" do
+    context "with destination => http://davinci.example.com, proxy_params => {'connectiontimeout' => 5}  and support_websockets => true" do
       let(:params) { {
         'destination'        => 'http://davinci.example.com/',
+        'proxy_params'       => {'connectiontimeout' => 5},
         'support_websockets' => true
       } }
 
@@ -94,7 +96,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                          'url'          => 'http://davinci.example.com/',
                                          'keywords'     => [],
                                          'reverse_urls' => 'http://davinci.example.com/',
-                                         'params'       => {}
+                                         'params'       => {'connectiontimeout' => 5}
                                        }
           ) }
         end
@@ -105,7 +107,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
   context "with title => https://michelangelo.example.com" do
     let(:title) { 'https://michelangelo.example.com' }
 
-    context "with certificate => 'foobar.example.com', destination => https://buonarotti.example.com/, preserve_host => true, allow_encoded_slashes => nodecode, proxy_keywords => ['interpolate', 'noquery'], support_websockets => true and aliases => ['mich.example.com', 'angelo.example.com']" do
+    context "with certificate => 'foobar.example.com', destination => https://buonarotti.example.com/, preserve_host => true, allow_encoded_slashes => nodecode, proxy_keywords => ['interpolate', 'noquery'], support_websockets => true, proxy_params => {'timeout' => 300, 'ping' => 3} and aliases => ['mich.example.com', 'angelo.example.com']" do
       let(:params) { {
         'certificate'           => 'foobar.example.com',
         'destination'           => 'https://buonarotti.example.com/',
@@ -113,6 +115,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
         'allow_encoded_slashes' => 'nodecode',
         'support_websockets'    => true,
         'proxy_keywords'        => ['interpolate', 'noquery'],
+        'proxy_params'          => {'timeout' => 300, 'ping' => 3},
         'aliases'               => ['mich.example.com', 'angelo.example.com']
       } }
 
@@ -151,7 +154,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                          'url'          => 'https://buonarotti.example.com/',
                                          'keywords'     => ['interpolate', 'noquery'],
                                          'reverse_urls' => ['https://buonarotti.example.com/', 'http://michelangelo.example.com/'],
-                                         'params'       => {}
+                                         'params'       => {'timeout' => 300, 'ping' => 3}
                                        }
           ) }
 
