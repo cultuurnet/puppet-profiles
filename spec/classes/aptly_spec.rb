@@ -86,10 +86,10 @@ describe 'profiles::aptly' do
           'certificate'  => 'foobar.example.com'
         } }
 
-        context "with signing_keys => { 'test' => { 'id' => '1234ABCD', 'source' => '/tmp/test.key' }}, version => 1.2.3, data_dir => '/data/aptly', api_bind => 1.2.3.4, api_port => 8080, repositories => { 'foo' => {'archive' => false}, 'bar' => {'archive' => true}} and mirrors => {'mirror' => {'location => 'http://mirror.example.com', distribution => 'unstable', components => ['main', 'contrib'], key => 'Ubuntu archive'}}" do
+        context "with signing_keys => { 'test' => { 'id' => '1234ABCD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nmysigningkey\n-----END PGP PRIVATE KEY BLOCK-----' }}, version => 1.2.3, data_dir => '/data/aptly', api_bind => 1.2.3.4, api_port => 8080, repositories => { 'foo' => {'archive' => false}, 'bar' => {'archive' => true}} and mirrors => {'mirror' => {'location => 'http://mirror.example.com', distribution => 'unstable', components => ['main', 'contrib'], key => 'Ubuntu archive'}}" do
           let(:params) { super().merge(
             {
-              'signing_keys' => { 'test' => { 'id' => '1234ABCD', 'source' => '/tmp/test.key' }},
+              'signing_keys' => { 'test' => { 'id' => '1234ABCD', 'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\nmysigningkey\n-----END PGP PRIVATE KEY BLOCK-----" }},
               'version'      => '1.2.3',
               'data_dir'     => '/data/aptly',
               'api_bind'     => '1.2.3.4',
@@ -107,11 +107,11 @@ describe 'profiles::aptly' do
           ) }
 
           it { is_expected.to contain_gnupg_key('test').with(
-            'ensure'     => 'present',
-            'key_id'     => '1234ABCD',
-            'user'       => 'aptly',
-            'key_source' => '/tmp/test.key',
-            'key_type'   => 'private'
+            'ensure'      => 'present',
+            'key_id'      => '1234ABCD',
+            'user'        => 'aptly',
+            'key_content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\nmysigningkey\n-----END PGP PRIVATE KEY BLOCK-----",
+            'key_type'    => 'private'
           ) }
 
           it { is_expected.to contain_class('aptly').with(
@@ -166,12 +166,12 @@ describe 'profiles::aptly' do
           it { is_expected.to contain_aptly__mirror('mirror').that_requires('Apt::Key[Ubuntu archive]') }
         end
 
-        context "with signing_keys => { 'test1' => { 'id' => '6789DEFG', 'source' => '/tmp/test1.key' }, 'test2' => { 'id' => '1234ABCD', 'source' => '/tmp/test2.key' }}, publish_endpoints => { 'apt1' => { 'region' => 'eu-west-1', bucket => 'apt1', awsAccessKeyID => '123', awsSecretAccessKey => 'abc' }}, repositories => 'baz' and mirrors => { 'mirror1' => { 'location' => 'http://mirror1.example.com', distribution => 'testing', components => 'nonfree', key => 'Ubuntu archive'}, 'mirror2' => { location => 'http://mirror2.example.com', 'distribution' => 'stable', 'components' => ['bar', 'baz'], 'key' => 'Ubuntu archive'}}" do
+        context "with signing_keys => { 'test1' => { 'id' => '6789DEFG', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nsigningkey1\n-----END PGP PRIVATE KEY BLOCK----' }, 'test2' => { 'id' => '1234ABCD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nsigningkey2\n-----END PGP PRIVATE KEY BLOCK----' }}, publish_endpoints => { 'apt1' => { 'region' => 'eu-west-1', bucket => 'apt1', awsAccessKeyID => '123', awsSecretAccessKey => 'abc' }}, repositories => 'baz' and mirrors => { 'mirror1' => { 'location' => 'http://mirror1.example.com', distribution => 'testing', components => 'nonfree', key => 'Ubuntu archive'}, 'mirror2' => { location => 'http://mirror2.example.com', 'distribution' => 'stable', 'components' => ['bar', 'baz'], 'key' => 'Ubuntu archive'}}" do
           let(:params) { super().merge(
             {
               'signing_keys'      => {
-                 'test1' => { 'id' => '6789DEFG', 'source' => '/tmp/test1.key' },
-                 'test2' => { 'id' => '1234ABCD', 'source' => '/tmp/test2.key' }
+                 'test1' => { 'id' => '6789DEFG', 'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\nsigningkey1\n-----END PGP PRIVATE KEY BLOCK----" },
+                 'test2' => { 'id' => '1234ABCD', 'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\nsigningkey2\n-----END PGP PRIVATE KEY BLOCK----" }
                },
               'publish_endpoints' => {
                  'apt1' => {
@@ -199,19 +199,19 @@ describe 'profiles::aptly' do
           ) }
 
           it { is_expected.to contain_gnupg_key('test1').with(
-            'ensure'     => 'present',
-            'key_id'     => '6789DEFG',
-            'user'       => 'aptly',
-            'key_source' => '/tmp/test1.key',
-            'key_type'   => 'private'
+            'ensure'      => 'present',
+            'key_id'      => '6789DEFG',
+            'user'        => 'aptly',
+            'key_content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\nsigningkey1\n-----END PGP PRIVATE KEY BLOCK----",
+            'key_type'    => 'private'
           ) }
 
           it { is_expected.to contain_gnupg_key('test2').with(
-            'ensure'     => 'present',
-            'key_id'     => '1234ABCD',
-            'user'       => 'aptly',
-            'key_source' => '/tmp/test2.key',
-            'key_type'   => 'private'
+            'ensure'      => 'present',
+            'key_id'      => '1234ABCD',
+            'user'        => 'aptly',
+            'key_content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\nsigningkey2\n-----END PGP PRIVATE KEY BLOCK----",
+            'key_type'    => 'private'
           ) }
 
           it { is_expected.to contain_class('aptly').with(

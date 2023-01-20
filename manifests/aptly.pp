@@ -25,12 +25,12 @@ class profiles::aptly (
 
   $signing_keys.each |$name, $attributes| {
     gnupg_key { $name:
-      ensure     => 'present',
-      key_id     => $attributes['id'],
-      user       => 'aptly',
-      key_source => $attributes['source'],
-      key_type   => 'private',
-      require    => User['aptly']
+      ensure      => 'present',
+      key_id      => $attributes['id'],
+      user        => 'aptly',
+      key_content => $attributes['content'],
+      key_type    => 'private',
+      require     => User['aptly']
     }
   }
 
