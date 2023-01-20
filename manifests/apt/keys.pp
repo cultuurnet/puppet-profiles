@@ -11,7 +11,7 @@ class profiles::apt::keys {
   }
 
   @apt::key { 'aptly':
-    id     => '26DA9D8630302E0B86A7A2CBED75B5A4483DA07C',
+    id     => '78D6517AB92E22947F577996A0546A43624A8331',
     source => 'https://www.aptly.info/pubkey.txt'
   }
 
