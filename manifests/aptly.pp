@@ -2,6 +2,7 @@ class profiles::aptly (
   String                         $api_hostname,
   Optional[String]               $certificate       = undef,
   Hash                           $signing_keys      = {},
+  Hash                           $trusted_keys      = {},
   String                         $version           = 'latest',
   String                         $data_dir          = '/var/aptly',
   Stdlib::Ipv4                   $api_bind          = '127.0.0.1',
@@ -81,6 +82,12 @@ class profiles::aptly (
       key_content => $attributes['content'],
       key_type    => 'private',
       require     => User['aptly']
+    }
+  }
+
+  $trusted_keys.each |$name, $attributes| {
+    @profiles::aptly::gpgkey { $name:
+      * => $attributes
     }
   }
 
