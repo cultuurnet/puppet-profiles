@@ -2,6 +2,7 @@ class profiles::aptly (
   String                         $api_hostname,
   Optional[String]               $certificate       = undef,
   Hash                           $signing_keys      = {},
+  Hash                           $trusted_keys      = {},
   String                         $version           = 'latest',
   String                         $data_dir          = '/var/aptly',
   Stdlib::Ipv4                   $api_bind          = '127.0.0.1',
@@ -10,6 +11,9 @@ class profiles::aptly (
   Hash                           $repositories      = {},
   Hash                           $mirrors           = {}
 ) inherits ::profiles {
+
+  $proxy_timeout = 3600
+  $homedir       = '/home/aptly'
 
   realize Group['aptly']
   realize User['aptly']
@@ -20,19 +24,6 @@ class profiles::aptly (
   realize Apt::Source['aptly']
 
   Apt::Key['aptly'] -> Apt::Source['aptly']
-
-  $proxy_timeout = 3600
-
-  $signing_keys.each |$name, $attributes| {
-    gnupg_key { $name:
-      ensure      => 'present',
-      key_id      => $attributes['id'],
-      user        => 'aptly',
-      key_content => $attributes['content'],
-      key_type    => 'private',
-      require     => User['aptly']
-    }
-  }
 
   class { '::aptly':
     version              => $version,
@@ -83,6 +74,23 @@ class profiles::aptly (
     require     => [ Class['aptly'], User['aptly']]
   }
 
+  $signing_keys.each |$name, $attributes| {
+    gnupg_key { $name:
+      ensure      => 'present',
+      key_id      => $attributes['id'],
+      user        => 'aptly',
+      key_content => $attributes['content'],
+      key_type    => 'private',
+      require     => User['aptly']
+    }
+  }
+
+  $trusted_keys.each |$name, $attributes| {
+    @profiles::aptly::gpgkey { $name:
+      * => $attributes
+    }
+  }
+
   $repositories.each |$repo, $attributes| {
     $archive = $attributes['archive']
 
@@ -97,16 +105,38 @@ class profiles::aptly (
     }
   }
 
-  $mirrors.each |$name, $attributes| {
-    realize Apt::Key[$attributes['key']]
+  if !($mirrors.empty) {
+    # This is a somewhat hackish way to add trusted GPG keys to the aptly trustedkeys.gpg keyring.
+    # The signature verification in aptly uses gpgv which defaults to this keyring for trusted keys.
+    # The aptly commandline can override the default, but the API does not allow this.
+    # Unfortunately, the gnupg puppet module only allows manipulating the default pubring.gpg and
+    # secring.gpg keyrings. So, as a workaround, we use the gnupg_key puppet resource type to add the
+    # public keys to pubring.gpg and symlink it to trustedkeys.gpg (the correct solution is enhancing
+    # the gnupg_key type and provider to allow manipulating keys in other keyrings than the default,
+    # but this would require far more work to implement).
+    # As we don't import keys outside of puppet, the pubring.gpg only contains trusted keys.
 
-    aptly::mirror { $name:
-      location      => $attributes['location'],
-      distribution  => $attributes['distribution'],
-      components    => [$attributes['components']].flatten,
-      architectures => ['amd64'],
-      update        => false,
-      require       => Apt::Key[$attributes['key']]
+    file { 'aptly trustedkeys.gpg':
+      path   => "${homedir}/.gnupg/trustedkeys.gpg",
+      ensure => 'link',
+      target => "${homedir}/.gnupg/pubring.gpg",
+      owner  => 'aptly',
+      group  => 'aptly'
+    }
+
+    $mirrors.each |$name, $attributes| {
+      realize Profiles::Aptly::Gpgkey[$attributes['key']]
+
+      Profiles::Aptly::Gpgkey[$attributes['key']] -> File['aptly trustedkeys.gpg']
+
+      aptly::mirror { $name:
+        location      => $attributes['location'],
+        distribution  => $attributes['distribution'],
+        components    => [$attributes['components']].flatten,
+        architectures => ['amd64'],
+        update        => false,
+        require       => [Profiles::Aptly::Gpgkey[$attributes['key']], File['aptly trustedkeys.gpg']]
+      }
     }
   }
 }

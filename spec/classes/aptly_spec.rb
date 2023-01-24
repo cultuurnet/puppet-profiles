@@ -16,6 +16,20 @@ describe 'profiles::aptly' do
 
         it { is_expected.to compile.with_all_deps }
 
+        it { is_expected.to contain_class('profiles::aptly').with(
+          'api_hostname'      => 'aptly.example.com',
+          'certificate'       => nil,
+          'signing_keys'      => {},
+          'trusted_keys'      => {},
+          'version'           => 'latest',
+          'data_dir'          => '/var/aptly',
+          'api_bind'          => '127.0.0.1',
+          'api_port'          => 8081,
+          'publish_endpoints' => {},
+          'repositories'      => {},
+          'mirrors'           => {}
+        ) }
+
         it { is_expected.to contain_group('aptly') }
         it { is_expected.to contain_user('aptly') }
         it { is_expected.to contain_package('graphviz') }
@@ -78,6 +92,8 @@ describe 'profiles::aptly' do
 
         it { is_expected.to contain_cron('aptly db cleanup daily').that_requires('Class[aptly]') }
         it { is_expected.to contain_cron('aptly db cleanup daily').that_requires('User[aptly]') }
+
+        it { is_expected.not_to contain_file('aptly trustedkeys.gpg') }
       end
 
       context "with api_hostname => foobar.example.com and certificate => foobar.example.com" do
@@ -86,10 +102,11 @@ describe 'profiles::aptly' do
           'certificate'  => 'foobar.example.com'
         } }
 
-        context "with signing_keys => { 'test' => { 'id' => '1234ABCD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nmysigningkey\n-----END PGP PRIVATE KEY BLOCK-----' }}, version => 1.2.3, data_dir => '/data/aptly', api_bind => 1.2.3.4, api_port => 8080, repositories => { 'foo' => {'archive' => false}, 'bar' => {'archive' => true}} and mirrors => {'mirror' => {'location => 'http://mirror.example.com', distribution => 'unstable', components => ['main', 'contrib'], key => 'Ubuntu archive'}}" do
+        context "with signing_keys => { 'test' => { 'id' => '1234ABCD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nmysigningkey\n-----END PGP PRIVATE KEY BLOCK-----' }}, trusted_keys => { 'Ubuntu archive' => { 'key_id' => '00001234', 'key_server' => 'hkp://keyserver.ubuntu.com' }}, version => 1.2.3, data_dir => '/data/aptly', api_bind => 1.2.3.4, api_port => 8080, repositories => { 'foo' => {'archive' => false}, 'bar' => {'archive' => true}} and mirrors => {'mirror' => {'location => 'http://mirror.example.com', distribution => 'unstable', components => ['main', 'contrib'], key => 'Ubuntu archive'}}" do
           let(:params) { super().merge(
             {
               'signing_keys' => { 'test' => { 'id' => '1234ABCD', 'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\nmysigningkey\n-----END PGP PRIVATE KEY BLOCK-----" }},
+              'trusted_keys' => { 'Ubuntu archive' => { 'key_id' => '00001234', 'key_server' => 'hkp://keyserver.ubuntu.com' }},
               'version'      => '1.2.3',
               'data_dir'     => '/data/aptly',
               'api_bind'     => '1.2.3.4',
@@ -145,6 +162,14 @@ describe 'profiles::aptly' do
             'default_component' => 'main'
           ) }
 
+          it { is_expected.to contain_file('aptly trustedkeys.gpg').with(
+            'ensure' => 'link',
+            'path'   => '/home/aptly/.gnupg/trustedkeys.gpg',
+            'target' => '/home/aptly/.gnupg/pubring.gpg',
+            'owner'  => 'aptly',
+            'group'  => 'aptly',
+          ) }
+
           it { is_expected.to contain_aptly__mirror('mirror').with(
             'location'      => 'http://mirror.example.com',
             'distribution'  => 'unstable',
@@ -153,7 +178,10 @@ describe 'profiles::aptly' do
             'update'        => false
           ) }
 
-          it { is_expected.to contain_apt__key('Ubuntu archive') }
+          it { is_expected.to contain_profiles__aptly__gpgkey('Ubuntu archive').with(
+            'key_id'     => '00001234',
+            'key_server' => 'hkp://keyserver.ubuntu.com'
+          ) }
 
           case facts[:os]['release']['major']
           when '16.04'
@@ -163,15 +191,21 @@ describe 'profiles::aptly' do
           end
 
           it { is_expected.to contain_gnupg_key('test').that_requires('User[aptly]') }
-          it { is_expected.to contain_aptly__mirror('mirror').that_requires('Apt::Key[Ubuntu archive]') }
+          it { is_expected.to contain_profiles__aptly__gpgkey('Ubuntu archive').that_comes_before('File[aptly trustedkeys.gpg]') }
+          it { is_expected.to contain_aptly__mirror('mirror').that_requires('File[aptly trustedkeys.gpg]') }
+          it { is_expected.to contain_aptly__mirror('mirror').that_requires('Profiles::Aptly::Gpgkey[Ubuntu archive]') }
         end
 
-        context "with signing_keys => { 'test1' => { 'id' => '6789DEFG', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nsigningkey1\n-----END PGP PRIVATE KEY BLOCK----' }, 'test2' => { 'id' => '1234ABCD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nsigningkey2\n-----END PGP PRIVATE KEY BLOCK----' }}, publish_endpoints => { 'apt1' => { 'region' => 'eu-west-1', bucket => 'apt1', awsAccessKeyID => '123', awsSecretAccessKey => 'abc' }}, repositories => 'baz' and mirrors => { 'mirror1' => { 'location' => 'http://mirror1.example.com', distribution => 'testing', components => 'nonfree', key => 'Ubuntu archive'}, 'mirror2' => { location => 'http://mirror2.example.com', 'distribution' => 'stable', 'components' => ['bar', 'baz'], 'key' => 'Ubuntu archive'}}" do
+        context "with signing_keys => { 'test1' => { 'id' => '6789DEFG', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nsigningkey1\n-----END PGP PRIVATE KEY BLOCK----' }, 'test2' => { 'id' => '1234ABCD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nsigningkey2\n-----END PGP PRIVATE KEY BLOCK----' }}, trusted_keys => { 'Ubuntu archive' => { 'key_id' => '12340000', 'key_server' => 'hkp://keyserver.ubuntu.com' }, 'docker' => { 'key_id' => '56780000', 'key_source' => 'https://download.docker.com/linux/ubuntu/gpg' }}, publish_endpoints => { 'apt1' => { 'region' => 'eu-west-1', bucket => 'apt1', awsAccessKeyID => '123', awsSecretAccessKey => 'abc' }}, repositories => 'baz' and mirrors => { 'mirror1' => { 'location' => 'http://mirror1.example.com', distribution => 'testing', components => 'nonfree', key => 'Ubuntu archive'}, 'mirror2' => { location => 'http://mirror2.example.com', 'distribution' => 'stable', 'components' => ['bar', 'baz'], 'key' => 'docker'}}" do
           let(:params) { super().merge(
             {
               'signing_keys'      => {
                  'test1' => { 'id' => '6789DEFG', 'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\nsigningkey1\n-----END PGP PRIVATE KEY BLOCK----" },
                  'test2' => { 'id' => '1234ABCD', 'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\nsigningkey2\n-----END PGP PRIVATE KEY BLOCK----" }
+               },
+              'trusted_keys'      => {
+                 'Ubuntu archive' => { 'key_id' => '12340000', 'key_server' => 'hkp://keyserver.ubuntu.com' },
+                 'docker'         => { 'key_id' => '56780000', 'key_source' => 'https://download.docker.com/linux/ubuntu/gpg' }
                },
               'publish_endpoints' => {
                  'apt1' => {
@@ -192,7 +226,7 @@ describe 'profiles::aptly' do
                                                       'location'     => 'http://mirror2.example.com',
                                                       'distribution' => 'stable',
                                                       'components'   => ['bar', 'baz'],
-                                                      'key'          => 'Ubuntu archive'
+                                                      'key'          => 'docker'
                                                     }
                                      }
             }
@@ -230,6 +264,14 @@ describe 'profiles::aptly' do
 
           it { is_expected.not_to contain_aptly__repo('baz-archive') }
 
+          it { is_expected.to contain_file('aptly trustedkeys.gpg').with(
+            'ensure' => 'link',
+            'path'   => '/home/aptly/.gnupg/trustedkeys.gpg',
+            'target' => '/home/aptly/.gnupg/pubring.gpg',
+            'owner'  => 'aptly',
+            'group'  => 'aptly',
+          ) }
+
           it { is_expected.to contain_aptly__mirror('mirror1').with(
             'location'      => 'http://mirror1.example.com',
             'distribution'  => 'testing',
@@ -246,10 +288,23 @@ describe 'profiles::aptly' do
             'update'        => false
           ) }
 
-          it { is_expected.to contain_apt__key('Ubuntu archive') }
+          it { is_expected.to contain_profiles__aptly__gpgkey('Ubuntu archive').with(
+            'key_id'     => '12340000',
+            'key_server' => 'hkp://keyserver.ubuntu.com'
+          ) }
 
-          it { is_expected.to contain_aptly__mirror('mirror1').that_requires('Apt::Key[Ubuntu archive]') }
-          it { is_expected.to contain_aptly__mirror('mirror2').that_requires('Apt::Key[Ubuntu archive]') }
+          it { is_expected.to contain_profiles__aptly__gpgkey('docker').with(
+            'key_id'     => '56780000',
+            'key_source' => 'https://download.docker.com/linux/ubuntu/gpg'
+          ) }
+
+
+          it { is_expected.to contain_profiles__aptly__gpgkey('Ubuntu archive').that_comes_before('File[aptly trustedkeys.gpg]') }
+          it { is_expected.to contain_profiles__aptly__gpgkey('docker').that_comes_before('File[aptly trustedkeys.gpg]') }
+          it { is_expected.to contain_aptly__mirror('mirror1').that_requires('File[aptly trustedkeys.gpg]') }
+          it { is_expected.to contain_aptly__mirror('mirror1').that_requires('Profiles::Aptly::Gpgkey[Ubuntu archive]') }
+          it { is_expected.to contain_aptly__mirror('mirror2').that_requires('File[aptly trustedkeys.gpg]') }
+          it { is_expected.to contain_aptly__mirror('mirror2').that_requires('Profiles::Aptly::Gpgkey[docker]') }
         end
       end
 
