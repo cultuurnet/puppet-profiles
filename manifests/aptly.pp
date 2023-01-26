@@ -135,6 +135,7 @@ class profiles::aptly (
         components    => [$attributes['components']].flatten,
         architectures => ['amd64'],
         update        => false,
+        keyring       => "${homedir}/.gnupg/trustedkeys.gpg",
         require       => [Profiles::Aptly::Gpgkey[$attributes['key']], File['aptly trustedkeys.gpg']]
       }
     }

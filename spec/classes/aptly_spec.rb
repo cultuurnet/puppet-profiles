@@ -175,7 +175,8 @@ describe 'profiles::aptly' do
             'distribution'  => 'unstable',
             'components'    => ['main', 'contrib'],
             'architectures' => ['amd64'],
-            'update'        => false
+            'update'        => false,
+            'keyring'       => '/home/aptly/.gnupg/trustedkeys.gpg'
           ) }
 
           it { is_expected.to contain_profiles__aptly__gpgkey('Ubuntu archive').with(
@@ -277,7 +278,8 @@ describe 'profiles::aptly' do
             'distribution'  => 'testing',
             'components'    => ['nonfree'],
             'architectures' => ['amd64'],
-            'update'        => false
+            'update'        => false,
+            'keyring'       => '/home/aptly/.gnupg/trustedkeys.gpg'
           ) }
 
           it { is_expected.to contain_aptly__mirror('mirror2').with(
@@ -285,7 +287,8 @@ describe 'profiles::aptly' do
             'distribution'  => 'stable',
             'components'    => ['bar', 'baz'],
             'architectures' => ['amd64'],
-            'update'        => false
+            'update'        => false,
+            'keyring'       => '/home/aptly/.gnupg/trustedkeys.gpg'
           ) }
 
           it { is_expected.to contain_profiles__aptly__gpgkey('Ubuntu archive').with(
