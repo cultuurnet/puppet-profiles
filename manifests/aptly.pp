@@ -125,9 +125,11 @@ class profiles::aptly (
     }
 
     $mirrors.each |$name, $attributes| {
-      realize Profiles::Aptly::Gpgkey[$attributes['key']]
+      [$attributes['keys']].flatten.each |$key| {
+        realize Profiles::Aptly::Gpgkey[$key]
 
-      Profiles::Aptly::Gpgkey[$attributes['key']] -> File['aptly trustedkeys.gpg']
+        Profiles::Aptly::Gpgkey[$key] -> File['aptly trustedkeys.gpg']
+      }
 
       aptly::mirror { $name:
         location      => $attributes['location'],
@@ -136,7 +138,7 @@ class profiles::aptly (
         architectures => ['amd64'],
         update        => false,
         keyring       => "${homedir}/.gnupg/trustedkeys.gpg",
-        require       => [Profiles::Aptly::Gpgkey[$attributes['key']], File['aptly trustedkeys.gpg']]
+        require       => File['aptly trustedkeys.gpg']
       }
     }
   }
