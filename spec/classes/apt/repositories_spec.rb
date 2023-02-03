@@ -30,7 +30,6 @@ describe 'profiles::apt::repositories' do
 
         include_examples 'apt repositories', 'cultuurnet-tools'
         include_examples 'apt repositories', 'rabbitmq'
-        include_examples 'apt repositories', 'elasticsearch'
         include_examples 'apt repositories', 'erlang'
         include_examples 'apt repositories', 'publiq-jenkins'
         include_examples 'apt repositories', 'aptly'
@@ -67,9 +66,7 @@ describe 'profiles::apt::repositories' do
             ) }
 
             it { is_expected.to contain_apt__source('elasticsearch').with(
-              'location' => 'http://apt.uitdatabank.be/elasticsearch-testing',
-              'repos'    => 'main',
-              'release'  => 'stable'
+              'ensure' => 'absent'
             ) }
 
             it { is_expected.to contain_apt__source('erlang').with(
@@ -152,9 +149,7 @@ describe 'profiles::apt::repositories' do
             ) }
 
             it { is_expected.to contain_apt__source('elasticsearch').with(
-              'location' => 'http://apt.uitdatabank.be/elasticsearch-acceptance',
-              'repos'    => 'main',
-              'release'  => 'stable'
+              'ensure' => 'absent'
             ) }
 
             it { is_expected.to contain_apt__source('erlang').with(

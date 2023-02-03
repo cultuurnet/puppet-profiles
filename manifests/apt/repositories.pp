@@ -88,9 +88,7 @@ class profiles::apt::repositories {
   }
 
   @apt::source { 'elasticsearch':
-    location => "http://apt.uitdatabank.be/elasticsearch-${environment}",
-    release  => 'stable',
-    repos    => 'main'
+    ensure => 'absent',
   }
 
   @apt::source { 'erlang':
