@@ -87,10 +87,6 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
-  @apt::source { 'elasticsearch':
-    ensure => 'absent',
-  }
-
   @apt::source { 'erlang':
     location => "http://apt.uitdatabank.be/erlang-${environment}",
     release  => $facts['os']['distro']['codename'],

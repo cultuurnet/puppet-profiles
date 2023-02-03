@@ -65,10 +65,6 @@ describe 'profiles::apt::repositories' do
               'release'  => 'testing'
             ) }
 
-            it { is_expected.to contain_apt__source('elasticsearch').with(
-              'ensure' => 'absent'
-            ) }
-
             it { is_expected.to contain_apt__source('erlang').with(
               'location' => 'http://apt.uitdatabank.be/erlang-testing',
               'repos'    => 'main',
@@ -146,10 +142,6 @@ describe 'profiles::apt::repositories' do
               'location' => 'http://apt.uitdatabank.be/rabbitmq-acceptance',
               'repos'    => 'main',
               'release'  => 'testing'
-            ) }
-
-            it { is_expected.to contain_apt__source('elasticsearch').with(
-              'ensure' => 'absent'
             ) }
 
             it { is_expected.to contain_apt__source('erlang').with(
