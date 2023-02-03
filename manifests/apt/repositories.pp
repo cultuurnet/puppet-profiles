@@ -314,6 +314,12 @@ class profiles::apt::repositories {
     repos        => 'main'
   }
 
+  @apt::source { 'elastic-5.x':
+    location => "https://apt.publiq.be/elastic-5.x-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   @apt::source { 'elastic-8.x':
     location => "https://apt.publiq.be/elastic-8.x-${environment}",
     release  => $facts['os']['distro']['codename'],

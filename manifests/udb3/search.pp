@@ -1,5 +1,5 @@
 class profiles::udb3::search (
-  String $elasticsearch_version           = 'latest',
+  String $elasticsearch_version           = '5.2.2',
   String $elasticsearch_initial_heap_size = '512m',
   String $elasticsearch_max_heap_size     = '512m'
 ) inherits ::profiles {
