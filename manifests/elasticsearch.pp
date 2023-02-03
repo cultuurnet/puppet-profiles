@@ -6,6 +6,7 @@ class profiles::elasticsearch (
 
   contain ::profiles::java
 
+  realize Apt::Source["elasticsearch"]
   realize Apt::Source["elastic-${major_version}.x"]
 
   # TODO: parameterize this profile (version, ...)
