@@ -144,6 +144,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'uit-frontend-nuxt3':
+    location => "https://apt.publiq.be/uit-frontend-nuxt3-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   @apt::source { 'uit-api':
     location => "https://apt.publiq.be/uit-api-${environment}",
     release  => $facts['os']['distro']['codename'],

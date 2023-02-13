@@ -224,6 +224,17 @@ describe 'profiles::apt::repositories' do
               'release'      => 'xenial'
             ) }
 
+            it { is_expected.to contain_apt__source('uit-frontend-nuxt3').with(
+              'location'     => 'https://apt.publiq.be/uit-frontend-nuxt3-acceptance',
+              'ensure'       => 'present',
+              'repos'        => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'      => 'xenial'
+            ) }
+
             it { is_expected.to contain_apt__source('uit-api').with(
               'location'     => 'https://apt.publiq.be/uit-api-acceptance',
               'ensure'       => 'present',
