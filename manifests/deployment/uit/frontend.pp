@@ -2,7 +2,7 @@ class profiles::deployment::uit::frontend (
   String           $config_source,
   String           $version                 = 'latest',
   String           $uitdatabank_api_url     = 'http://localhost',
-  String           $apt_source              = 'uit-frontend',
+  String           $repository              = 'uit-frontend',
   Boolean          $service_manage          = true,
   String           $service_ensure          = 'running',
   Boolean          $service_enable          = true,
@@ -14,7 +14,7 @@ class profiles::deployment::uit::frontend (
 
   $basedir = '/var/www/uit-frontend/packages/app'
 
-  realize Apt::Source[$apt_source]
+  realize Apt::Source[$repository]
 
   package { 'uit-frontend':
     ensure  => $version,
