@@ -19,7 +19,7 @@ class profiles::deployment::uit::frontend (
   package { 'uit-frontend':
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Apt::Source['uit-frontend']
+    require => Apt::Source[$repository]
   }
 
   file { 'uit-frontend-config':
