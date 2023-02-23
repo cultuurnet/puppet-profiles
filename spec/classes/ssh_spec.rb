@@ -19,6 +19,11 @@ describe 'profiles::ssh' do
           'value'  => 'no'
         ) }
 
+        it { is_expected.to contain_sshd_config('PubkeyAcceptedKeyTypes').with(
+          'ensure' => 'present',
+          'value'  => '+rsa-sha2-256,rsa-sha2-512'
+        ) }
+
         it { is_expected.to contain_sshd_config('PermitRootLogin').that_notifies('Service[ssh]') }
 
         it { is_expected.to contain_service('ssh').with(

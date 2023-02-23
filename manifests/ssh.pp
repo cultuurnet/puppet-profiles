@@ -14,6 +14,11 @@ class profiles::ssh(
     value  => 'no'
   }
 
+  sshd_config { 'PubkeyAcceptedKeyTypes':
+    ensure => 'present',
+    value  => '+rsa-sha2-256,rsa-sha2-512'
+  }
+
   service { 'ssh':
     ensure => 'running',
     enable => true
