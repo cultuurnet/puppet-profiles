@@ -16,7 +16,8 @@ describe 'profiles::jena_fuseki' do
           'version'          => 'latest',
           'port'             => 3030,
           'jvm_args'         => '-Xmx1G',
-          'query_timeout_ms' => '5000'
+          'query_timeout_ms' => '5000',
+          'datasets'         => nil
         ) }
 
         it { is_expected.to contain_group('fuseki') }
@@ -29,8 +30,9 @@ describe 'profiles::jena_fuseki' do
         ) }
 
         it { is_expected.to contain_file('jena-fuseki config').with(
-          'ensure' => 'file',
-          'path'   => '/etc/jena-fuseki/config.ttl'
+          'ensure'  => 'file',
+          'path'    => '/etc/jena-fuseki/config.ttl',
+          'content' => nil
         ) }
 
         it { is_expected.to contain_file('jena-fuseki service defaults').with(
@@ -80,12 +82,13 @@ describe 'profiles::jena_fuseki' do
         it { is_expected.to contain_shellvar('jena-fuseki QUERY_TIMEOUT_MS').that_notifies('Service[jena-fuseki]') }
       end
 
-      context "with version => 1.2.3, port => 13030, jvm_args => -Xms2G -Xmx4G and query_timeout_ms => 10000" do
+      context "with version => 1.2.3, port => 13030, jvm_args => -Xms2G -Xmx4G, query_timeout_ms => 10000 and datasets => {name => mydataset, endpoint => myendpoint}" do
         let(:params) { {
           'version'          => '1.2.3',
           'port'             => 13030,
           'jvm_args'         => '-Xms2G -Xmx4G',
-          'query_timeout_ms' => 10000
+          'query_timeout_ms' => 10000,
+          'datasets'         => {'name' => 'mydataset', 'endpoint' => '/myendpoint'}
         } }
 
         it { is_expected.to contain_package('jena-fuseki').with(
@@ -106,6 +109,59 @@ describe 'profiles::jena_fuseki' do
           'variable' => 'QUERY_TIMEOUT_MS',
           'value'    => 10000
         ) }
+
+        it { is_expected.to contain_file('/var/lib/jena-fuseki/databases/mydataset').with(
+          'ensure' => 'directory',
+          'owner'  => 'fuseki',
+          'group'  => 'fuseki'
+        ) }
+
+        it { is_expected.to contain_file('jena-fuseki config').with_content(/^<#mydataset_service_tdb_all> rdf:type fuseki:Service ;$/) }
+        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*rdfs:label\s*"TDB2 mydataset" ;$/) }
+        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*fuseki:name\s*"\/myendpoint" ;$/) }
+        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*fuseki:dataset\s*<#mydataset_dataset> ;$/) }
+        it { is_expected.to contain_file('jena-fuseki config').with_content(/^<#mydataset_dataset> rdf:type tdb2:DatasetTDB2 ;$/) }
+        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*tdb2:location\s*"\/var\/lib\/jena-fuseki\/databases\/mydataset" ;$/) }
+
+        it { is_expected.to contain_file('/var/lib/jena-fuseki/databases/mydataset').that_comes_before('File[jena-fuseki config]') }
+      end
+
+      context "with datasets => [{name => dataset1, endpoint => endpoint1}, {name => dataset2, endpoint => //endpoint2}]" do
+        let(:params) { {
+          'datasets' => [
+                          {'name' => 'dataset1', 'endpoint' => 'endpoint1'},
+                          {'name' => 'dataset2', 'endpoint' => '//endpoint2'}
+                        ]
+        } }
+
+        it { is_expected.to contain_file('/var/lib/jena-fuseki/databases/dataset1').with(
+          'ensure' => 'directory',
+          'owner'  => 'fuseki',
+          'group'  => 'fuseki'
+        ) }
+
+        it { is_expected.to contain_file('/var/lib/jena-fuseki/databases/dataset2').with(
+          'ensure' => 'directory',
+          'owner'  => 'fuseki',
+          'group'  => 'fuseki'
+        ) }
+
+        it { is_expected.to contain_file('jena-fuseki config').with_content(/^<#dataset1_service_tdb_all> rdf:type fuseki:Service ;$/) }
+        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*rdfs:label\s*"TDB2 dataset1" ;$/) }
+        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*fuseki:name\s*"\/endpoint1" ;$/) }
+        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*fuseki:dataset\s*<#dataset1_dataset> ;$/) }
+        it { is_expected.to contain_file('jena-fuseki config').with_content(/^<#dataset1_dataset> rdf:type tdb2:DatasetTDB2 ;$/) }
+        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*tdb2:location\s*"\/var\/lib\/jena-fuseki\/databases\/dataset1" ;$/) }
+
+        it { is_expected.to contain_file('jena-fuseki config').with_content(/^<#dataset2_service_tdb_all> rdf:type fuseki:Service ;$/) }
+        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*rdfs:label\s*"TDB2 dataset2" ;$/) }
+        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*fuseki:name\s*"\/endpoint2" ;$/) }
+        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*fuseki:dataset\s*<#dataset2_dataset> ;$/) }
+        it { is_expected.to contain_file('jena-fuseki config').with_content(/^<#dataset2_dataset> rdf:type tdb2:DatasetTDB2 ;$/) }
+        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*tdb2:location\s*"\/var\/lib\/jena-fuseki\/databases\/dataset2" ;$/) }
+
+        it { is_expected.to contain_file('/var/lib/jena-fuseki/databases/dataset1').that_comes_before('File[jena-fuseki config]') }
+        it { is_expected.to contain_file('/var/lib/jena-fuseki/databases/dataset2').that_comes_before('File[jena-fuseki config]') }
       end
     end
   end

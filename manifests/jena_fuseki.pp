@@ -1,8 +1,9 @@
 class profiles::jena_fuseki (
-  String  $version          = 'latest',
-  Integer $port             = 3030,
-  String  $jvm_args         = '-Xmx1G',
-  Integer $query_timeout_ms = 5000
+  String                              $version          = 'latest',
+  Integer                             $port             = 3030,
+  String                              $jvm_args         = '-Xmx1G',
+  Integer                             $query_timeout_ms = 5000,
+  Optional[Variant[Array[Hash],Hash]] $datasets         = undef
 ) inherits ::profiles {
 
   $default_shellvar_attributes = {
@@ -22,9 +23,25 @@ class profiles::jena_fuseki (
     require => [ Group['fuseki'], User['fuseki'], Apt::Source['publiq-tools']]
   }
 
+  if $datasets {
+    [$datasets].flatten.each |$dataset| {
+      file { "/var/lib/jena-fuseki/databases/${dataset['name']}":
+        ensure => directory,
+        owner  => 'fuseki',
+        group  => 'fuseki',
+        before => File['jena-fuseki config']
+      }
+    }
+
+    $config = template('profiles/jena-fuseki/config.ttl.erb')
+  } else {
+    $config = undef
+  }
+
   file { 'jena-fuseki config':
     ensure  => 'file',
     path    => '/etc/jena-fuseki/config.ttl',
+    content => $config,
     require => Package['jena-fuseki']
   }
 
