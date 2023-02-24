@@ -59,4 +59,14 @@ class profiles::users inherits ::profiles {
     shell          => '/usr/sbin/nologin',
     uid            => '33'
   }
+
+  @user { 'fuseki':
+    ensure         => 'present',
+    gid            => 'fuseki',
+    home           => '/home/fuseki',
+    managehome     => true,
+    purge_ssh_keys => true,
+    shell          => '/bin/bash',
+    uid            => '1002'
+  }
 }

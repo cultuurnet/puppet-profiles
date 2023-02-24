@@ -53,6 +53,12 @@ describe 'profiles::groups' do
           'gid'    => '33'
           )
         }
+
+        it { is_expected.to contain_group('fuseki').with(
+          'ensure' => 'present',
+          'gid'    => '1002'
+          )
+        }
       end
     end
   end

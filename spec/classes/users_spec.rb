@@ -71,6 +71,16 @@ describe 'profiles::users' do
           'shell'          => '/usr/sbin/nologin',
           'uid'            => '33'
         ) }
+
+        it { is_expected.to contain_user('fuseki').with(
+          'ensure'         => 'present',
+          'gid'            => 'fuseki',
+          'home'           => '/home/fuseki',
+          'managehome'     => true,
+          'purge_ssh_keys' => true,
+          'shell'          => '/bin/bash',
+          'uid'            => '1002'
+        ) }
       end
     end
   end
