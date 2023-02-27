@@ -34,4 +34,9 @@ class profiles::groups inherits ::profiles {
     ensure => 'present',
     gid    => '33'
   }
+
+  @group { 'fuseki':
+    ensure => 'present',
+    gid    => '1002'
+  }
 }
