@@ -18,9 +18,11 @@ class profiles::jena_fuseki (
 
   realize Apt::Source['publiq-tools']
 
+  contain ::profiles::java
+
   package { 'jena-fuseki':
     ensure  => $version,
-    require => [ Group['fuseki'], User['fuseki'], Apt::Source['publiq-tools']]
+    require => [ Group['fuseki'], User['fuseki'], Apt::Source['publiq-tools'], Class['profiles::java']]
   }
 
   if $datasets {
