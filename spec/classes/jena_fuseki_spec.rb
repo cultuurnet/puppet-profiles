@@ -23,6 +23,8 @@ describe 'profiles::jena_fuseki' do
         it { is_expected.to contain_group('fuseki') }
         it { is_expected.to contain_user('fuseki') }
 
+        it { is_expected.to contain_class('profiles::java') }
+
         it { is_expected.to contain_apt__source('publiq-tools') }
 
         it { is_expected.to contain_package('jena-fuseki').with(
@@ -70,6 +72,7 @@ describe 'profiles::jena_fuseki' do
         it { is_expected.to contain_group('fuseki').that_comes_before('Package[jena-fuseki]') }
         it { is_expected.to contain_user('fuseki').that_comes_before('Package[jena-fuseki]') }
         it { is_expected.to contain_apt__source('publiq-tools').that_comes_before('Package[jena-fuseki]') }
+        it { is_expected.to contain_package('jena-fuseki').that_requires('Class[profiles::java]') }
         it { is_expected.to contain_file('jena-fuseki config').that_requires('Package[jena-fuseki]') }
         it { is_expected.to contain_service('jena-fuseki').that_subscribes_to('Package[jena-fuseki]') }
         it { is_expected.to contain_service('jena-fuseki').that_subscribes_to('File[jena-fuseki config]') }
