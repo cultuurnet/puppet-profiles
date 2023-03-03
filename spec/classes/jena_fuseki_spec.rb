@@ -91,7 +91,7 @@ describe 'profiles::jena_fuseki' do
           'port'             => 13030,
           'jvm_args'         => '-Xms2G -Xmx4G',
           'query_timeout_ms' => 10000,
-          'datasets'         => {'name' => 'mydataset', 'endpoint' => '/myendpoint', 'union_default_graph' => 'true'}
+          'datasets'         => {'name' => 'mydataset', 'endpoint' => '/myendpoint', 'union_default_graph' => true}
         } }
 
         it { is_expected.to contain_package('jena-fuseki').with(
