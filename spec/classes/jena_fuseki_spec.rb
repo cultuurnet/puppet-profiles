@@ -85,13 +85,13 @@ describe 'profiles::jena_fuseki' do
         it { is_expected.to contain_shellvar('jena-fuseki QUERY_TIMEOUT_MS').that_notifies('Service[jena-fuseki]') }
       end
 
-      context "with version => 1.2.3, port => 13030, jvm_args => -Xms2G -Xmx4G, query_timeout_ms => 10000 and datasets => {name => mydataset, endpoint => myendpoint}" do
+      context "with version => 1.2.3, port => 13030, jvm_args => -Xms2G -Xmx4G, query_timeout_ms => 10000 and datasets => {name => mydataset, endpoint => myendpoint, union_default_graph => true}" do
         let(:params) { {
           'version'          => '1.2.3',
           'port'             => 13030,
           'jvm_args'         => '-Xms2G -Xmx4G',
           'query_timeout_ms' => 10000,
-          'datasets'         => {'name' => 'mydataset', 'endpoint' => '/myendpoint'}
+          'datasets'         => {'name' => 'mydataset', 'endpoint' => '/myendpoint', 'union_default_graph' => true}
         } }
 
         it { is_expected.to contain_package('jena-fuseki').with(
@@ -125,6 +125,7 @@ describe 'profiles::jena_fuseki' do
         it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*fuseki:dataset\s*<#mydataset_dataset> ;$/) }
         it { is_expected.to contain_file('jena-fuseki config').with_content(/^<#mydataset_dataset> rdf:type tdb2:DatasetTDB2 ;$/) }
         it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*tdb2:location\s*"\/var\/lib\/jena-fuseki\/databases\/mydataset" ;$/) }
+        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*tdb2:unionDefaultGraph\s*true ;$/) }
 
         it { is_expected.to contain_file('/var/lib/jena-fuseki/databases/mydataset').that_comes_before('File[jena-fuseki config]') }
       end
@@ -155,6 +156,7 @@ describe 'profiles::jena_fuseki' do
         it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*fuseki:dataset\s*<#dataset1_dataset> ;$/) }
         it { is_expected.to contain_file('jena-fuseki config').with_content(/^<#dataset1_dataset> rdf:type tdb2:DatasetTDB2 ;$/) }
         it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*tdb2:location\s*"\/var\/lib\/jena-fuseki\/databases\/dataset1" ;$/) }
+        it { is_expected.not_to contain_file('jena-fuseki config').with_content(/^\s*tdb2:unionDefaultGraph\s*.* ;$/) }
 
         it { is_expected.to contain_file('jena-fuseki config').with_content(/^<#dataset2_service_tdb_all> rdf:type fuseki:Service ;$/) }
         it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*rdfs:label\s*"TDB2 dataset2" ;$/) }
