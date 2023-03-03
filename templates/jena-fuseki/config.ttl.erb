@@ -19,5 +19,8 @@ PREFIX :        <#>
 
 <#<%= dataset['name'] %>_dataset> rdf:type tdb2:DatasetTDB2 ;
     tdb2:location "/var/lib/jena-fuseki/databases/<%= dataset['name'] %>" ;
+    <%- if dataset['union_default_graph'] -%>
+    tdb2:unionDefaultGraph <%= dataset['union_default_graph'] %> ;
+    <%- end -%>
     .
 <%- end -%>
