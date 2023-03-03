@@ -747,6 +747,12 @@ describe 'profiles::apt::repositories' do
               'repos'    => 'main',
               'release'  => 'focal'
             ) }
+
+            it { is_expected.to contain_apt__source('puppet').with(
+              'location' => 'https://apt.publiq.be/puppet-focal-testing',
+              'repos'    => 'puppet',
+              'release'  => 'focal'
+            ) }
           end
         end
       end

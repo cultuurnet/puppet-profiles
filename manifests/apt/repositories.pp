@@ -38,6 +38,12 @@ class profiles::apt::repositories {
         release  => 'focal',
         repos    => 'main'
       }
+
+      @apt::source { 'puppet':
+        location => "https://apt.publiq.be/puppet-focal-${environment}",
+        release  => 'focal',
+        repos    => 'puppet'
+      }
     }
   }
 
