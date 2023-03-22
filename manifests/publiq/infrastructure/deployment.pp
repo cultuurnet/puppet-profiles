@@ -1,16 +1,17 @@
 class profiles::publiq::infrastructure::deployment (
   String           $version      = 'latest',
+  String           $repository   = 'publiq-infrastructure',
   Optional[String] $puppetdb_url = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   include ::profiles::puppetserver::cache_clear
 
-  realize Apt::Source['publiq-infrastructure']
+  realize Apt::Source[$repository]
 
   package { 'publiq-infrastructure':
     ensure  => $version,
     notify  => [ Class['profiles::puppetserver::cache_clear'], Profiles::Deployment::Versions[$title]],
-    require => Apt::Source['publiq-infrastructure']
+    require => Apt::Source[$repository]
   }
 
   profiles::deployment::versions { $title:
