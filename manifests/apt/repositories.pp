@@ -374,6 +374,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'publiq-infrastructure-legacy':
+    location => "https://apt.publiq.be/publiq-infrastructure-legacy-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   @apt::source { 'publiq-appconfig':
     location => "https://apt.publiq.be/publiq-appconfig-${environment}",
     release  => $facts['os']['distro']['codename'],
