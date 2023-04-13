@@ -1,12 +1,15 @@
 require 'spec_helper'
 
-RSpec.shared_examples "apt repositories" do |repository|
+RSpec.shared_examples "apt repositories" do |repository, params|
   it { is_expected.to contain_apt__source(repository).with(
-    'ensure'  => 'present',
-    'include' => {
-      'deb' => 'true',
-      'src' => 'false'
-    },
+    'location' => params[:location],
+    'ensure'   => 'present',
+    'include'  => {
+                    'deb' => 'true',
+                    'src' => 'false'
+                  },
+    'repos'    => params[:repos],
+    'release'  => params[:release]
   ) }
 
   it { is_expected.to contain_apt__source(repository).that_requires('Class[profiles::apt::keys]') }
@@ -28,12 +31,6 @@ describe 'profiles::apt::repositories' do
 
         it { is_expected.to contain_class('profiles::apt::keys') }
 
-        include_examples 'apt repositories', 'cultuurnet-tools'
-        include_examples 'apt repositories', 'rabbitmq'
-        include_examples 'apt repositories', 'erlang'
-        include_examples 'apt repositories', 'publiq-jenkins'
-        include_examples 'apt repositories', 'aptly'
-
         it { is_expected.to contain_apt__source('aptly').with(
           'location' => 'http://repo.aptly.info',
           'repos'    => 'main',
@@ -41,739 +38,84 @@ describe 'profiles::apt::repositories' do
         ) }
 
         case facts[:os]['release']['major']
-        when '14.04'
-          context "in the testing environment" do
-            let(:environment) { 'testing' }
-
-            it { is_expected.not_to contain_apt__ppa('ppa:deadsnakes/ppa') }
-
-            it { is_expected.to contain_apt__source('cultuurnet-tools').with(
-              'location' => 'http://apt.uitdatabank.be/tools-legacy-testing',
-              'repos'    => 'main',
-              'release'  => 'trusty'
-            ) }
-
-            it { is_expected.to contain_apt__source('php').with(
-              'location' => 'http://apt.uitdatabank.be/php-legacy-testing',
-              'repos'    => 'main',
-              'release'  => 'trusty'
-            ) }
-
-            it { is_expected.to contain_apt__source('rabbitmq').with(
-              'location' => 'http://apt.uitdatabank.be/rabbitmq-testing',
-              'repos'    => 'main',
-              'release'  => 'testing'
-            ) }
-
-            it { is_expected.to contain_apt__source('erlang').with(
-              'location' => 'http://apt.uitdatabank.be/erlang-testing',
-              'repos'    => 'main',
-              'release'  => 'trusty'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-jenkins').with(
-              'location' => 'https://apt.publiq.be/publiq-jenkins-testing',
-              'repos'    => 'main',
-              'release'  => 'trusty'
-            ) }
-
-            it { is_expected.to contain_apt__source('cultuurnet-omd').with(
-              'location' => 'http://apt.uitdatabank.be/omd-testing',
-              'repos'    => 'main',
-              'release'  => 'trusty'
-            ) }
-
-            it { is_expected.to contain_apt__source('cultuurnet-udb3').with(
-              'location' => 'http://apt.uitdatabank.be/udb3-testing',
-              'repos'    => 'main',
-              'release'  => 'trusty'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-prototypes').with(
-              'location' => 'https://apt.publiq.be/publiq-prototypes-testing',
-              'repos'    => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'  => 'trusty'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-infrastructure').with(
-              'location' => 'https://apt.publiq.be/publiq-infrastructure-testing',
-              'repos'    => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'  => 'trusty'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-infrastructure-legacy').with(
-              'location' => 'https://apt.publiq.be/publiq-infrastructure-legacy-testing',
-              'repos'    => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'  => 'trusty'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-appconfig').with(
-              'location' => 'https://apt.publiq.be/publiq-appconfig-testing',
-              'repos'    => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'  => 'trusty'
-            ) }
-          end
-
-        when '16.04'
-          context "in the acceptance environment" do
-            let(:environment) { 'acceptance' }
-
-            it { is_expected.not_to contain_apt__ppa('ppa:deadsnakes/ppa') }
-
-            it { is_expected.to contain_apt__source('cultuurnet-tools').with(
-              'location' => 'http://apt.uitdatabank.be/tools-acceptance',
-              'repos'    => 'main',
-              'release'  => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('php').with(
-              'location' => 'http://apt.uitdatabank.be/php-acceptance',
-              'repos'    => 'main',
-              'release'  => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('rabbitmq').with(
-              'location' => 'http://apt.uitdatabank.be/rabbitmq-acceptance',
-              'repos'    => 'main',
-              'release'  => 'testing'
-            ) }
-
-            it { is_expected.to contain_apt__source('erlang').with(
-              'location' => 'http://apt.uitdatabank.be/erlang-acceptance',
-              'repos'    => 'main',
-              'release'  => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-jenkins').with(
-              'location' => 'https://apt.publiq.be/publiq-jenkins-acceptance',
-              'repos'    => 'main',
-              'release'  => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('cultuurnet-omd').with(
-              'location' => 'http://apt.uitdatabank.be/omd-acceptance',
-              'repos'    => 'main',
-              'release'  => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('cultuurnet-udb3').with(
-              'location' => 'http://apt.uitdatabank.be/udb3-acceptance',
-              'repos'    => 'main',
-              'release'  => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('docker').with(
-              'location'     => 'https://apt.publiq.be/docker-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'stable',
-              'architecture' => 'amd64',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uit-mail-subscriptions').with(
-              'location'     => 'https://apt.publiq.be/uit-mail-subscriptions-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uit-notifications').with(
-              'location'     => 'https://apt.publiq.be/uit-notifications-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uit-recommender-frontend').with(
-              'location'     => 'https://apt.publiq.be/uit-recommender-frontend-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uit-frontend').with(
-              'location'     => 'https://apt.publiq.be/uit-frontend-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uit-frontend-nuxt3').with(
-              'location'     => 'https://apt.publiq.be/uit-frontend-nuxt3-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uit-api').with(
-              'location'     => 'https://apt.publiq.be/uit-api-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uit-cms').with(
-              'location'     => 'https://apt.publiq.be/uit-cms-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uitid-app').with(
-              'location'     => 'https://apt.publiq.be/uitid-app-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uitid-frontend').with(
-              'location'     => 'https://apt.publiq.be/uitid-frontend-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uitid-api').with(
-              'location'     => 'https://apt.publiq.be/uitid-api-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('widgetbeheer-frontend').with(
-              'location'     => 'https://apt.publiq.be/widgetbeheer-frontend-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('projectaanvraag-api').with(
-              'location'     => 'https://apt.publiq.be/projectaanvraag-api-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('projectaanvraag-frontend').with(
-              'location'     => 'https://apt.publiq.be/projectaanvraag-frontend-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uitpas-app').with(
-              'location'     => 'https://apt.publiq.be/uitpas-app-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uitpas-website-api').with(
-              'location'     => 'https://apt.publiq.be/uitpas-website-api-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uitpas-website-frontend').with(
-              'location'     => 'https://apt.publiq.be/uitpas-website-frontend-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uitpas-groepspas-frontend').with(
-              'location'     => 'https://apt.publiq.be/uitpas-groepspas-frontend-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('newrelic').with(
-              'location'     => 'https://apt.publiq.be/newrelic-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'non-free',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('newrelic-infra').with(
-              'location'     => 'https://apt.publiq.be/newrelic-infra-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('elastic-5.x').with(
-              'location'     => 'https://apt.publiq.be/elastic-5.x-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('elastic-8.x').with(
-              'location'     => 'https://apt.publiq.be/elastic-8.x-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('curator-articlelinker').with(
-              'location'     => 'https://apt.publiq.be/curator-articlelinker-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uitpas-balie-frontend').with(
-              'location'     => 'https://apt.publiq.be/uitpas-balie-frontend-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uitpas-balie-api').with(
-              'location'     => 'https://apt.publiq.be/uitpas-balie-api-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uitdatabank-angular-app').with(
-              'location'     => 'https://apt.publiq.be/uitdatabank-angular-app-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uitdatabank-newsletter-api').with(
-              'location'     => 'https://apt.publiq.be/uitdatabank-newsletter-api-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uitdatabank-search-api').with(
-              'location'     => 'https://apt.publiq.be/uitdatabank-search-api-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uitdatabank-geojson-data').with(
-              'location'     => 'https://apt.publiq.be/uitdatabank-geojson-data-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uitdatabank-frontend').with(
-              'location'     => 'https://apt.publiq.be/uitdatabank-frontend-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uitdatabank-jwt-provider').with(
-              'location'     => 'https://apt.publiq.be/uitdatabank-jwt-provider-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uitdatabank-jwt-provider-uitidv1').with(
-              'location'     => 'https://apt.publiq.be/uitdatabank-jwt-provider-uitidv1-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uitdatabank-movie-api-fetcher').with(
-              'location'     => 'https://apt.publiq.be/uitdatabank-movie-api-fetcher-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uitdatabank-entry-api').with(
-              'location'     => 'https://apt.publiq.be/uitdatabank-entry-api-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('uitdatabank-websocket-server').with(
-              'location'     => 'https://apt.publiq.be/uitdatabank-websocket-server-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-tools').with(
-              'location'     => 'https://apt.publiq.be/publiq-tools-xenial-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-versions').with(
-              'location'     => 'https://apt.publiq.be/publiq-versions-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-prototypes').with(
-              'location'     => 'https://apt.publiq.be/publiq-prototypes-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-infrastructure').with(
-              'location'     => 'https://apt.publiq.be/publiq-infrastructure-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-infrastructure-legacy').with(
-              'location'     => 'https://apt.publiq.be/publiq-infrastructure-legacy-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-appconfig').with(
-              'location'     => 'https://apt.publiq.be/publiq-appconfig-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-nodejs-14').with(
-              'location'     => 'https://apt.publiq.be/publiq-nodejs-14-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-nodejs-16').with(
-              'location'     => 'https://apt.publiq.be/publiq-nodejs-16-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-nodejs-18').with(
-              'location'     => 'https://apt.publiq.be/publiq-nodejs-18-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-          end
-
-          context "in the production environment" do
-            let(:environment) { 'production' }
-
-            it { is_expected.to contain_apt__source('museumpas-mspotm').with(
-              'location'     => 'https://apt.publiq.be/museumpas-mspotm-production',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-
-            it { is_expected.to contain_apt__source('museumpas-website').with(
-              'location'     => 'https://apt.publiq.be/museumpas-website-production',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
-            ) }
-          end
-
-        when '18.04'
-          context "in the testing environment" do
-            let(:environment) { 'testing' }
-
-            it { is_expected.to contain_apt__ppa('ppa:deadsnakes/ppa') }
-
-            it { is_expected.to contain_apt__source('publiq-nodejs-14').with(
-              'location'     => 'https://apt.publiq.be/publiq-nodejs-14-testing',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'bionic'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-tools').with(
-              'location'     => 'https://apt.publiq.be/publiq-tools-bionic-testing',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'bionic'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-nodejs-16').with(
-              'location'     => 'https://apt.publiq.be/publiq-nodejs-16-testing',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'bionic'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-nodejs-18').with(
-              'location'     => 'https://apt.publiq.be/publiq-nodejs-18-testing',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'bionic'
-            ) }
-          end
-
         when '20.04'
           context "in the testing environment" do
             let(:environment) { 'testing' }
 
+            include_examples 'apt repositories', 'focal', { :location => 'https://apt.publiq.be/focal-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'focal-updates', { :location => 'https://apt.publiq.be/focal-updates-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'focal-security', { :location => 'https://apt.publiq.be/focal-security-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'focal-backports', { :location => 'https://apt.publiq.be/focal-backports-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'puppet', { :location => 'https://apt.publiq.be/puppet-focal-testing', :repos => 'puppet', :release => 'focal' }
+
+            # Do we need to check for the architecture for these repositories?
+            include_examples 'apt repositories', 'docker', { :location => 'https://apt.publiq.be/docker-testing', :repos => 'stable', :release => 'focal' }
+            include_examples 'apt repositories', 'newrelic', { :location => 'https://apt.publiq.be/newrelic-testing', :repos => 'non-free', :release => 'focal' }
+            include_examples 'apt repositories', 'newrelic-infra', { :location => 'https://apt.publiq.be/newrelic-infra-testing', :repos => 'main', :release => 'focal' }
+
+            include_examples 'apt repositories', 'publiq-tools', { :location => 'https://apt.publiq.be/publiq-tools-focal-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'publiq-nodejs-14', { :location => 'https://apt.publiq.be/publiq-nodejs-14-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'publiq-nodejs-16', { :location => 'https://apt.publiq.be/publiq-nodejs-16-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'publiq-nodejs-18', { :location => 'https://apt.publiq.be/publiq-nodejs-18-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'elastic-5.x', { :location => 'https://apt.publiq.be/elastic-5.x-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'elastic-8.x', { :location => 'https://apt.publiq.be/elastic-8.x-testing', :repos => 'main', :release => 'focal' }
+
+            include_examples 'apt repositories', 'publiq-jenkins', { :location => 'https://apt.publiq.be/publiq-jenkins-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'publiq-prototypes', { :location => 'https://apt.publiq.be/publiq-prototypes-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'publiq-versions', { :location => 'https://apt.publiq.be/publiq-versions-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'publiq-infrastructure', { :location => 'https://apt.publiq.be/publiq-infrastructure-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'publiq-infrastructure-legacy', { :location => 'https://apt.publiq.be/publiq-infrastructure-legacy-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'publiq-appconfig', { :location => 'https://apt.publiq.be/publiq-appconfig-testing', :repos => 'main', :release => 'focal' }
+
+            include_examples 'apt repositories', 'museumpas-mspotm', { :location => 'https://apt.publiq.be/museumpas-mspotm-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'museumpas-website', { :location => 'https://apt.publiq.be/museumpas-website-testing', :repos => 'main', :release => 'focal' }
+
+            include_examples 'apt repositories', 'uitdatabank-angular-app', { :location => 'https://apt.publiq.be/uitdatabank-angular-app-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uitdatabank-newsletter-api', { :location => 'https://apt.publiq.be/uitdatabank-newsletter-api-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uitdatabank-search-api', { :location => 'https://apt.publiq.be/uitdatabank-search-api-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uitdatabank-geojson-data', { :location => 'https://apt.publiq.be/uitdatabank-geojson-data-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uitdatabank-frontend', { :location => 'https://apt.publiq.be/uitdatabank-frontend-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uitdatabank-jwt-provider', { :location => 'https://apt.publiq.be/uitdatabank-jwt-provider-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uitdatabank-jwt-provider-uitidv1', { :location => 'https://apt.publiq.be/uitdatabank-jwt-provider-uitidv1-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uitdatabank-movie-api-fetcher', { :location => 'https://apt.publiq.be/uitdatabank-movie-api-fetcher-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uitdatabank-entry-api', { :location => 'https://apt.publiq.be/uitdatabank-entry-api-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uitdatabank-websocket-server', { :location => 'https://apt.publiq.be/uitdatabank-websocket-server-testing', :repos => 'main', :release => 'focal' }
+
+            include_examples 'apt repositories', 'curator-articlelinker', { :location => 'https://apt.publiq.be/curator-articlelinker-testing', :repos => 'main', :release => 'focal' }
+
+            include_examples 'apt repositories', 'widgetbeheer-frontend', { :location => 'https://apt.publiq.be/widgetbeheer-frontend-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'projectaanvraag-api', { :location => 'https://apt.publiq.be/projectaanvraag-api-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'projectaanvraag-frontend', { :location => 'https://apt.publiq.be/projectaanvraag-frontend-testing', :repos => 'main', :release => 'focal' }
+
+            include_examples 'apt repositories', 'uitid-app', { :location => 'https://apt.publiq.be/uitid-app-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uitid-frontend', { :location => 'https://apt.publiq.be/uitid-frontend-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uitid-api', { :location => 'https://apt.publiq.be/uitid-api-testing', :repos => 'main', :release => 'focal' }
+
+            include_examples 'apt repositories', 'uitpas-app', { :location => 'https://apt.publiq.be/uitpas-app-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uitpas-website-api', { :location => 'https://apt.publiq.be/uitpas-website-api-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uitpas-website-frontend', { :location => 'https://apt.publiq.be/uitpas-website-frontend-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uitpas-groepspas-frontend', { :location => 'https://apt.publiq.be/uitpas-groepspas-frontend-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uitpas-balie-frontend', { :location => 'https://apt.publiq.be/uitpas-balie-frontend-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uitpas-balie-api', { :location => 'https://apt.publiq.be/uitpas-balie-api-testing', :repos => 'main', :release => 'focal' }
+
+            include_examples 'apt repositories', 'uit-mail-subscriptions', { :location => 'https://apt.publiq.be/uit-mail-subscriptions-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uit-notifications', { :location => 'https://apt.publiq.be/uit-notifications-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uit-recommender-frontend', { :location => 'https://apt.publiq.be/uit-recommender-frontend-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uit-frontend', { :location => 'https://apt.publiq.be/uit-frontend-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uit-frontend-nuxt3', { :location => 'https://apt.publiq.be/uit-frontend-nuxt3-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uit-api', { :location => 'https://apt.publiq.be/uit-api-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uit-cms', { :location => 'https://apt.publiq.be/uit-cms-testing', :repos => 'main', :release => 'focal' }
+          end
+
+          context 'in the acceptance environment' do
+            let(:environment) { 'acceptance' }
+
+            # How do we test a different environment?
             it { is_expected.to contain_apt__source('focal').with(
-              'location' => 'https://apt.publiq.be/focal-testing',
-              'repos'    => 'main',
-              'release'  => 'focal'
+              'location' => 'https://apt.publiq.be/focal-acceptance'
             ) }
 
-            it { is_expected.to contain_apt__source('focal-updates').with(
-              'location' => 'https://apt.publiq.be/focal-updates-testing',
-              'repos'    => 'main',
-              'release'  => 'focal'
-            ) }
-
-            it { is_expected.to contain_apt__source('focal-security').with(
-              'location' => 'https://apt.publiq.be/focal-security-testing',
-              'repos'    => 'main',
-              'release'  => 'focal'
-            ) }
-
-            it { is_expected.to contain_apt__source('focal-backports').with(
-              'location' => 'https://apt.publiq.be/focal-backports-testing',
-              'repos'    => 'main',
-              'release'  => 'focal'
-            ) }
-
-            it { is_expected.to contain_apt__source('puppet').with(
-              'location' => 'https://apt.publiq.be/puppet-focal-testing',
-              'repos'    => 'puppet',
-              'release'  => 'focal'
-            ) }
+            include_examples 'apt repositories', 'focal', { :location => 'https://apt.publiq.be/focal-acceptance', :repos => 'main', :release => 'focal' }
           end
         end
       end
