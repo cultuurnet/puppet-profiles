@@ -5,10 +5,10 @@ class profiles::puppet::agent (
 ) inherits ::profiles {
 
   $default_ini_setting_attributes = {
-    ensure  => 'present',
-    path    => '/etc/puppetlabs/puppet/puppet.conf',
-    notify  => Service['puppet']
-  }
+                                      ensure  => 'present',
+                                      path    => '/etc/puppetlabs/puppet/puppet.conf',
+                                      notify  => Service['puppet']
+                                    }
 
   if $puppetserver {
     ini_setting { 'puppetserver':

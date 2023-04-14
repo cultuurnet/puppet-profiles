@@ -5,9 +5,9 @@ class profiles::jenkins::cli::credentials (
 
   $config_path                 = '/etc/jenkins-cli/cli.conf'
   $default_shellvar_attributes = {
-    ensure   => 'present',
-    target   => $config_path
-  }
+                                   ensure   => 'present',
+                                   target   => $config_path
+                                 }
 
   shellvar { 'JENKINS_USER':
     variable => 'JENKINS_USER',

@@ -6,19 +6,19 @@ class profiles::jena_fuseki (
   Optional[Variant[Array[Hash],Hash]] $datasets         = undef
 ) inherits ::profiles {
 
+  contain ::profiles::java
+
   $default_shellvar_attributes = {
-    ensure  => 'present',
-    target  => '/etc/default/jena-fuseki',
-    require => File['jena-fuseki service defaults'],
-    notify  => Service['jena-fuseki']
-  }
+                                   ensure  => 'present',
+                                   target  => '/etc/default/jena-fuseki',
+                                   require => File['jena-fuseki service defaults'],
+                                   notify  => Service['jena-fuseki']
+                                 }
 
   realize Group['fuseki']
   realize User['fuseki']
 
   realize Apt::Source['publiq-tools']
-
-  contain ::profiles::java
 
   package { 'jena-fuseki':
     ensure  => $version,
