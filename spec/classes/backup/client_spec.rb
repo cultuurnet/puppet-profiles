@@ -12,14 +12,14 @@ describe 'profiles::backup::client' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_apt__source('cultuurnet-tools') }
+        it { is_expected.to contain_apt__source('publiq-tools') }
 
         it { is_expected.to contain_class('borgbackup').with(
           'configurations' => {}
           )
         }
 
-        it { is_expected.to contain_class('borgbackup').that_requires('Apt::Source[cultuurnet-tools]') }
+        it { is_expected.to contain_class('borgbackup').that_requires('Apt::Source[publiq-tools]') }
 
         it { is_expected.to contain_file('/root/.ssh').with(
           'ensure' => 'directory',

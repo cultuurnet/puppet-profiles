@@ -3,7 +3,7 @@ require 'spec_helper'
 RSpec.shared_examples "glassfish" do |flavor, version|
   it { is_expected.to compile.with_all_deps }
 
-  it { is_expected.to contain_apt__source('cultuurnet-tools') }
+  it { is_expected.to contain_apt__source('publiq-tools') }
 
   it { is_expected.to contain_class('profiles::java') }
 
@@ -26,8 +26,8 @@ RSpec.shared_examples "glassfish" do |flavor, version|
     )
   }
 
-  it { is_expected.to contain_package('ca-certificates-publiq').that_requires('Apt::Source[cultuurnet-tools]') }
-  it { is_expected.to contain_package('mysql-connector-java').that_requires('Apt::Source[cultuurnet-tools]') }
+  it { is_expected.to contain_package('ca-certificates-publiq').that_requires('Apt::Source[publiq-tools]') }
+  it { is_expected.to contain_package('mysql-connector-java').that_requires('Apt::Source[publiq-tools]') }
 
   it { is_expected.to contain_file('mysql-connector-java').with(
     'ensure' => 'link',

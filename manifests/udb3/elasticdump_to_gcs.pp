@@ -11,7 +11,7 @@ class profiles::udb3::elasticdump_to_gcs (
 
   include ::profiles::elasticdump
 
-  realize Apt::Source['cultuurnet-tools']
+  realize Apt::Source['publiq-tools']
 
   realize Package['gcsfuse']
 

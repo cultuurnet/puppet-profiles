@@ -15,12 +15,12 @@ describe 'profiles::icinga2' do
         it { is_expected.to_not contain_package('icinga2-plugins-systemd-service') }
       when '16.04'
 
-        it { is_expected.to contain_apt__source('cultuurnet-tools') }
+        it { is_expected.to contain_apt__source('publiq-tools') }
         it { is_expected.to contain_package('icinga2-plugins-systemd-service').with(
           'ensure' => 'present'
         ) }
 
-        it { is_expected.to contain_package('icinga2-plugins-systemd-service').that_requires('Apt::Source[cultuurnet-tools]') }
+        it { is_expected.to contain_package('icinga2-plugins-systemd-service').that_requires('Apt::Source[publiq-tools]') }
       end
     end
   end

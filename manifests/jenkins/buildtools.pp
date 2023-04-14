@@ -1,6 +1,6 @@
 class profiles::jenkins::buildtools inherits ::profiles {
 
-  realize Apt::Source['cultuurnet-tools']
+  realize Apt::Source['publiq-tools']
 
   realize Package['git']
   realize Package['jq']

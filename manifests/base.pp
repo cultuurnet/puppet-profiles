@@ -4,7 +4,7 @@ class profiles::base inherits ::profiles {
     target  => '/etc/environment'
   }
 
-  realize Apt::Source['cultuurnet-tools']
+  realize Apt::Source['publiq-tools']
   realize Package['ca-certificates-publiq']
   realize Package['policykit-1']
   realize Package['snapd']

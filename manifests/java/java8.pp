@@ -3,11 +3,11 @@ class profiles::java::java8 inherits ::profiles {
   $javahome = '/usr/lib/jvm/java-8-oracle/jre'
 
   realize Package['ca-certificates-publiq']
-  realize Apt::Source['cultuurnet-tools']
+  realize Apt::Source['publiq-tools']
 
   package { 'oracle-jdk8-archive':
     ensure  => '8u151',
-    require => Apt::Source['cultuurnet-tools']
+    require => Apt::Source['publiq-tools']
   }
 
   file { 'oracle-java8-installer.preseed':
