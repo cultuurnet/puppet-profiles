@@ -10,6 +10,7 @@ class profiles::jenkins::node(
 
   include ::profiles::java
   include ::profiles::jenkins::buildtools
+  include ::profiles::terraform
 
   $default_file_attributes = {
     require => Package['jenkins-swarm-client'],
