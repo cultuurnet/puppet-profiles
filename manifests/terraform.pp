@@ -1,5 +1,5 @@
 class profiles::terraform (
-  String $version = '1.4.5-1'
+  String $version = 'latest'
 ) inherits ::profiles {
 
   realize Apt::Source['publiq-tools']
