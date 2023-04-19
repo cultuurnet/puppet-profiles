@@ -103,9 +103,6 @@ fixtures:
     resqueweb:
       repo: 'https://github.com/cultuurnet/puppet-resqueweb.git'
       ref: 'a64a185'
-    websockets:
-      repo: 'https://github.com/cultuurnet/puppet-websockets.git'
-      ref: 'f4e4c59'
     aptly:
       repo: 'https://github.com/cultuurnet/puppet-aptly.git'
       ref: '74a1c76'
