@@ -62,7 +62,7 @@ fixtures:
       ref: '0.6.2'
     firewall:
       repo: 'puppetlabs/firewall'
-      ref: '1.9.0'
+      ref: '4.1.0'
     inifile:
       repo: 'puppetlabs/inifile'
       ref: '1.6.0'
