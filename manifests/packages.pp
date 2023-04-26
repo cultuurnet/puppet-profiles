@@ -76,23 +76,8 @@ class profiles::packages inherits ::profiles {
     ensure => 'present'
   }
 
-  @package { 'policykit-1':
-    ensure  => 'latest',
-    require => Apt::Source['publiq-tools']
-  }
-
-  @package { 'snapd':
-    ensure  => 'latest',
-    require => Apt::Source['publiq-tools']
-  }
-
   @package { 'qemu-user-static':
     ensure  => 'present'
-  }
-
-  @package { 'libssl1.1':
-    ensure  => 'present',
-    require => Apt::Source['publiq-tools']
   }
 
   @package { 'build-essential':

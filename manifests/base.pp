@@ -6,12 +6,6 @@ class profiles::base inherits ::profiles {
 
   realize Apt::Source['publiq-tools']
   realize Package['ca-certificates-publiq']
-  realize Package['policykit-1']
-  realize Package['snapd']
-
-  if $facts['operatingsystemrelease'] == '16.04' {
-    realize Package['libssl1.1']
-  }
 
   if $facts['ec2_metadata'] {
     $admin_user = 'ubuntu'

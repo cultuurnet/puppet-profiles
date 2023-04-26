@@ -18,27 +18,11 @@ describe 'profiles::base' do
 
       it { is_expected.to contain_package('ca-certificates-publiq') }
 
-      it { is_expected.to contain_package('policykit-1').with(
-        'ensure' => 'latest'
-      ) }
-
-      it { is_expected.to contain_package('snapd').with(
-        'ensure' => 'latest'
-      ) }
-
-      case facts[:os]['release']['major']
-        when '14.04'
-
-          it { is_expected.not_to contain_package('libssl1.1') }
-        when '16.04'
-
-          it { is_expected.to contain_package('libssl1.1') }
-      end
-
       it { is_expected.to contain_class('lvm').with(
         'manage_pkg' => true
         )
       }
+
 
       it { is_expected.to contain_file('data').with(
         'ensure' => 'directory',
