@@ -16,8 +16,6 @@ describe 'profiles::base' do
 
       it { is_expected.to contain_apt__source('cultuurnet-tools') }
 
-      it { is_expected.to contain_package('ca-certificates-publiq') }
-
       it { is_expected.to contain_package('policykit-1').with(
         'ensure' => 'latest'
       ) }
