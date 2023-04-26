@@ -4,9 +4,6 @@ class profiles::base inherits ::profiles {
     target  => '/etc/environment'
   }
 
-  realize Apt::Source['publiq-tools']
-  realize Package['ca-certificates-publiq']
-
   if $facts['ec2_metadata'] {
     $admin_user = 'ubuntu'
     realize Package['awscli']

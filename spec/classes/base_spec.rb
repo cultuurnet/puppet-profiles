@@ -14,16 +14,6 @@ describe 'profiles::base' do
         )
       }
 
-      it { is_expected.to contain_apt__source('publiq-tools') }
-
-      it { is_expected.to contain_package('ca-certificates-publiq') }
-
-      it { is_expected.to contain_class('lvm').with(
-        'manage_pkg' => true
-        )
-      }
-
-
       it { is_expected.to contain_file('data').with(
         'ensure' => 'directory',
         'group'  => 'root',
