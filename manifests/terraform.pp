@@ -1,5 +1,5 @@
 class profiles::terraform (
-  String $version           = 'latest'
+  String $version           = 'latest',
   String $terrafile_version = 'latest'
 ) inherits ::profiles {
 
