@@ -1,5 +1,6 @@
 class profiles::terraform (
-  String $version = 'latest'
+  String $version           = 'latest'
+  String $terrafile_version = 'latest'
 ) inherits ::profiles {
 
   realize Apt::Source['publiq-tools']
@@ -9,6 +10,6 @@ class profiles::terraform (
   }
 
   package { "terrafile":
-    ensure => latest
+    ensure => $terrafile_version
   }
 }
