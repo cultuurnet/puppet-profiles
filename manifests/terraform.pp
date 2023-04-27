@@ -7,4 +7,8 @@ class profiles::terraform (
   package { "terraform":
     ensure => $version
   }
+
+  package { "terrafile":
+    ensure => latest
+  }
 }
