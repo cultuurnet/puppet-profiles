@@ -35,15 +35,7 @@ describe 'profiles::packages' do
           'ensure' => 'present'
         ) }
 
-        it { is_expected.to contain_package('awscli').with(
-          'ensure' => 'present'
-        ) }
-
         it { is_expected.to contain_package('graphviz').with(
-          'ensure' => 'present'
-        ) }
-
-        it { is_expected.to contain_package('fontconfig').with(
           'ensure' => 'present'
         ) }
 
@@ -75,19 +67,7 @@ describe 'profiles::packages' do
           'ensure' => 'present'
         ) }
 
-        it { is_expected.to contain_package('policykit-1').with(
-          'ensure' => 'latest'
-        ) }
-
-        it { is_expected.to contain_package('snapd').with(
-          'ensure' => 'latest'
-        ) }
-
         it { is_expected.to contain_package('qemu-user-static').with(
-          'ensure' => 'present'
-        ) }
-
-        it { is_expected.to contain_package('libssl1.1').with(
           'ensure' => 'present'
         ) }
 
@@ -103,9 +83,6 @@ describe 'profiles::packages' do
         it { is_expected.to contain_package('liquibase').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('mysql-connector-java').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('yarn').that_requires('Apt::Source[publiq-tools]') }
-        it { is_expected.to contain_package('policykit-1').that_requires('Apt::Source[publiq-tools]') }
-        it { is_expected.to contain_package('snapd').that_requires('Apt::Source[publiq-tools]') }
-        it { is_expected.to contain_package('libssl1.1').that_requires('Apt::Source[publiq-tools]') }
       end
     end
   end

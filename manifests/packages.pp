@@ -31,15 +31,7 @@ class profiles::packages inherits ::profiles {
     ensure => 'present'
   }
 
-  @package { 'awscli':
-    ensure => 'present'
-  }
-
   @package { 'graphviz':
-    ensure => 'present'
-  }
-
-  @package { 'fontconfig':
     ensure => 'present'
   }
 
