@@ -13,34 +13,28 @@ class profiles::apt::repositories {
   # Ubuntu OS repositories
   case $::operatingsystemrelease {
     '20.04': {
-      @apt::source { 'focal':
+      apt::source { 'focal':
         location => "https://apt.publiq.be/focal-${environment}",
         release  => 'focal',
         repos    => 'main'
       }
 
-      @apt::source { 'focal-updates':
+      apt::source { 'focal-updates':
         location => "https://apt.publiq.be/focal-updates-${environment}",
         release  => 'focal',
         repos    => 'main'
       }
 
-      @apt::source { 'focal-security':
+      apt::source { 'focal-security':
         location => "https://apt.publiq.be/focal-security-${environment}",
         release  => 'focal',
         repos    => 'main'
       }
 
-      @apt::source { 'focal-backports':
+      apt::source { 'focal-backports':
         location => "https://apt.publiq.be/focal-backports-${environment}",
         release  => 'focal',
         repos    => 'main'
-      }
-
-      @apt::source { 'puppet':
-        location => "https://apt.publiq.be/puppet-focal-${environment}",
-        release  => 'focal',
-        repos    => 'puppet'
       }
     }
   }
@@ -50,6 +44,12 @@ class profiles::apt::repositories {
     location => 'http://repo.aptly.info',
     release  => 'squeeze',
     repos    => 'main'
+  }
+
+  @apt::source { 'puppet':
+    location => "https://apt.publiq.be/puppet-${facts['os']['distro']['codename']}-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'puppet'
   }
 
   @apt::source { 'docker':
