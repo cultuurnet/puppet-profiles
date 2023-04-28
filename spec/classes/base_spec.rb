@@ -9,20 +9,6 @@ describe 'profiles::base' do
 
       it { is_expected.to compile.with_all_deps }
 
-      it { is_expected.to contain_class('lvm').with(
-        'manage_pkg' => true
-        )
-      }
-
-      it { is_expected.to contain_file('data').with(
-        'ensure' => 'directory',
-        'group'  => 'root',
-        'mode'   => '0755',
-        'owner'  => 'root',
-        'path'   => '/data'
-        )
-      }
-
       it { is_expected.to contain_shellvar('system PATH').with(
         'ensure'   => 'present',
         'variable' => 'PATH',

@@ -18,18 +18,6 @@ class profiles::base inherits ::profiles {
     admin_user => $admin_user
   }
 
-  class { 'lvm':
-    manage_pkg => true
-  }
-
-  file { 'data':
-    ensure => 'directory',
-    group  => 'root',
-    mode   => '0755',
-    owner  => 'root',
-    path   => '/data'
-  }
-
   shellvar { 'system PATH':
     ensure   => 'present',
     variable => 'PATH',
