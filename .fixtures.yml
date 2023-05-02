@@ -84,6 +84,9 @@ fixtures:
     docker:
       repo: 'puppetlabs/docker'
       ref: '4.1.2'
+    timezone:
+      repo: 'bashtoni/timezone'
+      ref: '1.0.0'
   repositories:
     rabbitmq:
       repo: 'https://github.com/cultuurnet/puppetlabs-rabbitmq.git'
