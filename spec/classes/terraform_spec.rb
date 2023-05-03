@@ -22,16 +22,25 @@ describe 'profiles::terraform' do
           'ensure' => 'latest'
         ) }
 
-        it { is_expected.to contain_apt__source('publiq-tools').that_comes_before('Package[terraform]') }
+        it { is_expected.to contain_package('terrafile').with(
+          'ensure' => 'latest'
+        ) }
+
+        it { is_expected.to contain_apt__source('publiq-tools').that_comes_before('Package[terrafile]') }
       end
 
       context "with version => 1.2.3" do
         let(:params) { {
-          'version'          => '1.2.3'
+          'version'           => '1.2.3',
+          'terrafile_version' => '4.5.6'
         } }
 
         it { is_expected.to contain_package('terraform').with(
           'ensure' => '1.2.3'
+        ) }
+
+        it { is_expected.to contain_package('terrafile').with(
+          'ensure' => '4.5.6'
         ) }
       end
     end
