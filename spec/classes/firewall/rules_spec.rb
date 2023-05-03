@@ -18,6 +18,12 @@ describe 'profiles::firewall::rules' do
           'action' => 'accept'
         ) }
 
+        it { is_expected.to contain_firewall('200 accept NRPE traffic').with(
+          'proto'  => 'tcp',
+          'dport'  => '5666',
+          'action' => 'accept'
+        ) }
+
         it { is_expected.to contain_firewall('300 accept HTTP traffic').with(
           'proto' => 'tcp',
           'dport' => '80',
