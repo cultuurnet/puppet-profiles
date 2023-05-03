@@ -109,5 +109,8 @@ fixtures:
     aptly:
       repo: 'https://github.com/cultuurnet/puppet-aptly.git'
       ref: '74a1c76'
+    icinga2:
+      repo: 'https://github.com/cultuurnet/puppet-icinga2.git'
+      ref: '6815f51'
   symlinks:
     profiles: "#{source_dir}"
