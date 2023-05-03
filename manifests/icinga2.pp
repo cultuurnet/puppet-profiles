@@ -26,7 +26,7 @@ class profiles::icinga2 (
     target_dir       => '/etc/icinga2/objects/hosts',
     target_file_name => "${::fqdn}.conf",
     vars             => {
-      distro              => $facts['operatingsystem'],
+      distro              => $facts['os']['name'],
       os                  => $facts['kernel'],
       virtual_machine     => $facts['is_virtual'],
       puppet_certname     => $facts['clientcert'],
@@ -35,11 +35,11 @@ class profiles::icinga2 (
   }
 
   if versioncmp( $facts['os']['release']['major'], '16.04') >= 0 {
-    realize Apt::Source['cultuurnet-tools']
+    realize Apt::Source['publiq-tools']
 
     package { 'icinga2-plugins-systemd-service':
       ensure  => 'present',
-      require => Apt::Source['cultuurnet-tools']
+      require => Apt::Source['publiq-tools']
     }
   }
 }
