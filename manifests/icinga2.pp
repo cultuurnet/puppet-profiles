@@ -24,7 +24,7 @@ class profiles::icinga2 (
     display_name     => $facts['fqdn'],
     ipv4_address     => $facts['ipaddress'],
     target_dir       => '/etc/icinga2/objects/hosts',
-    target_file_name => "${::fqdn}.conf",
+    target_file_name => "${facts['fqdn']}.conf",
     vars             => {
       distro              => $facts['os']['name'],
       os                  => $facts['kernel'],
