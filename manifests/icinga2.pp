@@ -24,9 +24,9 @@ class profiles::icinga2 (
     display_name     => $facts['fqdn'],
     ipv4_address     => $facts['ipaddress'],
     target_dir       => '/etc/icinga2/objects/hosts',
-    target_file_name => "${::fqdn}.conf",
+    target_file_name => "${facts['fqdn']}.conf",
     vars             => {
-      distro              => $facts['operatingsystem'],
+      distro              => $facts['os']['name'],
       os                  => $facts['kernel'],
       virtual_machine     => $facts['is_virtual'],
       puppet_certname     => $facts['clientcert'],
