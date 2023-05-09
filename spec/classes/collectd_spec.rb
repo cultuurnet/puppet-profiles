@@ -25,6 +25,7 @@ describe 'profiles::collectd' do
 
           it { is_expected.to contain_class('collectd').with(
             'manage_repo'       => false,
+            'package_name'      => 'collectd-core',
             'purge'             => true,
             'purge_config'      => true,
             'recurse'           => true,
@@ -65,6 +66,7 @@ describe 'profiles::collectd' do
 
           it { is_expected.to contain_class('collectd').with(
             'manage_repo'       => false,
+            'package_name'      => 'collectd-core',
             'purge'             => true,
             'purge_config'      => true,
             'recurse'           => true,

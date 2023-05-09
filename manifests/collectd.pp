@@ -8,6 +8,7 @@ class profiles::collectd (
 
   class { '::collectd':
     manage_repo       => false,
+    package_name      => 'collectd-core',
     purge             => true,
     purge_config      => true,
     recurse           => true,
