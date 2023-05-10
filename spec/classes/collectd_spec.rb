@@ -16,6 +16,7 @@ describe 'profiles::collectd' do
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_class('profiles::collectd').with(
+            'enable'        => true,
             'graphite_host' => nil
           ) }
 
@@ -31,6 +32,8 @@ describe 'profiles::collectd' do
             'purge_config'      => true,
             'recurse'           => true,
             'fqdnlookup'        => false,
+            'service_ensure'    => 'running',
+            'service_enable'    => true,
             'collectd_hostname' => 'aaa.example.com',
             'typesdb'           => [ '/usr/share/collectd/types.db', '/etc/collectd/types.db']
           ) }
@@ -51,7 +54,8 @@ describe 'profiles::collectd' do
         end
 
         context "with graphite_host => graphite.example.com" do
-          let(:params) { { 'graphite_host' => 'graphite.example.com' } }
+          let(:params) { { 'graphite_host' => 'graphite.example.com' }}
+
 
           it { is_expected.to contain_class('collectd::plugin::write_graphite').with(
             'carbons' => { 'graphite.example.com' => {'graphitehost' => 'graphite.example.com'} }
@@ -62,8 +66,11 @@ describe 'profiles::collectd' do
       context "on host bbb.example.com" do
         let(:node) { 'bbb.example.com' }
 
-        context "with graphite_host => graphite2.example.com" do
-          let(:params) { { 'graphite_host' => 'graphite2.example.com' } }
+        context "with graphite_host => graphite2.example.com and enable => false" do
+          let(:params) { {
+            'enable'        => false,
+            'graphite_host' => 'graphite2.example.com'
+          } }
 
           it { is_expected.to contain_class('collectd').with(
             'manage_repo'       => false,
@@ -73,6 +80,8 @@ describe 'profiles::collectd' do
             'purge_config'      => true,
             'recurse'           => true,
             'fqdnlookup'        => false,
+            'service_ensure'    => 'stopped',
+            'service_enable'    => false,
             'collectd_hostname' => 'bbb.example.com',
             'typesdb'           => [ '/usr/share/collectd/types.db', '/etc/collectd/types.db']
           ) }
