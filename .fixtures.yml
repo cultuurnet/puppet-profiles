@@ -70,8 +70,8 @@ fixtures:
       repo: 'saz/sudo'
       ref: '6.0.0'
     systemd:
-      repo: 'camptocamp/systemd'
-      ref: '2.10.0'
+      repo: 'puppet/systemd'
+      ref: '4.2.0'
     alternatives:
       repo: 'puppet/alternatives'
       ref: '3.0.0'

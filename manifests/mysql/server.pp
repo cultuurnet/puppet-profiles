@@ -5,8 +5,7 @@ class profiles::mysql::server (
   systemd::dropin_file { 'mysql override.conf':
     unit          => 'mysql.service',
     filename      => 'override.conf',
-    content       => "[Service]\nLimitNOFILE=${max_open_files}",
-    daemon_reload => 'eager'
+    content       => "[Service]\nLimitNOFILE=${max_open_files}"
   }
 
   include ::mysql::server
