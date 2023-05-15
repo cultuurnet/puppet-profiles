@@ -12,7 +12,7 @@ describe 'profiles::publiq::appconfig::deployment' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_class('profiles::puppetserver::cache_clear') }
+        it { is_expected.to contain_class('profiles::puppet::puppetserver::cache_clear') }
 
         it { is_expected.to contain_apt__source('publiq-appconfig') }
 
@@ -37,9 +37,9 @@ describe 'profiles::publiq::appconfig::deployment' do
         end
 
         it { is_expected.to contain_package('publiq-appconfig').that_requires('Apt::Source[publiq-appconfig]') }
-        it { is_expected.to contain_package('publiq-appconfig').that_notifies('Class[profiles::puppetserver::cache_clear]') }
+        it { is_expected.to contain_package('publiq-appconfig').that_notifies('Class[profiles::puppet::puppetserver::cache_clear]') }
         it { is_expected.to contain_package('publiq-appconfig').that_notifies('Profiles::Deployment::Versions[profiles::publiq::appconfig::deployment]') }
-        it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::appconfig::deployment').that_requires('Class[profiles::puppetserver::cache_clear]') }
+        it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::appconfig::deployment').that_requires('Class[profiles::puppet::puppetserver::cache_clear]') }
       end
 
       context "with version => 1.2.3 and puppetdb_url => http://example.com:8000" do
