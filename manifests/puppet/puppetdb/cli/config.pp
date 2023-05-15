@@ -1,4 +1,4 @@
-define profiles::puppetdb::cli::config (
+define profiles::puppet::puppetdb::cli::config (
   Variant[String,Array[String]] $server_urls,
   Optional[String]              $certificate = undef,
   Optional[String]              $private_key = undef
@@ -101,7 +101,7 @@ define profiles::puppetdb::cli::config (
   file { "puppetdb-cli-config ${title}":
     ensure  => 'file',
     path    => "${config_rootdir}/client-tools/puppetdb.conf",
-    content => template('profiles/puppetdb/cli.conf.erb'),
+    content => template('profiles/puppet/puppetdb/cli.conf.erb'),
     *       => $default_file_attributes
   }
 }

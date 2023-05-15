@@ -27,7 +27,7 @@ class profiles::publiq::versions::deployment (
       notify  => Service['publiq-versions']
     }
 
-    profiles::puppetdb::cli::config { 'www-data':
+    profiles::puppet::puppetdb::cli::config { 'www-data':
       server_urls => $puppetdb_url,
       certificate => $certificate,
       private_key => $private_key,

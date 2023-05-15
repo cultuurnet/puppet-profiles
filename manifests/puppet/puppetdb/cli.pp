@@ -1,4 +1,4 @@
-class profiles::puppetdb::cli(
+class profiles::puppet::puppetdb::cli (
   Variant[String, Array[String]] $server_urls,
   Variant[String, Array[String]] $users       = 'root',
   Optional[String]               $certificate = undef,
@@ -13,7 +13,7 @@ class profiles::puppetdb::cli(
   }
 
   [$users].flatten.each |$user| {
-    profiles::puppetdb::cli::config { $user:
+    profiles::puppet::puppetdb::cli::config { $user:
       server_urls => $server_urls,
       certificate => $certificate,
       private_key => $private_key

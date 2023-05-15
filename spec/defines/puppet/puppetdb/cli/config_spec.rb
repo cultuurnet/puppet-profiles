@@ -67,7 +67,7 @@ RSpec.shared_examples "puppetdb-cli config file structure" do |user, rootdir|
   ) }
 end
 
-describe 'profiles::puppetdb::cli::config' do
+describe 'profiles::puppet::puppetdb::cli::config' do
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       let(:facts) { facts }
@@ -83,7 +83,7 @@ describe 'profiles::puppetdb::cli::config' do
 
           it { is_expected.to compile.with_all_deps }
 
-          it { is_expected.to contain_profiles__puppetdb__cli__config('root').with(
+          it { is_expected.to contain_profiles__puppet__puppetdb__cli__config('root').with(
             'server_urls' => 'https://example.com:1234',
             'certificate' => nil,
             'private_key' => nil

@@ -35,7 +35,7 @@ describe 'profiles::publiq::versions::deployment' do
           it { is_expected.to contain_package('publiq-versions').that_notifies('Service[publiq-versions]') }
           it { is_expected.to contain_package('publiq-versions').that_requires('Apt::Source[publiq-versions]') }
 
-          it { is_expected.to_not contain_profiles__puppetdb__cli__config('www-data') }
+          it { is_expected.to_not contain_profiles__puppet__puppetdb__cli__config('www-data') }
 
           it { is_expected.not_to contain_file('publiq-versions-env') }
 
@@ -86,7 +86,7 @@ describe 'profiles::publiq::versions::deployment' do
 
         it { is_expected.to contain_package('publiq-versions').with( 'ensure' => '1.2.3') }
 
-        it { is_expected.to contain_profiles__puppetdb__cli__config('www-data').with(
+        it { is_expected.to contain_profiles__puppet__puppetdb__cli__config('www-data').with(
           'server_urls' => 'http://localhost:9000',
           'certificate' => 'abc123',
           'private_key' => 'xyz789'
@@ -94,7 +94,7 @@ describe 'profiles::publiq::versions::deployment' do
 
         it { is_expected.to contain_file('publiq-versions-env').with_content('PUPPETDB_CONFIG_SOURCE=\'/var/www/.puppetlabs/client-tools/puppetdb.conf\'') }
 
-        it { is_expected.to contain_profiles__puppetdb__cli__config('www-data').that_notifies('Service[publiq-versions]') }
+        it { is_expected.to contain_profiles__puppet__puppetdb__cli__config('www-data').that_notifies('Service[publiq-versions]') }
         it { is_expected.to contain_file('publiq-versions-env').that_notifies('Service[publiq-versions]') }
 
         it { is_expected.to contain_file('publiq-versions-service-defaults').with_content(/^LISTEN_ADDRESS=0\.0\.0\.0$/) }

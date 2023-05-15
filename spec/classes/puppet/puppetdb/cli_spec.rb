@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'profiles::puppetdb::cli' do
+describe 'profiles::puppet::puppetdb::cli' do
   include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
@@ -18,7 +18,7 @@ describe 'profiles::puppetdb::cli' do
         it { is_expected.to contain_apt__source('publiq-tools') }
         it { is_expected.to contain_package('rubygem-puppetdb-cli').that_requires('Apt::Source[publiq-tools]') }
 
-        it { is_expected.to contain_class('profiles::puppetdb::cli').with(
+        it { is_expected.to contain_class('profiles::puppet::puppetdb::cli').with(
           'server_urls' => 'https://example.com:1234',
           'users'       => 'root',
           'certificate' => nil,
@@ -27,7 +27,7 @@ describe 'profiles::puppetdb::cli' do
 
         it { is_expected.to contain_package('rubygem-puppetdb-cli') }
 
-        it { is_expected.to contain_profiles__puppetdb__cli__config('root').with(
+        it { is_expected.to contain_profiles__puppet__puppetdb__cli__config('root').with(
           'server_urls' => 'https://example.com:1234',
           'certificate' => nil,
           'private_key' => nil
@@ -42,13 +42,13 @@ describe 'profiles::puppetdb::cli' do
           'private_key' => 'def456'
         } }
 
-        it { is_expected.to contain_profiles__puppetdb__cli__config('root').with(
+        it { is_expected.to contain_profiles__puppet__puppetdb__cli__config('root').with(
           'server_urls' => [ 'https://example.com:1234', 'https://example.com:5678'],
           'certificate' => 'abc123',
           'private_key' => 'def456'
         ) }
 
-        it { is_expected.to contain_profiles__puppetdb__cli__config('jenkins').with(
+        it { is_expected.to contain_profiles__puppet__puppetdb__cli__config('jenkins').with(
           'server_urls' => [ 'https://example.com:1234', 'https://example.com:5678'],
           'certificate' => 'abc123',
           'private_key' => 'def456'
