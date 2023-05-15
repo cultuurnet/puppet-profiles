@@ -18,7 +18,7 @@ describe 'profiles::publiq::infrastructure::deployment' do
           'repository' => 'publiq-infrastructure'
         ) }
 
-        it { is_expected.to contain_class('profiles::puppetserver::cache_clear') }
+        it { is_expected.to contain_class('profiles::puppet::puppetserver::cache_clear') }
 
         it { is_expected.to contain_apt__source('publiq-infrastructure') }
 
@@ -51,9 +51,9 @@ describe 'profiles::publiq::infrastructure::deployment' do
         end
 
         it { is_expected.to contain_package('publiq-infrastructure').that_requires('Apt::Source[publiq-infrastructure]') }
-        it { is_expected.to contain_package('publiq-infrastructure').that_notifies('Class[profiles::puppetserver::cache_clear]') }
+        it { is_expected.to contain_package('publiq-infrastructure').that_notifies('Class[profiles::puppet::puppetserver::cache_clear]') }
         it { is_expected.to contain_package('publiq-infrastructure').that_notifies('Profiles::Deployment::Versions[profiles::publiq::infrastructure::deployment]') }
-        it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::infrastructure::deployment').that_requires('Class[profiles::puppetserver::cache_clear]') }
+        it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::infrastructure::deployment').that_requires('Class[profiles::puppet::puppetserver::cache_clear]') }
       end
 
       context "with version => 1.2.3, repository => publiq-infrastructure-legacy and puppetdb_url => http://example.com:8000" do
