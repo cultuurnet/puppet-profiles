@@ -81,6 +81,16 @@ describe 'profiles::users' do
           'shell'          => '/bin/bash',
           'uid'            => '1002'
         ) }
+
+        it { is_expected.to contain_user('puppet').with(
+          'ensure'         => 'present',
+          'gid'            => 'puppet',
+          'home'           => '/opt/puppetlabs/server/data/puppetserver',
+          'managehome'     => false,
+          'purge_ssh_keys' => true,
+          'shell'          => '/usr/sbin/nologin',
+          'uid'            => '452'
+        ) }
       end
     end
   end

@@ -59,6 +59,12 @@ describe 'profiles::groups' do
           'gid'    => '1002'
           )
         }
+
+        it { is_expected.to contain_group('puppet').with(
+          'ensure' => 'present',
+          'gid'    => '452'
+          )
+        }
       end
     end
   end

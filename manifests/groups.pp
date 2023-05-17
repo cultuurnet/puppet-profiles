@@ -15,6 +15,11 @@ class profiles::groups inherits ::profiles {
     gid    => '451'
   }
 
+  @group { 'puppet':
+    ensure => 'present',
+    gid    => '452'
+  }
+
   @group { 'ubuntu':
     ensure => 'present',
     gid    => '1000'

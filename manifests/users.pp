@@ -20,6 +20,16 @@ class profiles::users inherits ::profiles {
     uid            => '451'
   }
 
+  @user { 'puppet':
+    ensure         => 'present',
+    gid            => 'puppet',
+    home           => '/opt/puppetlabs/server/data/puppetserver',
+    managehome     => false,
+    purge_ssh_keys => true,
+    shell          => '/usr/sbin/nologin',
+    uid            => '452'
+  }
+
   @user { 'ubuntu':
     ensure         => 'present',
     gid            => 'ubuntu',
