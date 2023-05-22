@@ -3,7 +3,6 @@ class profiles::puppet::puppetdb::cli (
   Variant[String, Array[String]] $users       = 'root',
   Optional[String]               $certificate = undef,
   Optional[String]               $private_key = undef
-
 ) inherits ::profiles {
 
   realize Apt::Source['publiq-tools']
