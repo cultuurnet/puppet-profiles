@@ -42,13 +42,6 @@ class profiles::puppet::agent (
     *       => $default_ini_setting_attributes
   }
 
-  ini_setting { 'agent preferred_serialization_format':
-    setting => 'preferred_serialization_format',
-    section => 'agent',
-    value   => 'pson',
-    *       => $default_ini_setting_attributes
-  }
-
   service { 'puppet':
     ensure    => $service_ensure,
     enable    => $service_enable,
