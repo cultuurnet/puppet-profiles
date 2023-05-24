@@ -105,7 +105,7 @@ image_id = instance_details.reservations[0].instances[0].image_id
 
 log.info "[#{clientcert}] Validating image ID #{image_id}"
 
-unless TRUSTED_IMAGE_IDS.include? image_id
+unless TRUSTED_AMIS.include? image_id
   log.fatal "[#{clientcert}] Failed signing CSR as image ID #{image_id} is not trusted"
   exit 6
 end
