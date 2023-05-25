@@ -1,5 +1,5 @@
 class profiles::puppet::puppetserver (
-  String                                   $version           = 'latest',
+  String                                   $version           = 'installed',
   Optional[Variant[String, Array[String]]] $dns_alt_names     = undef,
   Boolean                                  $autosign          = false,
   Variant[String, Array[String]]           $trusted_amis      = [],

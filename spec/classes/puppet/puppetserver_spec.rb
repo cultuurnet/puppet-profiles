@@ -16,7 +16,7 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_class('profiles::puppet::puppetserver').with(
-            'version'           => 'latest',
+            'version'           => 'installed',
             'dns_alt_names'     => nil,
             'autosign'          => false,
             'trusted_amis'      => [],
@@ -34,7 +34,7 @@ describe 'profiles::puppet::puppetserver' do
 
           it { is_expected.to contain_class('profiles::java') }
           it { is_expected.to contain_package('puppetserver').with(
-            'ensure' => 'latest'
+            'ensure' => 'installed'
           ) }
 
           it { is_expected.to contain_ini_setting('puppetserver ca_server').with(
