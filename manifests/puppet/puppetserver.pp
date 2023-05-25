@@ -74,7 +74,8 @@ class profiles::puppet::puppetserver (
 
   package { 'puppetserver':
     ensure  => $version,
-    require => [Group['puppet'], User['puppet'], Apt::Source['puppet'], Class['profiles::java']]
+    require => [Group['puppet'], User['puppet'], Apt::Source['puppet'], Class['profiles::java']],
+    notify  => Service['puppetserver']
   }
 
   if $initial_heap_size {
@@ -100,7 +101,6 @@ class profiles::puppet::puppetserver (
   service { 'puppetserver':
     ensure    => $service_ensure,
     enable    => $service_enable,
-    hasstatus => true,
-    subscribe => Package['puppetserver']
+    hasstatus => true
   }
 }
