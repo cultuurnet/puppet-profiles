@@ -22,8 +22,7 @@ describe 'profiles::puppet::puppetserver' do
             'trusted_amis'      => [],
             'initial_heap_size' => nil,
             'maximum_heap_size' => nil,
-            'service_enable'    => true,
-            'service_ensure'    => 'running'
+            'service_status'    => 'running'
           ) }
 
           it { is_expected.to contain_group('puppet') }
@@ -80,7 +79,7 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to contain_ini_setting('puppetserver ca_server').that_notifies('Service[puppetserver]') }
         end
 
-        context "with version => 1.2.3, dns_alt_names => puppet.services.example.com, autosign => true, trusted_amis => ami-123, initial_heap_size => 512m, maximum_heap_size => 512m, service_enable => false and service_ensure => stopped" do
+        context "with version => 1.2.3, dns_alt_names => puppet.services.example.com, autosign => true, trusted_amis => ami-123, initial_heap_size => 512m, maximum_heap_size => 512m and service_status => stopped" do
           let(:params) { {
             'version'           => '1.2.3',
             'dns_alt_names'     => 'puppet.services.example.com',
@@ -88,8 +87,7 @@ describe 'profiles::puppet::puppetserver' do
             'trusted_amis'      => 'ami-123',
             'initial_heap_size' => '512m',
             'maximum_heap_size' => '512m',
-            'service_enable'    => false,
-            'service_ensure'    => 'stopped'
+            'service_status'    => 'stopped'
           } }
 
           it { is_expected.to compile.with_all_deps }

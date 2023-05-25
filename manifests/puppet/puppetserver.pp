@@ -5,8 +5,7 @@ class profiles::puppet::puppetserver (
   Variant[String, Array[String]]           $trusted_amis      = [],
   Optional[String]                         $initial_heap_size = undef,
   Optional[String]                         $maximum_heap_size = undef,
-  Boolean                                  $service_enable    = true,
-  String                                   $service_ensure    = 'running'
+  Enum['running', 'stopped']               $service_status    = 'running'
 
 ) inherits ::profiles {
 
@@ -98,8 +97,13 @@ class profiles::puppet::puppetserver (
     }
   }
 
+  $service_enable = $service_status ? {
+    'running' => true,
+    'stopped' => false
+  }
+
   service { 'puppetserver':
-    ensure    => $service_ensure,
+    ensure    => $service_status,
     enable    => $service_enable,
     hasstatus => true
   }
