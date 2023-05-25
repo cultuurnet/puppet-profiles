@@ -20,6 +20,16 @@ class profiles::groups inherits ::profiles {
     gid    => '452'
   }
 
+  @group { 'postgres':
+    ensure => 'present',
+    gid    => '453'
+  }
+
+  @group { 'puppetdb':
+    ensure => 'present',
+    gid    => '454'
+  }
+
   @group { 'ubuntu':
     ensure => 'present',
     gid    => '1000'

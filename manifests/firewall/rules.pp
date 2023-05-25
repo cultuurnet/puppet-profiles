@@ -30,10 +30,15 @@ class profiles::firewall::rules inherits ::profiles {
     action => 'accept'
   }
 
+  @firewall { '300 accept puppetdb HTTPS traffic':
+    proto  => 'tcp',
+    dport  => '8081',
+    action => 'accept'
+  }
+
   @firewall { '300 accept SMTP traffic':
     proto  => 'tcp',
     dport  => '25',
     action => 'accept'
   }
-
 }

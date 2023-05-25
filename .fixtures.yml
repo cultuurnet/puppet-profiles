@@ -90,6 +90,12 @@ fixtures:
     collectd:
       repo: 'puppet/collectd'
       ref: '7.0.0'
+    postgresql:
+      repo: 'puppetlabs/postgresql'
+      ref: '8.2.1'
+    puppetdb:
+      repo: 'puppetlabs/puppetdb'
+      ref: '7.13.0'
   repositories:
     rabbitmq:
       repo: 'https://github.com/cultuurnet/puppetlabs-rabbitmq.git'

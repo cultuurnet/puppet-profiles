@@ -47,6 +47,12 @@ describe 'profiles::firewall::rules' do
           'dport' => '8140',
           'action' => 'accept'
         ) }
+
+        it { is_expected.to contain_firewall('300 accept puppetdb HTTPS traffic').with(
+          'proto' => 'tcp',
+          'dport' => '8081',
+          'action' => 'accept'
+        ) }
       end
     end
   end
