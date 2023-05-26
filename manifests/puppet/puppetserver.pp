@@ -22,7 +22,7 @@ class profiles::puppet::puppetserver (
 
   realize Firewall['300 accept puppetserver HTTPS traffic']
 
-  contain profiles::java
+  include profiles::java
 
   ini_setting { 'puppetserver ca_server':
     ensure  => 'present',

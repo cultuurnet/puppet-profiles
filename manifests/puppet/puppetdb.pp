@@ -21,7 +21,7 @@ class profiles::puppet::puppetdb (
 
   realize Firewall['300 accept puppetdb HTTPS traffic']
 
-  contain profiles::java
+  include profiles::java
 
   class { 'puppetdb::globals':
     version => $version
