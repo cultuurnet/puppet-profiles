@@ -1,4 +1,5 @@
 class profiles::puppet::agent (
+  String                     $version        = 'installed',
   Optional[String]           $puppetserver   = undef,
   Enum['running', 'stopped'] $service_ensure = 'stopped',
   Boolean                    $service_enable = false
@@ -17,6 +18,14 @@ class profiles::puppet::agent (
       value   => $puppetserver,
       *       => $default_ini_setting_attributes
     }
+  }
+
+  realize Apt::Source['puppet']
+
+  package { 'puppet-agent':
+    ensure  => $version,
+    require => Apt::Source['puppet'],
+    notify  => Service['puppet']
   }
 
   if $facts['ec2_metadata'] {

@@ -13,18 +13,25 @@ describe 'profiles::puppet::agent' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::puppet::agent').with(
+          'version'        => 'installed',
           'puppetserver'   => nil,
           'service_ensure' => 'stopped',
           'service_enable' => false
         ) }
 
-        it { is_expected.not_to contain_ini_setting('puppetserver') }
+        it { is_expected.to contain_apt__source('puppet') }
+
+        it { is_expected.to contain_package('puppet-agent').with(
+          'ensure'    => 'installed'
+        ) }
 
         it { is_expected.to contain_service('puppet').with(
           'ensure'    => 'stopped',
           'enable'    => false,
           'hasstatus' => true
         ) }
+
+        it { is_expected.not_to contain_ini_setting('puppetserver') }
 
         it { is_expected.to contain_ini_setting('agent certificate_revocation').with(
           'ensure'  => 'present',
@@ -42,18 +49,25 @@ describe 'profiles::puppet::agent' do
           'value'   => false
         ) }
 
+        it { is_expected.to contain_apt__source('puppet').that_comes_before('Package[puppet-agent]') }
+        it { is_expected.to contain_package('puppet-agent').that_notifies('Service[puppet]') }
         it { is_expected.to contain_ini_setting('agent certificate_revocation').that_notifies('Service[puppet]') }
         it { is_expected.to contain_ini_setting('agent usecacheonfailure').that_notifies('Service[puppet]') }
       end
 
-      context "with puppetserver => puppet.example.com, service_ensure => running and service_enable => true" do
+      context "with version => 6.23.1, puppetserver => puppet.example.com, service_ensure => running and service_enable => true" do
         let(:params) { {
+          'version'        => '6.23.1',
           'puppetserver'   => 'puppet.example.com',
           'service_ensure' => 'running',
           'service_enable' => true
         } }
 
         it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to contain_package('puppet-agent').with(
+          'ensure'    => '6.23.1'
+        ) }
 
         it { is_expected.to contain_service('puppet').with(
           'ensure'    => 'running',
