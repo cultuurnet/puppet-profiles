@@ -49,10 +49,20 @@ describe 'profiles::puppet::agent' do
           'value'   => false
         ) }
 
+        it { is_expected.to contain_ini_subsetting('agent reports').with(
+          'ensure'               => 'present',
+          'path'                 => '/etc/puppetlabs/puppet/puppet.conf',
+          'section'              => 'main',
+          'setting'              => 'reports',
+          'subsetting'           => 'store',
+          'subsetting_separator' => ','
+        ) }
+
         it { is_expected.to contain_apt__source('puppet').that_comes_before('Package[puppet-agent]') }
         it { is_expected.to contain_package('puppet-agent').that_notifies('Service[puppet]') }
         it { is_expected.to contain_ini_setting('agent certificate_revocation').that_notifies('Service[puppet]') }
         it { is_expected.to contain_ini_setting('agent usecacheonfailure').that_notifies('Service[puppet]') }
+        it { is_expected.to contain_ini_subsetting('agent reports').that_notifies('Service[puppet]') }
       end
 
       context "with version => 6.23.1, puppetserver => puppet.example.com, service_ensure => running and service_enable => true" do
