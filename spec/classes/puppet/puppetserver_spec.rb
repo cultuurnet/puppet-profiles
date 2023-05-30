@@ -20,6 +20,8 @@ describe 'profiles::puppet::puppetserver' do
             'dns_alt_names'     => nil,
             'autosign'          => false,
             'trusted_amis'      => [],
+            'trusted_certnames' => [],
+            'puppetdb_url'      => nil,
             'initial_heap_size' => nil,
             'maximum_heap_size' => nil,
             'service_status'    => 'running'
@@ -51,13 +53,6 @@ describe 'profiles::puppet::puppetserver' do
             'setting' => 'dns_alt_names'
           ) }
 
-          it { is_expected.to contain_ini_setting('puppetserver autosign').with(
-            'ensure'  => 'absent',
-            'path'    => '/etc/puppetlabs/puppet/puppet.conf',
-            'section' => 'server',
-            'setting' => 'autosign'
-          ) }
-
           it { is_expected.to contain_service('puppetserver').with(
             'ensure'    => 'running',
             'enable'    => true,
@@ -67,7 +62,15 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.not_to contain_augeas('puppetserver_initial_heap_size') }
           it { is_expected.not_to contain_augeas('puppetserver_maximum_heap_size') }
 
-          it { is_expected.not_to contain_class('profiles::puppet::puppetserver::autosign') }
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::autosign').with(
+            'autosign'          => false,
+            'trusted_amis'      => [],
+            'trusted_certnames' => []
+          ) }
+
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').with(
+            'url' => nil
+          ) }
 
           it { is_expected.to contain_package('puppetserver').that_requires('Group[puppet]') }
           it { is_expected.to contain_package('puppetserver').that_requires('User[puppet]') }
@@ -76,15 +79,19 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to contain_package('puppetserver').that_requires('Apt::Source[puppet]') }
           it { is_expected.to contain_package('puppetserver').that_requires('Class[profiles::java]') }
           it { is_expected.to contain_package('puppetserver').that_notifies('Service[puppetserver]') }
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::autosign').that_notifies('Service[puppetserver]') }
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').that_notifies('Service[puppetserver]') }
           it { is_expected.to contain_ini_setting('puppetserver ca_server').that_notifies('Service[puppetserver]') }
         end
 
-        context "with version => 1.2.3, dns_alt_names => puppet.services.example.com, autosign => true, trusted_amis => ami-123, initial_heap_size => 512m, maximum_heap_size => 512m and service_status => stopped" do
+        context "with version => 1.2.3, dns_alt_names => puppet.services.example.com, autosign => true, trusted_amis => ami-123, trusted_certnames => [], puppetdb_url => https://puppetdb.example.com:8081, initial_heap_size => 512m, maximum_heap_size => 512m and service_status => stopped" do
           let(:params) { {
             'version'           => '1.2.3',
             'dns_alt_names'     => 'puppet.services.example.com',
             'autosign'          => true,
             'trusted_amis'      => 'ami-123',
+            'trusted_certnames' => [],
+            'puppetdb_url'      => 'https://puppetdb.example.com:8081',
             'initial_heap_size' => '512m',
             'maximum_heap_size' => '512m',
             'service_status'    => 'stopped'
@@ -118,16 +125,14 @@ describe 'profiles::puppet::puppetserver' do
             'value'   => 'puppet.services.example.com'
           ) }
 
-          it { is_expected.to contain_ini_setting('puppetserver autosign').with(
-            'ensure'  => 'present',
-            'path'    => '/etc/puppetlabs/puppet/puppet.conf',
-            'section' => 'server',
-            'setting' => 'autosign',
-            'value'   => '/etc/puppetlabs/puppet/autosign'
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::autosign').with(
+            'autosign'          => true,
+            'trusted_certnames' => [],
+            'trusted_amis'      => 'ami-123'
           ) }
 
-          it { is_expected.to contain_class('profiles::puppet::puppetserver::autosign').with(
-           'trusted_amis' => 'ami-123'
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').with(
+            'url' => 'https://puppetdb.example.com:8081'
           ) }
 
           it { is_expected.to contain_service('puppetserver').with(
@@ -136,8 +141,8 @@ describe 'profiles::puppet::puppetserver' do
             'hasstatus' => true
           ) }
 
-          it { is_expected.to contain_ini_setting('puppetserver autosign').that_notifies('Service[puppetserver]') }
           it { is_expected.to contain_class('profiles::puppet::puppetserver::autosign').that_notifies('Service[puppetserver]') }
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').that_notifies('Service[puppetserver]') }
           it { is_expected.to contain_augeas('puppetserver_initial_heap_size').that_notifies('Service[puppetserver]') }
           it { is_expected.to contain_augeas('puppetserver_maximum_heap_size').that_notifies('Service[puppetserver]') }
         end
@@ -146,11 +151,13 @@ describe 'profiles::puppet::puppetserver' do
       context "on host bbb.example.com" do
         let(:node) { 'bbb.example.com' }
 
-        context "with autosign => true, trusted_amis => [ami-234, ami-567] and dns_alt_names => [puppet1.services.example.com, puppet2.services.example.com]" do
+        context "with autosign => true, trusted_amis => [], trusted_certnames => [a.example.com, b.example.com, *.c.example.com], puppetdb_url => https://foo.example.com:1234 and dns_alt_names => [puppet1.services.example.com, puppet2.services.example.com]" do
           let(:params) { {
-            'autosign'      => true,
-            'trusted_amis'  => ['ami-234', 'ami-567'],
-            'dns_alt_names' => ['puppet1.services.example.com', 'puppet2.services.example.com'],
+            'autosign'          => true,
+            'trusted_amis'      => [],
+            'trusted_certnames' => ['a.example.com', 'b.example.com', '*.c.example.com'],
+            'puppetdb_url'      => 'https://foo.example.com:1234',
+            'dns_alt_names'     => ['puppet1.services.example.com', 'puppet2.services.example.com'],
           } }
 
           it { is_expected.to contain_ini_setting('puppetserver ca_server').with(
@@ -162,7 +169,13 @@ describe 'profiles::puppet::puppetserver' do
           ) }
 
           it { is_expected.to contain_class('profiles::puppet::puppetserver::autosign').with(
-           'trusted_amis' => ['ami-234', 'ami-567']
+            'autosign'          => true,
+            'trusted_amis'      => [],
+            'trusted_certnames' => ['a.example.com', 'b.example.com', '*.c.example.com'],
+          ) }
+
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').with(
+            'url' => 'https://foo.example.com:1234'
           ) }
 
           it { is_expected.to contain_ini_setting('puppetserver dns_alt_names').with(
@@ -172,6 +185,29 @@ describe 'profiles::puppet::puppetserver' do
             'setting' => 'dns_alt_names',
             'value'   => 'puppet1.services.example.com,puppet2.services.example.com'
           ) }
+        end
+
+        context "with autosign => true and trusted_amis => ['ami-234', 'ami-567']" do
+          let(:params) { {
+            'autosign'          => true,
+            'trusted_amis'      => ['ami-234', 'ami-567'],
+          } }
+
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::autosign').with(
+            'autosign'          => true,
+            'trusted_amis'      => ['ami-234', 'ami-567'],
+            'trusted_certnames' => []
+          ) }
+        end
+
+        context "with autosign => true, trusted_certnames => [a.example.com, b.example.com, *.c.example.com] and trusted_amis => ['ami-234', 'ami-567']" do
+          let(:params) { {
+            'autosign'          => true,
+            'trusted_amis'      => ['ami-234', 'ami-567'],
+            'trusted_certnames' => ['a.example.com', 'b.example.com', '*.c.example.com'],
+          } }
+
+          it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects either a value for parameter 'trusted_amis' or 'trusted_certnames' when autosigning/) }
         end
       end
     end

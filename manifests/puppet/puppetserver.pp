@@ -3,11 +3,17 @@ class profiles::puppet::puppetserver (
   Optional[Variant[String, Array[String]]] $dns_alt_names     = undef,
   Boolean                                  $autosign          = false,
   Variant[String, Array[String]]           $trusted_amis      = [],
+  Variant[String, Array[String]]           $trusted_certnames = [],
+  Optional[String]                         $puppetdb_url      = undef,
   Optional[String]                         $initial_heap_size = undef,
   Optional[String]                         $maximum_heap_size = undef,
   Enum['running', 'stopped']               $service_status    = 'running'
 
 ) inherits ::profiles {
+
+  if ($autosign and !empty($trusted_amis) and !empty($trusted_certnames)) {
+    fail("Class Profiles::Puppet::Puppetserver expects either a value for parameter 'trusted_amis' or 'trusted_certnames' when autosigning")
+  }
 
   $default_ini_setting_attributes = {
                                       path    => '/etc/puppetlabs/puppet/puppet.conf',
@@ -50,25 +56,16 @@ class profiles::puppet::puppetserver (
     }
   }
 
-  if $autosign {
-    class { 'profiles::puppet::puppetserver::autosign':
-      trusted_amis => $trusted_amis,
-      notify       => Service['puppetserver']
-    }
+  class { 'profiles::puppet::puppetserver::autosign':
+    autosign          => $autosign,
+    trusted_amis      => $trusted_amis,
+    trusted_certnames => $trusted_certnames,
+    notify            => Service['puppetserver']
+  }
 
-    ini_setting { 'puppetserver autosign':
-      ensure  => 'present',
-      setting => 'autosign',
-      value   => '/etc/puppetlabs/puppet/autosign',
-      notify  => Service['puppetserver'],
-      *       => $default_ini_setting_attributes
-    }
-  } else {
-    ini_setting { 'puppetserver autosign':
-      ensure  => 'absent',
-      setting => 'autosign',
-      *       => $default_ini_setting_attributes
-    }
+  class { 'profiles::puppet::puppetserver::puppetdb':
+    url    => $puppetdb_url,
+    notify => Service['puppetserver']
   }
 
   package { 'puppetserver':
