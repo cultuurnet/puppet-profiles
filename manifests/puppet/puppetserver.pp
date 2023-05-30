@@ -5,6 +5,7 @@ class profiles::puppet::puppetserver (
   Variant[String, Array[String]]           $trusted_amis      = [],
   Variant[String, Array[String]]           $trusted_certnames = [],
   Optional[String]                         $puppetdb_url      = undef,
+  Optional[String]                         $puppetdb_version  = undef,
   Optional[String]                         $initial_heap_size = undef,
   Optional[String]                         $maximum_heap_size = undef,
   Enum['running', 'stopped']               $service_status    = 'running'
@@ -64,8 +65,9 @@ class profiles::puppet::puppetserver (
   }
 
   class { 'profiles::puppet::puppetserver::puppetdb':
-    url    => $puppetdb_url,
-    notify => Service['puppetserver']
+    url     => $puppetdb_url,
+    version => $puppetdb_version,
+    notify  => Service['puppetserver']
   }
 
   package { 'puppetserver':

@@ -22,6 +22,7 @@ describe 'profiles::puppet::puppetserver' do
             'trusted_amis'      => [],
             'trusted_certnames' => [],
             'puppetdb_url'      => nil,
+            'puppetdb_version'  => nil,
             'initial_heap_size' => nil,
             'maximum_heap_size' => nil,
             'service_status'    => 'running'
@@ -69,7 +70,8 @@ describe 'profiles::puppet::puppetserver' do
           ) }
 
           it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').with(
-            'url' => nil
+            'url'     => nil,
+            'version' => nil
           ) }
 
           it { is_expected.to contain_package('puppetserver').that_requires('Group[puppet]') }
@@ -132,7 +134,8 @@ describe 'profiles::puppet::puppetserver' do
           ) }
 
           it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').with(
-            'url' => 'https://puppetdb.example.com:8081'
+            'url'     => 'https://puppetdb.example.com:8081',
+            'version' => nil
           ) }
 
           it { is_expected.to contain_service('puppetserver').with(
@@ -151,12 +154,13 @@ describe 'profiles::puppet::puppetserver' do
       context "on host bbb.example.com" do
         let(:node) { 'bbb.example.com' }
 
-        context "with autosign => true, trusted_amis => [], trusted_certnames => [a.example.com, b.example.com, *.c.example.com], puppetdb_url => https://foo.example.com:1234 and dns_alt_names => [puppet1.services.example.com, puppet2.services.example.com]" do
+        context "with autosign => true, trusted_amis => [], trusted_certnames => [a.example.com, b.example.com, *.c.example.com], puppetdb_url => https://foo.example.com:1234, puppetdb_version => 7.8.9 and dns_alt_names => [puppet1.services.example.com, puppet2.services.example.com]" do
           let(:params) { {
             'autosign'          => true,
             'trusted_amis'      => [],
             'trusted_certnames' => ['a.example.com', 'b.example.com', '*.c.example.com'],
             'puppetdb_url'      => 'https://foo.example.com:1234',
+            'puppetdb_version'  => '7.8.9',
             'dns_alt_names'     => ['puppet1.services.example.com', 'puppet2.services.example.com'],
           } }
 
@@ -175,7 +179,8 @@ describe 'profiles::puppet::puppetserver' do
           ) }
 
           it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').with(
-            'url' => 'https://foo.example.com:1234'
+            'url'     => 'https://foo.example.com:1234',
+            'version' => '7.8.9'
           ) }
 
           it { is_expected.to contain_ini_setting('puppetserver dns_alt_names').with(
