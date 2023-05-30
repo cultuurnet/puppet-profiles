@@ -51,12 +51,11 @@ class profiles::puppet::agent (
     *       => $default_ini_setting_attributes
   }
 
-  ini_subsetting { 'agent reports':
-    setting              => 'reports',
-    section              => 'main',
-    subsetting           => 'store',
-    subsetting_separator => ',',
-    *                    => $default_ini_setting_attributes
+  ini_setting { 'agent reports':
+    setting => 'reports',
+    section => 'main',
+    value   => 'store',
+    *       => $default_ini_setting_attributes
   }
 
   service { 'puppet':
