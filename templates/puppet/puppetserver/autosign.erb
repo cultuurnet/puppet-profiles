@@ -70,11 +70,6 @@ unless defined? csr_extensions['pp_region']
   exit 2
 end
 
-unless defined? csr_extensions['pp_image_name']
-  log.fatal "[#{clientcert}] Failed signing CSR due to no `pp_image_name` data supplied"
-  exit 3
-end
-
 # Fetch the instance details from AWS
 log.info "[#{clientcert}] Fetching instance information for instance ID #{csr_extensions['pp_instance_id']} from region #{csr_extensions['pp_region']}..."
 
@@ -90,14 +85,14 @@ instance_details = client_ec2.describe_instances({
 
 if instance_details.reservations.empty?
   log.fatal "[#{clientcert}] Failed signing CSR as instance ID #{csr_extensions['pp_instance_id']} does not exist under this account in this region"
-  exit 4
+  exit 3
 end
 
 # Ensure that we are trying to sign a running instance. Not much use signing
 # anything that has already been terminated...
 unless instance_details.reservations[0].instances[0].state.name == 'running'
   log.fatal "[#{clientcert}] Failed signing CSR as instance #{csr_extensions['pp_instance_id']} not running (current state: #{instance_details.reservations[0].instances[0].state.name})"
-  exit 5
+  exit 4
 end
 
 # Validate the instance by checking if the AMI id is trusted
@@ -107,7 +102,7 @@ log.info "[#{clientcert}] Validating image ID #{image_id}"
 
 unless TRUSTED_AMIS.include? image_id
   log.fatal "[#{clientcert}] Failed signing CSR as image ID #{image_id} is not trusted"
-  exit 6
+  exit 5
 end
 
 # All checks passed! Approve certificate signing request for signing
