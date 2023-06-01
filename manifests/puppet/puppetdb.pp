@@ -1,5 +1,6 @@
 class profiles::puppet::puppetdb (
   String                     $version           = 'installed',
+  Optional[String]           $certname          = $facts['fqdn'],
   Optional[String]           $initial_heap_size = undef,
   Optional[String]           $maximum_heap_size = undef,
   Enum['running', 'stopped'] $service_status    = 'running'
@@ -23,6 +24,12 @@ class profiles::puppet::puppetdb (
 
   include profiles::java
 
+  class { 'profiles::puppet::puppetdb::certificate':
+    certname => $certname,
+    before   => Class['puppetdb::globals'],
+    notify   => Class['puppetdb::server']
+  }
+
   class { 'puppetdb::globals':
     version => $version
   }
@@ -39,6 +46,11 @@ class profiles::puppet::puppetdb (
     manage_firewall         => false,
     puppetdb_service_status => $service_status,
     java_args               => $java_args,
+    ssl_deploy_certs        => false,
+    ssl_set_cert_paths      => true,
+    ssl_ca_cert_path        => '/etc/puppetlabs/puppetdb/ssl/ca.pem',
+    ssl_cert_path           => "/etc/puppetlabs/puppetdb/ssl/${certname}.pem",
+    ssl_key_path            => "/etc/puppetlabs/puppetdb/ssl/${certname}.key",
     require                 => [Group['puppetdb'], User['puppetdb'], Apt::Source['puppet'], Class['profiles::java'], Class['puppetdb::globals'], Class['puppetdb::database::postgresql']]
   }
 }
