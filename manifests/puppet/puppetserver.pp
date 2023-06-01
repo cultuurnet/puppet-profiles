@@ -40,6 +40,22 @@ class profiles::puppet::puppetserver (
     *       => $default_ini_setting_attributes
   }
 
+  ini_setting { 'puppetserver environmentpath':
+    ensure  => 'present',
+    setting => 'environmentpath',
+    value   => '$codedir/environments',
+    notify  => Service['puppetserver'],
+    *       => $default_ini_setting_attributes
+  }
+
+  ini_setting { 'puppetserver environment_timeout':
+    ensure  => 'present',
+    setting => 'environment_timeout',
+    value   => 'unlimited',
+    notify  => Service['puppetserver'],
+    *       => $default_ini_setting_attributes
+  }
+
   if $dns_alt_names {
     ini_setting { 'puppetserver dns_alt_names':
       ensure  => 'present',

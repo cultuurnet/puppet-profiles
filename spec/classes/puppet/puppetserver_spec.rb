@@ -54,6 +54,22 @@ describe 'profiles::puppet::puppetserver' do
             'setting' => 'dns_alt_names'
           ) }
 
+          it { is_expected.to contain_ini_setting('puppetserver environmentpath').with(
+            'ensure'  => 'present',
+            'path'    => '/etc/puppetlabs/puppet/puppet.conf',
+            'section' => 'server',
+            'setting' => 'environmentpath',
+            'value'   => '$codedir/environments'
+          ) }
+
+          it { is_expected.to contain_ini_setting('puppetserver environment_timeout').with(
+            'ensure'  => 'present',
+            'path'    => '/etc/puppetlabs/puppet/puppet.conf',
+            'section' => 'server',
+            'setting' => 'environment_timeout',
+            'value'   => 'unlimited'
+          ) }
+
           it { is_expected.to contain_service('puppetserver').with(
             'ensure'    => 'running',
             'enable'    => true,
@@ -84,6 +100,8 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to contain_class('profiles::puppet::puppetserver::autosign').that_notifies('Service[puppetserver]') }
           it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').that_notifies('Service[puppetserver]') }
           it { is_expected.to contain_ini_setting('puppetserver ca_server').that_notifies('Service[puppetserver]') }
+          it { is_expected.to contain_ini_setting('puppetserver environmentpath').that_notifies('Service[puppetserver]') }
+          it { is_expected.to contain_ini_setting('puppetserver environment_timeout').that_notifies('Service[puppetserver]') }
         end
 
         context "with version => 1.2.3, dns_alt_names => puppet.services.example.com, autosign => true, trusted_amis => ami-123, trusted_certnames => [], puppetdb_url => https://puppetdb.example.com:8081, initial_heap_size => 512m, maximum_heap_size => 512m and service_status => stopped" do
