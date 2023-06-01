@@ -32,7 +32,7 @@ class profiles::puppet::puppetserver::autosign (
 
       package { 'aws-sdk-ec2':
         ensure   => 'installed',
-        provider => 'puppetserver_gem'
+        provider => 'puppet_gem'
       }
     } else {
       $autosign_ini_setting = true

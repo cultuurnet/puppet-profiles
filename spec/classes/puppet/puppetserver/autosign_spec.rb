@@ -108,7 +108,7 @@ describe 'profiles::puppet::puppetserver::autosign' do
 
         it { is_expected.to contain_package('aws-sdk-ec2').with(
           'ensure'   => 'installed',
-          'provider' => 'puppetserver_gem'
+          'provider' => 'puppet_gem'
         ) }
 
         it { is_expected.to contain_group('puppet').that_comes_before('File[puppetserver autosign]') }
