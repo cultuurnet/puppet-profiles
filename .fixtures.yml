@@ -96,6 +96,9 @@ fixtures:
     puppetdb:
       repo: 'puppetlabs/puppetdb'
       ref: '7.13.0'
+    puppet_certificate:
+      repo: 'puppet/puppet_certificate'
+      ref: '1.0.0'
   repositories:
     rabbitmq:
       repo: 'https://github.com/cultuurnet/puppetlabs-rabbitmq.git'
