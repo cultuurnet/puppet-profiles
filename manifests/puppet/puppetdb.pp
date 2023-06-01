@@ -26,7 +26,6 @@ class profiles::puppet::puppetdb (
 
   class { 'profiles::puppet::puppetdb::certificate':
     certname => $certname,
-    before   => Class['puppetdb::globals'],
     notify   => Class['puppetdb::server']
   }
 
@@ -48,9 +47,6 @@ class profiles::puppet::puppetdb (
     java_args               => $java_args,
     ssl_deploy_certs        => false,
     ssl_set_cert_paths      => true,
-    ssl_ca_cert_path        => '/etc/puppetlabs/puppetdb/ssl/ca.pem',
-    ssl_cert_path           => "/etc/puppetlabs/puppetdb/ssl/${certname}.pem",
-    ssl_key_path            => "/etc/puppetlabs/puppetdb/ssl/${certname}.key",
     require                 => [Group['puppetdb'], User['puppetdb'], Apt::Source['puppet'], Class['profiles::java'], Class['puppetdb::globals'], Class['puppetdb::database::postgresql']]
   }
 }

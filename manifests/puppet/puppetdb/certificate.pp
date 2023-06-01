@@ -5,9 +5,14 @@ class profiles::puppet::puppetdb::certificate (
   realize Group['puppetdb']
   realize User['puppetdb']
 
-  puppet_certificate { $certname:
-    ensure      => 'present',
-    waitforcert =>  60
+  if !($certname == $facts['fqdn']) {
+    puppet_certificate { $certname:
+      ensure      => 'present',
+      waitforcert =>  60
+    }
+
+    Puppet_certificate[$certname] -> File['puppetdb private_key']
+    Puppet_certificate[$certname] -> File['puppetdb certificate']
   }
 
   file { 'puppetdb confdir':
@@ -40,33 +45,21 @@ class profiles::puppet::puppetdb::certificate (
 
   file { 'puppetdb certificate':
     ensure  => 'file',
-    path    => "/etc/puppetlabs/puppetdb/ssl/${certname}.pem",
+    path    => '/etc/puppetlabs/puppetdb/ssl/public.pem',
     owner   => 'puppetdb',
     group   => 'puppetdb',
     mode    => '0600',
     source  => "file:///etc/puppetlabs/puppet/ssl/certs/${certname}.pem",
-    require => [Group['puppetdb'], User['puppetdb'], File['puppetdb ssldir'], Puppet_certificate[$certname]]
+    require => [Group['puppetdb'], User['puppetdb'], File['puppetdb ssldir']]
   }
 
   file { 'puppetdb private_key':
     ensure  => 'file',
-    path    => "/etc/puppetlabs/puppetdb/ssl/${certname}.key",
+    path    => '/etc/puppetlabs/puppetdb/ssl/private.pem',
     owner   => 'puppetdb',
     group   => 'puppetdb',
     mode    => '0600',
     source  => "file:///etc/puppetlabs/puppet/ssl/private_keys/${certname}.pem",
-    require => [Group['puppetdb'], User['puppetdb'], File['puppetdb ssldir'], Puppet_certificate[$certname]]
-  }
-
-  file { 'puppetdb default certificate':
-    ensure  => 'absent',
-    path    => '/etc/puppetlabs/puppetdb/ssl/public.pem',
-    require => File['puppetdb ssldir']
-  }
-
-  file { 'puppetdb default private_key':
-    ensure  => 'absent',
-    path    => '/etc/puppetlabs/puppetdb/ssl/private.pem',
-    require => File['puppetdb ssldir']
+    require => [Group['puppetdb'], User['puppetdb'], File['puppetdb ssldir']]
   }
 }

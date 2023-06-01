@@ -51,13 +51,9 @@ describe 'profiles::puppet::puppetdb' do
             'manage_firewall'         => false,
             'java_args'               => {},
             'ssl_deploy_certs'        => false,
-            'ssl_set_cert_paths'      => true,
-            'ssl_ca_cert_path'        => '/etc/puppetlabs/puppetdb/ssl/ca.pem',
-            'ssl_cert_path'           => '/etc/puppetlabs/puppetdb/ssl/aaa.example.com.pem',
-            'ssl_key_path'            => '/etc/puppetlabs/puppetdb/ssl/aaa.example.com.key',
+            'ssl_set_cert_paths'      => true
           ) }
 
-          it { is_expected.to contain_class('profiles::puppet::puppetdb::certificate').that_comes_before('Class[puppetdb::globals]') }
           it { is_expected.to contain_class('profiles::puppet::puppetdb::certificate').that_notifies('Class[puppetdb::server]') }
 
           it { is_expected.to contain_class('puppetdb::database::postgresql').that_requires('Group[postgres]') }
@@ -102,10 +98,7 @@ describe 'profiles::puppet::puppetdb' do
                                            '-Xmx' => '512m'
                                          },
             'ssl_deploy_certs'        => false,
-            'ssl_set_cert_paths'      => true,
-            'ssl_ca_cert_path'        => '/etc/puppetlabs/puppetdb/ssl/ca.pem',
-            'ssl_cert_path'           => '/etc/puppetlabs/puppetdb/ssl/puppetdb.example.com.pem',
-            'ssl_key_path'            => '/etc/puppetlabs/puppetdb/ssl/puppetdb.example.com.key',
+            'ssl_set_cert_paths'      => true
           ) }
         end
       end
