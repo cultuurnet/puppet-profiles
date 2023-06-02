@@ -14,15 +14,9 @@ class profiles::ssh(
     value  => 'no'
   }
 
-  if versioncmp( $facts['os']['release']['major'], '16.04') >= 0 {
-    sshd_config { 'PubkeyAcceptedKeyTypes':
-      ensure => 'present',
-      value  => '+rsa-sha2-256,rsa-sha2-512'
-    }
-  } else {
-    sshd_config { 'PubkeyAcceptedKeyTypes':
-      ensure => 'absent'
-    }
+  sshd_config { 'PubkeyAcceptedKeyTypes':
+    ensure => 'present',
+    value  => '+rsa-sha2-256,rsa-sha2-512'
   }
 
   service { 'ssh':

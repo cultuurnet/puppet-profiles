@@ -84,8 +84,6 @@ describe 'profiles::postfix' do
         it { is_expected.not_to contain_firewall('300 accept SMTP traffic') }
 
         it { is_expected.not_to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
-
-        include_examples 'postfix daemon directory', facts[:os]['release']['major']
       end
 
       context "without tls" do
@@ -117,8 +115,6 @@ describe 'profiles::postfix' do
           'dport' => '25',
           'action' => 'accept'
         ) }
-
-        include_examples 'postfix daemon directory', facts[:os]['release']['major']
 
         context "on host with public ip address 5.6.7.8 with inet_protocols => ipv4, listen_addresses => 127.0.0.1 and relayhost => [mailhost.example.com]" do
           let(:facts) {

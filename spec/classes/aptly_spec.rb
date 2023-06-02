@@ -68,22 +68,15 @@ describe 'profiles::aptly' do
           'minute'      => '0'
         ) }
 
-        case facts[:os]['release']['major']
-        when '14.04'
+        it { is_expected.to contain_systemd__unit_file('aptly-api.service').with(
+          'enable' => true,
+          'active' => true
+        ) }
 
-          it { is_expected.to have_systemd__unit_file_resource_count(0) }
-        when '16.04'
+        it { is_expected.to contain_systemd__unit_file('aptly-api.service').with_content(/WorkingDirectory=\/var\/aptly/) }
+        it { is_expected.to contain_systemd__unit_file('aptly-api.service').with_content(/ExecStart=\/usr\/bin\/aptly api serve -listen=127.0.0.1:8081 -no-lock/) }
 
-          it { is_expected.to contain_systemd__unit_file('aptly-api.service').with(
-            'enable' => true,
-            'active' => true
-          ) }
-
-          it { is_expected.to contain_systemd__unit_file('aptly-api.service').with_content(/WorkingDirectory=\/var\/aptly/) }
-          it { is_expected.to contain_systemd__unit_file('aptly-api.service').with_content(/ExecStart=\/usr\/bin\/aptly api serve -listen=127.0.0.1:8081 -no-lock/) }
-
-          it { is_expected.to contain_systemd__unit_file('aptly-api.service').that_requires('Class[aptly]') }
-        end
+        it { is_expected.to contain_systemd__unit_file('aptly-api.service').that_requires('Class[aptly]') }
 
         it { is_expected.to contain_class('aptly').that_requires('User[aptly]') }
 

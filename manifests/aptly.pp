@@ -39,13 +39,11 @@ class profiles::aptly (
     s3_publish_endpoints => $publish_endpoints
   }
 
-  if versioncmp( $facts['os']['release']['major'], '16.04') >= 0 {
-    systemd::unit_file { 'aptly-api.service':
-      content => template('profiles/aptly/aptly-api.service.erb'),
-      enable  => true,
-      active  => true,
-      require => Class['aptly']
-    }
+  systemd::unit_file { 'aptly-api.service':
+    content => template('profiles/aptly/aptly-api.service.erb'),
+    enable  => true,
+    active  => true,
+    require => Class['aptly']
   }
 
   if $certificate {
