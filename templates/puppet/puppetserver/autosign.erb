@@ -73,11 +73,10 @@ end
 # Fetch the instance details from AWS
 log.info "[#{clientcert}] Fetching instance information for instance ID #{csr_extensions['pp_instance_id']} from region #{csr_extensions['pp_region']}..."
 
-Aws.config.update({
-  region: csr_extensions['pp_region'],
+client_ec2 = Aws::EC2::Client.new({
+  region: csr_extensions['pp_region']
 })
 
-client_ec2 = Aws::EC2::Client.new()
 instance_details = client_ec2.describe_instances({
   instance_ids: [csr_extensions['pp_instance_id']],
   dry_run: false,
