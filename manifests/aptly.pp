@@ -105,7 +105,7 @@ class profiles::aptly (
     }
   }
 
-  if !($mirrors.empty) {
+  if !empty($mirrors) {
     # This is a somewhat hackish way to add trusted GPG keys to the aptly trustedkeys.gpg keyring.
     # The signature verification in aptly uses gpgv which defaults to this keyring for trusted keys.
     # The aptly commandline can override the default, but the API does not allow this.
