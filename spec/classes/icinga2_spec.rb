@@ -10,10 +10,10 @@ describe 'profiles::icinga2' do
       context "on host aaa.example.com with ipaddress 1.2.3.4 in the acceptance environment" do
         let(:node) { 'aaa.example.com' }
         let(:environment) { 'acceptance' }
+
         let(:facts) {
           super().merge(
-            'fqdn'      => 'aaa.example.com',
-            'ipaddress' => '1.2.3.4'
+            'networking' => { 'ip' => '1.2.3.4' }
           )
         }
 
@@ -81,10 +81,10 @@ describe 'profiles::icinga2' do
       context "on host bbb.example.com with ipaddress 4.3.2.1 in the testing environment" do
         let(:node) { 'bbb.example.com' }
         let(:environment) { 'testing' }
+
         let(:facts) {
           super().merge(
-            'fqdn'      => 'bbb.example.com',
-            'ipaddress' => '4.3.2.1'
+            'networking' => { 'ip' => '4.3.2.1' }
           )
         }
 
