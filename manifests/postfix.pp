@@ -2,7 +2,7 @@ class profiles::postfix (
   Boolean                        $tls                   = true,
   Enum['ipv4', 'ipv6', 'all']    $inet_protocols        = 'all',
   String                         $listen_addresses      = 'all',
-  String                         $relayhost             = '',
+  Optional[String]               $relayhost             = undef,
   Boolean                        $aliases               = false,
   Variant[String, Array[String]] $aliases_domains       = [],
   Variant[String, Array[String]] $additional_mynetworks = [],
@@ -13,12 +13,8 @@ class profiles::postfix (
 
   $config_directory = '/etc/postfix'
   $mynetworks_file  = "${config_directory}/mynetworks"
-  $daemon_directory = $facts['os']['distro']['codename'] ? {
-    'trusty' => '/usr/lib/postfix',
-    default  => '/usr/lib/postfix/sbin'
-  }
 
-  if $relayhost == '' {
+  if !($relayhost) {
     $relay_host  = false
     $my_networks = "${config_directory}/mynetworks"
 
@@ -52,7 +48,7 @@ class profiles::postfix (
   if $aliases {
     if $tls {
       class { '::postfix::server':
-        daemon_directory        => $daemon_directory,
+        daemon_directory        => '/usr/lib/postfix/sbin',
         inet_protocols          => $inet_protocols,
         inet_interfaces         => $listen_addresses,
         virtual_alias_maps      => [ "hash:${config_directory}/virtual"],
@@ -69,7 +65,7 @@ class profiles::postfix (
       }
     } else {
       class { '::postfix::server':
-        daemon_directory      => $daemon_directory,
+        daemon_directory      => '/usr/lib/postfix/sbin',
         inet_protocols        => $inet_protocols,
         inet_interfaces       => $listen_addresses,
         virtual_alias_maps    => [ "hash:${config_directory}/virtual"],
@@ -89,7 +85,7 @@ class profiles::postfix (
   } else {
     if $tls {
       class { '::postfix::server':
-        daemon_directory        => $daemon_directory,
+        daemon_directory        => '/usr/lib/postfix/sbin',
         inet_protocols          => $inet_protocols,
         inet_interfaces         => $listen_addresses,
         relayhost               => $relay_host,
@@ -104,7 +100,7 @@ class profiles::postfix (
       }
     } else {
       class { '::postfix::server':
-        daemon_directory   => $daemon_directory,
+        daemon_directory   => '/usr/lib/postfix/sbin',
         inet_protocols     => $inet_protocols,
         inet_interfaces    => $listen_addresses,
         relayhost          => $relay_host,
