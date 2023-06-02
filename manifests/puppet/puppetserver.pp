@@ -34,7 +34,7 @@ class profiles::puppet::puppetserver (
   ini_setting { 'puppetserver ca_server':
     ensure  => 'present',
     setting => 'ca_server',
-    value   => $facts['fqdn'],
+    value   => $facts['networking']['fqdn'],
     before  => Package['puppetserver'],
     notify  => Service['puppetserver'],
     *       => $default_ini_setting_attributes

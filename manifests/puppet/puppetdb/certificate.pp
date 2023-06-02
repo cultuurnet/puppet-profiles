@@ -5,7 +5,7 @@ class profiles::puppet::puppetdb::certificate (
   realize Group['puppetdb']
   realize User['puppetdb']
 
-  if !($certname == $facts['fqdn']) {
+  if !($certname == $facts['networking']['fqdn']) {
     puppet_certificate { $certname:
       ensure      => 'present',
       waitforcert =>  60

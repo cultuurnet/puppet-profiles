@@ -19,9 +19,9 @@ class profiles::udb3::search (
   # TODO: firewall rules
 
   if $facts['ec2_metadata'] {
-    $http_hosts = [ $facts['ipaddress_eth0'], '127.0.0.1']
+    $interface = 'eth0'
   } else {
-    $http_hosts = [ $facts['ipaddress_eth1'], '127.0.0.1']
+    $interface = 'eth1'
   }
 
   class { 'profiles::elasticsearch':
@@ -34,7 +34,7 @@ class profiles::udb3::search (
     jvm_options => [ "-Xms${elasticsearch_initial_heap_size}", "-Xmx${elasticsearch_max_heap_size}"],
     datadir     => '/data/elasticsearch/es01',
     config      => {
-      'http.host'    => $http_hosts,
+      'http.host'    => [ $facts['networking'][$interface]['ip'], '127.0.0.1'],
       'network.host' => [ '127.0.0.1']
     }
   }

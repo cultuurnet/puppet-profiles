@@ -1,6 +1,6 @@
 class profiles::puppet::puppetdb (
   String                     $version           = 'installed',
-  Optional[String]           $certname          = $facts['fqdn'],
+  Optional[String]           $certname          = $facts['networking']['fqdn'],
   Optional[String]           $initial_heap_size = undef,
   Optional[String]           $maximum_heap_size = undef,
   Enum['running', 'stopped'] $service_status    = 'running'
