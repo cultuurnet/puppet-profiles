@@ -1,6 +1,6 @@
 class profiles::apache::mod::php inherits ::profiles {
 
-  case $::operatingsystemrelease {
+  case $facts['os']['release']['major'] {
     '14.04', '16.04': {
       realize Apt::Source['php']
 

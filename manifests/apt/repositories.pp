@@ -11,7 +11,7 @@ class profiles::apt::repositories {
   }
 
   # Ubuntu OS repositories
-  case $::operatingsystemrelease {
+  case $facts['os']['release']['major'] {
     '20.04': {
       apt::source { 'focal':
         location => "https://apt.publiq.be/focal-${environment}",

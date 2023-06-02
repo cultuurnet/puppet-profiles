@@ -7,7 +7,7 @@ class profiles::php (
 
   realize Apt::Source['publiq-tools']
 
-  case $::operatingsystemrelease {
+  case $facts['os']['release']['major'] {
     '14.04', '16.04': {
       realize Apt::Source['php']
 

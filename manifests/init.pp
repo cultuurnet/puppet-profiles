@@ -1,7 +1,7 @@
 class profiles {
-  case $::operatingsystem {
+  case $facts['os']['name'] {
     'Ubuntu': {
-      case $::operatingsystemrelease {
+      case $facts['os']['release']['major'] {
         '20.04': {
           contain ::profiles::groups
           contain ::profiles::users
@@ -12,12 +12,12 @@ class profiles {
           class { 'profiles::apt::repositories': stage => 'pre' }
         }
         default: {
-          fail("Ubuntu ${::operatingsystemrelease} not supported")
+          fail("Ubuntu ${facts['os']['release']['major']} not supported")
         }
       }
     }
     default: {
-      fail("${::operatingsystem} not supported")
+      fail("${facts['os']['name']} not supported")
     }
   }
 }
