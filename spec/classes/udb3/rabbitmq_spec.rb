@@ -20,6 +20,23 @@ RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin
     )
   }
 
+  it { is_expected.to contain_rabbitmq_queue("rdf.q.udb3-domain-events@#{vhost}").with(
+    'user'        => admin_user,
+    'password'    => admin_password,
+    'durable'     => true,
+    'auto_delete' => false
+    )
+  }
+
+  it { is_expected.to contain_rabbitmq_binding("udb3.x.domain-events@rdf.q.udb3-domain-events@#{vhost}").with(
+    'user'             => admin_user,
+    'password'         => admin_password,
+    'destination_type' => 'queue',
+    'routing_key'      => '#',
+    'arguments'        => {}
+    )
+  }
+
   it { is_expected.to contain_rabbitmq_queue("uitpas.q.udb3-domain-events-api@#{vhost}").with(
     'user'        => admin_user,
     'password'    => admin_password,
