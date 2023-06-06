@@ -2,9 +2,10 @@ class profiles::sudo inherits ::profiles {
 
   class { '::sudo': }
 
-  $admin_user = $facts['ec2_metadata'] ? {
-    true    => 'ubuntu',
-    default => 'vagrant'
+  if $facts['ec2_metadata'] {
+    $admin_user = 'ubuntu'
+  } else {
+    $admin_user = 'vagrant'
   }
 
   realize Group[$admin_user]
