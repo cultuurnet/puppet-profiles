@@ -44,7 +44,7 @@ fixtures:
       ref: '1.0.1'
     ntp:
       repo: 'puppetlabs/ntp'
-      ref: '6.1.0'
+      ref: '7.0.0'
     apache:
       repo: 'puppetlabs/apache'
       ref: '6.3.0'
