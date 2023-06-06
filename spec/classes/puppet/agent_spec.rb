@@ -100,10 +100,24 @@ describe 'profiles::puppet::agent' do
           super().merge({ 'ec2_metadata' => 'true'})
         end
 
-        context "with EC2 tag 'Environment => acceptance'" do
-          let(:facts) do
-            super().merge({ 'ec2_tags' => {'environment' => 'acceptance'} })
-          end
+        context "with environment set to 'foobar' and trusted_facts pp_environment set to development" do
+          let(:environment) { 'foobar' }
+          let(:trusted_facts) { { 'pp_environment' => 'development' } }
+
+          # The trusted facts override the environment setting
+          it { is_expected.to contain_ini_setting('environment').with(
+            'ensure'  => 'present',
+            'path'    => '/etc/puppetlabs/puppet/puppet.conf',
+            'section' => 'main',
+            'setting' => 'environment',
+            'value'   => 'development'
+          ) }
+
+          it { is_expected.to contain_ini_setting('environment').that_notifies('Service[puppet]') }
+        end
+
+        context "with environment from trusted facts" do
+          let(:trusted_facts) { { 'pp_environment' => 'acceptance' } }
 
           it { is_expected.to contain_ini_setting('environment').with(
             'ensure'  => 'present',
@@ -111,18 +125,6 @@ describe 'profiles::puppet::agent' do
             'section' => 'main',
             'setting' => 'environment',
             'value'   => 'acceptance'
-          ) }
-
-          it { is_expected.to contain_ini_setting('environment').that_notifies('Service[puppet]') }
-        end
-
-        context "with EC2 tag 'Environment => production'" do
-          let(:facts) do
-            super().merge({ 'ec2_tags' => {'environment' => 'production'} })
-          end
-
-          it { is_expected.to contain_ini_setting('environment').with(
-            'value' => 'production'
           ) }
         end
       end

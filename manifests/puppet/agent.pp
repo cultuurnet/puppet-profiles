@@ -32,7 +32,7 @@ class profiles::puppet::agent (
     ini_setting { 'environment':
       setting => 'environment',
       section => 'main',
-      value   => $facts['ec2_tags']['environment'],
+      value   => $trusted['extensions']['pp_environment'],
       *       => $default_ini_setting_attributes
     }
   }

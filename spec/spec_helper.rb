@@ -1,3 +1,5 @@
+require 'rspec-puppet'
+
 RSpec.configure do |rspec|
   rspec.mock_with :rspec
   rspec.after(:suite) do
