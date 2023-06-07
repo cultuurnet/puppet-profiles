@@ -15,8 +15,7 @@ describe 'profiles::puppet::agent' do
         it { is_expected.to contain_class('profiles::puppet::agent').with(
           'version'        => 'installed',
           'puppetserver'   => nil,
-          'service_ensure' => 'stopped',
-          'service_enable' => false
+          'service_status' => 'stopped',
         ) }
 
         it { is_expected.to contain_apt__source('puppet') }
@@ -33,6 +32,7 @@ describe 'profiles::puppet::agent' do
 
         it { is_expected.to contain_ini_setting('puppetserver').with(
           'ensure'  => 'absent',
+          'path'    => '/etc/puppetlabs/puppet/puppet.conf',
           'section' => 'main',
           'setting' => 'server'
         ) }
@@ -66,14 +66,14 @@ describe 'profiles::puppet::agent' do
         it { is_expected.to contain_ini_setting('agent certificate_revocation').that_notifies('Service[puppet]') }
         it { is_expected.to contain_ini_setting('agent usecacheonfailure').that_notifies('Service[puppet]') }
         it { is_expected.to contain_ini_setting('agent reports').that_notifies('Service[puppet]') }
+        it { is_expected.to contain_ini_setting('puppetserver').that_notifies('Service[puppet]') }
       end
 
-      context "with version => 6.23.1, puppetserver => puppet.example.com, service_ensure => running and service_enable => true" do
+      context "with version => 6.23.1, puppetserver => puppet.example.com, service_status => running" do
         let(:params) { {
           'version'        => '6.23.1',
           'puppetserver'   => 'puppet.example.com',
-          'service_ensure' => 'running',
-          'service_enable' => true
+          'service_status' => 'running'
         } }
 
         it { is_expected.to compile.with_all_deps }
