@@ -34,7 +34,7 @@ class profiles::ssh(
     @@sshkey { $facts['networking']['hostname']:
       type         => 'rsa',
       key          => $facts['ssh']['rsa']['key'],
-      host_aliases => [ $facts['networking']['ip'], "${facts['networking']['hostname']}.machines.publiq.be", $facts['networking']['fqdn']]
+      host_aliases => [ $facts['networking']['ip'], $facts['networking']['fqdn']]
     }
 
     Sshkey <<| |>>
