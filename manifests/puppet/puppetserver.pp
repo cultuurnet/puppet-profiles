@@ -56,6 +56,24 @@ class profiles::puppet::puppetserver (
     *       => $default_ini_setting_attributes
   }
 
+  hocon_setting { 'puppetserver delete environment cache':
+    ensure  => 'present',
+    path    => '/etc/puppetlabs/puppetserver/conf.d/auth.conf',
+    setting => 'authorization.rules',
+    type    => 'array_element',
+    value   => {
+                 'allow'         => '*',
+                 'match-request' => {
+                                      'path'   => '/puppet-admin-api/v1/environment-cache',
+                                      'type'   => 'path',
+                                      'method' => 'delete'
+                                    },
+                 'name'          => 'environment-cache',
+                 'sort-order'    => 200
+               },
+    notify  => Service['puppetserver']
+  }
+
   if $dns_alt_names {
     ini_setting { 'puppetserver dns_alt_names':
       ensure  => 'present',

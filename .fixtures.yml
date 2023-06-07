@@ -96,6 +96,9 @@ fixtures:
     puppetdb:
       repo: 'puppetlabs/puppetdb'
       ref: '7.13.0'
+    hocon:
+      repo: 'puppetlabs/hocon'
+      ref: '1.1.0'
     puppet_certificate:
       repo: 'puppet/puppet_certificate'
       ref: '1.0.0'
