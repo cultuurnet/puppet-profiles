@@ -1,4 +1,7 @@
 ---
+data::puppet::puppetdb::url: 'http://localhost:8081'
+data::puppet::puppetserver::url: 'https://puppetserver.example.com:8140'
+
 profiles::jenkins::controller::admin_password: 'bar'
 profiles::jenkins::controller::url: 'https://foobar.com/'
 
@@ -29,5 +32,3 @@ profiles::ssh_authorized_keys::keys:
     tag: 'foobar'
   'acme first key':
     tag: 'acme'
-
-data::puppet::puppetdb::url: 'http://localhost:8081'
