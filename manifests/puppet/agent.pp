@@ -18,6 +18,12 @@ class profiles::puppet::agent (
       value   => $puppetserver,
       *       => $default_ini_setting_attributes
     }
+  } else {
+    ini_setting { 'puppetserver':
+      ensure  => 'absent',
+      setting => 'server',
+      section => 'main'
+    }
   }
 
   realize Apt::Source['puppet']

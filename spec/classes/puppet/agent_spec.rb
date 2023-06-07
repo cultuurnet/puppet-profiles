@@ -31,7 +31,11 @@ describe 'profiles::puppet::agent' do
           'hasstatus' => true
         ) }
 
-        it { is_expected.not_to contain_ini_setting('puppetserver') }
+        it { is_expected.to contain_ini_setting('puppetserver').with(
+          'ensure'  => 'absent',
+          'section' => 'main',
+          'setting' => 'server'
+        ) }
 
         it { is_expected.to contain_ini_setting('agent certificate_revocation').with(
           'ensure'  => 'present',
