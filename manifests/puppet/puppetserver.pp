@@ -108,6 +108,7 @@ class profiles::puppet::puppetserver (
       incl    => '/etc/default/puppetserver',
       context => '/files/etc/default/puppetserver/JAVA_ARGS',
       changes => "set value[. =~ regexp('-Xms.*')] '-Xms${initial_heap_size}'",
+      require => Package['puppetserver'],
       notify  => Service['puppetserver']
     }
   }
@@ -118,6 +119,7 @@ class profiles::puppet::puppetserver (
       incl    => '/etc/default/puppetserver',
       context => '/files/etc/default/puppetserver/JAVA_ARGS',
       changes => "set value[. =~ regexp('-Xmx.*')] '-Xmx${maximum_heap_size}'",
+      require => Package['puppetserver'],
       notify  => Service['puppetserver']
     }
   }

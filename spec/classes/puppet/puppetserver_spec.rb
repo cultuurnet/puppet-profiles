@@ -175,7 +175,9 @@ describe 'profiles::puppet::puppetserver' do
 
           it { is_expected.to contain_class('profiles::puppet::puppetserver::autosign').that_notifies('Service[puppetserver]') }
           it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').that_notifies('Service[puppetserver]') }
+          it { is_expected.to contain_augeas('puppetserver_initial_heap_size').that_requires('Package[puppetserver]') }
           it { is_expected.to contain_augeas('puppetserver_initial_heap_size').that_notifies('Service[puppetserver]') }
+          it { is_expected.to contain_augeas('puppetserver_maximum_heap_size').that_requires('Package[puppetserver]') }
           it { is_expected.to contain_augeas('puppetserver_maximum_heap_size').that_notifies('Service[puppetserver]') }
         end
       end
