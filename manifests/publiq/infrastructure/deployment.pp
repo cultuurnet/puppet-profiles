@@ -20,6 +20,12 @@ class profiles::publiq::infrastructure::deployment (
     notify => Class['profiles::puppet::puppetserver::cache_clear']
   }
 
+  file { 'publiq-infrastructure production environment datadir':
+    ensure => 'absent',
+    path   => '/etc/puppetlabs/code/environments/production/data',
+    notify => Class['profiles::puppet::puppetserver::cache_clear']
+  }
+
   ['acceptance', 'testing', 'production'].each |$env| {
     file { "publiq-infrastructure ${env} environment environment.conf":
       ensure  => 'file',
