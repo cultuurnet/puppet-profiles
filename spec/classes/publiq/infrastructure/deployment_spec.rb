@@ -33,7 +33,8 @@ describe 'profiles::publiq::infrastructure::deployment' do
 
         it { is_expected.to contain_file('publiq-infrastructure production environment datadir').with(
           'ensure' => 'absent',
-          'path'   => '/etc/puppetlabs/code/environments/production/data'
+          'path'   => '/etc/puppetlabs/code/environments/production/data',
+          'force'  => true
         ) }
 
         it { is_expected.to contain_file('publiq-infrastructure acceptance environment environment.conf').with(

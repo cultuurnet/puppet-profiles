@@ -23,6 +23,7 @@ class profiles::publiq::infrastructure::deployment (
   file { 'publiq-infrastructure production environment datadir':
     ensure => 'absent',
     path   => '/etc/puppetlabs/code/environments/production/data',
+    force  => true,
     notify => Class['profiles::puppet::puppetserver::cache_clear']
   }
 
