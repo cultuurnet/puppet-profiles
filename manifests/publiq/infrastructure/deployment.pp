@@ -14,6 +14,12 @@ class profiles::publiq::infrastructure::deployment (
     require => Apt::Source[$repository]
   }
 
+  file { 'puppet-agent production environment hiera.yaml':
+    ensure => 'absent',
+    path   => '/etc/puppetlabs/code/environments/production/hiera.yaml',
+    notify => Class['profiles::puppet::puppetserver::cache_clear']
+  }
+
   profiles::deployment::versions { $title:
     puppetdb_url    => $puppetdb_url,
     require         => Class['profiles::puppet::puppetserver::cache_clear']
