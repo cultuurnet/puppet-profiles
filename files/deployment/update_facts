@@ -10,22 +10,9 @@ require 'date'
 
 module Facts
   def self.config(setting)
-    if Puppet.version.split('.')[0].to_i >= 6
-      out = Puppet::Face[:config, :current].print(setting)
+    out = Puppet::Face[:config, :current].print(setting)
 
-      out[setting]
-    else
-      begin
-        orig_stdout = $stdout
-        out = StringIO.new
-        $stdout = out
-        Puppet::Face[:config, :current].print(setting)
-
-        out.string.chomp
-      ensure
-        $stdout = orig_stdout
-      end
-    end
+    out[setting]
   end
 
   def self.replace(puppetdb_url)
