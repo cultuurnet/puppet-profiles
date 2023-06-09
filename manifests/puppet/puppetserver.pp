@@ -22,14 +22,13 @@ class profiles::puppet::puppetserver (
                                     }
 
   include profiles::firewall::rules
+  include profiles::java
 
   realize Group['puppet']
   realize User['puppet']
   realize Apt::Source['puppet']
 
   realize Firewall['300 accept puppetserver HTTPS traffic']
-
-  include profiles::java
 
   ini_setting { 'puppetserver ca_server':
     ensure  => 'present',
@@ -56,22 +55,15 @@ class profiles::puppet::puppetserver (
     *       => $default_ini_setting_attributes
   }
 
-  hocon_setting { 'puppetserver delete environment cache':
-    ensure  => 'present',
-    path    => '/etc/puppetlabs/puppetserver/conf.d/auth.conf',
-    setting => 'authorization.rules',
-    type    => 'array_element',
-    value   => {
-                 'allow'         => '*',
-                 'match-request' => {
-                                      'path'   => '/puppet-admin-api/v1/environment-cache',
-                                      'type'   => 'path',
-                                      'method' => 'delete'
-                                    },
-                 'name'          => 'environment-cache',
-                 'sort-order'    => 200
-               },
-    notify  => Service['puppetserver']
+  puppet_authorization::rule { 'puppetserver environment cache':
+    ensure               => 'present',
+    match_request_path   => '/puppet-admin-api/v1/environment-cache',
+    match_request_type   => 'path',
+    match_request_method => 'delete',
+    allow                => '*',
+    sort_order           => 200,
+    path                 => '/etc/puppetlabs/puppetserver/conf.d/auth.conf',
+    notify               => Service['puppetserver']
   }
 
   if $dns_alt_names {

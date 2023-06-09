@@ -70,21 +70,14 @@ describe 'profiles::puppet::puppetserver' do
             'value'   => 'unlimited'
           ) }
 
-          it { is_expected.to contain_hocon_setting('puppetserver delete environment cache').with(
-            'ensure'  => 'present',
-            'path'    => '/etc/puppetlabs/puppetserver/conf.d/auth.conf',
-            'setting' => 'authorization.rules',
-            'type'    => 'array_element',
-            'value'   => {
-                           'allow'         => '*',
-                           'match-request' => {
-                                                'path'   => '/puppet-admin-api/v1/environment-cache',
-                                                'type'   => 'path',
-                                                'method' => 'delete'
-                                              },
-                           'name'          => 'environment-cache',
-                           'sort-order'    => 200
-                         }
+          it { is_expected.to contain_puppet_authorization__rule('puppetserver environment cache').with(
+            'ensure'               => 'present',
+            'path'                 => '/etc/puppetlabs/puppetserver/conf.d/auth.conf',
+            'match_request_path'   => '/puppet-admin-api/v1/environment-cache',
+            'match_request_type'   => 'path',
+            'match_request_method' => 'delete',
+            'allow'                => '*',
+            'sort_order'           => 200
           ) }
 
           it { is_expected.to contain_service('puppetserver').with(
@@ -119,7 +112,7 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to contain_ini_setting('puppetserver ca_server').that_notifies('Service[puppetserver]') }
           it { is_expected.to contain_ini_setting('puppetserver environmentpath').that_notifies('Service[puppetserver]') }
           it { is_expected.to contain_ini_setting('puppetserver environment_timeout').that_notifies('Service[puppetserver]') }
-          it { is_expected.to contain_hocon_setting('puppetserver delete environment cache').that_notifies('Service[puppetserver]') }
+          it { is_expected.to contain_puppet_authorization__rule('puppetserver environment cache').that_notifies('Service[puppetserver]') }
         end
 
         context "with version => 1.2.3, dns_alt_names => puppet.services.example.com, autosign => true, trusted_amis => ami-123, trusted_certnames => [], puppetdb_url => https://puppetdb.example.com:8081, initial_heap_size => 512m, maximum_heap_size => 512m and service_status => stopped" do
