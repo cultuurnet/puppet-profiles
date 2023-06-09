@@ -102,6 +102,15 @@ class profiles::puppet::puppetserver (
     notify  => Service['puppetserver']
   }
 
+  # Fix ownership of dropsonde directory, to stop the permission errors in puppetserver.log
+  file { 'puppserver dropsonde directory':
+    owner   => 'puppet',
+    path    => '/opt/puppetlabs/server/data/puppetserver/dropsonde',
+    group   => 'puppet',
+    require => [Group['puppet'], User['puppet'], Package['puppetserver']],
+    notify  => Service['puppetserver']
+  }
+
   if $initial_heap_size {
     augeas { 'puppetserver_initial_heap_size':
       lens    => 'Shellvars_list.lns',

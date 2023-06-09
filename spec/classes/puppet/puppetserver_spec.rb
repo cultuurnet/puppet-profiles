@@ -80,6 +80,12 @@ describe 'profiles::puppet::puppetserver' do
             'sort_order'           => 200
           ) }
 
+          it { is_expected.to contain_file('puppserver dropsonde directory').with(
+            'path'    => '/opt/puppetlabs/server/data/puppetserver/dropsonde',
+            'owner'   => 'puppet',
+            'group'   => 'puppet'
+          ) }
+
           it { is_expected.to contain_service('puppetserver').with(
             'ensure'    => 'running',
             'enable'    => true,
@@ -113,6 +119,10 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to contain_ini_setting('puppetserver environmentpath').that_notifies('Service[puppetserver]') }
           it { is_expected.to contain_ini_setting('puppetserver environment_timeout').that_notifies('Service[puppetserver]') }
           it { is_expected.to contain_puppet_authorization__rule('puppetserver environment cache').that_notifies('Service[puppetserver]') }
+          it { is_expected.to contain_file('puppserver dropsonde directory').that_requires('Group[puppet]') }
+          it { is_expected.to contain_file('puppserver dropsonde directory').that_requires('User[puppet]') }
+          it { is_expected.to contain_file('puppserver dropsonde directory').that_requires('Package[puppetserver]') }
+          it { is_expected.to contain_file('puppserver dropsonde directory').that_notifies('Service[puppetserver]') }
         end
 
         context "with version => 1.2.3, dns_alt_names => puppet.services.example.com, autosign => true, trusted_amis => ami-123, trusted_certnames => [], puppetdb_url => https://puppetdb.example.com:8081, initial_heap_size => 512m, maximum_heap_size => 512m and service_status => stopped" do
