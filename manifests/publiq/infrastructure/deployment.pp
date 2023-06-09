@@ -24,7 +24,7 @@ class profiles::publiq::infrastructure::deployment (
     file { "publiq-infrastructure ${env} environment environment.conf":
       ensure  => 'file',
       path    => "/etc/puppetlabs/code/environments/${env}/environment.conf",
-      content => 'config_version = /etc/puppetlabs/code/environments/get_config_version.sh',
+      content => 'config_version = /etc/puppetlabs/code/get_config_version.sh',
       require => Package['publiq-infrastructure'],
       notify  => Class['profiles::puppet::puppetserver::cache_clear']
     }

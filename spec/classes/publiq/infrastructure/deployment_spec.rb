@@ -34,19 +34,19 @@ describe 'profiles::publiq::infrastructure::deployment' do
         it { is_expected.to contain_file('publiq-infrastructure acceptance environment environment.conf').with(
           'ensure'  => 'file',
           'path'    => '/etc/puppetlabs/code/environments/acceptance/environment.conf',
-          'content' => 'config_version = /etc/puppetlabs/code/environments/get_config_version.sh'
+          'content' => 'config_version = /etc/puppetlabs/code/get_config_version.sh'
         ) }
 
         it { is_expected.to contain_file('publiq-infrastructure testing environment environment.conf').with(
           'ensure' => 'file',
           'path'    => '/etc/puppetlabs/code/environments/testing/environment.conf',
-          'content' => 'config_version = /etc/puppetlabs/code/environments/get_config_version.sh'
+          'content' => 'config_version = /etc/puppetlabs/code/get_config_version.sh'
         ) }
 
         it { is_expected.to contain_file('publiq-infrastructure production environment environment.conf').with(
           'ensure' => 'file',
           'path'    => '/etc/puppetlabs/code/environments/production/environment.conf',
-          'content' => 'config_version = /etc/puppetlabs/code/environments/get_config_version.sh'
+          'content' => 'config_version = /etc/puppetlabs/code/get_config_version.sh'
         ) }
 
         context "without hieradata" do
