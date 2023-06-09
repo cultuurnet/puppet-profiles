@@ -80,6 +80,14 @@ describe 'profiles::puppet::puppetserver' do
             'sort_order'           => 200
           ) }
 
+          it { is_expected.to contain_hocon_setting('puppetserver dropsonde').with(
+            'ensure'  => 'present',
+            'path'    => '/etc/puppetlabs/puppetserver/conf.d/puppetserver.conf',
+            'setting' => 'dropsonde.enabled',
+            'type'    => 'boolean',
+            'value'   => false
+          ) }
+
           it { is_expected.to contain_file('puppserver dropsonde directory').with(
             'path'    => '/opt/puppetlabs/server/data/puppetserver/dropsonde',
             'owner'   => 'puppet',
@@ -123,6 +131,8 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to contain_file('puppserver dropsonde directory').that_requires('User[puppet]') }
           it { is_expected.to contain_file('puppserver dropsonde directory').that_requires('Package[puppetserver]') }
           it { is_expected.to contain_file('puppserver dropsonde directory').that_notifies('Service[puppetserver]') }
+          it { is_expected.to contain_hocon_setting('puppetserver dropsonde').that_requires('Package[puppetserver]') }
+          it { is_expected.to contain_hocon_setting('puppetserver dropsonde').that_notifies('Service[puppetserver]') }
         end
 
         context "with version => 1.2.3, dns_alt_names => puppet.services.example.com, autosign => true, trusted_amis => ami-123, trusted_certnames => [], puppetdb_url => https://puppetdb.example.com:8081, initial_heap_size => 512m, maximum_heap_size => 512m and service_status => stopped" do

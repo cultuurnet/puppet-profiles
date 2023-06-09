@@ -111,6 +111,16 @@ class profiles::puppet::puppetserver (
     notify  => Service['puppetserver']
   }
 
+  hocon_setting { 'puppetserver dropsonde':
+    ensure  => 'present',
+    path    => '/etc/puppetlabs/puppetserver/conf.d/puppetserver.conf',
+    setting => 'dropsonde.enabled',
+    type    => 'boolean',
+    value   => false,
+    require => Package['puppetserver'],
+    notify  => Service['puppetserver']
+  }
+
   if $initial_heap_size {
     augeas { 'puppetserver_initial_heap_size':
       lens    => 'Shellvars_list.lns',
