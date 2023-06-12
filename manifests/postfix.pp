@@ -36,8 +36,13 @@ class profiles::postfix (
       Concat::Fragment <<| tag == 'postfix_mynetworks' |>>
     }
 
+    file { $config_directory:
+      ensure => 'directory'
+    }
+
     concat { $mynetworks_file:
-      notify => Class['::postfix::server']
+      require => File[$config_directory],
+      notify  => Class['::postfix::server']
     }
 
     realize Firewall['300 accept SMTP traffic']

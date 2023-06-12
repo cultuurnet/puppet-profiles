@@ -57,13 +57,20 @@ describe 'profiles::postfix' do
             'tag'     => 'postfix_mynetworks'
           ) }
 
-          it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
+          it { is_expected.to contain_file('/etc/postfix').with(
+            'ensure' => 'directory'
+          ) }
+
+          it { is_expected.to contain_concat('/etc/postfix/mynetworks') }
 
           it { is_expected.to contain_firewall('300 accept SMTP traffic').with(
             'proto' => 'tcp',
             'dport' => '25',
             'action' => 'accept'
           ) }
+
+          it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_requires('File[/etc/postfix]') }
+          it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
         end
 
         context "with tls => false and listen_addresses => 127.0.0.1" do
@@ -91,13 +98,20 @@ describe 'profiles::postfix' do
             'tag'     => 'postfix_mynetworks'
           ) }
 
-          it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
+          it { is_expected.to contain_file('/etc/postfix').with(
+            'ensure' => 'directory'
+          ) }
+
+          it { is_expected.to contain_concat('/etc/postfix/mynetworks') }
 
           it { is_expected.to contain_firewall('300 accept SMTP traffic').with(
             'proto' => 'tcp',
             'dport' => '25',
             'action' => 'accept'
           ) }
+
+          it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_requires('File[/etc/postfix]') }
+          it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
         end
 
         context "with relayhost => [mailhost.example.com]" do
@@ -128,7 +142,8 @@ describe 'profiles::postfix' do
 
           it { is_expected.not_to contain_firewall('300 accept SMTP traffic') }
 
-          it { is_expected.not_to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
+          it { is_expected.not_to contain_file('/etc/postfix') }
+          it { is_expected.not_to contain_concat('/etc/postfix/mynetworks') }
         end
 
         context "with relayhost => mailhost.example.com" do
@@ -183,7 +198,8 @@ describe 'profiles::postfix' do
 
           it { is_expected.not_to contain_firewall('300 accept SMTP traffic') }
 
-          it { is_expected.not_to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
+          it { is_expected.not_to contain_file('/etc/postfix') }
+          it { is_expected.not_to contain_concat('/etc/postfix/mynetworks') }
         end
 
         context "with aliases and extra_allowed_ips => ['8.7.6.5', '9.10.11.12']" do
@@ -227,13 +243,20 @@ describe 'profiles::postfix' do
             'tag'     => 'postfix_mynetworks'
           ) }
 
-          it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
+          it { is_expected.to contain_file('/etc/postfix').with(
+            'ensure' => 'directory'
+          ) }
+
+          it { is_expected.to contain_concat('/etc/postfix/mynetworks') }
 
           it { is_expected.to contain_firewall('300 accept SMTP traffic').with(
             'proto' => 'tcp',
             'dport' => '25',
             'action' => 'accept'
           ) }
+
+          it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_requires('File[/etc/postfix]') }
+          it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
 
           context "with aliases_domains => [foo.com, bar.com]" do
             let(:params) {
@@ -270,8 +293,6 @@ describe 'profiles::postfix' do
               'dport' => '25',
               'action' => 'accept'
             ) }
-
-            it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
           end
 
           context "with aliases_source => puppet:///private/postfix/virtual" do
