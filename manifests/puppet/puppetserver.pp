@@ -4,7 +4,7 @@ class profiles::puppet::puppetserver (
   Boolean                                  $autosign          = false,
   Variant[String, Array[String]]           $trusted_amis      = [],
   Variant[String, Array[String]]           $trusted_certnames = [],
-  Optional[String]                         $puppetdb_url      = undef,
+  Optional[Stdlib::Httpurl]                $puppetdb_url      = undef,
   Optional[String]                         $puppetdb_version  = undef,
   Optional[String]                         $initial_heap_size = undef,
   Optional[String]                         $maximum_heap_size = undef,
