@@ -21,6 +21,8 @@ describe 'profiles::puppet::puppetserver' do
             'autosign'          => false,
             'trusted_amis'      => [],
             'trusted_certnames' => [],
+            'eyaml'             => false,
+            'eyaml_gpg_key'     => {},
             'puppetdb_url'      => nil,
             'puppetdb_version'  => nil,
             'initial_heap_size' => nil,
@@ -109,6 +111,11 @@ describe 'profiles::puppet::puppetserver' do
             'trusted_certnames' => []
           ) }
 
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::eyaml').with(
+            'enable'  => false,
+            'gpg_key' => {}
+          ) }
+
           it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').with(
             'url'     => nil,
             'version' => nil
@@ -122,6 +129,8 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to contain_package('puppetserver').that_requires('Class[profiles::java]') }
           it { is_expected.to contain_package('puppetserver').that_notifies('Service[puppetserver]') }
           it { is_expected.to contain_class('profiles::puppet::puppetserver::autosign').that_notifies('Service[puppetserver]') }
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::eyaml').that_requires('Package[puppetserver]') }
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::eyaml').that_notifies('Service[puppetserver]') }
           it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').that_notifies('Service[puppetserver]') }
           it { is_expected.to contain_ini_setting('puppetserver ca_server').that_notifies('Service[puppetserver]') }
           it { is_expected.to contain_ini_setting('puppetserver environmentpath').that_notifies('Service[puppetserver]') }
@@ -135,13 +144,18 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to contain_hocon_setting('puppetserver dropsonde').that_notifies('Service[puppetserver]') }
         end
 
-        context "with version => 1.2.3, dns_alt_names => puppet.services.example.com, autosign => true, trusted_amis => ami-123, trusted_certnames => [], puppetdb_url => https://puppetdb.example.com:8081, initial_heap_size => 512m, maximum_heap_size => 512m and service_status => stopped" do
+        context "with version => 1.2.3, dns_alt_names => puppet.services.example.com, autosign => true, trusted_amis => ami-123, trusted_certnames => [], eyaml => true, eyaml_gpg_key => { 'test1' => { 'id' => '6789DEFG', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\neyaml_key\n-----END PGP PRIVATE KEY BLOCK----' }}, puppetdb_url => https://puppetdb.example.com:8081, initial_heap_size => 512m, maximum_heap_size => 512m and service_status => stopped" do
           let(:params) { {
             'version'           => '1.2.3',
             'dns_alt_names'     => 'puppet.services.example.com',
             'autosign'          => true,
             'trusted_amis'      => 'ami-123',
             'trusted_certnames' => [],
+            'eyaml'             => true,
+            'eyaml_gpg_key'     => { 'test1' => {
+                                     'id'      => '6789DEFG',
+                                     'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\neyaml_key\n-----END PGP PRIVATE KEY BLOCK----'
+                                   } },
             'puppetdb_url'      => 'https://puppetdb.example.com:8081',
             'initial_heap_size' => '512m',
             'maximum_heap_size' => '512m',
@@ -182,6 +196,14 @@ describe 'profiles::puppet::puppetserver' do
             'trusted_amis'      => 'ami-123'
           ) }
 
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::eyaml').with(
+            'enable'  => true,
+            'gpg_key' => { 'test1' => {
+                           'id'      => '6789DEFG',
+                           'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\neyaml_key\n-----END PGP PRIVATE KEY BLOCK----'
+                         } }
+          ) }
+
           it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').with(
             'url'     => 'https://puppetdb.example.com:8081',
             'version' => nil
@@ -194,6 +216,7 @@ describe 'profiles::puppet::puppetserver' do
           ) }
 
           it { is_expected.to contain_class('profiles::puppet::puppetserver::autosign').that_notifies('Service[puppetserver]') }
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::eyaml').that_notifies('Service[puppetserver]') }
           it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').that_notifies('Service[puppetserver]') }
           it { is_expected.to contain_augeas('puppetserver_initial_heap_size').that_requires('Package[puppetserver]') }
           it { is_expected.to contain_augeas('puppetserver_initial_heap_size').that_notifies('Service[puppetserver]') }
@@ -205,11 +228,16 @@ describe 'profiles::puppet::puppetserver' do
       context "on host bbb.example.com" do
         let(:node) { 'bbb.example.com' }
 
-        context "with autosign => true, trusted_amis => [], trusted_certnames => [a.example.com, b.example.com, *.c.example.com], puppetdb_url => https://foo.example.com:1234, puppetdb_version => 7.8.9 and dns_alt_names => [puppet1.services.example.com, puppet2.services.example.com]" do
+        context "with autosign => true, trusted_amis => [], trusted_certnames => [a.example.com, b.example.com, *.c.example.com], eyaml => true, eyaml_gpg_key => { 'test2' => { 'id' => '1234ABCD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK----' }}, puppetdb_url => https://foo.example.com:1234, puppetdb_version => 7.8.9 and dns_alt_names => [puppet1.services.example.com, puppet2.services.example.com]" do
           let(:params) { {
             'autosign'          => true,
             'trusted_amis'      => [],
             'trusted_certnames' => ['a.example.com', 'b.example.com', '*.c.example.com'],
+            'eyaml'             => true,
+            'eyaml_gpg_key'     => { 'test2' => {
+                                     'id'      => '1234ABCD',
+                                     'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK----'
+                                   } },
             'puppetdb_url'      => 'https://foo.example.com:1234',
             'puppetdb_version'  => '7.8.9',
             'dns_alt_names'     => ['puppet1.services.example.com', 'puppet2.services.example.com'],
@@ -227,6 +255,14 @@ describe 'profiles::puppet::puppetserver' do
             'autosign'          => true,
             'trusted_amis'      => [],
             'trusted_certnames' => ['a.example.com', 'b.example.com', '*.c.example.com'],
+          ) }
+
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::eyaml').with(
+            'enable'  => true,
+            'gpg_key' => { 'test2' => {
+                           'id'      => '1234ABCD',
+                           'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK----'
+                         } }
           ) }
 
           it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').with(
@@ -264,6 +300,15 @@ describe 'profiles::puppet::puppetserver' do
           } }
 
           it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects either a value for parameter 'trusted_amis' or 'trusted_certnames' when autosigning/) }
+        end
+
+        context "with eyaml => true and eyaml_gpg_key => {}" do
+          let(:params) { {
+            'eyaml'         => true,
+            'eyaml_gpg_key' => {}
+          } }
+
+          it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a non-empty value for parameter 'gpg_key' when eyaml is enabled/) }
         end
       end
     end

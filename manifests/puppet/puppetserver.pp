@@ -4,6 +4,8 @@ class profiles::puppet::puppetserver (
   Boolean                                  $autosign          = false,
   Variant[String, Array[String]]           $trusted_amis      = [],
   Variant[String, Array[String]]           $trusted_certnames = [],
+  Boolean                                  $eyaml             = false,
+  Hash                                     $eyaml_gpg_key     = {},
   Optional[Stdlib::Httpurl]                $puppetdb_url      = undef,
   Optional[String]                         $puppetdb_version  = undef,
   Optional[String]                         $initial_heap_size = undef,
@@ -88,6 +90,13 @@ class profiles::puppet::puppetserver (
     trusted_amis      => $trusted_amis,
     trusted_certnames => $trusted_certnames,
     notify            => Service['puppetserver']
+  }
+
+  class { 'profiles::puppet::puppetserver::eyaml':
+    enable  => $eyaml,
+    gpg_key => $eyaml_gpg_key,
+    require => Package['puppetserver'],
+    notify  => Service['puppetserver']
   }
 
   class { 'profiles::puppet::puppetserver::puppetdb':

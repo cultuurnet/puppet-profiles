@@ -1,0 +1,3 @@
+---
+encrypt_method: 'gpg'
+gpg_gnupghome: '/opt/puppetlabs/server/data/puppetserver/.gnupg'
