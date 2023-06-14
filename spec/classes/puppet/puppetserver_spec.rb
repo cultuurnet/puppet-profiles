@@ -144,7 +144,7 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to contain_hocon_setting('puppetserver dropsonde').that_notifies('Service[puppetserver]') }
         end
 
-        context "with version => 1.2.3, dns_alt_names => puppet.services.example.com, autosign => true, trusted_amis => ami-123, trusted_certnames => [], eyaml => true, eyaml_gpg_key => { 'id' => '6789DEFG', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\neyaml_key\n-----END PGP PRIVATE KEY BLOCK----' }, puppetdb_url => https://puppetdb.example.com:8081, initial_heap_size => 512m, maximum_heap_size => 512m and service_status => stopped" do
+        context "with version => 1.2.3, dns_alt_names => puppet.services.example.com, autosign => true, trusted_amis => ami-123, trusted_certnames => [], eyaml => true, eyaml_gpg_key => { 'id' => '6789DEFD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\neyamlkey\n-----END PGP PRIVATE KEY BLOCK-----' }, puppetdb_url => https://puppetdb.example.com:8081, initial_heap_size => 512m, maximum_heap_size => 512m and service_status => stopped" do
           let(:params) { {
             'version'           => '1.2.3',
             'dns_alt_names'     => 'puppet.services.example.com',
@@ -153,8 +153,8 @@ describe 'profiles::puppet::puppetserver' do
             'trusted_certnames' => [],
             'eyaml'             => true,
             'eyaml_gpg_key'     => {
-                                     'id'      => '6789DEFG',
-                                     'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\neyaml_key\n-----END PGP PRIVATE KEY BLOCK----'
+                                     'id'      => '6789DEFD',
+                                     'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\neyamlkey\n-----END PGP PRIVATE KEY BLOCK-----"
                                    },
             'puppetdb_url'      => 'https://puppetdb.example.com:8081',
             'initial_heap_size' => '512m',
@@ -199,8 +199,8 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to contain_class('profiles::puppet::puppetserver::eyaml').with(
             'enable'  => true,
             'gpg_key' => {
-                           'id'      => '6789DEFG',
-                           'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\neyaml_key\n-----END PGP PRIVATE KEY BLOCK----'
+                           'id'      => '6789DEFD',
+                           'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\neyamlkey\n-----END PGP PRIVATE KEY BLOCK-----"
                          }
           ) }
 
@@ -228,7 +228,7 @@ describe 'profiles::puppet::puppetserver' do
       context "on host bbb.example.com" do
         let(:node) { 'bbb.example.com' }
 
-        context "with autosign => true, trusted_amis => [], trusted_certnames => [a.example.com, b.example.com, *.c.example.com], eyaml => true, eyaml_gpg_key => { 'id' => '1234ABCD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK----' }, puppetdb_url => https://foo.example.com:1234, puppetdb_version => 7.8.9 and dns_alt_names => [puppet1.services.example.com, puppet2.services.example.com]" do
+        context "with autosign => true, trusted_amis => [], trusted_certnames => [a.example.com, b.example.com, *.c.example.com], eyaml => true, eyaml_gpg_key => { 'id' => '1234ABCD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK-----' }, puppetdb_url => https://foo.example.com:1234, puppetdb_version => 7.8.9 and dns_alt_names => [puppet1.services.example.com, puppet2.services.example.com]" do
           let(:params) { {
             'autosign'          => true,
             'trusted_amis'      => [],
@@ -236,7 +236,7 @@ describe 'profiles::puppet::puppetserver' do
             'eyaml'             => true,
             'eyaml_gpg_key'     => {
                                      'id'      => '1234ABCD',
-                                     'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK----'
+                                     'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK-----"
                                    },
             'puppetdb_url'      => 'https://foo.example.com:1234',
             'puppetdb_version'  => '7.8.9',
@@ -261,7 +261,7 @@ describe 'profiles::puppet::puppetserver' do
             'enable'  => true,
             'gpg_key' => {
                            'id'      => '1234ABCD',
-                           'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK----'
+                           'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK-----"
                          }
           ) }
 
