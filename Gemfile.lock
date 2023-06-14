@@ -102,6 +102,7 @@ GEM
       json
       puppet
     rspec-support (3.10.2)
+    scanf (1.0.0)
     semantic_puppet (1.0.3)
     shellany (0.0.1)
     spdx-licenses (1.3.0)
@@ -122,7 +123,8 @@ DEPENDENCIES
   rake
   rspec-puppet
   rspec-puppet-facts
+  scanf
   semantic_puppet
 
 BUNDLED WITH
-   2.0.1
+   2.2.18
