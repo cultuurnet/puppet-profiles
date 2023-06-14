@@ -191,19 +191,4 @@ class profiles::udb3::rabbitmq (
     routing_key      => '#',
     arguments        => {}
   }
-
-  rabbitmq_binding { "udb3.x.domain-events@rdf.q.udb3-domain-events@${vhost}":
-    user             => $admin_user,
-    password         => $admin_password,
-    destination_type => 'queue',
-    routing_key      => '#',
-    arguments        => {}
-  }
-
-  rabbitmq_queue { "rdf.q.udb3-domain-events@${vhost}":
-    user        => $admin_user,
-    password    => $admin_password,
-    durable     => true,
-    auto_delete => false
-  }
 }
