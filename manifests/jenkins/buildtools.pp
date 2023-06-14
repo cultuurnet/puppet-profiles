@@ -6,7 +6,5 @@ class profiles::jenkins::buildtools inherits ::profiles {
   realize Package['jq']
   realize Package['build-essential']
 
-  class { '::profiles::ruby':
-    with_dev => true
-  }
+  include profiles::ruby
 }
