@@ -81,6 +81,36 @@ describe 'profiles::users' do
           'shell'          => '/bin/bash',
           'uid'            => '1002'
         ) }
+
+        it { is_expected.to contain_user('puppet').with(
+          'ensure'         => 'present',
+          'gid'            => 'puppet',
+          'home'           => '/opt/puppetlabs/server/data/puppetserver',
+          'managehome'     => false,
+          'purge_ssh_keys' => true,
+          'shell'          => '/usr/sbin/nologin',
+          'uid'            => '452'
+        ) }
+
+        it { is_expected.to contain_user('postgres').with(
+          'ensure'         => 'present',
+          'gid'            => 'postgres',
+          'home'           => '/var/lib/postgresql',
+          'managehome'     => false,
+          'purge_ssh_keys' => true,
+          'shell'          => '/bin/bash',
+          'uid'            => '453'
+        ) }
+
+        it { is_expected.to contain_user('puppetdb').with(
+          'ensure'         => 'present',
+          'gid'            => 'puppetdb',
+          'home'           => '/opt/puppetlabs/server/data/puppetdb',
+          'managehome'     => false,
+          'purge_ssh_keys' => true,
+          'shell'          => '/usr/sbin/nologin',
+          'uid'            => '454'
+        ) }
       end
     end
   end

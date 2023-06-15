@@ -14,15 +14,9 @@ class profiles::ssh(
     value  => 'no'
   }
 
-  if versioncmp( $facts['os']['release']['major'], '16.04') >= 0 {
-    sshd_config { 'PubkeyAcceptedKeyTypes':
-      ensure => 'present',
-      value  => '+rsa-sha2-256,rsa-sha2-512'
-    }
-  } else {
-    sshd_config { 'PubkeyAcceptedKeyTypes':
-      ensure => 'absent'
-    }
+  sshd_config { 'PubkeyAcceptedKeyTypes':
+    ensure => 'present',
+    value  => '+rsa-sha2-256,rsa-sha2-512'
   }
 
   service { 'ssh':
@@ -40,7 +34,7 @@ class profiles::ssh(
     @@sshkey { $facts['networking']['hostname']:
       type         => 'rsa',
       key          => $facts['ssh']['rsa']['key'],
-      host_aliases => [ $facts['networking']['ip'], "${facts['networking']['hostname']}.machines.publiq.be", $facts['networking']['fqdn']]
+      host_aliases => [ $facts['networking']['ip'], $facts['networking']['fqdn']]
     }
 
     Sshkey <<| |>>

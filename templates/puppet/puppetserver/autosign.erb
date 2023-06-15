@@ -1,0 +1,110 @@
+#!/opt/puppetlabs/puppet/bin/ruby
+
+# Utility to validate Puppet CA/CSR requests against the instance data
+# via the AWS API to ensure legitimacy.
+#
+#
+#   Copyright (c) 2016 Sailthru, Inc., https://www.sailthru.com/
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+require 'puppet'
+require 'puppet/ssl/oids'
+require 'puppet/ssl/certificate_request'
+require 'aws-sdk-ec2'
+require 'logger'
+require 'syslog/logger'
+require 'fileutils'
+
+TRUSTED_AMIS = [<%= [@trusted_amis].flatten.map { |ami| "'" + ami + "'" }.join(', ') %>]
+
+# When running under Puppet we can't get STDOUT/STDERR unless running Puppet in
+# debug mode. So we should default to using syslog, unless an engineer running
+# tests chooses not to
+if ENV['LOGSTDOUT'] == 'true'
+  log = Logger.new(STDOUT)
+else
+  log = Syslog::Logger.new 'autosign'
+end
+
+# Puppet CA executes this script with the client cert name (usually the
+# hostname) as an argument and the full contents of the CSR as STDIN. Thanks to
+# https://gist.github.com/jbouse/8763661 for the inspriration for using Puppet's
+# own libraries to crunch the CSR and extract out any values that have been
+# defined
+
+clientcert = ARGV.pop
+
+log.info "[#{clientcert}] Processing supplied CSR (from STDIN)..."
+csr = Puppet::SSL::CertificateRequest.from_s(STDIN.read)
+
+csr_extensions = Hash.new
+
+Puppet::SSL::Oids::PUPPET_OIDS.each do |puppetoid|
+  extendedvalue = csr.request_extensions.find { |a| a['oid'] == puppetoid[0] }
+
+  unless extendedvalue.nil?
+    csr_extensions[puppetoid[1]] = extendedvalue["value"]
+  end
+end
+
+log.info "[#{clientcert}] Extended values returned: " + csr_extensions.to_s
+
+unless defined? csr_extensions['pp_instance_id']
+  log.fatal "[#{clientcert}] Failed signing CSR due to no `pp_instance_id` data supplied"
+  exit 1
+end
+
+unless defined? csr_extensions['pp_region']
+  log.fatal "[#{clientcert}] Failed signing CSR sign due to no `pp_region` data supplied"
+  exit 2
+end
+
+# Fetch the instance details from AWS
+log.info "[#{clientcert}] Fetching instance information for instance ID #{csr_extensions['pp_instance_id']} from region #{csr_extensions['pp_region']}..."
+
+client_ec2 = Aws::EC2::Client.new({
+  region: csr_extensions['pp_region']
+})
+
+instance_details = client_ec2.describe_instances({
+  instance_ids: [csr_extensions['pp_instance_id']],
+  dry_run: false,
+})
+
+if instance_details.reservations.empty?
+  log.fatal "[#{clientcert}] Failed signing CSR as instance ID #{csr_extensions['pp_instance_id']} does not exist under this account in this region"
+  exit 3
+end
+
+# Ensure that we are trying to sign a running instance. Not much use signing
+# anything that has already been terminated...
+unless instance_details.reservations[0].instances[0].state.name == 'running'
+  log.fatal "[#{clientcert}] Failed signing CSR as instance #{csr_extensions['pp_instance_id']} not running (current state: #{instance_details.reservations[0].instances[0].state.name})"
+  exit 4
+end
+
+# Validate the instance by checking if the AMI id is trusted
+image_id = instance_details.reservations[0].instances[0].image_id
+
+log.info "[#{clientcert}] Validating image ID #{image_id}"
+
+unless TRUSTED_AMIS.include? image_id
+  log.fatal "[#{clientcert}] Failed signing CSR as image ID #{image_id} is not trusted"
+  exit 5
+end
+
+# All checks passed! Approve certificate signing request for signing
+log.info "[#{clientcert}] All validations passed, certificate #{clientcert} approved"
+
+exit 0

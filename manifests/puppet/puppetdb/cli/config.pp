@@ -55,9 +55,9 @@ define profiles::puppet::puppetdb::cli::config (
 
   $ssl_dir                 = "${config_rootdir}/puppet/ssl"
   $default_file_attributes = {
-    owner => $title,
-    group => $title
-  }
+                               owner => $title,
+                               group => $title
+                             }
 
   if ($certificate and $private_key) {
     [

@@ -26,6 +26,35 @@ describe 'profiles::publiq::infrastructure::deployment' do
           'ensure' => 'latest'
         ) }
 
+        it { is_expected.to contain_file('publiq-infrastructure production environment hiera.yaml').with(
+          'ensure' => 'absent',
+          'path'   => '/etc/puppetlabs/code/environments/production/hiera.yaml'
+        ) }
+
+        it { is_expected.to contain_file('publiq-infrastructure production environment datadir').with(
+          'ensure' => 'absent',
+          'path'   => '/etc/puppetlabs/code/environments/production/data',
+          'force'  => true
+        ) }
+
+        it { is_expected.to contain_file('publiq-infrastructure acceptance environment environment.conf').with(
+          'ensure'  => 'file',
+          'path'    => '/etc/puppetlabs/code/environments/acceptance/environment.conf',
+          'content' => 'config_version = /etc/puppetlabs/code/get_config_version.sh'
+        ) }
+
+        it { is_expected.to contain_file('publiq-infrastructure testing environment environment.conf').with(
+          'ensure' => 'file',
+          'path'    => '/etc/puppetlabs/code/environments/testing/environment.conf',
+          'content' => 'config_version = /etc/puppetlabs/code/get_config_version.sh'
+        ) }
+
+        it { is_expected.to contain_file('publiq-infrastructure production environment environment.conf').with(
+          'ensure' => 'file',
+          'path'    => '/etc/puppetlabs/code/environments/production/environment.conf',
+          'content' => 'config_version = /etc/puppetlabs/code/get_config_version.sh'
+        ) }
+
         context "without hieradata" do
           let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
 
@@ -52,6 +81,16 @@ describe 'profiles::publiq::infrastructure::deployment' do
 
         it { is_expected.to contain_package('publiq-infrastructure').that_requires('Apt::Source[publiq-infrastructure]') }
         it { is_expected.to contain_package('publiq-infrastructure').that_notifies('Class[profiles::puppet::puppetserver::cache_clear]') }
+
+        it { is_expected.to contain_file('publiq-infrastructure production environment hiera.yaml').that_notifies('Class[profiles::puppet::puppetserver::cache_clear]') }
+        it { is_expected.to contain_file('publiq-infrastructure production environment datadir').that_notifies('Class[profiles::puppet::puppetserver::cache_clear]') }
+        it { is_expected.to contain_file('publiq-infrastructure acceptance environment environment.conf').that_requires('Package[publiq-infrastructure]') }
+        it { is_expected.to contain_file('publiq-infrastructure acceptance environment environment.conf').that_notifies('Class[profiles::puppet::puppetserver::cache_clear]') }
+        it { is_expected.to contain_file('publiq-infrastructure testing environment environment.conf').that_requires('Package[publiq-infrastructure]') }
+        it { is_expected.to contain_file('publiq-infrastructure testing environment environment.conf').that_notifies('Class[profiles::puppet::puppetserver::cache_clear]') }
+        it { is_expected.to contain_file('publiq-infrastructure production environment environment.conf').that_requires('Package[publiq-infrastructure]') }
+        it { is_expected.to contain_file('publiq-infrastructure production environment environment.conf').that_notifies('Class[profiles::puppet::puppetserver::cache_clear]') }
+
         it { is_expected.to contain_package('publiq-infrastructure').that_notifies('Profiles::Deployment::Versions[profiles::publiq::infrastructure::deployment]') }
         it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::infrastructure::deployment').that_requires('Class[profiles::puppet::puppetserver::cache_clear]') }
       end

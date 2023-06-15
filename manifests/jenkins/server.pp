@@ -17,7 +17,6 @@ class profiles::jenkins::server (
   $helper_groovy = '/usr/share/jenkins/puppet_helper.groovy'
 
   realize Apt::Source['publiq-jenkins']
-  realize Apt::Source['cultuurnet-tools']
   realize Apt::Source['publiq-tools']
 
   class {'::profiles::ruby':
@@ -146,9 +145,6 @@ instance.save()' | /usr/bin/jenkins-cli groovy =",
   }
 
   Package['dpkg'] -> Class['::profiles::java'] -> Class['jenkins'] -> File[$sshdir] -> File['jenkins.model.JenkinsLocationConfiguration.xml']
-
-  realize Apt::Source['cultuurnet-tools']
-  realize Apt::Source['cultuurnet-tools']
 
   realize Package['git']
   realize Package['groovy']

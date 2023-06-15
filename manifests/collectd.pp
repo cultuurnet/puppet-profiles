@@ -17,13 +17,15 @@ class profiles::collectd (
 
   class { '::collectd':
     manage_repo       => false,
+    package_name      => 'collectd-core',
+    minimum_version   => '5.8',
     purge             => true,
     purge_config      => true,
     recurse           => true,
     fqdnlookup        => false,
     service_enable    => $service_enable,
     service_ensure    => $service_ensure,
-    collectd_hostname => $facts['fqdn'],
+    collectd_hostname => $facts['networking']['fqdn'],
     typesdb           => [ '/usr/share/collectd/types.db', '/etc/collectd/types.db']
   }
 

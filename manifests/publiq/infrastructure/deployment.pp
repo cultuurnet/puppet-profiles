@@ -14,6 +14,29 @@ class profiles::publiq::infrastructure::deployment (
     require => Apt::Source[$repository]
   }
 
+  file { 'publiq-infrastructure production environment hiera.yaml':
+    ensure => 'absent',
+    path   => '/etc/puppetlabs/code/environments/production/hiera.yaml',
+    notify => Class['profiles::puppet::puppetserver::cache_clear']
+  }
+
+  file { 'publiq-infrastructure production environment datadir':
+    ensure => 'absent',
+    path   => '/etc/puppetlabs/code/environments/production/data',
+    force  => true,
+    notify => Class['profiles::puppet::puppetserver::cache_clear']
+  }
+
+  ['acceptance', 'testing', 'production'].each |$env| {
+    file { "publiq-infrastructure ${env} environment environment.conf":
+      ensure  => 'file',
+      path    => "/etc/puppetlabs/code/environments/${env}/environment.conf",
+      content => 'config_version = /etc/puppetlabs/code/get_config_version.sh',
+      require => Package['publiq-infrastructure'],
+      notify  => Class['profiles::puppet::puppetserver::cache_clear']
+    }
+  }
+
   profiles::deployment::versions { $title:
     puppetdb_url    => $puppetdb_url,
     require         => Class['profiles::puppet::puppetserver::cache_clear']

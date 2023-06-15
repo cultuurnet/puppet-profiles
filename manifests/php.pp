@@ -5,9 +5,9 @@ class profiles::php (
   Optional[String] $newrelic_license_key          = undef
 ) inherits ::profiles {
 
-  realize Apt::Source['cultuurnet-tools']
+  realize Apt::Source['publiq-tools']
 
-  case $::operatingsystemrelease {
+  case $facts['os']['release']['major'] {
     '14.04', '16.04': {
       realize Apt::Source['php']
 

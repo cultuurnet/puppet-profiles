@@ -10,18 +10,16 @@ class profiles::jenkins::node(
 
   include ::profiles::java
   include ::profiles::jenkins::buildtools
-  include ::profiles::terraform
 
   $default_file_attributes = {
-    require => Package['jenkins-swarm-client'],
-    notify  => Service['jenkins-swarm-client']
-  }
-
-  $default_labels = [
-    $facts['os']['name'],
-    $facts['os']['release']['major'],
-    $facts['os']['distro']['codename']
-  ]
+                               require => Package['jenkins-swarm-client'],
+                               notify  => Service['jenkins-swarm-client']
+                             }
+  $default_labels          = [
+                               $facts['os']['name'],
+                               $facts['os']['release']['major'],
+                               $facts['os']['distro']['codename']
+                             ]
 
   realize Group['jenkins']
   realize User['jenkins']

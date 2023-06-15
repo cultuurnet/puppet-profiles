@@ -26,6 +26,8 @@ describe 'profiles::collectd' do
 
           it { is_expected.to contain_class('collectd').with(
             'manage_repo'       => false,
+            'package_name'      => 'collectd-core',
+            'minimum_version'   => '5.8',
             'purge'             => true,
             'purge_config'      => true,
             'recurse'           => true,
@@ -72,6 +74,8 @@ describe 'profiles::collectd' do
 
           it { is_expected.to contain_class('collectd').with(
             'manage_repo'       => false,
+            'package_name'      => 'collectd-core',
+            'minimum_version'   => '5.8',
             'purge'             => true,
             'purge_config'      => true,
             'recurse'           => true,

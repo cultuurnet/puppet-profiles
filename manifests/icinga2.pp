@@ -5,7 +5,7 @@ class profiles::icinga2 (
   include ::profiles::firewall::rules
 
   class {'::icinga2::nrpe':
-    nrpe_allowed_hosts => concat(['127.0.0.1', $facts['ipaddress']], $nrpe_allowed_hosts)
+    nrpe_allowed_hosts => concat(['127.0.0.1', $facts['networking']['ip']], $nrpe_allowed_hosts)
   }
 
   realize Firewall['200 accept NRPE traffic']
@@ -20,11 +20,11 @@ class profiles::icinga2 (
     nrpe_plugin_name => 'check_disk'
   }
 
-  @@::icinga2::object::host { $::fqdn:
-    display_name     => $facts['fqdn'],
-    ipv4_address     => $facts['ipaddress'],
+  @@::icinga2::object::host { $facts['networking']['fqdn']:
+    display_name     => $facts['networking']['fqdn'],
+    ipv4_address     => $facts['networking']['ip'],
     target_dir       => '/etc/icinga2/objects/hosts',
-    target_file_name => "${facts['fqdn']}.conf",
+    target_file_name => "${facts['networking']['fqdn']}.conf",
     vars             => {
       distro              => $facts['os']['name'],
       os                  => $facts['kernel'],
@@ -34,12 +34,10 @@ class profiles::icinga2 (
     }
   }
 
-  if versioncmp( $facts['os']['release']['major'], '16.04') >= 0 {
-    realize Apt::Source['publiq-tools']
+  realize Apt::Source['publiq-tools']
 
-    package { 'icinga2-plugins-systemd-service':
-      ensure  => 'present',
-      require => Apt::Source['publiq-tools']
-    }
+  package { 'icinga2-plugins-systemd-service':
+    ensure  => 'present',
+    require => Apt::Source['publiq-tools']
   }
 }

@@ -7,12 +7,17 @@ describe 'profiles::sudo' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      it { is_expected.to compile.with_all_deps }
-
-      context "with admin_user => ubuntu" do
-        let(:params) do
-          { 'admin_user' => 'ubuntu' }
+      context "on AWS EC2" do
+        let(:facts) do
+          super().merge({ 'ec2_metadata' => true })
         end
+
+        it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to contain_group('ubuntu') }
+        it { is_expected.to contain_user('ubuntu') }
+        it { is_expected.to_not contain_group('vagrant') }
+        it { is_expected.to_not contain_user('vagrant') }
 
         it { is_expected.to contain_class('sudo') }
 
@@ -21,12 +26,22 @@ describe 'profiles::sudo' do
           'priority' => '10'
           )
         }
+
+        it { is_expected.to contain_sudo__conf('ubuntu').that_requires('Class[sudo]') }
+        it { is_expected.to contain_sudo__conf('ubuntu').that_requires('User[ubuntu]') }
       end
 
-      context "with admin_user => vagrant" do
-        let(:params) do
-          { 'admin_user' => 'vagrant' }
+      context "not on AWS EC2" do
+        let(:facts) do
+          super()
         end
+
+        it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to_not contain_group('ubuntu') }
+        it { is_expected.to_not contain_user('ubuntu') }
+        it { is_expected.to contain_group('vagrant') }
+        it { is_expected.to contain_user('vagrant') }
 
         it { is_expected.to contain_class('sudo') }
 
@@ -35,6 +50,9 @@ describe 'profiles::sudo' do
           'priority' => '10'
           )
         }
+
+        it { is_expected.to contain_sudo__conf('vagrant').that_requires('Class[sudo]') }
+        it { is_expected.to contain_sudo__conf('vagrant').that_requires('User[vagrant]') }
       end
     end
   end

@@ -39,13 +39,11 @@ class profiles::aptly (
     s3_publish_endpoints => $publish_endpoints
   }
 
-  if versioncmp( $facts['os']['release']['major'], '16.04') >= 0 {
-    systemd::unit_file { 'aptly-api.service':
-      content => template('profiles/aptly/aptly-api.service.erb'),
-      enable  => true,
-      active  => true,
-      require => Class['aptly']
-    }
+  systemd::unit_file { 'aptly-api.service':
+    content => template('profiles/aptly/aptly-api.service.erb'),
+    enable  => true,
+    active  => true,
+    require => Class['aptly']
   }
 
   if $certificate {
@@ -105,7 +103,7 @@ class profiles::aptly (
     }
   }
 
-  if !($mirrors.empty) {
+  if !empty($mirrors) {
     # This is a somewhat hackish way to add trusted GPG keys to the aptly trustedkeys.gpg keyring.
     # The signature verification in aptly uses gpgv which defaults to this keyring for trusted keys.
     # The aptly commandline can override the default, but the API does not allow this.

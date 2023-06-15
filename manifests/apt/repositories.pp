@@ -1,7 +1,5 @@
 class profiles::apt::repositories {
 
-  # TODO: repositories split for trusty and xenial
-
   contain ::profiles::apt::keys
 
   Apt::Source {
@@ -13,110 +11,45 @@ class profiles::apt::repositories {
   }
 
   # Ubuntu OS repositories
-  case $::operatingsystemrelease {
+  case $facts['os']['release']['major'] {
     '20.04': {
-      @apt::source { 'focal':
+      apt::source { 'focal':
         location => "https://apt.publiq.be/focal-${environment}",
         release  => 'focal',
         repos    => 'main'
       }
 
-      @apt::source { 'focal-updates':
+      apt::source { 'focal-updates':
         location => "https://apt.publiq.be/focal-updates-${environment}",
         release  => 'focal',
         repos    => 'main'
       }
 
-      @apt::source { 'focal-security':
+      apt::source { 'focal-security':
         location => "https://apt.publiq.be/focal-security-${environment}",
         release  => 'focal',
         repos    => 'main'
       }
 
-      @apt::source { 'focal-backports':
+      apt::source { 'focal-backports':
         location => "https://apt.publiq.be/focal-backports-${environment}",
         release  => 'focal',
         repos    => 'main'
       }
-
-      @apt::source { 'puppet':
-        location => "https://apt.publiq.be/puppet-focal-${environment}",
-        release  => 'focal',
-        repos    => 'puppet'
-      }
     }
   }
 
-  # Legacy repositories on apt.uitdatabank.be
-
-  case $::operatingsystemrelease {
-    '14.04': {
-      @apt::source { 'php':
-        location => "http://apt.uitdatabank.be/php-legacy-${environment}",
-        release  => $facts['os']['distro']['codename'],
-        repos    => 'main'
-      }
-
-      @apt::source { 'cultuurnet-tools':
-        location => "http://apt.uitdatabank.be/tools-legacy-${environment}",
-        release  => $facts['os']['distro']['codename'],
-        repos    => 'main'
-      }
-    }
-    '16.04': {
-      @apt::source { 'php':
-        location => "http://apt.uitdatabank.be/php-${environment}",
-        release  => $facts['os']['distro']['codename'],
-        repos    => 'main'
-      }
-
-      @apt::source { 'cultuurnet-tools':
-        location => "http://apt.uitdatabank.be/tools-${environment}",
-        release  => $facts['os']['distro']['codename'],
-        repos    => 'main'
-      }
-    }
-    default: {
-      @apt::source { 'cultuurnet-tools':
-        location => "http://apt.uitdatabank.be/tools-${environment}",
-        release  => $facts['os']['distro']['codename'],
-        repos    => 'main'
-      }
-
-      @apt::ppa { 'ppa:deadsnakes/ppa': }
-    }
-  }
-
-  @apt::source { 'rabbitmq':
-    location => "http://apt.uitdatabank.be/rabbitmq-${environment}",
-    release  => 'testing',
-    repos    => 'main'
-  }
-
-  @apt::source { 'erlang':
-    location => "http://apt.uitdatabank.be/erlang-${environment}",
-    release  => $facts['os']['distro']['codename'],
-    repos    => 'main'
-  }
-
-  @apt::source { 'cultuurnet-omd':
-    location => "http://apt.uitdatabank.be/omd-${environment}",
-    release  => $facts['os']['distro']['codename'],
-    repos    => 'main'
-  }
-
-  @apt::source { 'cultuurnet-udb3':
-    location => "http://apt.uitdatabank.be/udb3-${environment}",
-    release  => $facts['os']['distro']['codename'],
-    repos    => 'main'
-  }
-
-  # End legacy repositories on apt.uitdatabank.be
-
+  # Tool repositories
   @apt::source { 'aptly':
     location => 'http://repo.aptly.info',
     release  => 'squeeze',
     repos    => 'main'
+  }
+
+  @apt::source { 'puppet':
+    location => "https://apt.publiq.be/puppet-${facts['os']['distro']['codename']}-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'puppet'
   }
 
   @apt::source { 'docker':
@@ -126,6 +59,57 @@ class profiles::apt::repositories {
     repos        => 'stable'
   }
 
+  @apt::source { 'newrelic':
+    location     => "https://apt.publiq.be/newrelic-${environment}",
+    release      => $facts['os']['distro']['codename'],
+    architecture => 'amd64',
+    repos        => 'non-free'
+  }
+
+  @apt::source { 'newrelic-infra':
+    location     => "https://apt.publiq.be/newrelic-infra-${environment}",
+    release      => $facts['os']['distro']['codename'],
+    architecture => 'amd64',
+    repos        => 'main'
+  }
+
+  @apt::source { 'elastic-5.x':
+    location => "https://apt.publiq.be/elastic-5.x-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
+  @apt::source { 'elastic-8.x':
+    location => "https://apt.publiq.be/elastic-8.x-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
+  @apt::source { 'publiq-nodejs-14':
+    location => "https://apt.publiq.be/publiq-nodejs-14-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
+  @apt::source { 'publiq-nodejs-16':
+    location => "https://apt.publiq.be/publiq-nodejs-16-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
+  @apt::source { 'publiq-nodejs-18':
+    location => "https://apt.publiq.be/publiq-nodejs-18-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
+  @apt::source { 'publiq-tools':
+    location => "https://apt.publiq.be/publiq-tools-${facts['os']['distro']['codename']}-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
+  # Project repositories
   @apt::source { 'uit-mail-subscriptions':
     location => "https://apt.publiq.be/uit-mail-subscriptions-${environment}",
     release  => $facts['os']['distro']['codename'],
@@ -302,56 +286,6 @@ class profiles::apt::repositories {
 
   @apt::source { 'curator-articlelinker':
     location => "https://apt.publiq.be/curator-articlelinker-${environment}",
-    release  => $facts['os']['distro']['codename'],
-    repos    => 'main'
-  }
-
-  @apt::source { 'newrelic':
-    location     => "https://apt.publiq.be/newrelic-${environment}",
-    release      => $facts['os']['distro']['codename'],
-    architecture => 'amd64',
-    repos        => 'non-free'
-  }
-
-  @apt::source { 'newrelic-infra':
-    location     => "https://apt.publiq.be/newrelic-infra-${environment}",
-    release      => $facts['os']['distro']['codename'],
-    architecture => 'amd64',
-    repos        => 'main'
-  }
-
-  @apt::source { 'elastic-5.x':
-    location => "https://apt.publiq.be/elastic-5.x-${environment}",
-    release  => $facts['os']['distro']['codename'],
-    repos    => 'main'
-  }
-
-  @apt::source { 'elastic-8.x':
-    location => "https://apt.publiq.be/elastic-8.x-${environment}",
-    release  => $facts['os']['distro']['codename'],
-    repos    => 'main'
-  }
-
-  @apt::source { 'publiq-nodejs-14':
-    location => "https://apt.publiq.be/publiq-nodejs-14-${environment}",
-    release  => $facts['os']['distro']['codename'],
-    repos    => 'main'
-  }
-
-  @apt::source { 'publiq-nodejs-16':
-    location => "https://apt.publiq.be/publiq-nodejs-16-${environment}",
-    release  => $facts['os']['distro']['codename'],
-    repos    => 'main'
-  }
-
-  @apt::source { 'publiq-nodejs-18':
-    location => "https://apt.publiq.be/publiq-nodejs-18-${environment}",
-    release  => $facts['os']['distro']['codename'],
-    repos    => 'main'
-  }
-
-  @apt::source { 'publiq-tools':
-    location => "https://apt.publiq.be/publiq-tools-${facts['os']['distro']['codename']}-${environment}",
     release  => $facts['os']['distro']['codename'],
     repos    => 'main'
   }

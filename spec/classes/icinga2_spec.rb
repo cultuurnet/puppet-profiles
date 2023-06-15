@@ -10,10 +10,10 @@ describe 'profiles::icinga2' do
       context "on host aaa.example.com with ipaddress 1.2.3.4 in the acceptance environment" do
         let(:node) { 'aaa.example.com' }
         let(:environment) { 'acceptance' }
+
         let(:facts) {
           super().merge(
-            'fqdn'      => 'aaa.example.com',
-            'ipaddress' => '1.2.3.4'
+            'networking' => { 'ip' => '1.2.3.4' }
           )
         }
 
@@ -40,17 +40,12 @@ describe 'profiles::icinga2' do
             'nrpe_plugin_name' => 'check_disk'
           ) }
 
-          case facts[:os]['release']['major']
-          when '14.04'
-            it { is_expected.to_not contain_package('icinga2-plugins-systemd-service') }
-          when '16.04'
-            it { is_expected.to contain_apt__source('publiq-tools') }
-            it { is_expected.to contain_package('icinga2-plugins-systemd-service').with(
-              'ensure' => 'present'
-            ) }
+          it { is_expected.to contain_apt__source('publiq-tools') }
+          it { is_expected.to contain_package('icinga2-plugins-systemd-service').with(
+            'ensure' => 'present'
+          ) }
 
-            it { is_expected.to contain_package('icinga2-plugins-systemd-service').that_requires('Apt::Source[publiq-tools]') }
-          end
+          it { is_expected.to contain_package('icinga2-plugins-systemd-service').that_requires('Apt::Source[publiq-tools]') }
 
           it { expect(exported_resources).to contain_icinga2__object__host('aaa.example.com').with(
             'display_name'     => 'aaa.example.com',
@@ -81,10 +76,10 @@ describe 'profiles::icinga2' do
       context "on host bbb.example.com with ipaddress 4.3.2.1 in the testing environment" do
         let(:node) { 'bbb.example.com' }
         let(:environment) { 'testing' }
+
         let(:facts) {
           super().merge(
-            'fqdn'      => 'bbb.example.com',
-            'ipaddress' => '4.3.2.1'
+            'networking' => { 'ip' => '4.3.2.1' }
           )
         }
 

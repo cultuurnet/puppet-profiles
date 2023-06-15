@@ -45,6 +45,21 @@ class profiles::udb3::rabbitmq (
     arguments        => {}
   }
 
+  rabbitmq_queue { "rdf.q.udb3-domain-events@${vhost}":
+    user        => $admin_user,
+    password    => $admin_password,
+    durable     => true,
+    auto_delete => false
+  }
+
+  rabbitmq_binding { "udb3.x.domain-events@rdf.q.udb3-domain-events@${vhost}":
+    user             => $admin_user,
+    password         => $admin_password,
+    destination_type => 'queue',
+    routing_key      => '#',
+    arguments        => {}
+  }
+
   rabbitmq_queue { "uitpas.q.udb3-domain-events-cli@${vhost}":
     user        => $admin_user,
     password    => $admin_password,
@@ -175,20 +190,5 @@ class profiles::udb3::rabbitmq (
     destination_type => 'queue',
     routing_key      => '#',
     arguments        => {}
-  }
-
-  rabbitmq_binding { "udb3.x.domain-events@rdf.q.udb3-domain-events@${vhost}":
-    user             => $admin_user,
-    password         => $admin_password,
-    destination_type => 'queue',
-    routing_key      => '#',
-    arguments        => {}
-  }
-
-  rabbitmq_queue { "rdf.q.udb3-domain-events@${vhost}":
-    user        => $admin_user,
-    password    => $admin_password,
-    durable     => true,
-    auto_delete => false
   }
 }

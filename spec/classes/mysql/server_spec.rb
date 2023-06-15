@@ -19,8 +19,7 @@ describe 'profiles::mysql::server' do
         it { is_expected.to contain_systemd__dropin_file('mysql override.conf').with(
           'unit'          => 'mysql.service',
           'filename'      => 'override.conf',
-          'content'       => "[Service]\nLimitNOFILE=1024",
-          'daemon_reload' => 'eager'
+          'content'       => "[Service]\nLimitNOFILE=1024"
         ) }
 
         it { is_expected.to contain_class('mysql::server') }
@@ -39,8 +38,7 @@ describe 'profiles::mysql::server' do
         it { is_expected.to contain_systemd__dropin_file('mysql override.conf').with(
           'unit'          => 'mysql.service',
           'filename'      => 'override.conf',
-          'content'       => "[Service]\nLimitNOFILE=5120",
-          'daemon_reload' => 'eager'
+          'content'       => "[Service]\nLimitNOFILE=5120"
         ) }
       end
     end

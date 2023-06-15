@@ -59,6 +59,24 @@ describe 'profiles::groups' do
           'gid'    => '1002'
           )
         }
+
+        it { is_expected.to contain_group('puppet').with(
+          'ensure' => 'present',
+          'gid'    => '452'
+          )
+        }
+
+        it { is_expected.to contain_group('postgres').with(
+          'ensure' => 'present',
+          'gid'    => '453'
+          )
+        }
+
+        it { is_expected.to contain_group('puppetdb').with(
+          'ensure' => 'present',
+          'gid'    => '454'
+          )
+        }
       end
     end
   end

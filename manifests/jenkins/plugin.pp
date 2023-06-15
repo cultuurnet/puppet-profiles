@@ -7,15 +7,14 @@ define profiles::jenkins::plugin (
   include ::profiles
   include ::profiles::jenkins::cli
 
-  $config_dir = '/var/lib/jenkins/casc_config'
-
+  $config_dir              = '/var/lib/jenkins/casc_config'
   $default_exec_attributes = {
-    path      => ['/usr/local/bin', '/usr/bin', '/bin'],
-    logoutput => 'on_failure',
-    tries     => 5,
-    try_sleep => 10,
-    require   => Class['profiles::jenkins::cli']
-  }
+                               path      => ['/usr/local/bin', '/usr/bin', '/bin'],
+                               logoutput => 'on_failure',
+                               tries     => 5,
+                               try_sleep => 10,
+                               require   => Class['profiles::jenkins::cli']
+                             }
 
   if $ensure == 'absent' {
     $post_action = '-restart'

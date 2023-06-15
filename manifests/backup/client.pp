@@ -3,7 +3,7 @@ class profiles::backup::client (
   Hash   $configuration = {}
 ) inherits ::profiles {
 
-  realize Apt::Source['cultuurnet-tools']
+  realize Apt::Source['publiq-tools']
 
   Sshkey <<| title == 'backup' |>>
 
@@ -26,5 +26,5 @@ class profiles::backup::client (
     content => $private_key
   }
 
-  Apt::Source['cultuurnet-tools'] -> Class['borgbackup']
+  Apt::Source['publiq-tools'] -> Class['borgbackup']
 }
