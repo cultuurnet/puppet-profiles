@@ -96,10 +96,8 @@ describe 'profiles::puppet::puppetserver' do
             'group'   => 'puppet'
           ) }
 
-          it { is_expected.to contain_service('puppetserver').with(
-            'ensure'    => 'running',
-            'enable'    => true,
-            'hasstatus' => true
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::service').with(
+            'status' => 'running'
           ) }
 
           it { is_expected.not_to contain_augeas('puppetserver_initial_heap_size') }
@@ -127,21 +125,21 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to contain_package('puppetserver').that_requires('Ini_setting[puppetserver dns_alt_names]') }
           it { is_expected.to contain_package('puppetserver').that_requires('Apt::Source[puppet]') }
           it { is_expected.to contain_package('puppetserver').that_requires('Class[profiles::java]') }
-          it { is_expected.to contain_package('puppetserver').that_notifies('Service[puppetserver]') }
-          it { is_expected.to contain_class('profiles::puppet::puppetserver::autosign').that_notifies('Service[puppetserver]') }
+          it { is_expected.to contain_package('puppetserver').that_notifies('Class[profiles::puppet::puppetserver::service]') }
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::autosign').that_notifies('Class[profiles::puppet::puppetserver::service]') }
           it { is_expected.to contain_class('profiles::puppet::puppetserver::eyaml').that_requires('Package[puppetserver]') }
-          it { is_expected.to contain_class('profiles::puppet::puppetserver::eyaml').that_notifies('Service[puppetserver]') }
-          it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').that_notifies('Service[puppetserver]') }
-          it { is_expected.to contain_ini_setting('puppetserver ca_server').that_notifies('Service[puppetserver]') }
-          it { is_expected.to contain_ini_setting('puppetserver environmentpath').that_notifies('Service[puppetserver]') }
-          it { is_expected.to contain_ini_setting('puppetserver environment_timeout').that_notifies('Service[puppetserver]') }
-          it { is_expected.to contain_puppet_authorization__rule('puppetserver environment cache').that_notifies('Service[puppetserver]') }
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::eyaml').that_notifies('Class[profiles::puppet::puppetserver::service]') }
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').that_notifies('Class[profiles::puppet::puppetserver::service]') }
+          it { is_expected.to contain_ini_setting('puppetserver ca_server').that_notifies('Class[profiles::puppet::puppetserver::service]') }
+          it { is_expected.to contain_ini_setting('puppetserver environmentpath').that_notifies('Class[profiles::puppet::puppetserver::service]') }
+          it { is_expected.to contain_ini_setting('puppetserver environment_timeout').that_notifies('Class[profiles::puppet::puppetserver::service]') }
+          it { is_expected.to contain_puppet_authorization__rule('puppetserver environment cache').that_notifies('Class[profiles::puppet::puppetserver::service]') }
           it { is_expected.to contain_file('puppserver dropsonde directory').that_requires('Group[puppet]') }
           it { is_expected.to contain_file('puppserver dropsonde directory').that_requires('User[puppet]') }
           it { is_expected.to contain_file('puppserver dropsonde directory').that_requires('Package[puppetserver]') }
-          it { is_expected.to contain_file('puppserver dropsonde directory').that_notifies('Service[puppetserver]') }
+          it { is_expected.to contain_file('puppserver dropsonde directory').that_notifies('Class[profiles::puppet::puppetserver::service]') }
           it { is_expected.to contain_hocon_setting('puppetserver dropsonde').that_requires('Package[puppetserver]') }
-          it { is_expected.to contain_hocon_setting('puppetserver dropsonde').that_notifies('Service[puppetserver]') }
+          it { is_expected.to contain_hocon_setting('puppetserver dropsonde').that_notifies('Class[profiles::puppet::puppetserver::service]') }
         end
 
         context "with version => 1.2.3, dns_alt_names => puppet.services.example.com, autosign => true, trusted_amis => ami-123, trusted_certnames => [], eyaml => true, eyaml_gpg_key => { 'id' => '6789DEFD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\neyamlkey\n-----END PGP PRIVATE KEY BLOCK-----' }, puppetdb_url => https://puppetdb.example.com:8081, initial_heap_size => 512m, maximum_heap_size => 512m and service_status => stopped" do
@@ -209,19 +207,17 @@ describe 'profiles::puppet::puppetserver' do
             'version' => nil
           ) }
 
-          it { is_expected.to contain_service('puppetserver').with(
-            'ensure'    => 'stopped',
-            'enable'    => false,
-            'hasstatus' => true
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::service').with(
+            'status' => 'stopped'
           ) }
 
-          it { is_expected.to contain_class('profiles::puppet::puppetserver::autosign').that_notifies('Service[puppetserver]') }
-          it { is_expected.to contain_class('profiles::puppet::puppetserver::eyaml').that_notifies('Service[puppetserver]') }
-          it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').that_notifies('Service[puppetserver]') }
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::autosign').that_notifies('Class[profiles::puppet::puppetserver::service]') }
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::eyaml').that_notifies('Class[profiles::puppet::puppetserver::service]') }
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').that_notifies('Class[profiles::puppet::puppetserver::service]') }
           it { is_expected.to contain_augeas('puppetserver_initial_heap_size').that_requires('Package[puppetserver]') }
-          it { is_expected.to contain_augeas('puppetserver_initial_heap_size').that_notifies('Service[puppetserver]') }
+          it { is_expected.to contain_augeas('puppetserver_initial_heap_size').that_notifies('Class[profiles::puppet::puppetserver::service]') }
           it { is_expected.to contain_augeas('puppetserver_maximum_heap_size').that_requires('Package[puppetserver]') }
-          it { is_expected.to contain_augeas('puppetserver_maximum_heap_size').that_notifies('Service[puppetserver]') }
+          it { is_expected.to contain_augeas('puppetserver_maximum_heap_size').that_notifies('Class[profiles::puppet::puppetserver::service]') }
         end
       end
 
