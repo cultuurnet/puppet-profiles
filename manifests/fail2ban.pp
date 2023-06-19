@@ -13,16 +13,16 @@ class profiles::fail2ban (
 ) inherits ::profiles {
 
   class { 'fail2ban':
-    manage_defaults          => $manage_defaults         
-    package_ensure           => $package_ensure          
-    service_ensure           => $service_ensure          
-    service_enable           => $service_enable          
-    config_file_hash         => $config_file_hash        
-    config_file_options_hash => $config_file_options_hash
-    email                    => $email                   
-    sender                   => $sender                  
-    whitelist                => $whitelist               
-    jails                    => $jails
+    manage_defaults          => $manage_defaults,
+    package_ensure           => $package_ensure,
+    service_ensure           => $service_ensure,
+    service_enable           => $service_enable,
+    config_file_hash         => $config_file_hash,
+    config_file_options_hash => $config_file_options_hash,
+    email                    => $email,
+    sender                   => $sender,
+    whitelist                => $whitelist,
+    jails                    => $jails,
     custom_jails             => $custom_jails
   }
 }
