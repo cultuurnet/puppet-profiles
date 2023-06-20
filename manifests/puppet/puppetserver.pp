@@ -6,6 +6,10 @@ class profiles::puppet::puppetserver (
   Variant[String, Array[String]]           $trusted_certnames = [],
   Boolean                                  $eyaml             = false,
   Hash                                     $eyaml_gpg_key     = {},
+  Variant[Hash,Array[Hash]]                $lookup_hierarchy  = [
+                                                                  { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
+                                                                  { 'name' => 'Common data', 'path' => 'common.yaml' }
+                                                                ],
   Optional[Stdlib::Httpurl]                $puppetdb_url      = undef,
   Optional[String]                         $puppetdb_version  = undef,
   Optional[String]                         $initial_heap_size = undef,
@@ -88,10 +92,11 @@ class profiles::puppet::puppetserver (
   }
 
   class { 'profiles::puppet::puppetserver::eyaml':
-    enable  => $eyaml,
-    gpg_key => $eyaml_gpg_key,
-    require => Class['profiles::puppet::puppetserver::install'],
-    notify  => Class['profiles::puppet::puppetserver::service']
+    enable           => $eyaml,
+    gpg_key          => $eyaml_gpg_key,
+    lookup_hierarchy => $lookup_hierarchy,
+    require          => Class['profiles::puppet::puppetserver::install'],
+    notify           => Class['profiles::puppet::puppetserver::service']
   }
 
   class { 'profiles::puppet::puppetserver::puppetdb':

@@ -23,6 +23,10 @@ describe 'profiles::puppet::puppetserver' do
             'trusted_certnames' => [],
             'eyaml'             => false,
             'eyaml_gpg_key'     => {},
+            'lookup_hierarchy'  => [
+                                     { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
+                                     { 'name' => 'Common data', 'path' => 'common.yaml' }
+                                   ],
             'puppetdb_url'      => nil,
             'puppetdb_version'  => nil,
             'initial_heap_size' => nil,
@@ -133,7 +137,7 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to contain_hocon_setting('puppetserver dropsonde').that_notifies('Class[profiles::puppet::puppetserver::service]') }
         end
 
-        context "with version => 1.2.3, dns_alt_names => puppet.services.example.com, autosign => true, trusted_amis => ami-123, trusted_certnames => [], eyaml => true, eyaml_gpg_key => { 'id' => '6789DEFD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\neyamlkey\n-----END PGP PRIVATE KEY BLOCK-----' }, puppetdb_url => https://puppetdb.example.com:8081, initial_heap_size => 512m, maximum_heap_size => 512m and service_status => stopped" do
+        context "with version => 1.2.3, dns_alt_names => puppet.services.example.com, autosign => true, trusted_amis => ami-123, trusted_certnames => [], eyaml => true, eyaml_gpg_key => { 'id' => '6789DEFD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\neyamlkey\n-----END PGP PRIVATE KEY BLOCK-----' }, lookup_hierarchy => { name => Common data, path => common.yaml }, puppetdb_url => https://puppetdb.example.com:8081, initial_heap_size => 512m, maximum_heap_size => 512m and service_status => stopped" do
           let(:params) { {
             'version'           => '1.2.3',
             'dns_alt_names'     => 'puppet.services.example.com',
@@ -145,6 +149,7 @@ describe 'profiles::puppet::puppetserver' do
                                      'id'      => '6789DEFD',
                                      'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\neyamlkey\n-----END PGP PRIVATE KEY BLOCK-----"
                                    },
+            'lookup_hierarchy'  => { 'name' => 'Common data', 'path' => 'common.yaml' },
             'puppetdb_url'      => 'https://puppetdb.example.com:8081',
             'initial_heap_size' => '512m',
             'maximum_heap_size' => '512m',
@@ -186,11 +191,12 @@ describe 'profiles::puppet::puppetserver' do
           ) }
 
           it { is_expected.to contain_class('profiles::puppet::puppetserver::eyaml').with(
-            'enable'  => true,
-            'gpg_key' => {
-                           'id'      => '6789DEFD',
-                           'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\neyamlkey\n-----END PGP PRIVATE KEY BLOCK-----"
-                         }
+            'enable'           => true,
+            'gpg_key'          => {
+                                    'id'      => '6789DEFD',
+                                    'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\neyamlkey\n-----END PGP PRIVATE KEY BLOCK-----"
+                                  },
+            'lookup_hierarchy' => { 'name' => 'Common data', 'path' => 'common.yaml' }
           ) }
 
           it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').with(
