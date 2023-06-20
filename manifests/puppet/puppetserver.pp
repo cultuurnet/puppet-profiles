@@ -6,6 +6,10 @@ class profiles::puppet::puppetserver (
   Variant[String, Array[String]]           $trusted_certnames = [],
   Boolean                                  $eyaml             = false,
   Hash                                     $eyaml_gpg_key     = {},
+  Variant[Hash,Array[Hash]]                $lookup_hierarchy  = [
+                                                                  { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
+                                                                  { 'name' => 'Common data', 'path' => 'common.yaml' }
+                                                                ],
   Optional[Stdlib::Httpurl]                $puppetdb_url      = undef,
   Optional[String]                         $puppetdb_version  = undef,
   Optional[String]                         $initial_heap_size = undef,
@@ -24,11 +28,6 @@ class profiles::puppet::puppetserver (
                                     }
 
   include profiles::firewall::rules
-  include profiles::java
-
-  realize Group['puppet']
-  realize User['puppet']
-  realize Apt::Source['puppet']
 
   realize Firewall['300 accept puppetserver HTTPS traffic']
 
@@ -36,8 +35,8 @@ class profiles::puppet::puppetserver (
     ensure  => 'present',
     setting => 'ca_server',
     value   => $facts['networking']['fqdn'],
-    before  => Package['puppetserver'],
-    notify  => Service['puppetserver'],
+    before  => Class['profiles::puppet::puppetserver::install'],
+    notify  => Class['profiles::puppet::puppetserver::service'],
     *       => $default_ini_setting_attributes
   }
 
@@ -45,7 +44,7 @@ class profiles::puppet::puppetserver (
     ensure  => 'present',
     setting => 'environmentpath',
     value   => '$codedir/environments',
-    notify  => Service['puppetserver'],
+    notify  => Class['profiles::puppet::puppetserver::service'],
     *       => $default_ini_setting_attributes
   }
 
@@ -53,7 +52,7 @@ class profiles::puppet::puppetserver (
     ensure  => 'present',
     setting => 'environment_timeout',
     value   => 'unlimited',
-    notify  => Service['puppetserver'],
+    notify  => Class['profiles::puppet::puppetserver::service'],
     *       => $default_ini_setting_attributes
   }
 
@@ -65,7 +64,7 @@ class profiles::puppet::puppetserver (
     allow                => '*',
     sort_order           => 200,
     path                 => '/etc/puppetlabs/puppetserver/conf.d/auth.conf',
-    notify               => Service['puppetserver']
+    notify               => Class['profiles::puppet::puppetserver::service']
   }
 
   if $dns_alt_names {
@@ -73,14 +72,14 @@ class profiles::puppet::puppetserver (
       ensure  => 'present',
       setting => 'dns_alt_names',
       value   => [$dns_alt_names].flatten.join(','),
-      before  => Package['puppetserver'],
+      before  => Class['profiles::puppet::puppetserver::install'],
       *       => $default_ini_setting_attributes
     }
   } else {
     ini_setting { 'puppetserver dns_alt_names':
       ensure  => 'absent',
       setting => 'dns_alt_names',
-      before  => Package['puppetserver'],
+      before  => Class['profiles::puppet::puppetserver::install'],
       *       => $default_ini_setting_attributes
     }
   }
@@ -89,26 +88,26 @@ class profiles::puppet::puppetserver (
     autosign          => $autosign,
     trusted_amis      => $trusted_amis,
     trusted_certnames => $trusted_certnames,
-    notify            => Service['puppetserver']
+    notify            => Class['profiles::puppet::puppetserver::service']
   }
 
   class { 'profiles::puppet::puppetserver::eyaml':
-    enable  => $eyaml,
-    gpg_key => $eyaml_gpg_key,
-    require => Package['puppetserver'],
-    notify  => Service['puppetserver']
+    enable           => $eyaml,
+    gpg_key          => $eyaml_gpg_key,
+    lookup_hierarchy => $lookup_hierarchy,
+    require          => Class['profiles::puppet::puppetserver::install'],
+    notify           => Class['profiles::puppet::puppetserver::service']
   }
 
   class { 'profiles::puppet::puppetserver::puppetdb':
     url     => $puppetdb_url,
     version => $puppetdb_version,
-    notify  => Service['puppetserver']
+    notify  => Class['profiles::puppet::puppetserver::service']
   }
 
-  package { 'puppetserver':
-    ensure  => $version,
-    require => [Group['puppet'], User['puppet'], Apt::Source['puppet'], Class['profiles::java']],
-    notify  => Service['puppetserver']
+  class { 'profiles::puppet::puppetserver::install':
+    version => $version,
+    notify  => Class['profiles::puppet::puppetserver::service']
   }
 
   # Fix ownership of dropsonde directory, to stop the permission errors in puppetserver.log
@@ -116,8 +115,8 @@ class profiles::puppet::puppetserver (
     owner   => 'puppet',
     path    => '/opt/puppetlabs/server/data/puppetserver/dropsonde',
     group   => 'puppet',
-    require => [Group['puppet'], User['puppet'], Package['puppetserver']],
-    notify  => Service['puppetserver']
+    require => [Group['puppet'], User['puppet'], Class['profiles::puppet::puppetserver::install']],
+    notify  => Class['profiles::puppet::puppetserver::service']
   }
 
   hocon_setting { 'puppetserver dropsonde':
@@ -126,8 +125,8 @@ class profiles::puppet::puppetserver (
     setting => 'dropsonde.enabled',
     type    => 'boolean',
     value   => false,
-    require => Package['puppetserver'],
-    notify  => Service['puppetserver']
+    require => Class['profiles::puppet::puppetserver::install'],
+    notify  => Class['profiles::puppet::puppetserver::service']
   }
 
   if $initial_heap_size {
@@ -136,8 +135,8 @@ class profiles::puppet::puppetserver (
       incl    => '/etc/default/puppetserver',
       context => '/files/etc/default/puppetserver/JAVA_ARGS',
       changes => "set value[. =~ regexp('-Xms.*')] '-Xms${initial_heap_size}'",
-      require => Package['puppetserver'],
-      notify  => Service['puppetserver']
+      require => Class['profiles::puppet::puppetserver::install'],
+      notify  => Class['profiles::puppet::puppetserver::service']
     }
   }
 
@@ -147,19 +146,12 @@ class profiles::puppet::puppetserver (
       incl    => '/etc/default/puppetserver',
       context => '/files/etc/default/puppetserver/JAVA_ARGS',
       changes => "set value[. =~ regexp('-Xmx.*')] '-Xmx${maximum_heap_size}'",
-      require => Package['puppetserver'],
-      notify  => Service['puppetserver']
+      require => Class['profiles::puppet::puppetserver::install'],
+      notify  => Class['profiles::puppet::puppetserver::service']
     }
   }
 
-  $service_enable = $service_status ? {
-    'running' => true,
-    'stopped' => false
-  }
-
-  service { 'puppetserver':
-    ensure    => $service_status,
-    enable    => $service_enable,
-    hasstatus => true
+  class { 'profiles::puppet::puppetserver::service':
+    status => $service_status
   }
 }
