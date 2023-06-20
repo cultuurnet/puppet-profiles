@@ -111,7 +111,7 @@ class profiles::puppet::puppetserver (
   }
 
   # Fix ownership of dropsonde directory, to stop the permission errors in puppetserver.log
-  file { 'puppserver dropsonde directory':
+  file { 'puppetserver dropsonde directory':
     owner   => 'puppet',
     path    => '/opt/puppetlabs/server/data/puppetserver/dropsonde',
     group   => 'puppet',

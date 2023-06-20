@@ -89,7 +89,7 @@ describe 'profiles::puppet::puppetserver' do
             'value'   => false
           ) }
 
-          it { is_expected.to contain_file('puppserver dropsonde directory').with(
+          it { is_expected.to contain_file('puppetserver dropsonde directory').with(
             'path'    => '/opt/puppetlabs/server/data/puppetserver/dropsonde',
             'owner'   => 'puppet',
             'group'   => 'puppet'
@@ -129,10 +129,10 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to contain_ini_setting('puppetserver environmentpath').that_notifies('Class[profiles::puppet::puppetserver::service]') }
           it { is_expected.to contain_ini_setting('puppetserver environment_timeout').that_notifies('Class[profiles::puppet::puppetserver::service]') }
           it { is_expected.to contain_puppet_authorization__rule('puppetserver environment cache').that_notifies('Class[profiles::puppet::puppetserver::service]') }
-          it { is_expected.to contain_file('puppserver dropsonde directory').that_requires('Group[puppet]') }
-          it { is_expected.to contain_file('puppserver dropsonde directory').that_requires('User[puppet]') }
-          it { is_expected.to contain_file('puppserver dropsonde directory').that_requires('Class[profiles::puppet::puppetserver::install]') }
-          it { is_expected.to contain_file('puppserver dropsonde directory').that_notifies('Class[profiles::puppet::puppetserver::service]') }
+          it { is_expected.to contain_file('puppetserver dropsonde directory').that_requires('Group[puppet]') }
+          it { is_expected.to contain_file('puppetserver dropsonde directory').that_requires('User[puppet]') }
+          it { is_expected.to contain_file('puppetserver dropsonde directory').that_requires('Class[profiles::puppet::puppetserver::install]') }
+          it { is_expected.to contain_file('puppetserver dropsonde directory').that_notifies('Class[profiles::puppet::puppetserver::service]') }
           it { is_expected.to contain_hocon_setting('puppetserver dropsonde').that_requires('Class[profiles::puppet::puppetserver::install]') }
           it { is_expected.to contain_hocon_setting('puppetserver dropsonde').that_notifies('Class[profiles::puppet::puppetserver::service]') }
         end
