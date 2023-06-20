@@ -31,7 +31,7 @@ class profiles::puppet::puppetserver (
     ensure  => 'present',
     setting => 'ca_server',
     value   => $facts['networking']['fqdn'],
-    before  => Package['puppetserver'],
+    before  => Class['profiles::puppet::puppetserver::install'],
     notify  => Class['profiles::puppet::puppetserver::service'],
     *       => $default_ini_setting_attributes
   }
@@ -68,14 +68,14 @@ class profiles::puppet::puppetserver (
       ensure  => 'present',
       setting => 'dns_alt_names',
       value   => [$dns_alt_names].flatten.join(','),
-      before  => Package['puppetserver'],
+      before  => Class['profiles::puppet::puppetserver::install'],
       *       => $default_ini_setting_attributes
     }
   } else {
     ini_setting { 'puppetserver dns_alt_names':
       ensure  => 'absent',
       setting => 'dns_alt_names',
-      before  => Package['puppetserver'],
+      before  => Class['profiles::puppet::puppetserver::install'],
       *       => $default_ini_setting_attributes
     }
   }
@@ -90,7 +90,7 @@ class profiles::puppet::puppetserver (
   class { 'profiles::puppet::puppetserver::eyaml':
     enable  => $eyaml,
     gpg_key => $eyaml_gpg_key,
-    require => Package['puppetserver'],
+    require => Class['profiles::puppet::puppetserver::install'],
     notify  => Class['profiles::puppet::puppetserver::service']
   }
 
@@ -110,7 +110,7 @@ class profiles::puppet::puppetserver (
     owner   => 'puppet',
     path    => '/opt/puppetlabs/server/data/puppetserver/dropsonde',
     group   => 'puppet',
-    require => [Group['puppet'], User['puppet'], Package['puppetserver']],
+    require => [Group['puppet'], User['puppet'], Class['profiles::puppet::puppetserver::install']],
     notify  => Class['profiles::puppet::puppetserver::service']
   }
 
@@ -120,7 +120,7 @@ class profiles::puppet::puppetserver (
     setting => 'dropsonde.enabled',
     type    => 'boolean',
     value   => false,
-    require => Package['puppetserver'],
+    require => Class['profiles::puppet::puppetserver::install'],
     notify  => Class['profiles::puppet::puppetserver::service']
   }
 
@@ -130,7 +130,7 @@ class profiles::puppet::puppetserver (
       incl    => '/etc/default/puppetserver',
       context => '/files/etc/default/puppetserver/JAVA_ARGS',
       changes => "set value[. =~ regexp('-Xms.*')] '-Xms${initial_heap_size}'",
-      require => Package['puppetserver'],
+      require => Class['profiles::puppet::puppetserver::install'],
       notify  => Class['profiles::puppet::puppetserver::service']
     }
   }
@@ -141,7 +141,7 @@ class profiles::puppet::puppetserver (
       incl    => '/etc/default/puppetserver',
       context => '/files/etc/default/puppetserver/JAVA_ARGS',
       changes => "set value[. =~ regexp('-Xmx.*')] '-Xmx${maximum_heap_size}'",
-      require => Package['puppetserver'],
+      require => Class['profiles::puppet::puppetserver::install'],
       notify  => Class['profiles::puppet::puppetserver::service']
     }
   }
