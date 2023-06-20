@@ -13,8 +13,12 @@ describe 'profiles::puppet::puppetserver::eyaml' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::puppet::puppetserver::eyaml').with(
-          'enable'  => false,
-          'gpg_key' => {}
+          'enable'           => false,
+          'gpg_key'          => {},
+          'lookup_hierarchy' => [
+                                  { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
+                                  { 'name' => 'Common data', 'path' => 'common.yaml' }
+                                ]
         ) }
 
         it { is_expected.to contain_package('ruby_gpg').with(
@@ -41,6 +45,19 @@ describe 'profiles::puppet::puppetserver::eyaml' do
           'ensure' => 'absent',
           'path'   => '/opt/puppetlabs/server/data/puppetserver/.eyaml',
           'force'  => true
+        ) }
+
+        it { is_expected.to contain_class('hiera').with(
+          'hiera_version'      => '5',
+          'hiera_yaml'         => '/etc/puppetlabs/code/hiera.yaml',
+          'datadir_manage'     => false,
+          'puppet_conf_manage' => false,
+          'master_service'     => 'puppetserver',
+          'hiera5_defaults'    => { 'datadir' => 'data', 'data_hash' => 'yaml_data' },
+          'hierarchy'          => [
+                                    { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
+                                    { 'name' => 'Common data', 'path' => 'common.yaml' }
+                                  ]
         ) }
 
         it { is_expected.to contain_package('hiera-eyaml-gpg').that_comes_before('Package[hiera-eyaml]') }
@@ -91,6 +108,19 @@ describe 'profiles::puppet::puppetserver::eyaml' do
           'source' => 'puppet:///modules/profiles/puppet/puppetserver/eyaml/config.yaml'
         ) }
 
+        it { is_expected.to contain_class('hiera').with(
+          'hiera_version'      => '5',
+          'hiera_yaml'         => '/etc/puppetlabs/code/hiera.yaml',
+          'datadir_manage'     => false,
+          'puppet_conf_manage' => false,
+          'master_service'     => 'puppetserver',
+          'hiera5_defaults'    => { 'datadir' => 'data', 'data_hash' => 'yaml_data' },
+          'hierarchy'          => [
+                                    { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml', 'lookup_key' => 'eyaml_lookup_key', 'options' => { 'gpg_gnupghome' => '/opt/puppetlabs/server/data/puppetserver/.gnupg' } },
+                                    { 'name' => 'Common data', 'path' => 'common.yaml', 'lookup_key' => 'eyaml_lookup_key', 'options' => { 'gpg_gnupghome' => '/opt/puppetlabs/server/data/puppetserver/.gnupg' } }
+                                  ]
+        ) }
+
         it { is_expected.to contain_gnupg_key('6789DEFD').with(
           'ensure'      => 'present',
           'key_id'      => '6789DEFD',
@@ -108,13 +138,14 @@ describe 'profiles::puppet::puppetserver::eyaml' do
         it { is_expected.to contain_gnupg_key('6789DEFD').that_requires('User[puppet]') }
       end
 
-      context "with enable => true and gpg_key => { 'id' => '1234ABCD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK-----' }" do
+      context "with enable => true, gpg_key => { 'id' => '1234ABCD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK-----' } and lookup_hierarchy => { 'name' => 'Common data', 'path' => 'common.yaml' }" do
         let(:params) { {
-          'enable'  => true,
-          'gpg_key' => {
-                         'id'      => '1234ABCD',
-                         'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK-----"
-                       }
+          'enable'           => true,
+          'gpg_key'          => {
+                                  'id'      => '1234ABCD',
+                                  'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK-----"
+                                },
+          'lookup_hierarchy' => { 'name' => 'Common data', 'path' => 'common.yaml' }
         } }
 
         it { is_expected.to contain_gnupg_key('1234ABCD').with(
@@ -126,6 +157,18 @@ describe 'profiles::puppet::puppetserver::eyaml' do
         ) }
 
         it { is_expected.to contain_gnupg_key('1234ABCD').that_requires('User[puppet]') }
+
+        it { is_expected.to contain_class('hiera').with(
+          'hiera_version'      => '5',
+          'hiera_yaml'         => '/etc/puppetlabs/code/hiera.yaml',
+          'datadir_manage'     => false,
+          'puppet_conf_manage' => false,
+          'master_service'     => 'puppetserver',
+          'hiera5_defaults'    => { 'datadir' => 'data', 'data_hash' => 'yaml_data' },
+          'hierarchy'          => [
+                                    { 'name' => 'Common data', 'path' => 'common.yaml', 'lookup_key' => 'eyaml_lookup_key', 'options' => { 'gpg_gnupghome' => '/opt/puppetlabs/server/data/puppetserver/.gnupg' } }
+                                  ]
+        ) }
       end
 
       context "with enable => true and gpg_key => {}" do
