@@ -218,7 +218,12 @@ describe 'profiles::postfix' do
             'message_size_limit'    => '0',
             'mailbox_size_limit'    => '0',
             'virtual_alias_maps'    => [ 'hash:/etc/postfix/virtual'],
-            'virtual_alias_domains' => []
+            'virtual_alias_domains' => [],
+            'extra_main_parameters'   => {
+              'smtp_tls_loglevel' => '1',
+              'smtpd_recipient_restrictions' => 'permit_mynetworks,reject_unauth_destination',
+              'smtpd_relay_restrictions'     => 'permit_mynetworks,reject_unauth_destination'
+            }
           ) }
 
           it { is_expected.to contain_postfix__dbfile('virtual').with(
@@ -325,7 +330,12 @@ describe 'profiles::postfix' do
             'message_size_limit'    => '0',
             'mailbox_size_limit'    => '0',
             'virtual_alias_maps'    => ['hash:/etc/postfix/virtual'],
-            'virtual_alias_domains' => ['baz.com']
+            'virtual_alias_domains' => ['baz.com'],
+            'extra_main_parameters'   => {
+              'smtp_tls_loglevel' => '1',
+              'smtpd_recipient_restrictions' => 'permit_mynetworks,reject_unauth_destination',
+              'smtpd_relay_restrictions'     => 'permit_mynetworks,reject_unauth_destination'
+            }
           ) }
 
           it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_1.2.3.4').with(
