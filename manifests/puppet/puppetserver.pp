@@ -24,11 +24,6 @@ class profiles::puppet::puppetserver (
                                     }
 
   include profiles::firewall::rules
-  include profiles::java
-
-  realize Group['puppet']
-  realize User['puppet']
-  realize Apt::Source['puppet']
 
   realize Firewall['300 accept puppetserver HTTPS traffic']
 
@@ -105,9 +100,8 @@ class profiles::puppet::puppetserver (
     notify  => Class['profiles::puppet::puppetserver::service']
   }
 
-  package { 'puppetserver':
-    ensure  => $version,
-    require => [Group['puppet'], User['puppet'], Apt::Source['puppet'], Class['profiles::java']],
+  class { 'profiles::puppet::puppetserver::install':
+    version => $version,
     notify  => Class['profiles::puppet::puppetserver::service']
   }
 
