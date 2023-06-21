@@ -66,7 +66,7 @@ class profiles::puppet::puppetserver::eyaml (
   ['ruby_gpg', 'hiera-eyaml', 'hiera-eyaml-gpg'].each |$package| {
     package { $package:
       ensure   => $package_ensure,
-      provider => 'puppet_gem'
+      provider => 'puppetserver_gem'
     }
   }
 
