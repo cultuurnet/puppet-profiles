@@ -23,17 +23,17 @@ describe 'profiles::puppet::puppetserver::eyaml' do
 
         it { is_expected.to contain_package('ruby_gpg').with(
           'ensure'   => 'absent',
-          'provider' => 'puppet_gem'
+          'provider' => 'puppetserver_gem'
         ) }
 
         it { is_expected.to contain_package('hiera-eyaml').with(
           'ensure'   => 'absent',
-          'provider' => 'puppet_gem'
+          'provider' => 'puppetserver_gem'
         ) }
 
         it { is_expected.to contain_package('hiera-eyaml-gpg').with(
           'ensure'   => 'absent',
-          'provider' => 'puppet_gem'
+          'provider' => 'puppetserver_gem'
         ) }
 
         it { is_expected.to contain_file('puppetserver eyaml configuration').with(
@@ -80,17 +80,17 @@ describe 'profiles::puppet::puppetserver::eyaml' do
 
         it { is_expected.to contain_package('ruby_gpg').with(
           'ensure'   => 'installed',
-          'provider' => 'puppet_gem'
+          'provider' => 'puppetserver_gem'
         ) }
 
         it { is_expected.to contain_package('hiera-eyaml').with(
           'ensure'   => 'installed',
-          'provider' => 'puppet_gem'
+          'provider' => 'puppetserver_gem'
         ) }
 
         it { is_expected.to contain_package('hiera-eyaml-gpg').with(
           'ensure'   => 'installed',
-          'provider' => 'puppet_gem'
+          'provider' => 'puppetserver_gem'
         ) }
 
         it { is_expected.to contain_file('puppetserver eyaml configdir').with(
