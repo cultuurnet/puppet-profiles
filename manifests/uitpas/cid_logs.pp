@@ -5,6 +5,9 @@ class profiles::uitpas::cid_logs (
   String                     $data_dir        = '/data/cidlogs'
 ) inherits ::profiles {
 
+  realize Group['logstash']
+  realize User['logstash']
+
   profiles::apache::vhost::reverse_proxy { $url:
     destination => "http://${service_address}:${service_port}/"
   }
@@ -14,6 +17,6 @@ class profiles::uitpas::cid_logs (
     owner  => 'logstash',
     group  => 'logstash',
     mode   => '0755',
-    require => [Package['logstash']]
+    require => [User['logstash'],Package['logstash']]
   }
 }
