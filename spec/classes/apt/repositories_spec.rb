@@ -47,6 +47,7 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'focal-security', { :location => 'https://apt.publiq.be/focal-security-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'focal-backports', { :location => 'https://apt.publiq.be/focal-backports-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'puppet', { :location => 'https://apt.publiq.be/puppet-focal-testing', :repos => 'puppet', :release => 'focal' }
+            include_examples 'apt repositories', 'php', { :location => 'https://apt.publiq.be/php-focal-testing', :repos => 'main', :release => 'focal' }
 
             # Do we need to check for the architecture for these repositories?
             include_examples 'apt repositories', 'docker', { :location => 'https://apt.publiq.be/docker-testing', :repos => 'stable', :release => 'focal' }
@@ -116,6 +117,7 @@ describe 'profiles::apt::repositories' do
             ) }
 
             include_examples 'apt repositories', 'focal', { :location => 'https://apt.publiq.be/focal-acceptance', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'php', { :location => 'https://apt.publiq.be/php-focal-acceptance', :repos => 'main', :release => 'focal' }
           end
         end
       end

@@ -109,6 +109,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'php':
+    location => "https://apt.publiq.be/php-${facts['os']['distro']['codename']}-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   # Project repositories
   @apt::source { 'uit-mail-subscriptions':
     location => "https://apt.publiq.be/uit-mail-subscriptions-${environment}",
