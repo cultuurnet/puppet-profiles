@@ -9,11 +9,14 @@ class profiles::logstash (
 
   include profiles::java
 
+  realize Group['logstash']
+  realize User['logstash']
+
   realize Apt::Source['elastic-8.x']
 
   package { 'logstash':
     ensure  => $version,
-    require => [Class['profiles::java'],Apt::Source['elastic-8.x']],
+    require => [User['logstash'],Class['profiles::java'],Apt::Source['elastic-8.x']],
     notify  => Service['logstash']
   }
 
