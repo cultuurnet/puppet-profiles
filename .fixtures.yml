@@ -105,6 +105,9 @@ fixtures:
     puppet_certificate:
       repo: 'puppet/puppet_certificate'
       ref: '1.0.0'
+    hiera:
+      repo: 'puppet/hiera'
+      ref: '5.0.1'
   repositories:
     rabbitmq:
       repo: 'https://github.com/cultuurnet/puppetlabs-rabbitmq.git'

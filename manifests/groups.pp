@@ -54,4 +54,9 @@ class profiles::groups inherits ::profiles {
     ensure => 'present',
     gid    => '1002'
   }
+
+  @group { 'logstash':
+    ensure => 'present',
+    gid    => '1003'
+  }
 }

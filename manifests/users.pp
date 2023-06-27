@@ -99,4 +99,14 @@ class profiles::users inherits ::profiles {
     shell          => '/bin/bash',
     uid            => '1002'
   }
+
+  @user { 'logstash':
+    ensure         => 'present',
+    gid            => 'logstash',
+    home           => '/usr/share/logstash',
+    managehome     => true,
+    purge_ssh_keys => true,
+    shell          => '/usr/sbin/nologin',
+    uid            => '1003'
+  }
 }
