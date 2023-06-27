@@ -3,6 +3,7 @@ class profiles::logstash (
   String                     $input_source    = undef,
   String                     $filter_source   = undef,
   String                     $output_source   = undef,
+  Hash                       $plugins         = {},
   Optional[Variant[Hash]]    $config_defaults = undef,
   Enum['running', 'stopped'] $service_status  = 'running'
 ) inherits ::profiles {
@@ -18,6 +19,12 @@ class profiles::logstash (
     ensure  => $version,
     require => [User['logstash'],Class['profiles::java'],Apt::Source['elastic-8.x']],
     notify  => Service['logstash']
+  }
+
+  $plugins.each |$plugin,$properties| {
+    profiles::logstash::plugin { $plugin:
+      * => $properties
+    }
   }
 
   file { 'logstash_config_defaults':
