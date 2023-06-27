@@ -23,7 +23,8 @@ class profiles::logstash (
 
   $plugins.each |$plugin,$properties| {
     profiles::logstash::plugin { $plugin:
-      * => $properties
+      notify  => Service['logstash'],
+      *       => $properties
     }
   }
 
