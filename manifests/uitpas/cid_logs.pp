@@ -1,16 +1,16 @@
 class profiles::uitpas::cid_logs (
-  Stdlib::Httpurl               $url             = 'http://cidmonitor.lodgon.com',
+  String                        $hostname        = 'cidmonitor.lodgon.com',
+  Variant[String,Array[String]] $aliases         = 'cidlogs.publiq.be',
   Stdlib::Ipv4                  $service_address = '127.0.0.1',
   Stdlib::Port::Unprivileged    $service_port    = 8080,
   String                        $data_dir        = '/data/cidlogs',
-  Variant[String,Array[String]] $aliases         = 'cidlogs.publiq.be',
   String                        $gcs_credentials,
 ) inherits ::profiles {
 
   realize Group['logstash']
   realize User['logstash']
 
-  profiles::apache::vhost::reverse_proxy { $url:
+  profiles::apache::vhost::reverse_proxy { "http://${hostname}":
     destination => "http://${service_address}:${service_port}/",
     aliases     => $aliases
   }
