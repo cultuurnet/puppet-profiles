@@ -108,6 +108,12 @@ fixtures:
     hiera:
       repo: 'puppet/hiera'
       ref: '5.0.1'
+    fail2ban:
+      repo: 'puppet/fail2ban'
+      ref: '4.2.0'
+    php:
+      repo: 'puppet/php'
+      ref: '8.2.0'
   repositories:
     rabbitmq:
       repo: 'https://github.com/cultuurnet/puppetlabs-rabbitmq.git'

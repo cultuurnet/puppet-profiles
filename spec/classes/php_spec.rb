@@ -7,63 +7,163 @@ describe 'profiles::php' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context 'without parameters' do
-        let(:params) { {} }
+      context 'on node aaa.example.com' do
+        let(:node) { 'aaa.example.com' }
 
-        it { is_expected.to compile.with_all_deps }
+        context 'without parameters' do
+          let(:params) { {} }
 
-        it { is_expected.to contain_class('profiles::php').with(
-          'with_composer_default_version' => 1
-        ) }
+          it { is_expected.to compile.with_all_deps }
 
-        case facts[:os]['release']['major']
-        when '14.04', '16.04'
+          it { is_expected.to contain_class('profiles::php').with(
+            'version'                  => '7.4',
+            'settings'                 => {},
+            'composer_default_version' => nil,
+            'newrelic_agent'           => false,
+            'newrelic_app_name'        => 'aaa.example.com',
+            'newrelic_license_key'     => nil
+          ) }
+
           it { is_expected.to contain_apt__source('php') }
+          it { is_expected.not_to contain_apt__source('publiq-tools') }
+
+          it { is_expected.to contain_class('php::globals').with(
+            'php_version' => '7.4',
+            'config_root' => '/etc/php/7.4'
+          ) }
+
+          it { is_expected.to contain_class('php').with(
+            'manage_repos' => false,
+            'composer'     => false,
+            'dev'          => false,
+            'pear'         => false,
+            'fpm'          => true,
+            'settings'     => {},
+            'extensions'   => {
+                                'bcmath'   => {},
+                                'curl'     => {},
+                                'gd'       => {},
+                                'intl'     => {},
+                                'mbstring' => {},
+                                'mysql'    => {},
+                                'tidy'     => {},
+                                'xml'      => {},
+                                'zip'      => {}
+                              }
+          ) }
+
+#  mysql:
+#    so_name: 'mysqlnd'
+
+          it { is_expected.to contain_package('composer').with(
+            'ensure' => 'absent'
+          ) }
+
+          it { is_expected.not_to contain_package('composer1').with(
+            'ensure' => 'present'
+          ) }
+
+          it { is_expected.not_to contain_package('composer2').with(
+            'ensure' => 'present'
+          ) }
+
+          it { is_expected.not_to contain_alternatives('composer').with(
+            'path' => '/usr/bin/composer2'
+          ) }
+
+          it { is_expected.not_to contain_package('git').with(
+            'ensure' => 'present'
+          ) }
 
           it { is_expected.to contain_class('php::globals').that_requires('Apt::Source[php]') }
+          it { is_expected.to contain_class('php').that_requires('Class[php::globals]') }
         end
 
-        it { is_expected.to contain_class('php').that_requires('Class[php::globals]') }
-
-        it { is_expected.to contain_package('composer').with(
-          'ensure' => 'absent'
-          )
-        }
-
-        it { is_expected.to contain_package('composer1').with(
-          'ensure' => 'present'
-          )
-        }
-
-        it { is_expected.to contain_package('composer2').with(
-          'ensure' => 'present'
-          )
-        }
-
-        it { is_expected.to contain_alternatives('composer').with(
-          'path' => '/usr/bin/composer1'
-          )
-        }
-
-        it { is_expected.to contain_package('git').with(
-          'ensure' => 'present'
-          )
-        }
-
-        it { is_expected.to contain_package('composer1').that_requires(['Class[php]', 'Package[composer]']) }
-        it { is_expected.to contain_package('composer2').that_requires(['Class[php]', 'Package[composer]']) }
-        it { is_expected.to contain_alternatives('composer').that_requires(['Package[composer1]', 'Package[composer2]']) }
-      end
-
-      context 'with with_composer_default_version => 2' do
-        let(:params) { {
-            'with_composer_default_version' => 2
+        context 'with version => 8.2, settings => { PHP/upload_max_filesize => 22M, PHP/post_max_size => 24M } and composer_default_version => 2' do
+          let(:params) { {
+            'version'                  => '8.2',
+            'settings'                 => {
+                                            'PHP/upload_max_filesize' => '22M',
+                                            'PHP/post_max_size'       => '24M'
+                                          },
+            'composer_default_version' => 2
           } }
+
+          it { is_expected.to contain_class('php::globals').with(
+            'php_version' => '8.2',
+            'config_root' => '/etc/php/8.2'
+          ) }
+
+          it { is_expected.to contain_class('php').with(
+            'manage_repos' => false,
+            'composer'     => false,
+            'dev'          => false,
+            'pear'         => false,
+            'fpm'          => true,
+            'settings'     => {
+                                'PHP/upload_max_filesize' => '22M',
+                                'PHP/post_max_size'       => '24M'
+                              },
+            'extensions'   => {
+                                'bcmath'   => {},
+                                'curl'     => {},
+                                'gd'       => {},
+                                'intl'     => {},
+                                'mbstring' => {},
+                                'mysql'    => {},
+                                'tidy'     => {},
+                                'xml'      => {},
+                                'zip'      => {}
+                              }
+          ) }
+
+          it { is_expected.to contain_apt__source('publiq-tools') }
+
+          it { is_expected.to contain_package('composer1').with(
+            'ensure' => 'present'
+          ) }
+
+          it { is_expected.to contain_package('composer2').with(
+            'ensure' => 'present'
+          ) }
 
           it { is_expected.to contain_alternatives('composer').with(
             'path' => '/usr/bin/composer2'
-            )
-          }
+          ) }
+
+          it { is_expected.to contain_package('composer1').that_requires('Class[php]') }
+          it { is_expected.to contain_package('composer2').that_requires('Class[php]') }
+          it { is_expected.to contain_alternatives('composer').that_requires(['Package[composer1]', 'Package[composer2]']) }
+        end
+      end
+
+      context 'on node bbb.example.com' do
+        let(:node) { 'bbb.example.com' }
+
+        context 'with composer_default_version => 1, newrelic_agent => true' do
+          let(:params) { {
+            'composer_default_version' => 1,
+            'newrelic_agent'           => true
+          } }
+
+          it { is_expected.to contain_class('profiles::php').with(
+            'newrelic_app_name'        => 'bbb.example.com'
+          ) }
+
+          it { is_expected.to contain_apt__source('publiq-tools') }
+
+          it { is_expected.to contain_package('composer1').with(
+            'ensure' => 'present'
+          ) }
+
+          it { is_expected.to contain_package('composer2').with(
+            'ensure' => 'present'
+          ) }
+
+          it { is_expected.to contain_alternatives('composer').with(
+            'path' => '/usr/bin/composer1'
+          ) }
+        end
       end
     end
   end
