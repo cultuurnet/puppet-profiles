@@ -3,6 +3,7 @@ class profiles::php (
   Hash                    $extensions               = {},
   Hash                    $settings                 = {},
   Optional[Integer[1, 2]] $composer_default_version = undef,
+  Boolean                 $fpm                      = false,
   Boolean                 $newrelic_agent           = false,
   String                  $newrelic_app_name        = $facts['networking']['fqdn'],
   Optional[String]        $newrelic_license_key     = undef
@@ -40,7 +41,7 @@ class profiles::php (
     composer     => false,
     dev          => false,
     pear         => false,
-    fpm          => true,
+    fpm          => $fpm,
     settings     => $settings,
     extensions   => $default_extensions + $version_dependent_default_extensions + $extensions
   }

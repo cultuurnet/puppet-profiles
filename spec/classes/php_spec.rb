@@ -20,6 +20,7 @@ describe 'profiles::php' do
             'extensions'               => {},
             'settings'                 => {},
             'composer_default_version' => nil,
+            'fpm'                      => false,
             'newrelic_agent'           => false,
             'newrelic_app_name'        => 'aaa.example.com',
             'newrelic_license_key'     => nil
@@ -38,7 +39,7 @@ describe 'profiles::php' do
             'composer'     => false,
             'dev'          => false,
             'pear'         => false,
-            'fpm'          => true,
+            'fpm'          => false,
             'settings'     => {},
             'extensions'   => {
                                 'bcmath'   => {},
@@ -79,7 +80,7 @@ describe 'profiles::php' do
           it { is_expected.to contain_class('php').that_requires('Class[php::globals]') }
         end
 
-        context 'with version => 8.0, extensions => { mbstring => {}, mysql => { so_name => mysqlnd }, mongodb => {} }, settings => { PHP/upload_max_filesize => 22M, PHP/post_max_size => 24M } and composer_default_version => 2' do
+        context 'with version => 8.0, extensions => { mbstring => {}, mysql => { so_name => mysqlnd }, mongodb => {} }, settings => { PHP/upload_max_filesize => 22M, PHP/post_max_size => 24M }, fpm => true and composer_default_version => 2' do
           let(:params) { {
             'version'                  => '8.0',
             'extensions'               => {
@@ -91,6 +92,7 @@ describe 'profiles::php' do
                                             'PHP/upload_max_filesize' => '22M',
                                             'PHP/post_max_size'       => '24M'
                                           },
+            'fpm'                      => true,
             'composer_default_version' => 2
           } }
 
