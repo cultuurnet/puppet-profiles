@@ -14,12 +14,17 @@ class profiles::php (
                           'gd'       => {},
                           'intl'     => {},
                           'mbstring' => {},
-                          'opcache'  => {},
+                          'opcache'  => { 'zend' => true },
                           'readline' => {},
                           'tidy'     => {},
                           'xml'      => {},
                           'zip'      => {}
                         }
+
+  $version_dependent_default_extensions = $version ? {
+    '7.4'   => { 'json' => {} },
+    default => {}
+  }
 
   realize Apt::Source['php']
 
@@ -37,7 +42,7 @@ class profiles::php (
     pear         => false,
     fpm          => true,
     settings     => $settings,
-    extensions   => $default_extensions + $extensions
+    extensions   => $default_extensions + $version_dependent_default_extensions + $extensions
   }
 
   Apt::Source['php'] -> Class['php::globals']
