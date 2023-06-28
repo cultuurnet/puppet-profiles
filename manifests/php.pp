@@ -13,7 +13,6 @@ class profiles::php (
                           'curl'     => {},
                           'gd'       => {},
                           'intl'     => {},
-                          'json'     => {},
                           'mbstring' => {},
                           'opcache'  => {},
                           'readline' => {},

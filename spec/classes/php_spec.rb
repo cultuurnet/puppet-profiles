@@ -45,7 +45,6 @@ describe 'profiles::php' do
                                 'curl'     => {},
                                 'gd'       => {},
                                 'intl'     => {},
-                                'json'     => {},
                                 'mbstring' => {},
                                 'opcache'  => {},
                                 'readline' => {},
@@ -79,9 +78,9 @@ describe 'profiles::php' do
           it { is_expected.to contain_class('php').that_requires('Class[php::globals]') }
         end
 
-        context 'with version => 8.2, extensions => { mbstring => {}, mysql => { so_name => mysqlnd }, mongodb => {} }, settings => { PHP/upload_max_filesize => 22M, PHP/post_max_size => 24M } and composer_default_version => 2' do
+        context 'with version => 8.0, extensions => { mbstring => {}, mysql => { so_name => mysqlnd }, mongodb => {} }, settings => { PHP/upload_max_filesize => 22M, PHP/post_max_size => 24M } and composer_default_version => 2' do
           let(:params) { {
-            'version'                  => '8.2',
+            'version'                  => '8.0',
             'extensions'               => {
                                             'mbstring' => {},
                                             'mysql'    => { 'so_name' => 'mysqlnd' },
@@ -95,8 +94,8 @@ describe 'profiles::php' do
           } }
 
           it { is_expected.to contain_class('php::globals').with(
-            'php_version' => '8.2',
-            'config_root' => '/etc/php/8.2'
+            'php_version' => '8.0',
+            'config_root' => '/etc/php/8.0'
           ) }
 
           it { is_expected.to contain_class('php').with(
@@ -114,7 +113,6 @@ describe 'profiles::php' do
                                 'curl'     => {},
                                 'gd'       => {},
                                 'intl'     => {},
-                                'json'     => {},
                                 'mbstring' => {},
                                 'mongodb'  => {},
                                 'mysql'    => { 'so_name' => 'mysqlnd' },
