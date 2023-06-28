@@ -1,39 +1,73 @@
 class profiles::php (
-  Integer[1, 2]    $with_composer_default_version = 1,
-  Boolean          $newrelic_agent_enabled        = false,
-  String           $newrelic_app_name             = "${facts['networking']['hostname']}.machines.publiq.be",
-  Optional[String] $newrelic_license_key          = undef
+  String                  $version                  = '7.4',
+  Hash                    $extensions               = {},
+  Hash                    $settings                 = {},
+  Optional[Integer[1, 2]] $composer_default_version = undef,
+  Boolean                 $fpm                      = false,
+  Boolean                 $newrelic_agent           = false,
+  String                  $newrelic_app_name        = $facts['networking']['fqdn'],
+  Optional[String]        $newrelic_license_key     = undef
 ) inherits ::profiles {
 
-  realize Apt::Source['publiq-tools']
+  $default_extensions = {
+                          'bcmath'   => {},
+                          'curl'     => {},
+                          'gd'       => {},
+                          'intl'     => {},
+                          'mbstring' => {},
+                          'opcache'  => { 'zend' => true },
+                          'readline' => {},
+                          'tidy'     => {},
+                          'xml'      => {},
+                          'zip'      => {}
+                        }
 
-  case $facts['os']['release']['major'] {
-    '14.04', '16.04': {
-      realize Apt::Source['php']
+  $version_dependent_default_extensions = $version ? {
+    '7.4'   => { 'json' => {} },
+    default => {}
+  }
 
-      Apt::Source['php'] -> Class['php::globals']
+  realize Apt::Source['php']
+
+  realize Package['composer']
+
+  class { ::php::globals:
+    php_version => $version,
+    config_root => "/etc/php/${version}"
+  }
+
+  class { ::php:
+    manage_repos => false,
+    composer     => false,
+    dev          => false,
+    pear         => false,
+    fpm          => $fpm,
+    settings     => $settings,
+    extensions   => $default_extensions + $version_dependent_default_extensions + $extensions
+  }
+
+  Apt::Source['php'] -> Class['php::globals']
+  Class['php::globals'] -> Class['php']
+
+  if $composer_default_version {
+    realize Apt::Source['publiq-tools']
+
+    realize Package['composer1']
+    realize Package['composer2']
+    realize Package['git']
+
+    Package['composer'] -> Package['composer1']
+    Package['composer'] -> Package['composer2']
+    Class['php'] -> Package['composer1']
+    Class['php'] -> Package['composer2']
+
+    alternatives { 'composer':
+      path    => "/usr/bin/composer${composer_default_version}",
+      require => [ Package['composer1'], Package['composer2']]
     }
   }
 
-  contain ::php::globals
-  contain ::php
-
-  realize Package['composer']
-  realize Package['composer1']
-  realize Package['composer2']
-  realize Package['git']
-
-  Package['composer'] -> Package['composer1']
-  Package['composer'] -> Package['composer2']
-  Class['php'] -> Package['composer1']
-  Class['php'] -> Package['composer2']
-
-  alternatives { 'composer':
-    path    => "/usr/bin/composer${with_composer_default_version}",
-    require => [ Package['composer1'], Package['composer2']]
-  }
-
-  if $newrelic_agent_enabled {
+  if $newrelic_agent {
     realize Apt::Source['newrelic']
 
     file { 'newrelic-php5-installer.preseed':
