@@ -33,4 +33,13 @@ class profiles::uitpas::cid_logs (
     mode   => '0755',
     require => [User['logstash'],Package['logstash']]
   }
+
+  cron { 'remove-old-cidlogs':
+    command     => "find ${data_dir} -type f -name '*.log' -mtime +30 -delete",
+    environment => [ 'MAILTO=infra@publiq.be' ],
+    user        => 'root',
+    hour        => '3',
+    minute      => '30',
+    require     => File[$data_dir]
+  }
 }
