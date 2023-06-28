@@ -1,11 +1,26 @@
 class profiles::php (
   String                  $version                  = '7.4',
+  Hash                    $extensions               = {},
   Hash                    $settings                 = {},
   Optional[Integer[1, 2]] $composer_default_version = undef,
   Boolean                 $newrelic_agent           = false,
   String                  $newrelic_app_name        = $facts['networking']['fqdn'],
   Optional[String]        $newrelic_license_key     = undef
 ) inherits ::profiles {
+
+  $default_extensions = {
+                          'bcmath'   => {},
+                          'curl'     => {},
+                          'gd'       => {},
+                          'intl'     => {},
+                          'json'     => {},
+                          'mbstring' => {},
+                          'opcache'  => {},
+                          'readline' => {},
+                          'tidy'     => {},
+                          'xml'      => {},
+                          'zip'      => {}
+                        }
 
   realize Apt::Source['php']
 
@@ -23,7 +38,7 @@ class profiles::php (
     pear         => false,
     fpm          => true,
     settings     => $settings,
-    extensions   => {}
+    extensions   => $default_extensions + $extensions
   }
 
   Apt::Source['php'] -> Class['php::globals']

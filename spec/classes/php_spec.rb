@@ -17,6 +17,7 @@ describe 'profiles::php' do
 
           it { is_expected.to contain_class('profiles::php').with(
             'version'                  => '7.4',
+            'extensions'               => {},
             'settings'                 => {},
             'composer_default_version' => nil,
             'newrelic_agent'           => false,
@@ -44,16 +45,15 @@ describe 'profiles::php' do
                                 'curl'     => {},
                                 'gd'       => {},
                                 'intl'     => {},
+                                'json'     => {},
                                 'mbstring' => {},
-                                'mysql'    => {},
+                                'opcache'  => {},
+                                'readline' => {},
                                 'tidy'     => {},
                                 'xml'      => {},
                                 'zip'      => {}
                               }
           ) }
-
-#  mysql:
-#    so_name: 'mysqlnd'
 
           it { is_expected.to contain_package('composer').with(
             'ensure' => 'absent'
@@ -79,9 +79,14 @@ describe 'profiles::php' do
           it { is_expected.to contain_class('php').that_requires('Class[php::globals]') }
         end
 
-        context 'with version => 8.2, settings => { PHP/upload_max_filesize => 22M, PHP/post_max_size => 24M } and composer_default_version => 2' do
+        context 'with version => 8.2, extensions => { mbstring => {}, mysql => { so_name => mysqlnd }, mongodb => {} }, settings => { PHP/upload_max_filesize => 22M, PHP/post_max_size => 24M } and composer_default_version => 2' do
           let(:params) { {
             'version'                  => '8.2',
+            'extensions'               => {
+                                            'mbstring' => {},
+                                            'mysql'    => { 'so_name' => 'mysqlnd' },
+                                            'mongodb'  => {}
+                                          },
             'settings'                 => {
                                             'PHP/upload_max_filesize' => '22M',
                                             'PHP/post_max_size'       => '24M'
@@ -109,8 +114,12 @@ describe 'profiles::php' do
                                 'curl'     => {},
                                 'gd'       => {},
                                 'intl'     => {},
+                                'json'     => {},
                                 'mbstring' => {},
-                                'mysql'    => {},
+                                'mongodb'  => {},
+                                'mysql'    => { 'so_name' => 'mysqlnd' },
+                                'opcache'  => {},
+                                'readline' => {},
                                 'tidy'     => {},
                                 'xml'      => {},
                                 'zip'      => {}
