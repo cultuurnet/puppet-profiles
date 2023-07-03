@@ -17,6 +17,19 @@ class profiles::puppet::agent (
     notify  => Service['puppet']
   }
 
+  file { 'puppet agent production environment hiera.yaml':
+    ensure  => 'absent',
+    path    => '/etc/puppetlabs/code/environments/production/hiera.yaml',
+    require => Package['puppet-agent']
+  }
+
+  file { 'puppet agent production environment datadir':
+    ensure  => 'absent',
+    path    => '/etc/puppetlabs/code/environments/production/data',
+    force   => true,
+    require => Package['puppet-agent']
+  }
+
   if $puppetserver {
     ini_setting { 'puppetserver':
       ensure  => 'present',
@@ -68,14 +81,12 @@ class profiles::puppet::agent (
     *       => $default_ini_setting_attributes
   }
 
-  $service_enable = $service_status ? {
-    'running' => true,
-    'stopped' => false
-  }
-
   service { 'puppet':
     ensure    => $service_status,
-    enable    => $service_enable,
-    hasstatus => true
+    hasstatus => true,
+    enable    => $service_status ? {
+                   'running' => true,
+                   'stopped' => false
+                 }
   }
 }
