@@ -15,7 +15,7 @@ define profiles::apache::vhost::reverse_proxy (
   include ::profiles::certificates
 
   unless $title =~ Stdlib::Httpurl {
-    fail("Defined resource type Profiles::Apache::Vhost::Reverse_proxy[${title}] expects the title to be a valid HTTP URL")
+    fail("Defined resource type Profiles::Apache::Vhost::Reverse_proxy[${title}] expects the title to be a valid HTTP(S) URL")
   }
 
   $transport = split($title, ':')[0]
