@@ -3,9 +3,10 @@ define profiles::logstash::plugin (
 ) {
 
   Exec {
-    path    => '/bin:/usr/bin',
-    cwd     => '/tmp',
-    timeout => 1800
+    path      => '/bin:/usr/bin',
+    logoutput => 'on_failure',
+    cwd       => '/tmp',
+    timeout   => 1800
   }
 
   case $ensure {
@@ -15,14 +16,12 @@ define profiles::logstash::plugin (
         unless  => "/usr/share/logstash/bin/logstash-plugin list ^${title}$"
       }
     }
-
     'absent': {
       exec { "remove-${title}":
         command => "/usr/share/logstash/bin/logstash-plugin remove ${title}",
-        onlyif  => "/usr/share/logstash/bin/logstash-plugin list | grep -q ^${title}$"
+        onlyif  => "/usr/share/logstash/bin/logstash-plugin list ^${title}$"
       }
     }
-
     default: {
       fail "'ensure' should be 'present'"
     }
