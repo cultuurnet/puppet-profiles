@@ -1,10 +1,10 @@
 class profiles::uitpas::cid_logs (
-  String                        $hostname        = 'cidmonitor.lodgon.com',
-  Variant[String,Array[String]] $aliases         = 'cidlogs.publiq.be',
+  String                        $hostname        = 'cidlogs.publiq.be',
+  Variant[String,Array[String]] $aliases         = 'cidmonitor.lodgon.com',
   Stdlib::Ipv4                  $service_address = '127.0.0.1',
   Stdlib::Port::Unprivileged    $service_port    = 8080,
   String                        $data_dir        = '/data/cidlogs',
-  String                        $gcs_credentials,
+  String                        $gcs_credentials
 ) inherits ::profiles {
 
   realize Group['logstash']
@@ -22,16 +22,16 @@ class profiles::uitpas::cid_logs (
     group   => 'logstash',
     mode    => '0640',
     source  => $gcs_credentials,
-    require => [User['logstash'],Package['logstash']],
+    require => [User['logstash'], Package['logstash']],
     notify  => Service['logstash']
   }
 
   file { $data_dir:
-    ensure => 'directory', 
+    ensure => 'directory',
     owner  => 'logstash',
     group  => 'logstash',
     mode   => '0755',
-    require => [User['logstash'],Package['logstash']]
+    require => [User['logstash'], Package['logstash']]
   }
 
   cron { 'remove-old-cidlogs':
