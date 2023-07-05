@@ -6,16 +6,16 @@ class profiles::apache (
   realize User['www-data']
 
   class { '::apache':
-    mpm_module   => 'prefork',
-    manage_group => false,
-    manage_user  => false,
-    require      => [Group['www-data'], User['www-data']]
+    mpm_module    => 'prefork',
+    manage_group  => false,
+    manage_user   => false,
+    default_vhost => true,
+    require       => [Group['www-data'], User['www-data']]
   }
 
   if $metrics {
     include profiles::apache::metrics
   }
 
-  apache::mod { 'headers': }
   apache::mod { 'unique_id': }
 }

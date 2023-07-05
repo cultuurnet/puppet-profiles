@@ -18,14 +18,14 @@ describe 'profiles::apache' do
         it { is_expected.to contain_user('www-data') }
 
         it { is_expected.to contain_class('apache').with(
-          'mpm_module'   => 'prefork',
-          'manage_group' => false,
-          'manage_user'  => false
+          'mpm_module'    => 'prefork',
+          'manage_group'  => false,
+          'manage_user'   => false,
+          'default_vhost' => true
         ) }
 
         it { is_expected.to contain_class('profiles::apache::metrics') }
 
-        it { is_expected.to contain_apache__mod('headers') }
         it { is_expected.to contain_apache__mod('unique_id') }
 
         it { is_expected.to contain_group('www-data').that_comes_before('Class[apache]') }
