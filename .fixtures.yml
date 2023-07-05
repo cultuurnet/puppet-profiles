@@ -124,9 +124,6 @@ fixtures:
     glassfish:
       repo: 'https://github.com/cultuurnet/fatmcgav-glassfish.git'
       ref: 'be6c31f'
-    php:
-      repo: 'https://github.com/cultuurnet/puppet-php.git'
-      ref: 'f47aff9'
     mailcatcher:
       repo: 'https://github.com/cultuurnet/puppet-mailcatcher.git'
       ref: '9752479'
