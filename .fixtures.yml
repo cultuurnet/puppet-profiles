@@ -114,6 +114,9 @@ fixtures:
     php:
       repo: 'puppet/php'
       ref: '8.2.0'
+    logrotate:
+      repo: 'puppet/logrotate'
+      ref: '6.1.0'
   repositories:
     rabbitmq:
       repo: 'https://github.com/cultuurnet/puppetlabs-rabbitmq.git'
