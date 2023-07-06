@@ -30,7 +30,7 @@ describe 'profiles::apache' do
           'service_ensure' => 'running',
           'service_enable' => true,
           'log_formats'    => {
-                                'combined_json' => '{ "client_ip": "%a", "remote_logname": "%l", "user": "%u", "time": "%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t", "request": "%r", "status": %>s, "response_bytes": %b, "referer": "%{Referer}i", "user_agent": "%{User-Agent}i" }'
+                                'combined_json' => '{ \"client_ip\": \"%a\", \"remote_logname\": \"%l\", \"user\": \"%u\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"request\": \"%r\", \"status\": %>s, \"response_bytes\": %b, \"referer\": \"%{Referer}i\", \"user_agent\": \"%{User-Agent}i\" }'
                               }
         ) }
 
@@ -49,7 +49,7 @@ describe 'profiles::apache' do
         let(:params) { {
           'mpm_module'        => 'worker',
           'mpm_module_config' => { 'startservers' => 8, 'maxclients' => 256 },
-          'log_formats'       => { 'a' => '{ "client_ip": "%a" }', 'b' => '{ "response_bytes": %b }' },
+          'log_formats'       => { 'a' => '{ \"client_ip\": \"%a\" }', 'b' => '{ \"response_bytes\": %b }' },
           'service_status'    => 'stopped',
           'metrics'           => false
         } }
@@ -63,9 +63,9 @@ describe 'profiles::apache' do
           'service_ensure' => 'stopped',
           'service_enable' => false,
           'log_formats'    => {
-                                'combined_json' => '{ "client_ip": "%a", "remote_logname": "%l", "user": "%u", "time": "%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t", "request": "%r", "status": %>s, "response_bytes": %b, "referer": "%{Referer}i", "user_agent": "%{User-Agent}i" }',
-                                'a'             => '{ "client_ip": "%a" }',
-                                'b'             => '{ "response_bytes": %b }'
+                                'combined_json' => '{ \"client_ip\": \"%a\", \"remote_logname\": \"%l\", \"user\": \"%u\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"request\": \"%r\", \"status\": %>s, \"response_bytes\": %b, \"referer\": \"%{Referer}i\", \"user_agent\": \"%{User-Agent}i\" }',
+                                'a'             => '{ \"client_ip\": \"%a\" }',
+                                'b'             => '{ \"response_bytes\": %b }'
                               }
         ) }
 

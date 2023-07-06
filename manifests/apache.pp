@@ -7,7 +7,7 @@ class profiles::apache (
 ) inherits ::profiles {
 
   $default_log_formats = {
-    'combined_json' => '{ "client_ip": "%a", "remote_logname": "%l", "user": "%u", "time": "%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t", "request": "%r", "status": %>s, "response_bytes": %b, "referer": "%{Referer}i", "user_agent": "%{User-Agent}i" }'
+    'combined_json' => '{ \"client_ip\": \"%a\", \"remote_logname\": \"%l\", \"user\": \"%u\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"request\": \"%r\", \"status\": %>s, \"response_bytes\": %b, \"referer\": \"%{Referer}i\", \"user_agent\": \"%{User-Agent}i\" }'
   }
 
   realize Group['www-data']
