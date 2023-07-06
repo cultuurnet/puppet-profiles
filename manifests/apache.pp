@@ -24,5 +24,7 @@ class profiles::apache (
     include profiles::apache::metrics
   }
 
+  include profiles::apache::logging
+
   apache::mod { 'unique_id': }
 }

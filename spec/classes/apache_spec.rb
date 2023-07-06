@@ -29,6 +29,7 @@ describe 'profiles::apache' do
         ) }
 
         it { is_expected.to contain_class('profiles::apache::metrics') }
+        it { is_expected.to contain_class('profiles::apache::logging') }
 
         it { is_expected.to contain_apache__mod('unique_id') }
 
