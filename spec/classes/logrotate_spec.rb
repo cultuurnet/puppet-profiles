@@ -12,19 +12,16 @@ describe 'profiles::logrotate' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_class('profiles::logrotate').with(
-        ) }
-
-        it { is_expected.to contain_class('logrotate').with(
-          'ensure' => 'installed',
-          'config' => {
-                        'compress'      => true,
-                        'delaycompress' => true,
-                        'rotate'        => 10,
-                        'rotate_every'  => 'week',
-                        'missingok'     => true,
-                        'ifempty'       => true
-                      }
+        it { is_expected.to contain_logrotate__conf('/etc/logrotate.conf').with(
+          'compress'      => true,
+          'delaycompress' => true,
+          'rotate'        => 10,
+          'rotate_every'  => 'week',
+          'missingok'     => true,
+          'ifempty'       => true,
+          'su'            => true,
+          'su_user'       => 'root',
+          'su_group'      => 'adm'
         ) }
       end
     end

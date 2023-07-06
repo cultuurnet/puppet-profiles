@@ -1,14 +1,14 @@
 class profiles::logrotate inherits ::profiles {
 
-  class { '::logrotate':
-    ensure => 'installed',
-    config => {
-                compress      => true,
-                delaycompress => true,
-                rotate        => 10,
-                rotate_every  => 'week',
-                missingok     => true,
-                ifempty       => true
-              }
+  logrotate::conf { '/etc/logrotate.conf':
+    compress      => true,
+    delaycompress => true,
+    rotate        => 10,
+    rotate_every  => 'week',
+    missingok     => true,
+    ifempty       => true,
+    su            => true,
+    su_user       => 'root',
+    su_group      => 'adm'
   }
 }
