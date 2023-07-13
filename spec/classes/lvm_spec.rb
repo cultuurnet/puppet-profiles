@@ -13,7 +13,7 @@ describe 'profiles::lvm' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::lvm').with(
-          'volume_groups' => []
+          'volume_groups' => {}
         ) }
 
         it { is_expected.to contain_class('lvm').with(
@@ -49,7 +49,7 @@ describe 'profiles::lvm' do
         it { is_expected.to contain_physical_volume('/dev/xvdb').that_comes_before('Volume_group[datavg]') }
       end
 
-      context "with volume_groups => [{ data1vg => { physical_volumes => '/dev/xvdb' } }, { data2vg => { physical_volumes => [ '/dev/xvdc', '/dev/xvdd'] }]" do
+      context "with volume_groups => { data1vg => { physical_volumes => '/dev/xvdb' }, data2vg => { physical_volumes => [ '/dev/xvdc', '/dev/xvdd'] }}" do
         let(:params) { {
           'volume_groups' => {
                                'data1vg' => { 'physical_volumes' => '/dev/xvdb' },
