@@ -1,5 +1,5 @@
 class profiles::lvm (
-  Variant[Hash, Array] $volume_groups = []
+  Hash $volume_groups = {}
 ) inherits ::profiles {
 
   class { 'lvm':
@@ -14,19 +14,17 @@ class profiles::lvm (
     path   => '/data'
   }
 
-  [$volume_groups].flatten.each |Hash $volume_group| {
-    $volume_group.each |String $vg_name, Hash $vg_properties| {
-      [$vg_properties['physical_volumes']].flatten.each |String $pv| {
-        physical_volume { $pv:
-          ensure => 'present',
-          before => Volume_group[$vg_name]
-        }
+  $volume_groups.each |String $vg_name, Hash $vg_properties| {
+    [$vg_properties['physical_volumes']].flatten.each |String $pv| {
+      physical_volume { $pv:
+        ensure => 'present',
+        before => Volume_group[$vg_name]
       }
+    }
 
-      volume_group { $vg_name:
-        ensure           => 'present',
-        physical_volumes => $vg_properties['physical_volumes']
-      }
+    volume_group { $vg_name:
+      ensure           => 'present',
+      physical_volumes => $vg_properties['physical_volumes']
     }
   }
 }
