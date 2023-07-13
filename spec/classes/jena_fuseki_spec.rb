@@ -17,7 +17,10 @@ describe 'profiles::jena_fuseki' do
           'port'             => 3030,
           'jvm_args'         => '-Xmx1G',
           'query_timeout_ms' => '5000',
-          'datasets'         => nil
+          'datasets'         => {},
+          'lvm'              => false,
+          'volume_group'     => nil,
+          'volume_size'      => nil
         ) }
 
         it { is_expected.to contain_group('fuseki') }
@@ -85,88 +88,157 @@ describe 'profiles::jena_fuseki' do
         it { is_expected.to contain_shellvar('jena-fuseki QUERY_TIMEOUT_MS').that_notifies('Service[jena-fuseki]') }
       end
 
-      context "with version => 1.2.3, port => 13030, jvm_args => -Xms2G -Xmx4G, query_timeout_ms => 10000 and datasets => {name => mydataset, endpoint => myendpoint, union_default_graph => true}" do
-        let(:params) { {
-          'version'          => '1.2.3',
-          'port'             => 13030,
-          'jvm_args'         => '-Xms2G -Xmx4G',
-          'query_timeout_ms' => 10000,
-          'datasets'         => {'name' => 'mydataset', 'endpoint' => '/myendpoint', 'union_default_graph' => true}
-        } }
+      context "with volume_group datavg present" do
+        let(:pre_condition) { 'volume_group { "datavg": ensure => "present" }' }
 
-        it { is_expected.to contain_package('jena-fuseki').with(
-          'ensure' => '1.2.3'
-        ) }
+        context "with version => 1.2.3, port => 13030, jvm_args => -Xms2G -Xmx4G, query_timeout_ms => 10000, datasets => { mydataset => { endpoint => myendpoint, union_default_graph => true }}, lvm => true, volume_group => datavg and volume_size => 50G" do
+          let(:params) { {
+            'version'          => '1.2.3',
+            'port'             => 13030,
+            'jvm_args'         => '-Xms2G -Xmx4G',
+            'query_timeout_ms' => 10000,
+            'datasets'         => { 'mydataset' => { 'endpoint' => '/myendpoint', 'union_default_graph' => true }},
+            'lvm'              => true,
+            'volume_group'     => 'datavg',
+            'volume_size'      => '50G'
+          } }
 
-        it { is_expected.to contain_shellvar('jena-fuseki PORT').with(
-          'variable' => 'PORT',
-          'value'    => 13030
-        ) }
+          it { is_expected.to contain_package('jena-fuseki').with(
+            'ensure' => '1.2.3'
+          ) }
 
-        it { is_expected.to contain_shellvar('jena-fuseki JVM_ARGS').with(
-          'variable' => 'JVM_ARGS',
-          'value'    => '-Xms2G -Xmx4G'
-        ) }
+          it { is_expected.to contain_shellvar('jena-fuseki PORT').with(
+            'variable' => 'PORT',
+            'value'    => 13030
+          ) }
 
-        it { is_expected.to contain_shellvar('jena-fuseki QUERY_TIMEOUT_MS').with(
-          'variable' => 'QUERY_TIMEOUT_MS',
-          'value'    => 10000
-        ) }
+          it { is_expected.to contain_shellvar('jena-fuseki JVM_ARGS').with(
+            'variable' => 'JVM_ARGS',
+            'value'    => '-Xms2G -Xmx4G'
+          ) }
 
-        it { is_expected.to contain_file('/var/lib/jena-fuseki/databases/mydataset').with(
-          'ensure' => 'directory',
-          'owner'  => 'fuseki',
-          'group'  => 'fuseki'
-        ) }
+          it { is_expected.to contain_shellvar('jena-fuseki QUERY_TIMEOUT_MS').with(
+            'variable' => 'QUERY_TIMEOUT_MS',
+            'value'    => 10000
+          ) }
 
-        it { is_expected.to contain_file('jena-fuseki config').with_content(/^<#mydataset_service_tdb_all> rdf:type fuseki:Service ;$/) }
-        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*rdfs:label\s*"TDB2 mydataset" ;$/) }
-        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*fuseki:name\s*"\/myendpoint" ;$/) }
-        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*fuseki:dataset\s*<#mydataset_dataset> ;$/) }
-        it { is_expected.to contain_file('jena-fuseki config').with_content(/^<#mydataset_dataset> rdf:type tdb2:DatasetTDB2 ;$/) }
-        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*tdb2:location\s*"\/var\/lib\/jena-fuseki\/databases\/mydataset" ;$/) }
-        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*tdb2:unionDefaultGraph\s*true ;$/) }
+          it { is_expected.to contain_profiles__lvm__mount('rdfdata').with(
+            'volume_group' => 'datavg',
+            'size'         => '50G',
+            'fs_type'      => 'ext4',
+            'mountpoint'   => '/data/jena-fuseki/databases',
+            'owner'        => 'fuseki',
+            'group'        => 'fuseki'
+          ) }
 
-        it { is_expected.to contain_file('/var/lib/jena-fuseki/databases/mydataset').that_comes_before('File[jena-fuseki config]') }
+          it { is_expected.to contain_file('/var/lib/jena-fuseki').with(
+            'ensure' => 'directory',
+            'owner'  => 'fuseki',
+            'group'  => 'fuseki'
+          ) }
+
+          it { is_expected.to contain_file('/var/lib/jena-fuseki/databases').with(
+            'ensure' => 'link',
+            'target' => '/data/jena-fuseki/databases',
+            'force'  => true,
+            'owner'  => 'fuseki',
+            'group'  => 'fuseki'
+          ) }
+
+          it { is_expected.to contain_file('/var/lib/jena-fuseki/databases/mydataset').with(
+            'ensure' => 'directory',
+            'owner'  => 'fuseki',
+            'group'  => 'fuseki'
+          ) }
+
+          it { is_expected.to contain_file('jena-fuseki config').with_content(/^<#mydataset_service_tdb_all> rdf:type fuseki:Service ;$/) }
+          it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*rdfs:label\s*"TDB2 mydataset" ;$/) }
+          it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*fuseki:name\s*"\/myendpoint" ;$/) }
+          it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*fuseki:dataset\s*<#mydataset_dataset> ;$/) }
+          it { is_expected.to contain_file('jena-fuseki config').with_content(/^<#mydataset_dataset> rdf:type tdb2:DatasetTDB2 ;$/) }
+          it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*tdb2:location\s*"\/var\/lib\/jena-fuseki\/databases\/mydataset" ;$/) }
+          it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*tdb2:unionDefaultGraph\s*true ;$/) }
+
+          it { is_expected.to contain_group('fuseki').that_comes_before('Profiles::Lvm::Mount[rdfdata]') }
+          it { is_expected.to contain_user('fuseki').that_comes_before('Profiles::Lvm::Mount[rdfdata]') }
+          it { is_expected.to contain_profiles__lvm__mount('rdfdata').that_comes_before('Package[jena-fuseki]') }
+          it { is_expected.to contain_file('/var/lib/jena-fuseki').that_comes_before('File[/var/lib/jena-fuseki/databases]') }
+          it { is_expected.to contain_file('/var/lib/jena-fuseki/databases').that_requires('Profiles::Lvm::Mount[rdfdata]') }
+          it { is_expected.to contain_file('/var/lib/jena-fuseki/databases').that_comes_before('Package[jena-fuseki]') }
+          it { is_expected.to contain_file('/var/lib/jena-fuseki/databases/mydataset').that_comes_before('File[jena-fuseki config]') }
+        end
       end
 
-      context "with datasets => [{name => dataset1, endpoint => endpoint1}, {name => dataset2, endpoint => //endpoint2}]" do
+      context "with volume_group myvg present" do
+        let(:pre_condition) { 'volume_group { "myvg": ensure => "present" }' }
+
+        context "with datasets => { dataset1 => { endpoint => endpoint1 }, dataset2 => { endpoint => //endpoint2 }}, lvm => true, volume_group => myvg and volume_size => 10G" do
+          let(:params) { {
+            'datasets'     => {
+                                'dataset1' => { 'endpoint' => 'endpoint1' },
+                                'dataset2' => { 'endpoint' => '//endpoint2' }
+                              },
+            'lvm'          => true,
+            'volume_group' => 'myvg',
+            'volume_size'  => '10G'
+          } }
+
+          it { is_expected.to contain_profiles__lvm__mount('rdfdata').with(
+            'volume_group' => 'myvg',
+            'size'         => '10G',
+            'mountpoint'   => '/data/jena-fuseki/databases',
+            'owner'        => 'fuseki',
+            'group'        => 'fuseki'
+          ) }
+
+          it { is_expected.to contain_file('/var/lib/jena-fuseki/databases/dataset1').with(
+            'ensure' => 'directory',
+            'owner'  => 'fuseki',
+            'group'  => 'fuseki'
+          ) }
+
+          it { is_expected.to contain_file('/var/lib/jena-fuseki/databases/dataset2').with(
+            'ensure' => 'directory',
+            'owner'  => 'fuseki',
+            'group'  => 'fuseki'
+          ) }
+
+          it { is_expected.to contain_file('jena-fuseki config').with_content(/^<#dataset1_service_tdb_all> rdf:type fuseki:Service ;$/) }
+          it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*rdfs:label\s*"TDB2 dataset1" ;$/) }
+          it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*fuseki:name\s*"\/endpoint1" ;$/) }
+          it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*fuseki:dataset\s*<#dataset1_dataset> ;$/) }
+          it { is_expected.to contain_file('jena-fuseki config').with_content(/^<#dataset1_dataset> rdf:type tdb2:DatasetTDB2 ;$/) }
+          it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*tdb2:location\s*"\/var\/lib\/jena-fuseki\/databases\/dataset1" ;$/) }
+          it { is_expected.not_to contain_file('jena-fuseki config').with_content(/^\s*tdb2:unionDefaultGraph\s*.* ;$/) }
+
+          it { is_expected.to contain_file('jena-fuseki config').with_content(/^<#dataset2_service_tdb_all> rdf:type fuseki:Service ;$/) }
+          it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*rdfs:label\s*"TDB2 dataset2" ;$/) }
+          it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*fuseki:name\s*"\/endpoint2" ;$/) }
+          it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*fuseki:dataset\s*<#dataset2_dataset> ;$/) }
+          it { is_expected.to contain_file('jena-fuseki config').with_content(/^<#dataset2_dataset> rdf:type tdb2:DatasetTDB2 ;$/) }
+          it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*tdb2:location\s*"\/var\/lib\/jena-fuseki\/databases\/dataset2" ;$/) }
+
+          it { is_expected.to contain_file('/var/lib/jena-fuseki/databases/dataset1').that_comes_before('File[jena-fuseki config]') }
+          it { is_expected.to contain_file('/var/lib/jena-fuseki/databases/dataset2').that_comes_before('File[jena-fuseki config]') }
+        end
+      end
+
+      context "with lvm => true, volume_group => datavg" do
         let(:params) { {
-          'datasets' => [
-                          {'name' => 'dataset1', 'endpoint' => 'endpoint1'},
-                          {'name' => 'dataset2', 'endpoint' => '//endpoint2'}
-                        ]
+          'lvm'          => true,
+          'volume_group' => 'myvg'
         } }
 
-        it { is_expected.to contain_file('/var/lib/jena-fuseki/databases/dataset1').with(
-          'ensure' => 'directory',
-          'owner'  => 'fuseki',
-          'group'  => 'fuseki'
-        ) }
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /with LVM enabled, expects a value for both 'volume_group' and 'volume_size'/) }
+      end
 
-        it { is_expected.to contain_file('/var/lib/jena-fuseki/databases/dataset2').with(
-          'ensure' => 'directory',
-          'owner'  => 'fuseki',
-          'group'  => 'fuseki'
-        ) }
+      context "with lvm => true, volume_size => 100G" do
+        let(:params) { {
+          'lvm'         => true,
+          'volume_size' => '100G'
+        } }
 
-        it { is_expected.to contain_file('jena-fuseki config').with_content(/^<#dataset1_service_tdb_all> rdf:type fuseki:Service ;$/) }
-        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*rdfs:label\s*"TDB2 dataset1" ;$/) }
-        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*fuseki:name\s*"\/endpoint1" ;$/) }
-        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*fuseki:dataset\s*<#dataset1_dataset> ;$/) }
-        it { is_expected.to contain_file('jena-fuseki config').with_content(/^<#dataset1_dataset> rdf:type tdb2:DatasetTDB2 ;$/) }
-        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*tdb2:location\s*"\/var\/lib\/jena-fuseki\/databases\/dataset1" ;$/) }
-        it { is_expected.not_to contain_file('jena-fuseki config').with_content(/^\s*tdb2:unionDefaultGraph\s*.* ;$/) }
-
-        it { is_expected.to contain_file('jena-fuseki config').with_content(/^<#dataset2_service_tdb_all> rdf:type fuseki:Service ;$/) }
-        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*rdfs:label\s*"TDB2 dataset2" ;$/) }
-        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*fuseki:name\s*"\/endpoint2" ;$/) }
-        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*fuseki:dataset\s*<#dataset2_dataset> ;$/) }
-        it { is_expected.to contain_file('jena-fuseki config').with_content(/^<#dataset2_dataset> rdf:type tdb2:DatasetTDB2 ;$/) }
-        it { is_expected.to contain_file('jena-fuseki config').with_content(/^\s*tdb2:location\s*"\/var\/lib\/jena-fuseki\/databases\/dataset2" ;$/) }
-
-        it { is_expected.to contain_file('/var/lib/jena-fuseki/databases/dataset1').that_comes_before('File[jena-fuseki config]') }
-        it { is_expected.to contain_file('/var/lib/jena-fuseki/databases/dataset2').that_comes_before('File[jena-fuseki config]') }
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /with LVM enabled, expects a value for both 'volume_group' and 'volume_size'/) }
       end
     end
   end

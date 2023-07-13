@@ -5,22 +5,22 @@ PREFIX tdb1:    <http://jena.hpl.hp.com/2008/tdb#>
 PREFIX tdb2:    <http://jena.apache.org/2016/tdb#>
 PREFIX ja:      <http://jena.hpl.hp.com/2005/11/Assembler#>
 PREFIX :        <#>
-<%- [@datasets].flatten.each do |dataset| -%>
+<%- @datasets.each do |name, properties| -%>
 
-<#<%= dataset['name'] %>_service_tdb_all> rdf:type fuseki:Service ;
-    rdfs:label      "TDB2 <%= dataset['name'] %>" ;
-    fuseki:name     "<%= "/#{dataset['endpoint'][/^\/*(.*)$/, 1]}" %>" ;
-    fuseki:dataset  <#<%= dataset['name'] %>_dataset> ;
+<#<%= name %>_service_tdb_all> rdf:type fuseki:Service ;
+    rdfs:label      "TDB2 <%= name %>" ;
+    fuseki:name     "<%= "/#{properties['endpoint'][/^\/*(.*)$/, 1]}" %>" ;
+    fuseki:dataset  <#<%= name %>_dataset> ;
 
     fuseki:endpoint [ fuseki:operation fuseki:query ] ;
     fuseki:endpoint [ fuseki:operation fuseki:update ] ;
     fuseki:endpoint [ fuseki:operation fuseki:gsp-rw ] ;
     .
 
-<#<%= dataset['name'] %>_dataset> rdf:type tdb2:DatasetTDB2 ;
-    tdb2:location "/var/lib/jena-fuseki/databases/<%= dataset['name'] %>" ;
-    <%- if dataset['union_default_graph'] -%>
-    tdb2:unionDefaultGraph <%= dataset['union_default_graph'] %> ;
+<#<%= name %>_dataset> rdf:type tdb2:DatasetTDB2 ;
+    tdb2:location "/var/lib/jena-fuseki/databases/<%= name %>" ;
+    <%- if properties['union_default_graph'] -%>
+    tdb2:unionDefaultGraph <%= properties['union_default_graph'] %> ;
     <%- end -%>
     .
 <%- end -%>
