@@ -13,7 +13,7 @@ describe 'profiles::jena_fuseki' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::jena_fuseki').with(
-          'version'          => 'latest',
+          'version'          => 'installed',
           'port'             => 3030,
           'jvm_args'         => '-Xmx1G',
           'query_timeout_ms' => '5000',
@@ -31,7 +31,7 @@ describe 'profiles::jena_fuseki' do
         it { is_expected.to contain_apt__source('publiq-tools') }
 
         it { is_expected.to contain_package('jena-fuseki').with(
-          'ensure' => 'latest'
+          'ensure' => 'installed'
         ) }
 
         it { is_expected.to contain_file('jena-fuseki config').with(

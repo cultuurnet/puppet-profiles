@@ -1,5 +1,5 @@
 class profiles::jena_fuseki (
-  String           $version          = 'latest',
+  String           $version          = 'installed',
   Integer          $port             = 3030,
   String           $jvm_args         = '-Xmx1G',
   Integer          $query_timeout_ms = 5000,
