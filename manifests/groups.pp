@@ -30,6 +30,16 @@ class profiles::groups inherits ::profiles {
     gid    => '454'
   }
 
+  @group { 'redis':
+    ensure => 'present',
+    gid    => '455'
+  }
+
+  @group { 'mysql':
+    ensure => 'present',
+    gid    => '456'
+  }
+
   @group { 'ubuntu':
     ensure => 'present',
     gid    => '1000'
