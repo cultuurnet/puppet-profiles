@@ -114,6 +114,9 @@ fixtures:
     php:
       repo: 'puppet/php'
       ref: '8.2.0'
+    logrotate:
+      repo: 'puppet/logrotate'
+      ref: '6.1.0'
   repositories:
     rabbitmq:
       repo: 'https://github.com/cultuurnet/puppetlabs-rabbitmq.git'
@@ -124,9 +127,6 @@ fixtures:
     glassfish:
       repo: 'https://github.com/cultuurnet/fatmcgav-glassfish.git'
       ref: 'be6c31f'
-    php:
-      repo: 'https://github.com/cultuurnet/puppet-php.git'
-      ref: 'f47aff9'
     mailcatcher:
       repo: 'https://github.com/cultuurnet/puppet-mailcatcher.git'
       ref: '9752479'

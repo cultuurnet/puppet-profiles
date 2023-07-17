@@ -24,6 +24,17 @@ describe 'profiles::puppet::agent' do
           'ensure'    => 'installed'
         ) }
 
+        it { is_expected.to contain_file('puppet agent production environment hiera.yaml').with(
+          'ensure' => 'absent',
+          'path'   => '/etc/puppetlabs/code/environments/production/hiera.yaml'
+        ) }
+
+        it { is_expected.to contain_file('puppet agent production environment datadir').with(
+          'ensure' => 'absent',
+          'path'   => '/etc/puppetlabs/code/environments/production/data',
+          'force'  => true
+        ) }
+
         it { is_expected.to contain_service('puppet').with(
           'ensure'    => 'stopped',
           'enable'    => false,
@@ -63,6 +74,8 @@ describe 'profiles::puppet::agent' do
 
         it { is_expected.to contain_apt__source('puppet').that_comes_before('Package[puppet-agent]') }
         it { is_expected.to contain_package('puppet-agent').that_notifies('Service[puppet]') }
+        it { is_expected.to contain_file('puppet agent production environment hiera.yaml').that_requires('Package[puppet-agent]') }
+        it { is_expected.to contain_file('puppet agent production environment datadir').that_requires('Package[puppet-agent]') }
         it { is_expected.to contain_ini_setting('agent certificate_revocation').that_notifies('Service[puppet]') }
         it { is_expected.to contain_ini_setting('agent usecacheonfailure').that_notifies('Service[puppet]') }
         it { is_expected.to contain_ini_setting('agent reports').that_notifies('Service[puppet]') }

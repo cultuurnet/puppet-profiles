@@ -1,9 +1,12 @@
 class profiles::jena_fuseki (
-  String                              $version          = 'latest',
-  Integer                             $port             = 3030,
-  String                              $jvm_args         = '-Xmx1G',
-  Integer                             $query_timeout_ms = 5000,
-  Optional[Variant[Array[Hash],Hash]] $datasets         = undef
+  String           $version          = 'installed',
+  Integer          $port             = 3030,
+  String           $jvm_args         = '-Xmx1G',
+  Integer          $query_timeout_ms = 5000,
+  Hash             $datasets         = {},
+  Boolean          $lvm              = false,
+  Optional[String] $volume_group     = undef,
+  Optional[String] $volume_size      = undef
 ) inherits ::profiles {
 
   contain ::profiles::java
@@ -20,14 +23,48 @@ class profiles::jena_fuseki (
 
   realize Apt::Source['publiq-tools']
 
+  if $lvm {
+
+    unless ($volume_group and $volume_size) {
+      fail("with LVM enabled, expects a value for both 'volume_group' and 'volume_size'")
+    }
+
+    profiles::lvm::mount { 'rdfdata':
+      volume_group => $volume_group,
+      size         => $volume_size,
+      mountpoint   => '/data/jena-fuseki/databases',
+      fs_type      => 'ext4',
+      owner        => 'fuseki',
+      group        => 'fuseki',
+      require      => [Group['fuseki'], User['fuseki']],
+      before       => Package['jena-fuseki']
+    }
+
+    file { '/var/lib/jena-fuseki':
+      ensure => 'directory',
+      owner  => 'fuseki',
+      group  => 'fuseki'
+    }
+
+    file { '/var/lib/jena-fuseki/databases':
+      ensure  => 'link',
+      target  => '/data/jena-fuseki/databases',
+      force   => true,
+      owner   => 'fuseki',
+      group   => 'fuseki',
+      require => [File['/var/lib/jena-fuseki'], Profiles::Lvm::Mount['rdfdata']],
+      before  => Package['jena-fuseki']
+    }
+  }
+
   package { 'jena-fuseki':
     ensure  => $version,
     require => [ Group['fuseki'], User['fuseki'], Apt::Source['publiq-tools'], Class['profiles::java']]
   }
 
-  if $datasets {
-    [$datasets].flatten.each |$dataset| {
-      file { "/var/lib/jena-fuseki/databases/${dataset['name']}":
+  if !$datasets.empty {
+    $datasets.each |String $name, Hash $properties| {
+      file { "/var/lib/jena-fuseki/databases/${name}":
         ensure => directory,
         owner  => 'fuseki',
         group  => 'fuseki',

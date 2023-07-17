@@ -238,7 +238,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
         context "on #{os}" do
           let(:facts) { facts }
 
-          it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects the title to be a valid HTTP URL/) }
+          it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects the title to be a valid HTTP\(S\) URL/) }
         end
       end
     end
