@@ -68,7 +68,7 @@ define profiles::apache::vhost::php_fpm (
       $apache_proxy_handler = "SetHandler \"proxy:unix:/var/run/php/php${php_version}-fpm.sock|fcgi://localhost\""
     }
     'tcp_socket': {
-      $listen               = "172.0.0.1:9000"
+      $listen               = "127.0.0.1:9000"
       $apache_proxy_handler = "SetHandler \"proxy:fcgi://127.0.0.1:9000\""
     }
   }
