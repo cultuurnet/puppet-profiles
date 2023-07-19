@@ -8,10 +8,9 @@
 #   - profiles::php_fpm
 # 
 # profiles::php_fpm::vhosts:
-#   'https://phpfpmtest.publiq.be':
+#   'http://phpfpmtest.publiq.be':
 #      aliases: 'fpmalias.publiq.be'
 #      docroot: '/var/www/phpfpmtest'
-#      certificate: 'wildcard.publiq.be'
 #      php_version: '8.1'
 #      fpm_listen: 'tcp_socket'
 
