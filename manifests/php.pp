@@ -4,6 +4,9 @@ class profiles::php (
   Hash                    $settings                 = {},
   Optional[Integer[1, 2]] $composer_default_version = undef,
   Boolean                 $fpm                      = false,
+  Boolean                 $fpm_service_enable       = false,
+  String                  $fpm_service_ensure       = 'running',
+  Hash                    $fpm_global_pool_settings = {},
   Boolean                 $newrelic_agent           = false,
   String                  $newrelic_app_name        = $facts['networking']['fqdn'],
   Optional[String]        $newrelic_license_key     = undef
@@ -37,13 +40,17 @@ class profiles::php (
   }
 
   class { ::php:
-    manage_repos => false,
-    composer     => false,
-    dev          => false,
-    pear         => false,
-    fpm          => $fpm,
-    settings     => $settings,
-    extensions   => $default_extensions + $version_dependent_default_extensions + $extensions
+    manage_repos             => false,
+    composer                 => false,
+    dev                      => false,
+    pear                     => false,
+    fpm                      => $fpm,
+    fpm_service_enable       => $fpm_service_enable,
+    fpm_service_ensure       => $fpm_service_ensure,
+    fpm_pools                => { 'www'  => {} }, # https://github.com/voxpupuli/puppet-php/issues/564
+    fpm_global_pool_settings => $fpm_global_pool_settings,
+    settings                 => $settings,
+    extensions               => $default_extensions + $version_dependent_default_extensions + $extensions
   }
 
   Apt::Source['php'] -> Class['php::globals']
