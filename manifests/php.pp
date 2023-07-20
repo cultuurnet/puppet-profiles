@@ -42,8 +42,8 @@ class profiles::php (
 
   case $fpm_listen {
     'unix_socket': {
-      $listen               = "/var/run/php/php${php_version}-fpm.sock"
-      $apache_proxy_handler = "SetHandler \"proxy:unix:/var/run/php/php${php_version}-fpm.sock|fcgi://localhost\""
+      $listen               = "/var/run/php/php${version}-fpm.sock"
+      $apache_proxy_handler = "SetHandler \"proxy:unix:/var/run/php/php${version}-fpm.sock|fcgi://localhost\""
     }
     'tcp_socket': {
       $listen               = "127.0.0.1:9000"
