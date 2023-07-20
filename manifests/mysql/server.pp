@@ -1,7 +1,7 @@
 class profiles::mysql::server (
   Boolean          $lvm            = false,
   Optional[String] $volume_group   = undef,
-  Optional[String] $volume_size    = undef
+  Optional[String] $volume_size    = undef,
   Integer          $max_open_files = 1024
 ) inherits ::profiles {
 
