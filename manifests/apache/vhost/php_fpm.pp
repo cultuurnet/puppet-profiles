@@ -51,15 +51,6 @@ define profiles::apache::vhost::php_fpm (
     require => [User['www-data'],Group['www-data']]
   }
 
-  file { "${docroot}/index.php":
-    ensure  => 'file',
-    owner   => 'www-data',
-    group   => 'www-data',
-    mode    => '0755',
-    content => "<?php phpinfo(); ?>",
-    require => [User['www-data'],Group['www-data']]
-  }
-
   apache::vhost { "${servername}_${port}":
     servername            => $servername,
     serveraliases         => $aliases,
