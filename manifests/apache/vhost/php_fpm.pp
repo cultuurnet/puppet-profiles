@@ -1,28 +1,9 @@
-# Defined type profiles::apache::vhost::php_fpm
-#
-# This will deploy an apache vhost with php fpm enabled
-# Example hiera config:
-#
-# ---
-# classes:
-#   - profiles::php_fpm
-# 
-# profiles::php_fpm::vhosts:
-#   'http://phpfpmtest.publiq.be':
-#      aliases: 'fpmalias.publiq.be'
-#      docroot: '/var/www/phpfpmtest'
-#      php_version: '8.1'
-#      fpm_listen: 'tcp_socket'
-
 define profiles::apache::vhost::php_fpm (
   String                            $docroot               = undef,
-  String                            $php_version           = '8.1',
-  Optional[String]                  $certificate           = undef,
-  Enum['unix_socket', 'tcp_socket'] $fpm_listen            = 'unix_socket',
   Enum['on', 'off', 'nodecode']     $allow_encoded_slashes = 'off',
   Variant[String, Array[String]]    $aliases               = [],
-  Boolean                           $newrelic_agent        = false,
-  Optional[String]                  $newrelic_license_key  = undef
+  String                            $apache_proxy_handler  = undef,
+  Optional[String]                  $certificate           = undef
 ) {
 
   include ::profiles
@@ -62,37 +43,20 @@ define profiles::apache::vhost::php_fpm (
     $ssl_key      = undef
   }
 
-  case $fpm_listen {
-    'unix_socket': {
-      $listen               = "/var/run/php/php${php_version}-fpm.sock"
-      $apache_proxy_handler = "SetHandler \"proxy:unix:/var/run/php/php${php_version}-fpm.sock|fcgi://localhost\""
-    }
-    'tcp_socket': {
-      $listen               = "127.0.0.1:9000"
-      $apache_proxy_handler = "SetHandler \"proxy:fcgi://127.0.0.1:9000\""
-    }
-  }
-
-  class { '::profiles::php':
-    version                  => $php_version,
-    fpm                      => true,
-    fpm_service_enable       => true,
-    fpm_service_ensure       => 'running',
-    fpm_global_pool_settings => {
-      listen       => $listen,
-      listen_owner => 'www-data',
-      listen_group => 'www-data'
-    },
-    newrelic_agent           => $newrelic_agent,
-    newrelic_app_name        => $facts['networking']['fqdn'],
-    newrelic_license_key     => $newrelic_license_key
-  }
-
   file { $docroot:
-    ensure => 'directory',
-    owner  => 'www-data',
-    group  => 'www-data',
-    mode   => '0755',
+    ensure  => 'directory',
+    owner   => 'www-data',
+    group   => 'www-data',
+    mode    => '0755',
+    require => [User['www-data'],Group['www-data']]
+  }
+
+  file { "${docroot}/index.php":
+    ensure  => 'file',
+    owner   => 'www-data',
+    group   => 'www-data',
+    mode    => '0755',
+    content => "<?php phpinfo(); ?>",
     require => [User['www-data'],Group['www-data']]
   }
 
