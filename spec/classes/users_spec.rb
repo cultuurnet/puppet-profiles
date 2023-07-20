@@ -111,6 +111,26 @@ describe 'profiles::users' do
           'shell'          => '/usr/sbin/nologin',
           'uid'            => '454'
         ) }
+
+        it { is_expected.to contain_user('redis').with(
+          'ensure'         => 'present',
+          'gid'            => 'redis',
+          'home'           => '/var/lib/redis',
+          'managehome'     => false,
+          'purge_ssh_keys' => true,
+          'shell'          => '/bin/false',
+          'uid'            => '455'
+        ) }
+
+        it { is_expected.to contain_user('mysql').with(
+          'ensure'         => 'present',
+          'gid'            => 'mysql',
+          'home'           => '/var/lib/mysql',
+          'managehome'     => false,
+          'purge_ssh_keys' => true,
+          'shell'          => '/bin/false',
+          'uid'            => '456'
+        ) }
       end
     end
   end

@@ -72,6 +72,9 @@ fixtures:
     systemd:
       repo: 'puppet/systemd'
       ref: '4.2.0'
+    redis:
+      repo: 'puppet/redis'
+      ref: '8.8.0'
     alternatives:
       repo: 'puppet/alternatives'
       ref: '3.0.0'

@@ -50,6 +50,26 @@ class profiles::users inherits ::profiles {
     uid            => '454'
   }
 
+  @user { 'redis':
+    ensure         => 'present',
+    gid            => 'redis',
+    home           => '/var/lib/redis',
+    managehome     => false,
+    purge_ssh_keys => true,
+    shell          => '/bin/false',
+    uid            => '455'
+  }
+
+  @user { 'mysql':
+    ensure         => 'present',
+    gid            => 'mysql',
+    home           => '/var/lib/mysql',
+    managehome     => false,
+    purge_ssh_keys => true,
+    shell          => '/bin/false',
+    uid            => '456'
+  }
+
   @user { 'ubuntu':
     ensure         => 'present',
     gid            => 'ubuntu',
