@@ -1,15 +1,16 @@
 class profiles::php (
-  String                  $version                  = '7.4',
-  Hash                    $extensions               = {},
-  Hash                    $settings                 = {},
-  Optional[Integer[1, 2]] $composer_default_version = undef,
-  Boolean                 $fpm                      = false,
-  Boolean                 $fpm_service_enable       = false,
-  String                  $fpm_service_ensure       = 'running',
-  Hash                    $fpm_global_pool_settings = {},
-  Boolean                 $newrelic_agent           = false,
-  String                  $newrelic_app_name        = $facts['networking']['fqdn'],
-  Optional[String]        $newrelic_license_key     = undef
+  String                            $version                  = '7.4',
+  Hash                              $extensions               = {},
+  Hash                              $settings                 = {},
+  Optional[Integer[1, 2]]           $composer_default_version = undef,
+  Boolean                           $fpm                      = false,
+  Enum['unix_socket', 'tcp_socket'] $fpm_listen               = 'unix_socket',
+  Boolean                           $fpm_service_enable       = true,
+  String                            $fpm_service_ensure       = 'running',
+  Hash                              $fpm_global_pool_settings = {},
+  Boolean                           $newrelic_agent           = false,
+  String                            $newrelic_app_name        = $facts['networking']['fqdn'],
+  Optional[String]                  $newrelic_license_key     = undef
 ) inherits ::profiles {
 
   $default_extensions = {
@@ -39,6 +40,17 @@ class profiles::php (
     config_root => "/etc/php/${version}"
   }
 
+  case $fpm_listen {
+    'unix_socket': {
+      $listen               = "/var/run/php/php${php_version}-fpm.sock"
+      $apache_proxy_handler = "SetHandler \"proxy:unix:/var/run/php/php${php_version}-fpm.sock|fcgi://localhost\""
+    }
+    'tcp_socket': {
+      $listen               = "127.0.0.1:9000"
+      $apache_proxy_handler = "SetHandler \"proxy:fcgi://127.0.0.1:9000\""
+    }
+  }
+
   class { ::php:
     manage_repos             => false,
     composer                 => false,
@@ -48,7 +60,11 @@ class profiles::php (
     fpm_service_enable       => $fpm_service_enable,
     fpm_service_ensure       => $fpm_service_ensure,
     fpm_pools                => { 'www'  => {} }, # https://github.com/voxpupuli/puppet-php/issues/564
-    fpm_global_pool_settings => $fpm_global_pool_settings,
+    fpm_global_pool_settings => {
+      listen       => $listen,
+      listen_owner => 'www-data',
+      listen_group => 'www-data'
+    },
     settings                 => $settings,
     extensions               => $default_extensions + $version_dependent_default_extensions + $extensions
   }
@@ -88,6 +104,13 @@ class profiles::php (
       ensure       => 'latest',
       responsefile => '/var/tmp/newrelic-php5-installer.preseed',
       require      => [File['newrelic-php5-installer.preseed']]
+    }
+  }
+
+  if $fpm {
+    class { ::profiles::php::fpm:
+      php_version          => $version,
+      apache_proxy_handler => $apache_proxy_handler,
     }
   }
 
