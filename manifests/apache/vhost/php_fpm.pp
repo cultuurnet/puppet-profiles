@@ -43,13 +43,15 @@ define profiles::apache::vhost::php_fpm (
     $ssl_key      = undef
   }
 
-  file { $docroot:
-    ensure  => 'directory',
-    owner   => 'www-data',
-    group   => 'www-data',
-    mode    => '0755',
-    require => [User['www-data'],Group['www-data']]
-  }
+  # 2023-07-24 paul: docroot created by apt package
+  #
+  # file { $docroot:
+  #   ensure  => 'directory',
+  #   owner   => 'www-data',
+  #   group   => 'www-data',
+  #   mode    => '0755',
+  #   require => [User['www-data'],Group['www-data']]
+  # }
 
   apache::vhost { "${servername}_${port}":
     servername            => $servername,
