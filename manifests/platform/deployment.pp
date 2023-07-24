@@ -20,7 +20,7 @@ class profiles::platform::deployment (
     owner   => 'www-data',
     group   => 'www-data',
     source  => $config_source,
-    require => Package['platform-api-config']
+    require => Package['platform-api']
   }
 
   exec { 'run platform database migrations':
