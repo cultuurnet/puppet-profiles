@@ -35,6 +35,18 @@ class profiles::platform::deployment (
     require     => File['platform-api-config'],
   }
 
+  exec { 'run platform database seed':
+    command     => 'php artisan db:seed',
+    cwd         => $basedir,
+    path        => [ '/usr/local/bin', '/usr/bin', '/bin'],
+    user        => 'www-data',
+    environment => [ 'HOME=/'],
+    logoutput   => true,
+    subscribe   => Package['platform-api'],
+    refreshonly => true,
+    require     => [File['platform-api-config'],Exec['run platform database migrations']],
+  }
+
   profiles::deployment::versions { $title:
     puppetdb_url => $puppetdb_url
   }
