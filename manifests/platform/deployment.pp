@@ -32,7 +32,7 @@ class profiles::platform::deployment (
     logoutput   => true,
     subscribe   => Package['platform-api'],
     refreshonly => true,
-    require     => [File['platform-api-config'],Exec['run platform database migrations']],
+    require     => File['platform-api-config'],
   }
 
   exec { 'run platform database seed':
@@ -44,7 +44,7 @@ class profiles::platform::deployment (
     logoutput   => true,
     subscribe   => Package['platform-api'],
     refreshonly => true,
-    require     => File['platform-api-config'],
+    require     => [File['platform-api-config'],Exec['run platform database migrations']],
   }
 
   profiles::deployment::versions { $title:
