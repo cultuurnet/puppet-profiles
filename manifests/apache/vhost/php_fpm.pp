@@ -8,6 +8,7 @@ define profiles::apache::vhost::php_fpm (
 
   include ::profiles
   include ::profiles::apache
+  include ::profiles::firewall::rules
   include ::profiles::certificates
   include ::apache::mod::proxy
   include ::apache::mod::proxy_fcgi
@@ -33,6 +34,7 @@ define profiles::apache::vhost::php_fpm (
     $ssl_key      = "/etc/ssl/private/${certificate}.key"
 
     realize Profiles::Certificate[$certificate]
+    realize Firewall['300 accept HTTPS traffic']
 
     Profiles::Certificate[$certificate] -> Apache::Vhost["${servername}_${port}"]
     Profiles::Certificate[$certificate] ~> Class['apache::service']
@@ -41,6 +43,8 @@ define profiles::apache::vhost::php_fpm (
     $port         = 80
     $ssl_cert     = undef
     $ssl_key      = undef
+
+    realize Firewall['300 accept HTTP traffic']
   }
 
   # 2023-07-24 paul: docroot created by apt package
