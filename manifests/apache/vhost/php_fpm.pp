@@ -12,6 +12,7 @@ define profiles::apache::vhost::php_fpm (
   include ::profiles::certificates
   include ::apache::mod::proxy
   include ::apache::mod::proxy_fcgi
+  include ::apache::mod::rewrite
 
   realize Group['www-data']
   realize User['www-data']
@@ -47,16 +48,6 @@ define profiles::apache::vhost::php_fpm (
     realize Firewall['300 accept HTTP traffic']
   }
 
-  # 2023-07-24 paul: docroot created by apt package
-  #
-  # file { $docroot:
-  #   ensure  => 'directory',
-  #   owner   => 'www-data',
-  #   group   => 'www-data',
-  #   mode    => '0755',
-  #   require => [User['www-data'],Group['www-data']]
-  # }
-
   apache::vhost { "${servername}_${port}":
     servername            => $servername,
     serveraliases         => $aliases,
@@ -64,7 +55,7 @@ define profiles::apache::vhost::php_fpm (
     ssl                   => $https,
     ssl_cert              => $ssl_cert,
     ssl_key               => $ssl_key,
-    docroot               => $docroot,
+    docroot               => "${docroot}/public",
     manage_docroot        => false,
     request_headers       => [
                                "setifempty X-Forwarded-Port \"${port}\"",
@@ -75,6 +66,12 @@ define profiles::apache::vhost::php_fpm (
                                'path'            => '\.php$',
                                'provider'        => 'filesmatch',
                                'custom_fragment' => $apache_proxy_handler,
+                             },
+                             {
+                               'path'           => $docroot,
+                               'options'        => ['Indexes','FollowSymLinks','MultiViews'],
+                               'allow_override' => 'All',
+
                              }]
   }
 }
