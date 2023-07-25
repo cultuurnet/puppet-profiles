@@ -19,6 +19,7 @@ class profiles::php (
                           'gd'       => {},
                           'intl'     => {},
                           'mbstring' => {},
+                          'mysql'    => {},
                           'opcache'  => { 'zend' => true },
                           'readline' => {},
                           'tidy'     => {},
