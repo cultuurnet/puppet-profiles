@@ -22,6 +22,7 @@ class profiles::php (
                           'mysql'    => {},
                           'opcache'  => { 'zend' => true },
                           'readline' => {},
+                          'redis'    => {},
                           'tidy'     => {},
                           'xml'      => {},
                           'zip'      => {}

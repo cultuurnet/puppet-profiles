@@ -51,6 +51,7 @@ describe 'profiles::php' do
                                 'mysql'    => {},
                                 'opcache'  => { 'zend' => true },
                                 'readline' => {},
+                                'redis'    => {},
                                 'tidy'     => {},
                                 'xml'      => {},
                                 'zip'      => {}
@@ -122,6 +123,7 @@ describe 'profiles::php' do
                                 'mysql'    => { 'so_name' => 'mysqlnd' },
                                 'opcache'  => { 'zend' => true },
                                 'readline' => {},
+                                'redis'    => {},
                                 'tidy'     => {},
                                 'xml'      => {},
                                 'zip'      => {}
