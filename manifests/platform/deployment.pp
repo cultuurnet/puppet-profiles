@@ -32,6 +32,18 @@ class profiles::platform::deployment (
     logoutput   => true,
     subscribe   => Package['platform-api'],
     refreshonly => true,
+    require     => [File['platform-api-config'],Exec['run platform database migrations']],
+  }
+
+  exec { 'run platform database seed':
+    command     => 'php artisan db:seed',
+    cwd         => $basedir,
+    path        => [ '/usr/local/bin', '/usr/bin', '/bin'],
+    user        => 'www-data',
+    environment => [ 'HOME=/'],
+    logoutput   => true,
+    subscribe   => Package['platform-api'],
+    refreshonly => true,
     require     => File['platform-api-config'],
   }
 
