@@ -48,6 +48,7 @@ describe 'profiles::php' do
                                 'intl'     => {},
                                 'json'     => {},
                                 'mbstring' => {},
+                                'mysql'    => {},
                                 'opcache'  => { 'zend' => true },
                                 'readline' => {},
                                 'tidy'     => {},
