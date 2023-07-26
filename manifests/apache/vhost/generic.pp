@@ -10,6 +10,7 @@ class profiles::apache::vhost::generic (
   include ::apache::mod::rewrite
   include ::apache::mod::headers
   include ::apache::mod::http2
+  include ::apache::mod::event
 
   realize Group['www-data']
   realize User['www-data']
