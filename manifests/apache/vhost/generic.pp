@@ -9,6 +9,7 @@ class profiles::apache::vhost::generic (
   include ::apache::mod::proxy
   include ::apache::mod::rewrite
   include ::apache::mod::headers
+  include ::apache::mod::http2
 
   realize Group['www-data']
   realize User['www-data']
