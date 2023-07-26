@@ -1,5 +1,6 @@
 class profiles::apache (
   Enum['event', 'itk', 'peruser', 'prefork', 'worker']  $mpm_module        = 'prefork',
+  Boolean                                               $mpm_enable        = true,
   Hash                                                  $mpm_module_config = {},
   Hash                                                  $log_formats       = {},
   Boolean                                               $metrics           = true,
@@ -28,8 +29,10 @@ class profiles::apache (
     require        => [Group['www-data'], User['www-data']]
   }
 
-  class { "apache::mod::${mpm_module}":
-    * => $mpm_module_config
+  if $mpm_enable {
+    class { "apache::mod::${mpm_module}":
+      * => $mpm_module_config
+    }
   }
 
   if $metrics {
