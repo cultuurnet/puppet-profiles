@@ -4,7 +4,8 @@ class profiles::apache (
   Hash                                                  $mpm_module_config = {},
   Hash                                                  $log_formats       = {},
   Boolean                                               $metrics           = true,
-  Enum['running', 'stopped']                            $service_status    = 'running'
+  Enum['running', 'stopped']                            $service_status    = 'running',
+  Array[Enum['h2', 'h2c', 'http/1.1']]                  $protocols         = ['http/1.1']
 ) inherits ::profiles {
 
   $default_log_formats = {
@@ -26,6 +27,7 @@ class profiles::apache (
                         'stopped' => false
                       },
     log_formats    => $default_log_formats + $log_formats,
+    protocols      => $protocols,
     require        => [Group['www-data'], User['www-data']]
   }
 
