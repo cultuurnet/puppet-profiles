@@ -60,6 +60,42 @@ class profiles::platform::deployment (
     require     => [File['platform-api-config'],Exec['run platform database migrations']],
   }
 
+  exec { 'run platform route cache':
+    command     => 'php artisan route:cache',
+    cwd         => $basedir,
+    path        => [ '/usr/local/bin', '/usr/bin', '/bin'],
+    user        => 'www-data',
+    environment => [ 'HOME=/'],
+    logoutput   => true,
+    subscribe   => Package['platform-api'],
+    refreshonly => true,
+    require     => [File['platform-api-config'],Exec['run platform cache clear']],
+  }
+
+  exec { 'run platform config cache':
+    command     => 'php artisan config:cache',
+    cwd         => $basedir,
+    path        => [ '/usr/local/bin', '/usr/bin', '/bin'],
+    user        => 'www-data',
+    environment => [ 'HOME=/'],
+    logoutput   => true,
+    subscribe   => Package['platform-api'],
+    refreshonly => true,
+    require     => [File['platform-api-config'],Exec['run platform route cache']],
+  }
+
+  exec { 'run platform view cache':
+    command     => 'php artisan view:cache',
+    cwd         => $basedir,
+    path        => [ '/usr/local/bin', '/usr/bin', '/bin'],
+    user        => 'www-data',
+    environment => [ 'HOME=/'],
+    logoutput   => true,
+    subscribe   => Package['platform-api'],
+    refreshonly => true,
+    require     => [File['platform-api-config'],Exec['run platform config cache']],
+  }
+
   systemd::unit_file { 'platform-api-horizon.service':
     source  => 'puppet:///modules/profiles/platform/platform-api-horizon.service',
     enable  => true,
