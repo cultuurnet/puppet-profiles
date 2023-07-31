@@ -1,7 +1,8 @@
 class profiles::platform::deployment (
-  String           $config_source,
-  String           $version       = 'latest',
-  Optional[String] $puppetdb_url  = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+  String                     $config_source,
+  String                     $version        = 'latest',
+  Enum['running', 'stopped'] $service_status = 'running',
+  Optional[String]           $puppetdb_url   = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $basedir = '/var/www/platform-api'
@@ -57,6 +58,23 @@ class profiles::platform::deployment (
     subscribe   => Package['platform-api'],
     refreshonly => true,
     require     => [File['platform-api-config'],Exec['run platform database migrations']],
+  }
+
+  systemd::unit_file { 'platform-api-horizon.service':
+    source  => 'puppet:///modules/profiles/platform/platform-api-horizon.service',
+    enable  => true,
+    active  => true,
+    require => Package['platform-api']
+  }
+
+  service { 'platform-api-horizon':
+    ensure    => $service_status,
+    hasstatus => true,
+    enable    => $service_status ? {
+                   'running' => true,
+                   'stopped' => false
+                 },
+    require   => [Systemd::Unit_file['platform-api-horizon.service']]
   }
 
   profiles::deployment::versions { $title:
