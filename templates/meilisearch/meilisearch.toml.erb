@@ -1,0 +1,9 @@
+env = "<%= @environment %>"
+master_key = "<%= @master_key %>"
+http_addr = "<%= @http_addr %>"
+db_path = "<%= @db_path %>"
+dump_dir = "<%= @dump_dir %>"
+snapshot_dir = "<%= @snapshot_dir %>"
+<% @extra_config.each do |key,value| -%>
+<%= key %> = "<%= value %>"
+<% end -%>

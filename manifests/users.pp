@@ -129,4 +129,14 @@ class profiles::users inherits ::profiles {
     shell          => '/usr/sbin/nologin',
     uid            => '1003'
   }
+
+  @user { 'meilisearch':
+    ensure         => 'present',
+    gid            => 'meilisearch',
+    home           => '/var/lib/meilisearch',
+    managehome     => true,
+    purge_ssh_keys => true,
+    shell          => '/bin/false',
+    uid            => '1004'
+  }
 }
