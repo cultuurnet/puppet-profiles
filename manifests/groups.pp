@@ -69,4 +69,9 @@ class profiles::groups inherits ::profiles {
     ensure => 'present',
     gid    => '1003'
   }
+
+  @group { 'meilisearch':
+    ensure => 'present',
+    gid    => '1004'
+  }
 }
