@@ -37,7 +37,7 @@ class profiles::platform::deployment (
   }
 
   exec { 'run platform database seed':
-    command     => 'php artisan db:seed',
+    command     => 'php artisan db:seed --force',
     cwd         => $basedir,
     path        => [ '/usr/local/bin', '/usr/bin', '/bin'],
     user        => 'www-data',
