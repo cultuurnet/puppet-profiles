@@ -25,8 +25,8 @@ class profiles::meilisearch (
     ensure => 'file',
     path    => '/etc/meilisearch.toml',
     owner   => 'root',
-    group   => 'root',
-    mode    => '0600',
+    group   => 'meilisearch',
+    mode    => '0640',
     content => template('profiles/meilisearch/meilisearch.toml.erb'),
     require => [Package['meilisearch']],
     notify  => Service['meilisearch']
