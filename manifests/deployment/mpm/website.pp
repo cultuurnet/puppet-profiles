@@ -19,7 +19,7 @@ class profiles::deployment::mpm::website (
     path    => "/etc/varnish/secret",
     content => $varnish_secret,
     owner   => 'varnish',
-    group   => 'varnish'
+    group   => 'varnish',
     require => [Class['varnish']]
   }
 
@@ -29,7 +29,7 @@ class profiles::deployment::mpm::website (
   }
   varnish::backend { 'default':
     host => '127.0.0.1',
-    port => '80'
+    port => '80',
     require => [Class['varnish']]
   }
 
