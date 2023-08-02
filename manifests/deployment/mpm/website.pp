@@ -1,17 +1,37 @@
 class profiles::deployment::mpm::website (
-  String $vhost       = undef,
-  String $repository  = 'museumpas-website',
+  String $varnish_secret = undef,
+  String $vhost          = undef,
+  String $repository     = 'museumpas-website',
   $config_source,
   $maintenance_source,
-  $version            = 'latest',
-  $robots_source      = undef,
-  $noop_deploy        = false,
-  $puppetdb_url       = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+  $version               = 'latest',
+  $robots_source         = undef,
+  $noop_deploy           = false,
+  $puppetdb_url          = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $basedir = '/var/www/museumpas'
 
   # TODO: create apache vhost
+
+  file { 'varnish-secret':
+    ensure  => 'file',
+    path    => "/etc/varnish/secret",
+    content => $varnish_secret,
+    owner   => 'varnish',
+    group   => 'varnish'
+    require => [Class['varnish']]
+  }
+
+  class { 'varnish::vcl':
+    backends => {},
+    require => [Class['varnish']]
+  }
+  varnish::backend { 'default':
+    host => '127.0.0.1',
+    port => '80'
+    require => [Class['varnish']]
+  }
 
   realize Apt::Source[$repository]
 
