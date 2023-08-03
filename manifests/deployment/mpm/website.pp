@@ -27,7 +27,7 @@ class profiles::deployment::mpm::website (
     backends => {},
     require => [Class['varnish']]
   }
-  varnish::backend { 'default':
+  varnish::vcl::backend { 'default':
     host => '127.0.0.1',
     port => '80',
     require => [Class['varnish']]
