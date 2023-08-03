@@ -1,13 +1,14 @@
 class profiles::deployment::mpm::website (
-  String $varnish_secret = undef,
-  String $vhost          = undef,
-  String $repository     = 'museumpas-website',
+  String $varnish_secret                    = undef,
+  Optional[Variant[Hash]] $varnish_backends = undef,
+  String $vhost                             = undef,
+  String $repository                        = 'museumpas-website',
   $config_source,
   $maintenance_source,
-  $version               = 'latest',
-  $robots_source         = undef,
-  $noop_deploy           = false,
-  $puppetdb_url          = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+  $version                                  = 'latest',
+  $robots_source                            = undef,
+  $noop_deploy                              = false,
+  $puppetdb_url                             = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $basedir = '/var/www/museumpas'
@@ -27,11 +28,7 @@ class profiles::deployment::mpm::website (
     backends => {},
     require => [Class['varnish']]
   }
-  varnish::vcl::backend { 'default':
-    host => '127.0.0.1',
-    port => '80',
-    require => [Class['varnish']]
-  }
+  create_resources('varnish::vcl::backend', $varnish_backends)
 
   realize Apt::Source[$repository]
 
