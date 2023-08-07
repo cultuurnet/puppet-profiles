@@ -25,7 +25,7 @@ class profiles::deployment::mpm::website (
   include apache::mod::expires
   include apache::mod::headers
   include apache::mod::rewrite
-  inclide apache::vhosts
+  include apache::vhosts
 
   file { 'root_my_cnf':
     ensure  => 'file',
