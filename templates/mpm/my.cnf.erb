@@ -1,4 +1,6 @@
+<% @mysql_database.each do |name,properties| %>
 [client]
-user=<%= @mysql_database['user'] %>
-host=<%= @mysql_database['host'] %>
-password='<%= @mysql_database['password'] %>'
+user=<%= properties['user'] %>
+host=<%= properties['host'] %>
+password='<%= properties['password'] %>'
+<% end %>
