@@ -25,11 +25,13 @@ class profiles::deployment::mpm::website (
     content => template('profiles/mpm/my.cnf.erb'),
   }
 
-  mysql::db { $mysql_database['title']:
-    user     => $mysql_database['user'],
-    password => $mysql_database['password'],
-    host     => $mysql_database['host'],
-    require  => File['root_my_cnf']
+  $mysql_database.each |$name,$properties| {
+    mysql::db { $name:
+      user     => $properties['user'],
+      password => $properties['password'],
+      host     => $properties['host'],
+      require  => File['root_my_cnf']
+    }
   }
 
   file { 'varnish-secret':
