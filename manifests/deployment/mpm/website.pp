@@ -17,11 +17,15 @@ class profiles::deployment::mpm::website (
 
   $basedir = '/var/www/museumpas'
 
-  # TODO: create apache vhost
-
-  package { 'mysql-client':
-    ensure  => 'present',
+  class { 'locales':
+    default_locale  => 'en_US.UTF-8',
+    locales         => ['nl_BE.UTF-8 UTF8', 'fr_BE.UTF-8 UTF8', 'nl_NL.UTF-8 UTF8', 'fr_FR.UTF-8 UTF8'],
   }
+
+  include apache::mod::expires
+  include apache::mod::headers
+  include apache::mod::rewrite
+  inclide apache::vhosts
 
   file { 'root_my_cnf':
     ensure  => 'file',
@@ -32,14 +36,18 @@ class profiles::deployment::mpm::website (
     content => template('profiles/mpm/my.cnf.erb'),
   }
 
-  $mysql_databases.each |$name,$properties| {
-    mysql::db { $name:
-      user     => $properties['user'],
-      password => $properties['password'],
-      host     => $properties['host'],
-      require  => [File['root_my_cnf'],Package['mysql-client']]
-    }
-  }
+  # Database gets created correctly
+  # But issue with user creation
+  # See: https://github.com/puppetlabs/puppetlabs-mysql/blob/v14.0.0/README.md?plain=1#L190
+  #
+  # $mysql_databases.each |$name,$properties| {
+  #   mysql::db { $name:
+  #     user     => $properties['user'],
+  #     password => $properties['password'],
+  #     host     => $properties['host'],
+  #     require  => [File['root_my_cnf'],Package['mysql-client']]
+  #   }
+  # }
 
   file { 'varnish-secret':
     ensure  => 'file',
