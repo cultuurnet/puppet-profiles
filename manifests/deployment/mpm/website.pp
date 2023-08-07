@@ -18,8 +18,8 @@ class profiles::deployment::mpm::website (
   $basedir = '/var/www/museumpas'
 
   class { 'locales':
-    default_locale  => 'en_US.UTF-8',
-    locales         => ['nl_BE.UTF-8 UTF8', 'fr_BE.UTF-8 UTF8', 'nl_NL.UTF-8 UTF8', 'fr_FR.UTF-8 UTF8'],
+    default_locale  => 'en_US.utf8',
+    locales         => ['nl_BE.utf8 UTF8', 'fr_BE.utf8 UTF8', 'nl_NL.utf8 UTF8', 'fr_FR.utf8 UTF8'],
   }
 
   include apache::mod::expires
