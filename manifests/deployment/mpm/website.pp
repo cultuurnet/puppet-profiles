@@ -1,6 +1,9 @@
 class profiles::deployment::mpm::website (
   String $varnish_secret                    = undef,
-  Hash $mysql_database                      = undef,
+  String $mysql_admin_user                  = 'admin',
+  String $mysql_admin_password              = undef,
+  String $mysql_host                        = undef,
+  Hash $mysql_databases                     = undef,
   Optional[Variant[Hash]] $varnish_backends = undef,
   String $vhost                             = undef,
   String $repository                        = 'museumpas-website',
@@ -16,6 +19,10 @@ class profiles::deployment::mpm::website (
 
   # TODO: create apache vhost
 
+  package { 'mysql-client':
+    ensure  => 'present',
+  }
+
   file { 'root_my_cnf':
     ensure  => 'file',
     path    => '/root/.my.cnf',
@@ -25,12 +32,12 @@ class profiles::deployment::mpm::website (
     content => template('profiles/mpm/my.cnf.erb'),
   }
 
-  $mysql_database.each |$name,$properties| {
+  $mysql_databases.each |$name,$properties| {
     mysql::db { $name:
       user     => $properties['user'],
       password => $properties['password'],
       host     => $properties['host'],
-      require  => File['root_my_cnf']
+      require  => [File['root_my_cnf'],Package['mysql-client']]
     }
   }
 
