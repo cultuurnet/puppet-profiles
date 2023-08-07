@@ -1,5 +1,6 @@
 class profiles::deployment::mpm::website (
   String $varnish_secret                    = undef,
+  Hash $mysql_database                      = undef,
   Optional[Variant[Hash]] $varnish_backends = undef,
   String $vhost                             = undef,
   String $repository                        = 'museumpas-website',
@@ -14,6 +15,22 @@ class profiles::deployment::mpm::website (
   $basedir = '/var/www/museumpas'
 
   # TODO: create apache vhost
+
+  file { 'root_my_cnf':
+    ensure  => 'file',
+    path    => '/root/.my.cnf',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0400',
+    content => template('profiles/mpm/my.cnf.erb'),
+  }
+
+  mysql::db { $mysql_database['title']:
+    user     => $mysql_database['user'],
+    password => $mysql_database['password'],
+    host     => $mysql_database['host'],
+    require  => File['root_my_cnf']
+  }
 
   file { 'varnish-secret':
     ensure  => 'file',
