@@ -15,11 +15,6 @@ class profiles::uitpas::cid_logs (
     aliases     => $aliases
   }
 
-  class { '::apache::mod::prefork':
-    serverlimit => 512,
-    maxclients  => 512,
-  }
-
   file { 'gcs_credentials':
     ensure  => 'file',
     path    => '/etc/logstash/gcs_credentials.json',
