@@ -1,5 +1,6 @@
 class profiles::deployment::mpm::website (
   String $varnish_secret                    = undef,
+  String $mysql_version                     = undef,
   String $mysql_admin_user                  = 'admin',
   String $mysql_admin_password              = undef,
   String $mysql_host                        = undef,
@@ -29,6 +30,15 @@ class profiles::deployment::mpm::website (
   include apache::mod::proxy_fcgi
   include apache::vhosts
 
+  file { 'mysqld_version_ext_fact':
+    ensure  => 'file',
+    path    => '/etc/puppetlabs/facter/facts.d/mysqld_version.txt',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    content => "mysqld_version=$mysql_version"
+  }
+
   file { 'root_my_cnf':
     ensure  => 'file',
     path    => '/root/.my.cnf',
@@ -36,6 +46,7 @@ class profiles::deployment::mpm::website (
     group   => 'root',
     mode    => '0400',
     content => template('profiles/mpm/my.cnf.erb'),
+    require  => [File['mysqld_version_ext_fact']]
   }
 
   $mysql_databases.each |$name,$properties| {
