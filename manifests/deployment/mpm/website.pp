@@ -42,14 +42,14 @@ class profiles::deployment::mpm::website (
   # But issue with user creation
   # See: https://github.com/puppetlabs/puppetlabs-mysql/blob/v14.0.0/README.md?plain=1#L190
   #
-  # $mysql_databases.each |$name,$properties| {
-  #   mysql::db { $name:
-  #     user     => $properties['user'],
-  #     password => $properties['password'],
-  #     host     => $properties['host'],
-  #     require  => [File['root_my_cnf'],Package['mysql-client']]
-  #   }
-  # }
+  $mysql_databases.each |$name,$properties| {
+    mysql::db { $name:
+      user     => $properties['user'],
+      password => $properties['password'],
+      host     => $properties['host'],
+      require  => [File['root_my_cnf'],Package['mysql-client']]
+    }
+  }
 
   file { 'varnish-secret':
     ensure  => 'file',
