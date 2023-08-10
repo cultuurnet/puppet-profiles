@@ -3,7 +3,7 @@ class profiles::apache (
   Boolean                                               $mpm_enable        = true,
   Hash                                                  $mpm_module_config = {},
   Hash                                                  $log_formats       = {},
-  Boolean                                               $http2             = true,
+  Boolean                                               $http2             = false,
   Boolean                                               $metrics           = true,
   Enum['running', 'stopped']                            $service_status    = 'running',
 ) inherits ::profiles {

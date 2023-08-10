@@ -14,7 +14,7 @@ describe 'profiles::apache' do
           'mpm_module'        => 'prefork',
           'mpm_module_config' => {},
           'log_formats'       => {},
-          'http2'             => true,
+          'http2'             => false,
           'service_status'    => 'running',
           'metrics'           => true
         ) }
@@ -27,7 +27,7 @@ describe 'profiles::apache' do
           'manage_group'          => false,
           'manage_user'           => false,
           'default_vhost'         => true,
-          'protocols'             => ['h2c', 'http/1.1'],
+          'protocols'             => ['http/1.1'],
           'protocols_honor_order' => true,
           'service_manage'        => true,
           'service_ensure'        => 'running',
@@ -48,11 +48,11 @@ describe 'profiles::apache' do
         it { is_expected.to contain_user('www-data').that_comes_before('Class[apache]') }
       end
 
-      context "with mpm_module => worker, mpm_module_config => { startservers => 8, maxclients => 256 }, http2 => false, log_formats => { a => '{ client_ip: %a }', b => '{ response_bytes: %b }' }, service_status => stopped and metrics => false" do
+      context "with mpm_module => worker, mpm_module_config => { startservers => 8, maxclients => 256 }, http2 => true, log_formats => { a => '{ client_ip: %a }', b => '{ response_bytes: %b }' }, service_status => stopped and metrics => false" do
         let(:params) { {
           'mpm_module'        => 'worker',
           'mpm_module_config' => { 'startservers' => 8, 'maxclients' => 256 },
-          'http2'             => false,
+          'http2'             => true,
           'log_formats'       => { 'a' => '{ \"client_ip\": \"%a\" }', 'b' => '{ \"response_bytes\": %b }' },
           'service_status'    => 'stopped',
           'metrics'           => false
@@ -63,7 +63,7 @@ describe 'profiles::apache' do
           'manage_group'          => false,
           'manage_user'           => false,
           'default_vhost'         => true,
-          'protocols'             => ['http/1.1'],
+          'protocols'             => ['h2c', 'http/1.1'],
           'protocols_honor_order' => true,
           'service_manage'        => true,
           'service_ensure'        => 'stopped',
