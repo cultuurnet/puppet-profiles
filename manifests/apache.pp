@@ -3,9 +3,9 @@ class profiles::apache (
   Boolean                                               $mpm_enable        = true,
   Hash                                                  $mpm_module_config = {},
   Hash                                                  $log_formats       = {},
+  Boolean                                               $http2             = true,
   Boolean                                               $metrics           = true,
   Enum['running', 'stopped']                            $service_status    = 'running',
-  Array[Enum['h2', 'h2c', 'http/1.1']]                  $protocols         = ['http/1.1']
 ) inherits ::profiles {
 
   $default_log_formats = {
@@ -16,19 +16,23 @@ class profiles::apache (
   realize User['www-data']
 
   class { '::apache':
-    mpm_module     => false,
-    manage_group   => false,
-    manage_user    => false,
-    default_vhost  => true,
-    service_manage => true,
-    service_ensure => $service_status,
-    service_enable => $service_status ? {
-                        'running' => true,
-                        'stopped' => false
-                      },
-    log_formats    => $default_log_formats + $log_formats,
-    protocols      => $protocols,
-    require        => [Group['www-data'], User['www-data']]
+    mpm_module            => false,
+    manage_group          => false,
+    manage_user           => false,
+    default_vhost         => true,
+    protocols             => $http2 ? {
+                               true  => ['h2c', 'http/1.1'],
+                               false => ['http/1.1']
+                             },
+    protocols_honor_order => true,
+    service_manage        => true,
+    service_ensure        => $service_status,
+    service_enable        => $service_status ? {
+                               'running' => true,
+                               'stopped' => false
+                             },
+    log_formats           => $default_log_formats + $log_formats,
+    require               => [Group['www-data'], User['www-data']]
   }
 
   if $mpm_enable {
