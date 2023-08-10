@@ -14,6 +14,7 @@ describe 'profiles::apache' do
           'mpm_module'        => 'prefork',
           'mpm_module_config' => {},
           'log_formats'       => {},
+          'http2'             => true,
           'service_status'    => 'running',
           'metrics'           => true
         ) }
@@ -22,16 +23,18 @@ describe 'profiles::apache' do
         it { is_expected.to contain_user('www-data') }
 
         it { is_expected.to contain_class('apache').with(
-          'mpm_module'     => false,
-          'manage_group'   => false,
-          'manage_user'    => false,
-          'default_vhost'  => true,
-          'service_manage' => true,
-          'service_ensure' => 'running',
-          'service_enable' => true,
-          'log_formats'    => {
-                                'combined_json' => '{ \"client_ip\": \"%a\", \"remote_logname\": \"%l\", \"user\": \"%u\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"request\": \"%r\", \"status\": %>s, \"response_bytes\": %b, \"referer\": \"%{Referer}i\", \"user_agent\": \"%{User-Agent}i\" }'
-                              }
+          'mpm_module'            => false,
+          'manage_group'          => false,
+          'manage_user'           => false,
+          'default_vhost'         => true,
+          'protocols'             => ['h2c', 'http/1.1'],
+          'protocols_honor_order' => true,
+          'service_manage'        => true,
+          'service_ensure'        => 'running',
+          'service_enable'        => true,
+          'log_formats'           => {
+                                       'combined_json' => '{ \"client_ip\": \"%a\", \"remote_logname\": \"%l\", \"user\": \"%u\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"request\": \"%r\", \"status\": %>s, \"response_bytes\": %b, \"referer\": \"%{Referer}i\", \"user_agent\": \"%{User-Agent}i\" }'
+                                     }
         ) }
 
         it { is_expected.to contain_class('apache::mod::prefork') }
@@ -45,28 +48,31 @@ describe 'profiles::apache' do
         it { is_expected.to contain_user('www-data').that_comes_before('Class[apache]') }
       end
 
-      context "with mpm_module => worker, mpm_module_config => { startservers => 8, maxclients => 256 }, log_formats => { a => '{ client_ip: %a }', b => '{ response_bytes: %b }' }, service_status => stopped and metrics => false" do
+      context "with mpm_module => worker, mpm_module_config => { startservers => 8, maxclients => 256 }, http2 => false, log_formats => { a => '{ client_ip: %a }', b => '{ response_bytes: %b }' }, service_status => stopped and metrics => false" do
         let(:params) { {
           'mpm_module'        => 'worker',
           'mpm_module_config' => { 'startservers' => 8, 'maxclients' => 256 },
+          'http2'             => false,
           'log_formats'       => { 'a' => '{ \"client_ip\": \"%a\" }', 'b' => '{ \"response_bytes\": %b }' },
           'service_status'    => 'stopped',
           'metrics'           => false
         } }
 
         it { is_expected.to contain_class('apache').with(
-          'mpm_module'     => false,
-          'manage_group'   => false,
-          'manage_user'    => false,
-          'default_vhost'  => true,
-          'service_manage' => true,
-          'service_ensure' => 'stopped',
-          'service_enable' => false,
-          'log_formats'    => {
-                                'combined_json' => '{ \"client_ip\": \"%a\", \"remote_logname\": \"%l\", \"user\": \"%u\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"request\": \"%r\", \"status\": %>s, \"response_bytes\": %b, \"referer\": \"%{Referer}i\", \"user_agent\": \"%{User-Agent}i\" }',
-                                'a'             => '{ \"client_ip\": \"%a\" }',
-                                'b'             => '{ \"response_bytes\": %b }'
-                              }
+          'mpm_module'            => false,
+          'manage_group'          => false,
+          'manage_user'           => false,
+          'default_vhost'         => true,
+          'protocols'             => ['http/1.1'],
+          'protocols_honor_order' => true,
+          'service_manage'        => true,
+          'service_ensure'        => 'stopped',
+          'service_enable'        => false,
+          'log_formats'           => {
+                                       'combined_json' => '{ \"client_ip\": \"%a\", \"remote_logname\": \"%l\", \"user\": \"%u\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"request\": \"%r\", \"status\": %>s, \"response_bytes\": %b, \"referer\": \"%{Referer}i\", \"user_agent\": \"%{User-Agent}i\" }',
+                                       'a'             => '{ \"client_ip\": \"%a\" }',
+                                       'b'             => '{ \"response_bytes\": %b }'
+                                     }
         ) }
 
         it { is_expected.to contain_class('apache::mod::worker').with(
