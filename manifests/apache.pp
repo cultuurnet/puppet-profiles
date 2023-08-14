@@ -1,6 +1,5 @@
 class profiles::apache (
   Enum['event', 'itk', 'peruser', 'prefork', 'worker']  $mpm_module        = 'prefork',
-  Boolean                                               $mpm_enable        = true,
   Hash                                                  $mpm_module_config = {},
   Hash                                                  $log_formats       = {},
   Boolean                                               $http2             = false,
@@ -43,10 +42,8 @@ class profiles::apache (
     include apache::mod::http2
   }
 
-  if $mpm_enable {
-    class { "apache::mod::${mpm_module}":
-      * => $mpm_module_config
-    }
+  class { "apache::mod::${mpm_module}":
+    * => $mpm_module_config
   }
 
   if $metrics {
