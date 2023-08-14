@@ -37,6 +37,7 @@ describe 'profiles::apache' do
                                      }
         ) }
 
+        it { is_expected.not_to contain_class('apache::mod::http2') }
         it { is_expected.to contain_class('apache::mod::prefork') }
 
         it { is_expected.to contain_class('profiles::apache::metrics') }
@@ -75,12 +76,22 @@ describe 'profiles::apache' do
                                      }
         ) }
 
+        it { is_expected.to contain_class('apache::mod::http2') }
         it { is_expected.to contain_class('apache::mod::worker').with(
           'startservers' => 8,
           'maxclients'   => 256
         ) }
 
         it { is_expected.not_to contain_class('profiles::apache::metrics') }
+      end
+
+      context "with mpm_module => prefork and http2 => true" do
+        let(:params) { {
+          'mpm_module'        => 'prefork',
+          'http2'             => true
+        } }
+
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /The HTTP\/2 protocol is not supported with MPM module prefork/) }
       end
     end
   end

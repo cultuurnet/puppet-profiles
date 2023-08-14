@@ -8,6 +8,10 @@ class profiles::apache (
   Enum['running', 'stopped']                            $service_status    = 'running',
 ) inherits ::profiles {
 
+  if ($mpm_module == 'prefork' and $http2) {
+    fail('The HTTP/2 protocol is not supported with MPM module prefork')
+  }
+
   $default_log_formats = {
     'combined_json' => '{ \"client_ip\": \"%a\", \"remote_logname\": \"%l\", \"user\": \"%u\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"request\": \"%r\", \"status\": %>s, \"response_bytes\": %b, \"referer\": \"%{Referer}i\", \"user_agent\": \"%{User-Agent}i\" }'
   }
@@ -33,6 +37,10 @@ class profiles::apache (
                              },
     log_formats           => $default_log_formats + $log_formats,
     require               => [Group['www-data'], User['www-data']]
+  }
+
+  if $http2 {
+    include apache::mod::http2
   }
 
   if $mpm_enable {
