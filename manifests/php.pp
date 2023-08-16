@@ -1,16 +1,15 @@
 class profiles::php (
-  String                            $version                  = '7.4',
-  Hash                              $extensions               = {},
-  Hash                              $settings                 = {},
-  Optional[Integer[1, 2]]           $composer_default_version = undef,
-  Boolean                           $fpm                      = false,
-  Enum['unix_socket', 'tcp_socket'] $fpm_listen               = 'unix_socket',
-  Boolean                           $fpm_service_enable       = true,
-  String                            $fpm_service_ensure       = 'running',
-  Hash                              $fpm_global_pool_settings = {},
-  Boolean                           $newrelic_agent           = false,
-  String                            $newrelic_app_name        = $facts['networking']['fqdn'],
-  Optional[String]                  $newrelic_license_key     = undef
+  String                     $version                  = '7.4',
+  Hash                       $extensions               = {},
+  Hash                       $settings                 = {},
+  Optional[Integer[1, 2]]    $composer_default_version = undef,
+  Boolean                    $fpm                      = false,
+  Enum['unix', 'tcp']        $fpm_socket_type          = 'unix',
+  Enum['running', 'stopped'] $fpm_service_status       = 'running',
+  Hash                       $fpm_global_pool_settings = {},
+  Boolean                    $newrelic_agent           = false,
+  String                     $newrelic_app_name        = $facts['networking']['fqdn'],
+  Optional[String]           $newrelic_license_key     = undef
 ) inherits ::profiles {
 
   $default_extensions = {
@@ -42,13 +41,13 @@ class profiles::php (
     config_root => "/etc/php/${version}"
   }
 
-  case $fpm_listen {
-    'unix_socket': {
-      $listen               = "/var/run/php/php${version}-fpm.sock"
+  case $fpm_socket_type {
+    'unix': {
+      $socket               = "/var/run/php/php${version}-fpm.sock"
       $apache_proxy_handler = "SetHandler \"proxy:unix:/var/run/php/php${version}-fpm.sock|fcgi://localhost\""
     }
-    'tcp_socket': {
-      $listen               = "127.0.0.1:9000"
+    'tcp': {
+      $socket               = "127.0.0.1:9000"
       $apache_proxy_handler = "SetHandler \"proxy:fcgi://127.0.0.1:9000\""
     }
   }
@@ -59,14 +58,17 @@ class profiles::php (
     dev                      => false,
     pear                     => false,
     fpm                      => $fpm,
-    fpm_service_enable       => $fpm_service_enable,
-    fpm_service_ensure       => $fpm_service_ensure,
+    fpm_service_ensure       => $fpm_service_status,
+    fpm_service_enable       => $fpm_service_status ? {
+                                  'running' => true,
+                                  'stopped' => false
+                                },
     fpm_pools                => { 'www'  => {} }, # https://github.com/voxpupuli/puppet-php/issues/564
     fpm_global_pool_settings => {
-      listen       => $listen,
-      listen_owner => 'www-data',
-      listen_group => 'www-data'
-    },
+                                  listen       => $socket,
+                                  listen_owner => 'www-data',
+                                  listen_group => 'www-data'
+                                },
     settings                 => $settings,
     extensions               => $default_extensions + $version_dependent_default_extensions + $extensions
   }
