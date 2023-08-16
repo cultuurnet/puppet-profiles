@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'profiles::deployment::uit::frontend' do
+describe 'profiles::uit::frontend::deployment' do
   context "with config_source => /foo" do
     let(:params) { {
       'config_source'     => '/foo'
@@ -17,7 +17,7 @@ describe 'profiles::deployment::uit::frontend' do
         it { is_expected.to contain_apt__source('uit-frontend') }
 
         it { is_expected.to contain_package('uit-frontend').with( 'ensure' => 'latest') }
-        it { is_expected.to contain_package('uit-frontend').that_notifies('Profiles::Deployment::Versions[profiles::deployment::uit::frontend]') }
+        it { is_expected.to contain_package('uit-frontend').that_notifies('Profiles::Deployment::Versions[profiles::uit::frontend::deployment]') }
         it { is_expected.to contain_package('uit-frontend').that_requires('Apt::Source[uit-frontend]') }
 
         it { is_expected.to contain_file('uit-frontend-config').with(
@@ -44,7 +44,7 @@ describe 'profiles::deployment::uit::frontend' do
         context "without hieradata" do
           let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
 
-          it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::frontend').with(
+          it { is_expected.to contain_profiles__deployment__versions('profiles::uit::frontend::deployment').with(
             'puppetdb_url' => nil
           ) }
         end
@@ -52,7 +52,7 @@ describe 'profiles::deployment::uit::frontend' do
         context "with hieradata" do
           let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-          it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::frontend').with(
+          it { is_expected.to contain_profiles__deployment__versions('profiles::uit::frontend::deployment').with(
             'puppetdb_url' => 'http://localhost:8081'
           ) }
         end
@@ -103,7 +103,7 @@ describe 'profiles::deployment::uit::frontend' do
           'enable'    => false
         ) }
 
-        it { is_expected.to contain_profiles__deployment__versions('profiles::deployment::uit::frontend').with(
+        it { is_expected.to contain_profiles__deployment__versions('profiles::uit::frontend::deployment').with(
           'puppetdb_url' => 'http://example.com:8000'
         ) }
 

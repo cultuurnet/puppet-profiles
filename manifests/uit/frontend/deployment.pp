@@ -1,4 +1,4 @@
-class profiles::deployment::uit::frontend (
+class profiles::uit::frontend::deployment (
   String           $config_source,
   String           $version                 = 'latest',
   String           $uitdatabank_api_url     = 'http://localhost',
