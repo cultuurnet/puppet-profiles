@@ -1,10 +1,10 @@
 class profiles::uitpas::cid_logs (
-  String                        $hostname        = 'cidlogs.publiq.be',
-  Variant[String,Array[String]] $aliases         = 'cidmonitor.lodgon.com',
+  String                        $hostname,
+  String                        $gcs_credentials,
+  Variant[String,Array[String]] $aliases         = undef,
   Stdlib::Ipv4                  $service_address = '127.0.0.1',
   Stdlib::Port::Unprivileged    $service_port    = 8080,
-  String                        $data_dir        = '/data/cidlogs',
-  String                        $gcs_credentials
+  String                        $data_dir        = '/data/cidlogs'
 ) inherits ::profiles {
 
   realize Group['logstash']
