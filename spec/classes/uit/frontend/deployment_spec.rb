@@ -3,7 +3,7 @@ require 'spec_helper'
 describe 'profiles::uit::frontend::deployment' do
   context "with config_source => /foo" do
     let(:params) { {
-      'config_source'     => '/foo'
+      'config_source' => '/foo'
     } }
 
     include_examples 'operating system support'
@@ -15,14 +15,14 @@ describe 'profiles::uit::frontend::deployment' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::uit::frontend::deployment').with(
-          'config_source'           => '/foo',
-          'version'                 => 'latest',
-          'repository'              => 'uit-frontend',
-          'uitdatabank_api_url'     => 'http://localhost',
-          'service_status'          => 'running',
-          'service_defaults_source' => nil,
-          'maintenance_source'      => nil,
-          'deployment_source'       => nil
+          'config_source'     => '/foo',
+          'maximum_heap_size' => 512,
+          'version'           => 'latest',
+          'repository'        => 'uit-frontend',
+          'service_status'    => 'running',
+          'service_address'   => '127.0.0.1',
+          'service_port'      => 3000,
+          'puppetdb_url'      => nil
         ) }
 
         it { is_expected.to contain_apt__source('uit-frontend') }
@@ -41,7 +41,16 @@ describe 'profiles::uit::frontend::deployment' do
 
         it { is_expected.to contain_file('uit-frontend-config').that_requires('Package[uit-frontend]') }
 
-        it { is_expected.not_to contain_file('/etc/default/uit-frontend') }
+        it { is_expected.to contain_file('uit-frontend-service-defaults').with(
+          'ensure' => 'file',
+          'path'   => '/etc/default/uit-frontend',
+          'owner'  => 'root',
+          'group'  => 'root'
+        ) }
+
+        it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^HOST=127.0.0.1$/) }
+        it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NUXT_PORT=3000$/) }
+        it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NODE_OPTIONS=--max_old_space_size=512$/) }
 
         it { is_expected.to contain_service('uit-frontend').with(
           'ensure'    => 'running',
@@ -49,8 +58,9 @@ describe 'profiles::uit::frontend::deployment' do
           'hasstatus' => true
         ) }
 
-        it { is_expected.to contain_service('uit-frontend').that_requires('Package[uit-frontend]') }
+        it { is_expected.to contain_package('uit-frontend').that_notifies('Service[uit-frontend]') }
         it { is_expected.to contain_file('uit-frontend-config').that_notifies('Service[uit-frontend]') }
+        it { is_expected.to contain_file('uit-frontend-service-defaults').that_notifies('Service[uit-frontend]') }
 
         context "without hieradata" do
           let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
@@ -71,14 +81,16 @@ describe 'profiles::uit::frontend::deployment' do
     end
   end
 
-  context "with config_source => /bar, version => 1.2.3, repository => uit-frontend-exotic, service_defaults_source => /baz, service_status => stopped and puppetdb_url => http://example.com:8000" do
+  context "with config_source => /bar, maximum_heap_size => 1024, service_address => 0.0.0.0, service_port => 3456, version => 1.2.3, repository => uit-frontend-exotic, service_status => stopped and puppetdb_url => http://example.com:8000" do
     let(:params) { {
-      'config_source'           => '/bar',
-      'version'                 => '1.2.3',
-      'repository'              => 'uit-frontend-exotic',
-      'service_defaults_source' => '/baz',
-      'service_status'          => 'stopped',
-      'puppetdb_url'            => 'http://example.com:8000'
+      'config_source'     => '/bar',
+      'version'           => '1.2.3',
+      'maximum_heap_size' => 1024,
+      'repository'        => 'uit-frontend-exotic',
+      'service_status'    => 'stopped',
+      'service_address'   => '0.0.0.0',
+      'service_port'      => 3456,
+      'puppetdb_url'      => 'http://example.com:8000'
     } }
 
     on_supported_os.each do |os, facts|
@@ -94,13 +106,9 @@ describe 'profiles::uit::frontend::deployment' do
             'source' => '/bar',
           ) }
 
-          it { is_expected.to contain_file('uit-frontend-service-defaults').with(
-            'ensure' => 'file',
-            'path'   => '/etc/default/uit-frontend',
-            'source' => '/baz',
-            'owner'  => 'root',
-            'group'  => 'root'
-          ) }
+          it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^HOST=0.0.0.0$/) }
+          it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NUXT_PORT=3456$/) }
+          it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NODE_OPTIONS=--max_old_space_size=1024$/) }
 
           it { is_expected.to contain_package('uit-frontend').with( 'ensure' => '1.2.3') }
 
@@ -112,8 +120,6 @@ describe 'profiles::uit::frontend::deployment' do
           it { is_expected.to contain_profiles__deployment__versions('profiles::uit::frontend::deployment').with(
             'puppetdb_url' => 'http://example.com:8000'
           ) }
-
-          it { is_expected.to contain_file('uit-frontend-service-defaults').that_notifies('Service[uit-frontend]') }
         end
       end
     end
