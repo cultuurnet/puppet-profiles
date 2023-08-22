@@ -26,6 +26,8 @@ describe 'profiles::uit::frontend::deployment' do
         ) }
 
         it { is_expected.to contain_apt__source('uit-frontend') }
+        it { is_expected.to contain_group('www-data') }
+        it { is_expected.to contain_user('www-data') }
 
         it { is_expected.to contain_package('uit-frontend').with( 'ensure' => 'latest') }
         it { is_expected.to contain_package('uit-frontend').that_notifies('Profiles::Deployment::Versions[profiles::uit::frontend::deployment]') }
@@ -59,6 +61,8 @@ describe 'profiles::uit::frontend::deployment' do
         ) }
 
         it { is_expected.to contain_package('uit-frontend').that_notifies('Service[uit-frontend]') }
+        it { is_expected.to contain_file('uit-frontend-config').that_requires('Group[www-data]') }
+        it { is_expected.to contain_file('uit-frontend-config').that_requires('User[www-data]') }
         it { is_expected.to contain_file('uit-frontend-config').that_notifies('Service[uit-frontend]') }
         it { is_expected.to contain_file('uit-frontend-service-defaults').that_notifies('Service[uit-frontend]') }
 

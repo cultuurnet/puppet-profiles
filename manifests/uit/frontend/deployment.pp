@@ -12,10 +12,12 @@ class profiles::uit::frontend::deployment (
   $basedir = '/var/www/uit-frontend'
 
   realize Apt::Source[$repository]
+  realize Group['www-data']
+  realize User['www-data']
 
   package { 'uit-frontend':
     ensure  => $version,
-    notify  => Profiles::Deployment::Versions[$title],
+    notify  => [Profiles::Deployment::Versions[$title], Service['uit-frontend']],
     require => Apt::Source[$repository]
   }
 
@@ -25,7 +27,8 @@ class profiles::uit::frontend::deployment (
     owner   => 'www-data',
     group   => 'www-data',
     source  => $config_source,
-    require => Package['uit-frontend']
+    require => [Package['uit-frontend'], Group['www-data'], User['www-data']],
+    notify  => Service['uit-frontend']
   }
 
   file { 'uit-frontend-service-defaults':
@@ -43,7 +46,6 @@ class profiles::uit::frontend::deployment (
                    'running' => true,
                    'stopped' => false
                  },
-    subscribe => [Package['uit-frontend'], File['uit-frontend-config']],
     hasstatus => true
   }
 
