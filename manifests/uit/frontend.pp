@@ -15,7 +15,7 @@ class profiles::uit::frontend (
                        comment      => 'Serve brotli compressed assets for supported clients',
                        rewrite_cond => [
                                          '%{HTTP:Accept-encoding} "br"',
-                                         "${basedir}/packages/app/.output/public%{REQUEST_FILENAME}\.br -f",
+                                         "${basedir}/packages/app/.output/public%{REQUEST_FILENAME}.br -f",
                                        ],
                        rewrite_rule => "^/(css/|img/|js/|icons/|_nuxt/)(.*)\$ ${basedir}/packages/app/.output/public/\$1\$2.br [E=brotli]"
                      }, {
