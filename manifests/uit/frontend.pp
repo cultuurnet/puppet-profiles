@@ -1,13 +1,13 @@
 class profiles::uit::frontend (
-  String                    $servername,
-  Array[String]             $serveraliases           = [],
-  Boolean                   $deployment              = true,
-  Stdlib::Ipv4              $service_address         = '127.0.0.1',
-  Integer                   $service_port            = 3000,
-  Optional[String]          $redirect_source         = undef,
-  Optional[Stdlib::HTTPUrl] $uitdatabank_api_url     = undef,
-  Optional[String]          $maintenance_page_source = undef,
-  Optional[String]          $deployment_page_source  = undef
+  String                        $servername,
+  Variant[String,Array[String]] $serveraliases           = [],
+  Boolean                       $deployment              = true,
+  Stdlib::Ipv4                  $service_address         = '127.0.0.1',
+  Integer                       $service_port            = 3000,
+  Optional[String]              $redirect_source         = undef,
+  Optional[Stdlib::HTTPUrl]     $uitdatabank_api_url     = undef,
+  Optional[String]              $maintenance_page_source = undef,
+  Optional[String]              $deployment_page_source  = undef
 ) inherits ::profiles {
 
   $basedir = '/var/www/uit-frontend'
@@ -127,7 +127,7 @@ class profiles::uit::frontend (
 
   apache::vhost { "${servername}_80":
     servername         => $servername,
-    serveraliases      => $serveraliases,
+    serveraliases      => [$serveraliases].flatten,
     docroot            => $basedir,
     manage_docroot     => false,
     request_headers    => [
