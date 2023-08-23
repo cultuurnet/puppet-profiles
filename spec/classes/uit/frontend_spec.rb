@@ -88,7 +88,7 @@ describe 'profiles::uit::frontend' do
                                       }],
               'proxy_pass'         => [{
                                         'path'                => '/',
-                                        'url'                 => 'http://127.0.0.1:3000',
+                                        'url'                 => 'http://127.0.0.1:3000/',
                                         'no_proxy_uris'       => [],
                                         'no_proxy_uris_match' => ['^/(css/|img/|js/|icons/|_nuxt/|sw.js)']
                                       }],

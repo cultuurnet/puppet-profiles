@@ -155,7 +155,7 @@ class profiles::uit::frontend (
                           }],
     proxy_pass         => [{
                             path                => '/',
-                            url                 => "http://${service_address}:${service_port}",
+                            url                 => "http://${service_address}:${service_port}/",
                             no_proxy_uris       => [$maintenance_page_location, $deployment_page_location].filter |$item| { $item },
                             no_proxy_uris_match => ['^/(css/|img/|js/|icons/|_nuxt/|sw.js)']
                           }],
