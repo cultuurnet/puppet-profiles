@@ -10,8 +10,22 @@ class profiles::uit::frontend (
   Optional[String]              $deployment_page_source  = undef
 ) inherits ::profiles {
 
-  $basedir = '/var/www/uit-frontend'
-
+  $basedir         = '/var/www/uit-frontend'
+  $rewrites_brotli = [{
+                       comment      => 'Serve brotli compressed assets for supported clients',
+                       rewrite_cond => [
+                                         '%{HTTP:Accept-encoding} "br"',
+                                         "${basedir}/packages/app/.output/public%{REQUEST_FILENAME}\.br -f",
+                                       ],
+                       rewrite_rule => "^/(css/|img/|js/|icons/|_nuxt/)(.*)\$ ${basedir}/packages/app/.output/public/\$1\$2.br [E=brotli,L]"
+                     }, {
+                       comment      => 'Do not compress pre-compressed brotli content in transfer',
+                       rewrite_rule => [
+                                         '\.css\.br$ - [T=text/css,E=no-gzip:1,E=no-brotli:1]',
+                                         '\.js\.br$ - [T=text/javascript,E=no-gzip:1,E=no-brotli:1]',
+                                         '\.svg\.br$ - [T=image/svg+xml,E=no-gzip:1,E=no-brotli:1]'
+                                       ]
+                     }]
   realize Group['www-data']
   realize User['www-data']
 
@@ -163,7 +177,11 @@ class profiles::uit::frontend (
                             aliasmatch => '^/(css/|img/|js/|icons/|_nuxt/|sw.js)(.*)$',
                             path       => "${basedir}/packages/app/.output/public/\$1\$2"
                           }],
-    rewrites           => [ $rewrite_maintenance_page, $rewrite_deployment_page ].filter |$item| { $item },
+    rewrites           => $rewrites_brotli + [ $rewrite_maintenance_page, $rewrite_deployment_page ].filter |$item| { $item },
+    headers            => [
+                            'append Content-Encoding "br" "env=brotli"',
+                            'append Vary "Accept-Encoding" "env=brotli"'
+                          ],
     error_documents    => [ $error_document_maintenance_page, $error_document_deployment_page ].filter |$item| { $item },
     custom_fragment    => $vhost_custom_fragment,
     setenvif           => [

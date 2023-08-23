@@ -65,7 +65,6 @@ describe 'profiles::uit::frontend' do
               'port'               => 80,
               'access_log_env_var' => '!nolog',
               'custom_fragment'    => nil,
-              'rewrites'           => [],
               'error_documents'    => [],
               'request_headers'    => ['unset Proxy early'],
               'directories'        => [{
@@ -92,6 +91,25 @@ describe 'profiles::uit::frontend' do
                                         'no_proxy_uris'       => [],
                                         'no_proxy_uris_match' => ['^/(css/|img/|js/|icons/|_nuxt/|sw.js)']
                                       }],
+              'rewrites'           => [{
+                                        'comment'      => 'Serve brotli compressed assets for supported clients',
+                                        'rewrite_cond' => [
+                                                            '%{HTTP:Accept-encoding} "br"',
+                                                            '/var/www/uit-frontend/packages/app/.output/public%{REQUEST_FILENAME}\.br -f'
+                                                          ],
+                                        'rewrite_rule' => '^/(css/|img/|js/|icons/|_nuxt/)(.*)$ /var/www/uit-frontend/packages/app/.output/public/$1$2.br [E=brotli,L]'
+                                      }, {
+                                        'comment'      => 'Do not compress pre-compressed brotli content in transfer',
+                                        'rewrite_rule' => [
+                                                            '\.css\.br$ - [T=text/css,E=no-gzip:1,E=no-brotli:1]',
+                                                            '\.js\.br$ - [T=text/javascript,E=no-gzip:1,E=no-brotli:1]',
+                                                            '\.svg\.br$ - [T=image/svg+xml,E=no-gzip:1,E=no-brotli:1]'
+                                                          ]
+                                      }],
+              'headers'            => [
+                                        'append Content-Encoding "br" "env=brotli"',
+                                        'append Vary "Accept-Encoding" "env=brotli"'
+                                      ],
               'setenvif'           => [
                                         'X-Forwarded-Proto "https" HTTPS=on',
                                         'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
