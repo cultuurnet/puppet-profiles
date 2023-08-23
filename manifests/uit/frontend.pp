@@ -17,7 +17,7 @@ class profiles::uit::frontend (
                                          '%{HTTP:Accept-encoding} "br"',
                                          "${basedir}/packages/app/.output/public%{REQUEST_FILENAME}\.br -f",
                                        ],
-                       rewrite_rule => "^/(css/|img/|js/|icons/|_nuxt/)(.*)\$ ${basedir}/packages/app/.output/public/\$1\$2.br [E=brotli,L]"
+                       rewrite_rule => "^/(css/|img/|js/|icons/|_nuxt/)(.*)\$ ${basedir}/packages/app/.output/public/\$1\$2.br [E=brotli]"
                      }, {
                        comment      => 'Do not compress pre-compressed brotli content in transfer',
                        rewrite_rule => [
@@ -177,7 +177,7 @@ class profiles::uit::frontend (
                             aliasmatch => '^/(css/|img/|js/|icons/|_nuxt/|sw.js)(.*)$',
                             path       => "${basedir}/packages/app/.output/public/\$1\$2"
                           }],
-    rewrites           => $rewrites_brotli + [ $rewrite_maintenance_page, $rewrite_deployment_page ].filter |$item| { $item },
+    rewrites           => [ $rewrite_maintenance_page, $rewrite_deployment_page ].filter |$item| { $item } + $rewrites_brotli,
     headers            => [
                             'append Content-Encoding "br" "env=brotli"',
                             'append Vary "Accept-Encoding" "env=brotli"'

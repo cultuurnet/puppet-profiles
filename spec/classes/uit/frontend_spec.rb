@@ -97,7 +97,7 @@ describe 'profiles::uit::frontend' do
                                                             '%{HTTP:Accept-encoding} "br"',
                                                             '/var/www/uit-frontend/packages/app/.output/public%{REQUEST_FILENAME}\.br -f'
                                                           ],
-                                        'rewrite_rule' => '^/(css/|img/|js/|icons/|_nuxt/)(.*)$ /var/www/uit-frontend/packages/app/.output/public/$1$2.br [E=brotli,L]'
+                                        'rewrite_rule' => '^/(css/|img/|js/|icons/|_nuxt/)(.*)$ /var/www/uit-frontend/packages/app/.output/public/$1$2.br [E=brotli]'
                                       }, {
                                         'comment'      => 'Do not compress pre-compressed brotli content in transfer',
                                         'rewrite_rule' => [
