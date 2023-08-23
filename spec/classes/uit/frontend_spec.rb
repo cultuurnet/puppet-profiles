@@ -95,7 +95,7 @@ describe 'profiles::uit::frontend' do
                                         'comment'      => 'Serve brotli compressed assets for supported clients',
                                         'rewrite_cond' => [
                                                             '%{HTTP:Accept-encoding} "br"',
-                                                            '/var/www/uit-frontend/packages/app/.output/public%{REQUEST_FILENAME}\.br -f'
+                                                            '/var/www/uit-frontend/packages/app/.output/public%{REQUEST_FILENAME}.br -f'
                                                           ],
                                         'rewrite_rule' => '^/(css/|img/|js/|icons/|_nuxt/)(.*)$ /var/www/uit-frontend/packages/app/.output/public/$1$2.br [E=brotli]'
                                       }, {
