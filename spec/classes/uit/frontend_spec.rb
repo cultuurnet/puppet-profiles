@@ -36,6 +36,7 @@ describe 'profiles::uit::frontend' do
 
             it { is_expected.to contain_group('www-data') }
             it { is_expected.to contain_user('www-data') }
+            it { is_expected.to contain_firewall('300 accept HTTP traffic') }
 
             it { is_expected.to contain_class('profiles::nodejs') }
             it { is_expected.to contain_class('profiles::apache') }

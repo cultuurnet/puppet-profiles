@@ -15,6 +15,7 @@ class profiles::uit::frontend (
   realize Group['www-data']
   realize User['www-data']
 
+  include ::profiles::firewall::rules
   include ::profiles::nodejs
   include ::profiles::apache
 
@@ -124,6 +125,8 @@ class profiles::uit::frontend (
     Class['profiles::nodejs'] -> Class['profiles::uit::frontend::deployment']
     Class['profiles::uit::frontend::deployment'] -> Apache::Vhost["${servername}_80"]
   }
+
+  realize Firewall['300 accept HTTP traffic']
 
   apache::vhost { "${servername}_80":
     servername         => $servername,
