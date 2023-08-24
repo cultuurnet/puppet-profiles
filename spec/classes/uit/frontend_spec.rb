@@ -99,16 +99,25 @@ describe 'profiles::uit::frontend' do
                                                           ],
                                         'rewrite_rule' => '^/(css/|img/|js/|icons/|_nuxt/)(.*)$ /var/www/uit-frontend/packages/app/.output/public/$1$2.br [E=brotli]'
                                       }, {
-                                        'comment'      => 'Do not compress pre-compressed brotli content in transfer',
+                                        'comment'      => 'Serve gzip compressed assets for supported clients',
+                                        'rewrite_cond' => [
+                                                            '%{HTTP:Accept-encoding} "gzip"',
+                                                            '/var/www/uit-frontend/packages/app/.output/public%{REQUEST_FILENAME}.gz -f'
+                                                          ],
+                                        'rewrite_rule' => '^/(css/|img/|js/|icons/|_nuxt/)(.*)$ /var/www/uit-frontend/packages/app/.output/public/$1$2.gz [E=gzip]'
+                                      }, {
+                                        'comment'      => 'Do not compress pre-compressed content in transfer',
                                         'rewrite_rule' => [
-                                                            '\.css\.br$ - [T=text/css,E=no-gzip:1,E=no-brotli:1]',
-                                                            '\.js\.br$ - [T=text/javascript,E=no-gzip:1,E=no-brotli:1]',
-                                                            '\.svg\.br$ - [T=image/svg+xml,E=no-gzip:1,E=no-brotli:1]'
+                                                            '\.css\.(gz|br)$ - [T=text/css,E=no-gzip:1,E=no-brotli:1]',
+                                                            '\.js\.(gz|br)$ - [T=text/javascript,E=no-gzip:1,E=no-brotli:1]',
+                                                            '\.svg\.(gz|br)$ - [T=image/svg+xml,E=no-gzip:1,E=no-brotli:1]'
                                                           ]
                                       }],
               'headers'            => [
                                         'append Content-Encoding "br" "env=brotli"',
-                                        'append Vary "Accept-Encoding" "env=brotli"'
+                                        'append Content-Encoding "gzip" "env=gzip"',
+                                        'append Vary "Accept-Encoding" "env=brotli"',
+                                        'append Vary "Accept-Encoding" "env=gzip"'
                                       ],
               'setenvif'           => [
                                         'X-Forwarded-Proto "https" HTTPS=on',
