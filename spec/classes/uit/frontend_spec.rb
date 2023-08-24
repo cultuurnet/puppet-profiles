@@ -23,15 +23,15 @@ describe 'profiles::uit::frontend' do
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to contain_class('profiles::uit::frontend').with(
-              'servername'              => 'foo.example.com',
-              'serveraliases'           => [],
-              'deployment'              => true,
-              'service_address'         => '127.0.0.1',
-              'service_port'            => 3000,
-              'redirect_source'         => nil,
-              'uitdatabank_api_url'     => nil,
-              'maintenance_page_source' => nil,
-              'deployment_page_source'  => nil
+              'servername'          => 'foo.example.com',
+              'serveraliases'       => [],
+              'deployment'          => true,
+              'service_address'     => '127.0.0.1',
+              'service_port'        => 3000,
+              'redirect_source'     => nil,
+              'uitdatabank_api_url' => nil,
+              'maintenance_page'    => false,
+              'deployment_page'     => false
             ) }
 
             it { is_expected.to contain_group('www-data') }

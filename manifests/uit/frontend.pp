@@ -1,13 +1,13 @@
 class profiles::uit::frontend (
   String                        $servername,
-  Variant[String,Array[String]] $serveraliases           = [],
-  Boolean                       $deployment              = true,
-  Stdlib::Ipv4                  $service_address         = '127.0.0.1',
-  Integer                       $service_port            = 3000,
-  Optional[String]              $redirect_source         = undef,
-  Optional[Stdlib::HTTPUrl]     $uitdatabank_api_url     = undef,
-  Optional[String]              $maintenance_page_source = undef,
-  Optional[String]              $deployment_page_source  = undef
+  Variant[String,Array[String]] $serveraliases       = [],
+  Boolean                       $deployment          = true,
+  Stdlib::Ipv4                  $service_address     = '127.0.0.1',
+  Integer                       $service_port        = 3000,
+  Optional[String]              $redirect_source     = undef,
+  Optional[Stdlib::HTTPUrl]     $uitdatabank_api_url = undef,
+  Boolean                       $maintenance_page    = false,
+  Boolean                       $deployment_page     = false
 ) inherits ::profiles {
 
   $basedir              = '/var/www/uit-frontend'
@@ -79,28 +79,29 @@ class profiles::uit::frontend (
     $vhost_custom_fragment = undef
   }
 
-  if $maintenance_page_source {
-    $maintenance_page_location       = '/maintenance'
+  if $maintenance_page {
+    $maintenance_page_location       = '/maintenance/'
     $maintenance_error_code          = 503
     $rewrite_maintenance_page        = {
                                          comment      => 'Maintenance page',
                                          rewrite_cond => [
-                                                           "%{DOCUMENT_ROOT}${maintenance_page_location}/maintenance.html -f",
+                                                           "%{DOCUMENT_ROOT}${maintenance_page_location}index.html -f",
                                                            '%{DOCUMENT_ROOT}/maintenance.enabled -f',
-                                                           "%{REQUEST_URI} !^${maintenance_page_location}/"
+                                                           "%{REQUEST_URI} !^${maintenance_page_location}"
                                                          ],
                                          rewrite_rule => "^ - [R=${maintenance_error_code},L]"
                                        }
     $error_document_maintenance_page = {
                                          error_code => $maintenance_error_code,
-                                         document   => "${maintenance_page_location}/maintenance.html"
+                                         document   => "${maintenance_page_location}index.html"
                                        }
 
     file { 'uit-maintenance-page':
       ensure  => 'directory',
       path    => "${basedir}${maintenance_page_location}",
       recurse => true,
-      source  => $maintenance_source,
+      purge   => true,
+      source  => 'puppet:///modules/profiles/uit/frontend/maintenance',
       owner   => 'www-data',
       group   => 'www-data',
       require => [File[$basedir], Group['www-data'], User['www-data']]
@@ -111,36 +112,36 @@ class profiles::uit::frontend (
     $error_document_maintenance_page = undef
   }
 
-  if $deployment_page_source {
-    $deployment_page_location       = '/deployment'
+  if $deployment_page {
+    $deployment_page_location       = '/deployment/'
     $deployment_error_code          = 504
     $rewrite_deployment_page        = {
                                         comment      => 'Deployment in progress page',
                                         rewrite_cond => [
-                                                          "%{DOCUMENT_ROOT}${deployment_page_location}/deployment.html -f",
+                                                          "%{DOCUMENT_ROOT}${deployment_page_location}index.html -f",
                                                           '%{DOCUMENT_ROOT}/api.deployment.enabled -f [OR]',
                                                           '%{DOCUMENT_ROOT}/frontend.deployment.enabled -f [OR]',
                                                           '%{DOCUMENT_ROOT}/cms.deployment.enabled -f [OR]',
                                                           '%{DOCUMENT_ROOT}/deployment.enabled -f',
-                                                          "%{REQUEST_URI} !^${deployment_page_location}/"
+                                                          "%{REQUEST_URI} !^${deployment_page_location}"
                                                         ],
                                         rewrite_rule => "^ - [R=${deployment_error_code},L]"
                                       }
     $error_document_deployment_page = {
                                         error_code => $deployment_error_code,
-                                        document   => "${deployment_page_location}/deployment.html"
+                                        document   => "${deployment_page_location}index.html"
                                       }
 
     file { 'uit-deployment-page':
       ensure  => 'directory',
       path    => "${basedir}${deployment_page_location}",
       recurse => true,
-      source  => $deployment_source,
+      purge   => true,
+      source  => 'puppet:///modules/profiles/uit/frontend/deployment',
       owner   => 'www-data',
       group   => 'www-data',
       require => [File[$basedir], Group['www-data'], User['www-data']]
     }
-
   } else {
     $deployment_page_location       = undef
     $rewrite_deployment_page        = undef
