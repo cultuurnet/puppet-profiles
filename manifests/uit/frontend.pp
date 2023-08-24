@@ -33,6 +33,13 @@ class profiles::uit::frontend (
                                               '\.svg\.(gz|br)$ - [T=image/svg+xml,E=no-gzip:1,E=no-brotli:1]'
                                             ]
                           }]
+  $headers_compression  = [
+                            'append Content-Encoding "br" "env=brotli"',
+                            'append Content-Encoding "gzip" "env=gzip"',
+                            'append Vary "Accept-Encoding" "env=brotli"',
+                            'append Vary "Accept-Encoding" "env=gzip"'
+                          ]
+
   realize Group['www-data']
   realize User['www-data']
 
@@ -185,12 +192,7 @@ class profiles::uit::frontend (
                             path       => "${basedir}/packages/app/.output/public/\$1\$2"
                           }],
     rewrites           => [ $rewrite_maintenance_page, $rewrite_deployment_page ].filter |$item| { $item } + $rewrites_compression,
-    headers            => [
-                            'append Content-Encoding "br" "env=brotli"',
-                            'append Content-Encoding "gzip" "env=gzip"',
-                            'append Vary "Accept-Encoding" "env=brotli"',
-                            'append Vary "Accept-Encoding" "env=gzip"'
-                          ],
+    headers            => $headers_compression,
     error_documents    => [ $error_document_maintenance_page, $error_document_deployment_page ].filter |$item| { $item },
     custom_fragment    => $vhost_custom_fragment,
     setenvif           => [
