@@ -162,8 +162,21 @@ describe 'profiles::uit::frontend' do
               'service_port'    => 7000
             ) }
 
-            it { is_expected.to contain_file('uit-frontend-redirects') }
-            it { is_expected.to contain_file('uit-frontend-migration-script') }
+            it { is_expected.to contain_file('uit-frontend-migration-script').with(
+              'ensure'  => 'file',
+              'path'    => '/var/www/uit-frontend/migrate.sh',
+              'owner'   => 'www-data',
+              'group'   => 'www-data',
+              'mode'    => '0755'
+            ) }
+
+            it { is_expected.to contain_file('uit-frontend-redirects').with(
+              'ensure'  => 'file',
+              'path'    => '/var/www/uit-frontend/.redirect',
+              'owner'   => 'www-data',
+              'group'   => 'www-data',
+              'source'  => '/tmp/foo'
+            ) }
 
             it { is_expected.to contain_file('uit-maintenance-page').with(
               'ensure'  => 'directory',
@@ -243,6 +256,12 @@ describe 'profiles::uit::frontend' do
                                       }]
             ) }
 
+            it { is_expected.to contain_file('uit-frontend-migration-script').that_requires('File[/var/www/uit-frontend]') }
+            it { is_expected.to contain_file('uit-frontend-migration-script').that_requires('Group[www-data]') }
+            it { is_expected.to contain_file('uit-frontend-migration-script').that_requires('User[www-data]') }
+            it { is_expected.to contain_file('uit-frontend-redirects').that_requires('File[/var/www/uit-frontend]') }
+            it { is_expected.to contain_file('uit-frontend-redirects').that_requires('Group[www-data]') }
+            it { is_expected.to contain_file('uit-frontend-redirects').that_requires('User[www-data]') }
             it { is_expected.to contain_file('uit-maintenance-page').that_requires('File[/var/www/uit-frontend]') }
             it { is_expected.to contain_file('uit-maintenance-page').that_requires('Group[www-data]') }
             it { is_expected.to contain_file('uit-maintenance-page').that_requires('User[www-data]') }
