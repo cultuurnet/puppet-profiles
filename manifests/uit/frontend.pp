@@ -5,7 +5,6 @@ class profiles::uit::frontend (
   Stdlib::Ipv4                  $service_address     = '127.0.0.1',
   Integer                       $service_port        = 3000,
   Optional[String]              $redirect_source     = undef,
-  Optional[Stdlib::HTTPUrl]     $uitdatabank_api_url = undef,
   Boolean                       $maintenance_page    = false,
   Boolean                       $deployment_page     = false
 ) inherits ::profiles {

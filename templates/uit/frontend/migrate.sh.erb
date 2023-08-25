@@ -1,6 +1,20 @@
 #!/bin/bash
 
+environment=<%= @environment %>
+
+case ${environment} in
+    'acceptance' )
+        uitdatabank_api_url='https://io-acc.uitdatabank.be'
+        ;;
+    'testing' )
+        uitdatabank_api_url='https://io-test.uitdatabank.be'
+        ;;
+    'production' )
+        uitdatabank_api_url='https://io.uitdatabank.be'
+        ;;
+esac
+
 while read cdbid
 do
-        if `curl -q --fail <%= @uitdatabank_api_url %>/organizers/${cdbid} > /dev/null 2>&1`; then echo "o"; else echo "l"; fi
+        if `curl -q --fail ${uitdatabank_api_url}/organizers/${cdbid} > /dev/null 2>&1`; then echo "o"; else echo "l"; fi
 done
