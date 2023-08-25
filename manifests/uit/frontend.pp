@@ -149,7 +149,10 @@ class profiles::uit::frontend (
   }
 
   if $deployment {
-    include ::profiles::uit::frontend::deployment
+    class { 'profiles::uit::frontend::deployment':
+      service_address => $service_address,
+      service_port    => $service_port
+    }
 
     Class['profiles::nodejs'] -> Class['profiles::uit::frontend::deployment']
     Class['profiles::uit::frontend::deployment'] -> Apache::Vhost["${servername}_80"]

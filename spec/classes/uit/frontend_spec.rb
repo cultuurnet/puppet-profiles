@@ -141,6 +141,117 @@ describe 'profiles::uit::frontend' do
           end
         end
 
+        context "with service_address => 127.0.1.1, service_port => 7000, redirect_source => /tmp/foo, maintenance_page => true and deployment_page => true" do
+          let(:params) {
+            super().merge( {
+              'service_address'  => '127.0.1.1',
+              'service_port'     => 7000,
+              'redirect_source'  => '/tmp/foo',
+              'maintenance_page' => true,
+              'deployment_page'  => true
+            } )
+          }
+
+          context "with hieradata" do
+            let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
+            it { is_expected.to compile.with_all_deps }
+
+            it { is_expected.to contain_class('profiles::uit::frontend::deployment').with(
+              'service_address' => '127.0.1.1',
+              'service_port'    => 7000
+            ) }
+
+            it { is_expected.to contain_file('uit-frontend-redirects') }
+            it { is_expected.to contain_file('uit-frontend-migration-script') }
+
+            it { is_expected.to contain_file('uit-maintenance-page').with(
+              'ensure'  => 'directory',
+              'path'    => '/var/www/uit-frontend/maintenance/',
+              'recurse' => true,
+              'purge'   => true,
+              'source'  => 'puppet:///modules/profiles/uit/frontend/maintenance',
+              'owner'   => 'www-data',
+              'group'   => 'www-data'
+            ) }
+
+            it { is_expected.to contain_file('uit-deployment-page').with(
+              'ensure'  => 'directory',
+              'path'    => '/var/www/uit-frontend/deployment/',
+              'recurse' => true,
+              'purge'   => true,
+              'source'  => 'puppet:///modules/profiles/uit/frontend/deployment',
+              'owner'   => 'www-data',
+              'group'   => 'www-data'
+            ) }
+
+            it { is_expected.to contain_apache__vhost('foo.example.com_80').with(
+              'custom_fragment'    => 'Include /var/www/uit-frontend/.redirect',
+              'error_documents'    => [{
+                                        'error_code' => 503,
+                                        'document'   => '/maintenance/index.html'
+                                      }, {
+                                        'error_code' => 504,
+                                        'document'   => '/deployment/index.html'
+                                      }],
+              'proxy_pass'         => [{
+                                        'path'                => '/',
+                                        'url'                 => 'http://127.0.1.1:7000/',
+                                        'no_proxy_uris'       => ['/maintenance/', '/deployment/'],
+                                        'no_proxy_uris_match' => ['^/(css/|img/|js/|icons/|_nuxt/|sw.js)']
+                                      }],
+              'rewrites'           => [{
+                                        'comment'      => 'Maintenance page',
+                                        'rewrite_cond' => [
+                                                            '%{DOCUMENT_ROOT}/maintenance/index.html -f',
+                                                            '%{DOCUMENT_ROOT}/maintenance.enabled -f',
+                                                            '%{REQUEST_URI} !^/maintenance/'
+                                                          ],
+                                        'rewrite_rule' => '^ - [R=503,L]'
+                                      }, {
+                                        'comment'      => 'Deployment in progress page',
+                                        'rewrite_cond' => [
+                                                            '%{DOCUMENT_ROOT}/deployment/index.html -f',
+                                                            '%{DOCUMENT_ROOT}/api.deployment.enabled -f [OR]',
+                                                            '%{DOCUMENT_ROOT}/frontend.deployment.enabled -f [OR]',
+                                                            '%{DOCUMENT_ROOT}/cms.deployment.enabled -f [OR]',
+                                                            '%{DOCUMENT_ROOT}/deployment.enabled -f',
+                                                            '%{REQUEST_URI} !^/deployment/'
+                                                          ],
+                                        'rewrite_rule' => '^ - [R=504,L]'
+                                      }, {
+                                        'comment'      => 'Serve brotli compressed assets for supported clients',
+                                        'rewrite_cond' => [
+                                                            '%{HTTP:Accept-encoding} "br"',
+                                                            '/var/www/uit-frontend/packages/app/.output/public%{REQUEST_FILENAME}.br -f'
+                                                          ],
+                                        'rewrite_rule' => '^/(css/|img/|js/|icons/|_nuxt/)(.*)$ /var/www/uit-frontend/packages/app/.output/public/$1$2.br [E=brotli]'
+                                      }, {
+                                        'comment'      => 'Serve gzip compressed assets for supported clients',
+                                        'rewrite_cond' => [
+                                                            '%{HTTP:Accept-encoding} "gzip"',
+                                                            '/var/www/uit-frontend/packages/app/.output/public%{REQUEST_FILENAME}.gz -f'
+                                                          ],
+                                        'rewrite_rule' => '^/(css/|img/|js/|icons/|_nuxt/)(.*)$ /var/www/uit-frontend/packages/app/.output/public/$1$2.gz [E=gzip]'
+                                      }, {
+                                        'comment'      => 'Do not compress pre-compressed content in transfer',
+                                        'rewrite_rule' => [
+                                                            '\.css\.(gz|br)$ - [T=text/css,E=no-gzip:1,E=no-brotli:1]',
+                                                            '\.js\.(gz|br)$ - [T=text/javascript,E=no-gzip:1,E=no-brotli:1]',
+                                                            '\.svg\.(gz|br)$ - [T=image/svg+xml,E=no-gzip:1,E=no-brotli:1]'
+                                                          ]
+                                      }]
+            ) }
+
+            it { is_expected.to contain_file('uit-maintenance-page').that_requires('File[/var/www/uit-frontend]') }
+            it { is_expected.to contain_file('uit-maintenance-page').that_requires('Group[www-data]') }
+            it { is_expected.to contain_file('uit-maintenance-page').that_requires('User[www-data]') }
+            it { is_expected.to contain_file('uit-deployment-page').that_requires('File[/var/www/uit-frontend]') }
+            it { is_expected.to contain_file('uit-deployment-page').that_requires('Group[www-data]') }
+            it { is_expected.to contain_file('uit-deployment-page').that_requires('User[www-data]') }
+          end
+        end
+
         context "with deployment => false" do
           let(:params) {
             super().merge( {

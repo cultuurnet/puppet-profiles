@@ -4,8 +4,8 @@ class profiles::uit::frontend::deployment (
   String                     $version           = 'latest',
   String                     $repository        = 'uit-frontend',
   Enum['running', 'stopped'] $service_status    = 'running',
-  Stdlib::Ipv4               $service_address   = lookup('profiles::uit::frontend::service_address', Stdlib::Ipv4, 'first', '127.0.0.1'),
-  Integer                    $service_port      = lookup('profiles::uit::frontend::service_port', Integer, 'first', 3000),
+  Stdlib::Ipv4               $service_address   = '127.0.0.1',
+  Integer                    $service_port      = 3000,
   Optional[String]           $puppetdb_url      = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
