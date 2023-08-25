@@ -127,7 +127,6 @@ describe 'profiles::uit::frontend' do
 
             it { is_expected.to contain_file('/var/www/uit-frontend').that_requires('Group[www-data]') }
             it { is_expected.to contain_file('/var/www/uit-frontend').that_requires('User[www-data]') }
-            it { is_expected.to contain_file('/var/www/uit-frontend').that_requires('Class[profiles::apache]') }
             it { is_expected.to contain_class('profiles::uit::frontend::deployment').that_requires('Class[profiles::nodejs]') }
             it { is_expected.to contain_apache__vhost('foo.example.com_80').that_requires('Class[profiles::uit::frontend::deployment]') }
             it { is_expected.to contain_apache__vhost('foo.example.com_80').that_requires('Class[profiles::apache]') }
@@ -259,9 +258,11 @@ describe 'profiles::uit::frontend' do
             it { is_expected.to contain_file('uit-frontend-migration-script').that_requires('File[/var/www/uit-frontend]') }
             it { is_expected.to contain_file('uit-frontend-migration-script').that_requires('Group[www-data]') }
             it { is_expected.to contain_file('uit-frontend-migration-script').that_requires('User[www-data]') }
+            it { is_expected.to contain_file('uit-frontend-migration-script').that_notifies('Class[profiles::apache]') }
             it { is_expected.to contain_file('uit-frontend-redirects').that_requires('File[/var/www/uit-frontend]') }
             it { is_expected.to contain_file('uit-frontend-redirects').that_requires('Group[www-data]') }
             it { is_expected.to contain_file('uit-frontend-redirects').that_requires('User[www-data]') }
+            it { is_expected.to contain_file('uit-frontend-redirects').that_notifies('Class[profiles::apache]') }
             it { is_expected.to contain_file('uit-maintenance-page').that_requires('File[/var/www/uit-frontend]') }
             it { is_expected.to contain_file('uit-maintenance-page').that_requires('Group[www-data]') }
             it { is_expected.to contain_file('uit-maintenance-page').that_requires('User[www-data]') }

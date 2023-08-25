@@ -50,7 +50,7 @@ class profiles::uit::frontend (
     ensure  => 'directory',
     owner   => 'www-data',
     group   => 'www-data',
-    require => [Group['www-data'], User['www-data'], Class['profiles::apache']]
+    require => [Group['www-data'], User['www-data']]
   }
 
   if $redirect_source {
@@ -61,7 +61,8 @@ class profiles::uit::frontend (
       group   => 'www-data',
       mode    => '0755',
       content => template('profiles/uit/frontend/migrate.sh.erb'),
-      require => [File[$basedir], Group['www-data'], User['www-data']]
+      require => [File[$basedir], Group['www-data'], User['www-data']],
+      notify  => Class['profiles::apache']
     }
 
     file { 'uit-frontend-redirects':
@@ -70,7 +71,8 @@ class profiles::uit::frontend (
       owner   => 'www-data',
       group   => 'www-data',
       source  => $redirect_source,
-      require => [File[$basedir], Group['www-data'], User['www-data']]
+      require => [File[$basedir], Group['www-data'], User['www-data']],
+      notify  => Class['profiles::apache']
     }
 
     $vhost_custom_fragment = "Include ${basedir}/.redirect"
