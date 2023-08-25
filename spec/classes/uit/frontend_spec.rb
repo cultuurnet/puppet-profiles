@@ -258,11 +258,11 @@ describe 'profiles::uit::frontend' do
             it { is_expected.to contain_file('uit-frontend-migration-script').that_requires('File[/var/www/uit-frontend]') }
             it { is_expected.to contain_file('uit-frontend-migration-script').that_requires('Group[www-data]') }
             it { is_expected.to contain_file('uit-frontend-migration-script').that_requires('User[www-data]') }
-            it { is_expected.to contain_file('uit-frontend-migration-script').that_notifies('Class[profiles::apache]') }
+            it { is_expected.to contain_file('uit-frontend-migration-script').that_notifies('Class[apache::service]') }
             it { is_expected.to contain_file('uit-frontend-redirects').that_requires('File[/var/www/uit-frontend]') }
             it { is_expected.to contain_file('uit-frontend-redirects').that_requires('Group[www-data]') }
             it { is_expected.to contain_file('uit-frontend-redirects').that_requires('User[www-data]') }
-            it { is_expected.to contain_file('uit-frontend-redirects').that_notifies('Class[profiles::apache]') }
+            it { is_expected.to contain_file('uit-frontend-redirects').that_notifies('Class[apache::service]') }
             it { is_expected.to contain_file('uit-maintenance-page').that_requires('File[/var/www/uit-frontend]') }
             it { is_expected.to contain_file('uit-maintenance-page').that_requires('Group[www-data]') }
             it { is_expected.to contain_file('uit-maintenance-page').that_requires('User[www-data]') }
