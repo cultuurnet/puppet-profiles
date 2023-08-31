@@ -2,6 +2,21 @@ class profiles::lvm (
   Hash $volume_groups = {}
 ) inherits ::profiles {
 
+  realize Apt::Source['publiq-tools']
+
+  package { 'amazon-ec2-utils':
+    ensure  => 'latest',
+    require => Apt::Source['publiq-tools'],
+    notify  => Exec['amazon-ec2-utils-udevadm-trigger']
+  }
+
+  exec { 'amazon-ec2-utils-udevadm-trigger':
+    command     => 'udevadm trigger',
+    path        => ['/usr/bin'],
+    refreshonly => true,
+    before      => Class['lvm']
+  }
+
   class { 'lvm':
     manage_pkg => true
   }

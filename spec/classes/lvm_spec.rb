@@ -16,6 +16,17 @@ describe 'profiles::lvm' do
           'volume_groups' => {}
         ) }
 
+        it { is_expected.to contain_apt__source('publiq-tools') }
+        it { is_expected.to contain_package('amazon-ec2-utils').with(
+          'ensure' => 'latest'
+        ) }
+
+        it { is_expected.to contain_exec('amazon-ec2-utils-udevadm-trigger').with(
+          'command'     => 'udevadm trigger',
+          'path'        => ['/usr/bin'],
+          'refreshonly' => true
+        ) }
+
         it { is_expected.to contain_class('lvm').with(
           'manage_pkg' => true
         ) }
@@ -30,6 +41,10 @@ describe 'profiles::lvm' do
 
         it { is_expected.to have_physical_volume_resource_count(0) }
         it { is_expected.to have_volume_group_resource_count(0) }
+
+        it { is_expected.to contain_package('amazon-ec2-utils').that_requires('Apt::Source[publiq-tools]') }
+        it { is_expected.to contain_package('amazon-ec2-utils').that_notifies('Exec[amazon-ec2-utils-udevadm-trigger]') }
+        it { is_expected.to contain_exec('amazon-ec2-utils-udevadm-trigger').that_comes_before('Class[lvm]') }
       end
 
       context "with volume_groups => { datavg => { physical_volumes => '/dev/xvdb' } }" do
