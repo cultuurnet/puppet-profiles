@@ -22,7 +22,7 @@ describe 'profiles::lvm' do
         ) }
 
         it { is_expected.to contain_exec('amazon-ec2-utils-udevadm-trigger').with(
-          'command'     => 'udevadm trigger /dev/nvme*',
+          'command'     => 'udevadm trigger /dev/nvme* && sleep 5',
           'path'        => ['/usr/bin'],
           'refreshonly' => true
         ) }
