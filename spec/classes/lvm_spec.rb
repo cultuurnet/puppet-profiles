@@ -22,7 +22,7 @@ describe 'profiles::lvm' do
         ) }
 
         it { is_expected.to contain_exec('amazon-ec2-utils-udevadm-trigger').with(
-          'command'     => 'udevadm trigger',
+          'command'     => 'udevadm trigger /dev/nvme*',
           'path'        => ['/usr/bin'],
           'refreshonly' => true
         ) }
@@ -61,6 +61,7 @@ describe 'profiles::lvm' do
           'physical_volumes' => '/dev/xvdb'
         ) }
 
+        it { is_expected.to contain_physical_volume('/dev/xvdb').that_requires('Class[lvm]') }
         it { is_expected.to contain_physical_volume('/dev/xvdb').that_comes_before('Volume_group[datavg]') }
       end
 
@@ -94,6 +95,9 @@ describe 'profiles::lvm' do
           'physical_volumes' => ['/dev/xvdc', '/dev/xvdd']
         ) }
 
+        it { is_expected.to contain_physical_volume('/dev/xvdb').that_requires('Class[lvm]') }
+        it { is_expected.to contain_physical_volume('/dev/xvdc').that_requires('Class[lvm]') }
+        it { is_expected.to contain_physical_volume('/dev/xvdd').that_requires('Class[lvm]') }
         it { is_expected.to contain_physical_volume('/dev/xvdb').that_comes_before('Volume_group[data1vg]') }
         it { is_expected.to contain_physical_volume('/dev/xvdc').that_comes_before('Volume_group[data2vg]') }
         it { is_expected.to contain_physical_volume('/dev/xvdd').that_comes_before('Volume_group[data2vg]') }

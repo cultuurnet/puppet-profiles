@@ -11,7 +11,7 @@ class profiles::lvm (
   }
 
   exec { 'amazon-ec2-utils-udevadm-trigger':
-    command     => 'udevadm trigger',
+    command     => 'udevadm trigger /dev/nvme*',
     path        => ['/usr/bin'],
     refreshonly => true,
     before      => Class['lvm']
@@ -32,8 +32,9 @@ class profiles::lvm (
   $volume_groups.each |String $vg_name, Hash $vg_properties| {
     [$vg_properties['physical_volumes']].flatten.each |String $pv| {
       physical_volume { $pv:
-        ensure => 'present',
-        before => Volume_group[$vg_name]
+        ensure  => 'present',
+        require => Class['lvm'],
+        before  => Volume_group[$vg_name]
       }
     }
 
