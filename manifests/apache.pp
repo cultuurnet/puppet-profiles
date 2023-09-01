@@ -1,7 +1,6 @@
 class profiles::apache (
   Enum['event', 'itk', 'peruser', 'prefork', 'worker']  $mpm_module        = 'prefork',
   Hash                                                  $mpm_module_config = {},
-  Hash                                                  $log_formats       = {},
   Boolean                                               $http2             = false,
   Boolean                                               $metrics           = true,
   Enum['running', 'stopped']                            $service_status    = 'running',
@@ -32,7 +31,7 @@ class profiles::apache (
                                'running' => true,
                                'stopped' => false
                              },
-    log_formats           => $profiles::apache::logformats::all + $log_formats,
+    log_formats           => $profiles::apache::logformats::all,
     require               => [Group['www-data'], User['www-data']]
   }
 
