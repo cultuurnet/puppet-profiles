@@ -13,7 +13,6 @@ describe 'profiles::apache' do
         it { is_expected.to contain_class('profiles::apache').with(
           'mpm_module'        => 'prefork',
           'mpm_module_config' => {},
-          'log_formats'       => {},
           'http2'             => false,
           'service_status'    => 'running',
           'metrics'           => true
@@ -31,10 +30,7 @@ describe 'profiles::apache' do
           'protocols_honor_order' => true,
           'service_manage'        => true,
           'service_ensure'        => 'running',
-          'service_enable'        => true,
-          'log_formats'           => {
-                                       'combined_json' => '{ \"client_ip\": \"%a\", \"remote_logname\": \"%l\", \"user\": \"%u\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"request\": \"%r\", \"status\": %>s, \"response_bytes\": %b, \"referer\": \"%{Referer}i\", \"user_agent\": \"%{User-Agent}i\" }'
-                                     }
+          'service_enable'        => true
         ) }
 
         it { is_expected.not_to contain_class('apache::mod::http2') }
@@ -49,12 +45,11 @@ describe 'profiles::apache' do
         it { is_expected.to contain_user('www-data').that_comes_before('Class[apache]') }
       end
 
-      context "with mpm_module => worker, mpm_module_config => { startservers => 8, maxclients => 256 }, http2 => true, log_formats => { a => '{ client_ip: %a }', b => '{ response_bytes: %b }' }, service_status => stopped and metrics => false" do
+      context "with mpm_module => worker, mpm_module_config => { startservers => 8, maxclients => 256 }, http2 => true, service_status => stopped and metrics => false" do
         let(:params) { {
           'mpm_module'        => 'worker',
           'mpm_module_config' => { 'startservers' => 8, 'maxclients' => 256 },
           'http2'             => true,
-          'log_formats'       => { 'a' => '{ \"client_ip\": \"%a\" }', 'b' => '{ \"response_bytes\": %b }' },
           'service_status'    => 'stopped',
           'metrics'           => false
         } }
@@ -68,12 +63,7 @@ describe 'profiles::apache' do
           'protocols_honor_order' => true,
           'service_manage'        => true,
           'service_ensure'        => 'stopped',
-          'service_enable'        => false,
-          'log_formats'           => {
-                                       'combined_json' => '{ \"client_ip\": \"%a\", \"remote_logname\": \"%l\", \"user\": \"%u\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"request\": \"%r\", \"status\": %>s, \"response_bytes\": %b, \"referer\": \"%{Referer}i\", \"user_agent\": \"%{User-Agent}i\" }',
-                                       'a'             => '{ \"client_ip\": \"%a\" }',
-                                       'b'             => '{ \"response_bytes\": %b }'
-                                     }
+          'service_enable'        => false
         ) }
 
         it { is_expected.to contain_class('apache::mod::http2') }
