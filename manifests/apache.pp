@@ -11,9 +11,7 @@ class profiles::apache (
     fail('The HTTP/2 protocol is not supported with MPM module prefork')
   }
 
-  $default_log_formats = {
-    'combined_json' => '{ \"client_ip\": \"%a\", \"remote_logname\": \"%l\", \"user\": \"%u\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"request\": \"%r\", \"status\": %>s, \"response_bytes\": %b, \"referer\": \"%{Referer}i\", \"user_agent\": \"%{User-Agent}i\" }'
-  }
+  include profiles::apache::logformats
 
   realize Group['www-data']
   realize User['www-data']
@@ -34,7 +32,7 @@ class profiles::apache (
                                'running' => true,
                                'stopped' => false
                              },
-    log_formats           => $default_log_formats + $log_formats,
+    log_formats           => $profiles::apache::logformats::all + $log_formats,
     require               => [Group['www-data'], User['www-data']]
   }
 
