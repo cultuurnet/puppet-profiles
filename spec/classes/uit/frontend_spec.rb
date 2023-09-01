@@ -63,6 +63,7 @@ describe 'profiles::uit::frontend' do
               'docroot'            => '/var/www/uit-frontend',
               'manage_docroot'     => false,
               'port'               => 80,
+              'access_log_format'  => 'uit_frontend_json',
               'access_log_env_var' => '!nolog',
               'custom_fragment'    => nil,
               'error_documents'    => [],
