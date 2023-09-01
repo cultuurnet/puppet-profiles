@@ -12,9 +12,11 @@ class profiles::lvm (
 
   exec { 'amazon-ec2-utils-udevadm-trigger':
     command     => 'udevadm trigger /dev/nvme* && sleep 5',
-    path        => ['/usr/bin'],
+    path        => ['/usr/sbin', '/usr/bin'],
     refreshonly => true,
-    before      => Class['lvm']
+    logoutput   => 'on_failure',
+    onlyif      => 'ebsnvme-id /dev/nvme0',
+    before      => Class['lvm'],
   }
 
   class { 'lvm':
