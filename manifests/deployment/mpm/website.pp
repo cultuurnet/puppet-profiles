@@ -119,7 +119,7 @@ class profiles::deployment::mpm::website (
   }
 
   exec { 'composer script post-autoload-dump':
-    command     => 'vendor/bin/composer run-script post-autoload-dump',
+    command     => '/usr/bin/composer run-script post-autoload-dump',
     cwd         => $basedir,
     path        => [ '/usr/local/bin', '/usr/bin', '/bin', $basedir],
     user        => 'www-data',
