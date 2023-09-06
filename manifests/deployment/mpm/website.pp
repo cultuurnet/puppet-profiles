@@ -29,6 +29,9 @@ class profiles::deployment::mpm::website (
   include apache::mod::proxy
   include apache::mod::proxy_fcgi
   include apache::vhosts
+  include profiles::firewall::rules
+
+  realize Firewall['300 accept HTTP traffic']
 
   file { 'mysqld_version_ext_fact':
     ensure  => 'file',
