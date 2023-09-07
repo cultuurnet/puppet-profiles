@@ -210,7 +210,7 @@ class profiles::deployment::mpm::website (
   }
 
   systemd::unit_file { 'museumpas-website-horizon.service':
-    source  => 'puppet:///modules/profiles/deployment/mpm/platform-api-horizon.service',
+    source  => 'puppet:///modules/profiles/deployment/mpm/museumpas-website-horizon.service',
     enable  => true,
     active  => true,
     require => Package['museumpas-website']
