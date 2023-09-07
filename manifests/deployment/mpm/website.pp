@@ -1,19 +1,20 @@
 class profiles::deployment::mpm::website (
-  String $varnish_secret                    = undef,
-  String $mysql_version                     = undef,
-  String $mysql_admin_user                  = 'admin',
-  String $mysql_admin_password              = undef,
-  String $mysql_host                        = undef,
-  Hash $mysql_databases                     = undef,
-  Optional[Variant[Hash]] $varnish_backends = undef,
-  String $vhost                             = undef,
-  String $repository                        = 'museumpas-website',
+  String $varnish_secret                     = undef,
+  String $mysql_version                      = undef,
+  String $mysql_admin_user                   = 'admin',
+  String $mysql_admin_password               = undef,
+  String $mysql_host                         = undef,
+  Hash $mysql_databases                      = undef,
+  Optional[Variant[Hash]] $varnish_backends  = undef,
+  String $vhost                              = undef,
+  String $repository                         = 'museumpas-website',
+  Enum['running', 'stopped'] $service_status = 'running',
   $config_source,
   $maintenance_source,
-  $version                                  = 'latest',
-  $robots_source                            = undef,
-  $noop_deploy                              = false,
-  $puppetdb_url                             = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+  $version                                   = 'latest',
+  $robots_source                             = undef,
+  $noop_deploy                               = false,
+  $puppetdb_url                              = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $basedir = '/var/www/museumpas'
@@ -206,6 +207,23 @@ class profiles::deployment::mpm::website (
     refreshonly => true,
     require     => [ File['museumpas-website-config'], Exec['create storage link'], Exec['clear museumpas model cache'] ],
     noop        => $noop_deploy
+  }
+
+  systemd::unit_file { 'museumpas-website-horizon.service':
+    source  => 'puppet:///modules/profiles/deployment/mpm/platform-api-horizon.service',
+    enable  => true,
+    active  => true,
+    require => Package['museumpas-website']
+  }
+
+  service { 'museumpas-website-horizon':
+    ensure    => $service_status,
+    hasstatus => true,
+    enable    => $service_status ? {
+                   'running' => true,
+                   'stopped' => false
+                 },
+    require   => [Systemd::Unit_file['museumpas-website-horizon.service']]
   }
 
   profiles::deployment::versions { $title:

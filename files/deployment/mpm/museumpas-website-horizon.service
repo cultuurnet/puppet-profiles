@@ -1,0 +1,17 @@
+[Unit]
+Description=Museumpas Website PHP Horizon service
+After=syslog.target network.target remote-fs.target nss-lookup.target
+
+[Service]
+User=www-data
+Group=www-data
+EnvironmentFile=-/etc/default/museumpas-website-horizon
+WorkingDirectory=/var/www/museumpas
+ExecStart=/usr/bin/php artisan horizon
+TimeoutStopSec=5s
+Restart=always
+RestartSec=10s
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
