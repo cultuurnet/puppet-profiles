@@ -99,6 +99,7 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'uitpas-groepspas-frontend', { :location => 'https://apt.publiq.be/uitpas-groepspas-frontend-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uitpas-balie-frontend', { :location => 'https://apt.publiq.be/uitpas-balie-frontend-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uitpas-balie-api', { :location => 'https://apt.publiq.be/uitpas-balie-api-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uitpas-balie', { :location => 'https://apt.publiq.be/uitpas-balie-testing', :repos => 'main', :release => 'focal' }
 
             include_examples 'apt repositories', 'uit-mail-subscriptions', { :location => 'https://apt.publiq.be/uit-mail-subscriptions-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uit-notifications', { :location => 'https://apt.publiq.be/uit-notifications-testing', :repos => 'main', :release => 'focal' }

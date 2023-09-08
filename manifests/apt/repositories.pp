@@ -224,6 +224,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'uitpas-balie':
+    location => "https://apt.publiq.be/uitpas-balie-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   @apt::source { 'uitpas-groepspas-frontend':
     location => "https://apt.publiq.be/uitpas-groepspas-frontend-${environment}",
     release  => $facts['os']['distro']['codename'],
