@@ -67,7 +67,7 @@ class profiles::apt::repositories {
   }
 
   @apt::source { 'newrelic-infra':
-    location     => "https://apt.publiq.be/newrelic-infra-${environment}",
+    location     => "https://apt.publiq.be/newrelic-infra-$facts['os']['distro']['codename']-${environment}",
     release      => $facts['os']['distro']['codename'],
     architecture => 'amd64',
     repos        => 'main'
