@@ -52,7 +52,7 @@ describe 'profiles::apt::repositories' do
             # Do we need to check for the architecture for these repositories?
             include_examples 'apt repositories', 'docker', { :location => 'https://apt.publiq.be/docker-testing', :repos => 'stable', :release => 'focal' }
             include_examples 'apt repositories', 'newrelic', { :location => 'https://apt.publiq.be/newrelic-testing', :repos => 'non-free', :release => 'focal' }
-            include_examples 'apt repositories', 'newrelic-infra', { :location => 'https://apt.publiq.be/newrelic-infra-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'newrelic-infra', { :location => 'https://apt.publiq.be/newrelic-infra-focal-testing', :repos => 'main', :release => 'focal' }
 
             include_examples 'apt repositories', 'publiq-tools', { :location => 'https://apt.publiq.be/publiq-tools-focal-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'publiq-nodejs-14', { :location => 'https://apt.publiq.be/publiq-nodejs-14-testing', :repos => 'main', :release => 'focal' }
