@@ -6,7 +6,9 @@ class profiles::uit::frontend::deployment (
   Enum['running', 'stopped'] $service_status    = 'running',
   Stdlib::Ipv4               $service_address   = '127.0.0.1',
   Integer                    $service_port      = 3000,
-  Optional[String]           $puppetdb_url      = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+  Optional[String]           $puppetdb_url      = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef),
+  Optional[String]           $newrelic_licence_key = undef,
+  Optional[String]           $newrelic_app_name    = undef,
 ) inherits ::profiles {
 
   $basedir = '/var/www/uit-frontend'
