@@ -29,7 +29,6 @@ describe 'profiles::uit::frontend' do
               'service_address'     => '127.0.0.1',
               'service_port'        => 3000,
               'redirect_source'     => nil,
-              'uitdatabank_api_url' => nil,
               'maintenance_page'    => false,
               'deployment_page'     => false
             ) }
