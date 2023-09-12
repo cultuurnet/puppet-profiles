@@ -20,7 +20,7 @@ class profiles::deployment::mpm::website (
   $basedir = '/var/www/museumpas'
 
   class { 'locales':
-    default_locale  => 'en_US.UTF8 UTF8',
+    default_locale  => 'en_US.UTF8',
     locales         => ['nl_BE.UTF8 UTF8', 'fr_BE.UTF8 UTF8', 'nl_NL.UTF8 UTF8', 'fr_FR.UTF8 UTF8'],
   }
 
