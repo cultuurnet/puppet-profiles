@@ -20,8 +20,8 @@ class profiles::deployment::mpm::website (
   $basedir = '/var/www/museumpas'
 
   class { 'locales':
-    default_locale  => 'en_US.utf8',
-    locales         => ['nl_BE.utf8 UTF8', 'fr_BE.utf8 UTF8', 'nl_NL.utf8 UTF8', 'fr_FR.utf8 UTF8'],
+    default_locale  => 'en_US.UTF8',
+    locales         => ['nl_BE.UTF8 UTF8', 'fr_BE.UTF8 UTF8', 'nl_NL.UTF8 UTF8', 'fr_FR.UTF8 UTF8'],
   }
 
   include apache::mod::expires
@@ -172,7 +172,7 @@ class profiles::deployment::mpm::website (
   }
 
   exec { 'clear museumpas model cache':
-    command     => 'php artisan modelCache:clear',
+    command     => 'php artisan -q modelCache:clear',
     cwd         => $basedir,
     path        => [ '/usr/local/bin', '/usr/bin', '/bin'],
     user        => 'www-data',
