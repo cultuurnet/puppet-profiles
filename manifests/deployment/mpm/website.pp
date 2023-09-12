@@ -172,7 +172,7 @@ class profiles::deployment::mpm::website (
   }
 
   exec { 'clear museumpas model cache':
-    command     => 'php artisan modelCache:clear',
+    command     => 'php artisan -q modelCache:clear',
     cwd         => $basedir,
     path        => [ '/usr/local/bin', '/usr/bin', '/bin'],
     user        => 'www-data',
