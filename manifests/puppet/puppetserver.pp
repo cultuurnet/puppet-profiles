@@ -91,8 +91,8 @@ class profiles::puppet::puppetserver (
     notify            => Class['profiles::puppet::puppetserver::service']
   }
 
-  class { 'profiles::puppet::puppetserver::eyaml':
-    enable           => $eyaml,
+  class { 'profiles::puppet::puppetserver::hiera':
+    eyaml            => $eyaml,
     gpg_key          => $eyaml_gpg_key,
     lookup_hierarchy => $lookup_hierarchy,
     require          => Class['profiles::puppet::puppetserver::install'],

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'profiles::puppet::puppetserver::eyaml' do
+describe 'profiles::puppet::puppetserver::hiera' do
   include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
@@ -12,8 +12,8 @@ describe 'profiles::puppet::puppetserver::eyaml' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_class('profiles::puppet::puppetserver::eyaml').with(
-          'enable'           => false,
+        it { is_expected.to contain_class('profiles::puppet::puppetserver::hiera').with(
+          'eyaml'            => false,
           'gpg_key'          => {},
           'lookup_hierarchy' => [
                                   { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
@@ -64,9 +64,9 @@ describe 'profiles::puppet::puppetserver::eyaml' do
         it { is_expected.to contain_package('hiera-eyaml').that_comes_before('Package[ruby_gpg]') }
       end
 
-      context "with enable => true and gpg_key => { 'id' => '6789DEFD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\neyaml_key\n-----END PGP PRIVATE KEY BLOCK-----' }" do
+      context "with eyaml => true and gpg_key => { 'id' => '6789DEFD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\neyaml_key\n-----END PGP PRIVATE KEY BLOCK-----' }" do
         let(:params) { {
-          'enable'  => true,
+          'eyaml'   => true,
           'gpg_key' => {
                          'id'      => '6789DEFD',
                          'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\neyaml_key\n-----END PGP PRIVATE KEY BLOCK-----"
@@ -138,9 +138,9 @@ describe 'profiles::puppet::puppetserver::eyaml' do
         it { is_expected.to contain_gnupg_key('6789DEFD').that_requires('User[puppet]') }
       end
 
-      context "with enable => true, gpg_key => { 'id' => '1234ABCD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK-----' } and lookup_hierarchy => { 'name' => 'Common data', 'path' => 'common.yaml' }" do
+      context "with eyaml => true, gpg_key => { 'id' => '1234ABCD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK-----' } and lookup_hierarchy => { 'name' => 'Common data', 'path' => 'common.yaml' }" do
         let(:params) { {
-          'enable'           => true,
+          'eyaml'            => true,
           'gpg_key'          => {
                                   'id'      => '1234ABCD',
                                   'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK-----"
@@ -171,9 +171,9 @@ describe 'profiles::puppet::puppetserver::eyaml' do
         ) }
       end
 
-      context "with enable => true and gpg_key => {}" do
+      context "with eyaml => true and gpg_key => {}" do
         let(:params) { {
-          'enable'  => true,
+          'eyaml'   => true,
           'gpg_key' => {}
         } }
 

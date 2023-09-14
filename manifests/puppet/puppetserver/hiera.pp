@@ -1,5 +1,5 @@
-class profiles::puppet::puppetserver::eyaml (
-  Boolean                   $enable           = false,
+class profiles::puppet::puppetserver::hiera (
+  Boolean                   $eyaml            = false,
   Hash                      $gpg_key          = {},
   Variant[Hash,Array[Hash]] $lookup_hierarchy = [
                                                   { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
@@ -7,7 +7,7 @@ class profiles::puppet::puppetserver::eyaml (
                                                 ]
 ) inherits ::profiles {
 
-  if $enable {
+  if $eyaml {
     if empty($gpg_key) {
       fail("Class Profiles::Puppet::Puppetserver::Eyaml expects a non-empty value for parameter 'gpg_key' when eyaml is enabled")
     }

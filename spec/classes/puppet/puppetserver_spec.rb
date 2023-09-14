@@ -108,8 +108,8 @@ describe 'profiles::puppet::puppetserver' do
             'trusted_certnames' => []
           ) }
 
-          it { is_expected.to contain_class('profiles::puppet::puppetserver::eyaml').with(
-            'enable'  => false,
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::hiera').with(
+            'eyaml'   => false,
             'gpg_key' => {}
           ) }
 
@@ -118,12 +118,15 @@ describe 'profiles::puppet::puppetserver' do
             'version' => nil
           ) }
 
+          it { is_expected.not_to contain_file('puppetserver_terraform_hiera_data') }
+          it { is_expected.not_to contain_mount('puppetserver_terraform_hiera_data') }
+
           it { is_expected.to contain_class('profiles::puppet::puppetserver::install').that_requires('Ini_setting[puppetserver ca_server]') }
           it { is_expected.to contain_class('profiles::puppet::puppetserver::install').that_requires('Ini_setting[puppetserver dns_alt_names]') }
           it { is_expected.to contain_class('profiles::puppet::puppetserver::install').that_notifies('Class[profiles::puppet::puppetserver::service]') }
           it { is_expected.to contain_class('profiles::puppet::puppetserver::autosign').that_notifies('Class[profiles::puppet::puppetserver::service]') }
-          it { is_expected.to contain_class('profiles::puppet::puppetserver::eyaml').that_requires('Class[profiles::puppet::puppetserver::install]') }
-          it { is_expected.to contain_class('profiles::puppet::puppetserver::eyaml').that_notifies('Class[profiles::puppet::puppetserver::service]') }
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::hiera').that_requires('Class[profiles::puppet::puppetserver::install]') }
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::hiera').that_notifies('Class[profiles::puppet::puppetserver::service]') }
           it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').that_notifies('Class[profiles::puppet::puppetserver::service]') }
           it { is_expected.to contain_ini_setting('puppetserver ca_server').that_notifies('Class[profiles::puppet::puppetserver::service]') }
           it { is_expected.to contain_ini_setting('puppetserver environmentpath').that_notifies('Class[profiles::puppet::puppetserver::service]') }
@@ -190,8 +193,8 @@ describe 'profiles::puppet::puppetserver' do
             'trusted_amis'      => 'ami-123'
           ) }
 
-          it { is_expected.to contain_class('profiles::puppet::puppetserver::eyaml').with(
-            'enable'           => true,
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::hiera').with(
+            'eyaml'            => true,
             'gpg_key'          => {
                                     'id'      => '6789DEFD',
                                     'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\neyamlkey\n-----END PGP PRIVATE KEY BLOCK-----"
@@ -209,7 +212,7 @@ describe 'profiles::puppet::puppetserver' do
           ) }
 
           it { is_expected.to contain_class('profiles::puppet::puppetserver::autosign').that_notifies('Class[profiles::puppet::puppetserver::service]') }
-          it { is_expected.to contain_class('profiles::puppet::puppetserver::eyaml').that_notifies('Class[profiles::puppet::puppetserver::service]') }
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::hiera').that_notifies('Class[profiles::puppet::puppetserver::service]') }
           it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').that_notifies('Class[profiles::puppet::puppetserver::service]') }
           it { is_expected.to contain_augeas('puppetserver_initial_heap_size').that_requires('Class[profiles::puppet::puppetserver::install]') }
           it { is_expected.to contain_augeas('puppetserver_initial_heap_size').that_notifies('Class[profiles::puppet::puppetserver::service]') }
@@ -250,8 +253,8 @@ describe 'profiles::puppet::puppetserver' do
             'trusted_certnames' => ['a.example.com', 'b.example.com', '*.c.example.com'],
           ) }
 
-          it { is_expected.to contain_class('profiles::puppet::puppetserver::eyaml').with(
-            'enable'  => true,
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::hiera').with(
+            'eyaml'   => true,
             'gpg_key' => {
                            'id'      => '1234ABCD',
                            'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK-----"
