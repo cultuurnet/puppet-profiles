@@ -1,11 +1,18 @@
 class profiles::puppet::puppetserver::hiera (
-  Boolean                   $eyaml            = false,
-  Hash                      $gpg_key          = {},
-  Variant[Hash,Array[Hash]] $lookup_hierarchy = [
-                                                  { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
-                                                  { 'name' => 'Common data', 'path' => 'common.yaml' }
-                                                ]
+  Boolean                   $eyaml                 = false,
+  Hash                      $gpg_key               = {},
+  Variant[Hash,Array[Hash]] $lookup_hierarchy      = [
+                                                       { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
+                                                       { 'name' => 'Common data', 'path' => 'common.yaml' }
+                                                     ],
+  Boolean                   $terraform_integration = false
 ) inherits ::profiles {
+
+  if $terraform_integration {
+    $lookups = [{ 'name' => 'Terraform data', 'glob' => 'terraform/%{::trusted.certname}/*.yaml' }] + $lookup_hierarchy
+  } else {
+    $lookups = $lookup_hierarchy
+  }
 
   if $eyaml {
     if empty($gpg_key) {
@@ -13,7 +20,7 @@ class profiles::puppet::puppetserver::hiera (
     }
 
     $package_ensure = 'installed'
-    $hierarchy = [$lookup_hierarchy].flatten.map |Hash $level| { $level + { 'lookup_key' => 'eyaml_lookup_key', 'options' => { 'gpg_gnupghome' => '/opt/puppetlabs/server/data/puppetserver/.gnupg' } } }
+    $hierarchy      = [$lookups].flatten.map |Hash $lookup| { $lookup + { 'lookup_key' => 'eyaml_lookup_key', 'options' => { 'gpg_gnupghome' => '/opt/puppetlabs/server/data/puppetserver/.gnupg' } } }
 
     realize Group['puppet']
     realize User['puppet']
@@ -46,7 +53,7 @@ class profiles::puppet::puppetserver::hiera (
     Package['hiera-eyaml'] -> Package['hiera-eyaml-gpg']
   } else {
     $package_ensure = 'absent'
-    $hierarchy      = $lookup_hierarchy
+    $hierarchy      = [$lookups].flatten
 
     file { 'puppetserver eyaml configdir':
       ensure => 'absent',
