@@ -74,6 +74,7 @@ describe 'profiles::puppet::puppetserver::hiera' do
           'hiera_yaml'         => '/etc/puppetlabs/code/hiera.yaml',
           'puppet_conf_manage' => false,
           'master_service'     => 'puppetserver',
+          'datadir'            => '/etc/puppetlabs/code/data',
           'hiera5_defaults'    => { 'datadir' => 'data', 'data_hash' => 'yaml_data' },
           'hierarchy'          => [
                                     { 'name' => 'Terraform data', 'glob' => 'terraform/%{::trusted.certname}/*.yaml' },
@@ -133,6 +134,7 @@ describe 'profiles::puppet::puppetserver::hiera' do
           'hiera_yaml'         => '/etc/puppetlabs/code/hiera.yaml',
           'puppet_conf_manage' => false,
           'master_service'     => 'puppetserver',
+          'datadir'            => '/etc/puppetlabs/code/data',
           'hiera5_defaults'    => { 'datadir' => 'data', 'data_hash' => 'yaml_data' },
           'hierarchy'          => [
                                     { 'name' => 'Terraform data', 'glob' => 'terraform/%{::trusted.certname}/*.yaml', 'lookup_key' => 'eyaml_lookup_key', 'options' => { 'gpg_gnupghome' => '/opt/puppetlabs/server/data/puppetserver/.gnupg' } },
@@ -183,6 +185,7 @@ describe 'profiles::puppet::puppetserver::hiera' do
           'hiera_yaml'         => '/etc/puppetlabs/code/hiera.yaml',
           'puppet_conf_manage' => false,
           'master_service'     => 'puppetserver',
+          'datadir'            => '/etc/puppetlabs/code/data',
           'hiera5_defaults'    => { 'datadir' => 'data', 'data_hash' => 'yaml_data' },
           'hierarchy'          => [
                                     { 'name' => 'Common data', 'path' => 'common.yaml', 'lookup_key' => 'eyaml_lookup_key', 'options' => { 'gpg_gnupghome' => '/opt/puppetlabs/server/data/puppetserver/.gnupg' } }

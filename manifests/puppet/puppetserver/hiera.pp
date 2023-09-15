@@ -82,6 +82,7 @@ class profiles::puppet::puppetserver::hiera (
     hiera_yaml         => '/etc/puppetlabs/code/hiera.yaml',
     puppet_conf_manage => false,
     master_service     => 'puppetserver',
+    datadir            => '/etc/puppetlabs/code/data',
     hiera5_defaults    => { 'datadir' => 'data', 'data_hash' => 'yaml_data' },
     hierarchy          => $hierarchy
   }
