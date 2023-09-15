@@ -19,6 +19,7 @@ class profiles::s3fs (
   file { 's3fs-passwordfile':
     ensure  => $ensure,
     path    => '/etc/passwd-s3fs',
+    mode    => '0640',
     content => $content
   }
 }

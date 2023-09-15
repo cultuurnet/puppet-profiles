@@ -42,6 +42,7 @@ describe 'profiles::s3fs' do
         it { is_expected.to contain_file('s3fs-passwordfile').with(
           'ensure'  => 'file',
           'path'    => '/etc/passwd-s3fs',
+          'mode'    => '0640',
           'content' => 'secret_key_id:secret_access_key'
         ) }
       end
