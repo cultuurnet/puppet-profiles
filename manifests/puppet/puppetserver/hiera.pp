@@ -9,9 +9,9 @@ class profiles::puppet::puppetserver::hiera (
 ) inherits ::profiles {
 
   if $terraform_integration {
-    $lookups = [{ 'name' => 'Terraform data', 'glob' => 'terraform/%{::trusted.certname}/*.yaml' }] + $lookup_hierarchy
+    $lookups = [{ 'name' => 'Terraform data', 'glob' => 'terraform/%{::trusted.certname}/*.yaml' }] + [$lookup_hierarchy].flatten
   } else {
-    $lookups = $lookup_hierarchy
+    $lookups = [$lookup_hierarchy].flatten
   }
 
   if $eyaml {
@@ -20,7 +20,7 @@ class profiles::puppet::puppetserver::hiera (
     }
 
     $package_ensure = 'installed'
-    $hierarchy      = [$lookups].flatten.map |Hash $lookup| { $lookup + { 'lookup_key' => 'eyaml_lookup_key', 'options' => { 'gpg_gnupghome' => '/opt/puppetlabs/server/data/puppetserver/.gnupg' } } }
+    $hierarchy      = $lookups.map |Hash $lookup| { $lookup + { 'lookup_key' => 'eyaml_lookup_key', 'options' => { 'gpg_gnupghome' => '/opt/puppetlabs/server/data/puppetserver/.gnupg' } } }
 
     realize Group['puppet']
     realize User['puppet']
@@ -53,7 +53,7 @@ class profiles::puppet::puppetserver::hiera (
     Package['hiera-eyaml'] -> Package['hiera-eyaml-gpg']
   } else {
     $package_ensure = 'absent'
-    $hierarchy      = [$lookups].flatten
+    $hierarchy      = $lookups
 
     file { 'puppetserver eyaml configdir':
       ensure => 'absent',
