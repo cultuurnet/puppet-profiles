@@ -155,7 +155,7 @@ class profiles::puppet::puppetserver (
 
   cron {'puppetserver_report_retention':
     environment => [ 'MAILTO=infra@publiq.be'],
-    command     => "/usr/bin/find /opt/puppetlabs/server/data/puppetserver/reports -type f -name \"*.yaml\" -mtime +${retention_days} -exec rm {} \;",
+    command     => "/usr/bin/find /opt/puppetlabs/server/data/puppetserver/reports -type f -name \"*.yaml\" -mtime +${retention_days} -exec rm {} \\;",
     hour        => '0',
     minute      => '0'
   }
