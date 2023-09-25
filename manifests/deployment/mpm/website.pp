@@ -10,6 +10,7 @@ class profiles::deployment::mpm::website (
   String $repository                         = 'museumpas-website',
   Enum['running', 'stopped'] $service_status = 'running',
   Boolean $install_meilisearch               = true,
+  Boolean $install_redis                     = true,
   $config_source,
   $maintenance_source,
   $version                                   = 'latest',
@@ -32,6 +33,10 @@ class profiles::deployment::mpm::website (
   include apache::mod::proxy_fcgi
   include apache::vhosts
   include profiles::firewall::rules
+
+  if $install_redis {
+    include redis
+  }
 
   if $install_meilisearch {
     include profiles::meilisearch
