@@ -1,20 +1,21 @@
 class profiles::puppet::puppetserver (
-  String                                   $version           = 'installed',
-  Optional[Variant[String, Array[String]]] $dns_alt_names     = undef,
-  Boolean                                  $autosign          = false,
-  Variant[String, Array[String]]           $trusted_amis      = [],
-  Variant[String, Array[String]]           $trusted_certnames = [],
-  Boolean                                  $eyaml             = false,
-  Hash                                     $eyaml_gpg_key     = {},
-  Variant[Hash,Array[Hash]]                $lookup_hierarchy  = [
-                                                                  { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
-                                                                  { 'name' => 'Common data', 'path' => 'common.yaml' }
-                                                                ],
-  Optional[Stdlib::Httpurl]                $puppetdb_url      = undef,
-  Optional[String]                         $puppetdb_version  = undef,
-  Optional[String]                         $initial_heap_size = undef,
-  Optional[String]                         $maximum_heap_size = undef,
-  Enum['running', 'stopped']               $service_status    = 'running'
+  String                                   $version               = 'installed',
+  Optional[Variant[String, Array[String]]] $dns_alt_names         = undef,
+  Boolean                                  $autosign              = false,
+  Variant[String, Array[String]]           $trusted_amis          = [],
+  Variant[String, Array[String]]           $trusted_certnames     = [],
+  Boolean                                  $eyaml                 = false,
+  Hash                                     $eyaml_gpg_key         = {},
+  Variant[Hash,Array[Hash]]                $lookup_hierarchy      = [
+                                                                      { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
+                                                                      { 'name' => 'Common data', 'path' => 'common.yaml' }
+                                                                    ],
+  Optional[Stdlib::Httpurl]                $puppetdb_url          = undef,
+  Optional[String]                         $puppetdb_version      = undef,
+  Optional[String]                         $initial_heap_size     = undef,
+  Optional[String]                         $maximum_heap_size     = undef,
+  Integer                                  $report_retention_days = 0,
+  Enum['running', 'stopped']               $service_status        = 'running'
 
 ) inherits ::profiles {
 
@@ -22,6 +23,7 @@ class profiles::puppet::puppetserver (
     fail("Class Profiles::Puppet::Puppetserver expects either a value for parameter 'trusted_amis' or 'trusted_certnames' when autosigning")
   }
 
+  $retention_days                 = max(0, $report_retention_days - 1)
   $default_ini_setting_attributes = {
                                       path    => '/etc/puppetlabs/puppet/puppet.conf',
                                       section => 'server'
@@ -149,6 +151,13 @@ class profiles::puppet::puppetserver (
       require => Class['profiles::puppet::puppetserver::install'],
       notify  => Class['profiles::puppet::puppetserver::service']
     }
+  }
+
+  cron {'puppetserver_report_retention':
+    environment => [ 'MAILTO=infra@publiq.be'],
+    command     => "/usr/bin/find /opt/puppetlabs/server/data/puppetserver/reports -type f -name \"*.yaml\" -mtime +${retention_days} -exec rm {} \\;",
+    hour        => '0',
+    minute      => '0'
   }
 
   class { 'profiles::puppet::puppetserver::service':
