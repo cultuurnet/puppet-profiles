@@ -16,6 +16,7 @@ class profiles::apache (
   realize User['www-data']
 
   class { '::apache':
+    default_mods          => false,
     mpm_module            => false,
     manage_group          => false,
     manage_user           => false,
