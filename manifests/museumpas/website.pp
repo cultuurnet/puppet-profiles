@@ -47,12 +47,6 @@ class profiles::museumpas::website (
     ]
   }
 
-  class { "apache::mod::mime":
-    mime_types_additional => {
-      'AddType' => { 'image/webp' => '.webp' }
-    }
-  }
-
   apache::vhost { "${servername}_80":
     servername        => $servername,
     serveraliases     => [$serveraliases].flatten,
