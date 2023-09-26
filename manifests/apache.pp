@@ -51,4 +51,6 @@ class profiles::apache (
   include profiles::apache::logging
 
   apache::mod { 'unique_id': }
+  apache::mod { 'deflate': }
+  apache::mod { 'dir': }
 }
