@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'profiles::puppet::puppetserver::eyaml' do
+describe 'profiles::puppet::puppetserver::hiera' do
   include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
@@ -12,13 +12,14 @@ describe 'profiles::puppet::puppetserver::eyaml' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_class('profiles::puppet::puppetserver::eyaml').with(
-          'enable'           => false,
-          'gpg_key'          => {},
-          'lookup_hierarchy' => [
-                                  { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
-                                  { 'name' => 'Common data', 'path' => 'common.yaml' }
-                                ]
+        it { is_expected.to contain_class('profiles::puppet::puppetserver::hiera').with(
+          'eyaml'                 => false,
+          'gpg_key'               => {},
+          'lookup_hierarchy'      => [
+                                       { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
+                                       { 'name' => 'Common data', 'path' => 'common.yaml' }
+                                     ],
+          'terraform_integration' => false
         ) }
 
         it { is_expected.to contain_package('ruby_gpg').with(
@@ -50,7 +51,6 @@ describe 'profiles::puppet::puppetserver::eyaml' do
         it { is_expected.to contain_class('hiera').with(
           'hiera_version'      => '5',
           'hiera_yaml'         => '/etc/puppetlabs/code/hiera.yaml',
-          'datadir_manage'     => false,
           'puppet_conf_manage' => false,
           'master_service'     => 'puppetserver',
           'hiera5_defaults'    => { 'datadir' => 'data', 'data_hash' => 'yaml_data' },
@@ -64,13 +64,34 @@ describe 'profiles::puppet::puppetserver::eyaml' do
         it { is_expected.to contain_package('hiera-eyaml').that_comes_before('Package[ruby_gpg]') }
       end
 
-      context "with enable => true and gpg_key => { 'id' => '6789DEFD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\neyaml_key\n-----END PGP PRIVATE KEY BLOCK-----' }" do
+      context "with terraform_integration => true" do
         let(:params) { {
-          'enable'  => true,
-          'gpg_key' => {
-                         'id'      => '6789DEFD',
-                         'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\neyaml_key\n-----END PGP PRIVATE KEY BLOCK-----"
-                       }
+          'terraform_integration' => true
+        } }
+
+        it { is_expected.to contain_class('hiera').with(
+          'hiera_version'      => '5',
+          'hiera_yaml'         => '/etc/puppetlabs/code/hiera.yaml',
+          'puppet_conf_manage' => false,
+          'master_service'     => 'puppetserver',
+          'datadir'            => '/etc/puppetlabs/code/data',
+          'hiera5_defaults'    => { 'datadir' => 'data', 'data_hash' => 'yaml_data' },
+          'hierarchy'          => [
+                                    { 'name' => 'Terraform data', 'glob' => 'terraform/%{::trusted.certname}/*.yaml' },
+                                    { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
+                                    { 'name' => 'Common data', 'path' => 'common.yaml' }
+                                  ]
+        ) }
+      end
+
+      context "with eyaml => true, gpg_key => { 'id' => '6789DEFD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\neyaml_key\n-----END PGP PRIVATE KEY BLOCK-----' } and terraform_integration => true" do
+        let(:params) { {
+          'eyaml'                 => true,
+          'gpg_key'               => {
+                                       'id'      => '6789DEFD',
+                                       'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\neyaml_key\n-----END PGP PRIVATE KEY BLOCK-----"
+                                     },
+          'terraform_integration' => true
         } }
 
         it { is_expected.to compile.with_all_deps }
@@ -111,11 +132,12 @@ describe 'profiles::puppet::puppetserver::eyaml' do
         it { is_expected.to contain_class('hiera').with(
           'hiera_version'      => '5',
           'hiera_yaml'         => '/etc/puppetlabs/code/hiera.yaml',
-          'datadir_manage'     => false,
           'puppet_conf_manage' => false,
           'master_service'     => 'puppetserver',
+          'datadir'            => '/etc/puppetlabs/code/data',
           'hiera5_defaults'    => { 'datadir' => 'data', 'data_hash' => 'yaml_data' },
           'hierarchy'          => [
+                                    { 'name' => 'Terraform data', 'glob' => 'terraform/%{::trusted.certname}/*.yaml', 'lookup_key' => 'eyaml_lookup_key', 'options' => { 'gpg_gnupghome' => '/opt/puppetlabs/server/data/puppetserver/.gnupg' } },
                                     { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml', 'lookup_key' => 'eyaml_lookup_key', 'options' => { 'gpg_gnupghome' => '/opt/puppetlabs/server/data/puppetserver/.gnupg' } },
                                     { 'name' => 'Common data', 'path' => 'common.yaml', 'lookup_key' => 'eyaml_lookup_key', 'options' => { 'gpg_gnupghome' => '/opt/puppetlabs/server/data/puppetserver/.gnupg' } }
                                   ]
@@ -138,9 +160,9 @@ describe 'profiles::puppet::puppetserver::eyaml' do
         it { is_expected.to contain_gnupg_key('6789DEFD').that_requires('User[puppet]') }
       end
 
-      context "with enable => true, gpg_key => { 'id' => '1234ABCD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK-----' } and lookup_hierarchy => { 'name' => 'Common data', 'path' => 'common.yaml' }" do
+      context "with eyaml => true, gpg_key => { 'id' => '1234ABCD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK-----' } and lookup_hierarchy => { 'name' => 'Common data', 'path' => 'common.yaml' }" do
         let(:params) { {
-          'enable'           => true,
+          'eyaml'            => true,
           'gpg_key'          => {
                                   'id'      => '1234ABCD',
                                   'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK-----"
@@ -161,9 +183,9 @@ describe 'profiles::puppet::puppetserver::eyaml' do
         it { is_expected.to contain_class('hiera').with(
           'hiera_version'      => '5',
           'hiera_yaml'         => '/etc/puppetlabs/code/hiera.yaml',
-          'datadir_manage'     => false,
           'puppet_conf_manage' => false,
           'master_service'     => 'puppetserver',
+          'datadir'            => '/etc/puppetlabs/code/data',
           'hiera5_defaults'    => { 'datadir' => 'data', 'data_hash' => 'yaml_data' },
           'hierarchy'          => [
                                     { 'name' => 'Common data', 'path' => 'common.yaml', 'lookup_key' => 'eyaml_lookup_key', 'options' => { 'gpg_gnupghome' => '/opt/puppetlabs/server/data/puppetserver/.gnupg' } }
@@ -171,9 +193,9 @@ describe 'profiles::puppet::puppetserver::eyaml' do
         ) }
       end
 
-      context "with enable => true and gpg_key => {}" do
+      context "with eyaml => true and gpg_key => {}" do
         let(:params) { {
-          'enable'  => true,
+          'eyaml'   => true,
           'gpg_key' => {}
         } }
 
