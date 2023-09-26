@@ -50,6 +50,12 @@ class profiles::apache (
 
   include profiles::apache::logging
 
+  class { "apache::mod::mime":
+    mime_types_additional => {
+      'AddType' => { 'image/webp' => '.webp' }
+    }
+  }
+
   apache::mod { 'unique_id': }
   include apache::mod::deflate
   include apache::mod::dir
