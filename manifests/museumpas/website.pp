@@ -66,7 +66,7 @@ class profiles::museumpas::website (
     directories       => [{
                            path            => '\.php$',
                            provider        => 'filesmatch',
-                           custom_fragment => 'SetHandler "proxy:unix:/var/run/php/php8.2-fpm.sock|fcgi://localhost"',
+                           custom_fragment => 'SetHandler "proxy:unix:/var/run/php/php-fpm.sock|fcgi://localhost"',
                          },
                          {
                            path            => "${basedir}/public",
