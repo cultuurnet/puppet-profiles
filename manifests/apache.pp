@@ -16,6 +16,7 @@ class profiles::apache (
   realize User['www-data']
 
   class { '::apache':
+    default_mods          => false,
     mpm_module            => false,
     manage_group          => false,
     manage_user           => false,
@@ -49,5 +50,13 @@ class profiles::apache (
 
   include profiles::apache::logging
 
+  class { "apache::mod::mime":
+    mime_types_additional => {
+      'AddType' => { 'image/webp' => '.webp' }
+    }
+  }
+
   apache::mod { 'unique_id': }
+  include apache::mod::deflate
+  include apache::mod::dir
 }

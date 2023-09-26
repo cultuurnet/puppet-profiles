@@ -33,6 +33,7 @@ describe 'profiles::puppet::puppetserver' do
             'puppetdb_version'      => nil,
             'initial_heap_size'     => nil,
             'maximum_heap_size'     => nil,
+            'report_retention_days' => 0,
             'service_status'        => 'running'
           ) }
 
@@ -123,6 +124,13 @@ describe 'profiles::puppet::puppetserver' do
 
           it { is_expected.not_to contain_class('profiles::puppet::puppetserver::terraform') }
 
+          it { is_expected.to contain_cron('puppetserver_report_retention').with(
+            'environment' => [ 'MAILTO=infra@publiq.be'],
+            'command'     => '/usr/bin/find /opt/puppetlabs/server/data/puppetserver/reports -type f -name "*.yaml" -mtime +0 -exec rm {} \;',
+            'hour'        => '0',
+            'minute'      => '0'
+          ) }
+
           it { is_expected.to contain_class('profiles::puppet::puppetserver::install').that_requires('Ini_setting[puppetserver ca_server]') }
           it { is_expected.to contain_class('profiles::puppet::puppetserver::install').that_requires('Ini_setting[puppetserver dns_alt_names]') }
           it { is_expected.to contain_class('profiles::puppet::puppetserver::install').that_notifies('Class[profiles::puppet::puppetserver::service]') }
@@ -142,7 +150,7 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to contain_hocon_setting('puppetserver dropsonde').that_notifies('Class[profiles::puppet::puppetserver::service]') }
         end
 
-        context "with version => 1.2.3, dns_alt_names => puppet.services.example.com, autosign => true, trusted_amis => ami-123, trusted_certnames => [], eyaml => true, eyaml_gpg_key => { 'id' => '6789DEFD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\neyamlkey\n-----END PGP PRIVATE KEY BLOCK-----' }, lookup_hierarchy => { name => Common data, path => common.yaml }, terraform_integration => true, terraform_bucketpath => mybucket:/mypath, puppetdb_url => https://puppetdb.example.com:8081, initial_heap_size => 512m, maximum_heap_size => 512m and service_status => stopped" do
+        context "with version => 1.2.3, dns_alt_names => puppet.services.example.com, autosign => true, trusted_amis => ami-123, trusted_certnames => [], eyaml => true, eyaml_gpg_key => { 'id' => '6789DEFD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\neyamlkey\n-----END PGP PRIVATE KEY BLOCK-----' }, lookup_hierarchy => { name => Common data, path => common.yaml }, terraform_integration => true, terraform_bucketpath => mybucket:/mypath, puppetdb_url => https://puppetdb.example.com:8081, initial_heap_size => 512m, maximum_heap_size => 512m, report_retention_days => 5 and service_status => stopped" do
           let(:params) { {
             'version'               => '1.2.3',
             'dns_alt_names'         => 'puppet.services.example.com',
@@ -160,6 +168,7 @@ describe 'profiles::puppet::puppetserver' do
             'puppetdb_url'          => 'https://puppetdb.example.com:8081',
             'initial_heap_size'     => '512m',
             'maximum_heap_size'     => '512m',
+            'report_retention_days' => 5,
             'service_status'        => 'stopped'
           } }
 
@@ -221,6 +230,14 @@ describe 'profiles::puppet::puppetserver' do
           ) }
 
           it { is_expected.to contain_class('profiles::puppet::puppetserver::hiera').that_comes_before('Class[profiles::puppet::puppetserver::terraform]') }
+
+          it { is_expected.to contain_cron('puppetserver_report_retention').with(
+            'environment' => [ 'MAILTO=infra@publiq.be'],
+            'command'     => '/usr/bin/find /opt/puppetlabs/server/data/puppetserver/reports -type f -name "*.yaml" -mtime +4 -exec rm {} \;',
+            'hour'        => '0',
+            'minute'      => '0'
+          ) }
+
           it { is_expected.to contain_class('profiles::puppet::puppetserver::autosign').that_notifies('Class[profiles::puppet::puppetserver::service]') }
           it { is_expected.to contain_class('profiles::puppet::puppetserver::hiera').that_notifies('Class[profiles::puppet::puppetserver::service]') }
           it { is_expected.to contain_class('profiles::puppet::puppetserver::terraform').that_notifies('Class[profiles::puppet::puppetserver::service]') }

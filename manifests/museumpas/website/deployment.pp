@@ -1,12 +1,4 @@
-class profiles::deployment::mpm::website (
-  String $varnish_secret                     = undef,
-  String $mysql_version                      = undef,
-  String $mysql_admin_user                   = 'admin',
-  String $mysql_admin_password               = undef,
-  String $mysql_host                         = undef,
-  Hash $mysql_databases                      = undef,
-  Optional[Variant[Hash]] $varnish_backends  = undef,
-  String $vhost                              = undef,
+class profiles::museumpas::website::deployment (
   String $repository                         = 'museumpas-website',
   Enum['running', 'stopped'] $service_status = 'running',
   $config_source,
@@ -18,64 +10,6 @@ class profiles::deployment::mpm::website (
 ) inherits ::profiles {
 
   $basedir = '/var/www/museumpas'
-
-  class { 'locales':
-    default_locale  => 'en_US.UTF8',
-    locales         => ['nl_BE.UTF8 UTF8', 'fr_BE.UTF8 UTF8', 'nl_NL.UTF8 UTF8', 'fr_FR.UTF8 UTF8'],
-  }
-
-  include apache::mod::expires
-  include apache::mod::headers
-  include apache::mod::rewrite
-  include apache::mod::proxy
-  include apache::mod::proxy_fcgi
-  include apache::vhosts
-  include profiles::firewall::rules
-
-  realize Firewall['300 accept HTTP traffic']
-
-  file { 'mysqld_version_ext_fact':
-    ensure  => 'file',
-    path    => '/etc/puppetlabs/facter/facts.d/mysqld_version.txt',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => "mysqld_version=$mysql_version"
-  }
-
-  file { 'root_my_cnf':
-    ensure  => 'file',
-    path    => '/root/.my.cnf',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0400',
-    content => template('profiles/mpm/my.cnf.erb'),
-    require  => [File['mysqld_version_ext_fact']]
-  }
-
-  $mysql_databases.each |$name,$properties| {
-    mysql::db { $name:
-      user     => $properties['user'],
-      password => $properties['password'],
-      host     => $properties['host'],
-      require  => [File['root_my_cnf']]
-    }
-  }
-
-  file { 'varnish-secret':
-    ensure  => 'file',
-    path    => "/etc/varnish/secret",
-    content => $varnish_secret,
-    owner   => 'varnish',
-    group   => 'varnish',
-    require => [Class['varnish']]
-  }
-
-  class { 'varnish::vcl':
-    backends => {},
-    require => [Class['varnish']]
-  }
-  create_resources('varnish::vcl::backend', $varnish_backends)
 
   realize Apt::Source[$repository]
 
@@ -210,7 +144,7 @@ class profiles::deployment::mpm::website (
   }
 
   systemd::unit_file { 'museumpas-website-horizon.service':
-    source  => 'puppet:///modules/profiles/deployment/mpm/museumpas-website-horizon.service',
+    source  => 'puppet:///modules/profiles/museumpas/website/museumpas-website-horizon.service',
     enable  => true,
     active  => true,
     require => Package['museumpas-website']
@@ -230,6 +164,6 @@ class profiles::deployment::mpm::website (
     puppetdb_url => $puppetdb_url
   }
 
-  Class['php'] -> Class['profiles::deployment::mpm::website']
+  Class['profiles::php'] -> Class['profiles::museumpas::website']
 }
 

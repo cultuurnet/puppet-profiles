@@ -16,6 +16,7 @@ class profiles::puppet::puppetserver (
   Optional[String]                         $puppetdb_version      = undef,
   Optional[String]                         $initial_heap_size     = undef,
   Optional[String]                         $maximum_heap_size     = undef,
+  Integer                                  $report_retention_days = 0,
   Enum['running', 'stopped']               $service_status        = 'running'
 
 ) inherits ::profiles {
@@ -24,6 +25,7 @@ class profiles::puppet::puppetserver (
     fail("Class Profiles::Puppet::Puppetserver expects either a value for parameter 'trusted_amis' or 'trusted_certnames' when autosigning")
   }
 
+  $retention_days                 = max(0, $report_retention_days - 1)
   $default_ini_setting_attributes = {
                                       path    => '/etc/puppetlabs/puppet/puppet.conf',
                                       section => 'server'
@@ -160,6 +162,13 @@ class profiles::puppet::puppetserver (
       require => Class['profiles::puppet::puppetserver::install'],
       notify  => Class['profiles::puppet::puppetserver::service']
     }
+  }
+
+  cron {'puppetserver_report_retention':
+    environment => [ 'MAILTO=infra@publiq.be'],
+    command     => "/usr/bin/find /opt/puppetlabs/server/data/puppetserver/reports -type f -name \"*.yaml\" -mtime +${retention_days} -exec rm {} \\;",
+    hour        => '0',
+    minute      => '0'
   }
 
   class { 'profiles::puppet::puppetserver::service':

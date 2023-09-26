@@ -58,6 +58,9 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'publiq-nodejs-14', { :location => 'https://apt.publiq.be/publiq-nodejs-14-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'publiq-nodejs-16', { :location => 'https://apt.publiq.be/publiq-nodejs-16-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'publiq-nodejs-18', { :location => 'https://apt.publiq.be/publiq-nodejs-18-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'nodejs-16', { :location => 'https://apt.publiq.be/nodejs-16-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'nodejs-18', { :location => 'https://apt.publiq.be/nodejs-18-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'nodejs-20', { :location => 'https://apt.publiq.be/nodejs-20-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'elastic-5.x', { :location => 'https://apt.publiq.be/elastic-5.x-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'elastic-8.x', { :location => 'https://apt.publiq.be/elastic-8.x-testing', :repos => 'main', :release => 'focal' }
 
