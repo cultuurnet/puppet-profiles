@@ -1,23 +1,24 @@
 class profiles::puppet::puppetserver (
-  String                                   $version               = 'installed',
-  Optional[Variant[String, Array[String]]] $dns_alt_names         = undef,
-  Boolean                                  $autosign              = false,
-  Variant[String, Array[String]]           $trusted_amis          = [],
-  Variant[String, Array[String]]           $trusted_certnames     = [],
-  Boolean                                  $eyaml                 = false,
-  Hash                                     $eyaml_gpg_key         = {},
-  Variant[Hash,Array[Hash]]                $lookup_hierarchy      = [
-                                                                      { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
-                                                                      { 'name' => 'Common data', 'path' => 'common.yaml' }
-                                                                    ],
-  Boolean                                  $terraform_integration = false,
-  Optional[String]                         $terraform_bucketpath  = undef,
-  Optional[Stdlib::Httpurl]                $puppetdb_url          = undef,
-  Optional[String]                         $puppetdb_version      = undef,
-  Optional[String]                         $initial_heap_size     = undef,
-  Optional[String]                         $maximum_heap_size     = undef,
-  Integer                                  $report_retention_days = 0,
-  Enum['running', 'stopped']               $service_status        = 'running'
+  String                                   $version                = 'installed',
+  Optional[Variant[String, Array[String]]] $dns_alt_names          = undef,
+  Boolean                                  $autosign               = false,
+  Variant[String, Array[String]]           $trusted_amis           = [],
+  Variant[String, Array[String]]           $trusted_certnames      = [],
+  Boolean                                  $eyaml                  = false,
+  Hash                                     $eyaml_gpg_key          = {},
+  Variant[Hash,Array[Hash]]                $lookup_hierarchy       = [
+                                                                       { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
+                                                                       { 'name' => 'Common data', 'path' => 'common.yaml' }
+                                                                     ],
+  Boolean                                  $terraform_integration  = false,
+  Optional[String]                         $terraform_bucket       = undef,
+  Boolean                                  $terraform_use_iam_role = true,
+  Optional[Stdlib::Httpurl]                $puppetdb_url           = undef,
+  Optional[String]                         $puppetdb_version       = undef,
+  Optional[String]                         $initial_heap_size      = undef,
+  Optional[String]                         $maximum_heap_size      = undef,
+  Integer                                  $report_retention_days  = 0,
+  Enum['running', 'stopped']               $service_status         = 'running'
 
 ) inherits ::profiles {
 
@@ -106,9 +107,10 @@ class profiles::puppet::puppetserver (
 
   if $terraform_integration {
     class { 'profiles::puppet::puppetserver::terraform':
-      bucketpath => $terraform_bucketpath,
-      require    => Class['profiles::puppet::puppetserver::hiera'],
-      notify     => Class['profiles::puppet::puppetserver::service']
+      bucket       => $terraform_bucket,
+      use_iam_role => $terraform_use_iam_role,
+      require      => Class['profiles::puppet::puppetserver::hiera'],
+      notify       => Class['profiles::puppet::puppetserver::service']
     }
   }
 

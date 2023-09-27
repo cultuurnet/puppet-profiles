@@ -16,25 +16,26 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_class('profiles::puppet::puppetserver').with(
-            'version'               => 'installed',
-            'dns_alt_names'         => nil,
-            'autosign'              => false,
-            'trusted_amis'          => [],
-            'trusted_certnames'     => [],
-            'eyaml'                 => false,
-            'eyaml_gpg_key'         => {},
-            'lookup_hierarchy'      => [
-                                         { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
-                                         { 'name' => 'Common data', 'path' => 'common.yaml' }
-                                       ],
-            'terraform_integration' => false,
-            'terraform_bucketpath'  => nil,
-            'puppetdb_url'          => nil,
-            'puppetdb_version'      => nil,
-            'initial_heap_size'     => nil,
-            'maximum_heap_size'     => nil,
-            'report_retention_days' => 0,
-            'service_status'        => 'running'
+            'version'                => 'installed',
+            'dns_alt_names'          => nil,
+            'autosign'               => false,
+            'trusted_amis'           => [],
+            'trusted_certnames'      => [],
+            'eyaml'                  => false,
+            'eyaml_gpg_key'          => {},
+            'lookup_hierarchy'       => [
+                                          { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
+                                          { 'name' => 'Common data', 'path' => 'common.yaml' }
+                                        ],
+            'terraform_integration'  => false,
+            'terraform_bucket'       => nil,
+            'terraform_use_iam_role' => true,
+            'puppetdb_url'           => nil,
+            'puppetdb_version'       => nil,
+            'initial_heap_size'      => nil,
+            'maximum_heap_size'      => nil,
+            'report_retention_days'  => 0,
+            'service_status'         => 'running'
           ) }
 
           it { is_expected.to contain_firewall('300 accept puppetserver HTTPS traffic') }
@@ -150,7 +151,7 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to contain_hocon_setting('puppetserver dropsonde').that_notifies('Class[profiles::puppet::puppetserver::service]') }
         end
 
-        context "with version => 1.2.3, dns_alt_names => puppet.services.example.com, autosign => true, trusted_amis => ami-123, trusted_certnames => [], eyaml => true, eyaml_gpg_key => { 'id' => '6789DEFD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\neyamlkey\n-----END PGP PRIVATE KEY BLOCK-----' }, lookup_hierarchy => { name => Common data, path => common.yaml }, terraform_integration => true, terraform_bucketpath => mybucket:/mypath, puppetdb_url => https://puppetdb.example.com:8081, initial_heap_size => 512m, maximum_heap_size => 512m, report_retention_days => 5 and service_status => stopped" do
+        context "with version => 1.2.3, dns_alt_names => puppet.services.example.com, autosign => true, trusted_amis => ami-123, trusted_certnames => [], eyaml => true, eyaml_gpg_key => { 'id' => '6789DEFD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\neyamlkey\n-----END PGP PRIVATE KEY BLOCK-----' }, lookup_hierarchy => { name => Common data, path => common.yaml }, terraform_integration => true, terraform_bucket => mybucket, puppetdb_url => https://puppetdb.example.com:8081, initial_heap_size => 512m, maximum_heap_size => 512m, report_retention_days => 5 and service_status => stopped" do
           let(:params) { {
             'version'               => '1.2.3',
             'dns_alt_names'         => 'puppet.services.example.com',
@@ -164,7 +165,7 @@ describe 'profiles::puppet::puppetserver' do
                                        },
             'lookup_hierarchy'      => { 'name' => 'Common data', 'path' => 'common.yaml' },
             'terraform_integration' => true,
-            'terraform_bucketpath'  => 'mybucket:/mypath',
+            'terraform_bucket'      => 'mybucket',
             'puppetdb_url'          => 'https://puppetdb.example.com:8081',
             'initial_heap_size'     => '512m',
             'maximum_heap_size'     => '512m',
@@ -217,7 +218,8 @@ describe 'profiles::puppet::puppetserver' do
           ) }
 
           it { is_expected.to contain_class('profiles::puppet::puppetserver::terraform').with(
-            'bucketpath' => 'mybucket:/mypath'
+            'bucket'       => 'mybucket',
+            'use_iam_role' => true
           ) }
 
           it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').with(
@@ -252,21 +254,22 @@ describe 'profiles::puppet::puppetserver' do
       context "on host bbb.example.com" do
         let(:node) { 'bbb.example.com' }
 
-        context "with autosign => true, trusted_amis => [], trusted_certnames => [a.example.com, b.example.com, *.c.example.com], eyaml => true, eyaml_gpg_key => { 'id' => '1234ABCD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK-----' }, terraform_integration => true, terraform_bucketpath => foobar:/baz, puppetdb_url => https://foo.example.com:1234, puppetdb_version => 7.8.9 and dns_alt_names => [puppet1.services.example.com, puppet2.services.example.com]" do
+        context "with autosign => true, trusted_amis => [], trusted_certnames => [a.example.com, b.example.com, *.c.example.com], eyaml => true, eyaml_gpg_key => { 'id' => '1234ABCD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK-----' }, terraform_integration => true, terraform_bucket => foobar, terraform_use_iam_role => false, puppetdb_url => https://foo.example.com:1234, puppetdb_version => 7.8.9 and dns_alt_names => [puppet1.services.example.com, puppet2.services.example.com]" do
           let(:params) { {
-            'autosign'              => true,
-            'trusted_amis'          => [],
-            'trusted_certnames'     => ['a.example.com', 'b.example.com', '*.c.example.com'],
-            'eyaml'                 => true,
-            'eyaml_gpg_key'         => {
-                                         'id'      => '1234ABCD',
-                                         'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK-----"
-                                       },
-            'terraform_integration' => true,
-            'terraform_bucketpath'  => 'foobar:/baz',
-            'puppetdb_url'          => 'https://foo.example.com:1234',
-            'puppetdb_version'      => '7.8.9',
-            'dns_alt_names'         => ['puppet1.services.example.com', 'puppet2.services.example.com'],
+            'autosign'               => true,
+            'trusted_amis'           => [],
+            'trusted_certnames'      => ['a.example.com', 'b.example.com', '*.c.example.com'],
+            'eyaml'                  => true,
+            'eyaml_gpg_key'          => {
+                                          'id'      => '1234ABCD',
+                                          'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK-----"
+                                        },
+            'terraform_integration'  => true,
+            'terraform_bucket'       => 'foobar',
+            'terraform_use_iam_role' => false,
+            'puppetdb_url'           => 'https://foo.example.com:1234',
+            'puppetdb_version'       => '7.8.9',
+            'dns_alt_names'          => ['puppet1.services.example.com', 'puppet2.services.example.com'],
           } }
 
           it { is_expected.to contain_ini_setting('puppetserver ca_server').with(
@@ -293,7 +296,8 @@ describe 'profiles::puppet::puppetserver' do
           ) }
 
           it { is_expected.to contain_class('profiles::puppet::puppetserver::terraform').with(
-            'bucketpath' => 'foobar:/baz'
+            'bucket'       => 'foobar',
+            'use_iam_role' => false
           ) }
 
           it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').with(

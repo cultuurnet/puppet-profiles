@@ -7,12 +7,17 @@ describe 'profiles::puppet::puppetserver::terraform' do
    context "on #{os}" do
       let(:facts) { facts }
 
-      context "with bucketpath => mybucket:/mypath" do
+      context "with bucket => mybucket" do
         let(:params) { {
-          'bucketpath' => 'mybucket:/mypath'
+          'bucket' => 'mybucket'
         } }
 
         it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to contain_class('profiles::puppet::puppetserver::terraform').with(
+          'bucket'       => 'mybucket',
+          'use_iam_role' => true
+        ) }
 
         it { is_expected.to contain_group('puppet') }
         it { is_expected.to contain_user('puppet') }
@@ -28,9 +33,9 @@ describe 'profiles::puppet::puppetserver::terraform' do
         it { is_expected.to contain_mount('puppetserver-terraform-data').with(
           'ensure'   => 'mounted',
           'name'     => '/etc/puppetlabs/code/data/terraform',
-          'device'   => 'mybucket:/mypath',
+          'device'   => 'mybucket',
           'fstype'   => 'fuse.s3fs',
-          'options'  => '_netdev,nonempty,ro,nosuid,allow_other,multireq_max=5,uid=452,gid=452',
+          'options'  => '_netdev,nonempty,ro,nosuid,allow_other,multireq_max=5,uid=452,gid=452,iam_role=auto',
           'remounts' => false,
           'atboot'   => true
         ) }
@@ -41,15 +46,16 @@ describe 'profiles::puppet::puppetserver::terraform' do
         it { is_expected.to contain_class('profiles::s3fs').that_comes_before('Mount[puppetserver-terraform-data]') }
       end
 
-      context "with bucketpath => foobar:/baz" do
+      context "with bucket => foobar and use_iam_role => false" do
         let(:params) { {
-          'bucketpath' => 'foobar:/baz'
+          'bucket'       => 'foobar',
+          'use_iam_role' => false
         } }
 
         it { is_expected.to contain_mount('puppetserver-terraform-data').with(
           'ensure'   => 'mounted',
           'name'     => '/etc/puppetlabs/code/data/terraform',
-          'device'   => 'foobar:/baz',
+          'device'   => 'foobar',
           'fstype'   => 'fuse.s3fs',
           'options'  => '_netdev,nonempty,ro,nosuid,allow_other,multireq_max=5,uid=452,gid=452',
           'remounts' => false,
@@ -60,7 +66,7 @@ describe 'profiles::puppet::puppetserver::terraform' do
       context "without parameters" do
         let(:params) { {} }
 
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'bucketpath'/) }
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'bucket'/) }
       end
     end
   end
