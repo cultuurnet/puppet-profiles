@@ -1,6 +1,14 @@
 class profiles::puppet::puppetserver::terraform (
-  String $bucketpath
+  String  $bucket,
+  Boolean $use_iam_role = true
 ) inherits ::profiles {
+
+  $iam_role_mount_option = $use_iam_role ? {
+    true  => 'iam_role=auto',
+    false => undef
+  }
+
+  $mount_options = ['_netdev', 'nonempty', 'ro', 'nosuid', 'allow_other', 'multireq_max=5', 'uid=452', 'gid=452', $iam_role_mount_option]
 
   realize Group['puppet']
   realize User['puppet']
@@ -17,10 +25,10 @@ class profiles::puppet::puppetserver::terraform (
 
   mount { 'puppetserver-terraform-data':
     ensure   => 'mounted',
-    device   => $bucketpath,
+    device   => $bucket,
     name     => '/etc/puppetlabs/code/data/terraform',
     fstype   => 'fuse.s3fs',
-    options  => '_netdev,nonempty,ro,nosuid,allow_other,multireq_max=5,uid=452,gid=452',
+    options  => join($mount_options.filter |$option| { $option }, ','),
     remounts => false,
     atboot   => true,
     require  => [File['puppetserver-terraform-data'], Class['profiles::s3fs']]
