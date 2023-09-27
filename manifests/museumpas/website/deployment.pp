@@ -20,7 +20,7 @@ class profiles::museumpas::website::deployment (
     noop    => $noop_deploy
   }
 
-  if defined('$terraform::efs::mount_target_dns_name') {
+  if $terraform::efs::mount_target_dns_name {
     realize Package['nfs-common']
 
     mount { "${basedir}/storage/app/public":
