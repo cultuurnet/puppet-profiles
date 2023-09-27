@@ -75,4 +75,8 @@ class profiles::packages inherits ::profiles {
   @package { 'build-essential':
     ensure  => 'present'
   }
+
+  @package { 'nfs-common':
+    ensure  => 'present'
+  }
 }
