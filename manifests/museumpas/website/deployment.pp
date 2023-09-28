@@ -26,11 +26,11 @@ class profiles::museumpas::website::deployment (
 
   if $mount_target_dns_name {
     profiles::nfs::mount { "${mount_target_dns_name}:/":
-      mountpoint => "${basedir}/storage/app/public",
-      options    => 'nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2',
-      owner      => 'www-data',
-      group      => 'www-data',
-      require    => [Package['museumpas-website'],User['www-data'],Group['www-data']]
+      mountpoint    => "${basedir}/storage/app/public",
+      mount_options => 'nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2',
+      owner         => 'www-data',
+      group         => 'www-data',
+      require       => [Package['museumpas-website'],User['www-data'],Group['www-data']]
     }
   }
 
