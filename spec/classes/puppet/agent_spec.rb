@@ -35,6 +35,16 @@ describe 'profiles::puppet::agent' do
           'force'  => true
         ) }
 
+        it { is_expected.to contain_file('puppet agent facter datadir').with(
+          'ensure' => 'directory',
+          'path'   => '/etc/puppetlabs/facter'
+        ) }
+
+        it { is_expected.to contain_file('puppet agent facts.d datadir').with(
+          'ensure' => 'directory',
+          'path'   => '/etc/puppetlabs/facter/facts.d'
+        ) }
+
         it { is_expected.to contain_service('puppet').with(
           'ensure'    => 'stopped',
           'enable'    => false,
