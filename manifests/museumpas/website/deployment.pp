@@ -9,7 +9,8 @@ class profiles::museumpas::website::deployment (
   $puppetdb_url                              = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
-  $basedir = '/var/www/museumpas'
+  $basedir               = '/var/www/museumpas'
+  $mount_target_dns_name = lookup('terraform::efs::mount_target_dns_name', Optional[String], 'first', undef)
 
   realize Apt::Source[$repository]
 
@@ -20,12 +21,12 @@ class profiles::museumpas::website::deployment (
     noop    => $noop_deploy
   }
 
-  if lookup('terraform::efs::mount_target_dns_name', Optional[String], 'first', undef) {
+  if $mount_target_dns_name {
     realize Package['nfs-common']
 
     mount { "${basedir}/storage/app/public":
       ensure  => 'mounted',
-      device  => "${terraform::efs::mount_target_dns_name}:/",
+      device  => "${mount_target_dns_name}:/",
       fstype  => 'nfs4',
       options => 'nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2',
       atboot  => true,
