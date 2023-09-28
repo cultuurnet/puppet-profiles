@@ -30,6 +30,18 @@ class profiles::puppet::agent (
     require => Package['puppet-agent']
   }
 
+  file { 'puppet agent facter datadir':
+    ensure  => 'directory',
+    path    => '/etc/puppetlabs/facter',
+    require => Package['puppet-agent']
+  }
+
+  file { 'puppet agent facts.d datadir':
+    ensure  => 'directory',
+    path    => '/etc/puppetlabs/facter/facts.d',
+    require => File['puppet agent facter datadir']
+  }
+
   if $puppetserver {
     ini_setting { 'puppetserver':
       ensure  => 'present',
