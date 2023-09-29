@@ -7,6 +7,11 @@ class profiles::nodejs (
   realize Apt::Source["publiq-nodejs-${major_version}"]
   realize Apt::Source['publiq-tools']
 
+  if $major_version in ['16', '18'] {
+    realize Apt::Source["nodejs-${major_version}"]
+    Apt::Source["nodejs-${major_version}"] -> Class['nodejs']
+  }
+
   realize Package['yarn']
 
   class { '::nodejs':

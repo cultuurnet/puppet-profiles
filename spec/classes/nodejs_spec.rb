@@ -33,12 +33,14 @@ describe 'profiles::nodejs' do
         let(:params) { { 'version' => '16.17.0-1nodesource1' } }
 
         it { is_expected.to contain_apt__source('publiq-nodejs-16') }
+        it { is_expected.to contain_apt__source('nodejs-16') }
 
         it { is_expected.to contain_class('nodejs').with(
           'nodejs_package_ensure' => '16.17.0-1nodesource1'
         ) }
 
         it { is_expected.to contain_class('nodejs').that_requires('Apt::Source[publiq-nodejs-16]') }
+        it { is_expected.to contain_class('nodejs').that_requires('Apt::Source[nodejs-16]') }
       end
     end
   end
