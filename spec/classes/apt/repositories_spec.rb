@@ -662,6 +662,28 @@ describe 'profiles::apt::repositories' do
               },
               'release'      => 'xenial'
             ) }
+
+            it { is_expected.to contain_apt__source('nodejs-16').with(
+              'location'     => 'https://apt.publiq.be/nodejs-16-acceptance',
+              'ensure'       => 'present',
+              'repos'        => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'      => 'xenial'
+            ) }
+
+            it { is_expected.to contain_apt__source('nodejs-18').with(
+              'location'     => 'https://apt.publiq.be/nodejs-18-acceptance',
+              'ensure'       => 'present',
+              'repos'        => 'main',
+              'include'      => {
+                'deb' => 'true',
+                'src' => 'false'
+              },
+              'release'      => 'xenial'
+            ) }
           end
 
           context "in the production environment" do

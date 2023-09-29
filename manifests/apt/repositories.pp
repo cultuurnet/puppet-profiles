@@ -350,6 +350,18 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'nodejs-16':
+    location => "https://apt.publiq.be/nodejs-16-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
+  @apt::source { 'nodejs-18':
+    location => "https://apt.publiq.be/nodejs-18-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   @apt::source { 'publiq-tools':
     location => "https://apt.publiq.be/publiq-tools-${facts['os']['distro']['codename']}-${environment}",
     release  => $facts['os']['distro']['codename'],
