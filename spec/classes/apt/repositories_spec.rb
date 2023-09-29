@@ -642,25 +642,11 @@ describe 'profiles::apt::repositories' do
             ) }
 
             it { is_expected.to contain_apt__source('publiq-nodejs-16').with(
-              'location'     => 'https://apt.publiq.be/publiq-nodejs-16-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
+              'ensure' => 'absent'
             ) }
 
             it { is_expected.to contain_apt__source('publiq-nodejs-18').with(
-              'location'     => 'https://apt.publiq.be/publiq-nodejs-18-acceptance',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'xenial'
+              'ensure' => 'absent'
             ) }
 
             it { is_expected.to contain_apt__source('nodejs-16').with(
@@ -741,25 +727,11 @@ describe 'profiles::apt::repositories' do
             ) }
 
             it { is_expected.to contain_apt__source('publiq-nodejs-16').with(
-              'location'     => 'https://apt.publiq.be/publiq-nodejs-16-testing',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'bionic'
+              'ensure' => 'absent'
             ) }
 
             it { is_expected.to contain_apt__source('publiq-nodejs-18').with(
-              'location'     => 'https://apt.publiq.be/publiq-nodejs-18-testing',
-              'ensure'       => 'present',
-              'repos'        => 'main',
-              'include'      => {
-                'deb' => 'true',
-                'src' => 'false'
-              },
-              'release'      => 'bionic'
+              'ensure' => 'absent'
             ) }
           end
 
