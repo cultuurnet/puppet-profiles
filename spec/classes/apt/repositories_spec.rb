@@ -641,14 +641,6 @@ describe 'profiles::apt::repositories' do
               'release'      => 'xenial'
             ) }
 
-            it { is_expected.to contain_apt__source('publiq-nodejs-16').with(
-              'ensure' => 'absent'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-nodejs-18').with(
-              'ensure' => 'absent'
-            ) }
-
             it { is_expected.to contain_apt__source('nodejs-16').with(
               'location'     => 'https://apt.publiq.be/nodejs-16-acceptance',
               'ensure'       => 'present',

@@ -338,14 +338,6 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
-  @apt::source { 'publiq-nodejs-16':
-    ensure => 'absent'
-  }
-
-  @apt::source { 'publiq-nodejs-18':
-    ensure => 'absent'
-  }
-
   @apt::source { 'nodejs-16':
     location => "https://apt.publiq.be/nodejs-16-${environment}",
     release  => $facts['os']['distro']['codename'],
