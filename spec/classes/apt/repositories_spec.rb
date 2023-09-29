@@ -389,7 +389,7 @@ describe 'profiles::apt::repositories' do
             ) }
 
             it { is_expected.to contain_apt__source('newrelic-infra').with(
-              'location'     => 'https://apt.publiq.be/newrelic-infra-acceptance',
+              'location'     => 'https://apt.publiq.be/newrelic-infra-xenial-acceptance',
               'ensure'       => 'present',
               'repos'        => 'main',
               'include'      => {
