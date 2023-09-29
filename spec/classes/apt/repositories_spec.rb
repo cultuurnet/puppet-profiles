@@ -55,9 +55,6 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'newrelic-infra', { :location => 'https://apt.publiq.be/newrelic-infra-focal-testing', :repos => 'main', :release => 'focal' }
 
             include_examples 'apt repositories', 'publiq-tools', { :location => 'https://apt.publiq.be/publiq-tools-focal-testing', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'publiq-nodejs-14', { :location => 'https://apt.publiq.be/publiq-nodejs-14-testing', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'publiq-nodejs-16', { :location => 'https://apt.publiq.be/publiq-nodejs-16-testing', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'publiq-nodejs-18', { :location => 'https://apt.publiq.be/publiq-nodejs-18-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'nodejs-16', { :location => 'https://apt.publiq.be/nodejs-16-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'nodejs-18', { :location => 'https://apt.publiq.be/nodejs-18-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'nodejs-20', { :location => 'https://apt.publiq.be/nodejs-20-testing', :repos => 'main', :release => 'focal' }

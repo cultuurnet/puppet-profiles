@@ -86,21 +86,15 @@ class profiles::apt::repositories {
   }
 
   @apt::source { 'publiq-nodejs-14':
-    location => "https://apt.publiq.be/publiq-nodejs-14-${environment}",
-    release  => $facts['os']['distro']['codename'],
-    repos    => 'main'
+    ensure   => 'absent'
   }
 
   @apt::source { 'publiq-nodejs-16':
-    location => "https://apt.publiq.be/publiq-nodejs-16-${environment}",
-    release  => $facts['os']['distro']['codename'],
-    repos    => 'main'
+    ensure   => 'absent'
   }
 
   @apt::source { 'publiq-nodejs-18':
-    location => "https://apt.publiq.be/publiq-nodejs-18-${environment}",
-    release  => $facts['os']['distro']['codename'],
-    repos    => 'main'
+    ensure   => 'absent'
   }
 
   @apt::source { 'nodejs-16':
