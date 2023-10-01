@@ -9,7 +9,6 @@ class profiles::nodejs (
     }
   }
 
-  realize Apt::Source["publiq-nodejs-${major_version}"]
   realize Apt::Source["nodejs-${major_version}"]
   realize Apt::Source['publiq-tools']
 
