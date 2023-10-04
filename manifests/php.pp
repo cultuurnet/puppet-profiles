@@ -1,9 +1,13 @@
 class profiles::php (
-  Integer[1, 2]    $with_composer_default_version = 1,
-  Boolean          $newrelic_agent_enabled        = false,
-  String           $newrelic_app_name             = "${facts['networking']['hostname']}.machines.publiq.be",
-  Optional[String] $newrelic_license_key          = undef
+  Integer[1, 2]    $with_composer_default_version        = 1,
+  Boolean          $newrelic_agent_enabled               = false,
+  String           $newrelic_app_name                    = "${facts['networking']['hostname']}.machines.publiq.be",
+  Optional[String] $newrelic_license_key                 = undef,
+  Boolean          $newrelic_distributed_tracing_enabled = false
+
 ) inherits ::profiles {
+
+  $php_version = lookup('php::globals::php_version', Optional[String], 'first', '7.4')
 
   realize Apt::Source['cultuurnet-tools']
 
@@ -47,6 +51,15 @@ class profiles::php (
       ensure       => 'latest',
       responsefile => '/var/tmp/newrelic-php5-installer.preseed',
       require      => [File['newrelic-php5-installer.preseed']]
+    }
+
+    augeas { "newrelic.ini":
+      notify  => Service[httpd],
+      require => Package[newrelic-php5],
+      context => "/files/etc/php/${php_version}/apache2/conf.d/20-newrelic.ini/newrelic",
+      changes => [
+        "set newrelic.distributed_tracing_enabled ${bool2str(newrelic_distributed_tracing_enabled)}",
+      ];
     }
   }
 
