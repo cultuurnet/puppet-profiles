@@ -57,7 +57,7 @@ class profiles::php (
       ensure  => 'present',
       setting => 'newrelic.distributed_tracing_enabled',
       section => 'newrelic',
-      value   => "${String($newrelic_distributed_tracing_enabled)}",
+      value   => String($newrelic_distributed_tracing_enabled),
       path    => "/files/etc/php/${php_version}/apache2/conf.d/20-newrelic.ini",
       notify  => Service[httpd],
       require => Package[newrelic-php5]
