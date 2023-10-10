@@ -13,8 +13,8 @@ class profiles::museumpas::website (
   $basedir = '/var/www/museumpas'
 
   class { 'locales':
-    default_locale  => 'en_US.UTF8',
-    locales         => ['nl_BE.UTF8 UTF8', 'fr_BE.UTF8 UTF8', 'nl_NL.UTF8 UTF8', 'fr_FR.UTF8 UTF8'],
+    default_locale  => 'en_US.UTF-8 UTF-8',
+    locales         => ['en_US.UTF-8 UTF-8', 'nl_BE.UTF-8 UTF-8', 'fr_BE.UTF-8 UTF-8', 'nl_NL.UTF-8 UTF-8', 'fr_FR.UTF-8 UTF-8'],
   }
 
   if $install_redis {
