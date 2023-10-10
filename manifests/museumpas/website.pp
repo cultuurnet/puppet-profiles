@@ -13,7 +13,7 @@ class profiles::museumpas::website (
   $basedir = '/var/www/museumpas'
 
   class { 'locales':
-    default_locale  => 'en_US.UTF-8 UTF-8',
+    default_locale  => 'en_US.UTF-8',
     locales         => ['en_US.UTF-8 UTF-8', 'nl_BE.UTF-8 UTF-8', 'fr_BE.UTF-8 UTF-8', 'nl_NL.UTF-8 UTF-8', 'fr_FR.UTF-8 UTF-8'],
   }
 
