@@ -31,9 +31,10 @@ describe 'profiles::lvm::mount' do
             ) }
 
             it { is_expected.to contain_logical_volume('foo').with(
-              'ensure'        => 'present',
-              'volume_group'  => 'datavg',
-              'size'          => '1G'
+              'ensure'          => 'present',
+              'volume_group'    => 'datavg',
+              'size'            => '1G',
+              'size_is_minsize' => true
             ) }
 
             it { is_expected.to contain_filesystem('/dev/datavg/foo').with(
@@ -92,9 +93,10 @@ describe 'profiles::lvm::mount' do
             it { is_expected.to contain_user('ubuntu') }
 
             it { is_expected.to contain_logical_volume('foo').with(
-              'ensure'        => 'present',
-              'volume_group'  => 'foovg',
-              'size'          => '10G'
+              'ensure'          => 'present',
+              'volume_group'    => 'foovg',
+              'size'            => '10G',
+              'size_is_minsize' => true
             ) }
 
             it { is_expected.to contain_filesystem('/dev/foovg/foo').with(
@@ -177,9 +179,10 @@ describe 'profiles::lvm::mount' do
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to contain_logical_volume('bar').with(
-              'ensure'        => 'present',
-              'volume_group'  => 'myvg',
-              'size'          => '5G'
+              'ensure'          => 'present',
+              'volume_group'    => 'myvg',
+              'size'            => '5G',
+              'size_is_minsize' => true
             ) }
 
             it { is_expected.to contain_filesystem('/dev/myvg/bar').with(
