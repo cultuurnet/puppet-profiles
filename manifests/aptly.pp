@@ -117,7 +117,7 @@ class profiles::aptly (
     file { 'aptly trustedkeys.gpg':
       path   => "${homedir}/.gnupg/trustedkeys.gpg",
       ensure => 'link',
-      target => "${homedir}/.gnupg/pubring.gpg",
+      target => "${homedir}/.gnupg/pubring.kbx",
       owner  => 'aptly',
       group  => 'aptly'
     }

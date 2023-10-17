@@ -157,7 +157,7 @@ describe 'profiles::aptly' do
           it { is_expected.to contain_file('aptly trustedkeys.gpg').with(
             'ensure' => 'link',
             'path'   => '/home/aptly/.gnupg/trustedkeys.gpg',
-            'target' => '/home/aptly/.gnupg/pubring.gpg',
+            'target' => '/home/aptly/.gnupg/pubring.kbx',
             'owner'  => 'aptly',
             'group'  => 'aptly',
           ) }
@@ -261,7 +261,7 @@ describe 'profiles::aptly' do
           it { is_expected.to contain_file('aptly trustedkeys.gpg').with(
             'ensure' => 'link',
             'path'   => '/home/aptly/.gnupg/trustedkeys.gpg',
-            'target' => '/home/aptly/.gnupg/pubring.gpg',
+            'target' => '/home/aptly/.gnupg/pubring.kbx',
             'owner'  => 'aptly',
             'group'  => 'aptly',
           ) }
