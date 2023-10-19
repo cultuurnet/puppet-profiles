@@ -18,10 +18,11 @@ define profiles::lvm::mount (
   unless $owner == 'root' { realize User[$owner] }
 
   logical_volume { $title:
-    ensure       => 'present',
-    volume_group => $volume_group,
-    size         => $size,
-    require      => Volume_group[$volume_group]
+    ensure          => 'present',
+    volume_group    => $volume_group,
+    size            => $size,
+    size_is_minsize => true,
+    require         => Volume_group[$volume_group]
   }
 
   filesystem { "/dev/${volume_group}/${title}":
