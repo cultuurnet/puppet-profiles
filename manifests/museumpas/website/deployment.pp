@@ -178,7 +178,7 @@ class profiles::museumpas::website::deployment (
   if $run_scheduler_cron {
     cron { 'museumpas-filament-scheduler':
       command     => "cd ${basedir} && php artisan schedule:run >> /dev/null 2>&1",
-      require     => Package['museumpas-website'],
+      require     => [ User['www-data'], Package['museumpas-website'] ],
       user        => 'www-data'
     }
   }
