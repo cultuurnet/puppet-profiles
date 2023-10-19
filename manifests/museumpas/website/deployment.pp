@@ -6,7 +6,8 @@ class profiles::museumpas::website::deployment (
   $version                                   = 'latest',
   $robots_source                             = undef,
   $noop_deploy                               = false,
-  $puppetdb_url                              = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+  $puppetdb_url                              = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef),
+  $run_scheduler_cron                        = true
 ) inherits ::profiles {
 
   $basedir               = '/var/www/museumpas'
@@ -172,6 +173,14 @@ class profiles::museumpas::website::deployment (
                    'stopped' => false
                  },
     require   => [Systemd::Unit_file['museumpas-website-horizon.service']]
+  }
+
+  if $run_scheduler_cron {
+    cron { 'museumpas-filament-scheduler':
+      command     => "cd ${basedir} && php artisan schedule:run > /dev/null 2>&1",
+      require     => [ User['www-data'], Package['museumpas-website'] ],
+      user        => 'www-data'
+    }
   }
 
   profiles::deployment::versions { $title:
