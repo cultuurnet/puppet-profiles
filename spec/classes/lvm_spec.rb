@@ -65,6 +65,41 @@ describe 'profiles::lvm' do
 
         it { is_expected.to contain_physical_volume('/dev/xvdb').that_requires('Class[lvm]') }
         it { is_expected.to contain_physical_volume('/dev/xvdb').that_comes_before('Volume_group[datavg]') }
+
+        context "with terraform provided volume size for xvdb set to 60g" do
+          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
+          context "with physical extent count for /dev/xvdb being 15359" do
+            let(:facts) {
+              facts.merge( {
+                'physical_volumes' => { '/dev/xvdb' => { 'pe_count' => '15359' } }
+              } )
+            }
+
+            it { is_expected.not_to contain_exec('resize physical volume /dev/xvdb') }
+          end
+
+          context "with physical extent count for /dev/xvdb being 10000" do
+            let(:facts) {
+              facts.merge( {
+                'physical_volumes' => { '/dev/xvdb' => { 'pe_count' => '10000' } }
+              } )
+            }
+
+            it { is_expected.to contain_exec('resize_pv_/dev/xvdb').with(
+              'command' => 'pvresize /dev/xvdb',
+              'path'    => ['/usr/sbin', '/usr/bin']
+            ) }
+
+            it { is_expected.to contain_physical_volume('/dev/xvdb').that_comes_before('Exec[resize_pv_/dev/xvdb]') }
+          end
+        end
+
+        context "without terraform provided volume size for xvdb" do
+          let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
+
+          it { is_expected.not_to contain_exec('resize physical volume /dev/xvdb') }
+        end
       end
 
       context "with volume_groups => { data1vg => { physical_volumes => '/dev/xvdb' }, data2vg => { physical_volumes => [ '/dev/xvdc', '/dev/xvdd'] }}" do
@@ -103,6 +138,63 @@ describe 'profiles::lvm' do
         it { is_expected.to contain_physical_volume('/dev/xvdb').that_comes_before('Volume_group[data1vg]') }
         it { is_expected.to contain_physical_volume('/dev/xvdc').that_comes_before('Volume_group[data2vg]') }
         it { is_expected.to contain_physical_volume('/dev/xvdd').that_comes_before('Volume_group[data2vg]') }
+
+        context "with terraform provided volume size for xvdb set to 60g, for xvdc to 40g and for xvdd to 20g" do
+          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
+          context "with physical extent count for /dev/xdvb being 15359, for /dev/xvdc being  and for /dev/xvdd being " do
+            let(:facts) {
+              facts.merge( {
+                'physical_volumes' => {
+                  '/dev/xvdb' => { 'pe_count' => '15359' },
+                  '/dev/xvdc' => { 'pe_count' => '10239' },
+                  '/dev/xvdd' => { 'pe_count' => '5119' }
+                }
+              } )
+            }
+
+            it { is_expected.not_to contain_exec('resize physical volume /dev/xvdb') }
+            it { is_expected.not_to contain_exec('resize physical volume /dev/xvdc') }
+            it { is_expected.not_to contain_exec('resize physical volume /dev/xvdd') }
+          end
+
+          context "with physical extent count for /dev/xvdb being 10000, for /dev/xvdc being 5000 and for /dev/xvdd being 3000" do
+            let(:facts) {
+              facts.merge( {
+                'physical_volumes' => {
+                  '/dev/xvdb' => { 'pe_count' => '10000' },
+                  '/dev/xvdc' => { 'pe_count' => '5000' },
+                  '/dev/xvdd' => { 'pe_count' => '3000' }
+                }
+              } )
+            }
+
+            it { is_expected.to contain_exec('resize_pv_/dev/xvdb').with(
+              'command' => 'pvresize /dev/xvdb',
+              'path'    => ['/usr/sbin', '/usr/bin']
+            ) }
+
+            it { is_expected.to contain_exec('resize_pv_/dev/xvdc').with(
+              'command' => 'pvresize /dev/xvdc',
+              'path'    => ['/usr/sbin', '/usr/bin']
+            ) }
+
+            it { is_expected.to contain_exec('resize_pv_/dev/xvdd').with(
+              'command' => 'pvresize /dev/xvdd',
+              'path'    => ['/usr/sbin', '/usr/bin']
+            ) }
+
+            it { is_expected.to contain_physical_volume('/dev/xvdb').that_comes_before('Exec[resize_pv_/dev/xvdb]') }
+            it { is_expected.to contain_physical_volume('/dev/xvdc').that_comes_before('Exec[resize_pv_/dev/xvdc]') }
+            it { is_expected.to contain_physical_volume('/dev/xvdd').that_comes_before('Exec[resize_pv_/dev/xvdd]') }
+          end
+        end
+
+        context "without terraform provided volume size for xvdb" do
+          let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
+
+          it { is_expected.not_to contain_exec('resize physical volume /dev/xvdb') }
+        end
       end
     end
   end

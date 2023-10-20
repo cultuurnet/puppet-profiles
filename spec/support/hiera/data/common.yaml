@@ -33,3 +33,7 @@ profiles::ssh_authorized_keys::keys:
     tag: 'foobar'
   'acme first key':
     tag: 'acme'
+
+terraform::volumes::ebs::xvdb::size: 60
+terraform::volumes::ebs::xvdc::size: 40
+terraform::volumes::ebs::xvdd::size: 20
