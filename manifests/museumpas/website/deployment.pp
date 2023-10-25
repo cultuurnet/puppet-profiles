@@ -107,7 +107,7 @@ class profiles::museumpas::website::deployment (
     noop        => $noop_deploy
   }
 
-  exec { 'clear museumpas cache':
+  exec { 'clear museumpas optimize cache':
     command     => 'php artisan optimize:clear',
     cwd         => $basedir,
     path        => [ '/usr/local/bin', '/usr/bin', '/bin'],
@@ -117,6 +117,19 @@ class profiles::museumpas::website::deployment (
     subscribe   => Package['museumpas-website'],
     refreshonly => true,
     require     => [ File['museumpas-website-config'], Exec['run museumpas database migrations'] ],
+    noop        => $noop_deploy
+  }
+
+  exec { 'clear museumpas cache':
+    command     => 'php artisan cache:clear',
+    cwd         => $basedir,
+    path        => [ '/usr/local/bin', '/usr/bin', '/bin'],
+    user        => 'www-data',
+    environment => [ 'HOME=/'],
+    logoutput   => true,
+    subscribe   => Package['museumpas-website'],
+    refreshonly => true,
+    require     => [ File['museumpas-website-config'], Exec['run museumpas database migrations'], Exec['clear museumpas optimize cache'] ],
     noop        => $noop_deploy
   }
 
@@ -130,6 +143,19 @@ class profiles::museumpas::website::deployment (
     subscribe   => Package['museumpas-website'],
     refreshonly => true,
     require     => [ File['museumpas-website-config'], Exec['run museumpas database migrations'], Exec['clear museumpas cache'] ],
+    noop        => $noop_deploy
+  }
+
+  exec { 'optimize museumpas cache':
+    command     => 'php artisan optimize',
+    cwd         => $basedir,
+    path        => [ '/usr/local/bin', '/usr/bin', '/bin'],
+    user        => 'www-data',
+    environment => [ 'HOME=/'],
+    logoutput   => true,
+    subscribe   => Package['museumpas-website'],
+    refreshonly => true,
+    require     => [ File['museumpas-website-config'], Exec['run museumpas database migrations'], Exec['clear museumpas model cache'] ],
     noop        => $noop_deploy
   }
 
