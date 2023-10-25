@@ -146,19 +146,6 @@ class profiles::museumpas::website::deployment (
     noop        => $noop_deploy
   }
 
-  exec { 'optimize museumpas cache':
-    command     => 'php artisan optimize',
-    cwd         => $basedir,
-    path        => [ '/usr/local/bin', '/usr/bin', '/bin'],
-    user        => 'www-data',
-    environment => [ 'HOME=/'],
-    logoutput   => true,
-    subscribe   => Package['museumpas-website'],
-    refreshonly => true,
-    require     => [ File['museumpas-website-config'], Exec['run museumpas database migrations'], Exec['clear museumpas model cache'] ],
-    noop        => $noop_deploy
-  }
-
   exec { 'create storage link':
     command     => 'php artisan storage:link',
     cwd         => $basedir,
