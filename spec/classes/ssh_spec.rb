@@ -69,8 +69,8 @@ describe 'profiles::ssh' do
         it { is_expected.to contain_ssh_authorized_key('publiq second key') }
       end
 
-      context "with ssh_authorized_keys_tags => [ publiq, acme]" do
-        let(:params) { { 'ssh_authorized_keys_tags' => [ 'publiq', 'acme'] } }
+      context "with ssh_authorized_keys_tags => [publiq, acme]" do
+        let(:params) { { 'ssh_authorized_keys_tags' => ['publiq', 'acme'] } }
 
         it { is_expected.to contain_ssh_authorized_key('publiq first key') }
         it { is_expected.to contain_ssh_authorized_key('publiq second key') }
