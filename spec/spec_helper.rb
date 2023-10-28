@@ -1,6 +1,7 @@
 require 'rspec-puppet'
 
 RSpec.configure do |rspec|
+  rspec.order = 'random'
   rspec.mock_with :rspec
   rspec.after(:suite) do
     RSpec::Puppet::Coverage.report!
@@ -12,16 +13,14 @@ RSpec.configure do |rspec|
   # by checking the presence and contents of the file '/proc/1/comm'.
   # This makes sense for a real puppet agent, but breaks when running spec tests on
   # a platform that does not use systemd (like MacOS). We mock the calls the confine
-  # statement makes to simulate running systemd.
+  # statement makes on all platforms to simulate running systemd.
   #
   # For more information, see: https://tickets.puppetlabs.com/browse/PUP-11167
-  if RUBY_PLATFORM =~ /darwin/i
-    rspec.before(:each) do
-      allow(Puppet::FileSystem).to receive(:exist?).and_call_original
-      allow(Puppet::FileSystem).to receive(:exist?).with('/proc/1/comm').and_return(true)
-      allow(Puppet::FileSystem).to receive(:read).and_call_original
-      allow(Puppet::FileSystem).to receive(:read).with('/proc/1/comm').and_return(['systemd'])
-    end
+  rspec.before(:each) do
+    allow(Puppet::FileSystem).to receive(:exist?).and_call_original
+    allow(Puppet::FileSystem).to receive(:exist?).with('/proc/1/comm').and_return(true)
+    allow(Puppet::FileSystem).to receive(:read).and_call_original
+    allow(Puppet::FileSystem).to receive(:read).with('/proc/1/comm').and_return(['systemd'])
   end
 end
 
