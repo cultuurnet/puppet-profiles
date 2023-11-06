@@ -120,6 +120,9 @@ fixtures:
     logrotate:
       repo: 'puppet/logrotate'
       ref: '6.1.0'
+    filebeat:
+      repo: 'pcfens-filebeat'
+      ref: '4.14.0'
   repositories:
     rabbitmq:
       repo: 'https://github.com/cultuurnet/puppetlabs-rabbitmq.git'

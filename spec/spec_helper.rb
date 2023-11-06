@@ -31,5 +31,6 @@ include RspecPuppetFacts
 
 add_custom_fact :staging_http_get, 'curl'
 add_custom_fact :service_provider, 'systemd', :confine => 'ubuntu-20.04-x86_64'
+add_custom_fact :filebeat_version, '8.5.3'
 
 Dir['./spec/support/**/*.rb'].sort.each { |f| require f }

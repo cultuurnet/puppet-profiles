@@ -207,8 +207,19 @@ class profiles::uit::frontend (
     require => [Class['profiles::apache'], File['/var/www/uit-frontend']]
   }
 
+  # case $trusted['hostname'] {
+  #   /[\w-]+acc\d+/:  { $node_environment = 'acceptance' }
+  #   /[\w-]+test\d+/: { $node_environment = 'testing'    }
+  #   /[\w-]+prod\d+/: { $node_environment = 'production' }
+  # }
+
+  class { 'profiles::uit::frontend::logging':
+    servername  => $servername,
+    log_type    => 'apache_uiv_frontend',
+    environment => $environment
+  }
+
   # include ::profiles::uit::frontend::monitoring
   # include ::profiles::uit::frontend::metrics
   # include ::profiles::uit::frontend::backup
-  # include ::profiles::uit::frontend::logging
 }

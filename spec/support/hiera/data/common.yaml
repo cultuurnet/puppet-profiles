@@ -45,3 +45,16 @@ profiles::ssh_authorized_keys::keys:
     keys:
       type: 'ssh-rsa'
       key: '4567'
+
+profiles::filebeat::outputs:
+  logstash:
+    hosts:
+    - 'logstash.uitdatabank.be:5000'
+profiles::filebeat::logging:
+  level: 'warning'
+  to_files: true
+  to_syslog: false
+  files:
+    path: '/var/log/filebeat'
+    name: 'filebeat.log'
+    keepfiles: '7'
