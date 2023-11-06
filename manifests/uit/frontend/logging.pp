@@ -21,14 +21,14 @@ class profiles::uit::frontend::logging (
     require => Class['profiles::filebeat']
   }
 
-#   if $settings::storeconfigs {
-#     @@logstash_filter { ${servername}_logstash_filter:
-#       log_type    => $log_type,
-#       environment => $environment
-#     }
-# 
-#     # TODO: Add this to the logstash server
-#     #
-#     # Logstash_filter <<| |>>
-#   }
+  if $settings::storeconfigs {
+    @@logstash_filter { "${servername}_logstash_filter":
+      log_type    => $log_type,
+      environment => $environment
+    }
+
+    # TODO: Add this to the logstash server
+    #
+    # Logstash_filter <<| |>>
+  }
 }
