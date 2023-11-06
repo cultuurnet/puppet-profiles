@@ -214,9 +214,8 @@ class profiles::uit::frontend (
   # }
 
   class { 'profiles::uit::frontend::logging':
-    servername  => $servername,
-    log_type    => 'apache_uiv_frontend',
-    environment => $environment
+    servername => $servername,
+    log_type   => 'apache_uiv_frontend'
   }
 
   # include ::profiles::uit::frontend::monitoring
