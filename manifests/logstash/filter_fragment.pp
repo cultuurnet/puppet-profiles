@@ -1,5 +1,6 @@
 define profiles::logstash::filter_fragment (
-  String $log_type
+  String $log_type,
+  String $filter
 ) {
 
   concat::fragment { $title:
