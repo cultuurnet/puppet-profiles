@@ -121,6 +121,9 @@ fixtures:
       repo: 'puppet/logrotate'
       ref: '6.1.0'
   repositories:
+    filebeat:
+      repo: 'https://github.com/cultuurnet/puppet-filebeat.git'
+      ref: '598539b'
     rabbitmq:
       repo: 'https://github.com/cultuurnet/puppetlabs-rabbitmq.git'
       ref: 'cdcb352'
