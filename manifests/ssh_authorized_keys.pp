@@ -3,8 +3,8 @@ class profiles::ssh_authorized_keys(
 ) inherits ::profiles {
 
   $keys.each | $key, $attributes| {
-   [$attributes['key']].flatten.each | $index, $attribute_key | {
-      if size([$attributes['key']].flatten) == 1 {
+   [$attributes['keys']].flatten.each | $index, $key_attributes | {
+      if size([$attributes['keys']].flatten) == 1 {
         $key_title = $key
       } else {
         $key_number = $index + 1
@@ -13,8 +13,8 @@ class profiles::ssh_authorized_keys(
 
       @ssh_authorized_key { $key_title:
         user => 'ubuntu',
-        type => $attributes['type'],
-        key  => $attribute_key,
+        type => $key_attributes['type'],
+        key  => $key_attributes['key'],
         tag  => $attributes['tag']
       }
     }

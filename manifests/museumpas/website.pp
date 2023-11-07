@@ -1,13 +1,14 @@
 class profiles::museumpas::website (
-  String $mysql_version                      = undef,
-  String $mysql_admin_user                   = 'admin',
-  String $mysql_admin_password               = undef,
-  String $mysql_host                         = undef,
-  Hash $mysql_databases                      = undef,
-  String $servername                         = undef,
-  Boolean $install_meilisearch               = true,
-  Boolean $install_redis                     = true,
-  Boolean $deployment                        = true,
+  String $mysql_version                         = undef,
+  String $mysql_admin_user                      = 'admin',
+  String $mysql_admin_password                  = undef,
+  String $mysql_host                            = undef,
+  Hash $mysql_databases                         = undef,
+  String $servername                            = undef,
+  Variant[String, Array[String]] $serveraliases = [],
+  Boolean $install_meilisearch                  = true,
+  Boolean $install_redis                        = true,
+  Boolean $deployment                           = true
 ) inherits ::profiles {
 
   $basedir = '/var/www/museumpas'
@@ -128,7 +129,7 @@ class profiles::museumpas::website (
 
   if $deployment {
     include profiles::museumpas::website::deployment
-  
+
     Class['profiles::php'] -> Class['profiles::museumpas::website::deployment']
     Class['profiles::museumpas::website::deployment'] -> Apache::Vhost["${servername}_80"]
   }

@@ -107,8 +107,8 @@ class profiles::museumpas::website::deployment (
     noop        => $noop_deploy
   }
 
-  exec { 'clear museumpas cache':
-    command     => 'php artisan optimize:clear',
+  exec { 'run museumpas database seeder':
+    command     => 'php artisan db:seed RoleAndPermissionSeeder',
     cwd         => $basedir,
     path        => [ '/usr/local/bin', '/usr/bin', '/bin'],
     user        => 'www-data',
@@ -117,6 +117,32 @@ class profiles::museumpas::website::deployment (
     subscribe   => Package['museumpas-website'],
     refreshonly => true,
     require     => [ File['museumpas-website-config'], Exec['run museumpas database migrations'] ],
+    noop        => $noop_deploy
+  }
+
+  exec { 'clear museumpas optimize cache':
+    command     => 'php artisan optimize:clear',
+    cwd         => $basedir,
+    path        => [ '/usr/local/bin', '/usr/bin', '/bin'],
+    user        => 'www-data',
+    environment => [ 'HOME=/'],
+    logoutput   => true,
+    subscribe   => Package['museumpas-website'],
+    refreshonly => true,
+    require     => [ File['museumpas-website-config'], Exec['run museumpas database seeder'] ],
+    noop        => $noop_deploy
+  }
+
+  exec { 'clear museumpas cache':
+    command     => 'php artisan cache:clear',
+    cwd         => $basedir,
+    path        => [ '/usr/local/bin', '/usr/bin', '/bin'],
+    user        => 'www-data',
+    environment => [ 'HOME=/'],
+    logoutput   => true,
+    subscribe   => Package['museumpas-website'],
+    refreshonly => true,
+    require     => [ File['museumpas-website-config'], Exec['run museumpas database migrations'], Exec['clear museumpas optimize cache'] ],
     noop        => $noop_deploy
   }
 
