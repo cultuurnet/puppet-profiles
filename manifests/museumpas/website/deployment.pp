@@ -108,7 +108,7 @@ class profiles::museumpas::website::deployment (
   }
 
   exec { 'run museumpas database seeder':
-    command     => 'php artisan db:seed RoleAndPermissionSeeder',
+    command     => 'php artisan db:seed RoleAndPermissionSeeder --force',
     cwd         => $basedir,
     path        => [ '/usr/local/bin', '/usr/bin', '/bin'],
     user        => 'www-data',
@@ -179,6 +179,7 @@ class profiles::museumpas::website::deployment (
     environment => [ 'HOME=/'],
     logoutput   => true,
     subscribe   => Package['museumpas-website'],
+    notify      => Service['museumpas-website-horizon'],
     refreshonly => true,
     require     => [ File['museumpas-website-config'], Exec['create storage link'], Exec['clear museumpas model cache'] ],
     noop        => $noop_deploy
