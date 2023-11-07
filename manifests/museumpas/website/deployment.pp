@@ -107,6 +107,19 @@ class profiles::museumpas::website::deployment (
     noop        => $noop_deploy
   }
 
+  exec { 'run museumpas database seeder':
+    command     => 'php artisan db:seed RoleAndPermissionSeeder',
+    cwd         => $basedir,
+    path        => [ '/usr/local/bin', '/usr/bin', '/bin'],
+    user        => 'www-data',
+    environment => [ 'HOME=/'],
+    logoutput   => true,
+    subscribe   => Package['museumpas-website'],
+    refreshonly => true,
+    require     => [ File['museumpas-website-config'], Exec['run museumpas database migrations'] ],
+    noop        => $noop_deploy
+  }
+
   exec { 'clear museumpas optimize cache':
     command     => 'php artisan optimize:clear',
     cwd         => $basedir,
@@ -116,7 +129,7 @@ class profiles::museumpas::website::deployment (
     logoutput   => true,
     subscribe   => Package['museumpas-website'],
     refreshonly => true,
-    require     => [ File['museumpas-website-config'], Exec['run museumpas database migrations'] ],
+    require     => [ File['museumpas-website-config'], Exec['run museumpas database seeder'] ],
     noop        => $noop_deploy
   }
 
