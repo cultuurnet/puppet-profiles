@@ -41,7 +41,7 @@ fixtures:
       ref: '2.2.0'
     lvm:
       repo: 'puppetlabs/lvm'
-      ref: '1.0.1'
+      ref: '2.1.0'
     ntp:
       repo: 'puppetlabs/ntp'
       ref: '7.0.0'

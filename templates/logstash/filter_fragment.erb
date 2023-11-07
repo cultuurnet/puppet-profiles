@@ -1,0 +1,5 @@
+  if [fields][log_type] == "<%= @log_type %>" {
+  <%- @filter.each_line do |line| -%>
+    <%= line.chomp %>
+  <%- end -%>
+  }

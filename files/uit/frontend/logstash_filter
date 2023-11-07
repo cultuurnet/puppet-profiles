@@ -1,0 +1,37 @@
+json {
+  source       => "message"
+  remove_field => ["message", "path", "type"]
+}
+
+# 2022-07-26 paul: this generates too many fields in the index
+#
+# /var/log/logstash/logstash-plain.log:
+# [2022-07-26T02:31:00,269][WARN ][logstash.outputs.elasticsearch] Could not index event to Elasticsearch
+# "reason"=>"Limit of total fields [1000] in index [apache_uiv_frontend_prod-2022.07] has been exceeded"}}}}
+#
+# urldecode {
+#   field => query
+# }
+
+# kv {
+#   source          => query
+#   target          => parameters
+#   field_split     => "&?"
+#   remove_char_key => "\[\]"
+# }
+
+useragent {
+  source => "userAgent"
+  target => "ua"
+}
+
+date {
+  match => ["time" , "yyyy-MM-dd HH:mm:ss.SSS"]
+}
+
+mutate {
+  rename       => { "[beat][hostname]" => "host" }
+  add_field    => { "[@metadata][log_type]" => "%{[fields][log_type]}" }
+  add_field    => { "[@metadata][environment]" => "%{[fields][environment]}" }
+  remove_field => ["beat", "tags", "source", "offset", "@version", "fields"]
+}
