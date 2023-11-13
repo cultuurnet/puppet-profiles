@@ -157,6 +157,7 @@ class profiles::uit::frontend (
 
     Class['profiles::nodejs'] -> Class['profiles::uit::frontend::deployment']
     Class['profiles::uit::frontend::deployment'] -> Apache::Vhost["${servername}_80"]
+    Apache::Vhost["${servername}_80"] -> Class['profiles::uit::frontend::redirects']
   }
 
   realize Firewall['300 accept HTTP traffic']
