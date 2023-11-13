@@ -30,9 +30,12 @@ class profiles::uitdatabank::rdf (
     docroot           => '/var/www/html',
     manage_docroot    => false,
     port              => $port,
-    access_log_format => 'combined_json',
+    access_log_format => 'extended_json',
     request_headers   => $request_headers,
     rewrites          => $rewrites,
+    setenvif           => [
+                            'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                          ],
     proxy_pass        => {
                            'path'         => '/',
                            'url'          => $sparql_url,

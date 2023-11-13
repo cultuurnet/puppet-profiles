@@ -28,12 +28,15 @@ describe 'profiles::uitdatabank::rdf' do
           'manage_docroot'    => false,
           'port'              => 80,
           'ssl'               => false,
-          'access_log_format' => 'combined_json',
+          'access_log_format' => 'extended_json',
           'request_headers'   => [
                                    'unset Proxy early',
                                    'set X-Unique-Id %{UNIQUE_ID}e',
                                    'setifempty X-Forwarded-Port "80"',
                                    'setifempty X-Forwarded-Proto "http"'
+                                 ],
+          'setenvif'          => [
+                                   'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
                                  ],
           'rewrites'          => [ {
                                    'comment'      => 'Reverse proxy /(events|places|organizers)/<uuid> to Jena Fuseki backend with ?graph= query string',
@@ -67,12 +70,15 @@ describe 'profiles::uitdatabank::rdf' do
           'manage_docroot'    => false,
           'port'              => 80,
           'ssl'               => false,
-          'access_log_format' => 'combined_json',
+          'access_log_format' => 'extended_json',
           'request_headers'   => [
                                    'unset Proxy early',
                                    'set X-Unique-Id %{UNIQUE_ID}e',
                                    'setifempty X-Forwarded-Port "80"',
                                    'setifempty X-Forwarded-Proto "http"'
+                                 ],
+          'setenvif'          => [
+                                   'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
                                  ],
           'rewrites'          => [ {
                                    'comment'      => 'Reverse proxy /(events|places|organizers)/<uuid> to Jena Fuseki backend with ?graph= query string',
