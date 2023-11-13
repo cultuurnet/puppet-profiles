@@ -1,11 +1,10 @@
 define profiles::uit::frontend::redirect_vhost (
-  String                        $name            = undef,
   String                        $redirect_source = undef,
   Variant[String,Array[String]] $aliases         = []
 
 ) inherits ::profiles {
 
-  file { "${name}-redirects":
+  file { "${title}-redirects":
     ensure  => 'file',
     path    => "/var/www/.redirect.${title}",
     owner   => 'www-data',
@@ -15,8 +14,8 @@ define profiles::uit::frontend::redirect_vhost (
     notify  => Class['apache::service']
   }
 
-  apache::vhost { "${name}_80":
-    servername         => $name,
+  apache::vhost { "${title}_80":
+    servername         => $title,
     serveraliases      => $aliases,
     docroot            => '/var/www',
     manage_docroot     => false,
@@ -29,6 +28,6 @@ define profiles::uit::frontend::redirect_vhost (
                             'X-Forwarded-Proto "https" HTTPS=on',
                             'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
                           ],
-    require => File["${name}-redirects"]
+    require => File["${title}-redirects"]
   }
 }
