@@ -2,7 +2,7 @@ define profiles::uit::frontend::redirect_vhosts (
   String                        $redirect_source = undef,
   Variant[String,Array[String]] $aliases         = []
 
-) inherits ::profiles {
+) {
 
   file { "${title}-redirects":
     ensure  => 'file',
