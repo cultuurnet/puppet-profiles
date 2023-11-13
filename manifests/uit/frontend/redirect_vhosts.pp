@@ -1,4 +1,4 @@
-define profiles::uit::frontend::redirect_vhost (
+define profiles::uit::frontend::redirect_vhosts (
   String                        $redirect_source = undef,
   Variant[String,Array[String]] $aliases         = []
 

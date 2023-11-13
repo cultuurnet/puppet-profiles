@@ -5,7 +5,7 @@ class profiles::uit::frontend (
   Stdlib::Ipv4                  $service_address     = '127.0.0.1',
   Integer                       $service_port        = 3000,
   Optional[String]              $redirect_source     = undef,
-  Optional[Hash]                $redirect_vhost      = undef,
+  Optional[Hash]                $redirect_vhosts     = undef,
   Boolean                       $maintenance_page    = false,
   Boolean                       $deployment_page     = false
 ) inherits ::profiles {
@@ -208,8 +208,8 @@ class profiles::uit::frontend (
     require => [Class['profiles::apache'], File['/var/www/uit-frontend']]
   }
 
-  $redirect_vhost.each |$name, $attributes| {
-     profiles::uit::frontend::redirect_vhost{ $name:
+  $redirect_vhosts.each |$name, $attributes| {
+     profiles::uit::frontend::redirect_vhosts { $name:
       * => $attributes
     }
   }
