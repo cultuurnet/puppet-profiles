@@ -11,20 +11,29 @@
 #
 # profiles::fail2ban::action: 'action_'
 #
-class profiles::fail2ban inherits ::profiles {
+class profiles::fail2ban(
+  String                         $action                   = 'action_mb',
+  String                         $email                    = 'infra@publiq.be',
+  String                         $sender                   = "fail2ban@${facts['networking']['fqdn']}",
+  Whitelist                      $whitelist                = ['127.0.0.1/8'],
+  Variant[String, Array[String]] $jails                    = ['ssh', 'ssh-ddos'],
+  Hash                           $config_file_hash         = {},
+  Hash                           $config_file_options_hash = {},
+  Hash                           $custom_jails             = {}
+) inherits ::profiles {
 
   class { 'fail2ban':
     manage_defaults          => 'present',
     package_ensure           => 'latest',
     service_ensure           => 'running',
     service_enable           => true,
-    config_file_hash         => {},
-    config_file_options_hash => {},
-    action                   => 'action_mb',
-    email                    => "infra@publiq.be",
-    sender                   => "fail2ban@${facts['networking']['fqdn']}",
-    whitelist                => ['127.0.0.1/8'],
-    jails                    => ['ssh', 'ssh-ddos'],
-    custom_jails             => {}
+    action                   => $action,
+    email                    => $email,
+    sender                   => $sender,
+    whitelist                => $whitelist,
+    jails                    => [$jails].flatten,
+    config_file_hash         => $config_file_hash,
+    config_file_options_hash => $config_file_options_hash,
+    custom_jails             => $custom_jails
   }
 }
