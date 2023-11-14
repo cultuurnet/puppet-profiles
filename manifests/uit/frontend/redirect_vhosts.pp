@@ -10,7 +10,6 @@ define profiles::uit::frontend::redirect_vhosts (
     owner   => 'www-data',
     group   => 'www-data',
     source  => $redirect_source,
-    require => Class['profiles::uit::frontend'],
     notify  => Class['apache::service']
   }
 
