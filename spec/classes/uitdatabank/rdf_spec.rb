@@ -31,7 +31,7 @@ describe 'profiles::uitdatabank::rdf' do
                                    'set X-Unique-Id %{UNIQUE_ID}e',
                                    'setifempty X-Forwarded-Port "80"',
                                    'setifempty X-Forwarded-Proto "http"',
-                                   'setifempty Accept "text/turtle"'
+                                   'set Accept "text/turtle"'
                                  ],
           'setenvif'          => [
                                    'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
@@ -68,7 +68,7 @@ describe 'profiles::uitdatabank::rdf' do
                                    'set X-Unique-Id %{UNIQUE_ID}e',
                                    'setifempty X-Forwarded-Port "80"',
                                    'setifempty X-Forwarded-Proto "http"',
-                                   'setifempty Accept "text/turtle"'
+                                   'set Accept "text/turtle"'
                                  ],
           'setenvif'          => [
                                    'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
