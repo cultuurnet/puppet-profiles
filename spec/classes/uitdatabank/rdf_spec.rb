@@ -7,17 +7,13 @@ describe 'profiles::uitdatabank::rdf' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with servername => rdf.example.com" do
+      context "with servername => rdf.example.com and backend_url => https://foo.example.com" do
         let(:params) { {
-          'servername' => 'rdf.example.com'
+          'servername'  => 'rdf.example.com',
+          'backend_url' => 'https://foo.example.com'
         } }
 
         it { is_expected.to compile.with_all_deps }
-
-        it { is_expected.to contain_class('profiles::uitdatabank::rdf').with(
-          'servername' => 'rdf.example.com',
-          'sparql_url' => 'http://127.0.0.1:8080/'
-        ) }
 
         it { is_expected.to contain_firewall('300 accept HTTP traffic') }
         it { is_expected.to contain_class('profiles::apache') }
@@ -29,37 +25,32 @@ describe 'profiles::uitdatabank::rdf' do
           'port'              => 80,
           'ssl'               => false,
           'access_log_format' => 'extended_json',
+          'ssl_proxyengine'   => true,
           'request_headers'   => [
                                    'unset Proxy early',
                                    'set X-Unique-Id %{UNIQUE_ID}e',
                                    'setifempty X-Forwarded-Port "80"',
-                                   'setifempty X-Forwarded-Proto "http"'
+                                   'setifempty X-Forwarded-Proto "http"',
+                                   'set Accept "text/turtle"'
                                  ],
           'setenvif'          => [
                                    'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
                                  ],
           'rewrites'          => [ {
-                                   'comment'      => 'Reverse proxy /(events|places|organizers)/<uuid> to Jena Fuseki backend with ?graph= query string',
+                                   'comment'      => 'Reverse proxy /(events|places|organizers)/<uuid> to backend',
                                    'rewrite_cond' => [
                                                        '%{REQUEST_URI} "^/(events|places|organizers)/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$" [OR]',
                                                        '%{REQUEST_URI} "^/(events|places|organizers)/[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$"'
-                                                   ],
-                                   'rewrite_rule' => '^/(events|places|organizers)/(.*)$ http://127.0.0.1:8080/$1/?graph=https://%{HTTP_HOST}/$1/$2.ttl [P]'
-                                 } ],
-          'proxy_pass'        => {
-                                   'path'         => '/',
-                                   'url'          => 'http://127.0.0.1:8080/',
-                                   'keywords'     => [],
-                                   'reverse_urls' => 'http://127.0.0.1:8080/',
-                                   'params'       => {}
-                                 }
+                                                     ],
+                                   'rewrite_rule' => '^/(events|places|organizers)/(.*)$ https://foo.example.com/$1/$2 [P]'
+                                 } ]
         ) }
       end
 
-      context "with servername => foo.example.com and sparql_url => http://127.0.1.1:18080/" do
+      context "with servername => foo.example.com and backend_url => http://bar.example.com/" do
         let(:params) { {
-          'servername' => 'foo.example.com',
-          'sparql_url' => 'http://127.0.1.1:18080/'
+          'servername'  => 'foo.example.com',
+          'backend_url' => 'http://bar.example.com/'
         } }
 
         it { is_expected.to compile.with_all_deps }
@@ -71,30 +62,25 @@ describe 'profiles::uitdatabank::rdf' do
           'port'              => 80,
           'ssl'               => false,
           'access_log_format' => 'extended_json',
+          'ssl_proxyengine'   => false,
           'request_headers'   => [
                                    'unset Proxy early',
                                    'set X-Unique-Id %{UNIQUE_ID}e',
                                    'setifempty X-Forwarded-Port "80"',
-                                   'setifempty X-Forwarded-Proto "http"'
+                                   'setifempty X-Forwarded-Proto "http"',
+                                   'set Accept "text/turtle"'
                                  ],
           'setenvif'          => [
                                    'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
                                  ],
           'rewrites'          => [ {
-                                   'comment'      => 'Reverse proxy /(events|places|organizers)/<uuid> to Jena Fuseki backend with ?graph= query string',
+                                   'comment'      => 'Reverse proxy /(events|places|organizers)/<uuid> to backend',
                                    'rewrite_cond' => [
                                                      '%{REQUEST_URI} "^/(events|places|organizers)/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$" [OR]',
                                                      '%{REQUEST_URI} "^/(events|places|organizers)/[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$"'
                                                    ],
-                                   'rewrite_rule' => '^/(events|places|organizers)/(.*)$ http://127.0.1.1:18080/$1/?graph=https://%{HTTP_HOST}/$1/$2.ttl [P]'
-                                 } ],
-          'proxy_pass'        => {
-                                   'path'         => '/',
-                                   'url'          => 'http://127.0.1.1:18080/',
-                                   'keywords'     => [],
-                                   'reverse_urls' => 'http://127.0.1.1:18080/',
-                                   'params'       => {}
-                                 }
+                                   'rewrite_rule' => '^/(events|places|organizers)/(.*)$ http://bar.example.com/$1/$2 [P]'
+                                 } ]
         ) }
       end
 
@@ -102,6 +88,7 @@ describe 'profiles::uitdatabank::rdf' do
         let(:params) { {} }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'servername'/) }
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'backend_url'/) }
       end
     end
   end
