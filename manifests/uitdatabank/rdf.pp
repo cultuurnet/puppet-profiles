@@ -14,7 +14,7 @@ class profiles::uitdatabank::rdf (
                              'set X-Unique-Id %{UNIQUE_ID}e',
                              "setifempty X-Forwarded-Port \"${port}\"",
                              "setifempty X-Forwarded-Proto \"${transport}\"",
-                             'setifempty Accept "text/turtle"'
+                             'set Accept "text/turtle"'
                            ]
   $rewrites              = [ {
                                comment      => 'Reverse proxy /(events|places|organizers)/<uuid> to backend',
