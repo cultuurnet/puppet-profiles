@@ -18,6 +18,10 @@ describe 'profiles::uitdatabank::rdf' do
         it { is_expected.to contain_firewall('300 accept HTTP traffic') }
         it { is_expected.to contain_class('profiles::apache') }
 
+        it { is_expected.to contain_class('apache::mod::proxy') }
+        it { is_expected.to contain_class('apache::mod::proxy_http') }
+        it { is_expected.to contain_class('apache::mod::ssl') }
+
         it { is_expected.to contain_apache__vhost('rdf.example.com_80').with(
           'servername'        => 'rdf.example.com',
           'docroot'           => '/var/www/html',
@@ -45,6 +49,10 @@ describe 'profiles::uitdatabank::rdf' do
                                    'rewrite_rule' => '^/(events|places|organizers)/(.*)$ https://foo.example.com/$1/$2 [P]'
                                  } ]
         ) }
+
+        it { is_expected.to contain_class('apache::mod::proxy').that_comes_before('Apache::Vhost[rdf.example.com_80]') }
+        it { is_expected.to contain_class('apache::mod::proxy_http').that_comes_before('Apache::Vhost[rdf.example.com_80]') }
+        it { is_expected.to contain_class('apache::mod::ssl').that_comes_before('Apache::Vhost[rdf.example.com_80]') }
       end
 
       context "with servername => foo.example.com and backend_url => http://bar.example.com/" do
@@ -54,6 +62,7 @@ describe 'profiles::uitdatabank::rdf' do
         } }
 
         it { is_expected.to compile.with_all_deps }
+        it { is_expected.not_to contain_class('apache::mod::ssl') }
 
         it { is_expected.to contain_apache__vhost('foo.example.com_80').with(
           'servername'        => 'foo.example.com',

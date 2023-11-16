@@ -27,11 +27,18 @@ class profiles::uitdatabank::rdf (
 
   if $backend_url =~ /^https/ {
     $https_backend = true
+
+    include apache::mod::ssl
+
+    Class['apache::mod::ssl'] -> Apache::Vhost["${servername}_${port}"]
   } else {
     $https_backend = false
   }
 
   realize Firewall['300 accept HTTP traffic']
+
+  include apache::mod::proxy
+  include apache::mod::proxy_http
 
   apache::vhost { "${servername}_${port}":
     servername        => $servername,
@@ -43,8 +50,9 @@ class profiles::uitdatabank::rdf (
     request_headers   => $request_headers,
     rewrites          => $rewrites,
     setenvif          => [
-                            'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
-                          ]
+                           'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                         ],
+    require           => [Class['apache::mod::proxy'], Class['apache::mod::proxy_http']]
   }
 
   # include ::profiles::uitdatabank::rdf::monitoring
