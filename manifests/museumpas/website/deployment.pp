@@ -127,7 +127,7 @@ class profiles::museumpas::website::deployment (
     user        => 'www-data',
     environment => [ 'HOME=/'],
     logoutput   => true,
-    subscribe   => Package['museumpas-website'],
+    subscribe   => [Package['museumpas-website'],File['museumpas-website-config']],
     refreshonly => true,
     require     => [ File['museumpas-website-config'], Exec['run museumpas database seeder'] ],
     noop        => $noop_deploy
@@ -140,7 +140,7 @@ class profiles::museumpas::website::deployment (
     user        => 'www-data',
     environment => [ 'HOME=/'],
     logoutput   => true,
-    subscribe   => Package['museumpas-website'],
+    subscribe   => [Package['museumpas-website'],File['museumpas-website-config']],
     refreshonly => true,
     require     => [ File['museumpas-website-config'], Exec['run museumpas database migrations'], Exec['clear museumpas optimize cache'] ],
     noop        => $noop_deploy
@@ -153,7 +153,7 @@ class profiles::museumpas::website::deployment (
     user        => 'www-data',
     environment => [ 'HOME=/'],
     logoutput   => true,
-    subscribe   => Package['museumpas-website'],
+    subscribe   => [Package['museumpas-website'],File['museumpas-website-config']],
     refreshonly => true,
     require     => [ File['museumpas-website-config'], Exec['run museumpas database migrations'], Exec['clear museumpas cache'] ],
     noop        => $noop_deploy
@@ -199,7 +199,8 @@ class profiles::museumpas::website::deployment (
                    'running' => true,
                    'stopped' => false
                  },
-    require   => [Systemd::Unit_file['museumpas-website-horizon.service']]
+    require   => [Systemd::Unit_file['museumpas-website-horizon.service']],
+    subscribe => File['museumpas-website-config']
   }
 
   if $run_scheduler_cron {
