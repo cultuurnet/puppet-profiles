@@ -74,4 +74,9 @@ class profiles::groups inherits ::profiles {
     ensure => 'present',
     gid    => '1004'
   }
+
+  @group { 'glassfish':
+    ensure => 'present',
+    gid    => '1005'
+  }
 }
