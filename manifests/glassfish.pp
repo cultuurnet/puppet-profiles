@@ -1,37 +1,31 @@
 class profiles::glassfish (
-  String $flavor = 'payara'
+  String $version         = '4.1.2.181',
+  String $password        = 'adminadmin',
+  String $master_password = 'changeit'
 ) inherits ::profiles {
 
   contain ::profiles::java
 
   realize Apt::Source['publiq-tools']
-
-  realize Package['ca-certificates-publiq']
-  realize Package['mysql-connector-java']
-
-  $version = $flavor ? {
-    'payara'    => '4.1.1.171.1',
-    'glassfish' => '3.1.2.2'
-  }
+  realize Group['glassfish']
+  realize User['glassfish']
 
   class { 'glassfish':
     install_method      => 'package',
-    package_prefix      => $flavor,
+    package_prefix      => 'payara',
     version             => $version,
+    manage_accounts     => false,
+    create_passfile     => false,
     create_service      => false,
     enable_secure_admin => false,
     manage_java         => false,
     parent_dir          => '/opt',
-    install_dir         => $flavor,
+    install_dir         => 'payara',
     require             => Class['::profiles::java']
   }
 
-  # Hack to circumvent dependency problems with using glassfish::install_jars
-  file { 'mysql-connector-java':
-    ensure    => 'link',
-    path      => "/opt/${flavor}/glassfish/lib/mysql-connector-java.jar",
-    target    => '/opt/mysql-connector-java/mysql-connector-java.jar',
-    require   => Class['::glassfish'],
-    subscribe => Package['mysql-connector-java']
+  class { 'profiles::glassfish::asadmin_passfile':
+    password        => $password,
+    master_password => $master_password
   }
 }
