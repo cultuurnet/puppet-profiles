@@ -1,5 +1,5 @@
 class profiles::jenkins::controller::install (
-  String          $version     = 'latest'
+  String $version = 'latest'
 ) inherits ::profiles {
 
   $config_dir = '/var/lib/jenkins/casc_config'
