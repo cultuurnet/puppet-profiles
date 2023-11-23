@@ -63,6 +63,10 @@ class profiles::java::alternatives (
     }
   }
 
+  alternatives { 'jexec':
+    path => "${jre_home}/lib/jexec"
+  }
+
   $jre_commands.each |$command| {
     alternatives { $command:
       path => "${jre_home}/bin/${command}"

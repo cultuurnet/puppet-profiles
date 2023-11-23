@@ -34,6 +34,10 @@ describe 'profiles::java::alternatives' do
             }
           ) }
 
+          it { is_expected.to contain_alternatives('jexec').with(
+            'path' => '/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/jexec'
+          ) }
+
           ['rmid', 'java', 'keytool', 'jjs', 'pack200', 'rmiregistry', 'unpack200', 'orbd', 'servertool', 'tnameserv'].each do |command|
             it { is_expected.to contain_alternatives(command).with(
               'path' => "/usr/lib/jvm/java-8-openjdk-amd64/jre/bin/#{command}"
@@ -110,6 +114,10 @@ describe 'profiles::java::alternatives' do
               'distribution' => 'jre',
               'headless'     => true
             }
+          ) }
+
+          it { is_expected.to contain_alternatives('jexec').with(
+            'path' => '/usr/lib/jvm/java-11-openjdk-amd64/lib/jexec'
           ) }
 
           ['java', 'jjs', 'keytool', 'rmid', 'rmiregistry', 'pack200', 'unpack200'].each do |command|
@@ -190,6 +198,10 @@ describe 'profiles::java::alternatives' do
             }
           ) }
 
+          it { is_expected.to contain_alternatives('jexec').with(
+            'path' => '/usr/lib/jvm/java-16-openjdk-amd64/lib/jexec'
+          ) }
+
           ['java', 'jpackage', 'keytool', 'rmid', 'rmiregistry'].each do |command|
             it { is_expected.to contain_alternatives(command).with(
               'path' => "/usr/lib/jvm/java-16-openjdk-amd64/bin/#{command}"
@@ -266,6 +278,10 @@ describe 'profiles::java::alternatives' do
               'distribution' => 'jre',
               'headless'     => true
             }
+          ) }
+
+          it { is_expected.to contain_alternatives('jexec').with(
+            'path' => '/usr/lib/jvm/java-17-openjdk-amd64/lib/jexec'
           ) }
 
           ['java', 'jpackage', 'keytool', 'rmiregistry'].each do |command|
