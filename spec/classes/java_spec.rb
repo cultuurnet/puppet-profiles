@@ -29,9 +29,9 @@ describe 'profiles::java' do
         it { is_expected.to contain_package('openjdk-8-jre-headless').that_comes_before('Class[profiles::java::alternatives]') }
       end
 
-      context "with installed_versions => [8, 11], distribution => jdk and headless => false" do
+      context "with installed_versions => [8, 17], distribution => jdk and headless => false" do
         let(:params) { {
-          'installed_versions' => [8, 11],
+          'installed_versions' => [8, 17],
           'distribution'       => 'jdk',
           'headless'           => false
         } }
@@ -39,7 +39,7 @@ describe 'profiles::java' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_package('openjdk-8-jdk') }
-        it { is_expected.to contain_package('openjdk-11-jdk') }
+        it { is_expected.to contain_package('openjdk-17-jdk') }
 
         it { is_expected.to contain_class('profiles::java::alternatives').with(
           'default_version' => 8,
@@ -48,7 +48,7 @@ describe 'profiles::java' do
         ) }
 
         it { is_expected.to contain_package('openjdk-8-jdk').that_comes_before('Class[profiles::java::alternatives]') }
-        it { is_expected.to contain_package('openjdk-11-jdk').that_comes_before('Class[profiles::java::alternatives]') }
+        it { is_expected.to contain_package('openjdk-17-jdk').that_comes_before('Class[profiles::java::alternatives]') }
       end
 
       context "with installed_versions => [8, 11] and default_version => 11" do
