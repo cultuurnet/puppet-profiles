@@ -53,7 +53,7 @@ describe 'profiles::jenkins::controller' do
 
         it { is_expected.to contain_class('profiles::jenkins::cli').with(
           'version'        => 'latest',
-          'controller_url' => 'https://jenkins.example.com/'
+          'controller_url' => 'http://127.0.0.1:8080/'
         ) }
 
         it { is_expected.to_not contain_profiles__apache__vhost__redirect('http://jenkins.example.com') }
@@ -196,7 +196,7 @@ describe 'profiles::jenkins::controller' do
 
           it { is_expected.to contain_class('profiles::jenkins::cli').with(
             'version'        => '1.2.3',
-            'controller_url' => 'https://foobar.example.com/'
+            'controller_url' => 'http://127.0.0.1:8080/'
           ) }
 
           it { is_expected.to contain_profiles__apache__vhost__redirect('http://foobar.example.com').with(

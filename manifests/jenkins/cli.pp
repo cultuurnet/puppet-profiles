@@ -8,7 +8,8 @@ class profiles::jenkins::cli(
 
   include ::profiles::java
 
-  $config_path                 = '/etc/jenkins-cli/cli.conf'
+  $config_path              = '/etc/jenkins-cli/cli.conf'
+  $controller_url_sanitized = regsubst($controller_url, '/$', '')
 
   realize Apt::Source['publiq-jenkins']
 
@@ -42,7 +43,7 @@ class profiles::jenkins::cli(
   shellvar { 'CONTROLLER_URL':
     ensure   => 'present',
     variable => 'CONTROLLER_URL',
-    value    => $controller_url,
+    value    => "${controller_url_sanitized}/",
     target   => $config_path,
     require  => File['jenkins-cli_config']
   }

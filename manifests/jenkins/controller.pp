@@ -54,7 +54,7 @@ class profiles::jenkins::controller (
 
   class { '::profiles::jenkins::cli':
     version        => $version,
-    controller_url => $url
+    controller_url => 'http://127.0.0.1:8080/'
   }
 
   class { '::profiles::jenkins::controller::configuration':
