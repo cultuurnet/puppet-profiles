@@ -19,39 +19,44 @@ describe 'profiles::puppet::puppetdb::cli' do
         it { is_expected.to contain_package('rubygem-puppetdb-cli').that_requires('Apt::Source[publiq-tools]') }
 
         it { is_expected.to contain_class('profiles::puppet::puppetdb::cli').with(
-          'server_urls' => 'https://example.com:1234',
-          'users'       => 'root',
-          'certificate' => nil,
-          'private_key' => nil
+          'server_urls'    => 'https://example.com:1234',
+          'users'          => 'root',
+          'certificate'    => nil,
+          'private_key'    => nil,
+          'ca_certificate' => nil
         ) }
 
         it { is_expected.to contain_package('rubygem-puppetdb-cli') }
 
         it { is_expected.to contain_profiles__puppet__puppetdb__cli__config('root').with(
-          'server_urls' => 'https://example.com:1234',
-          'certificate' => nil,
-          'private_key' => nil
+          'server_urls'    => 'https://example.com:1234',
+          'certificate'    => nil,
+          'private_key'    => nil,
+          'ca_certificate' => nil
         ) }
       end
 
-      context "with server_urls => [ https://example.com:1234, https://example.com:5678], users => [ 'root', 'jenkins'], certificate => abc123 and private_key => def456" do
+      context "with server_urls => [ https://example.com:1234, https://example.com:5678], users => [ 'root', 'jenkins'], certificate => abc123, private_key => def456 and ca_certificate => 321cba" do
         let(:params) { {
-          'server_urls' => [ 'https://example.com:1234', 'https://example.com:5678'],
-          'users'       => [ 'root', 'jenkins'],
-          'certificate' => 'abc123',
-          'private_key' => 'def456'
+          'server_urls'    => [ 'https://example.com:1234', 'https://example.com:5678'],
+          'users'          => [ 'root', 'jenkins'],
+          'certificate'    => 'abc123',
+          'private_key'    => 'def456',
+          'ca_certificate' => '321cba'
         } }
 
         it { is_expected.to contain_profiles__puppet__puppetdb__cli__config('root').with(
-          'server_urls' => [ 'https://example.com:1234', 'https://example.com:5678'],
-          'certificate' => 'abc123',
-          'private_key' => 'def456'
+          'server_urls'    => [ 'https://example.com:1234', 'https://example.com:5678'],
+          'certificate'    => 'abc123',
+          'private_key'    => 'def456',
+          'ca_certificate' => '321cba'
         ) }
 
         it { is_expected.to contain_profiles__puppet__puppetdb__cli__config('jenkins').with(
-          'server_urls' => [ 'https://example.com:1234', 'https://example.com:5678'],
-          'certificate' => 'abc123',
-          'private_key' => 'def456'
+          'server_urls'    => [ 'https://example.com:1234', 'https://example.com:5678'],
+          'certificate'    => 'abc123',
+          'private_key'    => 'def456',
+          'ca_certificate' => '321cba'
         ) }
       end
 
