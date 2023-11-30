@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'profiles::udb3::websocket_server' do
+describe 'profiles::uitdatabank::websocket_server' do
   include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
@@ -15,15 +15,15 @@ describe 'profiles::udb3::websocket_server' do
 
           it { is_expected.to compile.with_all_deps }
 
-          it { is_expected.to contain_class('profiles::udb3::websocket_server').with(
+          it { is_expected.to contain_class('profiles::uitdatabank::websocket_server').with(
             'deployment'  => true,
             'listen_port' => 3000
           ) }
 
           it { is_expected.to contain_class('profiles::nodejs') }
-          it { is_expected.to contain_class('profiles::udb3::websocket_server::deployment') }
+          it { is_expected.to contain_class('profiles::uitdatabank::websocket_server::deployment') }
 
-          it { is_expected.to contain_class('profiles::udb3::websocket_server::deployment').that_requires('Class[profiles::nodejs]') }
+          it { is_expected.to contain_class('profiles::uitdatabank::websocket_server::deployment').that_requires('Class[profiles::nodejs]') }
         end
 
         context "with deployment => false" do
@@ -34,7 +34,7 @@ describe 'profiles::udb3::websocket_server' do
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_class('profiles::nodejs') }
-          it { is_expected.to_not contain_class('profiles::udb3::websocket_server::deployment') }
+          it { is_expected.to_not contain_class('profiles::uitdatabank::websocket_server::deployment') }
         end
       end
 

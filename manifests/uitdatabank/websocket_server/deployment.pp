@@ -1,10 +1,10 @@
-class profiles::udb3::websocket_server::deployment (
+class profiles::uitdatabank::websocket_server::deployment (
   String           $config_source,
   String           $version        = 'latest',
   Boolean          $service_manage = true,
   String           $service_ensure = 'running',
   Boolean          $service_enable = true,
-  Integer          $listen_port    = lookup('profiles::udb3::websocket_server::listen_port', Integer, 'first', 3000),
+  Integer          $listen_port    = lookup('profiles::uitdatabank::websocket_server::listen_port', Integer, 'first', 3000),
   Optional[String] $puppetdb_url   = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 

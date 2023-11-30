@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'profiles::udb3::websocket_server::deployment' do
+describe 'profiles::uitdatabank::websocket_server::deployment' do
   context "with config_source => /foo.json" do
     let(:params) { {
       'config_source' => '/foo.json'
@@ -14,7 +14,7 @@ describe 'profiles::udb3::websocket_server::deployment' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_class('profiles::udb3::websocket_server::deployment').with(
+        it { is_expected.to contain_class('profiles::uitdatabank::websocket_server::deployment').with(
           'config_source'  => '/foo.json',
           'version'        => 'latest',
           'service_manage' => true,
@@ -27,7 +27,7 @@ describe 'profiles::udb3::websocket_server::deployment' do
         it { is_expected.to contain_apt__source('uitdatabank-websocket-server') }
 
         it { is_expected.to contain_package('uitdatabank-websocket-server').with( 'ensure' => 'latest') }
-        it { is_expected.to contain_package('uitdatabank-websocket-server').that_notifies('Profiles::Deployment::Versions[profiles::udb3::websocket_server::deployment]') }
+        it { is_expected.to contain_package('uitdatabank-websocket-server').that_notifies('Profiles::Deployment::Versions[profiles::uitdatabank::websocket_server::deployment]') }
         it { is_expected.to contain_package('uitdatabank-websocket-server').that_requires('Apt::Source[uitdatabank-websocket-server]') }
 
         it { is_expected.to contain_file('uitdatabank-websocket-server-config').with(
@@ -60,7 +60,7 @@ describe 'profiles::udb3::websocket_server::deployment' do
         context 'without hieradata' do
           let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
 
-          it { is_expected.to contain_profiles__deployment__versions('profiles::udb3::websocket_server::deployment').with(
+          it { is_expected.to contain_profiles__deployment__versions('profiles::uitdatabank::websocket_server::deployment').with(
             'puppetdb_url' => nil
           ) }
         end
@@ -68,7 +68,7 @@ describe 'profiles::udb3::websocket_server::deployment' do
         context "with hieradata" do
           let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-          it { is_expected.to contain_profiles__deployment__versions('profiles::udb3::websocket_server::deployment').with(
+          it { is_expected.to contain_profiles__deployment__versions('profiles::uitdatabank::websocket_server::deployment').with(
             'puppetdb_url' => 'http://localhost:8081'
           ) }
         end
@@ -111,7 +111,7 @@ describe 'profiles::udb3::websocket_server::deployment' do
           'enable'    => false
         ) }
 
-        it { is_expected.to contain_profiles__deployment__versions('profiles::udb3::websocket_server::deployment').with(
+        it { is_expected.to contain_profiles__deployment__versions('profiles::uitdatabank::websocket_server::deployment').with(
           'puppetdb_url' => 'http://example.com:8000'
         ) }
       end
