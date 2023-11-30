@@ -1,4 +1,4 @@
-class profiles::udb3::rabbitmq (
+class profiles::uitdatabank::rabbitmq (
   String  $vhost,
   String  $admin_user,
   String  $admin_password,
