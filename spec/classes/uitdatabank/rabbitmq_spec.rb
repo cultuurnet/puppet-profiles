@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin_password|
+RSpec.shared_examples "UiTdatabank rabbitmq configuration" do |vhost, admin_user, admin_password|
   it { is_expected.to contain_rabbitmq_vhost("#{vhost}") }
 
   it { is_expected.to contain_rabbitmq_user_permissions("#{admin_user}@#{vhost}").with(
@@ -204,7 +204,7 @@ RSpec.shared_examples "UDB3 rabbitmq configuration" do |vhost, admin_user, admin
   }
 end
 
-describe 'profiles::udb3::rabbitmq' do
+describe 'profiles::uitdatabank::rabbitmq' do
   include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
@@ -228,7 +228,7 @@ describe 'profiles::udb3::rabbitmq' do
           )
         }
 
-        include_examples 'UDB3 rabbitmq configuration', 'foo', 'bar', 'baz'
+        include_examples 'UiTdatabank rabbitmq configuration', 'foo', 'bar', 'baz'
       end
 
       context "with vhost => 'alice', admin_user => 'bob' and admin_password => 'carl'" do
@@ -248,7 +248,7 @@ describe 'profiles::udb3::rabbitmq' do
           )
         }
 
-        include_examples 'UDB3 rabbitmq configuration', 'alice', 'bob', 'carl'
+        include_examples 'UiTdatabank rabbitmq configuration', 'alice', 'bob', 'carl'
       end
 
       context "without parameters" do
