@@ -1,4 +1,4 @@
-class profiles::udb3::elasticdump_to_gcs (
+class profiles::uitdatabank::elasticdump_to_gcs (
   String  $gcs_bucket_name,
   String  $gcs_key_file_source,
   String  $index_name,
@@ -45,7 +45,7 @@ class profiles::udb3::elasticdump_to_gcs (
 
   file { 'elasticdump_to_gcs':
     path    => '/usr/local/bin/elasticdump_to_gcs',
-    content => template('profiles/udb3/elasticdump_to_gcs.erb'),
+    content => template('profiles/uitdatabank/elasticdump_to_gcs.erb'),
     mode    => '0755',
     require => [ Class['profiles::elasticdump'], Package['gcsfuse'], File['gcs_credentials.json']]
   }
