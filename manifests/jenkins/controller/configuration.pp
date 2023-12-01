@@ -26,6 +26,7 @@ class profiles::jenkins::controller::configuration(
   profiles::jenkins::plugin { 'amazon-ecr': }
   profiles::jenkins::plugin { 'uno-choice': }
   profiles::jenkins::plugin { 'parameterized-scheduler': }
+  profiles::jenkins::plugin { 'pipeline-stage-view': }
 
   profiles::jenkins::plugin { 'git':
     configuration => {
