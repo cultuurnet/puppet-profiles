@@ -169,6 +169,12 @@ describe 'profiles::jenkins::controller::configuration' do
                              }
         ) }
 
+        it { is_expected.to contain_profiles__jenkins__plugin('pipeline-stage-view').with(
+          'ensure'        => 'present',
+          'restart'       => false,
+          'configuration' => nil
+        ) }
+
         it { is_expected.to_not contain_file('jenkins users') }
 
         it { is_expected.to contain_class('profiles::jenkins::controller::configuration::reload') }
