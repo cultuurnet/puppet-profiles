@@ -98,7 +98,7 @@ describe 'profiles::jenkins::cli' do
       end
 
       context "without parameters it uses hieradata from profiles::jenkins::controller" do
-        let(:hiera_config) { 'spec/support/hiera/hiera.yaml' }
+        let(:hiera_config) { 'spec/support/hiera/common.yaml' }
         let(:params) { {} }
 
         it { is_expected.to contain_class('profiles::jenkins::cli').with(

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'profiles::apache::vhost::redirect' do
-  let(:hiera_config) { 'spec/support/hiera/hiera.yaml' }
+  let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
   context "with title => http://leonardo.example.com" do
     let(:title) { 'http://leonardo.example.com' }
