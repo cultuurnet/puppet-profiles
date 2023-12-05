@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'profiles::ssh' do
-  let(:hiera_config) { 'spec/support/hiera/hiera.yaml' }
+  let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
   include_examples 'operating system support'
 

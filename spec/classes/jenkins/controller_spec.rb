@@ -7,7 +7,7 @@ describe 'profiles::jenkins::controller' do
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       let(:facts) { facts }
-      let(:hiera_config) { 'spec/support/hiera/hiera.yaml' }
+      let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
       context "with url => https://jenkins.example.com/ and admin_password => passw0rd" do
         let(:params) { {
