@@ -48,7 +48,7 @@ define profiles::apache::vhost::php_fpm (
 
   apache::vhost { "${servername}_${port}":
     servername            => $servername,
-    serveraliases         => $aliases,
+    serveraliases         => [$aliases].flatten,
     port                  => $port,
     ssl                   => $https,
     ssl_cert              => $ssl_cert,

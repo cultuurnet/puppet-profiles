@@ -98,14 +98,15 @@ describe 'profiles::apache::vhost::php_fpm' do
         context "with hieradata" do
           let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-          context "with basedir => /var/www/bar" do
+          context "with basedir => /var/www/bar and aliases => mysite.example.com" do
             let(:params) { {
-              'basedir' => '/var/www/bar'
+              'basedir' => '/var/www/bar',
+              'aliases' => 'mysite.example.com'
             } }
 
             it { is_expected.to contain_apache__vhost('winston.example.com_80').with(
               'servername'      => 'winston.example.com',
-              'serveraliases'   => [],
+              'serveraliases'   => ['mysite.example.com'],
               'docroot'         => '/var/www/bar/public',
               'manage_docroot'  => false,
               'port'            => 80,
