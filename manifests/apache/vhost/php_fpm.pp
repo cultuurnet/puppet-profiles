@@ -47,33 +47,35 @@ define profiles::apache::vhost::php_fpm (
   }
 
   apache::vhost { "${servername}_${port}":
-    servername            => $servername,
-    serveraliases         => [$aliases].flatten,
-    port                  => $port,
-    ssl                   => $https,
-    ssl_cert              => $ssl_cert,
-    ssl_key               => $ssl_key,
-    docroot               => "${basedir}/${public_web_directory}",
-    manage_docroot        => false,
-    request_headers       => [
-                               'unset Proxy early',
-                               "setifempty X-Forwarded-Port \"${port}\"",
-                               "setifempty X-Forwarded-Proto \"${transport}\""
-                             ],
-    directories           => [
-                               {
-                                 'path'            => '\.php$',
-                                 'provider'        => 'filesmatch',
-                                 'custom_fragment' => $socket_type ? {
-                                                        'unix' => 'SetHandler "proxy:unix:/var/run/php/php-fpm.sock|fcgi://localhost"',
-                                                        'tcp'  => 'SetHandler "proxy:fcgi://127.0.0.1:9000"'
-                                                      }
-                               },
-                               {
-                                 'path'           => $basedir,
-                                 'options'        => ['Indexes','FollowSymLinks','MultiViews'],
-                                 'allow_override' => 'All'
-                               }
-                             ]
+    servername         => $servername,
+    serveraliases      => [$aliases].flatten,
+    port               => $port,
+    ssl                => $https,
+    ssl_cert           => $ssl_cert,
+    ssl_key            => $ssl_key,
+    docroot            => "${basedir}/${public_web_directory}",
+    manage_docroot     => false,
+    access_log_format  => 'extended_json',
+    access_log_env_var => '!nolog',
+    request_headers    => [
+                            'unset Proxy early',
+                            "setifempty X-Forwarded-Port \"${port}\"",
+                            "setifempty X-Forwarded-Proto \"${transport}\""
+                          ],
+    directories        => [
+                            {
+                              'path'            => '\.php$',
+                              'provider'        => 'filesmatch',
+                              'custom_fragment' => $socket_type ? {
+                                                     'unix' => 'SetHandler "proxy:unix:/var/run/php/php-fpm.sock|fcgi://localhost"',
+                                                     'tcp'  => 'SetHandler "proxy:fcgi://127.0.0.1:9000"'
+                                                   }
+                            },
+                            {
+                              'path'           => $basedir,
+                              'options'        => ['Indexes','FollowSymLinks','MultiViews'],
+                              'allow_override' => 'All'
+                            }
+                          ]
   }
 }
