@@ -10,6 +10,8 @@ class profiles::apache::logging inherits ::profiles {
     create_mode   => '0640',
     create_owner  => 'root',
     create_group  => 'adm',
+    compress      => true,
+    delaycompress => true,
     sharedscripts => true,
     postrotate    => 'systemctl status apache2 > /dev/null 2>&1 && systemctl reload apache2 > /dev/null 2>&1'
   }
