@@ -23,7 +23,7 @@ class profiles::apache::logformats inherits ::profiles {
                     \"userAgent\": \"%{User-Agent}i\", \
                     \"referer\": \"%{Referer}i\", \
                     \"uniqueID\": \"%{UNIQUE_ID}e\", \
-                    \"duration\": \"%{ms}T\"
+                    \"duration\": \"%{ms}T\" \
                     }\
                     | EXTENDED_JSON
 
