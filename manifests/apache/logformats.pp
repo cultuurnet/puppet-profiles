@@ -10,7 +10,7 @@ class profiles::apache::logformats inherits ::profiles {
                     \"responseBytes\": %b, \
                     \"referer\": \"%{Referer}i\", \
                     \"userAgent\": \"%{User-Agent}i\" \
-                    }
+                    }\
                     | COMBINED_JSON
 
   $extended_json  = @("EXTENDED_JSON"/L)
@@ -24,7 +24,7 @@ class profiles::apache::logformats inherits ::profiles {
                     \"referer\": \"%{Referer}i\", \
                     \"uniqueID\": \"%{UNIQUE_ID}e\", \
                     \"duration\": \"%{ms}T\"
-                    }
+                    }\
                     | EXTENDED_JSON
 
   $all  = {
