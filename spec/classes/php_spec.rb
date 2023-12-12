@@ -104,30 +104,38 @@ describe 'profiles::php' do
           ) }
 
           it { is_expected.to contain_class('php').with(
-            'manage_repos' => false,
-            'composer'     => false,
-            'dev'          => false,
-            'pear'         => false,
-            'fpm'          => true,
-            'settings'     => {
-                                'PHP/upload_max_filesize' => '22M',
-                                'PHP/post_max_size'       => '24M'
-                              },
-            'extensions'   => {
-                                'bcmath'   => {},
-                                'curl'     => {},
-                                'gd'       => {},
-                                'intl'     => {},
-                                'mbstring' => {},
-                                'mongodb'  => {},
-                                'mysql'    => { 'so_name' => 'mysqlnd' },
-                                'opcache'  => { 'zend' => true },
-                                'readline' => {},
-                                'redis'    => {},
-                                'tidy'     => {},
-                                'xml'      => {},
-                                'zip'      => {}
-                              }
+            'manage_repos'             => false,
+            'composer'                 => false,
+            'dev'                      => false,
+            'pear'                     => false,
+            'settings'                 => {
+                                            'PHP/upload_max_filesize' => '22M',
+                                            'PHP/post_max_size'       => '24M'
+                                          },
+            'extensions'               => {
+                                            'bcmath'   => {},
+                                            'curl'     => {},
+                                            'gd'       => {},
+                                            'intl'     => {},
+                                            'mbstring' => {},
+                                            'mongodb'  => {},
+                                            'mysql'    => { 'so_name' => 'mysqlnd' },
+                                            'opcache'  => { 'zend' => true },
+                                            'readline' => {},
+                                            'redis'    => {},
+                                            'tidy'     => {},
+                                            'xml'      => {},
+                                            'zip'      => {}
+                                          },
+            'fpm'                      => true,
+            'fpm_service_ensure'       => 'running',
+            'fpm_service_enable'       => true,
+            'fpm_pools'                => { 'www' => {} },
+            'fpm_global_pool_settings' => {
+                                            'listen_owner' => 'www-data',
+                                            'listen_group' => 'www-data',
+                                            'listen'       => '/var/run/php/php-fpm.sock'
+                                          }
           ) }
 
           it { is_expected.to contain_apt__source('publiq-tools') }
@@ -153,14 +161,17 @@ describe 'profiles::php' do
       context 'on node bbb.example.com' do
         let(:node) { 'bbb.example.com' }
 
-        context 'with composer_default_version => 1, newrelic_agent => true' do
+        context 'with composer_default_version => 1, newrelic_agent => true, fpm => true, fpm_socket_type => tcp and fpm_service_status => stopped' do
           let(:params) { {
             'composer_default_version' => 1,
+            'fpm'                      => true,
+            'fpm_socket_type'          => 'tcp',
+            'fpm_service_status'       => 'stopped',
             'newrelic_agent'           => true
           } }
 
           it { is_expected.to contain_class('profiles::php').with(
-            'newrelic_app_name'        => 'bbb.example.com'
+            'newrelic_app_name' => 'bbb.example.com'
           ) }
 
           it { is_expected.to contain_apt__source('publiq-tools') }
@@ -175,6 +186,38 @@ describe 'profiles::php' do
 
           it { is_expected.to contain_alternatives('composer').with(
             'path' => '/usr/bin/composer1'
+          ) }
+
+          it { is_expected.to contain_class('php').with(
+            'manage_repos'             => false,
+            'composer'                 => false,
+            'dev'                      => false,
+            'pear'                     => false,
+            'settings'                 => {},
+            'extensions'               => {
+                                            'bcmath'   => {},
+                                            'curl'     => {},
+                                            'gd'       => {},
+                                            'intl'     => {},
+                                            'json'     => {},
+                                            'mbstring' => {},
+                                            'mysql'    => {},
+                                            'opcache'  => { 'zend' => true },
+                                            'readline' => {},
+                                            'redis'    => {},
+                                            'tidy'     => {},
+                                            'xml'      => {},
+                                            'zip'      => {}
+                                          },
+            'fpm'                      => true,
+            'fpm_service_ensure'       => 'stopped',
+            'fpm_service_enable'       => false,
+            'fpm_pools'                => { 'www' => {} },
+            'fpm_global_pool_settings' => {
+                                            'listen_owner' => 'www-data',
+                                            'listen_group' => 'www-data',
+                                            'listen'       => '127.0.0.1:9000'
+                                          }
           ) }
         end
       end

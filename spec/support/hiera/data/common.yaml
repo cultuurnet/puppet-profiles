@@ -59,6 +59,8 @@ profiles::filebeat::logging:
     name: 'filebeat.log'
     keepfiles: '7'
 
+profiles::php::fpm_socket_type: 'tcp'
+
 terraform::volumes::ebs::xvdb::size: 60
 terraform::volumes::ebs::xvdc::size: 40
 terraform::volumes::ebs::xvdd::size: 20
