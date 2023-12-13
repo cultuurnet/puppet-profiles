@@ -1,13 +1,16 @@
 class profiles::platform::deployment (
   String                     $config_source,
   String                     $version        = 'latest',
+  String                     $repository     = 'platform-api',
   Enum['running', 'stopped'] $service_status = 'running',
   Optional[String]           $puppetdb_url   = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $basedir = '/var/www/platform-api'
 
-  realize Apt::Source['platform-api']
+  realize Apt::Source[$repository]
+  realize Group['www-data']
+  realize User['www-data']
 
   package { 'platform-api':
     ensure  => $version,
@@ -21,7 +24,7 @@ class profiles::platform::deployment (
     owner   => 'www-data',
     group   => 'www-data',
     source  => $config_source,
-    require => Package['platform-api']
+    require => [Package['platform-api'], Group['www-data'], User['www-data']]
   }
 
   exec { 'run platform database migrations':

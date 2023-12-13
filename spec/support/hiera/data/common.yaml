@@ -9,6 +9,7 @@ profiles::uit::frontend::deployment::config_source: '/path/to/config/source'
 profiles::uit::mail_subscriptions::deployment::config_source: '/path/to/config/source'
 profiles::uit::recommender_frontend::deployment::config_source: '/path/to/config/source'
 profiles::uitpas::balie::deployment::config_source: '/path/to/config/source'
+profiles::platform::deployment::config_source: '/path/to/config/source'
 
 profiles::uitdatabank::websocket_server::deployment::config_source: '/path/to/config/source'
 
