@@ -1,4 +1,4 @@
-class profiles::deployment {
+class profiles::deployment inherits ::profiles {
 
   file { 'update_facts':
     ensure => 'file',
