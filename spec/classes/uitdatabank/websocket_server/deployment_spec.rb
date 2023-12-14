@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::uitdatabank::websocket_server::deployment' do
   context "with config_source => /foo.json" do
     let(:params) { {

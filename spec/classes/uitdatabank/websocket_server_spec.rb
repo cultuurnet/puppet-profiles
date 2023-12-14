@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::uitdatabank::websocket_server' do
   include_examples 'operating system support'
 

@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::certificates' do
   include_examples 'operating system support'
 

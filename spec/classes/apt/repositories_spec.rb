@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 RSpec.shared_examples "apt repositories" do |repository, params|
   it { is_expected.to contain_apt__source(repository).with(
     'location' => params[:location],

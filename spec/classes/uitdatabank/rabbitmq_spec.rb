@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 RSpec.shared_examples "UiTdatabank rabbitmq configuration" do |vhost, admin_user, admin_password|
   it { is_expected.to contain_rabbitmq_vhost("#{vhost}") }
 

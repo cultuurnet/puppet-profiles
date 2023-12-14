@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::uit::mail_subscriptions::deployment' do
 
   include_examples 'operating system support'

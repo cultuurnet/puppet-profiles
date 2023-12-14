@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::apache::vhost::redirect' do
   let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 

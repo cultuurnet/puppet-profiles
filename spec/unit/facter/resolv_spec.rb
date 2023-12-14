@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'Facter::Util::Fact' do
   before(:each) { Facter.clear }
 

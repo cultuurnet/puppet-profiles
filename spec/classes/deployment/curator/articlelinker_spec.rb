@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::deployment::curator::articlelinker' do
   context "with config_source => /foo and publishers_source => /bar" do
     let(:params) { {

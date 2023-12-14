@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::uit::recommender_frontend' do
   include_examples 'operating system support'
 

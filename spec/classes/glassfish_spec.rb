@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 RSpec.shared_examples "glassfish" do |flavor, version|
   it { is_expected.to compile.with_all_deps }
 

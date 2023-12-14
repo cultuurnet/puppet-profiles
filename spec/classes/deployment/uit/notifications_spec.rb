@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::deployment::uit::notifications' do
   context "with settings_source => /foo" do
     let(:params) { {
