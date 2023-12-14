@@ -126,6 +126,7 @@ describe 'profiles::php' do
                                             'zip'      => {}
                                           },
             'fpm'                      => true,
+            'fpm_service_name'         => 'php-fpm',
             'fpm_service_ensure'       => 'running',
             'fpm_service_enable'       => true,
             'fpm_pools'                => { 'www' => {} },
@@ -208,6 +209,7 @@ describe 'profiles::php' do
                                             'zip'      => {}
                                           },
             'fpm'                      => true,
+            'fpm_service_name'         => 'php-fpm',
             'fpm_service_ensure'       => 'stopped',
             'fpm_service_enable'       => false,
             'fpm_pools'                => { 'www' => {} },

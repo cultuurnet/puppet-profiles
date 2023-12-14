@@ -33,6 +33,7 @@ class profiles::php (
 
   if $fpm {
     $fpm_attributes = {
+                        fpm_service_name         => 'php-fpm',
                         fpm_service_ensure       => $fpm_service_status,
                         fpm_service_enable       => $fpm_service_status ? {
                                                       'running' => true,
