@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::deployment::uit::cms' do
   context "with settings_source => /foo, hostnames_source => /abc and drush_config_source => /bar" do
     let(:params) { {

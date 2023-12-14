@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::groups' do
   include_examples 'operating system support'
 

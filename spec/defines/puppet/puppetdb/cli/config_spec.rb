@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 RSpec.shared_examples "puppetdb-cli config file structure" do |user, rootdir|
   it { is_expected.to compile.with_all_deps }
 

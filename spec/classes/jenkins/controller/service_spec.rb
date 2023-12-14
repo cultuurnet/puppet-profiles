@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::jenkins::controller::service' do
   include_examples 'operating system support'
 

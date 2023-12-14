@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::aptly::gpgkey' do
   context 'with title => foo' do
     let(:title) { 'foo' }

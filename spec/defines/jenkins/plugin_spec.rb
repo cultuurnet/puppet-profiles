@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::jenkins::plugin' do
   on_supported_os.each do |os, facts|
     context "on #{os}" do

@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::publiq::prototypes' do
   let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 

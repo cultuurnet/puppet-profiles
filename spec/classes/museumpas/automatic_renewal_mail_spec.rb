@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::museumpas::automatic_renewal_mail' do
   include_examples 'operating system support'
 

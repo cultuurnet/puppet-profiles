@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::deployment::uitpas_be::backend' do
   context "with config_source => /foo" do
     let(:params) { {

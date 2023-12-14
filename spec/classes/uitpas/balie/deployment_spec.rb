@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::uitpas::balie::deployment' do
   context "with config_source => /foo" do
     let(:params) { {
