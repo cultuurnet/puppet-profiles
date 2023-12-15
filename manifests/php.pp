@@ -48,6 +48,12 @@ class profiles::php (
                                                                       }
                                                     }
                       }
+
+    systemd::dropin_file { 'php-fpm service override.conf':
+      unit     => "php${version}-fpm.service",
+      filename => 'override.conf',
+      content  => "[Install]\nAlias=php-fpm"
+    }
   } else {
     $fpm_attributes = {}
   }

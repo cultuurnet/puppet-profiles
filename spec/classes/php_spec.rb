@@ -136,6 +136,12 @@ describe 'profiles::php' do
                                           }
           ) }
 
+          it { is_expected.to contain_systemd__dropin_file('php-fpm service override.conf').with(
+            'unit'     => 'php8.0-fpm.service',
+            'filename' => 'override.conf',
+            'content'  => "[Install]\nAlias=php-fpm"
+          ) }
+
           it { is_expected.to contain_apt__source('publiq-tools') }
 
           it { is_expected.to contain_package('composer1').with(
@@ -170,6 +176,12 @@ describe 'profiles::php' do
 
           it { is_expected.to contain_class('profiles::php').with(
             'newrelic_app_name' => 'bbb.example.com'
+          ) }
+
+          it { is_expected.to contain_systemd__dropin_file('php-fpm service override.conf').with(
+            'unit'     => 'php7.4-fpm.service',
+            'filename' => 'override.conf',
+            'content'  => "[Install]\nAlias=php-fpm"
           ) }
 
           it { is_expected.to contain_apt__source('publiq-tools') }
