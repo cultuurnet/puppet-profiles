@@ -61,6 +61,7 @@ class profiles::php (
         path        => ['/usr/sbin', '/usr/bin'],
         refreshonly => true,
         logoutput   => 'on_failure',
+        require     => Class['php'],
         subscribe   => Systemd::Dropin_file['php-fpm service override.conf']
       }
     }

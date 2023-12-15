@@ -164,6 +164,7 @@ describe 'profiles::php' do
           ) }
 
           it { is_expected.to contain_exec('re-enable php8.0-fpm').that_subscribes_to('Systemd::Dropin_file[php-fpm service override.conf]') }
+          it { is_expected.to contain_exec('re-enable php8.0-fpm').that_requires('Class[php]') }
           it { is_expected.to contain_package('composer1').that_requires('Class[php]') }
           it { is_expected.to contain_package('composer2').that_requires('Class[php]') }
           it { is_expected.to contain_alternatives('composer').that_requires(['Package[composer1]', 'Package[composer2]']) }
@@ -192,7 +193,7 @@ describe 'profiles::php' do
             'content'  => "[Install]\nAlias=php-fpm.service"
           ) }
 
-          it { is_expected.not_to contain_exec('re-enable php7.4-fpm to make service alias available') }
+          it { is_expected.not_to contain_exec('re-enable php7.4-fpm') }
 
           it { is_expected.to contain_apt__source('publiq-tools') }
 
