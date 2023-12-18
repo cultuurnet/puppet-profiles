@@ -3,7 +3,7 @@ class profiles::php (
   Hash                       $extensions               = {},
   Hash                       $settings                 = {},
   Optional[Integer[1, 2]]    $composer_default_version = undef,
-  Boolean                    $fpm                      = false,
+  Boolean                    $fpm                      = true,
   Enum['unix', 'tcp']        $fpm_socket_type          = 'unix',
   Enum['running', 'stopped'] $fpm_service_status       = 'running',
   Boolean                    $newrelic_agent           = false,
@@ -74,7 +74,8 @@ class profiles::php (
 
   class { ::php::globals:
     php_version => $version,
-    config_root => "/etc/php/${version}"
+    config_root => "/etc/php/${version}",
+    before      => Class['php']
   }
 
   class { ::php:
@@ -105,7 +106,7 @@ class profiles::php (
 
     alternatives { 'composer':
       path    => "/usr/bin/composer${composer_default_version}",
-      require => [ Package['composer1'], Package['composer2']]
+      require => [Package['composer1'], Package['composer2']]
     }
   }
 
@@ -122,9 +123,7 @@ class profiles::php (
     package { 'newrelic-php5':
       ensure       => 'latest',
       responsefile => '/var/tmp/newrelic-php5-installer.preseed',
-      require      => [File['newrelic-php5-installer.preseed']]
+      require      => File['newrelic-php5-installer.preseed']
     }
   }
-
-  Class['php::globals'] -> Class['php']
 }
