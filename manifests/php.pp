@@ -48,6 +48,23 @@ class profiles::php (
                                                                       }
                                                     }
                       }
+
+    systemd::dropin_file { 'php-fpm service override.conf':
+      unit     => "php${version}-fpm.service",
+      filename => 'override.conf',
+      content  => "[Install]\nAlias=php-fpm.service"
+    }
+
+    if $fpm_service_status == 'running' {
+      exec { "re-enable php${version}-fpm":
+        command     => "systemctl reenable php${version}-fpm",
+        path        => ['/usr/sbin', '/usr/bin'],
+        refreshonly => true,
+        logoutput   => 'on_failure',
+        require     => Class['php'],
+        subscribe   => Systemd::Dropin_file['php-fpm service override.conf']
+      }
+    }
   } else {
     $fpm_attributes = {}
   }

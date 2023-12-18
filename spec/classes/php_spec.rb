@@ -136,6 +136,19 @@ describe 'profiles::php' do
                                           }
           ) }
 
+          it { is_expected.to contain_systemd__dropin_file('php-fpm service override.conf').with(
+            'unit'     => 'php8.0-fpm.service',
+            'filename' => 'override.conf',
+            'content'  => "[Install]\nAlias=php-fpm.service"
+          ) }
+
+          it { is_expected.to contain_exec('re-enable php8.0-fpm').with(
+            'command'     => 'systemctl reenable php8.0-fpm',
+            'path'        => ['/usr/sbin', '/usr/bin'],
+            'refreshonly' => true,
+            'logoutput'   => 'on_failure'
+          ) }
+
           it { is_expected.to contain_apt__source('publiq-tools') }
 
           it { is_expected.to contain_package('composer1').with(
@@ -150,6 +163,8 @@ describe 'profiles::php' do
             'path' => '/usr/bin/composer2'
           ) }
 
+          it { is_expected.to contain_exec('re-enable php8.0-fpm').that_subscribes_to('Systemd::Dropin_file[php-fpm service override.conf]') }
+          it { is_expected.to contain_exec('re-enable php8.0-fpm').that_requires('Class[php]') }
           it { is_expected.to contain_package('composer1').that_requires('Class[php]') }
           it { is_expected.to contain_package('composer2').that_requires('Class[php]') }
           it { is_expected.to contain_alternatives('composer').that_requires(['Package[composer1]', 'Package[composer2]']) }
@@ -171,6 +186,14 @@ describe 'profiles::php' do
           it { is_expected.to contain_class('profiles::php').with(
             'newrelic_app_name' => 'bbb.example.com'
           ) }
+
+          it { is_expected.to contain_systemd__dropin_file('php-fpm service override.conf').with(
+            'unit'     => 'php7.4-fpm.service',
+            'filename' => 'override.conf',
+            'content'  => "[Install]\nAlias=php-fpm.service"
+          ) }
+
+          it { is_expected.not_to contain_exec('re-enable php7.4-fpm') }
 
           it { is_expected.to contain_apt__source('publiq-tools') }
 
