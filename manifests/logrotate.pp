@@ -11,4 +11,15 @@ class profiles::logrotate inherits ::profiles {
     su_user       => 'root',
     su_group      => 'adm'
   }
+
+  $default_rule_attributes = {
+                               rotate_every  => 'day',
+                               missingok     => true,
+                               create        => true,
+                               ifempty       => true,
+                               create_mode   => '0640',
+                               compress      => true,
+                               delaycompress => true,
+                               sharedscripts => true
+                             }
 }
