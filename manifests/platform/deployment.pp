@@ -2,7 +2,6 @@ class profiles::platform::deployment (
   String                     $config_source,
   String                     $version        = 'latest',
   String                     $repository     = 'platform-api',
-  Enum['running', 'stopped'] $service_status = 'running',
   Optional[String]           $puppetdb_url   = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
@@ -77,14 +76,10 @@ class profiles::platform::deployment (
   profiles::php::fpm_service_alias { 'platform-api': }
 
   service { 'platform-api':
-    ensure    => $service_status,
-    hasstatus => true,
-    restart   => 'reload',
-    require   => Profiles::Php::Fpm_service_alias['platform-api'],
-    enable    => $service_status ? {
-                   'running' => true,
-                   'stopped' => false
-                 }
+    hasstatus  => true,
+    hasrestart => true,
+    restart    => '/usr/bin/systemctl reload platform-api',
+    require    => Profiles::Php::Fpm_service_alias['platform-api'],
   }
 
   systemd::unit_file { 'platform-api-horizon.service':
@@ -95,12 +90,9 @@ class profiles::platform::deployment (
   }
 
   service { 'platform-api-horizon':
-    ensure    => $service_status,
+    ensure    => 'running',
     hasstatus => true,
-    enable    => $service_status ? {
-                   'running' => true,
-                   'stopped' => false
-                 },
+    enable    => true,
     require   => Systemd::Unit_file['platform-api-horizon.service']
   }
 

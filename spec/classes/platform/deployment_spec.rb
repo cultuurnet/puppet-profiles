@@ -21,7 +21,6 @@ describe 'profiles::platform::deployment' do
             'config_source'  => '/my/config/file',
             'version'        => 'latest',
             'repository'     => 'platform-api',
-            'service_status' => 'running',
             'puppetdb_url'   => nil
           ) }
         end
