@@ -2,7 +2,6 @@ class profiles::museumpas::website::deployment (
   String                     $config_source,
   String                     $maintenance_source,
   String                     $repository         = 'museumpas-website',
-  Enum['running', 'stopped'] $service_status     = 'running',
   String                     $version            = 'latest',
   Optional[String]           $robots_source      = undef,
   Boolean                    $run_scheduler_cron = true,
@@ -132,14 +131,10 @@ class profiles::museumpas::website::deployment (
   profiles::php::fpm_service_alias { 'museumpas-website': }
 
   service { 'museumpas-website':
-    ensure    => $service_status,
-    hasstatus => true,
-    restart   => 'reload',
-    require   => Profiles::Php::Fpm_service_alias['museumpas-website'],
-    enable    => $service_status ? {
-                   'running' => true,
-                   'stopped' => false
-                 }
+    hasstatus  => true,
+    hasrestart => true,
+    restart    => '/usr/bin/systemctl reload museumpas-website',
+    require    => Profiles::Php::Fpm_service_alias['museumpas-website'],
   }
 
   systemd::unit_file { 'museumpas-website-horizon.service':
@@ -150,12 +145,9 @@ class profiles::museumpas::website::deployment (
   }
 
   service { 'museumpas-website-horizon':
-    ensure    => $service_status,
+    ensure    => 'running',
     hasstatus => true,
-    enable    => $service_status ? {
-                   'running' => true,
-                   'stopped' => false
-                 },
+    enable    => true,
     require   => Systemd::Unit_file['museumpas-website-horizon.service'],
     subscribe => File['museumpas-website-config']
   }
