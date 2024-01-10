@@ -94,9 +94,9 @@ class profiles::museumpas::website (
     redirect_dest     => [ '/nl/voorwaarden-privacy-museumpas' ],
     setenv            => [ 'HTTPS "on"' ],
     setenvif          => [
-                           'Remote_Addr "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+)" CLIENT_IP=$1',
+                           'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+)" CLIENT_IP=$1',
                          ],
-    require => [Class['profiles::apache']]
+    require           => Class['profiles::apache']
   }
 
   file { 'mysqld_version_ext_fact':
