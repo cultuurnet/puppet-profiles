@@ -97,10 +97,8 @@ describe 'profiles::uit::api::deployment' do
         it { is_expected.to contain_file('uit-api-config-db').that_notifies('Service[uit-api]') }
         it { is_expected.to contain_file('uit-api-service-defaults').that_notifies('Service[uit-api]') }
         it { is_expected.to contain_exec('uit-api-graphql-schema-update').that_notifies('Service[uit-api]') }
-        it { is_expected.to contain_exec('uit-api-graphql-schema-update').that_requires('Group[www-data]') }
         it { is_expected.to contain_exec('uit-api-graphql-schema-update').that_requires('User[www-data]') }
         it { is_expected.to contain_exec('uit-api-db-schema-update').that_notifies('Service[uit-api]') }
-        it { is_expected.to contain_exec('uit-api-db-schema-update').that_requires('Group[www-data]') }
         it { is_expected.to contain_exec('uit-api-db-schema-update').that_requires('User[www-data]') }
 
         context "without hieradata" do
