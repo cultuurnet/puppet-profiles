@@ -77,6 +77,11 @@ define profiles::apache::vhost::reverse_proxy (
     ssl_key               => $ssl_key,
     docroot               => '/var/www/html',
     manage_docroot        => false,
+    access_log_format     => 'extended_json',
+    setenvif              => [
+                               'X-Forwarded-Proto "https" HTTPS=on',
+                               'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                             ],
     request_headers       => [
                                'unset Proxy early',
                                "setifempty X-Forwarded-Port \"${port}\"",
