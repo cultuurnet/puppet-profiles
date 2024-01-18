@@ -42,17 +42,22 @@ define profiles::apache::vhost::redirect (
   }
 
   apache::vhost { "${servername}_${port}":
-    servername      => $servername,
-    serveraliases   => $aliases,
-    port            => $port,
-    ssl             => $https,
-    ssl_cert        => $ssl_cert,
-    ssl_key         => $ssl_key,
-    docroot         => '/var/www/html',
-    manage_docroot  => false,
-    request_headers => ['unset Proxy early'],
-    redirect_source => '/',
-    redirect_dest   => "${dest}/",
-    redirect_status => 'permanent'
+    servername        => $servername,
+    serveraliases     => $aliases,
+    port              => $port,
+    ssl               => $https,
+    ssl_cert          => $ssl_cert,
+    ssl_key           => $ssl_key,
+    docroot           => '/var/www/html',
+    manage_docroot    => false,
+    request_headers   => ['unset Proxy early'],
+    access_log_format => 'extended_json',
+    setenvif          => [
+                           'X-Forwarded-Proto "https" HTTPS=on',
+                           'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                         ],
+    redirect_source   => '/',
+    redirect_dest     => "${dest}/",
+    redirect_status   => 'permanent'
   }
 }
