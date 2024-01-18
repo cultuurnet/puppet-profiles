@@ -1,9 +1,12 @@
 class profiles::redis (
-  String           $version          = 'installed',
-  Boolean          $lvm              = false,
-  Optional[String] $volume_group     = undef,
-  Optional[String] $volume_size      = undef
+  String           $version      = 'installed',
+  Boolean          $persist_data = true,
+  Boolean          $lvm          = false,
+  Optional[String] $volume_group = undef,
+  Optional[String] $volume_size  = undef
 ) inherits ::profiles {
+
+  $workdir = '/var/lib/redis'
 
   realize Group['redis']
   realize User['redis']
@@ -25,20 +28,29 @@ class profiles::redis (
       before       => Class['redis']
     }
 
-    file { '/var/lib/redis':
-      ensure  => 'link',
-      target  => '/data/redis',
-      force   => true,
-      owner   => 'redis',
-      group   => 'redis',
-      require => [File['/var/lib/redis'], Profiles::Lvm::Mount['redisdata']],
-      before  => Class['redis']
+    mount { $workdir:
+      ensure  => mounted,
+      device  => '/data/redis',
+      fstype  => 'none',
+      options => 'rw,bind',
+      notify  => Service['redis-server'],
+      require => [Profiles::Lvm::Mount['redisdata'], Class['redis']]
     }
   }
 
   class { '::redis':
-    workdir      => '/var/lib/redis',
-    workdir_mode => '0755',
-    require      => [Group['redis'], User['redis']]
+    package_ensure  => $version,
+    workdir         => $workdir,
+    workdir_mode    => '0755',
+    save_db_to_disk => $persist_data,
+    service_manage  => false,
+    require         => [Group['redis'], User['redis']],
+    notify          => Service['redis-server']
+  }
+
+  service { 'redis-server':
+    enable    => true,
+    ensure    => 'running',
+    hasstatus => true
   }
 }
