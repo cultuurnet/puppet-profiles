@@ -10,14 +10,16 @@ class profiles::meilisearch (
   Enum['running', 'stopped'] $service_status = 'running'
 ) inherits ::profiles {
 
+  include profiles::firewall::rules
+
   realize Group['meilisearch']
   realize User['meilisearch']
-
   realize Apt::Source['publiq-tools']
+  realize Firewall['400 accept meilisearch traffic']
 
   package { 'meilisearch':
     ensure  => $version,
-    require => [User['meilisearch'],Apt::Source['publiq-tools']],
+    require => [User['meilisearch'], Apt::Source['publiq-tools']],
     notify  => Service['meilisearch']
   }
 
@@ -28,7 +30,7 @@ class profiles::meilisearch (
     group   => 'meilisearch',
     mode    => '0640',
     content => template('profiles/meilisearch/meilisearch.toml.erb'),
-    require => [Package['meilisearch']],
+    require => Package['meilisearch'],
     notify  => Service['meilisearch']
   }
 
