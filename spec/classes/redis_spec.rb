@@ -12,6 +12,7 @@ describe 'profiles::redis' do
 
         it { is_expected.to contain_class('profiles::redis').with(
           'version'          => 'installed',
+          'listen_address'   => '127.0.0.1',
           'persist_data'     => true,
           'lvm'              => false,
           'volume_group'     => nil,
@@ -30,6 +31,7 @@ describe 'profiles::redis' do
           'workdir'          => '/var/lib/redis',
           'save_db_to_disk'  => true,
           'workdir_mode'     => '0755',
+          'bind'             => '127.0.0.1',
           'service_manage'   => false,
           'maxmemory'        => nil,
           'maxmemory_policy' => nil
@@ -49,9 +51,10 @@ describe 'profiles::redis' do
       context "with volume_group datavg present" do
         let(:pre_condition) { 'volume_group { "datavg": ensure => "present" }' }
 
-        context "with version => 1.2.3, lvm => true, volume_group => datavg, volume_size => 20G, maxmemory => 200mb and maxmemory_policy => noeviction" do
+        context "with version => 1.2.3, listen_address => 0.0.0.0, lvm => true, volume_group => datavg, volume_size => 20G, maxmemory => 200mb and maxmemory_policy => noeviction" do
           let(:params) { {
             'version'          => '1.2.3',
+            'listen_address'   => '0.0.0.0',
             'lvm'              => true,
             'volume_group'     => 'datavg',
             'volume_size'      => '20G',
@@ -61,6 +64,7 @@ describe 'profiles::redis' do
 
           it { is_expected.to contain_class('redis').with(
             'package_ensure'   => '1.2.3',
+            'bind'             => '0.0.0.0',
             'maxmemory'        => '200mb',
             'maxmemory_policy' => 'noeviction'
           ) }
