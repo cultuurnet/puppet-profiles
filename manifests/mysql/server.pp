@@ -1,13 +1,15 @@
 class profiles::mysql::server (
-  Optional[String] $root_password  = undef,
-  Boolean          $lvm            = false,
-  Optional[String] $volume_group   = undef,
-  Optional[String] $volume_size    = undef,
-  Integer          $max_open_files = 1024
+  Optional[String]        $root_password   = undef,
+  Stdlib::IP::Address::V4 $listen_address  = '127.0.0.1',
+  Boolean                 $lvm             = false,
+  Optional[String]        $volume_group    = undef,
+  Optional[String]        $volume_size     = undef,
+  Integer                 $max_open_files  = 1024,
+  Integer                 $long_query_time = 2
 ) inherits ::profiles {
 
   $root_user = 'root'
-  $host      = '127.0.0.1'
+  $host      = 'localhost'
   $options   = {
                  'client' => { 'default-character-set' => 'utf8mb4' },
                  'mysql'  => { 'default-character-set' => 'utf8mb4' },
@@ -15,13 +17,12 @@ class profiles::mysql::server (
                                'character-set-client-handshake' => 'false',
                                'character-set-server'           => 'utf8mb4',
                                'collation-server'               => 'utf8mb4_unicode_ci',
-                               'bind-address'                   => '0.0.0.0',
-                               'ignore-db-dir'                  => 'lost+found',
+                               'bind-address'                   => $listen_address,
                                'skip-name-resolve'              => 'true',
                                'innodb_file_per_table'          => 'ON',
                                'slow_query_log'                 => 'ON',
                                'slow_query_log_file'            => '/var/log/mysql/slow-query.log',
-                               'long_query_time'                => '4'
+                               'long_query_time'                => "${long_query_time}"
                              }
                }
 
@@ -29,7 +30,6 @@ class profiles::mysql::server (
   realize User['mysql']
 
   if $lvm {
-
     unless ($volume_group and $volume_size) {
       fail("with LVM enabled, expects a value for both 'volume_group' and 'volume_size'")
     }
@@ -45,13 +45,28 @@ class profiles::mysql::server (
       before       => Class['mysql::server']
     }
 
-    file { '/var/lib/mysql':
-      ensure  => 'link',
-      target  => '/data/mysql',
+    file { '/data/mysql/lost+found':
+      ensure  => 'absent',
       force   => true,
+      require => Profiles::Lvm::Mount['mysqldata'],
+      before  => Class['mysql::server']
+    }
+
+    file { '/var/lib/mysql':
+      ensure  => 'directory',
       owner   => 'mysql',
       group   => 'mysql',
-      require => [File['/var/lib/mysql'], Profiles::Lvm::Mount['mysqldata']],
+      require => Profiles::Lvm::Mount['mysqldata'],
+      before  => Class['mysql::server']
+    }
+
+    mount { '/var/lib/mysql':
+      ensure  => 'mounted',
+      device  => '/data/mysql',
+      fstype  => 'none',
+      options => 'rw,bind',
+      notify  => Class['mysql::server::service'],
+      require => [Profiles::Lvm::Mount['mysqldata'], File['/var/lib/mysql']],
       before  => Class['mysql::server']
     }
   }
@@ -74,7 +89,10 @@ class profiles::mysql::server (
 
   class { ::mysql::server:
     root_password      => $root_password,
+    package_name       => 'mysql-server',
+    service_name       => 'mysql',
     create_root_my_cnf => false,
+    managed_dirs       =>  [],
     restart            => true,
     override_options   => $options
   }
