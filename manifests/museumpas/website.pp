@@ -20,8 +20,7 @@ class profiles::museumpas::website (
   include profiles::firewall::rules
 
   if $install_redis {
-    include redis
-    realize Firewall['400 accept redis traffic']
+    include profiles::redis
   }
 
   if $install_meilisearch {
