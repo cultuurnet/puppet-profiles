@@ -10,6 +10,10 @@ describe 'profiles::mysql::logging' do
       it { is_expected.to contain_class('profiles::logrotate') }
       it { is_expected.to contain_user('mysql') }
 
+      it { is_expected.to contain_logrotate__rule('mysql-server').with(
+        'ensure' => 'absent'
+      ) }
+
       it { is_expected.to contain_logrotate__rule('mysql-server-slow-query').with(
         'path'          => '/var/log/mysql/slow-query.log',
         'rotate'        => 30,

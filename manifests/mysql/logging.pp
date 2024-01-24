@@ -4,6 +4,10 @@ class profiles::mysql::logging inherits ::profiles {
 
   realize User['mysql']
 
+  logrotate::rule { 'mysql-server':
+    ensure => 'absent'
+  }
+
   logrotate::rule { 'mysql-server-slow-query':
     path         => '/var/log/mysql/slow-query.log',
     rotate       => 30,
