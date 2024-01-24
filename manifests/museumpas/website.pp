@@ -15,6 +15,7 @@ class profiles::museumpas::website (
 
   include apache::mod::proxy
   include apache::mod::proxy_fcgi
+  include apache::mod::rewrite
   include apache::vhosts
   include profiles::firewall::rules
 
