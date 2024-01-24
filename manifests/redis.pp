@@ -1,15 +1,21 @@
 class profiles::redis (
-  String           $version      = 'installed',
-  Boolean          $persist_data = true,
-  Boolean          $lvm          = false,
-  Optional[String] $volume_group = undef,
-  Optional[String] $volume_size  = undef
+  String                  $version          = 'installed',
+  Stdlib::IP::Address::V4 $listen_address   = '127.0.0.1',
+  Boolean                 $persist_data     = true,
+  Boolean                 $lvm              = false,
+  Optional[String]        $volume_group     = undef,
+  Optional[String]        $volume_size      = undef,
+  Optional[String]        $maxmemory        = undef,
+  Optional[String]        $maxmemory_policy = undef
 ) inherits ::profiles {
 
   $workdir = '/var/lib/redis'
 
+  include profiles::firewall::rules
+
   realize Group['redis']
   realize User['redis']
+  realize Firewall['400 accept redis traffic']
 
   if $lvm {
 
@@ -39,13 +45,16 @@ class profiles::redis (
   }
 
   class { '::redis':
-    package_ensure  => $version,
-    workdir         => $workdir,
-    workdir_mode    => '0755',
-    save_db_to_disk => $persist_data,
-    service_manage  => false,
-    require         => [Group['redis'], User['redis']],
-    notify          => Service['redis-server']
+    package_ensure   => $version,
+    workdir          => $workdir,
+    workdir_mode     => '0755',
+    save_db_to_disk  => $persist_data,
+    bind             => $listen_address,
+    service_manage   => false,
+    maxmemory        => $maxmemory,
+    maxmemory_policy => $maxmemory_policy,
+    require          => [Group['redis'], User['redis']],
+    notify           => Service['redis-server']
   }
 
   service { 'redis-server':

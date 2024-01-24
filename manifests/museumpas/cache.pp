@@ -1,9 +1,8 @@
 class profiles::museumpas::cache inherits ::profiles {
 
-  include redis
-  realize Firewall['400 accept REDIS traffic']
+  realize Firewall['400 accept redis traffic']
 
+  include redis
   include profiles::meilisearch
-  realize Firewall['400 accept MEILISEARCH traffic']
 }
 
