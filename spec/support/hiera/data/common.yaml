@@ -6,6 +6,7 @@ profiles::jenkins::controller::admin_password: 'bar'
 profiles::jenkins::controller::url: 'https://foobar.com/'
 
 profiles::uit::frontend::deployment::config_source: '/path/to/config/source'
+profiles::uit::api::deployment::config_source: '/path/to/config/source'
 profiles::uit::mail_subscriptions::deployment::config_source: '/path/to/config/source'
 profiles::uit::recommender_frontend::deployment::config_source: '/path/to/config/source'
 profiles::uitpas::balie::deployment::config_source: '/path/to/config/source'

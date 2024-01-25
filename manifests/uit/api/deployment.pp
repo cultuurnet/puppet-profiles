@@ -42,14 +42,6 @@ class profiles::uit::api::deployment (
     notify  => [Exec['uit-api-db-schema-update'], Service['uit-api']]
   }
 
-  file { 'uit-api-log':
-    ensure  => 'directory',
-    path    => "${basedir}/log",
-    owner   => 'www-data',
-    group   => 'www-data',
-    require => [Group['www-data'], User['www-data']]
-  }
-
   file { 'uit-api-service-defaults':
     ensure  => 'file',
     path    => '/etc/default/uit-api',
