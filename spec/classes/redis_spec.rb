@@ -11,22 +11,32 @@ describe 'profiles::redis' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::redis').with(
-          'version'      => 'installed',
-          'persist_data' => true,
-          'lvm'          => false,
-          'volume_group' => nil,
-          'volume_size'  => nil
+          'version'          => 'installed',
+          'listen_address'   => '127.0.0.1',
+          'persist_data'     => true,
+          'password'         => nil,
+          'lvm'              => false,
+          'volume_group'     => nil,
+          'volume_size'      => nil,
+          'maxmemory'        => nil,
+          'maxmemory_policy' => nil
         ) }
 
         it { is_expected.to contain_group('redis') }
         it { is_expected.to contain_user('redis') }
 
+        it { is_expected.to contain_firewall('400 accept redis traffic') }
+
         it { is_expected.to contain_class('redis').with(
-          'package_ensure'  => 'installed',
-          'workdir'         => '/var/lib/redis',
-          'save_db_to_disk' => true,
-          'workdir_mode'    => '0755',
-          'service_manage'  => false
+          'package_ensure'   => 'installed',
+          'workdir'          => '/var/lib/redis',
+          'save_db_to_disk'  => true,
+          'workdir_mode'     => '0755',
+          'bind'             => '127.0.0.1',
+          'requirepass'      => nil,
+          'service_manage'   => false,
+          'maxmemory'        => nil,
+          'maxmemory_policy' => nil
         ) }
 
         it { is_expected.to contain_service('redis-server').with(
@@ -43,16 +53,24 @@ describe 'profiles::redis' do
       context "with volume_group datavg present" do
         let(:pre_condition) { 'volume_group { "datavg": ensure => "present" }' }
 
-        context "with version => 1.2.3, lvm => true, volume_group => datavg and volume_size => 20G" do
+        context "with version => 1.2.3, listen_address => 0.0.0.0, password => mypass, lvm => true, volume_group => datavg, volume_size => 20G, maxmemory => 200mb and maxmemory_policy => noeviction" do
           let(:params) { {
             'version'          => '1.2.3',
+            'listen_address'   => '0.0.0.0',
+            'password'         => 'mypass',
             'lvm'              => true,
             'volume_group'     => 'datavg',
-            'volume_size'      => '20G'
+            'volume_size'      => '20G',
+            'maxmemory'        => '200mb',
+            'maxmemory_policy' => 'noeviction'
           } }
 
           it { is_expected.to contain_class('redis').with(
-            'package_ensure' => '1.2.3'
+            'package_ensure'   => '1.2.3',
+            'bind'             => '0.0.0.0',
+            'requirepass'      => 'mypass',
+            'maxmemory'        => '200mb',
+            'maxmemory_policy' => 'noeviction'
           ) }
 
           it { is_expected.to contain_profiles__lvm__mount('redisdata').with(
