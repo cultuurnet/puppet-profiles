@@ -42,13 +42,13 @@ class profiles::firewall::rules inherits ::profiles {
     action => 'accept'
   }
 
-  @firewall { '400 accept REDIS traffic':
+  @firewall { '400 accept redis traffic':
     proto  => 'tcp',
     dport  => '6379',
     action => 'accept'
   }
 
-  @firewall { '400 accept MEILISEARCH traffic':
+  @firewall { '400 accept meilisearch traffic':
     proto  => 'tcp',
     dport  => '7700',
     action => 'accept'

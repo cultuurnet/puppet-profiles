@@ -37,18 +37,23 @@ class profiles::publiq::prototypes (
   }
 
   apache::vhost { "${servername}_${port}":
-    docroot         => $basedir,
-    servername      => $servername,
-    serveraliases   => ["*.${servername}"],
-    virtual_docroot => "${basedir}/%1",
-    docroot_owner   => 'www-data',
-    docroot_group   => 'www-data',
-    request_headers => ['unset Proxy early'],
-    ssl             => $https,
-    port            => $port,
-    ssl_cert        => "/etc/ssl/certs/${certificate}.bundle.crt",
-    ssl_key         => "/etc/ssl/private/${certificate}.key",
-    require         => Class['profiles::apache']
+    docroot           => $basedir,
+    servername        => $servername,
+    serveraliases     => ["*.${servername}"],
+    virtual_docroot   => "${basedir}/%1",
+    docroot_owner     => 'www-data',
+    docroot_group     => 'www-data',
+    request_headers   => ['unset Proxy early'],
+    access_log_format => 'extended_json',
+    setenvif          => [
+                           'X-Forwarded-Proto "https" HTTPS=on',
+                           'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                         ],
+    ssl               => $https,
+    port              => $port,
+    ssl_cert          => "/etc/ssl/certs/${certificate}.bundle.crt",
+    ssl_key           => "/etc/ssl/private/${certificate}.key",
+    require           => Class['profiles::apache']
   }
 
   if $deployment {

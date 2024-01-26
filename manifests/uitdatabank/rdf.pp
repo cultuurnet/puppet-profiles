@@ -50,6 +50,7 @@ class profiles::uitdatabank::rdf (
     request_headers   => $request_headers,
     rewrites          => $rewrites,
     setenvif          => [
+                           'X-Forwarded-Proto "https" HTTPS=on',
                            'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
                          ],
     require           => [Class['apache::mod::proxy'], Class['apache::mod::proxy_http']]

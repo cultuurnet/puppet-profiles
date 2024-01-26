@@ -36,6 +36,7 @@ describe 'profiles::uitdatabank::rdf' do
                                    'set Accept "text/turtle"'
                                  ],
           'setenvif'          => [
+                                   'X-Forwarded-Proto "https" HTTPS=on',
                                    'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
                                  ],
           'rewrites'          => [ {
@@ -78,6 +79,7 @@ describe 'profiles::uitdatabank::rdf' do
                                    'set Accept "text/turtle"'
                                  ],
           'setenvif'          => [
+                                   'X-Forwarded-Proto "https" HTTPS=on',
                                    'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
                                  ],
           'rewrites'          => [ {
