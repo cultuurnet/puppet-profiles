@@ -2,7 +2,7 @@ HOST=<%= @service_address %>
 NUXT_PORT=<%= @service_port %>
 NODE_OPTIONS=--max_old_space_size=<%= @maximum_heap_size %>
 NUXT_TELEMETRY_DISABLED=1
-<% if @newrelic_license_key %>
+<%- if @newrelic_license_key -%>
 NEW_RELIC_LICENSE_KEY=<%= @newrelic_license_key %>
 NEW_RELIC_APP_NAME=<%= @newrelic_app_name %>
-<% end %>
+<%- end -%>
