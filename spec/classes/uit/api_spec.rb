@@ -1,7 +1,8 @@
 describe 'profiles::uit::api' do
-  context "with servername => foo.example.com" do
+  context "with servername => foo.example.com and database_password => secret" do
     let(:params) { {
-      'servername' => 'foo.example.com'
+      'servername'        => 'foo.example.com',
+      'database_password' => 'secret'
     } }
 
     include_examples 'operating system support'
@@ -21,10 +22,11 @@ describe 'profiles::uit::api' do
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to contain_class('profiles::uit::api').with(
-              'servername'    => 'foo.example.com',
-              'serveraliases' => [],
-              'deployment'    => true,
-              'service_port'  => 4000
+              'servername'        => 'foo.example.com',
+              'database_password' => 'secret',
+              'serveraliases'     => [],
+              'deployment'        => true,
+              'service_port'      => 4000
             ) }
 
             it { is_expected.to contain_group('www-data') }
@@ -69,20 +71,6 @@ describe 'profiles::uit::api' do
           end
         end
 
-        context "with " do
-          let(:params) {
-            super().merge( {
-            } )
-          }
-
-          context "with hieradata" do
-            let(:hiera_config) { 'spec/support/hiera/common.yaml' }
-
-            it { is_expected.to compile.with_all_deps }
-
-          end
-        end
-
         context "with deployment => false" do
           let(:params) {
             super().merge( {
@@ -99,9 +87,10 @@ describe 'profiles::uit::api' do
     end
   end
 
-  context "with servername => bar.example.com" do
+  context "with servername => bar.example.com and database_password => notsosecret" do
     let(:params) { {
-      'servername' => 'bar.example.com'
+      'servername'        => 'bar.example.com',
+      'database_password' => 'notsosecret'
     } }
 
     on_supported_os.each do |os, facts|
@@ -132,6 +121,7 @@ describe 'profiles::uit::api' do
         let(:facts) { facts }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'servername'/) }
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'database_password'/) }
       end
     end
   end
