@@ -1,7 +1,7 @@
 class profiles::uit::api (
   String                        $servername,
+  String                        $database_password,
   Variant[String,Array[String]] $serveraliases     = [],
-  String                        $database_password = undef,
   Boolean                       $deployment        = true,
   Integer                       $service_port      = 4000
 ) inherits ::profiles {
