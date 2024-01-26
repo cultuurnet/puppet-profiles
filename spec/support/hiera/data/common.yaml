@@ -11,6 +11,16 @@ profiles::uit::mail_subscriptions::deployment::config_source: '/path/to/config/s
 profiles::uit::recommender_frontend::deployment::config_source: '/path/to/config/source'
 profiles::uitpas::balie::deployment::config_source: '/path/to/config/source'
 profiles::platform::deployment::config_source: '/path/to/config/source'
+profiles::uitdatabank::entry_api::deployment::config_source: '/path/to/config/source'
+profiles::uitdatabank::entry_api::deployment::admin_permissions_source: '/path/to/admin/permissions/source'
+profiles::uitdatabank::entry_api::deployment::client_permissions_source: '/path/to/client/permissions/source'
+profiles::uitdatabank::entry_api::deployment::pubkey_uitidv1_source: '/path/to/pubkey/uitidv1/source'
+profiles::uitdatabank::entry_api::deployment::pubkey_auth0_source: '/path/to/pubkey/auth0/source'
+profiles::uitdatabank::entry_api::deployment::externalid_mapping_organizer_source: '/path/to/externalid/mapping/organizer/source'
+profiles::uitdatabank::entry_api::deployment::externalid_mapping_place_source: '/path/to/externalid/mapping/place/source'
+profiles::uitdatabank::entry_api::deployment::term_mapping_facilities_source: '/path/to/facilities_source'
+profiles::uitdatabank::entry_api::deployment::term_mapping_themes_source: '/path/to/themes_source'
+profiles::uitdatabank::entry_api::deployment::term_mapping_types_source: '/path/to/types_source'
 
 profiles::uitdatabank::websocket_server::deployment::config_source: '/path/to/config/source'
 
