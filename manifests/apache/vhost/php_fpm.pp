@@ -3,7 +3,8 @@ define profiles::apache::vhost::php_fpm (
   String                         $public_web_directory = 'public',
   Variant[String, Array[String]] $aliases              = [],
   Enum['unix', 'tcp']            $socket_type          = lookup('profiles::php::fpm_socket_type', Enum['unix', 'tcp'], 'first', 'unix'),
-  Optional[String]               $certificate          = undef
+  Optional[String]               $certificate          = undef,
+  Optional[Array]                $rewrites             = undef
 ) {
 
   include ::profiles
@@ -80,6 +81,7 @@ define profiles::apache::vhost::php_fpm (
                               'options'        => ['Indexes','FollowSymLinks','MultiViews'],
                               'allow_override' => 'All'
                             }
-                          ]
+                          ],
+    rewrites           => $rewrites
   }
 }
