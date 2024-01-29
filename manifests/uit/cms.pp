@@ -136,7 +136,7 @@ class profiles::uit::cms (
     rewrites             => [ {
                                 comment      => 'Redirect all requests to /tip/ to the frontend vhost'
                                 rewrite_map  => "hostnames 'txt:/var/www/uit-cms/hostnames.txt'",
-                                rewrite_rule => '^/tip/(.*)$ ${hostnames:%%{}{HTTP_HOST}}/tip/$1 [R=301,NE,L]'
+                                rewrite_rule => '^/tip/(.*)$ ${hostnames:%{HTTP_HOST}}/tip/$1 [R=301,NE,L]'
                             } ]
   }
 
