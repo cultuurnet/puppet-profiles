@@ -27,6 +27,15 @@ class profiles::uit::cms (
     require => [Group['www-data'], User['www-data']],
   }
 
+  file { "${basedir}/hostnames.txt":
+    ensure  => 'file',
+    owner   => 'www-data',
+    group   => 'www-data',
+    content => "${servername} ${frontend_url}",
+    require => [Group['www-data'], User['www-data']],
+    before  => Profiles::Apache::Vhost::Php_fpm["http://${servername}"]
+  }
+
   if $lvm {
     unless ($volume_group and $volume_size) {
       fail("with LVM enabled, expects a value for both 'volume_group' and 'volume_size'")
