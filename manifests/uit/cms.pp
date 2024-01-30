@@ -48,8 +48,7 @@ class profiles::uit::cms (
       fs_type      => 'ext4',
       owner        => 'www-data',
       group        => 'www-data',
-      require      => [Group['www-data'], User['www-data']],
-      before       => Package['uit-cms']
+      require      => [Group['www-data'], User['www-data']]
     }
 
     file { "${basedir}/web":
