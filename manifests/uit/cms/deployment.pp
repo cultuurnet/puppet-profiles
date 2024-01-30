@@ -1,4 +1,4 @@
-class profiles::deployment::uit::cms (
+class profiles::uit::cms::deployment (
   String           $settings_source,
   String           $drush_config_source,
   String           $version             = 'latest',
