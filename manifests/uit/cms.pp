@@ -70,12 +70,17 @@ class profiles::uit::cms (
     }
 
     file { "${basedir}/web/sites/default/files":
-      ensure  => 'link',
-      target  => '/data/cms',
-      force   => true,
+      ensure => 'directory',
       owner   => 'www-data',
       group   => 'www-data',
-      require => [File['/var/lib/jena-fuseki'], Profiles::Lvm::Mount['cmsdata']]
+    }
+
+    mount { "${basedir}/web/sites/default/files":
+      ensure  => 'mounted',
+      device  => '/data/cms',
+      fstype  => 'none',
+      options => 'rw,bind',
+      require => [Profiles::Lvm::Mount['cmsdata'], File["${basedir}/web/sites/default/files"]]
     }
   }
 
