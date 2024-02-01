@@ -1,30 +1,30 @@
-class profiles::deployment::uit::notifications (
-  String           $settings_source,
+class profiles::uit::notifications::deployment (
+  String           $config_source,
   String           $aws_access_key_id,
   String           $aws_secret_access_key,
   String           $version               = 'latest',
+  String           $repository            = 'uit-notifications',
   Optional[String] $puppetdb_url          = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $basedir = '/var/www/uit-notifications'
 
-  realize Apt::Source['uit-notifications']
-  realize Apt::Source['publiq-tools']
+  realize Apt::Source[$repository]
 
-  realize Package['yarn']
+  include profiles::nodejs
 
   package { 'uit-notifications':
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
-    require => Apt::Source['uit-notifications']
+    require => Apt::Source[$repository]
   }
 
-  file { 'uit-notifications-settings':
+  file { 'uit-notifications-config':
     ensure  => 'file',
     path    => "${basedir}/packages/notifications/env.yml",
     owner   => 'www-data',
     group   => 'www-data',
-    source  => $settings_source,
+    source  => $config_source,
     require => Package['uit-notifications']
   }
 
@@ -36,8 +36,8 @@ class profiles::deployment::uit::notifications (
     logoutput   => true,
     user        => 'www-data',
     refreshonly => true,
-    subscribe   => [Package['uit-notifications'], File['uit-notifications-settings']],
-    require     => Package['yarn']
+    subscribe   => [Package['uit-notifications'], File['uit-notifications-config']],
+    require     => Class['profiles::nodejs']
   }
 
   profiles::deployment::versions { $title:
