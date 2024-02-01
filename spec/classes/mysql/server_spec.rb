@@ -11,13 +11,14 @@ describe 'profiles::mysql::server' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::mysql::server').with(
-          'root_password'   => nil,
-          'listen_address'  => '127.0.0.1',
-          'lvm'             => false,
-          'volume_group'    => nil,
-          'volume_size'     => nil,
-          'max_open_files'  => 1024,
-          'long_query_time' => 2
+          'root_password'         => nil,
+          'listen_address'        => '127.0.0.1',
+          'lvm'                   => false,
+          'volume_group'          => nil,
+          'volume_size'           => nil,
+          'max_open_files'        => 1024,
+          'long_query_time'       => 2,
+          'transaction_isolation' => 'REPEATABLE-READ'
         ) }
 
         it { is_expected.not_to contain_profiles__lvm__mount('mysqldata') }
@@ -63,7 +64,8 @@ describe 'profiles::mysql::server' do
                                                   'innodb_file_per_table'          => 'ON',
                                                   'slow_query_log'                 => 'ON',
                                                   'slow_query_log_file'            => '/var/log/mysql/slow-query.log',
-                                                  'long_query_time'                => '2'
+                                                  'long_query_time'                => '2',
+                                                  'transaction_isolation'          => 'REPEATABLE-READ'
                                                 }
                                   }
         ) }
@@ -83,13 +85,14 @@ describe 'profiles::mysql::server' do
 
         context "with root_password => test, listen_address => 0.0.0.0, long_query_time => 5, max_open_files => 5120, lvm => true, volume_group => datavg and volume_size => 20G" do
           let(:params) { {
-            'root_password'   => 'test',
-            'listen_address'  => '0.0.0.0',
-            'max_open_files'  => 5120,
-            'lvm'             => true,
-            'volume_group'    => 'datavg',
-            'volume_size'     => '20G',
-            'long_query_time' => 5
+            'root_password'         => 'test',
+            'listen_address'        => '0.0.0.0',
+            'max_open_files'        => 5120,
+            'lvm'                   => true,
+            'volume_group'          => 'datavg',
+            'volume_size'           => '20G',
+            'long_query_time'       => 5,
+            'transaction_isolation' => 'READ-COMMITTED'
           } }
 
           it { is_expected.to compile.with_all_deps }
@@ -148,7 +151,8 @@ describe 'profiles::mysql::server' do
                                                     'innodb_file_per_table'          => 'ON',
                                                     'slow_query_log'                 => 'ON',
                                                     'slow_query_log_file'            => '/var/log/mysql/slow-query.log',
-                                                    'long_query_time'                => '5'
+                                                    'long_query_time'                => '5',
+                                                    'transaction_isolation'          => 'READ-COMMITTED'
                                                   }
                                     }
 
