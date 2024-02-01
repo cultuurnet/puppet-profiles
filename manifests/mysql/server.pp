@@ -1,11 +1,13 @@
 class profiles::mysql::server (
-  Optional[String]        $root_password   = undef,
-  Stdlib::IP::Address::V4 $listen_address  = '127.0.0.1',
-  Boolean                 $lvm             = false,
-  Optional[String]        $volume_group    = undef,
-  Optional[String]        $volume_size     = undef,
-  Integer                 $max_open_files  = 1024,
-  Integer                 $long_query_time = 2
+  Optional[String]                                                              $root_password         = undef,
+  Stdlib::IP::Address::V4                                                       $listen_address        = '127.0.0.1',
+  Boolean                                                                       $lvm                   = false,
+  Optional[String]                                                              $volume_group          = undef,
+  Optional[String]                                                              $volume_size           = undef,
+  Integer                                                                       $max_open_files        = 1024,
+  Integer                                                                       $long_query_time       = 2,
+  Enum['READ-COMMITTED', 'REPEATABLE-READ', 'READ-UNCOMMITTED', 'SERIALIZABLE'] $transaction_isolation = 'REPEATABLE-READ'
+
 ) inherits ::profiles {
 
   $root_user = 'root'
@@ -22,7 +24,8 @@ class profiles::mysql::server (
                                'innodb_file_per_table'          => 'ON',
                                'slow_query_log'                 => 'ON',
                                'slow_query_log_file'            => '/var/log/mysql/slow-query.log',
-                               'long_query_time'                => "${long_query_time}"
+                               'long_query_time'                => "${long_query_time}",
+                               'transaction_isolation'          => $transaction_isolation
                              }
                }
 
