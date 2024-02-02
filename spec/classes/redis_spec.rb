@@ -25,7 +25,7 @@ describe 'profiles::redis' do
         it { is_expected.to contain_group('redis') }
         it { is_expected.to contain_user('redis') }
 
-        it { is_expected.to contain_firewall('400 accept redis traffic') }
+        it { is_expected.not_to contain_firewall('400 accept redis traffic') }
 
         it { is_expected.to contain_class('redis').with(
           'package_ensure'   => 'installed',
@@ -64,6 +64,8 @@ describe 'profiles::redis' do
             'maxmemory'        => '200mb',
             'maxmemory_policy' => 'noeviction'
           } }
+
+          it { is_expected.to contain_firewall('400 accept redis traffic') }
 
           it { is_expected.to contain_class('redis').with(
             'package_ensure'   => '1.2.3',

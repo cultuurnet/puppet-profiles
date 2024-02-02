@@ -26,6 +26,8 @@ describe 'profiles::mysql::server' do
         it { is_expected.not_to contain_file('/var/lib/mysql') }
         it { is_expected.not_to contain_mount('/var/lib/mysql') }
 
+        it { is_expected.not_to contain_firewall('400 accept mysql traffic') }
+
         it { is_expected.to contain_group('mysql') }
         it { is_expected.to contain_user('mysql') }
 
@@ -123,6 +125,8 @@ describe 'profiles::mysql::server' do
             'fstype'  => 'none',
             'options' => 'rw,bind'
           ) }
+
+          it { is_expected.to contain_firewall('400 accept mysql traffic') }
 
           it { is_expected.to contain_systemd__dropin_file('mysql override.conf').with(
             'unit'          => 'mysql.service',

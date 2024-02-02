@@ -53,4 +53,10 @@ class profiles::firewall::rules inherits ::profiles {
     dport  => '7700',
     action => 'accept'
   }
+
+  @firewall { '400 accept mysql traffic':
+    proto  => 'tcp',
+    dport  => '3306',
+    action => 'accept'
+  }
 }
