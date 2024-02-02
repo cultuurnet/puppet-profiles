@@ -16,6 +16,7 @@ describe 'profiles::uit::mail_subscriptions::deployment' do
         it { is_expected.to contain_class('profiles::uit::mail_subscriptions::deployment').with(
           'config_source'  => '/foo',
           'version'        => 'latest',
+          'repository'     => 'uit-mail-subscriptions',
           'service_status' => 'running',
           'puppetdb_url'   => nil
         ) }
@@ -72,30 +73,39 @@ describe 'profiles::uit::mail_subscriptions::deployment' do
         end
       end
 
-      context "with config_source => /bar, version => 1.2.3, service_status => stopped and puppetdb_url => http://example.com:8000" do
+      context "with config_source => /bar, version => 1.2.3, repository => foo, service_status => stopped and puppetdb_url => http://example.com:8000" do
         let(:params) { {
           'config_source'  => '/bar',
           'version'        => '1.2.3',
+          'repository'     => 'foo',
           'service_status' => 'stopped',
           'puppetdb_url'   => 'http://example.com:8000'
         } }
 
-        it { is_expected.to contain_file('uit-mail-subscriptions-config').with(
-          'source' => '/bar'
-        ) }
+        context "with repository foo defined" do
+          let(:pre_condition) { '@apt::source { "foo": location => "http://localhost", release => "focal", repos => "main" }' }
 
-        it { is_expected.to contain_package('uit-mail-subscriptions').with(
-          'ensure' => '1.2.3'
-        ) }
+          it { is_expected.to contain_apt__source('foo') }
 
-        it { is_expected.to contain_service('uit-mail-subscriptions').with(
-          'ensure'    => 'stopped',
-          'enable'    => false
-        ) }
+          it { is_expected.to contain_file('uit-mail-subscriptions-config').with(
+            'source' => '/bar'
+          ) }
 
-        it { is_expected.to contain_profiles__deployment__versions('profiles::uit::mail_subscriptions::deployment').with(
-          'puppetdb_url' => 'http://example.com:8000'
-        ) }
+          it { is_expected.to contain_package('uit-mail-subscriptions').with(
+            'ensure' => '1.2.3'
+          ) }
+
+          it { is_expected.to contain_service('uit-mail-subscriptions').with(
+            'ensure'    => 'stopped',
+            'enable'    => false
+          ) }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::uit::mail_subscriptions::deployment').with(
+            'puppetdb_url' => 'http://example.com:8000'
+          ) }
+
+          it { is_expected.to contain_package('uit-mail-subscriptions').that_requires('Apt::Source[foo]') }
+        end
       end
 
       context "without parameters" do

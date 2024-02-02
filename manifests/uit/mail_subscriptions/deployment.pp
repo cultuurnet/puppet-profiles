@@ -1,18 +1,19 @@
 class profiles::uit::mail_subscriptions::deployment (
   String                     $config_source,
   String                     $version        = 'latest',
+  String                     $repository     = 'uit-mail-subscriptions',
   Enum['running', 'stopped'] $service_status = 'running',
   Optional[String]           $puppetdb_url   = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $basedir = '/var/www/uit-mail-subscriptions'
 
-  realize Apt::Source['uit-mail-subscriptions']
+  realize Apt::Source[$repository]
 
   package { 'uit-mail-subscriptions':
     ensure  => $version,
     notify  => [Service['uit-mail-subscriptions'], Profiles::Deployment::Versions[$title]],
-    require => Apt::Source['uit-mail-subscriptions']
+    require => Apt::Source[$repository]
   }
 
   file { 'uit-mail-subscriptions-config':
