@@ -29,6 +29,12 @@ class profiles::mysql::server (
                              }
                }
 
+  include profiles::firewall::rules
+
+  if !($listen_address == '127.0.0.1') {
+    realize Firewall['400 accept mysql traffic']
+  }
+
   realize Group['mysql']
   realize User['mysql']
 

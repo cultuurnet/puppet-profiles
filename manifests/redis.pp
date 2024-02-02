@@ -16,7 +16,10 @@ class profiles::redis (
 
   realize Group['redis']
   realize User['redis']
-  realize Firewall['400 accept redis traffic']
+
+  if !($listen_address == '127.0.0.1') {
+    realize Firewall['400 accept redis traffic']
+  }
 
   if $lvm {
 
