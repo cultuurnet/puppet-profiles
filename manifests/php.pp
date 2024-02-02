@@ -11,6 +11,10 @@ class profiles::php (
   Optional[String]           $newrelic_license_key     = undef
 ) inherits ::profiles {
 
+  $default_settings   = {
+                          'openssl/openssl.cafile' => '/etc/ssl/certs/ca-certificates.crt'
+                        }
+
   $default_extensions = {
                           'bcmath'   => {},
                           'curl'     => {},
@@ -83,7 +87,7 @@ class profiles::php (
     composer     => false,
     dev          => false,
     pear         => false,
-    settings     => $settings,
+    settings     => $default_settings + $settings,
     extensions   => $default_extensions + $version_dependent_default_extensions + $extensions,
     fpm          => $fpm,
     *            => $fpm_attributes

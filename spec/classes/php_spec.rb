@@ -38,7 +38,9 @@ describe 'profiles::php' do
             'dev'                      => false,
             'pear'                     => false,
             'fpm'                      => true,
-            'settings'                 => {},
+            'settings'                 => {
+                                            'openssl/openssl.cafile' => '/etc/ssl/certs/ca-certificates.crt'
+                                          },
             'extensions'               => {
                                             'bcmath'   => {},
                                             'curl'     => {},
@@ -128,6 +130,7 @@ describe 'profiles::php' do
             'dev'                      => false,
             'pear'                     => false,
             'settings'                 => {
+                                            'openssl/openssl.cafile'  => '/etc/ssl/certs/ca-certificates.crt',
                                             'PHP/upload_max_filesize' => '22M',
                                             'PHP/post_max_size'       => '24M'
                                           },
@@ -215,7 +218,9 @@ describe 'profiles::php' do
             'composer'                 => false,
             'dev'                      => false,
             'pear'                     => false,
-            'settings'                 => {},
+            'settings'                 => {
+                                            'openssl/openssl.cafile' => '/etc/ssl/certs/ca-certificates.crt'
+                                          },
             'extensions'               => {
                                             'bcmath'   => {},
                                             'curl'     => {},
