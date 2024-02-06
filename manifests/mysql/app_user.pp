@@ -18,11 +18,13 @@ define profiles::mysql::app_user (
     password_hash => mysql::password($password),
   }
 
-  mysql_grant { "${user}@${allowed_hosts}/${database}.${table}":
-    ensure        => $ensure,
-    user          => "${user}@${allowed_hosts}",
-    options       => ['GRANT'],
-    privileges    => $privileges,
-    table         => "${database}.${table}"
+  if $ensure == 'present' {
+    mysql_grant { "${user}@${allowed_hosts}/${database}.${table}":
+      ensure        => $ensure,
+      user          => "${user}@${allowed_hosts}",
+      options       => ['GRANT'],
+      privileges    => $privileges,
+      table         => "${database}.${table}"
+    }
   }
 }
