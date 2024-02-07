@@ -1,12 +1,11 @@
 describe 'profiles::uit::notifications::deployment' do
-
   include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with config_source => /foo" do
+      context 'with config_source => /foo' do
         let(:params) { {
           'config_source'         => '/foo',
           'aws_access_key_id'     => 'secret_key_id',
@@ -33,7 +32,7 @@ describe 'profiles::uit::notifications::deployment' do
 
         it { is_expected.not_to contain_file('/etc/default/uit-notifications') }
 
-        context "without hieradata" do
+        context 'without hieradata' do
           let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
 
           it { is_expected.to contain_profiles__deployment__versions('profiles::uit::notifications::deployment').with(
@@ -41,7 +40,7 @@ describe 'profiles::uit::notifications::deployment' do
           ) }
         end
 
-        context "with hieradata" do
+        context 'with hieradata' do
           let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
           it { is_expected.to contain_profiles__deployment__versions('profiles::uit::notifications::deployment').with(
@@ -49,21 +48,15 @@ describe 'profiles::uit::notifications::deployment' do
           ) }
         end
       end
-    end
-  end
 
-  context "with config_source => /bar, version => 1.2.3 and puppetdb_url => http://example.com:8000" do
-    let(:params) { {
-      'config_source'         => '/bar',
-      'aws_access_key_id'     => 'secret_key_id',
-      'aws_secret_access_key' => 'secret_access_key',
-      'version'               => '1.2.3',
-      'puppetdb_url'          => 'http://example.com:8000'
-    } }
-
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        let(:facts) { facts }
+      context 'with config_source => /bar, version => 1.2.3 and puppetdb_url => http://example.com:8000' do
+        let(:params) { {
+          'config_source'         => '/bar',
+          'aws_access_key_id'     => 'secret_key_id',
+          'aws_secret_access_key' => 'secret_access_key',
+          'version'               => '1.2.3',
+          'puppetdb_url'          => 'http://example.com:8000'
+        } }
 
         it { is_expected.to contain_file('uit-notifications-config').with(
           'source' => '/bar',
@@ -75,15 +68,9 @@ describe 'profiles::uit::notifications::deployment' do
           'puppetdb_url' => 'http://example.com:8000'
         ) }
       end
-    end
-  end
 
-  context "without parameters" do
-    let(:params) { {} }
-
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        let(:facts) { facts }
+      context 'without parameters' do
+        let(:params) { {} }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'aws_access_key_id'/) }
