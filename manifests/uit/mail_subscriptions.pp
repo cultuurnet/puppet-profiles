@@ -15,7 +15,6 @@ class profiles::uit::mail_subscriptions (
     user     => $database_user,
     database => $database_name,
     password => $database_password,
-    remote   => true,
     tag      => $environment
   }
 

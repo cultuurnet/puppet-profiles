@@ -37,7 +37,6 @@ describe 'profiles::uit::mail_subscriptions' do
               'user'     => 'uit_mail_subscriptions',
               'database' => 'uit_api',
               'password' => 'p4ssw0rd',
-              'remote'   => true,
               'tag'      => 'acceptance'
             ) }
           end
@@ -49,7 +48,6 @@ describe 'profiles::uit::mail_subscriptions' do
               'user'     => 'uit_mail_subscriptions',
               'database' => 'uit_api',
               'password' => 'p4ssw0rd',
-              'remote'   => true,
               'tag'      => 'testing'
             ) }
           end
@@ -87,7 +85,6 @@ describe 'profiles::uit::mail_subscriptions' do
               'user'     => 'uit_mail_subscriptions',
               'database' => 'uit_api',
               'password' => 'foo',
-              'remote'   => true,
               'tag'      => 'production'
             ) }
           end
