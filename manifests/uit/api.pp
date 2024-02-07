@@ -6,7 +6,9 @@ class profiles::uit::api (
   Integer                       $service_port      = 4000
 ) inherits ::profiles {
 
-  $basedir = '/var/www/uit-api'
+  $basedir       = '/var/www/uit-api'
+  $database_name = 'uit_api'
+  $database_user = 'uit_api'
 
   realize Group['www-data']
   realize User['www-data']
@@ -32,36 +34,21 @@ class profiles::uit::api (
     require => [Group['www-data'], User['www-data'], File[$basedir]]
   }
 
-  mysql_database { 'uit_api':
+  mysql_database { $database_name:
     charset => 'utf8mb4',
     collate => 'utf8mb4_unicode_ci',
     require => Class['profiles::mysql::server']
   }
 
-  mysql_user { 'uit_api@127.0.0.1':
-    ensure        => present,
-    password_hash => mysql::password($database_password),
-    require       => Class['profiles::mysql::server']
+  profiles::mysql::app_user { $database_user:
+    user     => $database_user,
+    database => $database_name,
+    password => $database_password,
+    require  => Mysql_database[$database_name]
   }
 
-  mysql_user { 'uit_api@%':
-    ensure        => present,
-    password_hash => mysql::password($database_password),
-    require       => Class['profiles::mysql::server']
-  }
-
-  mysql_grant { 'uit_api@127.0.0.1/uit_api.*':
-    user       => 'uit_api@127.0.0.1',
-    options    => ['GRANT'],
-    privileges => ['ALL'],
-    table      => 'uit_api.*'
-  }
-
-  mysql_grant { 'uit_api@%/uit_api.*':
-    user       => 'uit_api@%',
-    options    => ['GRANT'],
-    privileges => ['ALL'],
-    table      => 'uit_api.*'
+  if $settings::storeconfigs {
+    Profiles::Mysql::App_user <<| database == $database_name and tag == $environment |>>
   }
 
   if $deployment {
@@ -73,11 +60,7 @@ class profiles::uit::api (
     Class['profiles::redis'] -> Class['profiles::uit::api::deployment']
     Class['profiles::mysql::server'] -> Class['profiles::uit::api::deployment']
     File['uit-api-log'] -> Class['profiles::uit::api::deployment']
-    Mysql_database['uit_api'] -> Class['profiles::uit::api::deployment']
-    Mysql_user['uit_api@127.0.0.1'] -> Class['profiles::uit::api::deployment']
-    Mysql_user['uit_api@%'] -> Class['profiles::uit::api::deployment']
-    Mysql_grant['uit_api@127.0.0.1/uit_api.*'] -> Class['profiles::uit::api::deployment']
-    Mysql_grant['uit_api@%/uit_api.*'] -> Class['profiles::uit::api::deployment']
+    Profiles::Mysql::App_user["${database_user}"] -> Class['profiles::uit::api::deployment']
     Class['profiles::uit::api::deployment'] -> Profiles::Apache::Vhost::Reverse_proxy["http://${servername}"]
   }
 
