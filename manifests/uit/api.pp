@@ -41,7 +41,6 @@ class profiles::uit::api (
   }
 
   profiles::mysql::app_user { $database_user:
-    user     => $database_user,
     database => $database_name,
     password => $database_password,
     require  => Mysql_database[$database_name]
