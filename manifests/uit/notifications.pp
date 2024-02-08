@@ -12,7 +12,6 @@ class profiles::uit::notifications (
   realize User['www-data']
 
   @@profiles::mysql::app_user { $database_user:
-    user     => $database_user,
     database => $database_name,
     password => $database_password,
     remote   => true,

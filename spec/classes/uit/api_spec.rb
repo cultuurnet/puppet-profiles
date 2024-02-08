@@ -50,7 +50,6 @@ describe 'profiles::uit::api' do
           )}
 
           it { is_expected.to contain_profiles__mysql__app_user('uit_api').with(
-            'user'     => 'uit_api',
             'database' => 'uit_api',
             'password' => 'secret'
           ) }
