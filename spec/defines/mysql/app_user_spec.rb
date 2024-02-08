@@ -6,9 +6,8 @@ describe 'profiles::mysql::app_user' do
       context "with title foobar" do
         let(:title) { 'foobar' }
 
-        context "with parameters user => myuser, database => mydb and password => mypassword" do
+        context "with parameters database => mydb and password => mypassword" do
           let(:params) { {
-            'user'     => 'myuser',
             'database' => 'mydb',
             'password' => 'mypassword'
           } }
@@ -16,7 +15,7 @@ describe 'profiles::mysql::app_user' do
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_profiles__mysql__app_user('foobar').with(
-            'user'     => 'myuser',
+            'user'     => 'foobar',
             'database' => 'mydb',
             'password' => 'mypassword',
             'ensure'   => 'present',
@@ -25,20 +24,20 @@ describe 'profiles::mysql::app_user' do
             'remote'   => false
           ) }
 
-          it { is_expected.to contain_mysql_user('myuser@127.0.0.1').with(
+          it { is_expected.to contain_mysql_user('foobar@127.0.0.1').with(
             'ensure'        => 'present',
             'password_hash' => '*FABE5482D5AADF36D028AC443D117BE1180B9725'
           ) }
 
-          it { is_expected.to contain_mysql_grant('myuser@127.0.0.1/mydb.*').with(
+          it { is_expected.to contain_mysql_grant('foobar@127.0.0.1/mydb.*').with(
             'ensure'     => 'present',
             'options'    => ['GRANT'],
             'privileges' => ['ALL'],
             'table'      => 'mydb.*',
-            'user'       => 'myuser@127.0.0.1',
+            'user'       => 'foobar@127.0.0.1',
           ) }
 
-          it { is_expected.to contain_mysql_grant('myuser@127.0.0.1/mydb.*').that_requires('Mysql_user[myuser@127.0.0.1]') }
+          it { is_expected.to contain_mysql_grant('foobar@127.0.0.1/mydb.*').that_requires('Mysql_user[foobar@127.0.0.1]') }
         end
 
         context "with parameters user => testuser, database => testdb, password => testpassword, table => test, readonly => true and remote => true" do
@@ -82,7 +81,6 @@ describe 'profiles::mysql::app_user' do
         context "without parameters" do
           let(:params) { {} }
 
-          it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'user'/) }
           it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'database'/) }
           it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'password'/) }
         end

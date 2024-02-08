@@ -1,7 +1,7 @@
 define profiles::mysql::app_user (
-  String                    $user,
   String                    $database,
   String                    $password,
+  String                    $user     = $title,
   Enum['present', 'absent'] $ensure   = 'present',
   String                    $table    = '*',
   Boolean                   $readonly = false,
