@@ -44,7 +44,6 @@ describe 'profiles::uit::mail_subscriptions' do
             let(:environment) { 'testing' }
 
             it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_mail_subscriptions').with(
-              'user'     => 'uit_mail_subscriptions',
               'database' => 'uit_api',
               'password' => 'p4ssw0rd',
               'tag'      => 'testing'
@@ -81,7 +80,6 @@ describe 'profiles::uit::mail_subscriptions' do
             let(:environment) { 'production' }
 
             it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_mail_subscriptions').with(
-              'user'     => 'uit_mail_subscriptions',
               'database' => 'uit_api',
               'password' => 'foo',
               'tag'      => 'production'
