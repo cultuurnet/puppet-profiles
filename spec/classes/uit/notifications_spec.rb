@@ -34,7 +34,6 @@ describe 'profiles::uit::notifications' do
             let(:environment) { 'acceptance' }
 
             it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_notifications').with(
-              'user'     => 'uit_notifications',
               'database' => 'uit_api',
               'password' => 'p4ssw0rd',
               'remote'   => true,
