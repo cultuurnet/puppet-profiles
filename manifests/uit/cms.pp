@@ -9,10 +9,13 @@ class profiles::uit::cms (
   Optional[String]              $volume_size       = undef
 ) inherits ::profiles {
 
-  $basedir = '/var/www/uit-cms'
+  $basedir       = '/var/www/uit-cms'
+  $database_user = 'uit_cms'
+  $database_name = 'uit_cms'
 
   realize Group['www-data']
   realize User['www-data']
+  realize Firewall['300 accept HTTP traffic']
 
   include ::profiles::firewall::rules
   include ::profiles::php
@@ -20,15 +23,16 @@ class profiles::uit::cms (
   include ::profiles::mysql::server
   include ::profiles::apache
 
-  file { $basedir:
+  file { [$basedir, "${basedir}/web", "${basedir}/web/sites", "${basedir}/web/sites/default", "${basedir}/web/sites/default/files"]:
     ensure  => 'directory',
     owner   => 'www-data',
     group   => 'www-data',
-    require => [Group['www-data'], User['www-data']],
+    require => [Group['www-data'], User['www-data']]
   }
 
-  file { "${basedir}/hostnames.txt":
+  file { 'hostnames.txt':
     ensure  => 'file',
+    path    => "${basedir}/hostnames.txt",
     owner   => 'www-data',
     group   => 'www-data',
     content => "${servername} ${frontend_url}",
@@ -51,30 +55,6 @@ class profiles::uit::cms (
       require      => [Group['www-data'], User['www-data']]
     }
 
-    file { "${basedir}/web":
-      ensure => 'directory',
-      owner  => 'www-data',
-      group  => 'www-data'
-    }
-
-    file { "${basedir}/web/sites":
-      ensure => 'directory',
-      owner  => 'www-data',
-      group  => 'www-data'
-    }
-
-    file { "${basedir}/web/sites/default":
-      ensure => 'directory',
-      owner  => 'www-data',
-      group  => 'www-data'
-    }
-
-    file { "${basedir}/web/sites/default/files":
-      ensure => 'directory',
-      owner   => 'www-data',
-      group   => 'www-data',
-    }
-
     mount { "${basedir}/web/sites/default/files":
       ensure  => 'mounted',
       device  => '/data/cms',
@@ -90,30 +70,10 @@ class profiles::uit::cms (
     require => Class['profiles::mysql::server']
   }
 
-  mysql_user { 'uit_cms@127.0.0.1':
-    ensure        => present,
-    password_hash => mysql::password($database_password),
-    require       => Class['profiles::mysql::server']
-  }
-
-  mysql_user { 'uit_cms@%':
-    ensure        => present,
-    password_hash => mysql::password($database_password),
-    require       => Class['profiles::mysql::server']
-  }
-
-  mysql_grant { 'uit_cms@127.0.0.1/uit_cms.*':
-    user       => 'uit_cms@127.0.0.1',
-    options    => ['GRANT'],
-    privileges => ['ALL'],
-    table      => 'uit_cms.*'
-  }
-
-  mysql_grant { 'uit_cms@%/uit_cms.*':
-    user       => 'uit_cms@%',
-    options    => ['GRANT'],
-    privileges => ['ALL'],
-    table      => 'uit_cms.*'
+  profiles::mysql::app_user { $database_user:
+    database => $database_name,
+    password => $database_password,
+    require  => Mysql_database[$database_name]
   }
 
   if $deployment {
@@ -123,15 +83,14 @@ class profiles::uit::cms (
     Class['profiles::redis'] -> Class['profiles::uit::cms::deployment']
     Class['profiles::mysql::server'] -> Class['profiles::uit::cms::deployment']
     Mysql_database['uit_cms'] -> Class['profiles::uit::cms::deployment']
-    Mysql_user['uit_cms@127.0.0.1'] -> Class['profiles::uit::cms::deployment']
-    Mysql_user['uit_cms@%'] -> Class['profiles::uit::cms::deployment']
-    Mysql_grant['uit_cms@127.0.0.1/uit_cms.*'] -> Class['profiles::uit::cms::deployment']
-    Mysql_grant['uit_cms@%/uit_cms.*'] -> Class['profiles::uit::cms::deployment']
+    Profiles::Mysql::App_user[$database_user] -> Class['profiles::uit::cms::deployment']
     File["${basedir}/web/sites/default/files"] -> Class['profiles::uit::cms::deployment']
     Class['profiles::uit::cms::deployment'] -> Profiles::Apache::Vhost::Php_fpm["http://${servername}"]
-  }
 
-  realize Firewall['300 accept HTTP traffic']
+    if $lvm {
+      Mount["${basedir}/web/sites/default/files"] -> Class['profiles::uit::cms::deployment']
+    }
+  }
 
   profiles::apache::vhost::php_fpm { "http://${servername}":
     basedir              => $basedir,
