@@ -1,5 +1,5 @@
 class profiles::uit::cms::deployment (
-  String           $settings_source,
+  String           $config_source,
   String           $drush_config_source,
   String           $version             = 'latest',
   String           $repository          = 'uit-cms',
@@ -21,7 +21,7 @@ class profiles::uit::cms::deployment (
     path    => "${basedir}/web/sites/default/settings.private.php",
     owner   => 'www-data',
     group   => 'www-data',
-    source  => $settings_source,
+    source  => $config_source,
     require => Package['uit-cms'],
     notify  => Service['uit-cms']
   }
