@@ -29,7 +29,7 @@ class profiles::uit::notifications::deployment (
   }
 
   exec { 'uit-notifications-deploy':
-    command     => 'yarn notifications deploy --cache-folder /tmp',
+    command     => 'yarn notifications deploy --global-folder /tmp --cache-folder /tmp',
     cwd         => $basedir,
     path        => ['/usr/local/bin', '/usr/bin', '/bin', $basedir],
     environment => ["AWS_ACCESS_KEY_ID=${aws_access_key_id}", "AWS_SECRET_ACCESS_KEY=${aws_secret_access_key}"],
