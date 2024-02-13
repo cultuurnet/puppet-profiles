@@ -11,6 +11,12 @@ class profiles::uit::notifications (
   realize Group['www-data']
   realize User['www-data']
 
+  file { '/var/www':
+    ensure => 'directory',
+    owner  => 'www-data',
+    group  => 'www-data'
+  }
+
   @@profiles::mysql::app_user { $database_user:
     database => $database_name,
     password => $database_password,
@@ -24,6 +30,7 @@ class profiles::uit::notifications (
     Group['www-data'] -> Class['profiles::uit::notifications::deployment']
     User['www-data'] -> Class['profiles::uit::notifications::deployment']
     Class['profiles::nodejs'] -> Class['profiles::uit::notifications::deployment']
+    File['/var/www'] -> Class['profiles::uit::notifications::deployment']
   }
 
   # include ::profiles::uit::notifications::monitoring

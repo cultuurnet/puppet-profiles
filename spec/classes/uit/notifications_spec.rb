@@ -23,12 +23,19 @@ describe 'profiles::uit::notifications' do
           it { is_expected.to contain_group('www-data') }
           it { is_expected.to contain_user('www-data') }
 
+          it { is_expected.to contain_file('/var/www').with(
+            'ensure' => 'directory',
+            'owner'  => 'www-data',
+            'group'  => 'www-data'
+          ) }
+
           it { is_expected.to contain_class('profiles::nodejs') }
           it { is_expected.to contain_class('profiles::uit::notifications::deployment') }
 
           it { is_expected.to contain_class('profiles::uit::notifications::deployment').that_requires('Group[www-data]') }
           it { is_expected.to contain_class('profiles::uit::notifications::deployment').that_requires('User[www-data]') }
           it { is_expected.to contain_class('profiles::uit::notifications::deployment').that_requires('Class[profiles::nodejs]') }
+          it { is_expected.to contain_class('profiles::uit::notifications::deployment').that_requires('File[/var/www]') }
 
           context 'in the acceptance environment' do
             let(:environment) { 'acceptance' }
