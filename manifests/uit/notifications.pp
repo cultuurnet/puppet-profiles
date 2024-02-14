@@ -10,12 +10,7 @@ class profiles::uit::notifications (
 
   realize Group['www-data']
   realize User['www-data']
-
-  file { '/var/www':
-    ensure => 'directory',
-    owner  => 'www-data',
-    group  => 'www-data'
-  }
+  realize File['/var/www']
 
   @@profiles::mysql::app_user { $database_user:
     database => $database_name,
