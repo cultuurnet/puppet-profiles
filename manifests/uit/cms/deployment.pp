@@ -6,7 +6,18 @@ class profiles::uit::cms::deployment (
   Optional[String] $puppetdb_url        = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
-  $basedir = '/var/www/uit-cms'
+  $basedir                 = '/var/www/uit-cms'
+  $exec_default_attributes = {
+                               cwd         => $basedir,
+                               path        => ['/usr/local/bin', '/usr/bin', '/bin', "${basedir}/vendor/bin"],
+                               environment => ['HOME=/'],
+                               user        => 'www-data',
+                               refreshonly => true,
+                               subscribe   => [Package['uit-cms'], File['uit-cms-settings'], File['uit-cms-drush-config']]
+                             }
+
+  realize Group['www-data']
+  realize User['www-data']
 
   realize Apt::Source[$repository]
 
@@ -22,7 +33,7 @@ class profiles::uit::cms::deployment (
     owner   => 'www-data',
     group   => 'www-data',
     source  => $config_source,
-    require => Package['uit-cms'],
+    require => [Group['www-data'], User['www-data'], Package['uit-cms']],
     notify  => Service['uit-cms']
   }
 
@@ -32,69 +43,50 @@ class profiles::uit::cms::deployment (
     source  => $drush_config_source,
     owner   => 'www-data',
     group   => 'www-data',
-    require => Package['uit-cms'],
+    require => [Group['www-data'], User['www-data'], Package['uit-cms']],
     notify  => Service['uit-cms']
   }
 
   exec { 'uit-cms-cache-rebuild pre':
-    command     => 'drush cache:rebuild',
-    cwd         => $basedir,
-    path        => ['/usr/local/bin', '/usr/bin', '/bin', "${basedir}/vendor/bin"],
-    environment => ['HOME=/'],
-    user        => 'www-data',
-    refreshonly => true,
-    subscribe   => [Package['uit-cms'], File['uit-cms-settings'], File['uit-cms-drush-config']]
+    command => 'drush cache:rebuild',
+    require => User['www-data'],
+    *       => $exec_default_attributes
   }
 
   exec { 'uit-cms-updatedb':
-    command     => 'drush updatedb -y',
-    cwd         => $basedir,
-    path        => ['/usr/local/bin', '/usr/bin', '/bin', "${basedir}/vendor/bin"],
-    environment => ['HOME=/'],
-    user        => 'www-data',
-    refreshonly => true,
-    subscribe   => [Package['uit-cms'], File['uit-cms-settings'], File['uit-cms-drush-config']],
-    require     => Exec['uit-cms-cache-rebuild pre']
+    command => 'drush updatedb -y',
+    require => [User['www-data'], Exec['uit-cms-cache-rebuild pre']],
+    *       => $exec_default_attributes
   }
 
   exec { 'uit-cms-config-import':
-    command     => 'drush config:import -y',
-    cwd         => $basedir,
-    path        => ['/usr/local/bin', '/usr/bin', '/bin', "${basedir}/vendor/bin"],
-    environment => ['HOME=/'],
-    user        => 'www-data',
-    refreshonly => true,
-    subscribe   => [Package['uit-cms'], File['uit-cms-settings'], File['uit-cms-drush-config']],
-    require     => Exec['uit-cms-updatedb']
+    command => 'drush config:import -y',
+    require => [User['www-data'], Exec['uit-cms-updatedb']],
+    *       => $exec_default_attributes
   }
 
   exec { 'uit-cms-cache-rebuild post':
-    command     => 'drush cache:rebuild',
-    cwd         => $basedir,
-    path        => ['/usr/local/bin', '/usr/bin', '/bin', "${basedir}/vendor/bin"],
-    environment => ['HOME=/'],
-    user        => 'www-data',
-    refreshonly => true,
-    subscribe   => [Package['uit-cms'], File['uit-cms-settings'], File['uit-cms-drush-config']],
-    require     => Exec['uit-cms-config-import']
+    command => 'drush cache:rebuild',
+    require => [User['www-data'], Exec['uit-cms-config-import']],
+    *       => $exec_default_attributes
   }
 
   cron { 'uit-cms-core-cron':
     command     => "${basedir}/vendor/bin/drush -q core:cron",
-    environment => ['MAILTO=infra@publiq.be' ],
-    require     => Exec['uit-cms-cache-rebuild post'],
+    environment => ['MAILTO=infra@publiq.be'],
     user        => 'www-data',
     hour        => '*',
-    minute      => ['0', '30']
+    minute      => ['0', '30'],
+    require     => [User['www-data'], Exec['uit-cms-cache-rebuild post']]
   }
 
   cron { 'uit-cms-curator-sync':
     command     => "${basedir}/vendor/bin/drush -q queue-run curator_sync",
-    environment => ['MAILTO=infra@publiq.be' ],
-    require     => Exec['uit-cms-cache-rebuild post'],
+    environment => ['MAILTO=infra@publiq.be'],
     user        => 'www-data',
     hour        => '*',
-    minute      => '*'
+    minute      => '*',
+    require     => [User['www-data'], Exec['uit-cms-cache-rebuild post']]
   }
 
   profiles::php::fpm_service_alias { 'uit-cms': }
