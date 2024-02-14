@@ -8,6 +8,7 @@ class profiles {
           contain ::profiles::packages
           contain ::profiles::stages
           contain ::profiles::apt
+          contain ::profiles::files
 
           class { 'profiles::apt::repositories': stage => 'pre' }
         }
