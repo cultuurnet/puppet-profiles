@@ -9,6 +9,9 @@ class profiles::uit::notifications::deployment (
 
   $basedir = '/var/www/uit-notifications'
 
+  realize Group['www-data']
+  realize User['www-data']
+
   realize Apt::Source[$repository]
 
   include profiles::nodejs
@@ -25,7 +28,7 @@ class profiles::uit::notifications::deployment (
     owner   => 'www-data',
     group   => 'www-data',
     source  => $config_source,
-    require => Package['uit-notifications']
+    require => [Group['www-data'], User['www-data'], Package['uit-notifications']]
   }
 
   exec { 'uit-notifications-deploy':
@@ -37,7 +40,7 @@ class profiles::uit::notifications::deployment (
     user        => 'www-data',
     refreshonly => true,
     subscribe   => [Package['uit-notifications'], File['uit-notifications-config']],
-    require     => Class['profiles::nodejs']
+    require     => [User['www-data'], Class['profiles::nodejs']]
   }
 
   profiles::deployment::versions { $title:
