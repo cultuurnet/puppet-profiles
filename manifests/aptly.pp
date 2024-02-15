@@ -40,7 +40,8 @@ class profiles::aptly (
       fs_type      => 'ext4',
       owner        => 'aptly',
       group        => 'aptly',
-      require      => [Group['aptly'], User['aptly']]
+      require      => [Group['aptly'], User['aptly']],
+      before       => Class['::aptly'] 
     }
   }
 
