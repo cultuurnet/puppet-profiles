@@ -9,7 +9,10 @@ class profiles::aptly (
   Stdlib::Port::Unprivileged     $api_port          = 8081,
   Hash                           $publish_endpoints = {},
   Hash                           $repositories      = {},
-  Hash                           $mirrors           = {}
+  Hash                           $mirrors           = {},
+  Boolean                        $lvm               = false,
+  Optional[String]               $volume_group      = undef,
+  Optional[String]               $volume_size       = undef
 ) inherits ::profiles {
 
   $proxy_timeout = 3600
@@ -24,6 +27,22 @@ class profiles::aptly (
   realize Apt::Source['aptly']
 
   Apt::Key['aptly'] -> Apt::Source['aptly']
+
+  if $lvm {
+    unless ($volume_group and $volume_size) {
+      fail("with LVM enabled, expects a value for both 'volume_group' and 'volume_size'")
+    }
+
+    profiles::lvm::mount { 'aptlydata':
+      volume_group => $volume_group,
+      size         => $volume_size,
+      mountpoint   => '/data/aptly',
+      fs_type      => 'ext4',
+      owner        => 'aptly',
+      group        => 'aptly',
+      require      => [Group['aptly'], User['aptly']]
+    }
+  }
 
   class { '::aptly':
     version              => $version,
