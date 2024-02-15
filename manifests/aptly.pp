@@ -43,6 +43,14 @@ class profiles::aptly (
       require      => [Group['aptly'], User['aptly']],
       before       => Class['::aptly'] 
     }
+
+    mount { "/var/aptly":
+      ensure  => 'mounted',
+      device  => '/data/aptly',
+      fstype  => 'none',
+      options => 'rw,bind',
+      require => [Profiles::Lvm::Mount['aptlydata'], Class['::aptly']]
+    }
   }
 
   class { '::aptly':
@@ -112,6 +120,10 @@ class profiles::aptly (
   $repositories.each |$repo, $attributes| {
     $archive = $attributes['archive']
 
+    if $lvm {
+      Mount['/var/aptly'] -> Aptly::Repo[$repo]
+    }
+
     aptly::repo { $repo:
       default_component => 'main'
     }
@@ -119,6 +131,7 @@ class profiles::aptly (
     if $archive {
       aptly::repo { "${repo}-archive":
         default_component => 'main'
+        require => Aptly::Repo[$repo]
       }
     }
   }
