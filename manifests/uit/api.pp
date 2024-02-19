@@ -13,11 +13,9 @@ class profiles::uit::api (
   realize Group['www-data']
   realize User['www-data']
 
-  include ::profiles::firewall::rules
   include ::profiles::nodejs
   include ::profiles::redis
   include ::profiles::mysql::server
-  include ::profiles::apache
 
   file { $basedir:
     ensure  => 'directory',
@@ -63,12 +61,9 @@ class profiles::uit::api (
     Class['profiles::uit::api::deployment'] -> Profiles::Apache::Vhost::Reverse_proxy["http://${servername}"]
   }
 
-  realize Firewall['300 accept HTTP traffic']
-
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
     destination => "http://127.0.0.1:${service_port}/",
-    aliases     => $serveraliases,
-    require     => [File[$basedir], Class['profiles::apache']]
+    aliases     => $serveraliases
   }
 
   #class { 'profiles::uit::api::logging':

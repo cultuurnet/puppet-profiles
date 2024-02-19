@@ -35,7 +35,6 @@ describe 'profiles::uit::cms' do
 
           it { is_expected.to contain_group('www-data') }
           it { is_expected.to contain_user('www-data') }
-          it { is_expected.to contain_firewall('300 accept HTTP traffic') }
 
           it { is_expected.to contain_file('/var/www/uit-cms').with(
             'ensure' => 'directory',

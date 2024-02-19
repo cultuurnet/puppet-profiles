@@ -30,7 +30,6 @@ describe 'profiles::uit::api' do
           it { is_expected.to contain_class('profiles::nodejs') }
           it { is_expected.to contain_class('profiles::redis') }
           it { is_expected.to contain_class('profiles::mysql::server') }
-          it { is_expected.to contain_class('profiles::apache') }
 
           it { is_expected.to contain_file('/var/www/uit-api').with(
             'ensure' => 'directory',
@@ -56,6 +55,11 @@ describe 'profiles::uit::api' do
 
           it { is_expected.to contain_class('profiles::uit::api::deployment').with(
              'service_port' => 4000
+          ) }
+
+          it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://foo.example.com').with(
+            'destination' => 'http://127.0.0.1:4000/',
+            'aliases'     => []
           ) }
 
           it { is_expected.to contain_file('/var/www/uit-api').that_requires('Group[www-data]') }
@@ -117,8 +121,6 @@ describe 'profiles::uit::api' do
           ) }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://bar.example.com').that_requires('Class[profiles::uit::api::deployment]') }
-          it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://bar.example.com').that_requires('Class[profiles::apache]') }
-          it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://bar.example.com').that_requires('File[/var/www/uit-api]') }
         end
       end
 

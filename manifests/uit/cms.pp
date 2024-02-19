@@ -15,13 +15,10 @@ class profiles::uit::cms (
 
   realize Group['www-data']
   realize User['www-data']
-  realize Firewall['300 accept HTTP traffic']
 
-  include ::profiles::firewall::rules
   include ::profiles::php
   include ::profiles::redis
   include ::profiles::mysql::server
-  include ::profiles::apache
 
   file { [$basedir, "${basedir}/web", "${basedir}/web/sites", "${basedir}/web/sites/default", "${basedir}/web/sites/default/files"]:
     ensure  => 'directory',
