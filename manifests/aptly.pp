@@ -97,7 +97,7 @@ class profiles::aptly (
     user        => 'aptly',
     hour        => '4',
     minute      => '0',
-    require     => [ Class['aptly'], User['aptly']]
+    require     => [Class['aptly'], User['aptly']]
   }
 
   $signing_keys.each |$name, $attributes| {
@@ -155,14 +155,14 @@ class profiles::aptly (
       group  => 'aptly'
     }
 
-    $mirrors.each |$name, $attributes| {
+    $mirrors.each |$mirror, $attributes| {
       [$attributes['keys']].flatten.each |$key| {
         realize Profiles::Aptly::Gpgkey[$key]
 
         Profiles::Aptly::Gpgkey[$key] -> File['aptly trustedkeys.gpg']
       }
 
-      aptly::mirror { $name:
+      aptly::mirror { $mirror:
         location      => $attributes['location'],
         distribution  => $attributes['distribution'],
         components    => [$attributes['components']].flatten,
@@ -170,6 +170,10 @@ class profiles::aptly (
         update        => false,
         keyring       => "${homedir}/.gnupg/trustedkeys.gpg",
         require       => File['aptly trustedkeys.gpg']
+      }
+
+      if $lvm {
+        Mount['/var/aptly'] -> Aptly::Mirror[$mirror]
       }
     }
   }
