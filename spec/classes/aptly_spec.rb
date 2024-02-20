@@ -20,7 +20,6 @@ describe 'profiles::aptly' do
           'signing_keys'      => {},
           'trusted_keys'      => {},
           'version'           => 'latest',
-          'data_dir'          => '/var/aptly',
           'api_bind'          => '127.0.0.1',
           'api_port'          => 8081,
           'lvm'               => false,
@@ -99,25 +98,24 @@ describe 'profiles::aptly' do
           'certificate'  => 'foobar.example.com'
         } }
 
-        context "with signing_keys => { 'test' => { 'id' => '1234ABCD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nmysigningkey\n-----END PGP PRIVATE KEY BLOCK-----' }}, trusted_keys => { 'Ubuntu archive' => { 'key_id' => '00001234', 'key_server' => 'hkp://keyserver.ubuntu.com' }}, version => 1.2.3, data_dir => '/mnt/aptly', api_bind => 1.2.3.4, api_port => 8080, repositories => { 'foo' => {'archive' => false}, 'bar' => {'archive' => true}} and mirrors => {'mirror' => {'location => 'http://mirror.example.com', distribution => 'unstable', components => ['main', 'contrib'], keys => 'Ubuntu archive'}}, lvm => true, volume_group => myvg and volume_size => 10G" do
+        context "with signing_keys => { 'test' => { 'id' => '1234ABCD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nmysigningkey\n-----END PGP PRIVATE KEY BLOCK-----' }}, trusted_keys => { 'Ubuntu archive' => { 'key_id' => '00001234', 'key_server' => 'hkp://keyserver.ubuntu.com' }}, version => 1.2.3, api_bind => 1.2.3.4, api_port => 8080, repositories => { 'foo' => {'archive' => false}, 'bar' => {'archive' => true}} and mirrors => {'mirror' => {'location => 'http://mirror.example.com', distribution => 'unstable', components => ['main', 'contrib'], keys => 'Ubuntu archive'}}, lvm => true, volume_group => myvg and volume_size => 10G" do
           let(:params) { super().merge(
             {
               'signing_keys' => { 'test' => { 'id' => '1234ABCD', 'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\nmysigningkey\n-----END PGP PRIVATE KEY BLOCK-----" }},
               'trusted_keys' => { 'Ubuntu archive' => { 'key_id' => '00001234', 'key_server' => 'hkp://keyserver.ubuntu.com' }},
               'version'      => '1.2.3',
-              'data_dir'     => '/mnt/aptly',
               'api_bind'     => '1.2.3.4',
               'api_port'     => 8080,
-              'repositories' => {'foo' => {'archive' => false}, 'bar' => {'archive' => true}},
+              'repositories' => {'foo' => { 'archive' => false }, 'bar' => { 'archive' => true }},
               'lvm'          => true,
               'volume_group' => 'myvg',
               'volume_size'  => '10G',
-              'mirrors'      => { 'mirror' => {
-                                                 'location'     => 'http://mirror.example.com',
-                                                 'distribution' => 'unstable',
-                                                 'components'   => ['main', 'contrib'],
-                                                 'keys'         => 'Ubuntu archive'
-                                              }
+              'mirrors'      => { 'mymirror' => {
+                                                   'location'     => 'http://mymirror.example.com',
+                                                   'distribution' => 'unstable',
+                                                   'components'   => ['main', 'contrib'],
+                                                   'keys'         => 'Ubuntu archive'
+                                                }
                                 }
             }
           ) }
@@ -134,6 +132,13 @@ describe 'profiles::aptly' do
               'group'        => 'aptly'
             ) }
 
+            it { is_expected.to contain_mount('/var/aptly').with(
+              'ensure'  => 'mounted',
+              'device'  => '/data/aptly',
+              'fstype'  => 'none',
+              'options' => 'rw,bind'
+            ) }
+
             it { is_expected.to contain_gnupg_key('test').with(
               'ensure'      => 'present',
               'key_id'      => '1234ABCD',
@@ -144,7 +149,7 @@ describe 'profiles::aptly' do
 
             it { is_expected.to contain_class('aptly').with(
               'version'  => '1.2.3',
-              'root_dir' => '/mnt/aptly',
+              'root_dir' => '/var/aptly',
               'api_bind' => '1.2.3.4',
               'api_port' => 8080
             ) }
@@ -181,8 +186,8 @@ describe 'profiles::aptly' do
               'group'  => 'aptly',
             ) }
 
-            it { is_expected.to contain_aptly__mirror('mirror').with(
-              'location'      => 'http://mirror.example.com',
+            it { is_expected.to contain_aptly__mirror('mymirror').with(
+              'location'      => 'http://mymirror.example.com',
               'distribution'  => 'unstable',
               'components'    => ['main', 'contrib'],
               'architectures' => ['amd64'],
@@ -195,15 +200,18 @@ describe 'profiles::aptly' do
               'key_server' => 'hkp://keyserver.ubuntu.com'
             ) }
 
-            it { is_expected.to contain_systemd__unit_file('aptly-api.service').with_content(/WorkingDirectory=\/mnt\/aptly/) }
             it { is_expected.to contain_systemd__unit_file('aptly-api.service').with_content(/ExecStart=\/usr\/bin\/aptly api serve -listen=1.2.3.4:8080 -no-lock/) }
 
             it { is_expected.to contain_profiles__lvm__mount('aptlydata').that_comes_before('Class[aptly]') }
+            it { is_expected.to contain_mount('/var/aptly').that_requires('Class[aptly]') }
+            it { is_expected.to contain_mount('/var/aptly').that_comes_before('Aptly::Repo[bar]') }
+            it { is_expected.to contain_mount('/var/aptly').that_comes_before('Aptly::Repo[bar-archive]') }
+            it { is_expected.to contain_mount('/var/aptly').that_comes_before('Aptly::Mirror[mymirror]') }
             it { is_expected.to contain_gnupg_key('test').that_requires('User[aptly]') }
             it { is_expected.to contain_profiles__aptly__gpgkey('Ubuntu archive').that_comes_before('File[aptly trustedkeys.gpg]') }
             it { is_expected.to contain_aptly__repo('bar-archive').that_requires('Aptly::Repo[bar]') }
-            it { is_expected.to contain_aptly__mirror('mirror').that_requires('File[aptly trustedkeys.gpg]') }
-            it { is_expected.to contain_aptly__mirror('mirror').that_requires('Profiles::Aptly::Gpgkey[Ubuntu archive]') }
+            it { is_expected.to contain_aptly__mirror('mymirror').that_requires('File[aptly trustedkeys.gpg]') }
+            it { is_expected.to contain_aptly__mirror('mymirror').that_requires('Profiles::Aptly::Gpgkey[Ubuntu archive]') }
           end
         end
 
@@ -230,7 +238,7 @@ describe 'profiles::aptly' do
                    'awsSecretAccessKey' => 'abc'
                  }
               },
-              'repositories'      => {'baz' => {}},
+              'repositories'      => {'baz' => {} },
               'mirrors'           => { 'mirror1' => {
                                                       'location'     => 'http://mirror1.example.com' ,
                                                       'distribution' => 'testing',
@@ -257,6 +265,13 @@ describe 'profiles::aptly' do
               'fs_type'      => 'ext4',
               'owner'        => 'aptly',
               'group'        => 'aptly'
+            ) }
+
+            it { is_expected.to contain_mount('/var/aptly').with(
+              'ensure'  => 'mounted',
+              'device'  => '/data/aptly',
+              'fstype'  => 'none',
+              'options' => 'rw,bind'
             ) }
 
             it { is_expected.to contain_gnupg_key('test1').with(
@@ -335,6 +350,9 @@ describe 'profiles::aptly' do
             it { is_expected.to contain_profiles__aptly__gpgkey('Ubuntu archive').that_comes_before('File[aptly trustedkeys.gpg]') }
             it { is_expected.to contain_profiles__aptly__gpgkey('docker 1').that_comes_before('File[aptly trustedkeys.gpg]') }
             it { is_expected.to contain_profiles__aptly__gpgkey('docker 2').that_comes_before('File[aptly trustedkeys.gpg]') }
+            it { is_expected.to contain_mount('/var/aptly').that_comes_before('Aptly::Repo[baz]') }
+            it { is_expected.to contain_mount('/var/aptly').that_comes_before('Aptly::Mirror[mirror1]') }
+            it { is_expected.to contain_mount('/var/aptly').that_comes_before('Aptly::Mirror[mirror2]') }
             it { is_expected.to contain_aptly__mirror('mirror1').that_requires('File[aptly trustedkeys.gpg]') }
             it { is_expected.to contain_aptly__mirror('mirror1').that_requires('Profiles::Aptly::Gpgkey[Ubuntu archive]') }
             it { is_expected.to contain_aptly__mirror('mirror2').that_requires('File[aptly trustedkeys.gpg]') }

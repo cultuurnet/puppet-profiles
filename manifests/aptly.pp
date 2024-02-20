@@ -4,7 +4,6 @@ class profiles::aptly (
   Hash                           $signing_keys      = {},
   Hash                           $trusted_keys      = {},
   String                         $version           = 'latest',
-  String                         $data_dir          = '/var/aptly',
   Stdlib::Ipv4                   $api_bind          = '127.0.0.1',
   Stdlib::Port::Unprivileged     $api_port          = 8081,
   Hash                           $publish_endpoints = {},
@@ -15,8 +14,9 @@ class profiles::aptly (
   Optional[String]               $volume_size       = undef
 ) inherits ::profiles {
 
+  $data_dir      = '/var/aptly'
+  $home_dir      = '/home/aptly'
   $proxy_timeout = 3600
-  $homedir       = '/home/aptly'
 
   realize Group['aptly']
   realize User['aptly']
@@ -44,7 +44,7 @@ class profiles::aptly (
       before       => Class['::aptly']
     }
 
-    mount { '/var/aptly':
+    mount { $data_dir:
       ensure  => 'mounted',
       device  => '/data/aptly',
       fstype  => 'none',
@@ -132,7 +132,7 @@ class profiles::aptly (
     }
 
     if $lvm {
-      Mount['/var/aptly'] -> Aptly::Repo[$repo]
+      Mount[$data_dir] -> Aptly::Repo[$repo]
     }
   }
 
@@ -148,9 +148,9 @@ class profiles::aptly (
     # As we don't import keys outside of puppet, the pubring.gpg only contains trusted keys.
 
     file { 'aptly trustedkeys.gpg':
-      path   => "${homedir}/.gnupg/trustedkeys.gpg",
+      path   => "${home_dir}/.gnupg/trustedkeys.gpg",
       ensure => 'link',
-      target => "${homedir}/.gnupg/pubring.kbx",
+      target => "${home_dir}/.gnupg/pubring.kbx",
       owner  => 'aptly',
       group  => 'aptly'
     }
@@ -168,12 +168,12 @@ class profiles::aptly (
         components    => [$attributes['components']].flatten,
         architectures => ['amd64'],
         update        => false,
-        keyring       => "${homedir}/.gnupg/trustedkeys.gpg",
+        keyring       => "${home_dir}/.gnupg/trustedkeys.gpg",
         require       => File['aptly trustedkeys.gpg']
       }
 
       if $lvm {
-        Mount['/var/aptly'] -> Aptly::Mirror[$mirror]
+        Mount[$data_dir] -> Aptly::Mirror[$mirror]
       }
     }
   }
