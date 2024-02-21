@@ -1,5 +1,5 @@
 class profiles::java::alternatives (
-  Integer[8, 11]     $default_version,
+  Integer[8, 17]     $default_version,
   Enum['jre', 'jdk'] $distribution    = 'jre',
   Boolean            $headless        = true
 ) inherits ::profiles {
@@ -37,18 +37,46 @@ class profiles::java::alternatives (
             $jdk_commands = $jdk_commands_headless + ['jconsole']
           }
     }
+    16: {
+          $jre_home  = $java_home
+          $jre_commands_headless = ['java', 'jpackage', 'keytool', 'rmid', 'rmiregistry']
+          $jdk_commands_headless = ['jar', 'jarsigner', 'javac', 'javadoc', 'javap', 'jcmd', 'jdb', 'jdeprscan', 'jdeps', 'jfr', 'jimage', 'jinfo', 'jlink', 'jmap', 'jmod', 'jps', 'jrunscript', 'jshell', 'jstack', 'jstat', 'jstatd', 'serialver', 'jaotc', 'jhsdb']
+          if $headless {
+            $jre_commands = $jre_commands_headless
+            $jdk_commands = $jdk_commands_headless
+          } else {
+            $jre_commands = $jre_commands_headless
+            $jdk_commands = $jdk_commands_headless + ['jconsole']
+          }
+    }
+    17: {
+          $jre_home  = $java_home
+          $jre_commands_headless = ['java', 'jpackage', 'keytool', 'rmiregistry']
+          $jdk_commands_headless = ['jar', 'jarsigner', 'javac', 'javadoc', 'javap', 'jcmd', 'jdb', 'jdeprscan', 'jdeps', 'jfr', 'jimage', 'jinfo', 'jlink', 'jmap', 'jmod', 'jps', 'jrunscript', 'jshell', 'jstack', 'jstat', 'jstatd', 'serialver', 'jhsd']
+          if $headless {
+            $jre_commands = $jre_commands_headless
+            $jdk_commands = $jdk_commands_headless
+          } else {
+            $jre_commands = $jre_commands_headless
+            $jdk_commands = $jdk_commands_headless + ['jconsole']
+          }
+    }
+  }
+
+  alternatives { 'jexec':
+    path => "${jre_home}/lib/jexec"
   }
 
   $jre_commands.each |$command| {
     alternatives { $command:
-      path    => "${jre_home}/bin/${command}"
+      path => "${jre_home}/bin/${command}"
     }
   }
 
   if $distribution == 'jdk' {
     $jdk_commands.each |$command| {
       alternatives { $command:
-        path    => "${java_home}/bin/${command}"
+        path => "${java_home}/bin/${command}"
       }
     }
   }

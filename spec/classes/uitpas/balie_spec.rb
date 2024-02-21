@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::uitpas::balie' do
   context "with servername => balie.example.com" do
     let(:params) { {

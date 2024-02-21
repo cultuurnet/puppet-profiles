@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::jenkins::cli' do
   include_examples 'operating system support'
 
@@ -56,13 +54,13 @@ describe 'profiles::jenkins::cli' do
         it { is_expected.to contain_shellvar('CONTROLLER_URL').that_requires('File[jenkins-cli_config]') }
       end
 
-      context "with version => 1.2.3, controller_url => http://remote:5555/, manage_credentials => true, user => john and password => doe" do
+      context "with version => 1.2.3, controller_url => http://remote:5555, manage_credentials => true, user => john and password => doe" do
         let(:params) { {
             'manage_credentials' => true,
             'version'            => '1.2.3',
             'user'               => 'john',
             'password'           => 'doe',
-            'controller_url'     => 'http://remote:5555/'
+            'controller_url'     => 'http://remote:5555'
           } }
 
         it { is_expected.to contain_package('jenkins-cli').with(
@@ -98,7 +96,7 @@ describe 'profiles::jenkins::cli' do
       end
 
       context "without parameters it uses hieradata from profiles::jenkins::controller" do
-        let(:hiera_config) { 'spec/support/hiera/hiera.yaml' }
+        let(:hiera_config) { 'spec/support/hiera/common.yaml' }
         let(:params) { {} }
 
         it { is_expected.to contain_class('profiles::jenkins::cli').with(

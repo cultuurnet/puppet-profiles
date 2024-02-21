@@ -50,7 +50,7 @@ fixtures:
       ref: '6.3.0'
     mysql:
       repo: 'puppetlabs/mysql'
-      ref: '6.2.0'
+      ref: '14.0.0'
     nodejs:
       repo: 'puppet/nodejs'
       ref: '2.1.0'

@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::ssh_authorized_keys' do
   include_examples 'operating system support'
 

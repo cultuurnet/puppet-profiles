@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::jenkins::controller::configuration' do
   include_examples 'operating system support'
 
@@ -167,6 +165,12 @@ describe 'profiles::jenkins::controller::configuration' do
                                'docker_registry_url'          => nil,
                                'docker_registry_credentialid' => nil
                              }
+        ) }
+
+        it { is_expected.to contain_profiles__jenkins__plugin('pipeline-stage-view').with(
+          'ensure'        => 'present',
+          'restart'       => false,
+          'configuration' => nil
         ) }
 
         it { is_expected.to_not contain_file('jenkins users') }

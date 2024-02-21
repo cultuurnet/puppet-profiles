@@ -1,7 +1,5 @@
-require 'spec_helper'
-
 describe 'profiles::apache::vhost::reverse_proxy' do
-  let(:hiera_config) { 'spec/support/hiera/hiera.yaml' }
+  let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
   context "with title => http://leonardo.example.com" do
     let(:title) { 'http://leonardo.example.com' }
@@ -44,6 +42,11 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                          'setifempty X-Forwarded-Port "80"',
                                          'setifempty X-Forwarded-Proto "http"'
                                        ],
+            'access_log_format'     => 'extended_json',
+            'setenvif'              => [
+                                         'X-Forwarded-Proto "https" HTTPS=on',
+                                         'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                       ],
             'allow_encoded_slashes' => 'off',
             'proxy_preserve_host'   => false,
             'rewrites'              => nil,
@@ -83,6 +86,11 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                          'unset Proxy early',
                                          'setifempty X-Forwarded-Port "80"',
                                          'setifempty X-Forwarded-Proto "http"'
+                                       ],
+            'access_log_format'     => 'extended_json',
+            'setenvif'              => [
+                                         'X-Forwarded-Proto "https" HTTPS=on',
+                                         'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
                                        ],
             'allow_encoded_slashes' => 'off',
             'proxy_preserve_host'   => false,
@@ -133,6 +141,11 @@ describe 'profiles::apache::vhost::reverse_proxy' do
             'servername'            => 'michelangelo.example.com',
             'serveraliases'         => ['mich.example.com', 'angelo.example.com'],
             'port'                  => 443,
+            'access_log_format'     => 'extended_json',
+            'setenvif'              => [
+                                         'X-Forwarded-Proto "https" HTTPS=on',
+                                         'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                       ],
             'ssl'                   => true,
             'ssl_cert'              => '/etc/ssl/certs/foobar.example.com.bundle.crt',
             'ssl_key'               => '/etc/ssl/private/foobar.example.com.key',
@@ -203,6 +216,11 @@ describe 'profiles::apache::vhost::reverse_proxy' do
             'docroot'               => '/var/www/html',
             'manage_docroot'        => false,
             'port'                  => 80,
+            'access_log_format'     => 'extended_json',
+            'setenvif'              => [
+                                         'X-Forwarded-Proto "https" HTTPS=on',
+                                         'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                       ],
             'ssl'                   => false,
             'ssl_proxyengine'       => false,
             'request_headers'       => [

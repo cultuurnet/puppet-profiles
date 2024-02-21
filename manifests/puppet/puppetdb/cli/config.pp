@@ -1,7 +1,8 @@
 define profiles::puppet::puppetdb::cli::config (
   Variant[String,Array[String]] $server_urls,
-  Optional[String]              $certificate = undef,
-  Optional[String]              $private_key = undef
+  Optional[String]              $certificate    = undef,
+  Optional[String]              $private_key    = undef,
+  Optional[String]              $ca_certificate = undef
 ) {
 
   include ::profiles
@@ -73,23 +74,31 @@ define profiles::puppet::puppetdb::cli::config (
       }
     }
 
-    file { "${config_rootdir}/puppet/ssl/certs/ca.pem":
-      ensure => 'file',
-      source => '/etc/puppetlabs/puppet/ssl/certs/ca.pem',
-      *      => $default_file_attributes
-    }
-
-    file { "${config_rootdir}/puppet/ssl/certs/puppetdb-cli.crt":
+    file { "${ssl_dir}/certs/puppetdb-cli.crt":
       ensure  => 'file',
       content => $certificate,
       *       => $default_file_attributes
     }
 
-    file { "${config_rootdir}/puppet/ssl/private_keys/puppetdb-cli.key":
+    file { "${ssl_dir}/private_keys/puppetdb-cli.key":
       ensure  => 'file',
       mode    => '0400',
       content => $private_key,
       *       => $default_file_attributes
+    }
+  }
+
+  if $ca_certificate {
+    file { "${ssl_dir}/certs/ca.pem":
+      ensure  => 'file',
+      content => $ca_certificate,
+      *       => $default_file_attributes
+    }
+  } else {
+    file { "${ssl_dir}/certs/ca.pem":
+      ensure => 'file',
+      source => '/etc/puppetlabs/puppet/ssl/certs/ca.pem',
+      *      => $default_file_attributes
     }
   }
 

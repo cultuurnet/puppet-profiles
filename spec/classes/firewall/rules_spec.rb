@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::firewall::rules' do
   include_examples 'operating system support'
 
@@ -51,6 +49,24 @@ describe 'profiles::firewall::rules' do
         it { is_expected.to contain_firewall('300 accept puppetdb HTTPS traffic').with(
           'proto' => 'tcp',
           'dport' => '8081',
+          'action' => 'accept'
+        ) }
+
+        it { is_expected.to contain_firewall('400 accept redis traffic').with(
+          'proto' => 'tcp',
+          'dport' => '6379',
+          'action' => 'accept'
+        ) }
+
+        it { is_expected.to contain_firewall('400 accept meilisearch traffic').with(
+          'proto' => 'tcp',
+          'dport' => '7700',
+          'action' => 'accept'
+        ) }
+
+        it { is_expected.to contain_firewall('400 accept mysql traffic').with(
+          'proto' => 'tcp',
+          'dport' => '3306',
           'action' => 'accept'
         ) }
       end

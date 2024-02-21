@@ -1,7 +1,5 @@
-require 'spec_helper'
-
 describe 'profiles::apache::vhost::redirect' do
-  let(:hiera_config) { 'spec/support/hiera/hiera.yaml' }
+  let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
   context "with title => http://leonardo.example.com" do
     let(:title) { 'http://leonardo.example.com' }
@@ -21,16 +19,21 @@ describe 'profiles::apache::vhost::redirect' do
           it { is_expected.to contain_firewall('300 accept HTTP traffic') }
 
           it { is_expected.to contain_apache__vhost('leonardo.example.com_80').with(
-            'servername'      => 'leonardo.example.com',
-            'serveraliases'   => ['leo.example.com'],
-            'docroot'         => '/var/www/html',
-            'manage_docroot'  => false,
-            'port'            => 80,
-            'ssl'             => false,
-            'request_headers' => ['unset Proxy early'],
-            'redirect_source' => '/',
-            'redirect_dest'   => 'https://davinci.example.com/',
-            'redirect_status' => 'permanent'
+            'servername'        => 'leonardo.example.com',
+            'serveraliases'     => ['leo.example.com'],
+            'docroot'           => '/var/www/html',
+            'manage_docroot'    => false,
+            'port'              => 80,
+            'ssl'               => false,
+            'request_headers'   => ['unset Proxy early'],
+            'access_log_format' => 'extended_json',
+            'setenvif'          => [
+                                     'X-Forwarded-Proto "https" HTTPS=on',
+                                     'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                   ],
+            'redirect_source'   => '/',
+            'redirect_dest'     => 'https://davinci.example.com/',
+            'redirect_status'   => 'permanent'
           ) }
         end
       end

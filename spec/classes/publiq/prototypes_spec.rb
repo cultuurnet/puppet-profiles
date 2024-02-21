@@ -1,7 +1,5 @@
-require 'spec_helper'
-
 describe 'profiles::publiq::prototypes' do
-  let(:hiera_config) { 'spec/support/hiera/hiera.yaml' }
+  let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
   include_examples 'operating system support'
 
@@ -25,15 +23,20 @@ describe 'profiles::publiq::prototypes' do
         it { is_expected.to contain_class('profiles::publiq::prototypes::deployment') }
 
         it { is_expected.to contain_apache__vhost('prototypes.local_80').with(
-          'docroot'         => '/var/www/prototypes',
-          'servername'      => 'prototypes.local',
-          'serveraliases'   => ['*.prototypes.local'],
-          'virtual_docroot' => '/var/www/prototypes/%1',
-          'docroot_owner'   => 'www-data',
-          'docroot_group'   => 'www-data',
-          'request_headers' => ['unset Proxy early'],
-          'port'            => 80,
-          'ssl'             => false
+          'docroot'           => '/var/www/prototypes',
+          'servername'        => 'prototypes.local',
+          'serveraliases'     => ['*.prototypes.local'],
+          'virtual_docroot'   => '/var/www/prototypes/%1',
+          'docroot_owner'     => 'www-data',
+          'docroot_group'     => 'www-data',
+          'request_headers'   => ['unset Proxy early'],
+          'port'              => 80,
+          'access_log_format' => 'extended_json',
+          'setenvif'          => [
+                                   'X-Forwarded-Proto "https" HTTPS=on',
+                                   'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                 ],
+          'ssl'               => false
         ) }
 
         it { is_expected.to contain_firewall('300 accept HTTP traffic') }
@@ -50,15 +53,20 @@ describe 'profiles::publiq::prototypes' do
         it { is_expected.to_not contain_class('profiles::publiq::prototypes::deployment') }
 
         it { is_expected.to contain_apache__vhost('prototypes.publiq.dev_80').with(
-          'docroot'         => '/var/www/prototypes',
-          'servername'      => 'prototypes.publiq.dev',
-          'serveraliases'   => ['*.prototypes.publiq.dev'],
-          'virtual_docroot' => '/var/www/prototypes/%1',
-          'docroot_owner'   => 'www-data',
-          'docroot_group'   => 'www-data',
-          'request_headers' => ['unset Proxy early'],
-          'port'            => 80,
-          'ssl'             => false
+          'docroot'           => '/var/www/prototypes',
+          'servername'        => 'prototypes.publiq.dev',
+          'serveraliases'     => ['*.prototypes.publiq.dev'],
+          'virtual_docroot'   => '/var/www/prototypes/%1',
+          'docroot_owner'     => 'www-data',
+          'docroot_group'     => 'www-data',
+          'request_headers'   => ['unset Proxy early'],
+          'port'              => 80,
+          'access_log_format' => 'extended_json',
+          'setenvif'          => [
+                                   'X-Forwarded-Proto "https" HTTPS=on',
+                                   'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                 ],
+          'ssl'               => false
         ) }
 
         it {is_expected.to contain_class('profiles::apache').that_comes_before('Apache::Vhost[prototypes.publiq.dev_80]') }
@@ -81,17 +89,22 @@ describe 'profiles::publiq::prototypes' do
           it { is_expected.to contain_profiles__certificate('foobar.example.com') }
 
           it { is_expected.to contain_apache__vhost('foobar.example.com_443').with(
-            'docroot'         => '/var/www/prototypes',
-            'servername'      => 'foobar.example.com',
-            'serveraliases'   => ['*.foobar.example.com'],
-            'virtual_docroot' => '/var/www/prototypes/%1',
-            'docroot_owner'   => 'www-data',
-            'docroot_group'   => 'www-data',
-            'request_headers' => ['unset Proxy early'],
-            'port'            => 443,
-            'ssl'             => true,
-            'ssl_cert'        => '/etc/ssl/certs/foobar.example.com.bundle.crt',
-            'ssl_key'         => '/etc/ssl/private/foobar.example.com.key'
+            'docroot'           => '/var/www/prototypes',
+            'servername'        => 'foobar.example.com',
+            'serveraliases'     => ['*.foobar.example.com'],
+            'virtual_docroot'   => '/var/www/prototypes/%1',
+            'docroot_owner'     => 'www-data',
+            'docroot_group'     => 'www-data',
+            'request_headers'   => ['unset Proxy early'],
+            'access_log_format' => 'extended_json',
+            'setenvif'          => [
+                                     'X-Forwarded-Proto "https" HTTPS=on',
+                                     'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                   ],
+            'port'              => 443,
+            'ssl'               => true,
+            'ssl_cert'          => '/etc/ssl/certs/foobar.example.com.bundle.crt',
+            'ssl_key'           => '/etc/ssl/private/foobar.example.com.key'
           ) }
 
           it { is_expected.to contain_firewall('300 accept HTTPS traffic') }

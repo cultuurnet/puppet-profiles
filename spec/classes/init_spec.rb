@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles' do
   include_examples 'operating system support'
 
@@ -11,6 +9,7 @@ describe 'profiles' do
       it { is_expected.to contain_class('profiles::apt') }
       it { is_expected.to contain_class('profiles::groups') }
       it { is_expected.to contain_class('profiles::users') }
+      it { is_expected.to contain_class('profiles::files') }
 
       it { is_expected.to contain_class('profiles::apt::repositories').with(
         'stage' => 'pre'

@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::deployment::uitidv2::frontend' do
   context "with config_source => /foo" do
     let(:params) { {

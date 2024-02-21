@@ -6,11 +6,20 @@ profiles::jenkins::controller::admin_password: 'bar'
 profiles::jenkins::controller::url: 'https://foobar.com/'
 
 profiles::uit::frontend::deployment::config_source: '/path/to/config/source'
+profiles::uit::api::deployment::config_source: '/path/to/config/source'
+profiles::uit::cms::deployment::config_source: '/path/to/config/source'
+profiles::uit::cms::deployment::drush_config_source: '/path/to/config/source'
+profiles::uit::notifications::deployment::config_source: '/path/to/config/source'
+profiles::uit::notifications::deployment::aws_access_key_id: 'abcd1234'
+profiles::uit::notifications::deployment::aws_secret_access_key: '4321dcba'
 profiles::uit::mail_subscriptions::deployment::config_source: '/path/to/config/source'
 profiles::uit::recommender_frontend::deployment::config_source: '/path/to/config/source'
+
 profiles::uitpas::balie::deployment::config_source: '/path/to/config/source'
 
-profiles::udb3::websocket_server::deployment::config_source: '/path/to/config/source'
+profiles::platform::deployment::config_source: '/path/to/config/source'
+
+profiles::uitdatabank::websocket_server::deployment::config_source: '/path/to/config/source'
 
 profiles::publiq::versions::url: 'http://abc.xyz'
 profiles::publiq::versions::service_address: '127.0.1.1'
@@ -58,6 +67,8 @@ profiles::filebeat::logging:
     path: '/var/log/filebeat'
     name: 'filebeat.log'
     keepfiles: '7'
+
+profiles::php::fpm_socket_type: 'tcp'
 
 terraform::volumes::ebs::xvdb::size: 60
 terraform::volumes::ebs::xvdc::size: 40

@@ -2,6 +2,9 @@ class profiles::jenkins::controller (
   Stdlib::Httpurl           $url,
   String                    $admin_password,
   String                    $version                      = 'latest',
+  Boolean                   $lvm                          = false,
+  Optional[String]          $volume_group                 = undef,
+  Optional[String]          $volume_size                  = undef,
   Optional[String]          $certificate                  = undef,
   Optional[Stdlib::Httpurl] $docker_registry_url          = undef,
   Optional[String]          $docker_registry_credentialid = undef,
@@ -15,6 +18,32 @@ class profiles::jenkins::controller (
 
   $hostname   = split($url, '/')[2]
 
+  if $lvm {
+    unless ($volume_group and $volume_size) {
+      fail("with LVM enabled, expects a value for both 'volume_group' and 'volume_size'")
+    }
+
+    profiles::lvm::mount { 'jenkins':
+      volume_group => $volume_group,
+      size         => $volume_size,
+      mountpoint   => '/data/jenkins/jobs',
+      fs_type      => 'ext4',
+      owner        => 'jenkins',
+      group        => 'jenkins',
+      require      => [Group['jenkins'], User['jenkins']]
+    }
+
+    file { '/var/lib/jenkins/jobs':
+      ensure  => 'link',
+      target  => '/data/jenkins/jobs',
+      force   => true,
+      owner   => 'jenkins',
+      group   => 'jenkins',
+      require => Profiles::Lvm::Mount['jenkins'],
+      before  => Class['profiles::jenkins::controller::install']
+    }
+  }
+
   class { '::profiles::jenkins::controller::install':
     version => $version,
     require => Class['profiles::java'],
@@ -25,7 +54,7 @@ class profiles::jenkins::controller (
 
   class { '::profiles::jenkins::cli':
     version        => $version,
-    controller_url => $url
+    controller_url => 'http://127.0.0.1:8080/'
   }
 
   class { '::profiles::jenkins::controller::configuration':

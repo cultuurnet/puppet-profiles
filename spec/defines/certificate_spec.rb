@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::certificate' do
   context "with title => leonardo.example.com" do
     let(:title) { 'leonardo.example.com' }

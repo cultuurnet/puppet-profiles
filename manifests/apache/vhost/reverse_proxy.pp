@@ -12,7 +12,6 @@ define profiles::apache::vhost::reverse_proxy (
   include ::profiles
   include ::profiles::firewall::rules
   include ::profiles::apache
-  include ::profiles::certificates
 
   unless $title =~ Stdlib::Httpurl {
     fail("Defined resource type Profiles::Apache::Vhost::Reverse_proxy[${title}] expects the title to be a valid HTTP(S) URL")
@@ -31,6 +30,8 @@ define profiles::apache::vhost::reverse_proxy (
     $ssl_cert     = "/etc/ssl/certs/${certificate}.bundle.crt"
     $ssl_key      = "/etc/ssl/private/${certificate}.key"
     $reverse_urls = [$destination, "http://${servername}/"]
+
+    include ::profiles::certificates
 
     realize Profiles::Certificate[$certificate]
     realize Firewall['300 accept HTTPS traffic']
@@ -76,6 +77,11 @@ define profiles::apache::vhost::reverse_proxy (
     ssl_key               => $ssl_key,
     docroot               => '/var/www/html',
     manage_docroot        => false,
+    access_log_format     => 'extended_json',
+    setenvif              => [
+                               'X-Forwarded-Proto "https" HTTPS=on',
+                               'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                             ],
     request_headers       => [
                                'unset Proxy early',
                                "setifempty X-Forwarded-Port \"${port}\"",

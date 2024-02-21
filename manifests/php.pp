@@ -3,14 +3,17 @@ class profiles::php (
   Hash                       $extensions               = {},
   Hash                       $settings                 = {},
   Optional[Integer[1, 2]]    $composer_default_version = undef,
-  Boolean                    $fpm                      = false,
+  Boolean                    $fpm                      = true,
   Enum['unix', 'tcp']        $fpm_socket_type          = 'unix',
   Enum['running', 'stopped'] $fpm_service_status       = 'running',
-  Hash                       $fpm_global_pool_settings = {},
   Boolean                    $newrelic_agent           = false,
   String                     $newrelic_app_name        = $facts['networking']['fqdn'],
   Optional[String]           $newrelic_license_key     = undef
 ) inherits ::profiles {
+
+  $default_settings   = {
+                          'openssl/openssl.cafile' => '/etc/ssl/certs/ca-certificates.crt'
+                        }
 
   $default_extensions = {
                           'bcmath'   => {},
@@ -32,45 +35,62 @@ class profiles::php (
     default => {}
   }
 
-  realize Apt::Source['php']
+  if $fpm {
+    $fpm_attributes = {
+                        fpm_service_ensure       => $fpm_service_status,
+                        fpm_service_enable       => $fpm_service_status ? {
+                                                      'running' => true,
+                                                      'stopped' => false
+                                                    },
+                        fpm_pools                => { 'www' => {} }, # https://github.com/voxpupuli/puppet-php/issues/564
+                        fpm_global_pool_settings => {
+                                                      listen_owner => 'www-data',
+                                                      listen_group => 'www-data',
+                                                      listen       => $fpm_socket_type ? {
+                                                                        'unix' => '/var/run/php/php-fpm.sock',
+                                                                        'tcp'  => '127.0.0.1:9000'
+                                                                      }
+                                                    }
+                      }
 
+    systemd::dropin_file { 'php-fpm service override.conf':
+      unit     => "php${version}-fpm.service",
+      filename => 'override.conf',
+      content  => "[Install]\nAlias=php-fpm.service"
+    }
+
+    if $fpm_service_status == 'running' {
+      exec { "re-enable php${version}-fpm":
+        command     => "systemctl reenable php${version}-fpm",
+        path        => ['/usr/sbin', '/usr/bin'],
+        refreshonly => true,
+        logoutput   => 'on_failure',
+        require     => Class['php'],
+        subscribe   => Systemd::Dropin_file['php-fpm service override.conf']
+      }
+    }
+  } else {
+    $fpm_attributes = {}
+  }
+
+  realize Apt::Source['php']
   realize Package['composer']
 
   class { ::php::globals:
     php_version => $version,
-    config_root => "/etc/php/${version}"
-  }
-
-  case $fpm_socket_type {
-    'unix': {
-      $socket               = "/var/run/php/php${version}-fpm.sock"
-      $apache_proxy_handler = "SetHandler \"proxy:unix:/var/run/php/php${version}-fpm.sock|fcgi://localhost\""
-    }
-    'tcp': {
-      $socket               = "127.0.0.1:9000"
-      $apache_proxy_handler = "SetHandler \"proxy:fcgi://127.0.0.1:9000\""
-    }
+    config_root => "/etc/php/${version}",
+    before      => Class['php']
   }
 
   class { ::php:
-    manage_repos             => false,
-    composer                 => false,
-    dev                      => false,
-    pear                     => false,
-    fpm                      => $fpm,
-    fpm_service_ensure       => $fpm_service_status,
-    fpm_service_enable       => $fpm_service_status ? {
-                                  'running' => true,
-                                  'stopped' => false
-                                },
-    fpm_pools                => { 'www'  => {} }, # https://github.com/voxpupuli/puppet-php/issues/564
-    fpm_global_pool_settings => {
-                                  listen       => $socket,
-                                  listen_owner => 'www-data',
-                                  listen_group => 'www-data'
-                                },
-    settings                 => $settings,
-    extensions               => $default_extensions + $version_dependent_default_extensions + $extensions
+    manage_repos => false,
+    composer     => false,
+    dev          => false,
+    pear         => false,
+    settings     => $default_settings + $settings,
+    extensions   => $default_extensions + $version_dependent_default_extensions + $extensions,
+    fpm          => $fpm,
+    *            => $fpm_attributes
   }
 
   Apt::Source['php'] -> Class['php::globals']
@@ -90,7 +110,7 @@ class profiles::php (
 
     alternatives { 'composer':
       path    => "/usr/bin/composer${composer_default_version}",
-      require => [ Package['composer1'], Package['composer2']]
+      require => [Package['composer1'], Package['composer2']]
     }
   }
 
@@ -107,16 +127,7 @@ class profiles::php (
     package { 'newrelic-php5':
       ensure       => 'latest',
       responsefile => '/var/tmp/newrelic-php5-installer.preseed',
-      require      => [File['newrelic-php5-installer.preseed']]
+      require      => File['newrelic-php5-installer.preseed']
     }
   }
-
-  if $fpm {
-    class { ::profiles::php::fpm:
-      php_version          => $version,
-      apache_proxy_handler => $apache_proxy_handler,
-    }
-  }
-
-  Class['php::globals'] -> Class['php']
 }

@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::backup::client' do
   include_examples 'operating system support'
 

@@ -1,6 +1,3 @@
-require 'spec_helper'
-require 'pp'
-
 describe 'profiles::publiq::infrastructure::deployment' do
   include_examples 'operating system support'
 

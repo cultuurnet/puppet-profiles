@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::uit::frontend' do
   context "with servername => foo.example.com" do
     let(:params) { {

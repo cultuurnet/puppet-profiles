@@ -13,27 +13,24 @@ class profiles::museumpas::website (
 
   $basedir = '/var/www/museumpas'
 
-  class { 'locales':
-    default_locale  => 'en_US.UTF-8',
-    locales         => ['en_US.UTF-8 UTF-8', 'nl_BE.UTF-8 UTF-8', 'fr_BE.UTF-8 UTF-8', 'nl_NL.UTF-8 UTF-8', 'fr_FR.UTF-8 UTF-8'],
-  }
+  include apache::mod::proxy
+  include apache::mod::proxy_fcgi
+  include apache::mod::rewrite
+  include apache::vhosts
+  include profiles::firewall::rules
 
   if $install_redis {
-    include redis
-    realize Firewall['400 accept REDIS traffic']
+    include profiles::redis
   }
 
   if $install_meilisearch {
     include profiles::meilisearch
-    realize Firewall['400 accept MEILISEARCH traffic']
   }
 
-  realize Firewall['300 accept HTTP traffic']
-
-  include apache::mod::proxy
-  include apache::mod::proxy_fcgi
-  include apache::vhosts
-  include profiles::firewall::rules
+  class { 'locales':
+    default_locale  => 'en_US.UTF-8',
+    locales         => ['en_US.UTF-8 UTF-8', 'nl_BE.UTF-8 UTF-8', 'fr_BE.UTF-8 UTF-8', 'nl_NL.UTF-8 UTF-8', 'fr_FR.UTF-8 UTF-8'],
+  }
 
   class { "apache::mod::expires":
     expires_by_type => [
@@ -49,6 +46,8 @@ class profiles::museumpas::website (
       'application/javascript' => 'access plus 1 month',
     ]
   }
+
+  realize Firewall['300 accept HTTP traffic']
 
   apache::vhost { "${servername}_80":
     servername        => $servername,
@@ -81,22 +80,14 @@ class profiles::museumpas::website (
                                                 'set X-Content-Type-Options "nosniff"',
                                               ]
                          }],
-    rewrites          => [{
-                           'comment' => 'Force all traffic (except Icinga checks) to HTTPS',
-                           'rewrite_cond' => [
-                              '%{HTTP:X-Forwarded-Proto} !https',
-                              '%{HTTP_USER_AGENT} !^check_http',
-                            ],
-                            'rewrite_rule' => '^.*$ https://%{SERVER_NAME}%{REQUEST_URI} [R=301,NE,L]',
-                         }],
     redirect_status   => 'permanent',
     redirect_source   => [ '/privacy' ],
     redirect_dest     => [ '/nl/voorwaarden-privacy-museumpas' ],
-    setenv            => [ 'HTTPS "on"' ],
     setenvif          => [
-                           'Remote_Addr "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+)" CLIENT_IP=$1',
+                           'X-Forwarded-Proto "https" HTTPS=on',
+                           'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+)" CLIENT_IP=$1',
                          ],
-    require => [Class['profiles::apache']]
+    require           => Class['profiles::apache']
   }
 
   file { 'mysqld_version_ext_fact':
@@ -134,4 +125,3 @@ class profiles::museumpas::website (
     Class['profiles::museumpas::website::deployment'] -> Apache::Vhost["${servername}_80"]
   }
 }
-

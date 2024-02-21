@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::curator' do
   context "with articlelinker_config_source => /foo, articlelinker_publishers_source => /bar and articlelinker_env_defaults_source => /defaults" do
     let(:params) { {

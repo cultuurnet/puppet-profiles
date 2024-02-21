@@ -4,16 +4,19 @@ class profiles::aptly (
   Hash                           $signing_keys      = {},
   Hash                           $trusted_keys      = {},
   String                         $version           = 'latest',
-  String                         $data_dir          = '/var/aptly',
   Stdlib::Ipv4                   $api_bind          = '127.0.0.1',
   Stdlib::Port::Unprivileged     $api_port          = 8081,
   Hash                           $publish_endpoints = {},
   Hash                           $repositories      = {},
-  Hash                           $mirrors           = {}
+  Hash                           $mirrors           = {},
+  Boolean                        $lvm               = false,
+  Optional[String]               $volume_group      = undef,
+  Optional[String]               $volume_size       = undef
 ) inherits ::profiles {
 
+  $data_dir      = '/var/aptly'
+  $home_dir      = '/home/aptly'
   $proxy_timeout = 3600
-  $homedir       = '/home/aptly'
 
   realize Group['aptly']
   realize User['aptly']
@@ -24,6 +27,31 @@ class profiles::aptly (
   realize Apt::Source['aptly']
 
   Apt::Key['aptly'] -> Apt::Source['aptly']
+
+  if $lvm {
+    unless ($volume_group and $volume_size) {
+      fail("with LVM enabled, expects a value for both 'volume_group' and 'volume_size'")
+    }
+
+    profiles::lvm::mount { 'aptlydata':
+      volume_group => $volume_group,
+      size         => $volume_size,
+      mountpoint   => '/data/aptly',
+      fs_type      => 'ext4',
+      owner        => 'aptly',
+      group        => 'aptly',
+      require      => [Group['aptly'], User['aptly']],
+      before       => Class['::aptly']
+    }
+
+    mount { $data_dir:
+      ensure  => 'mounted',
+      device  => '/data/aptly',
+      fstype  => 'none',
+      options => 'rw,bind',
+      require => [Profiles::Lvm::Mount['aptlydata'], Class['::aptly']]
+    }
+  }
 
   class { '::aptly':
     version              => $version,
@@ -69,7 +97,7 @@ class profiles::aptly (
     user        => 'aptly',
     hour        => '4',
     minute      => '0',
-    require     => [ Class['aptly'], User['aptly']]
+    require     => [Class['aptly'], User['aptly']]
   }
 
   $signing_keys.each |$name, $attributes| {
@@ -98,8 +126,13 @@ class profiles::aptly (
 
     if $archive {
       aptly::repo { "${repo}-archive":
-        default_component => 'main'
+        default_component => 'main',
+        require           => Aptly::Repo[$repo]
       }
+    }
+
+    if $lvm {
+      Mount[$data_dir] -> Aptly::Repo[$repo]
     }
   }
 
@@ -115,28 +148,32 @@ class profiles::aptly (
     # As we don't import keys outside of puppet, the pubring.gpg only contains trusted keys.
 
     file { 'aptly trustedkeys.gpg':
-      path   => "${homedir}/.gnupg/trustedkeys.gpg",
+      path   => "${home_dir}/.gnupg/trustedkeys.gpg",
       ensure => 'link',
-      target => "${homedir}/.gnupg/pubring.kbx",
+      target => "${home_dir}/.gnupg/pubring.kbx",
       owner  => 'aptly',
       group  => 'aptly'
     }
 
-    $mirrors.each |$name, $attributes| {
+    $mirrors.each |$mirror, $attributes| {
       [$attributes['keys']].flatten.each |$key| {
         realize Profiles::Aptly::Gpgkey[$key]
 
         Profiles::Aptly::Gpgkey[$key] -> File['aptly trustedkeys.gpg']
       }
 
-      aptly::mirror { $name:
+      aptly::mirror { $mirror:
         location      => $attributes['location'],
         distribution  => $attributes['distribution'],
         components    => [$attributes['components']].flatten,
         architectures => ['amd64'],
         update        => false,
-        keyring       => "${homedir}/.gnupg/trustedkeys.gpg",
+        keyring       => "${home_dir}/.gnupg/trustedkeys.gpg",
         require       => File['aptly trustedkeys.gpg']
+      }
+
+      if $lvm {
+        Mount[$data_dir] -> Aptly::Mirror[$mirror]
       }
     }
   }

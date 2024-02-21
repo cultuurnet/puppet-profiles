@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::java::alternatives' do
   include_examples 'operating system support'
 
@@ -32,6 +30,10 @@ describe 'profiles::java::alternatives' do
               'distribution' => 'jre',
               'headless'     => true
             }
+          ) }
+
+          it { is_expected.to contain_alternatives('jexec').with(
+            'path' => '/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/jexec'
           ) }
 
           ['rmid', 'java', 'keytool', 'jjs', 'pack200', 'rmiregistry', 'unpack200', 'orbd', 'servertool', 'tnameserv'].each do |command|
@@ -112,6 +114,10 @@ describe 'profiles::java::alternatives' do
             }
           ) }
 
+          it { is_expected.to contain_alternatives('jexec').with(
+            'path' => '/usr/lib/jvm/java-11-openjdk-amd64/lib/jexec'
+          ) }
+
           ['java', 'jjs', 'keytool', 'rmid', 'rmiregistry', 'pack200', 'unpack200'].each do |command|
             it { is_expected.to contain_alternatives(command).with(
               'path' => "/usr/lib/jvm/java-11-openjdk-amd64/bin/#{command}"
@@ -172,6 +178,170 @@ describe 'profiles::java::alternatives' do
           ['jar', 'jarsigner', 'javac', 'javadoc', 'javap', 'jcmd', 'jdb', 'jdeprscan', 'jdeps', 'jfr', 'jimage', 'jinfo', 'jlink', 'jmap', 'jmod', 'jps', 'jrunscript', 'jshell', 'jstack', 'jstat', 'jstatd', 'rmic', 'serialver', 'jaotc', 'jhsdb', 'jconsole'].each do |command|
             it { is_expected.to contain_alternatives(command).with(
               'path' => "/usr/lib/jvm/java-11-openjdk-amd64/bin/#{command}"
+            ) }
+          end
+        end
+      end
+
+      context "with default_version => 16" do
+        let(:params) { {
+          'default_version' => 16
+        } }
+
+        context "with distribution => jre and headless => true" do
+          let(:params) { super().merge(
+            {
+              'distribution' => 'jre',
+              'headless'     => true
+            }
+          ) }
+
+          it { is_expected.to contain_alternatives('jexec').with(
+            'path' => '/usr/lib/jvm/java-16-openjdk-amd64/lib/jexec'
+          ) }
+
+          ['java', 'jpackage', 'keytool', 'rmid', 'rmiregistry'].each do |command|
+            it { is_expected.to contain_alternatives(command).with(
+              'path' => "/usr/lib/jvm/java-16-openjdk-amd64/bin/#{command}"
+            ) }
+          end
+        end
+
+        context "with distribution => jre and headless => false" do
+          let(:params) { super().merge(
+            {
+              'distribution' => 'jre',
+              'headless'     => false
+            }
+          ) }
+
+          ['java', 'jpackage', 'keytool', 'rmid', 'rmiregistry'].each do |command|
+            it { is_expected.to contain_alternatives(command).with(
+              'path' => "/usr/lib/jvm/java-16-openjdk-amd64/bin/#{command}"
+            ) }
+          end
+        end
+
+        context "with distribution => jdk and headless => true" do
+          let(:params) { super().merge(
+            {
+              'distribution' => 'jdk',
+              'headless'     => true
+            }
+          ) }
+
+          ['java', 'jpackage', 'keytool', 'rmid', 'rmiregistry'].each do |command|
+            it { is_expected.to contain_alternatives(command).with(
+              'path' => "/usr/lib/jvm/java-16-openjdk-amd64/bin/#{command}"
+            ) }
+          end
+
+          ['jar', 'jarsigner', 'javac', 'javadoc', 'javap', 'jcmd', 'jdb', 'jdeprscan', 'jdeps', 'jfr', 'jimage', 'jinfo', 'jlink', 'jmap', 'jmod', 'jps', 'jrunscript', 'jshell', 'jstack', 'jstat', 'jstatd', 'serialver', 'jaotc', 'jhsdb'].each do |command|
+            it { is_expected.to contain_alternatives(command).with(
+              'path' => "/usr/lib/jvm/java-16-openjdk-amd64/bin/#{command}"
+            ) }
+          end
+        end
+
+        context "with distribution => jdk and headless => false" do
+          let(:params) { super().merge(
+            {
+              'distribution' => 'jdk',
+              'headless'     => false
+            }
+          ) }
+
+          ['java', 'jpackage', 'keytool', 'rmid', 'rmiregistry'].each do |command|
+            it { is_expected.to contain_alternatives(command).with(
+              'path' => "/usr/lib/jvm/java-16-openjdk-amd64/bin/#{command}"
+            ) }
+          end
+
+          ['jar', 'jarsigner', 'javac', 'javadoc', 'javap', 'jcmd', 'jdb', 'jdeprscan', 'jdeps', 'jfr', 'jimage', 'jinfo', 'jlink', 'jmap', 'jmod', 'jps', 'jrunscript', 'jshell', 'jstack', 'jstat', 'jstatd', 'serialver', 'jaotc', 'jhsdb', 'jconsole'].each do |command|
+            it { is_expected.to contain_alternatives(command).with(
+              'path' => "/usr/lib/jvm/java-16-openjdk-amd64/bin/#{command}"
+            ) }
+          end
+        end
+      end
+
+      context "with default_version => 17" do
+        let(:params) { {
+          'default_version' => 17
+        } }
+
+        context "with distribution => jre and headless => true" do
+          let(:params) { super().merge(
+            {
+              'distribution' => 'jre',
+              'headless'     => true
+            }
+          ) }
+
+          it { is_expected.to contain_alternatives('jexec').with(
+            'path' => '/usr/lib/jvm/java-17-openjdk-amd64/lib/jexec'
+          ) }
+
+          ['java', 'jpackage', 'keytool', 'rmiregistry'].each do |command|
+            it { is_expected.to contain_alternatives(command).with(
+              'path' => "/usr/lib/jvm/java-17-openjdk-amd64/bin/#{command}"
+            ) }
+          end
+        end
+
+        context "with distribution => jre and headless => false" do
+          let(:params) { super().merge(
+            {
+              'distribution' => 'jre',
+              'headless'     => false
+            }
+          ) }
+
+          ['java', 'jpackage', 'keytool', 'rmiregistry'].each do |command|
+            it { is_expected.to contain_alternatives(command).with(
+              'path' => "/usr/lib/jvm/java-17-openjdk-amd64/bin/#{command}"
+            ) }
+          end
+        end
+
+        context "with distribution => jdk and headless => true" do
+          let(:params) { super().merge(
+            {
+              'distribution' => 'jdk',
+              'headless'     => true
+            }
+          ) }
+
+          ['java', 'jpackage', 'keytool', 'rmiregistry'].each do |command|
+            it { is_expected.to contain_alternatives(command).with(
+              'path' => "/usr/lib/jvm/java-17-openjdk-amd64/bin/#{command}"
+            ) }
+          end
+
+          ['jar', 'jarsigner', 'javac', 'javadoc', 'javap', 'jcmd', 'jdb', 'jdeprscan', 'jdeps', 'jfr', 'jimage', 'jinfo', 'jlink', 'jmap', 'jmod', 'jps', 'jrunscript', 'jshell', 'jstack', 'jstat', 'jstatd', 'serialver', 'jhsd'].each do |command|
+            it { is_expected.to contain_alternatives(command).with(
+              'path' => "/usr/lib/jvm/java-17-openjdk-amd64/bin/#{command}"
+            ) }
+          end
+        end
+
+        context "with distribution => jdk and headless => false" do
+          let(:params) { super().merge(
+            {
+              'distribution' => 'jdk',
+              'headless'     => false
+            }
+          ) }
+
+          ['java', 'jpackage', 'keytool', 'rmiregistry'].each do |command|
+            it { is_expected.to contain_alternatives(command).with(
+              'path' => "/usr/lib/jvm/java-17-openjdk-amd64/bin/#{command}"
+            ) }
+          end
+
+          ['jar', 'jarsigner', 'javac', 'javadoc', 'javap', 'jcmd', 'jdb', 'jdeprscan', 'jdeps', 'jfr', 'jimage', 'jinfo', 'jlink', 'jmap', 'jmod', 'jps', 'jrunscript', 'jshell', 'jstack', 'jstat', 'jstatd', 'serialver', 'jhsd', 'jconsole'].each do |command|
+            it { is_expected.to contain_alternatives(command).with(
+              'path' => "/usr/lib/jvm/java-17-openjdk-amd64/bin/#{command}"
             ) }
           end
         end

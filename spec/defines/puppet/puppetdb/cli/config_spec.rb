@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 RSpec.shared_examples "puppetdb-cli config file structure" do |user, rootdir|
   it { is_expected.to compile.with_all_deps }
 
@@ -36,8 +34,7 @@ RSpec.shared_examples "puppetdb-cli config file structure" do |user, rootdir|
   it { is_expected.to contain_file("#{rootdir}/puppet/ssl/certs/ca.pem").with(
     'ensure' => 'file',
     'owner'  => user,
-    'group'  => user,
-    'source' => '/etc/puppetlabs/puppet/ssl/certs/ca.pem'
+    'group'  => user
   ) }
 
   it { is_expected.to contain_file("#{rootdir}/puppet/ssl/certs/puppetdb-cli.crt").with(
@@ -84,9 +81,10 @@ describe 'profiles::puppet::puppetdb::cli::config' do
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_profiles__puppet__puppetdb__cli__config('root').with(
-            'server_urls' => 'https://example.com:1234',
-            'certificate' => nil,
-            'private_key' => nil
+            'server_urls'    => 'https://example.com:1234',
+            'certificate'    => nil,
+            'private_key'    => nil,
+            'ca_certificate' => nil
           ) }
 
           it { is_expected.to_not contain_file('/etc/puppetlabs') }
@@ -104,11 +102,12 @@ describe 'profiles::puppet::puppetdb::cli::config' do
           it { is_expected.to contain_file('puppetdb-cli-config root').with_content(/"key":\s*"\/etc\/puppetlabs\/puppet\/ssl\/private_keys\/node1.example.com.pem"/) }
         end
 
-        context "with server_urls => [https://example.com:1234, https://example.com:5678], certificate => abc123 and private_key => def456" do
+        context "with server_urls => [https://example.com:1234, https://example.com:5678], certificate => abc123, private_key => def456 and ca_certificate => 321cba" do
           let(:params) { {
-            'server_urls' => ['https://example.com:1234', 'https://example.com:5678'],
-            'certificate' => 'abc123',
-            'private_key' => 'def456'
+            'server_urls'    => ['https://example.com:1234', 'https://example.com:5678'],
+            'certificate'    => 'abc123',
+            'private_key'    => 'def456',
+            'ca_certificate' => '321cba'
           } }
 
           include_examples 'puppetdb-cli config file structure', 'root', '/root/.puppetlabs'
@@ -119,6 +118,10 @@ describe 'profiles::puppet::puppetdb::cli::config' do
 
           it { is_expected.to contain_file('/root/.puppetlabs/puppet/ssl/private_keys/puppetdb-cli.key').with(
             'content' => 'def456'
+          ) }
+
+          it { is_expected.to contain_file('/root/.puppetlabs/puppet/ssl/certs/ca.pem').with(
+            'content' => '321cba'
           ) }
 
           it { is_expected.to contain_file('puppetdb-cli-config root').with_content(/"server_urls":\s*\[\s*"https:\/\/example.com:1234",\s*"https:\/\/example.com:5678"\s*\]/) }
@@ -156,6 +159,10 @@ describe 'profiles::puppet::puppetdb::cli::config' do
 
           it { is_expected.to contain_file('/var/lib/jenkins/.puppetlabs/puppet/ssl/private_keys/puppetdb-cli.key').with(
             'content' => '456def'
+          ) }
+
+          it { is_expected.to contain_file('/var/lib/jenkins/.puppetlabs/puppet/ssl/certs/ca.pem').with(
+            'source' => '/etc/puppetlabs/puppet/ssl/certs/ca.pem'
           ) }
 
           it { is_expected.to contain_user('jenkins').that_comes_before('File[puppetdb-cli-config jenkins]') }
@@ -217,11 +224,12 @@ describe 'profiles::puppet::puppetdb::cli::config' do
         let(:node) { 'node4.example.com' }
         let(:title) { 'www-data' }
 
-        context "with server_urls => https://example.com:1234, certificate => abc123 and private_key => def456" do
+        context "with server_urls => https://example.com:1234, certificate => abc123, private_key => def456 and ca_certificate => 654fed" do
           let(:params) { {
-            'server_urls' => 'https://example.com:1234',
-            'certificate' => '123abc',
-            'private_key' => '456def'
+            'server_urls'    => 'https://example.com:1234',
+            'certificate'    => '123abc',
+            'private_key'    => '456def',
+            'ca_certificate' => 'fed654'
           } }
 
           include_examples 'puppetdb-cli config file structure', 'www-data', '/var/www/.puppetlabs'
@@ -235,6 +243,10 @@ describe 'profiles::puppet::puppetdb::cli::config' do
 
           it { is_expected.to contain_file('/var/www/.puppetlabs/puppet/ssl/private_keys/puppetdb-cli.key').with(
             'content' => '456def'
+          ) }
+
+          it { is_expected.to contain_file('/var/www/.puppetlabs/puppet/ssl/certs/ca.pem').with(
+            'content' => 'fed654'
           ) }
 
           it { is_expected.to contain_user('www-data').that_comes_before('File[puppetdb-cli-config www-data]') }
