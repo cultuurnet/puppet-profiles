@@ -200,6 +200,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'uitpas-api':
+    location => "https://apt.publiq.be/uitpas-api-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   @apt::source { 'uitpas-website-frontend':
     location => "https://apt.publiq.be/uitpas-website-frontend-${environment}",
     release  => $facts['os']['distro']['codename'],
