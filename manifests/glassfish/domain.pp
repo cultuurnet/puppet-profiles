@@ -16,7 +16,7 @@ define profiles::glassfish::domain (
     asadminuser       => 'admin',
     passwordfile      => '/home/glassfish/asadmin.pass',
     portbase          => String($portbase),
-    startoncreate     => true,
+    startoncreate     => false,
     enablesecureadmin => false,
     template          => undef,
     require           => [Group['glassfish'], User['glassfish']]

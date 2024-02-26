@@ -27,7 +27,7 @@ describe 'profiles::glassfish::domain' do
             'asadminuser'       => 'admin',
             'passwordfile'      => '/home/glassfish/asadmin.pass',
             'portbase'          => '4800',
-            'startoncreate'     => true,
+            'startoncreate'     => false,
             'enablesecureadmin' => false,
             'template'          => nil
           ) }
