@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::glassfish::domain::service' do
   on_supported_os.each do |os, facts|
     context "on #{os}" do
@@ -18,18 +16,18 @@ describe 'profiles::glassfish::domain::service' do
             'status' => 'running'
           ) }
 
-          it { is_expected.to contain_systemd__unit_file('foobar-api.service').with(
+          it { is_expected.to contain_systemd__unit_file('glassfish-foobar-api.service').with(
             'path'          => '/lib/systemd/system',
             'daemon_reload' => true
           ) }
 
-          it { is_expected.to contain_service('foobar-api').with(
+          it { is_expected.to contain_service('glassfish-foobar-api').with(
             'ensure'    => 'running',
             'hasstatus' => true,
             'enable'    => true
           ) }
 
-          it { is_expected.to contain_systemd__unit_file('foobar-api.service').that_comes_before('Service[foobar-api]') }
+          it { is_expected.to contain_systemd__unit_file('glassfish-foobar-api.service').that_comes_before('Service[glassfish-foobar-api]') }
         end
 
         context 'with status => stopped' do
@@ -37,7 +35,7 @@ describe 'profiles::glassfish::domain::service' do
             'status' => 'stopped'
           } }
 
-          it { is_expected.to contain_service('foobar-api').with(
+          it { is_expected.to contain_service('glassfish-foobar-api').with(
             'ensure'    => 'stopped',
             'hasstatus' => true,
             'enable'    => false
@@ -51,18 +49,18 @@ describe 'profiles::glassfish::domain::service' do
         context 'without parameters' do
           let(:params) { {} }
 
-          it { is_expected.to contain_systemd__unit_file('baz-api.service').with(
+          it { is_expected.to contain_systemd__unit_file('glassfish-baz-api.service').with(
             'path'          => '/lib/systemd/system',
             'daemon_reload' => true
           ) }
 
-          it { is_expected.to contain_service('baz-api').with(
+          it { is_expected.to contain_service('glassfish-baz-api').with(
             'ensure'    => 'running',
             'hasstatus' => true,
             'enable'    => true
           ) }
 
-          it { is_expected.to contain_systemd__unit_file('baz-api.service').that_comes_before('Service[baz-api]') }
+          it { is_expected.to contain_systemd__unit_file('glassfish-baz-api.service').that_comes_before('Service[glassfish-baz-api]') }
         end
 
         context 'with ensure => absent' do
@@ -70,13 +68,13 @@ describe 'profiles::glassfish::domain::service' do
             'ensure' => 'absent'
           } }
 
-          it { is_expected.to contain_systemd__unit_file('baz-api.service').with(
+          it { is_expected.to contain_systemd__unit_file('glassfish-baz-api.service').with(
             'ensure'        => 'absent',
             'path'          => '/lib/systemd/system',
             'daemon_reload' => true
           ) }
 
-          it { is_expected.not_to contain_service('baz-api') }
+          it { is_expected.not_to contain_service('glassfish-baz-api') }
         end
       end
     end
