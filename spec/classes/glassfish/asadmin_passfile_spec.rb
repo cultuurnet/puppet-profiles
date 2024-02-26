@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::glassfish::asadmin_passfile' do
   include_examples 'operating system support'
 

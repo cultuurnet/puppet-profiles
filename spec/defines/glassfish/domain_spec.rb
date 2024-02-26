@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe 'profiles::glassfish::domain' do
   on_supported_os.each do |os, facts|
     context "on #{os}" do
@@ -60,10 +58,8 @@ describe 'profiles::glassfish::domain' do
             'template'          => nil
           ) }
 
-          it { is_expected.to contain_service('foobar-api').with(
-            'ensure'    => 'stopped',
-            'hasstatus' => true,
-            'enable'    => false
+          it { is_expected.to contain_profiles__glassfish__domain__service('foobar-api').with(
+            'status' => 'stopped'
           ) }
         end
       end
@@ -96,7 +92,7 @@ describe 'profiles::glassfish::domain' do
           } }
 
           it { is_expected.to contain_domain('baz-api').with(
-            'ensure'            => 'absent'
+            'ensure' => 'absent'
           ) }
 
           it { is_expected.to contain_profiles__glassfish__domain__service('baz-api').with(
