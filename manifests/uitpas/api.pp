@@ -11,7 +11,8 @@ class profiles::uitpas::api (
   # (x) glassfish
   # (x) domain uitpas
   # (x) service alias
-  # firewall rules (portbase)
+  # (x) firewall rules (portbase)
+  # lvm
   # jvmoptions + restart
   # system properties
   # service

@@ -32,6 +32,12 @@ describe 'profiles::glassfish::domain' do
             'template'          => nil
           ) }
 
+          it { is_expected.to contain_firewall('400 accept glassfish domain foobar-api traffic').with(
+            'proto'  => 'tcp',
+            'dport'  => '4880',
+            'action' => 'accept'
+          ) }
+
           it { is_expected.to contain_profiles__glassfish__domain__service('foobar-api').with(
             'status' => 'running'
           ) }
@@ -53,9 +59,15 @@ describe 'profiles::glassfish::domain' do
             'asadminuser'       => 'admin',
             'passwordfile'      => '/home/glassfish/asadmin.pass',
             'portbase'          => '14800',
-            'startoncreate'     => true,
+            'startoncreate'     => false,
             'enablesecureadmin' => false,
             'template'          => nil
+          ) }
+
+          it { is_expected.to contain_firewall('400 accept glassfish domain foobar-api traffic').with(
+            'proto'  => 'tcp',
+            'dport'  => '14880',
+            'action' => 'accept'
           ) }
 
           it { is_expected.to contain_profiles__glassfish__domain__service('foobar-api').with(
@@ -76,7 +88,7 @@ describe 'profiles::glassfish::domain' do
             'asadminuser'       => 'admin',
             'passwordfile'      => '/home/glassfish/asadmin.pass',
             'portbase'          => '4800',
-            'startoncreate'     => true,
+            'startoncreate'     => false,
             'enablesecureadmin' => false,
             'template'          => nil
           ) }
