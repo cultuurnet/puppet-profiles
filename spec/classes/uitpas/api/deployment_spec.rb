@@ -17,6 +17,7 @@ describe 'profiles::uitpas::api::deployment' do
           'database_host'     => '127.0.0.1',
           'version'           => 'latest',
           'repository'        => 'uitpas-api',
+          'portbase'          => 4800,
           'puppetdb_url'      => nil
         ) }
 
@@ -74,11 +75,12 @@ describe 'profiles::uitpas::api::deployment' do
         end
       end
 
-      context "with database_password => mypass, database_host => mydb.example.com, version => 3.2.1 and repository => uitpas-api-alternative" do
+      context "with database_password => mypass, database_host => mydb.example.com, version => 3.2.1, portbase => 14800 and repository => uitpas-api-alternative" do
         let(:params) { {
           'database_password' => 'mypass',
           'database_host'     => 'mydb.example.com',
           'version'           => '3.2.1',
+          'portbase'          => 14800,
           'repository'        => 'uitpas-api-alternative'
         } }
 
@@ -100,6 +102,16 @@ describe 'profiles::uitpas::api::deployment' do
             'path'        => ['/opt/liquibase', '/usr/local/bin', '/usr/bin', '/bin'],
             'refreshonly' => true,
             'logoutput'   => true
+          ) }
+
+          it { is_expected.to contain_app('uitpas-api').with(
+            'ensure'        => 'present',
+            'portbase'      => '14800',
+            'user'          => 'glassfish',
+            'passwordfile'  => '/home/glassfish/asadmin.pass',
+            'contextroot'   => 'uitid',
+            'precompilejsp' => false,
+            'source'        => '/opt/uitpas-api/uitpas-api.war'
           ) }
 
           it { is_expected.to contain_package('uitpas-api').that_requires('Apt::Source[uitpas-api-alternative]') }

@@ -3,6 +3,7 @@ class profiles::uitpas::api::deployment (
   String           $database_host     = '127.0.0.1',
   String           $version           = 'latest',
   String           $repository        = 'uitpas-api',
+  Integer          $portbase          = 4800,
   Optional[String] $puppetdb_url      = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
@@ -35,7 +36,7 @@ class profiles::uitpas::api::deployment (
 
   app { 'uitpas-api':
     ensure        => 'present',
-    portbase      => '4800',
+    portbase      => String($portbase),
     user          => 'glassfish',
     passwordfile  => '/home/glassfish/asadmin.pass',
     contextroot   => 'uitid',

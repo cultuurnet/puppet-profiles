@@ -1,7 +1,8 @@
 class profiles::uitpas::api (
   String  $database_password,
   String  $database_host     = '127.0.0.1',
-  Boolean $deployment        = true
+  Boolean $deployment        = true,
+  Integer $portbase          = 4800
 ) inherits ::profiles {
 
   # (x) mysql server if 127.0.0.1
@@ -10,6 +11,7 @@ class profiles::uitpas::api (
   # (x) glassfish
   # (x) domain uitpas
   # (x) service alias
+  # firewall rules (portbase)
   # jvmoptions + restart
   # system properties
   # service
@@ -46,34 +48,35 @@ class profiles::uitpas::api (
   }
 
   profiles::glassfish::domain { 'uitpas':
-    require => Class['profiles::glassfish']
+    portbase => $portbase,
+    require  => Class['profiles::glassfish']
   }
 
   jdbcconnectionpool { 'mysql_uitpas_api_j2eePool':
-    ensure              => 'present',
-    user                => 'glassfish',
-    passwordfile        => $passwordfile,
-    portbase            => '4800',
-    resourcetype        => 'javax.sql.DataSource',
-    dsclassname         => 'com.mysql.jdbc.jdbc2.optional.MysqlDataSource',
-    properties          => {
-                             'serverName'        => $database_host,
-                             'portNumber'        => '3306',
-                             'databaseName'      => $database_name,
-                             'User'              => $database_user,
-                             'Password'          => $database_password,
-                             'URL'               => "jdbc:mysql://${database_host}:3306/${database_name}",
-                             'driverClass'       => 'com.mysql.jdbc.Driver',
-                             'characterEncoding' => 'UTF-8',
-                             'useUnicode'        => true,
-                             'useSSL'            => false
-    },
-    require             => [Profiles::Glassfish::Domain['uitpas'], Profiles::Mysql::App_user['uitpas_api']]
+    ensure       => 'present',
+    user         => 'glassfish',
+    passwordfile => $passwordfile,
+    portbase     => String($portbase),
+    resourcetype => 'javax.sql.DataSource',
+    dsclassname  => 'com.mysql.jdbc.jdbc2.optional.MysqlDataSource',
+    properties   => {
+                      'serverName'        => $database_host,
+                      'portNumber'        => '3306',
+                      'databaseName'      => $database_name,
+                      'User'              => $database_user,
+                      'Password'          => $database_password,
+                      'URL'               => "jdbc:mysql://${database_host}:3306/${database_name}",
+                      'driverClass'       => 'com.mysql.jdbc.Driver',
+                      'characterEncoding' => 'UTF-8',
+                      'useUnicode'        => true,
+                      'useSSL'            => false
+                    },
+    require      => [Profiles::Glassfish::Domain['uitpas'], Profiles::Mysql::App_user['uitpas_api']]
   }
 
   jdbcresource { 'jdbc/cultuurnet_uitpas':
     ensure         => 'present',
-    portbase       => '4800',
+    portbase       => String($portbase),
     user           => 'glassfish',
     passwordfile   => $passwordfile,
     connectionpool => 'mysql_uitpas_api_j2eePool',
@@ -87,7 +90,8 @@ class profiles::uitpas::api (
   if $deployment {
     class { 'profiles::uitpas::api::deployment':
       database_password => $database_password,
-      database_host     => $database_host
+      database_host     => $database_host,
+      portbase          => $portbase
     }
 
     Class['profiles::glassfish'] -> Class['profiles::uitpas::api::deployment']
