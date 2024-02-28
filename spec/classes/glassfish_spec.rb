@@ -122,11 +122,11 @@ describe 'profiles::glassfish' do
           it { is_expected.to contain_file('/opt/payara/glassfish').that_requires('User[glassfish]') }
           it { is_expected.to contain_file('/opt/payara/glassfish/domains').that_requires('Group[glassfish]') }
           it { is_expected.to contain_file('/opt/payara/glassfish/domains').that_requires('User[glassfish]') }
+          it { is_expected.to contain_file('/opt/payara/glassfish/domains').that_requires('Class[glassfish]') }
           it { is_expected.to contain_profiles__lvm__mount('glassfishdata').that_requires('Group[glassfish]') }
           it { is_expected.to contain_profiles__lvm__mount('glassfishdata').that_requires('User[glassfish]') }
           it { is_expected.to contain_mount('/opt/payara/glassfish/domains').that_requires('Profiles::Lvm::Mount[glassfishdata]') }
           it { is_expected.to contain_mount('/opt/payara/glassfish/domains').that_requires('File[/opt/payara/glassfish/domains]') }
-          it { is_expected.to contain_mount('/opt/payara/glassfish/domains').that_comes_before('Class[glassfish]') }
         end
       end
 

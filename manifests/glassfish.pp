@@ -32,7 +32,7 @@ class profiles::glassfish (
       ensure  => 'directory',
       owner   => 'glassfish',
       group   => 'glassfish',
-      require => [Group['glassfish'], User['glassfish']]
+      require => [Group['glassfish'], User['glassfish'], Class['glassfish']]
     }
 
     mount { '/opt/payara/glassfish/domains':
@@ -40,8 +40,7 @@ class profiles::glassfish (
       device  => '/data/glassfish',
       fstype  => 'none',
       options => 'rw,bind',
-      require => [Profiles::Lvm::Mount['glassfishdata'], File['/opt/payara/glassfish/domains']],
-      before  => Class['glassfish']
+      require => [Profiles::Lvm::Mount['glassfishdata'], File['/opt/payara/glassfish/domains']]
     }
   }
 
