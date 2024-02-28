@@ -43,6 +43,16 @@ describe 'profiles::glassfish::domain' do
             'status' => 'running'
           ) }
 
+          it { is_expected.to contain_cron('Cleanup payara logs foobar-api').with(
+            'command'  => '/usr/bin/find /opt/payara/glassfish/domains/foobar-api/logs -type f -name "server.log_*" -mtime +7 -exec rm {} \;',
+            'user'     => 'root',
+            'hour'     => '*',
+            'minute'   => '15',
+            'weekday'  => '*',
+            'monthday' => '*',
+            'month'    => '*'
+          ) }
+
           it { is_expected.to contain_domain('foobar-api').that_requires('Group[glassfish]') }
           it { is_expected.to contain_domain('foobar-api').that_requires('User[glassfish]') }
           it { is_expected.to contain_profiles__glassfish__domain__service('foobar-api').that_requires('Domain[foobar-api]') }
@@ -96,6 +106,16 @@ describe 'profiles::glassfish::domain' do
 
           it { is_expected.to contain_profiles__glassfish__domain__service('baz-api').with(
             'status' => 'running'
+          ) }
+
+          it { is_expected.to contain_cron('Cleanup payara logs baz-api').with(
+            'command'  => '/usr/bin/find /opt/payara/glassfish/domains/baz-api/logs -type f -name "server.log_*" -mtime +7 -exec rm {} \;',
+            'user'     => 'root',
+            'hour'     => '*',
+            'minute'   => '15',
+            'weekday'  => '*',
+            'monthday' => '*',
+            'month'    => '*'
           ) }
         end
 

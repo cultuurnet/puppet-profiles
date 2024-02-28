@@ -28,6 +28,16 @@ define profiles::glassfish::domain (
     action => 'accept'
   }
 
+  cron { "Cleanup payara logs ${title}":
+    command  => "/usr/bin/find /opt/payara/glassfish/domains/${title}/logs -type f -name \"server.log_*\" -mtime +7 -exec rm {} \;",
+    user     => 'root',
+    hour     => '*',
+    minute   => '15',
+    weekday  => '*',
+    monthday => '*',
+    month    => '*'
+  }
+
   profiles::glassfish::domain::service { $title:
     ensure  => $ensure,
     status  => $service_status,
