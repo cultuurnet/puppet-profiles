@@ -1,7 +1,7 @@
 define profiles::glassfish::domain (
-  Enum['present', 'absent']  $ensure   = 'present',
-  Enum['running', 'stopped'] $status   = 'running',
-  Integer                    $portbase = 4800
+  Enum['present', 'absent']  $ensure         = 'present',
+  Enum['running', 'stopped'] $service_status = 'running',
+  Integer                    $portbase       = 4800
 ) {
 
   include ::profiles
@@ -30,7 +30,7 @@ define profiles::glassfish::domain (
 
   profiles::glassfish::domain::service { $title:
     ensure  => $ensure,
-    status  => $status,
+    status  => $service_status,
     require => Domain[$title]
   }
 }

@@ -12,8 +12,9 @@ describe 'profiles::glassfish::domain' do
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_profiles__glassfish__domain('foobar-api').with(
-            'ensure'   => 'present',
-            'portbase' => 4800
+            'ensure'         => 'present',
+            'service_status' => 'running',
+            'portbase'       => 4800
           ) }
 
           it { is_expected.to contain_class('profiles::glassfish') }
@@ -47,10 +48,10 @@ describe 'profiles::glassfish::domain' do
           it { is_expected.to contain_profiles__glassfish__domain__service('foobar-api').that_requires('Domain[foobar-api]') }
         end
 
-        context 'with portbase => 14800 and status => stopped' do
+        context 'with portbase => 14800 and service_status => stopped' do
           let(:params) { {
-            'portbase' => 14800,
-            'status'   => 'stopped'
+            'portbase'       => 14800,
+            'service_status' => 'stopped'
           } }
 
           it { is_expected.to contain_domain('foobar-api').with(
