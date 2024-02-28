@@ -17,7 +17,8 @@ describe 'profiles::uitpas::api' do
           'database_host'     => '127.0.0.1',
           'deployment'        => true,
           'portbase'          => 4800,
-          'service_status'    => 'running'
+          'service_status'    => 'running',
+          'settings'          => {}
         ) }
 
         it { is_expected.to contain_group('glassfish') }
@@ -108,11 +109,12 @@ describe 'profiles::uitpas::api' do
         it { is_expected.to contain_class('profiles::uitpas::api::deployment').that_requires('Class[profiles::glassfish]') }
       end
 
-      context "with database_password => secret, database_host => db.example.com and portbase => 14800" do
+      context "with database_password => secret, database_host => db.example.com, portbase => 14800 and settings => { 'foo' => 'bar', 'baz' => 'test' }" do
         let(:params) { {
           'database_password' => 'secret',
           'database_host'     => 'db.example.com',
-          'portbase'          => 14800
+          'portbase'          => 14800,
+          'settings'          => { 'foo' => 'bar', 'baz' => 'test' }
         } }
 
         it { is_expected.not_to contain_class('profiles::mysql::server') }
@@ -146,6 +148,22 @@ describe 'profiles::uitpas::api' do
           'connectionpool' => 'mysql_uitpas_api_j2eePool'
         ) }
 
+        it { is_expected.to contain_systemproperty('foo').with(
+          'ensure'         => 'present',
+          'value'          => 'bar',
+          'portbase'       => '14800',
+          'user'           => 'glassfish',
+          'passwordfile'   => '/home/glassfish/asadmin.pass',
+        ) }
+
+        it { is_expected.to contain_systemproperty('baz').with(
+          'ensure'         => 'present',
+          'value'          => 'test',
+          'portbase'       => '14800',
+          'user'           => 'glassfish',
+          'passwordfile'   => '/home/glassfish/asadmin.pass',
+        ) }
+
         it { is_expected.to contain_profiles__glassfish__domain('uitpas').with(
           'portbase' => '14800'
         ) }
@@ -155,6 +173,11 @@ describe 'profiles::uitpas::api' do
           'database_host'     => 'db.example.com',
           'portbase'          => 14800
         ) }
+
+        it { is_expected.to contain_systemproperty('foo').that_requires('Profiles::Glassfish::Domain[uitpas]') }
+        it { is_expected.to contain_systemproperty('foo').that_notifies('Service[uitpas]') }
+        it { is_expected.to contain_systemproperty('baz').that_requires('Profiles::Glassfish::Domain[uitpas]') }
+        it { is_expected.to contain_systemproperty('baz').that_notifies('Service[uitpas]') }
       end
 
       context "with database_password => mysecret and deployment => false" do
