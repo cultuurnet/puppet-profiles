@@ -29,7 +29,7 @@ define profiles::glassfish::domain (
   }
 
   cron { "Cleanup payara logs ${title}":
-    command  => "/usr/bin/find /opt/payara/glassfish/domains/${title}/logs -type f -name \"server.log_*\" -mtime +7 -exec rm {} \;",
+    command  => "/usr/bin/find /opt/payara/glassfish/domains/${title}/logs -type f -name \"server.log_*\" -mtime +7 -exec rm {} \\;",
     user     => 'root',
     hour     => '*',
     minute   => '15',
