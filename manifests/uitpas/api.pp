@@ -1,8 +1,9 @@
 class profiles::uitpas::api (
-  String  $database_password,
-  String  $database_host     = '127.0.0.1',
-  Boolean $deployment        = true,
-  Integer $portbase          = 4800
+  String                     $database_password,
+  String                     $database_host     = '127.0.0.1',
+  Boolean                    $deployment        = true,
+  Integer                    $portbase          = 4800,
+  Enum['running', 'stopped'] $service_status    = 'running'
 ) inherits ::profiles {
 
   # (x) mysql server if 127.0.0.1
@@ -12,10 +13,10 @@ class profiles::uitpas::api (
   # (x) domain uitpas
   # (x) service alias
   # (x) firewall rules (portbase)
-  # lvm
+  # (x) lvm
   # jvmoptions + restart
   # system properties
-  # service
+  # (x) service
 
   $database_name = 'uitpas_api'
   $database_user = 'uitpas_api'
@@ -49,8 +50,9 @@ class profiles::uitpas::api (
   }
 
   profiles::glassfish::domain { 'uitpas':
-    portbase => $portbase,
-    require  => Class['profiles::glassfish']
+    portbase       => $portbase,
+    service_status => $service_status,
+    require        => Class['profiles::glassfish']
   }
 
   jdbcconnectionpool { 'mysql_uitpas_api_j2eePool':
@@ -86,6 +88,16 @@ class profiles::uitpas::api (
 
   profiles::glassfish::domain::service_alias { 'uitpas':
     require => Profiles::Glassfish::Domain['uitpas']
+  }
+
+  service { 'uitpas':
+    ensure    => $service_status,
+    hasstatus => true,
+    enable    => $service_status ? {
+                   'running' => true,
+                   'stopped' => false
+                 },
+    require   => Profiles::Glassfish::Domain::Service_alias['uitpas']
   }
 
   if $deployment {

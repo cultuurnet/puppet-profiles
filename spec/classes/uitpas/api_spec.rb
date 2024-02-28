@@ -16,7 +16,8 @@ describe 'profiles::uitpas::api' do
           'database_password' => 'mypassword',
           'database_host'     => '127.0.0.1',
           'deployment'        => true,
-          'portbase'          => 4800
+          'portbase'          => 4800,
+          'service_status'    => 'running'
         ) }
 
         it { is_expected.to contain_group('glassfish') }
@@ -76,10 +77,17 @@ describe 'profiles::uitpas::api' do
         ) }
 
         it { is_expected.to contain_profiles__glassfish__domain('uitpas').with(
-          'portbase' => '4800'
+          'portbase'       => '4800',
+          'service_status' => 'running'
         ) }
 
         it { is_expected.to contain_profiles__glassfish__domain__service_alias('uitpas') }
+
+        it { is_expected.to contain_service('uitpas').with(
+          'enable'    => true,
+          'ensure'    => 'running',
+          'hasstatus' => true
+        ) }
 
         it { is_expected.to contain_class('profiles::uitpas::api::deployment').with(
           'database_password' => 'mypassword',
@@ -96,6 +104,7 @@ describe 'profiles::uitpas::api' do
         it { is_expected.to contain_jdbcresource('jdbc/cultuurnet_uitpas').that_requires('Jdbcconnectionpool[mysql_uitpas_api_j2eePool]') }
         it { is_expected.to contain_profiles__glassfish__domain('uitpas').that_requires('Class[profiles::glassfish]') }
         it { is_expected.to contain_profiles__glassfish__domain__service_alias('uitpas').that_requires('Profiles::Glassfish::Domain[uitpas]') }
+        it { is_expected.to contain_profiles__glassfish__domain__service_alias('uitpas').that_comes_before('Service[uitpas]') }
         it { is_expected.to contain_class('profiles::uitpas::api::deployment').that_requires('Class[profiles::glassfish]') }
       end
 
@@ -155,6 +164,25 @@ describe 'profiles::uitpas::api' do
         } }
 
         it { is_expected.not_to contain_class('profiles::uitpas::api::deployment') }
+      end
+
+      context "with database_password => foo and service_status => stopped" do
+        let(:params) { {
+          'database_password' => 'foo',
+          'service_status'    => 'stopped'
+        } }
+
+        it { is_expected.to contain_profiles__glassfish__domain('uitpas').with(
+          'portbase'       => '4800',
+          'service_status' => 'stopped'
+        ) }
+
+        it { is_expected.to contain_service('uitpas').with(
+          'enable'    => false,
+          'ensure'    => 'stopped',
+          'hasstatus' => true
+        ) }
+
       end
     end
   end
