@@ -16,6 +16,7 @@ class profiles::uitpas::api (
   # (x) firewall rules (portbase)
   # (x) lvm
   # jvmoptions + restart
+  # (x) set
   # (x) system properties
   # (x) service
 
@@ -85,6 +86,16 @@ class profiles::uitpas::api (
     passwordfile   => $passwordfile,
     connectionpool => 'mysql_uitpas_api_j2eePool',
     require        => Jdbcconnectionpool['mysql_uitpas_api_j2eePool']
+  }
+
+  set { 'server.network-config.protocols.protocol.http-listener-1.http.scheme-mapping':
+    ensure       => 'present',
+    value        => 'X-Forwarded-Proto',
+    user         => 'glassfish',
+    passwordfile => $passwordfile,
+    portbase     => String($portbase),
+    require      => Profiles::Glassfish::Domain['uitpas'],
+    notify       => Service['uitpas']
   }
 
   $settings.each |$name, $value| {
