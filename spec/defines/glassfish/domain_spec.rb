@@ -62,7 +62,7 @@ describe 'profiles::glassfish::domain' do
           it { is_expected.to contain_domain('foobar-api').that_requires('Group[glassfish]') }
           it { is_expected.to contain_domain('foobar-api').that_requires('User[glassfish]') }
           it { is_expected.to contain_profiles__glassfish__domain__service('foobar-api').that_requires('Domain[foobar-api]') }
-          it { is_expected.to contain_profiles__glassfish__domain__jmx('foobar-api').that_requires('Domain[foobar-api]') }
+          it { is_expected.to contain_profiles__glassfish__domain__jmx('foobar-api').that_requires('Profiles::Glassfish::Domain::Service[foobar-api]') }
         end
 
         context 'with portbase => 14800, jmx => false and service_status => stopped' do

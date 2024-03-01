@@ -27,13 +27,13 @@ define profiles::glassfish::domain (
     profiles::glassfish::domain::jmx { $title:
       ensure   => 'present',
       portbase => $portbase,
-      require  => Domain[$title]
+      require  => Profiles::Glassfish::Domain::Service[$title]
     }
   } else {
     profiles::glassfish::domain::jmx { $title:
       ensure   => 'absent',
       portbase => $portbase,
-      require  => Domain[$title]
+      require  => Profiles::Glassfish::Domain::Service[$title]
     }
   }
 
