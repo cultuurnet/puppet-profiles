@@ -2,6 +2,7 @@ class profiles::uitpas::api (
   String                     $database_password,
   String                     $database_host     = '127.0.0.1',
   Boolean                    $deployment        = true,
+  Boolean                    $jmx               = true,
   Integer                    $portbase          = 4800,
   Enum['running', 'stopped'] $service_status    = 'running',
   Hash                       $settings          = {}
@@ -53,8 +54,10 @@ class profiles::uitpas::api (
 
   profiles::glassfish::domain { 'uitpas':
     portbase       => $portbase,
+    jmx            => $jmx,
     service_status => $service_status,
-    require        => Class['profiles::glassfish']
+    require        => Class['profiles::glassfish'],
+    notify         => Service['uitpas']
   }
 
   jdbcconnectionpool { 'mysql_uitpas_api_j2eePool':
