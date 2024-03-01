@@ -1,6 +1,7 @@
 define profiles::glassfish::domain (
   Enum['present', 'absent']  $ensure         = 'present',
   Enum['running', 'stopped'] $service_status = 'running',
+  Boolean                    $jmx            = true,
   Integer                    $portbase       = 4800
 ) {
 
@@ -20,6 +21,20 @@ define profiles::glassfish::domain (
     enablesecureadmin => false,
     template          => undef,
     require           => [Group['glassfish'], User['glassfish']]
+  }
+
+  if $jmx {
+    profiles::glassfish::domain::jmx { $title:
+      ensure   => 'present',
+      portbase => $portbase,
+      require  => Domain[$title]
+    }
+  } else {
+    profiles::glassfish::domain::jmx { $title:
+      ensure   => 'absent',
+      portbase => $portbase,
+      require  => Domain[$title]
+    }
   }
 
   firewall { "400 accept glassfish domain ${title} traffic":

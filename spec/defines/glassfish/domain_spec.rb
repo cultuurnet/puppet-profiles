@@ -14,6 +14,7 @@ describe 'profiles::glassfish::domain' do
           it { is_expected.to contain_profiles__glassfish__domain('foobar-api').with(
             'ensure'         => 'present',
             'service_status' => 'running',
+            'jmx'            => true,
             'portbase'       => 4800
           ) }
 
@@ -31,6 +32,11 @@ describe 'profiles::glassfish::domain' do
             'startoncreate'     => false,
             'enablesecureadmin' => false,
             'template'          => nil
+          ) }
+
+          it { is_expected.to contain_profiles__glassfish__domain__jmx('foobar-api').with(
+            'ensure'   => 'present',
+            'portbase' => 4800
           ) }
 
           it { is_expected.to contain_firewall('400 accept glassfish domain foobar-api traffic').with(
@@ -56,11 +62,13 @@ describe 'profiles::glassfish::domain' do
           it { is_expected.to contain_domain('foobar-api').that_requires('Group[glassfish]') }
           it { is_expected.to contain_domain('foobar-api').that_requires('User[glassfish]') }
           it { is_expected.to contain_profiles__glassfish__domain__service('foobar-api').that_requires('Domain[foobar-api]') }
+          it { is_expected.to contain_profiles__glassfish__domain__jmx('foobar-api').that_requires('Domain[foobar-api]') }
         end
 
-        context 'with portbase => 14800 and service_status => stopped' do
+        context 'with portbase => 14800, jmx => false and service_status => stopped' do
           let(:params) { {
             'portbase'       => 14800,
+            'jmx'            => false,
             'service_status' => 'stopped'
           } }
 
@@ -73,6 +81,11 @@ describe 'profiles::glassfish::domain' do
             'startoncreate'     => false,
             'enablesecureadmin' => false,
             'template'          => nil
+          ) }
+
+          it { is_expected.to contain_profiles__glassfish__domain__jmx('foobar-api').with(
+            'ensure'   => 'absent',
+            'portbase' => 14800
           ) }
 
           it { is_expected.to contain_firewall('400 accept glassfish domain foobar-api traffic').with(
@@ -102,6 +115,11 @@ describe 'profiles::glassfish::domain' do
             'startoncreate'     => false,
             'enablesecureadmin' => false,
             'template'          => nil
+          ) }
+
+          it { is_expected.to contain_profiles__glassfish__domain__jmx('baz-api').with(
+            'ensure'   => 'present',
+            'portbase' => 4800
           ) }
 
           it { is_expected.to contain_profiles__glassfish__domain__service('baz-api').with(
