@@ -14,6 +14,8 @@ describe 'profiles::glassfish::domain' do
           it { is_expected.to contain_profiles__glassfish__domain('foobar-api').with(
             'ensure'         => 'present',
             'service_status' => 'running',
+            'initial_heap'   => nil,
+            'maximum_heap'   => nil,
             'jmx'            => true,
             'portbase'       => 4800
           ) }
@@ -32,6 +34,12 @@ describe 'profiles::glassfish::domain' do
             'startoncreate'     => false,
             'enablesecureadmin' => false,
             'template'          => nil
+          ) }
+
+          it { is_expected.to contain_profiles__glassfish__domain__heap('foobar-api').with(
+            'initial'  => nil,
+            'maximum'  => nil,
+            'portbase' => 4800
           ) }
 
           it { is_expected.to contain_profiles__glassfish__domain__jmx('foobar-api').with(
@@ -63,11 +71,14 @@ describe 'profiles::glassfish::domain' do
           it { is_expected.to contain_domain('foobar-api').that_requires('User[glassfish]') }
           it { is_expected.to contain_profiles__glassfish__domain__service('foobar-api').that_requires('Domain[foobar-api]') }
           it { is_expected.to contain_profiles__glassfish__domain__jmx('foobar-api').that_requires('Profiles::Glassfish::Domain::Service[foobar-api]') }
+          it { is_expected.to contain_profiles__glassfish__domain__heap('foobar-api').that_requires('Profiles::Glassfish::Domain::Service[foobar-api]') }
         end
 
-        context 'with portbase => 14800, jmx => false and service_status => stopped' do
+        context 'with portbase => 14800, initial_heap => 512m, maximum_heap => 1024m, jmx => false and service_status => stopped' do
           let(:params) { {
             'portbase'       => 14800,
+            'initial_heap'   => '512m',
+            'maximum_heap'   => '1024m',
             'jmx'            => false,
             'service_status' => 'stopped'
           } }
@@ -81,6 +92,12 @@ describe 'profiles::glassfish::domain' do
             'startoncreate'     => false,
             'enablesecureadmin' => false,
             'template'          => nil
+          ) }
+
+          it { is_expected.to contain_profiles__glassfish__domain__heap('foobar-api').with(
+            'initial'  => '512m',
+            'maximum'  => '1024m',
+            'portbase' => 14800
           ) }
 
           it { is_expected.to contain_profiles__glassfish__domain__jmx('foobar-api').with(
@@ -115,6 +132,12 @@ describe 'profiles::glassfish::domain' do
             'startoncreate'     => false,
             'enablesecureadmin' => false,
             'template'          => nil
+          ) }
+
+          it { is_expected.to contain_profiles__glassfish__domain__heap('baz-api').with(
+            'initial'  => nil,
+            'maximum'  => nil,
+            'portbase' => 4800
           ) }
 
           it { is_expected.to contain_profiles__glassfish__domain__jmx('baz-api').with(

@@ -1,6 +1,8 @@
 define profiles::glassfish::domain (
   Enum['present', 'absent']  $ensure         = 'present',
   Enum['running', 'stopped'] $service_status = 'running',
+  Optional[String]           $initial_heap   = undef,
+  Optional[String]           $maximum_heap   = undef,
   Boolean                    $jmx            = true,
   Integer                    $portbase       = 4800
 ) {
@@ -21,6 +23,13 @@ define profiles::glassfish::domain (
     enablesecureadmin => false,
     template          => undef,
     require           => [Group['glassfish'], User['glassfish']]
+  }
+
+  profiles::glassfish::domain::heap { $title:
+    initial  => $initial_heap,
+    maximum  => $maximum_heap,
+    portbase => $portbase,
+    require  => Profiles::Glassfish::Domain::Service[$title]
   }
 
   if $jmx {
