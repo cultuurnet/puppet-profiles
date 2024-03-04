@@ -76,8 +76,8 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx512m'
+              'ensure' => 'present',
+              'option' => '-Xmx512m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with(
@@ -99,8 +99,8 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx512m'
+              'ensure' => 'present',
+              'option' => '-Xmx512m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '512m'$/) }
@@ -115,13 +115,13 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.not_to contain_jvmoption('Domain foobar-api initial heap jvmoption') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xmx512m'
+              'ensure' => 'absent',
+              'option' => '-Xmx512m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx1024m'
+              'ensure' => 'present',
+              'option' => '-Xmx1024m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '1024m'$/) }
@@ -135,15 +135,15 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xms256m'
+              'ensure' => 'present',
+              'option' => '-Xms256m'
             ) }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx512m'
+              'ensure' => 'present',
+              'option' => '-Xmx512m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      maximum: '512m'$/) }
@@ -158,15 +158,15 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xms256m'
+              'ensure' => 'present',
+              'option' => '-Xms256m'
             ) }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx512m'
+              'ensure' => 'present',
+              'option' => '-Xmx512m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      maximum: '512m'$/) }
@@ -181,18 +181,18 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xms256m'
+              'ensure' => 'present',
+              'option' => '-Xms256m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xmx512m'
+              'ensure' => 'absent',
+              'option' => '-Xmx512m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx768m'
+              'ensure' => 'present',
+              'option' => '-Xmx768m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      maximum: '768m'$/) }
@@ -208,16 +208,16 @@ describe 'profiles::glassfish::domain::heap' do
             let(:params) { { } }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xms384m'
+              'ensure' => 'absent',
+              'option' => '-Xms384m'
             ) }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api initial heap jvmoption') }
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx512m'
+              'ensure' => 'present',
+              'option' => '-Xmx512m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '512m'$/) }
@@ -237,8 +237,8 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx512m'
+              'ensure' => 'present',
+              'option' => '-Xmx512m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '384m'\n      maximum: '512m'$/) }
@@ -250,20 +250,20 @@ describe 'profiles::glassfish::domain::heap' do
             } }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xms384m'
+              'ensure' => 'absent',
+              'option' => '-Xms384m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xms256m'
+              'ensure' => 'present',
+              'option' => '-Xms256m'
             ) }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx512m'
+              'ensure' => 'present',
+              'option' => '-Xmx512m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      maximum: '512m'$/) }
@@ -275,20 +275,20 @@ describe 'profiles::glassfish::domain::heap' do
             } }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xms384m'
+              'ensure' => 'absent',
+              'option' => '-Xms384m'
             ) }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api initial heap jvmoption') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xmx512m'
+              'ensure' => 'absent',
+              'option' => '-Xmx512m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx1024m'
+              'ensure' => 'present',
+              'option' => '-Xmx1024m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '1024m'$/) }
@@ -302,8 +302,8 @@ describe 'profiles::glassfish::domain::heap' do
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
             it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xms384m'
+              'ensure' => 'present',
+              'option' => '-Xms384m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal').with(
@@ -312,8 +312,8 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx1024m'
+              'ensure' => 'present',
+              'option' => '-Xmx1024m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '384m'\n      maximum: '1024m'$/) }
@@ -326,23 +326,23 @@ describe 'profiles::glassfish::domain::heap' do
             } }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xms384m'
+              'ensure' => 'absent',
+              'option' => '-Xms384m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xms512m'
+              'ensure' => 'present',
+              'option' => '-Xms512m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xmx512m'
+              'ensure' => 'absent',
+              'option' => '-Xmx512m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx1024m'
+              'ensure' => 'present',
+              'option' => '-Xmx1024m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '512m'\n      maximum: '1024m'$/) }
@@ -355,20 +355,20 @@ describe 'profiles::glassfish::domain::heap' do
             } }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xms384m'
+              'ensure' => 'absent',
+              'option' => '-Xms384m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xms512m'
+              'ensure' => 'present',
+              'option' => '-Xms512m'
             ) }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx512m'
+              'ensure' => 'present',
+              'option' => '-Xmx512m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '512m'\n      maximum: '512m'$/) }
@@ -387,13 +387,13 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.not_to contain_jvmoption('Domain foobar-api initial heap jvmoption') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xmx1024m'
+              'ensure' => 'absent',
+              'option' => '-Xmx1024m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx512m'
+              'ensure' => 'present',
+              'option' => '-Xmx512m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '512m'$/) }
@@ -407,18 +407,18 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xms256m'
+              'ensure' => 'present',
+              'option' => '-Xms256m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xmx1024m'
+              'ensure' => 'absent',
+              'option' => '-Xmx1024m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx512m'
+              'ensure' => 'present',
+              'option' => '-Xmx512m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      maximum: '512m'$/) }
@@ -435,8 +435,8 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx1024m'
+              'ensure' => 'present',
+              'option' => '-Xmx1024m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '1024m'$/) }
@@ -451,13 +451,13 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.not_to contain_jvmoption('Domain foobar-api initial heap jvmoption') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xmx1024m'
+              'ensure' => 'absent',
+              'option' => '-Xmx1024m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx1536m'
+              'ensure' => 'present',
+              'option' => '-Xmx1536m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '1536m'$/) }
@@ -471,15 +471,15 @@ describe 'profiles::glassfish::domain::heap' do
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
             it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xms400m'
+              'ensure' => 'present',
+              'option' => '-Xms400m'
             ) }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx1024m'
+              'ensure' => 'present',
+              'option' => '-Xmx1024m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '400m'\n      maximum: '1024m'$/) }
@@ -493,18 +493,18 @@ describe 'profiles::glassfish::domain::heap' do
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
             it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xms400m'
+              'ensure' => 'present',
+              'option' => '-Xms400m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xmx1024m'
+              'ensure' => 'absent',
+              'option' => '-Xmx1024m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx1536m'
+              'ensure' => 'present',
+              'option' => '-Xmx1536m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '400m'\n      maximum: '1536m'$/) }
@@ -518,20 +518,20 @@ describe 'profiles::glassfish::domain::heap' do
 
           context 'without parameters' do
             it { is_expected.to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xms256m'
+              'ensure' => 'absent',
+              'option' => '-Xms256m'
             ) }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api initial heap jvmoption') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xmx768m'
+              'ensure' => 'absent',
+              'option' => '-Xmx768m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx512m'
+              'ensure' => 'present',
+              'option' => '-Xmx512m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '512m'$/) }
@@ -543,23 +543,23 @@ describe 'profiles::glassfish::domain::heap' do
             } }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xms256m'
+              'ensure' => 'absent',
+              'option' => '-Xms256m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xms400m'
+              'ensure' => 'present',
+              'option' => '-Xms400m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xmx768m'
+              'ensure' => 'absent',
+              'option' => '-Xmx768m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx512m'
+              'ensure' => 'present',
+              'option' => '-Xmx512m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '400m'\n      maximum: '512m'$/) }
@@ -573,18 +573,18 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xms256m'
+              'ensure' => 'present',
+              'option' => '-Xms256m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xmx768m'
+              'ensure' => 'absent',
+              'option' => '-Xmx768m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx512m'
+              'ensure' => 'present',
+              'option' => '-Xmx512m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      maximum: '512m'$/) }
@@ -596,20 +596,20 @@ describe 'profiles::glassfish::domain::heap' do
             } }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xms256m'
+              'ensure' => 'absent',
+              'option' => '-Xms256m'
             ) }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api initial heap jvmoption') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xmx768m'
+              'ensure' => 'absent',
+              'option' => '-Xmx768m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx1024m'
+              'ensure' => 'present',
+              'option' => '-Xmx1024m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '1024m'$/) }
@@ -621,8 +621,8 @@ describe 'profiles::glassfish::domain::heap' do
             } }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xms256m'
+              'ensure' => 'absent',
+              'option' => '-Xms256m'
             ) }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api initial heap jvmoption') }
@@ -630,8 +630,8 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx768m'
+              'ensure' => 'present',
+              'option' => '-Xmx768m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '768m'$/) }
@@ -646,15 +646,15 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xms256m'
+              'ensure' => 'present',
+              'option' => '-Xms256m'
             ) }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx768m'
+              'ensure' => 'present',
+              'option' => '-Xmx768m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      maximum: '768m'$/) }
@@ -667,20 +667,20 @@ describe 'profiles::glassfish::domain::heap' do
             } }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xms256m'
+              'ensure' => 'absent',
+              'option' => '-Xms256m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xms512m'
+              'ensure' => 'present',
+              'option' => '-Xms512m'
             ) }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx768m'
+              'ensure' => 'present',
+              'option' => '-Xmx768m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '512m'\n      maximum: '768m'$/) }
@@ -695,18 +695,18 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xms256m'
+              'ensure' => 'present',
+              'option' => '-Xms256m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xmx768m'
+              'ensure' => 'absent',
+              'option' => '-Xmx768m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx1024m'
+              'ensure' => 'present',
+              'option' => '-Xmx1024m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      maximum: '1024m'$/) }
@@ -719,23 +719,23 @@ describe 'profiles::glassfish::domain::heap' do
             } }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xms256m'
+              'ensure' => 'absent',
+              'option' => '-Xms256m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xms512m'
+              'ensure' => 'present',
+              'option' => '-Xms512m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xmx768m'
+              'ensure' => 'absent',
+              'option' => '-Xmx768m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx1024m'
+              'ensure' => 'present',
+              'option' => '-Xmx1024m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '512m'\n      maximum: '1024m'$/) }
@@ -749,16 +749,16 @@ describe 'profiles::glassfish::domain::heap' do
 
           context 'without parameters' do
             it { is_expected.to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xms256m'
+              'ensure' => 'absent',
+              'option' => '-Xms256m'
             ) }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api initial heap jvmoption') }
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx512m'
+              'ensure' => 'present',
+              'option' => '-Xmx512m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '512m'$/) }
@@ -770,20 +770,20 @@ describe 'profiles::glassfish::domain::heap' do
             } }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal').with(
-              'ensure'       => 'absent',
-              'option'       => '-Xms256m'
+              'ensure' => 'absent',
+              'option' => '-Xms256m'
             ) }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xms400m'
+              'ensure' => 'present',
+              'option' => '-Xms400m'
             ) }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx512m'
+              'ensure' => 'present',
+              'option' => '-Xmx512m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '400m'\n      maximum: '512m'$/) }
@@ -797,15 +797,15 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xms256m'
+              'ensure' => 'present',
+              'option' => '-Xms256m'
             ) }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx512m'
+              'ensure' => 'present',
+              'option' => '-Xmx512m'
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      maximum: '512m'$/) }
@@ -836,8 +836,8 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.not_to contain_jvmoption('Domain baz-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain baz-api maximum heap jvmoption').with(
-              'ensure'       => 'present',
-              'option'       => '-Xmx512m'
+              'ensure' => 'present',
+              'option' => '-Xmx512m'
             ) }
 
             it { is_expected.to contain_file('Domain baz-api heap external facts').with(
