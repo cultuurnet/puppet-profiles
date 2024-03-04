@@ -21,9 +21,14 @@ class profiles::uitpas::api (
   # (x) system properties
   # (x) service
 
-  $database_name = 'uitpas_api'
-  $database_user = 'uitpas_api'
-  $passwordfile  = '/home/glassfish/asadmin.pass'
+  $database_name      = 'uitpas_api'
+  $database_user      = 'uitpas_api'
+  $passwordfile       = '/home/glassfish/asadmin.pass'
+  $default_attributes = {
+                          user         => 'glassfish',
+                          passwordfile => '/home/glassfish/asadmin.pass',
+                          portbase     => String($portbase)
+                        }
 
   include ::profiles::java
   include ::profiles::glassfish
@@ -62,9 +67,6 @@ class profiles::uitpas::api (
 
   jdbcconnectionpool { 'mysql_uitpas_api_j2eePool':
     ensure       => 'present',
-    user         => 'glassfish',
-    passwordfile => $passwordfile,
-    portbase     => String($portbase),
     resourcetype => 'javax.sql.DataSource',
     dsclassname  => 'com.mysql.jdbc.jdbc2.optional.MysqlDataSource',
     properties   => {
@@ -79,37 +81,46 @@ class profiles::uitpas::api (
                       'useUnicode'        => true,
                       'useSSL'            => false
                     },
-    require      => [Profiles::Glassfish::Domain['uitpas'], Profiles::Mysql::App_user['uitpas_api']]
+    require      => [Profiles::Glassfish::Domain['uitpas'], Profiles::Mysql::App_user['uitpas_api']],
+    *            => $default_attributes
   }
 
   jdbcresource { 'jdbc/cultuurnet_uitpas':
     ensure         => 'present',
-    portbase       => String($portbase),
-    user           => 'glassfish',
-    passwordfile   => $passwordfile,
     connectionpool => 'mysql_uitpas_api_j2eePool',
-    require        => Jdbcconnectionpool['mysql_uitpas_api_j2eePool']
+    require        => Jdbcconnectionpool['mysql_uitpas_api_j2eePool'],
+    *              => $default_attributes
   }
 
   set { 'server.network-config.protocols.protocol.http-listener-1.http.scheme-mapping':
     ensure       => 'present',
     value        => 'X-Forwarded-Proto',
-    user         => 'glassfish',
-    passwordfile => $passwordfile,
-    portbase     => String($portbase),
     require      => Profiles::Glassfish::Domain['uitpas'],
-    notify       => Service['uitpas']
+    notify       => Service['uitpas'],
+    *            => $default_attributes
+  }
+
+  jvmoption { 'Clear domain uitpas default truststore':
+    ensure => 'absent',
+    option => '-Djavax.net.ssl.trustStore=\$\{com.sun.aas.instanceRoot\}/config/cacerts.jks',
+    notify => Service['uitpas'],
+    *      => $default_attributes
+  }
+
+  jvmoption { 'Domain uitpas truststore':
+    ensure  => 'present',
+    option  => '-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts',
+    notify  => Service['uitpas'],
+    *       => $default_attributes
   }
 
   $settings.each |$name, $value| {
     systemproperty { $name:
-      ensure       => 'present',
-      value        => $value,
-      user         => 'glassfish',
-      passwordfile => $passwordfile,
-      portbase     => String($portbase),
-      require      => Profiles::Glassfish::Domain['uitpas'],
-      notify       => Service['uitpas']
+      ensure  => 'present',
+      value   => $value,
+      require => Profiles::Glassfish::Domain['uitpas'],
+      notify  => Service['uitpas'],
+      *       => $default_attributes
     }
   }
 
