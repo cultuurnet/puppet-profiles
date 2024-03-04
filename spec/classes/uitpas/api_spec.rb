@@ -102,6 +102,14 @@ describe 'profiles::uitpas::api' do
           'portbase'     => '4800'
         ) }
 
+        it { is_expected.to contain_jvmoption('Domain uitpas timezone').with(
+          'ensure'       => 'present',
+          'option'       => '-Duser.timezone=CET',
+          'user'         => 'glassfish',
+          'passwordfile' => '/home/glassfish/asadmin.pass',
+          'portbase'     => '4800'
+        ) }
+
         it { is_expected.to contain_profiles__glassfish__domain('uitpas').with(
           'portbase'       => '4800',
           'jmx'            => true,
@@ -133,6 +141,7 @@ describe 'profiles::uitpas::api' do
         it { is_expected.to contain_set('server.network-config.protocols.protocol.http-listener-1.http.scheme-mapping').that_notifies('Service[uitpas]') }
         it { is_expected.to contain_jvmoption('Clear domain uitpas default truststore').that_notifies('Service[uitpas]') }
         it { is_expected.to contain_jvmoption('Domain uitpas truststore').that_notifies('Service[uitpas]') }
+        it { is_expected.to contain_jvmoption('Domain uitpas timezone').that_notifies('Service[uitpas]') }
         it { is_expected.to contain_profiles__glassfish__domain('uitpas').that_requires('Class[profiles::glassfish]') }
         it { is_expected.to contain_profiles__glassfish__domain('uitpas').that_notifies('Service[uitpas]') }
         it { is_expected.to contain_profiles__glassfish__domain__service_alias('uitpas').that_requires('Profiles::Glassfish::Domain[uitpas]') }

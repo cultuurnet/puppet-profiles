@@ -114,6 +114,13 @@ class profiles::uitpas::api (
     *       => $default_attributes
   }
 
+  jvmoption { 'Domain uitpas timezone':
+    ensure  => 'present',
+    option  => '-Duser.timezone=CET',
+    notify  => Service['uitpas'],
+    *       => $default_attributes
+  }
+
   $settings.each |$name, $value| {
     systemproperty { $name:
       ensure  => 'present',
