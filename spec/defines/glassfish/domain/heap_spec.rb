@@ -66,7 +66,7 @@ describe 'profiles::glassfish::domain::heap' do
 
             it { is_expected.to contain_profiles__glassfish__domain__heap('foobar-api').with(
               'initial'  => nil,
-              'maximum'  => '512m',
+              'maximum'  => nil,
               'portbase' => 4800
             ) }
 
@@ -826,7 +826,7 @@ describe 'profiles::glassfish::domain::heap' do
 
             it { is_expected.to contain_profiles__glassfish__domain__heap('baz-api').with(
               'initial'  => nil,
-              'maximum'  => '512m',
+              'maximum'  => nil,
               'portbase' => 4800
             ) }
 
