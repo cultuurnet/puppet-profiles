@@ -16,6 +16,8 @@ describe 'profiles::uitpas::api' do
           'database_password' => 'mypassword',
           'database_host'     => '127.0.0.1',
           'deployment'        => true,
+          'initial_heap'      => nil,
+          'maximum_heap'      => nil,
           'jmx'               => true,
           'portbase'          => 4800,
           'service_status'    => 'running',
@@ -112,6 +114,8 @@ describe 'profiles::uitpas::api' do
 
         it { is_expected.to contain_profiles__glassfish__domain('uitpas').with(
           'portbase'       => '4800',
+          'initial_heap'   => nil,
+          'maximum_heap'   => nil,
           'jmx'            => true,
           'service_status' => 'running'
         ) }
@@ -149,10 +153,13 @@ describe 'profiles::uitpas::api' do
         it { is_expected.to contain_class('profiles::uitpas::api::deployment').that_requires('Class[profiles::glassfish]') }
       end
 
-      context "with database_password => secret, database_host => db.example.com, portbase => 14800 and settings => { 'foo' => 'bar', 'baz' => 'test' }" do
+      context "with database_password => secret, database_host => db.example.com, initial_heap => 1024m, maximum_heap => 1536m, jmx => false, portbase => 14800 and settings => { 'foo' => 'bar', 'baz' => 'test' }" do
         let(:params) { {
           'database_password' => 'secret',
           'database_host'     => 'db.example.com',
+          'initial_heap'      => '1024m',
+          'maximum_heap'      => '1536m',
+          'jmx'               => false,
           'portbase'          => 14800,
           'settings'          => { 'foo' => 'bar', 'baz' => 'test' }
         } }
@@ -213,7 +220,10 @@ describe 'profiles::uitpas::api' do
         ) }
 
         it { is_expected.to contain_profiles__glassfish__domain('uitpas').with(
-          'portbase' => '14800'
+          'initial_heap' => '1024m',
+          'maximum_heap' => '1536m',
+          'jmx'          => false,
+          'portbase'     => '14800'
         ) }
 
         it { is_expected.to contain_class('profiles::uitpas::api::deployment').with(
@@ -244,6 +254,9 @@ describe 'profiles::uitpas::api' do
         } }
 
         it { is_expected.to contain_profiles__glassfish__domain('uitpas').with(
+          'initial_heap'   => nil,
+          'maximum_heap'   => nil,
+          'jmx'            => true,
           'portbase'       => '4800',
           'service_status' => 'stopped'
         ) }

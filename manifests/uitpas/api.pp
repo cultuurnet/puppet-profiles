@@ -2,6 +2,8 @@ class profiles::uitpas::api (
   String                     $database_password,
   String                     $database_host     = '127.0.0.1',
   Boolean                    $deployment        = true,
+  Optional[String]           $initial_heap      = undef,
+  Optional[String]           $maximum_heap      = undef,
   Boolean                    $jmx               = true,
   Integer                    $portbase          = 4800,
   Enum['running', 'stopped'] $service_status    = 'running',
@@ -16,7 +18,7 @@ class profiles::uitpas::api (
   # (x) service alias
   # (x) firewall rules (portbase)
   # (x) lvm
-  # jvmoptions + restart
+  # (x) jvmoptions + restart
   # (x) set
   # (x) system properties
   # (x) service
@@ -59,6 +61,8 @@ class profiles::uitpas::api (
 
   profiles::glassfish::domain { 'uitpas':
     portbase       => $portbase,
+    initial_heap   => $initial_heap,
+    maximum_heap   => $maximum_heap,
     jmx            => $jmx,
     service_status => $service_status,
     require        => Class['profiles::glassfish'],
