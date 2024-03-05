@@ -54,7 +54,7 @@ class profiles::packages inherits ::profiles {
     require => Apt::Source['publiq-tools']
   }
 
-  @package { 'mysql-connector-java':
+  @package { 'mysql-connector-j':
     ensure  => 'present',
     require => Apt::Source['publiq-tools']
   }

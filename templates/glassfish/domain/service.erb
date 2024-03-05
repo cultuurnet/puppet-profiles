@@ -1,0 +1,16 @@
+[Unit]
+Description=Payara Application Server <%= scope['profiles::glassfish::version'] %> - <%= @title %>
+After=syslog.target network.target
+
+[Service]
+User=glassfish
+ExecStart=/opt/payara/glassfish/bin/asadmin --passwordfile /home/glassfish/asadmin.pass start-domain <%= @title %>
+ExecStop=/opt/payara/glassfish/bin/asadmin --passwordfile /home/glassfish/asadmin.pass stop-domain <%= @title %>
+ExecReload=/opt/payara/glassfish/bin/asadmin --passwordfile /home/glassfish/asadmin.pass restart-domain <%= @title %>
+TimeoutStartSec=120
+TimeoutStopSec=30
+RestartSec=10
+Type=forking
+
+[Install]
+WantedBy=multi-user.target

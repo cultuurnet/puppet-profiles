@@ -74,6 +74,11 @@ describe 'profiles::groups' do
           'ensure' => 'present',
           'gid'    => '456'
         ) }
+
+        it { is_expected.to contain_group('glassfish').with(
+          'ensure' => 'present',
+          'gid'    => '1005'
+        ) }
       end
     end
   end

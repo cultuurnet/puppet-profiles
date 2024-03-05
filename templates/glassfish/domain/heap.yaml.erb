@@ -1,0 +1,13 @@
+---
+glassfish:
+  <%= @title %>:
+    heap:
+      <%- if @initial -%>
+      initial: '<%= @initial %>'
+      <%- end -%>
+      <%- if @maximum -%>
+      maximum: '<%= @maximum %>'
+      <%- else -%>
+      maximum: '<%= @default_maximum %>'
+      <%- end -%>
+

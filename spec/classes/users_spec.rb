@@ -129,6 +129,16 @@ describe 'profiles::users' do
           'shell'          => '/bin/false',
           'uid'            => '456'
         ) }
+
+        it { is_expected.to contain_user('glassfish').with(
+          'ensure'         => 'present',
+          'gid'            => 'glassfish',
+          'home'           => '/home/glassfish',
+          'managehome'     => true,
+          'purge_ssh_keys' => true,
+          'shell'          => '/bin/bash',
+          'uid'            => '1005'
+        ) }
       end
     end
   end

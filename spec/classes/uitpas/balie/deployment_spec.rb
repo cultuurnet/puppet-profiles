@@ -1,14 +1,14 @@
 describe 'profiles::uitpas::balie::deployment' do
-  context "with config_source => /foo" do
-    let(:params) { {
-      'config_source' => '/foo'
-    } }
+  include_examples 'operating system support'
 
-    include_examples 'operating system support'
+  on_supported_os.each do |os, facts|
+    context "on #{os}" do
+      let(:facts) { facts }
 
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        let(:facts) { facts }
+      context "with config_source => /foo" do
+        let(:params) { {
+          'config_source' => '/foo'
+        } }
 
         it { is_expected.to compile.with_all_deps }
 
@@ -80,24 +80,18 @@ describe 'profiles::uitpas::balie::deployment' do
           ) }
         end
       end
-    end
-  end
 
-  context "with config_source => /bar, maximum_heap_size => 1024, service_address => 0.0.0.0, service_port => 3456, version => 1.2.3, repository => uit-frontend-exotic, service_status => stopped and puppetdb_url => http://example.com:8000" do
-    let(:params) { {
-      'config_source'     => '/bar',
-      'version'           => '1.2.3',
-      'maximum_heap_size' => 1024,
-      'repository'        => 'uitpas-balie-exotic',
-      'service_status'    => 'stopped',
-      'service_address'   => '0.0.0.0',
-      'service_port'      => 3456,
-      'puppetdb_url'      => 'http://example.com:8000'
-    } }
-
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        let(:facts) { facts }
+      context "with config_source => /bar, maximum_heap_size => 1024, service_address => 0.0.0.0, service_port => 3456, version => 1.2.3, repository => uit-frontend-exotic, service_status => stopped and puppetdb_url => http://example.com:8000" do
+        let(:params) { {
+          'config_source'     => '/bar',
+          'version'           => '1.2.3',
+          'maximum_heap_size' => 1024,
+          'repository'        => 'uitpas-balie-exotic',
+          'service_status'    => 'stopped',
+          'service_address'   => '0.0.0.0',
+          'service_port'      => 3456,
+          'puppetdb_url'      => 'http://example.com:8000'
+        } }
 
         context "with repository uitpas-balie-exotic defined" do
           let(:pre_condition) { '@apt::source { "uitpas-balie-exotic": location => "http://localhost", release => "focal", repos => "main" }' }
@@ -124,15 +118,9 @@ describe 'profiles::uitpas::balie::deployment' do
           ) }
         end
       end
-    end
-  end
 
-  context "without parameters" do
-    let(:params) { {} }
-
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        let(:facts) { facts }
+      context "without parameters" do
+        let(:params) { {} }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }
       end

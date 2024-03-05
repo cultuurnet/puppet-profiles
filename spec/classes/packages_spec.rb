@@ -53,7 +53,7 @@ describe 'profiles::packages' do
           'ensure' => 'present'
         ) }
 
-        it { is_expected.to contain_package('mysql-connector-java').with(
+        it { is_expected.to contain_package('mysql-connector-j').with(
           'ensure' => 'present'
         ) }
 
@@ -79,7 +79,7 @@ describe 'profiles::packages' do
         it { is_expected.to contain_package('ca-certificates-publiq').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('gcsfuse').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('liquibase').that_requires('Apt::Source[publiq-tools]') }
-        it { is_expected.to contain_package('mysql-connector-java').that_requires('Apt::Source[publiq-tools]') }
+        it { is_expected.to contain_package('mysql-connector-j').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('yarn').that_requires('Apt::Source[publiq-tools]') }
       end
     end

@@ -139,4 +139,14 @@ class profiles::users inherits ::profiles {
     shell          => '/bin/false',
     uid            => '1004'
   }
+
+  @user { 'glassfish':
+    ensure         => 'present',
+    gid            => 'glassfish',
+    home           => '/home/glassfish',
+    managehome     => true,
+    purge_ssh_keys => true,
+    shell          => '/bin/bash',
+    uid            => '1005'
+  }
 }
