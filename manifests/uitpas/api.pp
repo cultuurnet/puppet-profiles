@@ -10,22 +10,8 @@ class profiles::uitpas::api (
   Hash                       $settings          = {}
 ) inherits ::profiles {
 
-  # (x) mysql server if 127.0.0.1
-  # (x) jdbc resource
-  # (x) jdbc connection pool
-  # (x) glassfish
-  # (x) domain uitpas
-  # (x) service alias
-  # (x) firewall rules (portbase)
-  # (x) lvm
-  # (x) jvmoptions + restart
-  # (x) set
-  # (x) system properties
-  # (x) service
-
   $database_name      = 'uitpas_api'
   $database_user      = 'uitpas_api'
-  $passwordfile       = '/home/glassfish/asadmin.pass'
   $default_attributes = {
                           user         => 'glassfish',
                           passwordfile => '/home/glassfish/asadmin.pass',
@@ -107,6 +93,7 @@ class profiles::uitpas::api (
   jvmoption { 'Clear domain uitpas default truststore':
     ensure => 'absent',
     option => '-Djavax.net.ssl.trustStore=\$\{com.sun.aas.instanceRoot\}/config/cacerts.jks',
+    require => Profiles::Glassfish::Domain['uitpas'],
     notify => Service['uitpas'],
     *      => $default_attributes
   }
@@ -114,6 +101,7 @@ class profiles::uitpas::api (
   jvmoption { 'Domain uitpas truststore':
     ensure  => 'present',
     option  => '-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts',
+    require => Profiles::Glassfish::Domain['uitpas'],
     notify  => Service['uitpas'],
     *       => $default_attributes
   }
@@ -121,6 +109,7 @@ class profiles::uitpas::api (
   jvmoption { 'Domain uitpas timezone':
     ensure  => 'present',
     option  => '-Duser.timezone=CET',
+    require => Profiles::Glassfish::Domain['uitpas'],
     notify  => Service['uitpas'],
     *       => $default_attributes
   }
