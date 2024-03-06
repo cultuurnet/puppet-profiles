@@ -138,6 +138,13 @@ class profiles::uitpas::api (
     require   => Profiles::Glassfish::Domain::Service_alias['uitpas']
   }
 
+  file { 'Domain uitpas mysql-connector-j':
+    ensure  => 'link',
+    path    => '/opt/payara/glassfish/domains/uitpas/lib/mysql-connector-j.jar',
+    target  => '/usr/share/java/mysql-connector-j.jar',
+    require => [Package['mysql-connector-j'], Profiles::Glassfish::Domain['uitpas']]
+  }
+
   if $deployment {
     class { 'profiles::uitpas::api::deployment':
       database_password => $database_password,
@@ -148,6 +155,7 @@ class profiles::uitpas::api (
     Class['profiles::glassfish'] -> Class['profiles::uitpas::api::deployment']
     Package['liquibase'] -> Class['profiles::uitpas::api::deployment']
     Package['mysql-connector-j'] -> Class['profiles::uitpas::api::deployment']
+    File['Domain uitpas mysql-connector-j'] -> Class['profiles::uitpas::api::deployment']
     Profiles::Mysql::App_user[$database_user] -> Class['profiles::uitpas::api::deployment']
   }
 
