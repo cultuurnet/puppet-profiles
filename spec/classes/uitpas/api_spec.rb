@@ -57,7 +57,7 @@ describe 'profiles::uitpas::api' do
           'passwordfile'        => '/home/glassfish/asadmin.pass',
           'portbase'            => '4800',
           'resourcetype'        => 'javax.sql.DataSource',
-          'dsclassname'         => 'com.mysql.jdbc.jdbc2.optional.MysqlDataSource',
+          'dsclassname'         => 'com.mysql.cj.jdbc.MysqlDataSource',
           'properties'          => {
                                      'serverName'        => '127.0.0.1',
                                      'portNumber'        => '3306',
@@ -65,7 +65,7 @@ describe 'profiles::uitpas::api' do
                                      'User'              => 'uitpas_api',
                                      'Password'          => 'mypassword',
                                      'URL'               => 'jdbc:mysql://127.0.0.1:3306/uitpas_api',
-                                     'driverClass'       => 'com.mysql.jdbc.Driver',
+                                     'driverClass'       => 'com.mysql.cj.jdbc.Driver',
                                      'characterEncoding' => 'UTF-8',
                                      'useUnicode'        => true,
                                      'useSSL'            => false
@@ -184,7 +184,7 @@ describe 'profiles::uitpas::api' do
           'passwordfile'        => '/home/glassfish/asadmin.pass',
           'portbase'            => '14800',
           'resourcetype'        => 'javax.sql.DataSource',
-          'dsclassname'         => 'com.mysql.jdbc.jdbc2.optional.MysqlDataSource',
+          'dsclassname'         => 'com.mysql.cj.jdbc.MysqlDataSource',
           'properties'          => {
                                      'serverName'        => 'db.example.com',
                                      'portNumber'        => '3306',
@@ -192,7 +192,7 @@ describe 'profiles::uitpas::api' do
                                      'User'              => 'uitpas_api',
                                      'Password'          => 'secret',
                                      'URL'               => 'jdbc:mysql://db.example.com:3306/uitpas_api',
-                                     'driverClass'       => 'com.mysql.jdbc.Driver',
+                                     'driverClass'       => 'com.mysql.cj.jdbc.Driver',
                                      'characterEncoding' => 'UTF-8',
                                      'useUnicode'        => true,
                                      'useSSL'            => false

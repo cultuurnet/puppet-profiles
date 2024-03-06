@@ -58,7 +58,7 @@ class profiles::uitpas::api (
   jdbcconnectionpool { 'mysql_uitpas_api_j2eePool':
     ensure       => 'present',
     resourcetype => 'javax.sql.DataSource',
-    dsclassname  => 'com.mysql.jdbc.jdbc2.optional.MysqlDataSource',
+    dsclassname  => 'com.mysql.cj.jdbc.MysqlDataSource',
     properties   => {
                       'serverName'        => $database_host,
                       'portNumber'        => '3306',
@@ -66,7 +66,7 @@ class profiles::uitpas::api (
                       'User'              => $database_user,
                       'Password'          => $database_password,
                       'URL'               => "jdbc:mysql://${database_host}:3306/${database_name}",
-                      'driverClass'       => 'com.mysql.jdbc.Driver',
+                      'driverClass'       => 'com.mysql.cj.jdbc.Driver',
                       'characterEncoding' => 'UTF-8',
                       'useUnicode'        => true,
                       'useSSL'            => false
