@@ -130,7 +130,7 @@ describe 'profiles::uitpas::api' do
 
         it { is_expected.to contain_file('Domain uitpas mysql-connector-j').with(
           'ensure' => 'file',
-          'path'   => '/opt/payara/glassfish/domains/uitpas/lib/ext/mysql-connector-j.jar',
+          'path'   => '/opt/payara/glassfish/lib/mysql-connector-j.jar',
           'source' => '/usr/share/java/mysql-connector-j.jar'
         ) }
 
@@ -160,7 +160,7 @@ describe 'profiles::uitpas::api' do
         it { is_expected.to contain_profiles__glassfish__domain__service_alias('uitpas').that_requires('Profiles::Glassfish::Domain[uitpas]') }
         it { is_expected.to contain_profiles__glassfish__domain__service_alias('uitpas').that_comes_before('Service[uitpas]') }
         it { is_expected.to contain_file('Domain uitpas mysql-connector-j').that_requires('Package[mysql-connector-j]') }
-        it { is_expected.to contain_file('Domain uitpas mysql-connector-j').that_requires('Profiles::Glassfish::Domain[uitpas]') }
+        it { is_expected.to contain_file('Domain uitpas mysql-connector-j').that_comes_before('Profiles::Glassfish::Domain[uitpas]') }
         it { is_expected.to contain_file('Domain uitpas mysql-connector-j').that_comes_before('Class[profiles::uitpas::api::deployment]') }
         it { is_expected.to contain_class('profiles::uitpas::api::deployment').that_requires('Class[profiles::glassfish]') }
       end
