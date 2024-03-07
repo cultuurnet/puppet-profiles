@@ -129,9 +129,9 @@ describe 'profiles::uitpas::api' do
         ) }
 
         it { is_expected.to contain_file('Domain uitpas mysql-connector-j').with(
-          'ensure' => 'link',
-          'path' => '/opt/payara/glassfish/domains/uitpas/lib/mysql-connector-j.jar',
-          'target' => '/usr/share/java/mysql-connector-j.jar',
+          'ensure' => 'file',
+          'path'   => '/opt/payara/glassfish/domains/uitpas/lib/ext/mysql-connector-j.jar',
+          'source' => '/usr/share/java/mysql-connector-j.jar'
         ) }
 
         it { is_expected.to contain_class('profiles::uitpas::api::deployment').with(

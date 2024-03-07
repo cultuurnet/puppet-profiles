@@ -10,6 +10,7 @@ class profiles::uitpas::api (
   Hash                       $settings          = {}
 ) inherits ::profiles {
 
+  $basedir            = '/opt/payara/glassfish/domains/uitpas'
   $database_name      = 'uitpas_api'
   $database_user      = 'uitpas_api'
   $default_attributes = {
@@ -139,9 +140,9 @@ class profiles::uitpas::api (
   }
 
   file { 'Domain uitpas mysql-connector-j':
-    ensure  => 'link',
-    path    => '/opt/payara/glassfish/domains/uitpas/lib/mysql-connector-j.jar',
-    target  => '/usr/share/java/mysql-connector-j.jar',
+    ensure  => 'file',
+    path    => "${basedir}/lib/ext/mysql-connector-j.jar",
+    source  => '/usr/share/java/mysql-connector-j.jar',
     require => [Package['mysql-connector-j'], Profiles::Glassfish::Domain['uitpas']]
   }
 

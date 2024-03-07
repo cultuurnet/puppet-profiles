@@ -7,8 +7,8 @@ class profiles::uitpas::api::deployment (
   Optional[String] $puppetdb_url      = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
-  $database_name     = 'uitpas_api'
-  $database_user     = 'uitpas_api'
+  $database_name = 'uitpas_api'
+  $database_user = 'uitpas_api'
 
   realize Apt::Source[$repository]
   realize User['glassfish']
