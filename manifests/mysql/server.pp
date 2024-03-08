@@ -33,6 +33,18 @@ class profiles::mysql::server (
 
   if !($listen_address == '127.0.0.1') {
     realize Firewall['400 accept mysql traffic']
+
+    if $facts['mysqld_version'] {
+      @@file { 'mysqld_version_external_fact':
+        ensure  => 'file',
+        path    => '/etc/puppetlabs/facter/facts.d/mysqld_version.txt',
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0644',
+        content => "mysqld_version=${facts['mysqld_version']}",
+        tag     => ['mysqld_version', $facts['networking']['fqdn']]
+      }
+    }
   }
 
   realize Group['mysql']

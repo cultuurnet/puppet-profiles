@@ -124,6 +124,8 @@ describe 'profiles::mysql::server' do
 
           it { is_expected.to contain_firewall('400 accept mysql traffic') }
 
+          it { expect(exported_resources).not_to contain_file('mysqld_version_external_fact') }
+
           it { is_expected.to contain_systemd__dropin_file('mysql override.conf').with(
             'unit'          => 'mysql.service',
             'filename'      => 'override.conf',
@@ -175,6 +177,22 @@ describe 'profiles::mysql::server' do
           it { is_expected.to contain_mount('/var/lib/mysql').that_requires('Profiles::Lvm::Mount[mysqldata]') }
           it { is_expected.to contain_mount('/var/lib/mysql').that_requires('File[/var/lib/mysql]') }
           it { is_expected.to contain_mount('/var/lib/mysql').that_comes_before('Class[mysql::server]') }
+
+          context "on node db.example.com with mysqld_version fact available" do
+            let(:facts) {
+              facts.merge( { 'networking' => { 'fqdn' => 'db.example.com' }, 'mysqld_version' => '8.0.33' } )
+            }
+
+            it { expect(exported_resources).to contain_file('mysqld_version_external_fact').with(
+              'ensure'  => 'file',
+              'path'    => '/etc/puppetlabs/facter/facts.d/mysqld_version.txt',
+              'owner'   => 'root',
+              'group'   => 'root',
+              'mode'    => '0644',
+              'content' => 'mysqld_version=8.0.33',
+              'tag'     => ['mysqld_version', 'db.example.com']
+            ) }
+          end
         end
       end
 
