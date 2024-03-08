@@ -43,7 +43,7 @@ describe 'profiles::uitpas::api::deployment' do
         ) }
 
         it { is_expected.to contain_exec('uitpas_database_management').with(
-          'command'     => "liquibase --driver=com.mysql.jdbc.Driver --classpath=/opt/uitpas-db-mgmt/uitpas-db-mgmt.jar:/usr/share/java/mysql-connector-j.jar --changeLogFile=migrations.xml --url='jdbc:mysql://127.0.0.1:3306/uitpas_api?useSSL=false' --username=uitpas_api --password=secret update",
+          'command'     => "liquibase --driver=com.mysql.cj.jdbc.Driver --classpath=/opt/uitpas-db-mgmt/uitpas-db-mgmt.jar:/usr/share/java/mysql-connector-j.jar --changeLogFile=migrations.xml --url='jdbc:mysql://127.0.0.1:3306/uitpas_api?useSSL=false' --username=uitpas_api --password=secret update",
           'path'        => ['/opt/liquibase', '/usr/local/bin', '/usr/bin', '/bin'],
           'refreshonly' => true,
           'logoutput'   => true
@@ -98,7 +98,7 @@ describe 'profiles::uitpas::api::deployment' do
           ) }
 
           it { is_expected.to contain_exec('uitpas_database_management').with(
-            'command'     => "liquibase --driver=com.mysql.jdbc.Driver --classpath=/opt/uitpas-db-mgmt/uitpas-db-mgmt.jar:/usr/share/java/mysql-connector-j.jar --changeLogFile=migrations.xml --url='jdbc:mysql://mydb.example.com:3306/uitpas_api?useSSL=false' --username=uitpas_api --password=mypass update",
+            'command'     => "liquibase --driver=com.mysql.cj.jdbc.Driver --classpath=/opt/uitpas-db-mgmt/uitpas-db-mgmt.jar:/usr/share/java/mysql-connector-j.jar --changeLogFile=migrations.xml --url='jdbc:mysql://mydb.example.com:3306/uitpas_api?useSSL=false' --username=uitpas_api --password=mypass update",
             'path'        => ['/opt/liquibase', '/usr/local/bin', '/usr/bin', '/bin'],
             'refreshonly' => true,
             'logoutput'   => true
