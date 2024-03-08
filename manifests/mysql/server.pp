@@ -80,13 +80,10 @@ class profiles::mysql::server (
     }
   }
 
-  file { 'root_my_cnf':
-    ensure  => 'file',
-    path    => '/root/.my.cnf',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0400',
-    content => template('profiles/mysql/my.cnf.erb'),
+  class { 'profiles::mysql::root_my_cnf':
+    root_user     => $root_user,
+    root_password => $root_password,
+    host          => $host,
     before  => Class['mysql::server']
   }
 
