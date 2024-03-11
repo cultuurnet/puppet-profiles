@@ -403,4 +403,10 @@ class profiles::apt::repositories {
     release  => $facts['os']['distro']['codename'],
     repos    => 'main'
   }
+
+  @apt::source { 'museumpas-partner-website':
+    location => "https://apt.publiq.be/museumpas-partner-website-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
 }
