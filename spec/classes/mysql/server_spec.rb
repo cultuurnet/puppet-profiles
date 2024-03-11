@@ -37,10 +37,10 @@ describe 'profiles::mysql::server' do
           'content'       => "[Service]\nLimitNOFILE=1024"
         ) }
 
-        it { is_expected.to contain_class('profiles::mysql::root_my_cnf').with(
-          'root_user'     => 'root',
-          'root_password' => nil,
-          'host'          => 'localhost'
+        it { is_expected.to contain_profiles__mysql__my_cnf('root').with(
+          'database_user'     => 'root',
+          'database_password' => nil,
+          'host'              => 'localhost'
         ) }
 
         it { is_expected.to contain_class('mysql::server').with(
@@ -72,7 +72,7 @@ describe 'profiles::mysql::server' do
 
         it { is_expected.to contain_group('mysql').that_comes_before('Class[mysql::server]') }
         it { is_expected.to contain_user('mysql').that_comes_before('Class[mysql::server]') }
-        it { is_expected.to contain_class('profiles::mysql::root_my_cnf').that_comes_before('Class[mysql::server]') }
+        it { is_expected.to contain_profiles__mysql__my_cnf('root').that_comes_before('Class[mysql::server]') }
         it { is_expected.to contain_systemd__dropin_file('mysql override.conf').that_comes_before('Class[mysql::server]') }
         it { is_expected.to contain_systemd__dropin_file('mysql override.conf').that_notifies('Class[mysql::server::service]') }
         it { is_expected.to contain_class('mysql::server').that_comes_before('Class[profiles::mysql::logging]') }
@@ -132,11 +132,14 @@ describe 'profiles::mysql::server' do
             'content'       => "[Service]\nLimitNOFILE=5120"
           ) }
 
-          it { is_expected.to contain_class('profiles::mysql::root_my_cnf').with(
-            'root_user'     => 'root',
-            'root_password' => 'test',
-            'host'          => 'localhost'
-          ) }
+          # The following cannot be tested as rspec-puppet cannot collect
+          # exported resources
+          #
+          # it { is_expected.to contain_profiles__mysql__my_cnf('root').with(
+          #   'database_user'     => 'root',
+          #   'database_password' => 'test',
+          #   'host'              => 'localhost'
+          # ) }
 
           it { is_expected.to contain_class('mysql::server').with(
             'root_password'      => 'test',
@@ -225,10 +228,10 @@ describe 'profiles::mysql::server' do
             'content'       => "[Service]\nLimitNOFILE=2048"
           ) }
 
-          it { is_expected.to contain_class('profiles::mysql::root_my_cnf').with(
-            'root_user'     => 'root',
-            'root_password' => 'foobar',
-            'host'          => 'localhost'
+          it { is_expected.to contain_profiles__mysql__my_cnf('root').with(
+            'database_user'     => 'root',
+            'database_password' => 'foobar',
+            'host'              => 'localhost'
           ) }
 
           it { is_expected.to contain_class('mysql::server').with(

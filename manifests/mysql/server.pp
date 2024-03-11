@@ -11,7 +11,6 @@ class profiles::mysql::server (
 ) inherits ::profiles {
 
   $root_user = 'root'
-  $host      = 'localhost'
   $options   = {
                  'client' => { 'default-character-set' => 'utf8mb4' },
                  'mysql'  => { 'default-character-set' => 'utf8mb4' },
@@ -31,7 +30,14 @@ class profiles::mysql::server (
 
   include profiles::firewall::rules
 
-  if !($listen_address == '127.0.0.1') {
+  if $listen_address == '127.0.0.1' {
+    profiles::mysql::my_cnf { 'root':
+      database_user     => $root_user,
+      database_password => $root_password,
+      host              => 'localhost',
+      before            => Class['mysql::server']
+    }
+  } else {
     realize Firewall['400 accept mysql traffic']
 
     if $facts['mysqld_version'] {
@@ -45,6 +51,15 @@ class profiles::mysql::server (
         tag     => ['mysqld_version', $facts['networking']['fqdn']]
       }
     }
+
+    @@profiles::mysql::my_cnf { 'root':
+      database_user     => $root_user,
+      database_password => $root_password,
+      host              => $facts['networking']['fqdn'],
+      before            => Class['mysql::server']
+    }
+
+    Profiles::Mysql::My_cnf <<| title == 'root' and host == $facts['networking']['fqdn'] |>>
   }
 
   realize Group['mysql']
@@ -90,13 +105,6 @@ class profiles::mysql::server (
       require => [Profiles::Lvm::Mount['mysqldata'], File['/var/lib/mysql']],
       before  => Class['mysql::server']
     }
-  }
-
-  class { 'profiles::mysql::root_my_cnf':
-    root_user     => $root_user,
-    root_password => $root_password,
-    host          => $host,
-    before  => Class['mysql::server']
   }
 
   systemd::dropin_file { 'mysql override.conf':
