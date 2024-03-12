@@ -65,7 +65,7 @@ class profiles::mysql::server (
 
     mysql_user { "${root_user}@%":
       password_hash => mysql::password($root_password),
-      require       => [Class['mysql::server'], Profiles::Mysql::My_cnf['localhost']]
+      require       => [Class['mysql::server'], Profiles::Mysql::Root_my_cnf['localhost']]
     }
 
     mysql_grant { "${root_user}@%/*.*":
@@ -73,7 +73,7 @@ class profiles::mysql::server (
       options       => ['GRANT'],
       privileges    => ['ALL'],
       table         => '*.*',
-      require       => [Class['mysql::server'], Profiles::Mysql::My_cnf['localhost']]
+      require       => [Class['mysql::server'], Profiles::Mysql::Root_my_cnf['localhost']]
     }
   }
 
