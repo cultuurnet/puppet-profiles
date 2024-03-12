@@ -31,13 +31,24 @@ class profiles::mysql::server (
   include profiles::firewall::rules
 
   if $listen_address == '127.0.0.1' {
-    profiles::mysql::my_cnf { 'root':
+    profiles::mysql::root_my_cnf { 'localhost':
       database_user     => $root_user,
       database_password => $root_password,
-      host              => 'localhost',
       before            => Class['mysql::server']
     }
   } else {
+    profiles::mysql::root_my_cnf { 'localhost':
+      database_user     => $root_user,
+      database_password => $root_password,
+      before            => Class['mysql::server']
+    }
+
+    @@profiles::mysql::root_my_cnf { $facts['networking']['fqdn']:
+      database_user     => $root_user,
+      database_password => $root_password,
+      before            => Class['mysql::server']
+    }
+
     realize Firewall['400 accept mysql traffic']
 
     if $facts['mysqld_version'] {
@@ -52,14 +63,18 @@ class profiles::mysql::server (
       }
     }
 
-    @@profiles::mysql::my_cnf { 'root':
-      database_user     => $root_user,
-      database_password => $root_password,
-      host              => $facts['networking']['fqdn'],
-      before            => Class['mysql::server']
+    mysql_user { "${root_user}@%":
+      password_hash => mysql::password($root_password),
+      require       => [Class['mysql::server'], Profiles::Mysql::My_cnf['localhost']]
     }
 
-    Profiles::Mysql::My_cnf <<| title == 'root' and host == $facts['networking']['fqdn'] |>>
+    mysql_grant { "${root_user}@%/*.*":
+      user          => "${root_user}@%",
+      options       => ['GRANT'],
+      privileges    => ['ALL'],
+      table         => '*.*',
+      require       => [Class['mysql::server'], Profiles::Mysql::My_cnf['localhost']]
+    }
   }
 
   realize Group['mysql']
