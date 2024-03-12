@@ -3,5 +3,5 @@ class profiles::mysql::remote_server (
 ) inherits ::profiles {
 
   File <<| tag == 'mysqld_version' and tag == $host |>>
-  Profiles::Mysql::My_cnf <<| title == 'root' and host == $host |>>
+  Profiles::Mysql::Root_my_cnf <<| title == $host |>>
 }
