@@ -48,7 +48,8 @@ describe 'profiles::uitpas::api' do
 
         it { is_expected.to contain_profiles__mysql__app_user('uitpas_api').with(
           'database' => 'uitpas_api',
-          'password' => 'mypassword'
+          'password' => 'mypassword',
+          'remote'   => false
         ) }
 
         it { is_expected.to contain_jdbcconnectionpool('mysql_uitpas_api_j2eePool').with(
@@ -225,7 +226,8 @@ describe 'profiles::uitpas::api' do
 
           it { is_expected.to contain_profiles__mysql__app_user('uitpas_api').with(
             'database' => 'uitpas_api',
-            'password' => 'secret'
+            'password' => 'secret',
+            'remote'   => true
           ) }
 
           it { is_expected.to contain_jdbcconnectionpool('mysql_uitpas_api_j2eePool').with(

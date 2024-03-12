@@ -24,11 +24,14 @@ class profiles::uitpas::api (
   if $database_host == '127.0.0.1' {
     include ::profiles::mysql::server
 
+    $database_host_remote    = false
     $database_host_available = true
 
     Class['profiles::mysql::server'] -> Mysql_database[$database_name]
   } else {
     include ::profiles::mysql::rds
+
+    $database_host_remote = true
 
     if $facts['mysqld_version'] {
       $database_host_available = true
@@ -65,6 +68,7 @@ class profiles::uitpas::api (
     profiles::mysql::app_user { $database_user:
       database => $database_name,
       password => $database_password,
+      remote   => $database_host_remote,
       require  => Mysql_database[$database_name]
     }
 
