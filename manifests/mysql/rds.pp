@@ -2,6 +2,8 @@ class profiles::mysql::rds inherits ::profiles {
 
   $rds_mysqld_version = lookup('terraform::rds::mysqld_version', Optional[String], 'first', undef)
 
+  realize Package['mysql-client']
+
   if $rds_mysqld_version {
     $rds_host = lookup('terraform::rds::host')
 

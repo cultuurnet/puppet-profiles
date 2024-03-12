@@ -8,6 +8,8 @@ describe 'profiles::mysql::rds' do
       context "with hieradata" do
         let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
+        it { is_expected.to contain_package('mysql-client') }
+
         it { is_expected.to contain_file('mysqld_version_external_fact').with(
           'ensure'  => 'file',
           'path'    => '/etc/puppetlabs/facter/facts.d/mysqld_version.txt',
@@ -28,6 +30,7 @@ describe 'profiles::mysql::rds' do
 
         it { is_expected.to compile.with_all_deps }
 
+        it { is_expected.to contain_package('mysql-client') }
         it { is_expected.not_to contain_file('mysqld_version_external_fact') }
         it { is_expected.to have_profiles__mysql__my_cnf_resource_count(0) }
       end

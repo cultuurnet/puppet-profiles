@@ -11,6 +11,8 @@ describe 'profiles::mysql::remote_server' do
         } }
 
         it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to contain_package('mysql-client') }
       end
 
       context "without parameters" do
