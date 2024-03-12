@@ -17,10 +17,9 @@ describe 'profiles::mysql::rds' do
           'content' => 'mysqld_version=8.0.33'
         ) }
 
-        it { is_expected.to contain_profiles__mysql__my_cnf('root').with(
+        it { is_expected.to contain_profiles__mysql__root_my_cnf('myrdshost.example.com').with(
           'database_user'     => 'admin',
-          'database_password' => 'mypass',
-          'host'              => 'myrdshost.example.com'
+          'database_password' => 'mypass'
         ) }
       end
 
@@ -30,7 +29,7 @@ describe 'profiles::mysql::rds' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.not_to contain_file('mysqld_version_external_fact') }
-        it { is_expected.not_to contain_class('profiles::mysql::root_my_cnf') }
+        it { is_expected.to have_profiles__mysql__my_cnf_resource_count(0) }
       end
     end
   end
