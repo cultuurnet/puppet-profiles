@@ -10,23 +10,24 @@ class profiles::mysql::server (
 
 ) inherits ::profiles {
 
-  $root_user = 'root'
-  $options   = {
-                 'client' => { 'default-character-set' => 'utf8mb4' },
-                 'mysql'  => { 'default-character-set' => 'utf8mb4' },
-                 'mysqld' => {
-                               'character-set-client-handshake' => 'false',
-                               'character-set-server'           => 'utf8mb4',
-                               'collation-server'               => 'utf8mb4_unicode_ci',
-                               'bind-address'                   => $listen_address,
-                               'skip-name-resolve'              => 'true',
-                               'innodb_file_per_table'          => 'ON',
-                               'slow_query_log'                 => 'ON',
-                               'slow_query_log_file'            => '/var/log/mysql/slow-query.log',
-                               'long_query_time'                => "${long_query_time}",
-                               'transaction_isolation'          => $transaction_isolation
-                             }
-               }
+  $root_user       = 'root'
+  $root_privileges = ['ALL', 'APPLICATION_PASSWORD_ADMIN', 'AUDIT_ABORT_EXEMPT', 'AUDIT_ADMIN', 'AUTHENTICATION_POLICY_ADMIN', 'BACKUP_ADMIN', 'BINLOG_ADMIN', 'BINLOG_ENCRYPTION_ADMIN', 'CLONE_ADMIN', 'CONNECTION_ADMIN', 'ENCRYPTION_KEY_ADMIN', 'FIREWALL_EXEMPT', 'FLUSH_OPTIMIZER_COSTS', 'FLUSH_STATUS', 'FLUSH_TABLES', 'FLUSH_USER_RESOURCES', 'GROUP_REPLICATION_ADMIN', 'GROUP_REPLICATION_STREAM', 'INNODB_REDO_LOG_ARCHIVE', 'INNODB_REDO_LOG_ENABLE', 'PASSWORDLESS_USER_ADMIN', 'PERSIST_RO_VARIABLES_ADMIN', 'REPLICATION_APPLIER', 'REPLICATION_SLAVE_ADMIN', 'RESOURCE_GROUP_ADMIN', 'RESOURCE_GROUP_USER', 'ROLE_ADMIN', 'SENSITIVE_VARIABLES_OBSERVER', 'SERVICE_CONNECTION_ADMIN', 'SESSION_VARIABLES_ADMIN', 'SET_USER_ID', 'SHOW_ROUTINE', 'SYSTEM_USER', 'SYSTEM_VARIABLES_ADMIN', 'TABLE_ENCRYPTION_ADMIN', 'TELEMETRY_LOG_ADMIN', 'XA_RECOVER_ADMIN']
+  $options         = {
+                       'client' => { 'default-character-set' => 'utf8mb4' },
+                       'mysql'  => { 'default-character-set' => 'utf8mb4' },
+                       'mysqld' => {
+                                     'character-set-client-handshake' => 'false',
+                                     'character-set-server'           => 'utf8mb4',
+                                     'collation-server'               => 'utf8mb4_unicode_ci',
+                                     'bind-address'                   => $listen_address,
+                                     'skip-name-resolve'              => 'true',
+                                     'innodb_file_per_table'          => 'ON',
+                                     'slow_query_log'                 => 'ON',
+                                     'slow_query_log_file'            => '/var/log/mysql/slow-query.log',
+                                     'long_query_time'                => "${long_query_time}",
+                                     'transaction_isolation'          => $transaction_isolation
+                                   }
+                     }
 
   include profiles::firewall::rules
 
@@ -71,7 +72,7 @@ class profiles::mysql::server (
     mysql_grant { "${root_user}@%/*.*":
       user          => "${root_user}@%",
       options       => ['GRANT'],
-      privileges    => ['ALL'],
+      privileges    => $root_privileges,
       table         => '*.*',
       require       => [Class['mysql::server'], Profiles::Mysql::Root_my_cnf['localhost']]
     }
