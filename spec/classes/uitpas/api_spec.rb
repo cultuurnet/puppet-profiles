@@ -177,35 +177,7 @@ describe 'profiles::uitpas::api' do
         } }
 
         it { is_expected.not_to contain_class('profiles::mysql::server') }
-
-        it { is_expected.to contain_jdbcconnectionpool('mysql_uitpas_api_j2eePool').with(
-          'ensure'              => 'present',
-          'user'                => 'glassfish',
-          'passwordfile'        => '/home/glassfish/asadmin.pass',
-          'portbase'            => '14800',
-          'resourcetype'        => 'javax.sql.DataSource',
-          'dsclassname'         => 'com.mysql.cj.jdbc.MysqlDataSource',
-          'properties'          => {
-                                     'serverName'        => 'db.example.com',
-                                     'portNumber'        => '3306',
-                                     'databaseName'      => 'uitpas_api',
-                                     'User'              => 'uitpas_api',
-                                     'Password'          => 'secret',
-                                     'URL'               => 'jdbc:mysql://db.example.com:3306/uitpas_api',
-                                     'driverClass'       => 'com.mysql.cj.jdbc.Driver',
-                                     'characterEncoding' => 'UTF-8',
-                                     'useUnicode'        => true,
-                                     'useSSL'            => false
-                                   }
-        )}
-
-        it { is_expected.to contain_jdbcresource('jdbc/cultuurnet_uitpas').with(
-          'ensure'         => 'present',
-          'portbase'       => '14800',
-          'user'           => 'glassfish',
-          'passwordfile'   => '/home/glassfish/asadmin.pass',
-          'connectionpool' => 'mysql_uitpas_api_j2eePool'
-        ) }
+        it { is_expected.to contain_class('profiles::mysql::rds') }
 
         it { is_expected.to contain_set('server.network-config.protocols.protocol.http-listener-1.http.scheme-mapping').with(
           'ensure'       => 'present',
@@ -238,16 +210,69 @@ describe 'profiles::uitpas::api' do
           'portbase'     => '14800'
         ) }
 
-        it { is_expected.to contain_class('profiles::uitpas::api::deployment').with(
-          'database_password' => 'secret',
-          'database_host'     => 'db.example.com',
-          'portbase'          => 14800
-        ) }
-
         it { is_expected.to contain_systemproperty('foo').that_requires('Profiles::Glassfish::Domain[uitpas]') }
         it { is_expected.to contain_systemproperty('foo').that_notifies('Service[uitpas]') }
         it { is_expected.to contain_systemproperty('baz').that_requires('Profiles::Glassfish::Domain[uitpas]') }
         it { is_expected.to contain_systemproperty('baz').that_notifies('Service[uitpas]') }
+
+        context "with fact mysqld_version => 8.0.33" do
+          let(:facts) { facts.merge( { 'mysqld_version' => '8.0.33' } ) }
+
+          it { is_expected.to contain_mysql_database('uitpas_api').with(
+            'charset' => 'utf8mb4',
+            'collate' => 'utf8mb4_unicode_ci'
+          ) }
+
+          it { is_expected.to contain_profiles__mysql__app_user('uitpas_api').with(
+            'database' => 'uitpas_api',
+            'password' => 'secret'
+          ) }
+
+          it { is_expected.to contain_jdbcconnectionpool('mysql_uitpas_api_j2eePool').with(
+            'ensure'              => 'present',
+            'user'                => 'glassfish',
+            'passwordfile'        => '/home/glassfish/asadmin.pass',
+            'portbase'            => '14800',
+            'resourcetype'        => 'javax.sql.DataSource',
+            'dsclassname'         => 'com.mysql.cj.jdbc.MysqlDataSource',
+            'properties'          => {
+                                       'serverName'        => 'db.example.com',
+                                       'portNumber'        => '3306',
+                                       'databaseName'      => 'uitpas_api',
+                                       'User'              => 'uitpas_api',
+                                       'Password'          => 'secret',
+                                       'URL'               => 'jdbc:mysql://db.example.com:3306/uitpas_api',
+                                       'driverClass'       => 'com.mysql.cj.jdbc.Driver',
+                                       'characterEncoding' => 'UTF-8',
+                                       'useUnicode'        => true,
+                                       'useSSL'            => false
+                                     }
+          )}
+
+          it { is_expected.to contain_jdbcresource('jdbc/cultuurnet_uitpas').with(
+            'ensure'         => 'present',
+            'portbase'       => '14800',
+            'user'           => 'glassfish',
+            'passwordfile'   => '/home/glassfish/asadmin.pass',
+            'connectionpool' => 'mysql_uitpas_api_j2eePool'
+          ) }
+
+          it { is_expected.to contain_class('profiles::uitpas::api::deployment').with(
+            'database_password' => 'secret',
+            'database_host'     => 'db.example.com',
+            'portbase'          => 14800
+          ) }
+        end
+
+        context "without extra facts" do
+          let(:facts) { facts }
+
+          it { is_expected.not_to contain_mysql_database('uitpas_api') }
+          it { is_expected.not_to contain_profiles__mysql__app_user('uitpas_api') }
+          it { is_expected.not_to contain_jdbcconnectionpool('mysql_uitpas_api_j2eePool') }
+          it { is_expected.not_to contain_jdbcresource('jdbc/cultuurnet_uitpas') }
+          it { is_expected.not_to contain_class('profiles::uitpas::api::deployment') }
+        end
       end
 
       context "with database_password => mysecret and deployment => false" do

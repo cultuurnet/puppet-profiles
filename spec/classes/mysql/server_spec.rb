@@ -37,15 +37,11 @@ describe 'profiles::mysql::server' do
           'content'       => "[Service]\nLimitNOFILE=1024"
         ) }
 
-        it { is_expected.to contain_file('root_my_cnf').with(
-          'ensure' => 'file',
-          'path'   => '/root/.my.cnf',
-          'owner'  => 'root',
-          'group'  => 'root',
-          'mode'   => '0400'
+        it { is_expected.to contain_profiles__mysql__my_cnf('root').with(
+          'database_user'     => 'root',
+          'database_password' => nil,
+          'host'              => 'localhost'
         ) }
-
-        it { is_expected.to contain_file('root_my_cnf').with_content(/^\[client\]\nuser=root\npassword=''\nhost=localhost\n$/) }
 
         it { is_expected.to contain_class('mysql::server').with(
           'root_password'      => 'UNSET',
@@ -76,7 +72,7 @@ describe 'profiles::mysql::server' do
 
         it { is_expected.to contain_group('mysql').that_comes_before('Class[mysql::server]') }
         it { is_expected.to contain_user('mysql').that_comes_before('Class[mysql::server]') }
-        it { is_expected.to contain_file('root_my_cnf').that_comes_before('Class[mysql::server]') }
+        it { is_expected.to contain_profiles__mysql__my_cnf('root').that_comes_before('Class[mysql::server]') }
         it { is_expected.to contain_systemd__dropin_file('mysql override.conf').that_comes_before('Class[mysql::server]') }
         it { is_expected.to contain_systemd__dropin_file('mysql override.conf').that_notifies('Class[mysql::server::service]') }
         it { is_expected.to contain_class('mysql::server').that_comes_before('Class[profiles::mysql::logging]') }
@@ -128,13 +124,22 @@ describe 'profiles::mysql::server' do
 
           it { is_expected.to contain_firewall('400 accept mysql traffic') }
 
+          it { expect(exported_resources).not_to contain_file('mysqld_version_external_fact') }
+
           it { is_expected.to contain_systemd__dropin_file('mysql override.conf').with(
             'unit'          => 'mysql.service',
             'filename'      => 'override.conf',
             'content'       => "[Service]\nLimitNOFILE=5120"
           ) }
 
-          it { is_expected.to contain_file('root_my_cnf').with_content(/^\[client\]\nuser=root\npassword='test'\nhost=localhost\n$/) }
+          # The following cannot be tested as rspec-puppet cannot collect
+          # exported resources
+          #
+          # it { is_expected.to contain_profiles__mysql__my_cnf('root').with(
+          #   'database_user'     => 'root',
+          #   'database_password' => 'test',
+          #   'host'              => 'localhost'
+          # ) }
 
           it { is_expected.to contain_class('mysql::server').with(
             'root_password'      => 'test',
@@ -175,6 +180,22 @@ describe 'profiles::mysql::server' do
           it { is_expected.to contain_mount('/var/lib/mysql').that_requires('Profiles::Lvm::Mount[mysqldata]') }
           it { is_expected.to contain_mount('/var/lib/mysql').that_requires('File[/var/lib/mysql]') }
           it { is_expected.to contain_mount('/var/lib/mysql').that_comes_before('Class[mysql::server]') }
+
+          context "on node db.example.com with mysqld_version fact available" do
+            let(:facts) {
+              facts.merge( { 'networking' => { 'fqdn' => 'db.example.com' }, 'mysqld_version' => '8.0.33' } )
+            }
+
+            it { expect(exported_resources).to contain_file('mysqld_version_external_fact').with(
+              'ensure'  => 'file',
+              'path'    => '/etc/puppetlabs/facter/facts.d/mysqld_version.txt',
+              'owner'   => 'root',
+              'group'   => 'root',
+              'mode'    => '0644',
+              'content' => 'mysqld_version=8.0.33',
+              'tag'     => ['mysqld_version', 'db.example.com']
+            ) }
+          end
         end
       end
 
@@ -207,7 +228,11 @@ describe 'profiles::mysql::server' do
             'content'       => "[Service]\nLimitNOFILE=2048"
           ) }
 
-          it { is_expected.to contain_file('root_my_cnf').with_content(/^\[client\]\nuser=root\npassword='foobar'\nhost=localhost\n$/) }
+          it { is_expected.to contain_profiles__mysql__my_cnf('root').with(
+            'database_user'     => 'root',
+            'database_password' => 'foobar',
+            'host'              => 'localhost'
+          ) }
 
           it { is_expected.to contain_class('mysql::server').with(
             'root_password'      => 'foobar',
