@@ -46,9 +46,15 @@ define profiles::glassfish::domain (
     }
   }
 
-  firewall { "400 accept glassfish domain ${title} traffic":
+  firewall { "400 accept glassfish domain ${title} HTTP traffic":
     proto  => 'tcp',
     dport  => String($portbase + 80),
+    action => 'accept'
+  }
+
+  firewall { "400 accept glassfish domain ${title} HTTPS traffic":
+    proto  => 'tcp',
+    dport  => String($portbase + 81),
     action => 'accept'
   }
 
