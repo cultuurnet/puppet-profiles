@@ -2,6 +2,7 @@ class profiles::apache (
   Enum['event', 'itk', 'peruser', 'prefork', 'worker']  $mpm_module        = 'prefork',
   Hash                                                  $mpm_module_config = {},
   Boolean                                               $http2             = false,
+  Integer                                               $limitreqfieldsize = 8190,
   Boolean                                               $metrics           = true,
   Enum['running', 'stopped']                            $service_status    = 'running',
 ) inherits ::profiles {
@@ -26,6 +27,7 @@ class profiles::apache (
                                false => ['http/1.1']
                              },
     protocols_honor_order => true,
+    limitreqfieldsize     => $limitreqfieldsize,
     service_manage        => true,
     service_ensure        => $service_status,
     service_enable        => $service_status ? {
