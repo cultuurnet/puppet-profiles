@@ -27,7 +27,7 @@ describe 'profiles::newrelic::java' do
         let(:params) { { 'ensure' => '9.8.7' } }
 
         it { is_expected.to contain_package('newrelic-java').with(
-          'ensure' => '9.8.1'
+          'ensure' => '9.8.7'
         ) }
       end
     end
