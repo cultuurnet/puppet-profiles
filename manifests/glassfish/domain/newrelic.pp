@@ -18,8 +18,9 @@ define profiles::glassfish::domain::newrelic (
                         }
 
   jvmoption { "Domain ${title} jvmoption -javaagent:/opt/newrelic/newrelic.jar":
-    option => '-javaagent:/opt/newrelic/newrelic.jar',
-    *      => $default_attributes
+    option  => '-javaagent:/opt/newrelic/newrelic.jar',
+    require => Class['profiles::newrelic::java'],
+    *       => $default_attributes
   }
 
   systemproperty { "Domain ${title} newrelic.config.file" :

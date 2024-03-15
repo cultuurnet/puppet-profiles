@@ -52,6 +52,7 @@ describe 'profiles::glassfish::domain::newrelic' do
             it { is_expected.to contain_file('Domain foobar-api newrelic config file').with_content(/^\s*log_file_path: \/opt\/payara\/glassfish\/domains\/foobar-api\/logs\s*$/) }
 
             it { is_expected.to contain_systemproperty('Domain foobar-api newrelic.config.file').that_requires('File[Domain foobar-api newrelic config file]') }
+            it { is_expected.to contain_class('profiles::newrelic::java').that_comes_before('Jvmoption[Domain foobar-api jvmoption -javaagent:/opt/newrelic/newrelic.jar]') }
           end
 
           context 'with license_key => xyz, app_name => my_app_name and portbase => 5000' do
