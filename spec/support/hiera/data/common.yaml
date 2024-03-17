@@ -2,6 +2,8 @@
 data::puppet::puppetdb::url: 'http://localhost:8081'
 data::puppet::puppetserver::url: 'https://puppetserver.example.com:8140'
 
+data::newrelic_license_key: 'my_license_key'
+
 profiles::jenkins::controller::admin_password: 'bar'
 profiles::jenkins::controller::url: 'https://foobar.com/'
 
