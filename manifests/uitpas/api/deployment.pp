@@ -45,6 +45,11 @@ class profiles::uitpas::api::deployment (
     require       => User['glassfish']
   }
 
+  class { 'profiles::uitpas::api::cron':
+    portbase => $portbase,
+    require  => App['uitpas-api']
+  }
+
   profiles::deployment::versions { $title:
     puppetdb_url => $puppetdb_url
   }

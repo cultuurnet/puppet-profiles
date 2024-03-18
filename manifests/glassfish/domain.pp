@@ -1,10 +1,12 @@
 define profiles::glassfish::domain (
-  Enum['present', 'absent']  $ensure         = 'present',
-  Enum['running', 'stopped'] $service_status = 'running',
-  Optional[String]           $initial_heap   = undef,
-  Optional[String]           $maximum_heap   = undef,
-  Boolean                    $jmx            = true,
-  Integer                    $portbase       = 4800
+  Enum['present', 'absent']  $ensure            = 'present',
+  Enum['running', 'stopped'] $service_status    = 'running',
+  Optional[String]           $initial_heap      = undef,
+  Optional[String]           $maximum_heap      = undef,
+  Boolean                    $jmx               = true,
+  Boolean                    $newrelic          = true,
+  String                     $newrelic_app_name = "${title}-${environment}",
+  Integer                    $portbase          = 4800
 ) {
 
   include ::profiles
@@ -32,18 +34,24 @@ define profiles::glassfish::domain (
     require  => Profiles::Glassfish::Domain::Service[$title]
   }
 
-  if $jmx {
-    profiles::glassfish::domain::jmx { $title:
-      ensure   => 'present',
-      portbase => $portbase,
-      require  => Profiles::Glassfish::Domain::Service[$title]
-    }
-  } else {
-    profiles::glassfish::domain::jmx { $title:
-      ensure   => 'absent',
-      portbase => $portbase,
-      require  => Profiles::Glassfish::Domain::Service[$title]
-    }
+  profiles::glassfish::domain::jmx { $title:
+    ensure => $jmx ? {
+                true  => 'present',
+                false => 'absent'
+              },
+    portbase => $portbase,
+    require  => Profiles::Glassfish::Domain::Service[$title]
+  }
+
+  profiles::glassfish::domain::newrelic { $title:
+    ensure      => $newrelic ? {
+                     true  => 'present',
+                     false => 'absent'
+                   },
+    portbase    => $portbase,
+    license_key => lookup('data::newrelic_license_key', Optional[String], 'first', undef),
+    app_name    => $newrelic_app_name,
+    require     => Profiles::Glassfish::Domain::Service[$title]
   }
 
   firewall { "400 accept glassfish domain ${title} HTTP traffic":

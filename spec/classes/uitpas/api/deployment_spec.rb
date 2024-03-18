@@ -49,6 +49,10 @@ describe 'profiles::uitpas::api::deployment' do
           'logoutput'   => true
         ) }
 
+        it { is_expected.to contain_class('profiles::uitpas::api::cron').with(
+          'portbase' => 4800
+        ) }
+
         it { is_expected.to contain_package('uitpas-api').that_requires('Apt::Source[uitpas-api]') }
         it { is_expected.to contain_package('uitpas-api').that_notifies('App[uitpas-api]') }
         it { is_expected.to contain_package('uitpas-api').that_notifies('Profiles::Deployment::Versions[profiles::uitpas::api::deployment]') }
@@ -57,6 +61,7 @@ describe 'profiles::uitpas::api::deployment' do
         it { is_expected.to contain_package('uitpas-db-mgmt').that_notifies('Profiles::Deployment::Versions[profiles::uitpas::api::deployment]') }
         it { is_expected.to contain_app('uitpas-api').that_requires('User[glassfish]') }
         it { is_expected.to contain_app('uitpas-api').that_requires('Exec[uitpas_database_management]') }
+        it { is_expected.to contain_class('profiles::uitpas::api::cron').that_requires('App[uitpas-api]') }
 
         context "without hieradata" do
           let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
@@ -112,6 +117,10 @@ describe 'profiles::uitpas::api::deployment' do
             'contextroot'   => 'uitid',
             'precompilejsp' => false,
             'source'        => '/opt/uitpas-api/uitpas-api.war'
+          ) }
+
+          it { is_expected.to contain_class('profiles::uitpas::api::cron').with(
+            'portbase' => '14800'
           ) }
 
           it { is_expected.to contain_package('uitpas-api').that_requires('Apt::Source[uitpas-api-alternative]') }
