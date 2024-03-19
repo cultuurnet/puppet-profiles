@@ -1,8 +1,9 @@
 class profiles::publiq::versions (
-  Stdlib::Httpurl            $url,
-  Stdlib::Ipv4               $service_address = '127.0.0.1',
-  Stdlib::Port::Unprivileged $service_port    = 3000,
-  Boolean                    $deployment      = true
+  Stdlib::Httpurl                $url,
+  Variant[String, Array[String]] $aliases         = [],
+  Stdlib::Ipv4                   $service_address = '127.0.0.1',
+  Stdlib::Port::Unprivileged     $service_port    = 3000,
+  Boolean                        $deployment      = true
 ) inherits ::profiles {
 
   include profiles::ruby
@@ -14,7 +15,8 @@ class profiles::publiq::versions (
   }
 
   profiles::apache::vhost::reverse_proxy { $url:
-    destination => "http://${service_address}:${service_port}/"
+    destination => "http://${service_address}:${service_port}/",
+    aliases     => $aliases
   }
 
   # include ::profiles::publiq::versions::monitoring
