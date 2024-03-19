@@ -90,6 +90,14 @@ class profiles::uitpas::api (
     *            => $default_attributes
   }
 
+  set { 'server.thread-pools.thread-pool.http-thread-pool.max-thread-pool-size':
+    ensure       => 'present',
+    value        => '32',
+    require      => Profiles::Glassfish::Domain['uitpas'],
+    notify       => Service['uitpas'],
+    *            => $default_attributes
+  }
+
   jvmoption { 'Clear domain uitpas default truststore':
     ensure => 'absent',
     option => '-Djavax.net.ssl.trustStore=\$\{com.sun.aas.instanceRoot\}/config/cacerts.jks',
