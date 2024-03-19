@@ -37,17 +37,22 @@ class profiles::museumpas::website (
 
   } else {
     $database_host_remote    = true
-    $database_host_available = true
 
-    Class { "profiles::mysql::remote_server":
-      host => $database_host
-    } -> Mysql_database[$database_name]
+    if $facts['mysqld_version'] {
+      $database_host_available = true
+
+      class { "profiles::mysql::remote_server":
+        host => $database_host
+      } -> Mysql_database[$database_name]
+    } else {
+      $database_host_available = false
+    }
   }
 
   if $database_host_available {
     mysql_database { $database_name:
       charset => 'utf8mb4',
-      collate => 'utf8mb4_unicode_ci'
+      collate => 'utf8mb4_0900_ai_ci'
     }
 
     profiles::mysql::app_user { $database_user:
