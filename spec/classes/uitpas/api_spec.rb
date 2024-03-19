@@ -93,6 +93,14 @@ describe 'profiles::uitpas::api' do
             'portbase'     => '4800'
           ) }
 
+          it { is_expected.to contain_set('server.thread-pools.thread-pool.http-thread-pool.max-thread-pool-size').with(
+            'ensure'       => 'present',
+            'value'        => '32',
+            'user'         => 'glassfish',
+            'passwordfile' => '/home/glassfish/asadmin.pass',
+            'portbase'     => '4800'
+          ) }
+
           it { is_expected.to contain_jvmoption('Clear domain uitpas default truststore').with(
             'ensure'       => 'absent',
             'option'       => '-Djavax.net.ssl.trustStore=\$\{com.sun.aas.instanceRoot\}/config/cacerts.jks',
@@ -156,6 +164,8 @@ describe 'profiles::uitpas::api' do
           it { is_expected.to contain_jdbcresource('jdbc/cultuurnet_uitpas').that_requires('Jdbcconnectionpool[mysql_uitpas_api_j2eePool]') }
           it { is_expected.to contain_set('server.network-config.protocols.protocol.http-listener-1.http.scheme-mapping').that_requires('Profiles::Glassfish::Domain[uitpas]') }
           it { is_expected.to contain_set('server.network-config.protocols.protocol.http-listener-1.http.scheme-mapping').that_notifies('Service[uitpas]') }
+          it { is_expected.to contain_set('server.thread-pools.thread-pool.http-thread-pool.max-thread-pool-size').that_requires('Profiles::Glassfish::Domain[uitpas]') }
+          it { is_expected.to contain_set('server.thread-pools.thread-pool.http-thread-pool.max-thread-pool-size').that_notifies('Service[uitpas]') }
           it { is_expected.to contain_jvmoption('Clear domain uitpas default truststore').that_requires('Profiles::Glassfish::Domain[uitpas]') }
           it { is_expected.to contain_jvmoption('Clear domain uitpas default truststore').that_notifies('Service[uitpas]') }
           it { is_expected.to contain_jvmoption('Domain uitpas truststore').that_requires('Profiles::Glassfish::Domain[uitpas]') }
@@ -191,6 +201,14 @@ describe 'profiles::uitpas::api' do
         it { is_expected.to contain_set('server.network-config.protocols.protocol.http-listener-1.http.scheme-mapping').with(
           'ensure'       => 'present',
           'value'        => 'X-Forwarded-Proto',
+          'user'         => 'glassfish',
+          'passwordfile' => '/home/glassfish/asadmin.pass',
+          'portbase'     => '14800'
+        ) }
+
+        it { is_expected.to contain_set('server.thread-pools.thread-pool.http-thread-pool.max-thread-pool-size').with(
+          'ensure'       => 'present',
+          'value'        => '32',
           'user'         => 'glassfish',
           'passwordfile' => '/home/glassfish/asadmin.pass',
           'portbase'     => '14800'

@@ -14,6 +14,7 @@ describe 'profiles::publiq::versions' do
 
         it { is_expected.to contain_class('profiles::publiq::versions').with(
           'url'             => 'http://versions.local',
+          'aliases'         => [],
           'deployment'      => true,
           'service_address' => '127.0.0.1',
           'service_port'    => '3000'
@@ -36,15 +37,17 @@ describe 'profiles::publiq::versions' do
           } ) }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://versions.local').with(
-            'destination' => 'http://0.0.0.0:5000/'
+            'destination' => 'http://0.0.0.0:5000/',
+            'aliases'     => []
           ) }
         end
       end
 
-      context "with url => http://versions.publiq.dev and deployment => false" do
+      context "with url => http://versions.publiq.dev, aliases => foo.example.com and deployment => false" do
         let(:params) { {
-          'url'          => 'http://versions.publiq.dev',
-          'deployment'   => false
+          'url'        => 'http://versions.publiq.dev',
+          'aliases'    => 'foo.example.com',
+          'deployment' => false
         } }
 
         it { is_expected.to compile.with_all_deps }
@@ -53,7 +56,20 @@ describe 'profiles::publiq::versions' do
         it { is_expected.to_not contain_class('profiles::publiq::versions::deployment') }
 
         it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://versions.publiq.dev').with(
-          'destination' => 'http://127.0.0.1:3000/'
+          'destination' => 'http://127.0.0.1:3000/',
+          'aliases'     => 'foo.example.com'
+        ) }
+      end
+
+      context "with url => http://myversions.publiq.dev and aliases => [bar.example.com, baz.example.com]" do
+        let(:params) { {
+          'url'     => 'http://myversions.publiq.dev',
+          'aliases' => ['bar.example.com', 'baz.example.com']
+        } }
+
+        it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://myversions.publiq.dev').with(
+          'destination' => 'http://127.0.0.1:3000/',
+          'aliases'     => ['bar.example.com', 'baz.example.com']
         ) }
       end
 
