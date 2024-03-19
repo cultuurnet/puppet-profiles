@@ -16,6 +16,7 @@ class profiles::php (
                         }
 
   $default_extensions = {
+                          'apcu'     => {},
                           'bcmath'   => {},
                           'curl'     => {},
                           'gd'       => {},

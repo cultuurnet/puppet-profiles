@@ -42,6 +42,7 @@ describe 'profiles::php' do
                                             'openssl/openssl.cafile' => '/etc/ssl/certs/ca-certificates.crt'
                                           },
             'extensions'               => {
+                                            'apcu'     => {},
                                             'bcmath'   => {},
                                             'curl'     => {},
                                             'gd'       => {},
@@ -135,6 +136,7 @@ describe 'profiles::php' do
                                             'PHP/post_max_size'       => '24M'
                                           },
             'extensions'               => {
+                                            'apcu'     => {},
                                             'bcmath'   => {},
                                             'curl'     => {},
                                             'gd'       => {},
@@ -222,6 +224,7 @@ describe 'profiles::php' do
                                             'openssl/openssl.cafile' => '/etc/ssl/certs/ca-certificates.crt'
                                           },
             'extensions'               => {
+                                            'apcu'     => {},
                                             'bcmath'   => {},
                                             'curl'     => {},
                                             'gd'       => {},

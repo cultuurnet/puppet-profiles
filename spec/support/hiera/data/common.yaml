@@ -2,6 +2,8 @@
 data::puppet::puppetdb::url: 'http://localhost:8081'
 data::puppet::puppetserver::url: 'https://puppetserver.example.com:8140'
 
+data::newrelic_license_key: 'my_license_key'
+
 profiles::jenkins::controller::admin_password: 'bar'
 profiles::jenkins::controller::url: 'https://foobar.com/'
 
@@ -73,3 +75,8 @@ profiles::php::fpm_socket_type: 'tcp'
 terraform::volumes::ebs::xvdb::size: 60
 terraform::volumes::ebs::xvdc::size: 40
 terraform::volumes::ebs::xvdd::size: 20
+
+terraform::rds::mysqld_version: '8.0.33'
+terraform::rds::user: 'admin'
+terraform::rds::password: 'mypass'
+terraform::rds::host: 'myrdshost.example.com'

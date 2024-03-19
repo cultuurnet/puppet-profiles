@@ -7,8 +7,8 @@ class profiles::uitpas::api::deployment (
   Optional[String] $puppetdb_url      = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
-  $database_name     = 'uitpas_api'
-  $database_user     = 'uitpas_api'
+  $database_name = 'uitpas_api'
+  $database_user = 'uitpas_api'
 
   realize Apt::Source[$repository]
   realize User['glassfish']
@@ -26,7 +26,7 @@ class profiles::uitpas::api::deployment (
   }
 
   exec { 'uitpas_database_management':
-    command     => "liquibase --driver=com.mysql.jdbc.Driver --classpath=/opt/uitpas-db-mgmt/uitpas-db-mgmt.jar:/usr/share/java/mysql-connector-j.jar --changeLogFile=migrations.xml --url='jdbc:mysql://${database_host}:3306/${database_name}?useSSL=false' --username=${database_user} --password=${database_password} update",
+    command     => "liquibase --driver=com.mysql.cj.jdbc.Driver --classpath=/opt/uitpas-db-mgmt/uitpas-db-mgmt.jar:/usr/share/java/mysql-connector-j.jar --changeLogFile=migrations.xml --url='jdbc:mysql://${database_host}:3306/${database_name}?useSSL=false' --username=${database_user} --password=${database_password} update",
     path        => ['/opt/liquibase', '/usr/local/bin', '/usr/bin', '/bin'],
     refreshonly => true,
     logoutput   => true,
@@ -43,6 +43,11 @@ class profiles::uitpas::api::deployment (
     precompilejsp => false,
     source        => '/opt/uitpas-api/uitpas-api.war',
     require       => User['glassfish']
+  }
+
+  class { 'profiles::uitpas::api::cron':
+    portbase => $portbase,
+    require  => App['uitpas-api']
   }
 
   profiles::deployment::versions { $title:

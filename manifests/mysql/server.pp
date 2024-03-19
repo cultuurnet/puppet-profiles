@@ -11,7 +11,6 @@ class profiles::mysql::server (
 ) inherits ::profiles {
 
   $root_user = 'root'
-  $host      = 'localhost'
   $options   = {
                  'client' => { 'default-character-set' => 'utf8mb4' },
                  'mysql'  => { 'default-character-set' => 'utf8mb4' },
@@ -31,8 +30,51 @@ class profiles::mysql::server (
 
   include profiles::firewall::rules
 
-  if !($listen_address == '127.0.0.1') {
+  if $listen_address == '127.0.0.1' {
+    profiles::mysql::root_my_cnf { 'localhost':
+      database_user     => $root_user,
+      database_password => $root_password,
+      before            => Class['mysql::server']
+    }
+  } else {
+    profiles::mysql::root_my_cnf { 'localhost':
+      database_user     => $root_user,
+      database_password => $root_password,
+      before            => Class['mysql::server']
+    }
+
+    @@profiles::mysql::root_my_cnf { $facts['networking']['fqdn']:
+      database_user     => $root_user,
+      database_password => $root_password,
+      before            => Class['mysql::server']
+    }
+
     realize Firewall['400 accept mysql traffic']
+
+    if $facts['mysqld_version'] {
+      @@file { 'mysqld_version_external_fact':
+        ensure  => 'file',
+        path    => '/etc/puppetlabs/facter/facts.d/mysqld_version.txt',
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0644',
+        content => "mysqld_version=${facts['mysqld_version']}",
+        tag     => ['mysqld_version', $facts['networking']['fqdn']]
+      }
+    }
+
+    mysql_user { "${root_user}@%":
+      password_hash => mysql::password($root_password),
+      require       => [Class['mysql::server'], Profiles::Mysql::Root_my_cnf['localhost']]
+    }
+
+    mysql_grant { "${root_user}@%/*.*":
+      user          => "${root_user}@%",
+      options       => ['GRANT'],
+      privileges    => ['ALL'],
+      table         => '*.*',
+      require       => [Class['mysql::server'], Profiles::Mysql::Root_my_cnf['localhost']]
+    }
   }
 
   realize Group['mysql']
@@ -78,16 +120,6 @@ class profiles::mysql::server (
       require => [Profiles::Lvm::Mount['mysqldata'], File['/var/lib/mysql']],
       before  => Class['mysql::server']
     }
-  }
-
-  file { 'root_my_cnf':
-    ensure  => 'file',
-    path    => '/root/.my.cnf',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0400',
-    content => template('profiles/mysql/my.cnf.erb'),
-    before  => Class['mysql::server']
   }
 
   systemd::dropin_file { 'mysql override.conf':

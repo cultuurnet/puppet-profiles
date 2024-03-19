@@ -12,6 +12,7 @@ describe 'profiles::apache' do
           'mpm_module'        => 'prefork',
           'mpm_module_config' => {},
           'http2'             => false,
+          'limitreqfieldsize' => 8190,
           'service_status'    => 'running',
           'metrics'           => true
         ) }
@@ -26,6 +27,7 @@ describe 'profiles::apache' do
           'default_vhost'         => true,
           'protocols'             => ['http/1.1'],
           'protocols_honor_order' => true,
+          'limitreqfieldsize'     => 8190,
           'service_manage'        => true,
           'service_ensure'        => 'running',
           'service_enable'        => true
@@ -43,13 +45,14 @@ describe 'profiles::apache' do
         it { is_expected.to contain_user('www-data').that_comes_before('Class[apache]') }
       end
 
-      context "with mpm_module => worker, mpm_module_config => { startservers => 8, maxclients => 256 }, http2 => true, service_status => stopped and metrics => false" do
+      context "with mpm_module => worker, mpm_module_config => { startservers => 8, maxclients => 256 }, http2 => true, limitreqfieldsize => 32766, service_status => stopped and metrics => false" do
         let(:params) { {
-          'mpm_module'        => 'worker',
-          'mpm_module_config' => { 'startservers' => 8, 'maxclients' => 256 },
-          'http2'             => true,
-          'service_status'    => 'stopped',
-          'metrics'           => false
+          'mpm_module'            => 'worker',
+          'mpm_module_config'     => { 'startservers' => 8, 'maxclients' => 256 },
+          'http2'                 => true,
+          'limitreqfieldsize'     => 32766,
+          'service_status'        => 'stopped',
+          'metrics'               => false
         } }
 
         it { is_expected.to contain_class('apache').with(
@@ -59,6 +62,7 @@ describe 'profiles::apache' do
           'default_vhost'         => true,
           'protocols'             => ['h2c', 'http/1.1'],
           'protocols_honor_order' => true,
+          'limitreqfieldsize'     => 32766,
           'service_manage'        => true,
           'service_ensure'        => 'stopped',
           'service_enable'        => false

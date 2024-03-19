@@ -5,6 +5,7 @@ class profiles::uitpas::api (
   Optional[String]           $initial_heap      = undef,
   Optional[String]           $maximum_heap      = undef,
   Boolean                    $jmx               = true,
+  Boolean                    $newrelic          = true,
   Integer                    $portbase          = 4800,
   Enum['running', 'stopped'] $service_status    = 'running',
   Hash                       $settings          = {}
@@ -24,7 +25,22 @@ class profiles::uitpas::api (
   if $database_host == '127.0.0.1' {
     include ::profiles::mysql::server
 
+    $database_host_remote    = false
+    $database_host_available = true
+
     Class['profiles::mysql::server'] -> Mysql_database[$database_name]
+  } else {
+    include ::profiles::mysql::rds
+
+    $database_host_remote = true
+
+    if $facts['mysqld_version'] {
+      $database_host_available = true
+
+      Class['profiles::mysql::rds'] -> Mysql_database[$database_name]
+    } else {
+      $database_host_available = false
+    }
   }
 
   realize Group['glassfish']
@@ -34,52 +50,71 @@ class profiles::uitpas::api (
   realize Package['liquibase']
   realize Package['mysql-connector-j']
 
-  mysql_database { $database_name:
-    charset => 'utf8mb4',
-    collate => 'utf8mb4_unicode_ci'
-  }
-
-  profiles::mysql::app_user { $database_user:
-    database => $database_name,
-    password => $database_password,
-    require  => Mysql_database[$database_name]
-  }
-
   profiles::glassfish::domain { 'uitpas':
-    portbase       => $portbase,
-    initial_heap   => $initial_heap,
-    maximum_heap   => $maximum_heap,
-    jmx            => $jmx,
-    service_status => $service_status,
-    require        => Class['profiles::glassfish'],
-    notify         => Service['uitpas']
+    portbase          => $portbase,
+    initial_heap      => $initial_heap,
+    maximum_heap      => $maximum_heap,
+    jmx               => $jmx,
+    newrelic          => $newrelic,
+    newrelic_app_name => "uitpas-api-${environment}",
+    service_status    => $service_status,
+    require           => Class['profiles::glassfish'],
+    notify            => Service['uitpas']
   }
 
-  jdbcconnectionpool { 'mysql_uitpas_api_j2eePool':
-    ensure       => 'present',
-    resourcetype => 'javax.sql.DataSource',
-    dsclassname  => 'com.mysql.jdbc.jdbc2.optional.MysqlDataSource',
-    properties   => {
-                      'serverName'        => $database_host,
-                      'portNumber'        => '3306',
-                      'databaseName'      => $database_name,
-                      'User'              => $database_user,
-                      'Password'          => $database_password,
-                      'URL'               => "jdbc:mysql://${database_host}:3306/${database_name}",
-                      'driverClass'       => 'com.mysql.jdbc.Driver',
-                      'characterEncoding' => 'UTF-8',
-                      'useUnicode'        => true,
-                      'useSSL'            => false
-                    },
-    require      => [Profiles::Glassfish::Domain['uitpas'], Profiles::Mysql::App_user['uitpas_api']],
-    *            => $default_attributes
-  }
+  if $database_host_available {
+    mysql_database { $database_name:
+      charset => 'utf8mb4',
+      collate => 'utf8mb4_unicode_ci'
+    }
 
-  jdbcresource { 'jdbc/cultuurnet_uitpas':
-    ensure         => 'present',
-    connectionpool => 'mysql_uitpas_api_j2eePool',
-    require        => Jdbcconnectionpool['mysql_uitpas_api_j2eePool'],
-    *              => $default_attributes
+    profiles::mysql::app_user { $database_user:
+      database => $database_name,
+      password => $database_password,
+      remote   => $database_host_remote,
+      require  => Mysql_database[$database_name]
+    }
+
+    jdbcconnectionpool { 'mysql_uitpas_api_j2eePool':
+      ensure       => 'present',
+      resourcetype => 'javax.sql.DataSource',
+      dsclassname  => 'com.mysql.cj.jdbc.MysqlDataSource',
+      properties   => {
+                        'serverName'        => $database_host,
+                        'portNumber'        => '3306',
+                        'databaseName'      => $database_name,
+                        'User'              => $database_user,
+                        'Password'          => $database_password,
+                        'URL'               => "jdbc:mysql://${database_host}:3306/${database_name}",
+                        'driverClass'       => 'com.mysql.cj.jdbc.Driver',
+                        'characterEncoding' => 'UTF-8',
+                        'useUnicode'        => true,
+                        'useSSL'            => false
+                      },
+      require      => [Profiles::Glassfish::Domain['uitpas'], Profiles::Mysql::App_user['uitpas_api']],
+      *            => $default_attributes
+    }
+
+    jdbcresource { 'jdbc/cultuurnet_uitpas':
+      ensure         => 'present',
+      connectionpool => 'mysql_uitpas_api_j2eePool',
+      require        => Jdbcconnectionpool['mysql_uitpas_api_j2eePool'],
+      *              => $default_attributes
+    }
+
+    if $deployment {
+      class { 'profiles::uitpas::api::deployment':
+        database_password => $database_password,
+        database_host     => $database_host,
+        portbase          => $portbase
+      }
+
+      Class['profiles::glassfish'] -> Class['profiles::uitpas::api::deployment']
+      Package['liquibase'] -> Class['profiles::uitpas::api::deployment']
+      Package['mysql-connector-j'] -> Class['profiles::uitpas::api::deployment']
+      File['Domain uitpas mysql-connector-j'] -> Class['profiles::uitpas::api::deployment']
+      Profiles::Mysql::App_user[$database_user] -> Class['profiles::uitpas::api::deployment']
+    }
   }
 
   set { 'server.network-config.protocols.protocol.http-listener-1.http.scheme-mapping':
@@ -146,17 +181,12 @@ class profiles::uitpas::api (
     require   => Profiles::Glassfish::Domain::Service_alias['uitpas']
   }
 
-  if $deployment {
-    class { 'profiles::uitpas::api::deployment':
-      database_password => $database_password,
-      database_host     => $database_host,
-      portbase          => $portbase
-    }
-
-    Class['profiles::glassfish'] -> Class['profiles::uitpas::api::deployment']
-    Package['liquibase'] -> Class['profiles::uitpas::api::deployment']
-    Package['mysql-connector-j'] -> Class['profiles::uitpas::api::deployment']
-    Profiles::Mysql::App_user[$database_user] -> Class['profiles::uitpas::api::deployment']
+  file { 'Domain uitpas mysql-connector-j':
+    ensure  => 'file',
+    path    => '/opt/payara/glassfish/lib/mysql-connector-j.jar',
+    source  => '/usr/share/java/mysql-connector-j.jar',
+    require => Package['mysql-connector-j'],
+    before  => Profiles::Glassfish::Domain['uitpas']
   }
 
   # include ::profiles::uitpas::api::monitoring

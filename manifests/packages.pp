@@ -76,6 +76,10 @@ class profiles::packages inherits ::profiles {
     ensure  => 'present'
   }
 
+  @package { 'mysql-client':
+    ensure  => 'present'
+  }
+
   @package { 'nfs-common':
     ensure  => 'present'
   }
