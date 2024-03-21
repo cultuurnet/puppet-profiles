@@ -20,8 +20,8 @@ class profiles::museumpas::website (
   include apache::vhosts
   include profiles::firewall::rules
 
-  $image_libraries.each |$image_libary| {
-    package { $image_libary:
+  $image_libraries.each |$image_library| {
+    package { $image_library:
       ensure => 'present'
     }
   }
