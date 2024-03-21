@@ -53,20 +53,6 @@ class profiles::uit::api (
   #  require  => Mysql_database[$database_name]
   #}
 
-  if $recommender_password {
-    profiles::mysql::app_user { 'recommender':
-      database => $database_name,
-      table    => 'user_recommendations',
-      password => $recommender_password,
-      remote   => true,
-      require  => Mysql_database[$database_name]
-    }
-
-    if $deployment {
-      Class['profiles::uit::api::deployment'] -> Profiles::Mysql::App_user['recommender']
-    }
-  }
-
   if $settings::storeconfigs {
     Profiles::Mysql::App_user <<| database == $database_name and tag == $environment |>>
   }
@@ -74,6 +60,16 @@ class profiles::uit::api (
   if $deployment {
     class { 'profiles::uit::api::deployment':
       service_port => $service_port
+    }
+
+    if $recommender_password {
+      profiles::mysql::app_user { 'recommender':
+        database => $database_name,
+        table    => 'user_recommendations',
+        password => $recommender_password,
+        remote   => true,
+        require  => [Mysql_database[$database_name], Class['profiles::uit::api::deployment']]
+      }
     }
 
     Class['profiles::nodejs'] -> Class['profiles::uit::api::deployment']

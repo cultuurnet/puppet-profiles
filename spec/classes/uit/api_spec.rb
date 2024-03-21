@@ -88,6 +88,7 @@ describe 'profiles::uit::api' do
 
           it { is_expected.to contain_class('profiles::nodejs') }
           it { is_expected.to_not contain_class('profiles::uit::api::deployment') }
+          it { is_expected.not_to contain_profiles__mysql__app_user('recommender') }
         end
 
         context 'without hieradata' do
