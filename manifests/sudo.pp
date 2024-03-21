@@ -4,6 +4,15 @@ class profiles::sudo inherits ::profiles {
 
   if $facts['ec2_metadata'] {
     $admin_user = 'ubuntu'
+
+    realize Group['ssm-user']
+    realize User['ssm-user']
+
+    sudo::conf { 'ssm-user':
+      priority => '10',
+      content  => 'ssm-user ALL=(ALL) NOPASSWD: ALL',
+      require  => [Class['sudo'], User['ssm-user']]
+    }
   } else {
     $admin_user = 'vagrant'
   }

@@ -139,6 +139,16 @@ describe 'profiles::users' do
           'shell'          => '/bin/bash',
           'uid'            => '1005'
         ) }
+
+        it { is_expected.to contain_user('ssm-user').with(
+          'ensure'         => 'present',
+          'gid'            => 'ssm-user',
+          'home'           => '/home/ssm-user',
+          'managehome'     => true,
+          'purge_ssh_keys' => true,
+          'shell'          => '/bin/sh',
+          'uid'            => '1006'
+        ) }
       end
     end
   end

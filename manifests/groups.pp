@@ -79,4 +79,9 @@ class profiles::groups inherits ::profiles {
     ensure => 'present',
     gid    => '1005'
   }
+
+  @group { 'ssm-user':
+    ensure => 'present',
+    gid    => '1006'
+  }
 }

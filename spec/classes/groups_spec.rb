@@ -79,6 +79,11 @@ describe 'profiles::groups' do
           'ensure' => 'present',
           'gid'    => '1005'
         ) }
+
+        it { is_expected.to contain_group('ssm-user').with(
+          'ensure' => 'present',
+          'gid'    => '1006'
+        ) }
       end
     end
   end

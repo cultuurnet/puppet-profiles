@@ -149,4 +149,14 @@ class profiles::users inherits ::profiles {
     shell          => '/bin/bash',
     uid            => '1005'
   }
+
+  @user { 'ssm-user':
+    ensure         => 'present',
+    gid            => 'ssm-user',
+    home           => '/home/ssm-user',
+    managehome     => true,
+    purge_ssh_keys => true,
+    shell          => '/bin/sh',
+    uid            => '1006'
+  }
 }
