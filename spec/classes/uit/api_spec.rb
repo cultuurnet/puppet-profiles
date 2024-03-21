@@ -17,11 +17,12 @@ describe 'profiles::uit::api' do
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_class('profiles::uit::api').with(
-            'servername'        => 'foo.example.com',
-            'database_password' => 'secret',
-            'serveraliases'     => [],
-            'deployment'        => true,
-            'service_port'      => 4000
+            'servername'           => 'foo.example.com',
+            'database_password'    => 'secret',
+            'recommender_password' => nil,
+            'serveraliases'        => [],
+            'deployment'           => true,
+            'service_port'         => 4000
           ) }
 
           it { is_expected.to contain_group('www-data') }
@@ -52,6 +53,8 @@ describe 'profiles::uit::api' do
             'database' => 'uit_api',
             'password' => 'secret'
           ) }
+
+          it { is_expected.not_to contain_profiles__mysql__app_user('recommender') }
 
           it { is_expected.to contain_class('profiles::uit::api::deployment').with(
              'service_port' => 4000
@@ -94,12 +97,13 @@ describe 'profiles::uit::api' do
         end
       end
 
-      context 'with servername => bar.example.com, serveraliases => [alias1.example.com, alias2.example.com], service_port => 4001 and database_password => notsosecret' do
+      context 'with servername => bar.example.com, serveraliases => [alias1.example.com, alias2.example.com], service_port => 4001, recommender_password => foo and database_password => notsosecret' do
         let(:params) { {
-          'servername'        => 'bar.example.com',
-          'serveraliases'     => ['alias1.example.com', 'alias2.example.com'],
-          'service_port'      => 4001,
-          'database_password' => 'notsosecret'
+          'servername'           => 'bar.example.com',
+          'serveraliases'        => ['alias1.example.com', 'alias2.example.com'],
+          'service_port'         => 4001,
+          'recommender_password' => 'foo',
+          'database_password'    => 'notsosecret'
         } }
 
         context 'with hieradata' do
@@ -120,7 +124,17 @@ describe 'profiles::uit::api' do
             'password' => 'notsosecret'
           ) }
 
+          it { is_expected.to contain_profiles__mysql__app_user('recommender').with(
+            'user'     => 'recommender',
+            'database' => 'uit_api',
+            'table'    => 'user_recommendations',
+            'remote'   => true,
+            'password' => 'foo'
+          ) }
+
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://bar.example.com').that_requires('Class[profiles::uit::api::deployment]') }
+          it { is_expected.to contain_profiles__mysql__app_user('recommender').that_requires('Mysql_database[uit_api]') }
+          it { is_expected.to contain_profiles__mysql__app_user('recommender').that_requires('Class[profiles::uit::api::deployment]') }
         end
       end
 
