@@ -54,6 +54,13 @@ describe 'profiles::uit::api' do
             'password' => 'secret'
           ) }
 
+          it { is_expected.to contain_profiles__mysql__app_user('etl').with(
+            'database' => 'uit_api',
+            'password' => 'my_etl_password',
+            'remote'   => true,
+            'readonly' => true
+          ) }
+
           it { is_expected.not_to contain_profiles__mysql__app_user('recommender') }
 
           it { is_expected.to contain_class('profiles::uit::api::deployment').with(
@@ -73,6 +80,7 @@ describe 'profiles::uit::api' do
           it { is_expected.to contain_mysql_database('uit_api').that_requires('Class[profiles::mysql::server]') }
           it { is_expected.to contain_profiles__mysql__app_user('uit_api').that_requires('Mysql_database[uit_api]') }
           it { is_expected.to contain_profiles__mysql__app_user('uit_api').that_comes_before('Class[profiles::uit::api::deployment]') }
+          it { is_expected.to contain_profiles__mysql__app_user('etl').that_requires('Mysql_database[uit_api]') }
           it { is_expected.to contain_class('profiles::uit::api::deployment').that_requires('Class[profiles::nodejs]') }
           it { is_expected.to contain_class('profiles::uit::api::deployment').that_requires('Class[profiles::mysql::server]') }
           it { is_expected.to contain_class('profiles::uit::api::deployment').that_requires('Class[profiles::redis]') }
@@ -84,11 +92,21 @@ describe 'profiles::uit::api' do
             super().merge( { 'deployment' => false } )
           }
 
-          it { is_expected.to compile.with_all_deps }
+          context 'with hieradata' do
+            let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-          it { is_expected.to contain_class('profiles::nodejs') }
-          it { is_expected.to_not contain_class('profiles::uit::api::deployment') }
-          it { is_expected.not_to contain_profiles__mysql__app_user('recommender') }
+            it { is_expected.to compile.with_all_deps }
+
+            it { is_expected.to contain_class('profiles::nodejs') }
+            it { is_expected.to_not contain_class('profiles::uit::api::deployment') }
+            it { is_expected.not_to contain_profiles__mysql__app_user('recommender') }
+          end
+
+          context 'without hieradata' do
+            let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
+
+            it { expect { catalogue }.to raise_error(Puppet::ParseError, /parameter 'password' expects a String value, got Undef/) }
+          end
         end
 
         context 'without hieradata' do

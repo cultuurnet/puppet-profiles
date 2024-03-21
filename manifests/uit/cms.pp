@@ -73,6 +73,14 @@ class profiles::uit::cms (
     require  => Mysql_database[$database_name]
   }
 
+  profiles::mysql::app_user { 'etl':
+    database => $database_name,
+    password => lookup('data::mysql::etl::password', Optional[String], 'first', undef),
+    readonly => true,
+    remote   => true,
+    require  => Mysql_database[$database_name]
+  }
+
   if $deployment {
     include profiles::uit::cms::deployment
 

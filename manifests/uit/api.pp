@@ -45,13 +45,13 @@ class profiles::uit::api (
     require  => Mysql_database[$database_name]
   }
 
-  #profiles::mysql::app_user { 'etl':
-  #  database => $database_name,
-  #  password => ,
-  #  readonly => true,
-  #  remote   => true,
-  #  require  => Mysql_database[$database_name]
-  #}
+  profiles::mysql::app_user { 'etl':
+    database => $database_name,
+    password => lookup('data::mysql::etl::password', Optional[String], 'first', undef),
+    readonly => true,
+    remote   => true,
+    require  => Mysql_database[$database_name]
+  }
 
   if $settings::storeconfigs {
     Profiles::Mysql::App_user <<| database == $database_name and tag == $environment |>>
