@@ -6,7 +6,7 @@ class profiles::museumpas::website (
   Variant[String, Array[String]] $image_libraries = ['jpegoptim', 'optipng', 'pngquant', 'gifsicle'],
   Boolean $install_meilisearch                    = true,
   Boolean $install_redis                          = true,
-  Boolean $deployment                             = true,
+  Boolean $deployment                             = true
 ) inherits ::profiles {
 
   $basedir = '/var/www/museumpas'
