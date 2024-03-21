@@ -1,14 +1,15 @@
 class profiles::museumpas::website (
-  String $mysql_version                         = undef,
-  String $mysql_admin_user                      = 'admin',
-  String $mysql_admin_password                  = undef,
-  String $mysql_host                            = undef,
-  Hash $mysql_databases                         = undef,
-  String $servername                            = undef,
-  Variant[String, Array[String]] $serveraliases = [],
-  Boolean $install_meilisearch                  = true,
-  Boolean $install_redis                        = true,
-  Boolean $deployment                           = true
+  String $mysql_version                           = undef,
+  String $mysql_admin_user                        = 'admin',
+  String $mysql_admin_password                    = undef,
+  String $mysql_host                              = undef,
+  Hash $mysql_databases                           = undef,
+  String $servername                              = undef,
+  Variant[String, Array[String]] $serveraliases   = [],
+  Variant[String, Array[String]] $image_libraries = ['jpegoptim', 'optipng', 'pngquant', 'gifsicle'],
+  Boolean $install_meilisearch                    = true,
+  Boolean $install_redis                          = true,
+  Boolean $deployment                             = true
 ) inherits ::profiles {
 
   $basedir = '/var/www/museumpas'
@@ -18,6 +19,12 @@ class profiles::museumpas::website (
   include apache::mod::rewrite
   include apache::vhosts
   include profiles::firewall::rules
+
+  $image_libraries.each |$image_libary| {
+    package { $image_libary:
+      ensure => 'present'
+    }
+  }
 
   if $install_redis {
     include profiles::redis
