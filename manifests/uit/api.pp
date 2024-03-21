@@ -1,9 +1,10 @@
 class profiles::uit::api (
   String                        $servername,
   String                        $database_password,
-  Variant[String,Array[String]] $serveraliases     = [],
-  Boolean                       $deployment        = true,
-  Integer                       $service_port      = 4000
+  Optional[String]              $recommender_password = undef,
+  Variant[String,Array[String]] $serveraliases        = [],
+  Boolean                       $deployment           = true,
+  Integer                       $service_port         = 4000
 ) inherits ::profiles {
 
   $basedir       = '/var/www/uit-api'
@@ -44,6 +45,14 @@ class profiles::uit::api (
     require  => Mysql_database[$database_name]
   }
 
+  #profiles::mysql::app_user { 'etl':
+  #  database => $database_name,
+  #  password => ,
+  #  readonly => true,
+  #  remote   => true,
+  #  require  => Mysql_database[$database_name]
+  #}
+
   if $settings::storeconfigs {
     Profiles::Mysql::App_user <<| database == $database_name and tag == $environment |>>
   }
@@ -51,6 +60,16 @@ class profiles::uit::api (
   if $deployment {
     class { 'profiles::uit::api::deployment':
       service_port => $service_port
+    }
+
+    if $recommender_password {
+      profiles::mysql::app_user { 'recommender':
+        database => $database_name,
+        table    => 'user_recommendations',
+        password => $recommender_password,
+        remote   => true,
+        require  => [Mysql_database[$database_name], Class['profiles::uit::api::deployment']]
+      }
     }
 
     Class['profiles::nodejs'] -> Class['profiles::uit::api::deployment']
