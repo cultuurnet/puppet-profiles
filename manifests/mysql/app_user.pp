@@ -11,7 +11,7 @@ define profiles::mysql::app_user (
   include ::profiles
 
   $allowed_hosts = $remote ? { true => '%', false => '127.0.0.1' }
-  $privileges    = $readonly ? { true => ['READ', 'SHOW VIEW'], false => ['ALL'] }
+  $privileges    = $readonly ? { true => ['SELECT', 'SHOW VIEW'], false => ['ALL'] }
 
   mysql_user { "${user}@${allowed_hosts}":
     ensure        => $ensure,

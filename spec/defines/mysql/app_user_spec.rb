@@ -70,7 +70,7 @@ describe 'profiles::mysql::app_user' do
           it { is_expected.to contain_mysql_grant('testuser@%/testdb.test').with(
             'ensure'     => 'present',
             'options'    => ['GRANT'],
-            'privileges' => ['READ', 'SHOW VIEW'],
+            'privileges' => ['SELECT', 'SHOW VIEW'],
             'table'      => 'testdb.test',
             'user'       => 'testuser@%',
           ) }
