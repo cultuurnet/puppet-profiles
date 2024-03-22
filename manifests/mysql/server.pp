@@ -138,11 +138,11 @@ class profiles::mysql::server (
     override_options   => $options
   }
 
-  include profiles::mysql::logging
+  include profiles::mysql::server::logging
 
   Group['mysql'] -> Class['mysql::server']
   User['mysql'] -> Class['mysql::server']
   Systemd::Dropin_file['mysql override.conf'] -> Class['mysql::server']
   Systemd::Dropin_file['mysql override.conf'] ~> Class['mysql::server::service']
-  Class['mysql::server'] -> Class['profiles::mysql::logging']
+  Class['mysql::server'] -> Class['profiles::mysql::server::logging']
 }

@@ -1,4 +1,4 @@
-describe 'profiles::mysql::logging' do
+describe 'profiles::mysql::server::logging' do
   include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|

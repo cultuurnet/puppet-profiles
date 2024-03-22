@@ -1,4 +1,4 @@
-class profiles::mysql::logging inherits ::profiles {
+class profiles::mysql::server::logging inherits ::profiles {
 
   include profiles::logrotate
 

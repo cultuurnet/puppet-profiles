@@ -70,14 +70,14 @@ describe 'profiles::mysql::server' do
                                   }
         ) }
 
-        it { is_expected.to contain_class('profiles::mysql::logging') }
+        it { is_expected.to contain_class('profiles::mysql::server::logging') }
 
         it { is_expected.to contain_group('mysql').that_comes_before('Class[mysql::server]') }
         it { is_expected.to contain_user('mysql').that_comes_before('Class[mysql::server]') }
         it { is_expected.to contain_profiles__mysql__root_my_cnf('localhost').that_comes_before('Class[mysql::server]') }
         it { is_expected.to contain_systemd__dropin_file('mysql override.conf').that_comes_before('Class[mysql::server]') }
         it { is_expected.to contain_systemd__dropin_file('mysql override.conf').that_notifies('Class[mysql::server::service]') }
-        it { is_expected.to contain_class('mysql::server').that_comes_before('Class[profiles::mysql::logging]') }
+        it { is_expected.to contain_class('mysql::server').that_comes_before('Class[profiles::mysql::server::logging]') }
       end
 
       context "with volume_group datavg present" do
