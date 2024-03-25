@@ -75,4 +75,11 @@ class profiles::uitpas::api::cron (
     minute  => '14',
     *       => $cron_default_attributes
   }
+
+  cron { 'uitpas clear jpa cache':
+    command => "/usr/bin/curl -q -s '${base_url}/uitid/rest/bootstrap/uitpas/clearJpaCache' > /dev/null",
+    hour    => '4',
+    minute  => '30',
+    *       => $cron_default_attributes
+  }
 }
