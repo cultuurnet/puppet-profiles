@@ -34,7 +34,7 @@ class profiles::uitdatabank::search (
     jvm_options => [ "-Xms${elasticsearch_initial_heap_size}", "-Xmx${elasticsearch_max_heap_size}"],
     datadir     => '/data/elasticsearch/es01',
     config      => {
-      'http.host'    => [ $facts['networking'][$interface]['ip'], '127.0.0.1'],
+      'http.host'    => [ $facts['networking']['interfaces'][$interface]['ip'], '127.0.0.1'],
       'network.host' => [ '127.0.0.1']
     }
   }
