@@ -17,11 +17,27 @@ describe 'profiles::files' do
         it { is_expected.to contain_file('/var/www').with(
           'ensure' => 'directory',
           'owner'  => 'www-data',
-          'group'  => 'www-data'
+          'group'  => 'www-data',
+          'mode'   => '0755'
+        ) }
+
+        it { is_expected.to contain_file('/data').with(
+          'ensure' => 'directory',
+          'owner'  => 'root',
+          'group'  => 'root',
+          'mode'   => '0755'
+        ) }
+
+        it { is_expected.to contain_file('/data/backup').with(
+          'ensure' => 'directory',
+          'owner'  => 'root',
+          'group'  => 'root',
+          'mode'   => '0755'
         ) }
 
         it { is_expected.to contain_file('/var/www').that_requires('Group[www-data]') }
         it { is_expected.to contain_file('/var/www').that_requires('User[www-data]') }
+        it { is_expected.to contain_file('/data/backup').that_requires('File[/data]') }
       end
     end
   end

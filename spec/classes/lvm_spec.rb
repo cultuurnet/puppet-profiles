@@ -31,12 +31,11 @@ describe 'profiles::lvm' do
           'manage_pkg' => true
         ) }
 
-        it { is_expected.to contain_file('data').with(
+        it { is_expected.to contain_file('/data').with(
           'ensure' => 'directory',
           'group'  => 'root',
           'mode'   => '0755',
-          'owner'  => 'root',
-          'path'   => '/data'
+          'owner'  => 'root'
         ) }
 
         it { is_expected.to have_physical_volume_resource_count(0) }
