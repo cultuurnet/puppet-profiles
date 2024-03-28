@@ -90,7 +90,7 @@ class profiles::uitpas::api (
                         'useUnicode'        => true,
                         'useSSL'            => false
                       },
-      require      => [Profiles::Glassfish::Domain['uitpas'], Profiles::Mysql::App_user['uitpas_api']],
+      require      => [Profiles::Glassfish::Domain['uitpas'], Profiles::Mysql::App_user["${database_user}@${database_name}"]],
       *            => $default_attributes
     }
 
@@ -112,7 +112,7 @@ class profiles::uitpas::api (
       Package['liquibase'] -> Class['profiles::uitpas::api::deployment']
       Package['mysql-connector-j'] -> Class['profiles::uitpas::api::deployment']
       File['Domain uitpas mysql-connector-j'] -> Class['profiles::uitpas::api::deployment']
-      Profiles::Mysql::App_user[$database_user] -> Class['profiles::uitpas::api::deployment']
+      Profiles::Mysql::App_user["${database_user}@${database_name}"] -> Class['profiles::uitpas::api::deployment']
     }
   }
 

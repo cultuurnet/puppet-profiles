@@ -61,8 +61,7 @@ class profiles::uit::api (
     }
 
     if $recommender_password {
-      profiles::mysql::app_user { 'recommender':
-        database => $database_name,
+      profiles::mysql::app_user { "recommender@${database_name}":
         table    => 'user_recommendations',
         password => $recommender_password,
         remote   => true,
@@ -74,7 +73,7 @@ class profiles::uit::api (
     Class['profiles::redis'] -> Class['profiles::uit::api::deployment']
     Class['profiles::mysql::server'] -> Class['profiles::uit::api::deployment']
     File['uit-api-log'] -> Class['profiles::uit::api::deployment']
-    Profiles::Mysql::App_user["${database_user}"] -> Class['profiles::uit::api::deployment']
+    Profiles::Mysql::App_user["${database_user}@${database_name}"] -> Class['profiles::uit::api::deployment']
     Class['profiles::uit::api::deployment'] -> Profiles::Apache::Vhost::Reverse_proxy["http://${servername}"]
   }
 
