@@ -49,19 +49,17 @@ describe 'profiles::uit::api' do
             'collate' => 'utf8mb4_unicode_ci'
           )}
 
-          it { is_expected.to contain_profiles__mysql__app_user('uit_api').with(
-            'database' => 'uit_api',
+          it { is_expected.to contain_profiles__mysql__app_user('uit_api@uit_api').with(
             'password' => 'secret'
           ) }
 
-          it { is_expected.to contain_profiles__mysql__app_user('etl').with(
-            'database' => 'uit_api',
+          it { is_expected.to contain_profiles__mysql__app_user('etl@uit_api').with(
             'password' => 'my_etl_password',
             'remote'   => true,
             'readonly' => true
           ) }
 
-          it { is_expected.not_to contain_profiles__mysql__app_user('recommender') }
+          it { is_expected.not_to contain_profiles__mysql__app_user('recommender@uit_api') }
 
           it { is_expected.to contain_class('profiles::uit::api::deployment').with(
              'service_port' => 4000
@@ -78,9 +76,9 @@ describe 'profiles::uit::api' do
           it { is_expected.to contain_file('uit-api-log').that_requires('User[www-data]') }
           it { is_expected.to contain_file('uit-api-log').that_requires('File[/var/www/uit-api]') }
           it { is_expected.to contain_mysql_database('uit_api').that_requires('Class[profiles::mysql::server]') }
-          it { is_expected.to contain_profiles__mysql__app_user('uit_api').that_requires('Mysql_database[uit_api]') }
-          it { is_expected.to contain_profiles__mysql__app_user('uit_api').that_comes_before('Class[profiles::uit::api::deployment]') }
-          it { is_expected.to contain_profiles__mysql__app_user('etl').that_requires('Mysql_database[uit_api]') }
+          it { is_expected.to contain_profiles__mysql__app_user('uit_api@uit_api').that_requires('Mysql_database[uit_api]') }
+          it { is_expected.to contain_profiles__mysql__app_user('uit_api@uit_api').that_comes_before('Class[profiles::uit::api::deployment]') }
+          it { is_expected.to contain_profiles__mysql__app_user('etl@uit_api').that_requires('Mysql_database[uit_api]') }
           it { is_expected.to contain_class('profiles::uit::api::deployment').that_requires('Class[profiles::nodejs]') }
           it { is_expected.to contain_class('profiles::uit::api::deployment').that_requires('Class[profiles::mysql::server]') }
           it { is_expected.to contain_class('profiles::uit::api::deployment').that_requires('Class[profiles::redis]') }
@@ -99,7 +97,7 @@ describe 'profiles::uit::api' do
 
             it { is_expected.to contain_class('profiles::nodejs') }
             it { is_expected.to_not contain_class('profiles::uit::api::deployment') }
-            it { is_expected.not_to contain_profiles__mysql__app_user('recommender') }
+            it { is_expected.not_to contain_profiles__mysql__app_user('recommender@uit_api') }
           end
 
           context 'without hieradata' do
@@ -137,13 +135,13 @@ describe 'profiles::uit::api' do
              'service_port' => 4001
           ) }
 
-          it { is_expected.to contain_profiles__mysql__app_user('uit_api').with(
+          it { is_expected.to contain_profiles__mysql__app_user('uit_api@uit_api').with(
             'user'     => 'uit_api',
             'database' => 'uit_api',
             'password' => 'notsosecret'
           ) }
 
-          it { is_expected.to contain_profiles__mysql__app_user('recommender').with(
+          it { is_expected.to contain_profiles__mysql__app_user('recommender@uit_api').with(
             'user'     => 'recommender',
             'database' => 'uit_api',
             'table'    => 'user_recommendations',
@@ -152,8 +150,8 @@ describe 'profiles::uit::api' do
           ) }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://bar.example.com').that_requires('Class[profiles::uit::api::deployment]') }
-          it { is_expected.to contain_profiles__mysql__app_user('recommender').that_requires('Mysql_database[uit_api]') }
-          it { is_expected.to contain_profiles__mysql__app_user('recommender').that_requires('Class[profiles::uit::api::deployment]') }
+          it { is_expected.to contain_profiles__mysql__app_user('recommender@uit_api').that_requires('Mysql_database[uit_api]') }
+          it { is_expected.to contain_profiles__mysql__app_user('recommender@uit_api').that_requires('Class[profiles::uit::api::deployment]') }
         end
       end
 
