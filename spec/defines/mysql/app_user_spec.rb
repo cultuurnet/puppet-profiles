@@ -101,7 +101,9 @@ describe 'profiles::mysql::app_user' do
             'ensure'        => 'absent'
           ) }
 
-          it { is_expected.not_to contain_mysql_grant('nouser@127.0.0.1/nodb.*') }
+          it { is_expected.to contain_mysql_grant('nouser@127.0.0.1/nodb.*').with(
+            'ensure'        => 'absent'
+          ) }
         end
       end
     end
