@@ -12,8 +12,7 @@ class profiles::uit::notifications (
   realize User['www-data']
   realize File['/var/www']
 
-  @@profiles::mysql::app_user { $database_user:
-    database => $database_name,
+  @@profiles::mysql::app_user { "${database_user}@${database_name}":
     password => $database_password,
     remote   => true,
     tag      => $environment

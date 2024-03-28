@@ -68,8 +68,7 @@ class profiles::uitpas::api (
       collate => 'utf8mb4_unicode_ci'
     }
 
-    profiles::mysql::app_user { $database_user:
-      database => $database_name,
+    profiles::mysql::app_user { "${database_user}@${database_name}":
       password => $database_password,
       remote   => $database_host_remote,
       require  => Mysql_database[$database_name]

@@ -33,8 +33,7 @@ describe 'profiles::uit::mail_subscriptions' do
           context 'in the acceptance environment' do
             let(:environment) { 'acceptance' }
 
-            it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_mail_subscriptions').with(
-              'database' => 'uit_api',
+            it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_mail_subscriptions@uit_api').with(
               'password' => 'p4ssw0rd',
               'tag'      => 'acceptance'
             ) }
@@ -43,8 +42,7 @@ describe 'profiles::uit::mail_subscriptions' do
           context 'in the testing environment' do
             let(:environment) { 'testing' }
 
-            it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_mail_subscriptions').with(
-              'database' => 'uit_api',
+            it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_mail_subscriptions@uit_api').with(
               'password' => 'p4ssw0rd',
               'tag'      => 'testing'
             ) }
@@ -79,8 +77,7 @@ describe 'profiles::uit::mail_subscriptions' do
           context 'in the production environment' do
             let(:environment) { 'production' }
 
-            it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_mail_subscriptions').with(
-              'database' => 'uit_api',
+            it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_mail_subscriptions@uit_api').with(
               'password' => 'foo',
               'tag'      => 'production'
             ) }

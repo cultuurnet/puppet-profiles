@@ -11,8 +11,7 @@ class profiles::uit::mail_subscriptions (
   realize Group['www-data']
   realize User['www-data']
 
-  @@profiles::mysql::app_user { $database_user:
-    database => $database_name,
+  @@profiles::mysql::app_user { "${database_user}@${database_name}":
     password => $database_password,
     tag      => $environment
   }
