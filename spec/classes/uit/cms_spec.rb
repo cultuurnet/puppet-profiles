@@ -125,7 +125,7 @@ describe 'profiles::uit::cms' do
           it { is_expected.to contain_class('profiles::uit::cms::deployment').that_requires('Class[profiles::php]') }
           it { is_expected.to contain_class('profiles::uit::cms::deployment').that_requires('Class[profiles::mysql::server]') }
           it { is_expected.to contain_class('profiles::uit::cms::deployment').that_requires('Mysql_database[uit_cms]') }
-          it { is_expected.to contain_class('profiles::uit::cms::deployment').that_requires('Profiles::Mysql::App_user[uit_cms]') }
+          it { is_expected.to contain_class('profiles::uit::cms::deployment').that_requires('Profiles::Mysql::App_user[uit_cms@uit_cms]') }
           it { is_expected.to contain_class('profiles::uit::cms::deployment').that_requires('File[/var/www/uit-cms/web/sites/default/files]') }
         end
 
