@@ -84,7 +84,7 @@ class profiles::uitpas::api::cron (
   }
 
   cron { 'uitpas clear cache':
-    command => "/usr/bin/curl -q -s '${base_url}/uitid/rest/bootstrap/uitpas/clearCache' > /dev/null",
+    command => "/usr/bin/curl -q -s '${base_url}/uitid/rest/bootstrap/uitpas/clearcaches' > /dev/null",
     hour    => '6',
     minute  => '15',
     *       => $cron_default_attributes
