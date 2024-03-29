@@ -5,16 +5,16 @@ describe 'profiles::uitpas::api' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with database_password => mypassword" do
-        let(:params) { {
-          'database_password' => 'mypassword'
-        } }
+      context 'in the production environment' do
+        let(:environment) { 'production' }
 
-        context 'in the production environment' do
-          let(:environment) { 'production' }
+        context 'with hieradata' do
+          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-          context 'with hieradata' do
-            let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+          context "with database_password => mypassword" do
+            let(:params) { {
+              'database_password' => 'mypassword'
+            } }
 
             it { is_expected.to compile.with_all_deps }
 
@@ -192,143 +192,132 @@ describe 'profiles::uitpas::api' do
             it { is_expected.to contain_class('profiles::uitpas::api::deployment').that_requires('Class[profiles::glassfish]') }
           end
 
-          context 'without hieradata' do
-            let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
+          context "with database_password => secret, database_host => db.example.com, initial_heap => 1024m, maximum_heap => 1536m, jmx => false, newrelic => false, portbase => 14800 and settings => { 'foo' => 'bar', 'baz' => 'test' }" do
+            let(:params) { {
+              'database_password' => 'secret',
+              'database_host'     => 'db.example.com',
+              'initial_heap'      => '1024m',
+              'maximum_heap'      => '1536m',
+              'jmx'               => false,
+              'newrelic'          => false,
+              'portbase'          => 14800,
+              'settings'          => { 'foo' => 'bar', 'baz' => 'test' }
+            } }
 
-            it { expect { catalogue }.to raise_error(Puppet::ParseError, /Profiles::Mysql::App_user\[etl@uitpas_api\]: parameter 'password' expects a String value/) }
-          end
-        end
-      end
+            it { is_expected.not_to contain_class('profiles::mysql::server') }
+            it { is_expected.to contain_class('profiles::mysql::rds') }
 
-      context 'with hieradata' do
-        let(:hiera_config) { 'spec/support/hiera/common.yaml' }
-
-        context "with database_password => secret, database_host => db.example.com, initial_heap => 1024m, maximum_heap => 1536m, jmx => false, newrelic => false, portbase => 14800 and settings => { 'foo' => 'bar', 'baz' => 'test' }" do
-          let(:params) { {
-            'database_password' => 'secret',
-            'database_host'     => 'db.example.com',
-            'initial_heap'      => '1024m',
-            'maximum_heap'      => '1536m',
-            'jmx'               => false,
-            'newrelic'          => false,
-            'portbase'          => 14800,
-            'settings'          => { 'foo' => 'bar', 'baz' => 'test' }
-          } }
-
-          it { is_expected.not_to contain_class('profiles::mysql::server') }
-          it { is_expected.to contain_class('profiles::mysql::rds') }
-
-          it { is_expected.to contain_set('server.network-config.protocols.protocol.http-listener-1.http.scheme-mapping').with(
-            'ensure'       => 'present',
-            'value'        => 'X-Forwarded-Proto',
-            'user'         => 'glassfish',
-            'passwordfile' => '/home/glassfish/asadmin.pass',
-            'portbase'     => '14800'
-          ) }
-
-          it { is_expected.to contain_set('server.thread-pools.thread-pool.http-thread-pool.max-thread-pool-size').with(
-            'ensure'       => 'present',
-            'value'        => '32',
-            'user'         => 'glassfish',
-            'passwordfile' => '/home/glassfish/asadmin.pass',
-            'portbase'     => '14800'
-          ) }
-
-          it { is_expected.to contain_systemproperty('foo').with(
-            'ensure'         => 'present',
-            'value'          => 'bar',
-            'portbase'       => '14800',
-            'user'           => 'glassfish',
-            'passwordfile'   => '/home/glassfish/asadmin.pass',
-          ) }
-
-          it { is_expected.to contain_systemproperty('baz').with(
-            'ensure'         => 'present',
-            'value'          => 'test',
-            'portbase'       => '14800',
-            'user'           => 'glassfish',
-            'passwordfile'   => '/home/glassfish/asadmin.pass',
-          ) }
-
-          it { is_expected.to contain_profiles__glassfish__domain('uitpas').with(
-            'initial_heap' => '1024m',
-            'maximum_heap' => '1536m',
-            'jmx'          => false,
-            'newrelic'     => false,
-            'portbase'     => '14800'
-          ) }
-
-          it { is_expected.to contain_systemproperty('foo').that_requires('Profiles::Glassfish::Domain[uitpas]') }
-          it { is_expected.to contain_systemproperty('foo').that_notifies('Service[uitpas]') }
-          it { is_expected.to contain_systemproperty('baz').that_requires('Profiles::Glassfish::Domain[uitpas]') }
-          it { is_expected.to contain_systemproperty('baz').that_notifies('Service[uitpas]') }
-
-          context "with fact mysqld_version => 8.0.33" do
-            let(:facts) { facts.merge( { 'mysqld_version' => '8.0.33' } ) }
-
-            it { is_expected.to contain_mysql_database('uitpas_api').with(
-              'charset' => 'utf8mb4',
-              'collate' => 'utf8mb4_unicode_ci'
+            it { is_expected.to contain_set('server.network-config.protocols.protocol.http-listener-1.http.scheme-mapping').with(
+              'ensure'       => 'present',
+              'value'        => 'X-Forwarded-Proto',
+              'user'         => 'glassfish',
+              'passwordfile' => '/home/glassfish/asadmin.pass',
+              'portbase'     => '14800'
             ) }
 
-            it { is_expected.to contain_profiles__mysql__app_user('uitpas_api@uitpas_api').with(
-              'password' => 'secret',
-              'remote'   => true
+            it { is_expected.to contain_set('server.thread-pools.thread-pool.http-thread-pool.max-thread-pool-size').with(
+              'ensure'       => 'present',
+              'value'        => '32',
+              'user'         => 'glassfish',
+              'passwordfile' => '/home/glassfish/asadmin.pass',
+              'portbase'     => '14800'
             ) }
 
-            it { is_expected.to contain_profiles__mysql__app_user('etl@uitpas_api').with(
-              'password' => 'my_etl_password',
-              'remote'   => true,
-              'readonly' => true
-            ) }
-
-            it { is_expected.to contain_jdbcconnectionpool('mysql_uitpas_api_j2eePool').with(
-              'ensure'              => 'present',
-              'user'                => 'glassfish',
-              'passwordfile'        => '/home/glassfish/asadmin.pass',
-              'portbase'            => '14800',
-              'resourcetype'        => 'javax.sql.DataSource',
-              'dsclassname'         => 'com.mysql.cj.jdbc.MysqlDataSource',
-              'properties'          => {
-                                         'serverName'        => 'db.example.com',
-                                         'portNumber'        => '3306',
-                                         'databaseName'      => 'uitpas_api',
-                                         'User'              => 'uitpas_api',
-                                         'Password'          => 'secret',
-                                         'URL'               => 'jdbc:mysql://db.example.com:3306/uitpas_api',
-                                         'driverClass'       => 'com.mysql.cj.jdbc.Driver',
-                                         'characterEncoding' => 'UTF-8',
-                                         'useUnicode'        => true,
-                                         'useSSL'            => false
-                                       }
-            )}
-
-            it { is_expected.to contain_jdbcresource('jdbc/cultuurnet_uitpas').with(
+            it { is_expected.to contain_systemproperty('foo').with(
               'ensure'         => 'present',
+              'value'          => 'bar',
               'portbase'       => '14800',
               'user'           => 'glassfish',
               'passwordfile'   => '/home/glassfish/asadmin.pass',
-              'connectionpool' => 'mysql_uitpas_api_j2eePool'
             ) }
 
-            it { is_expected.to contain_class('profiles::uitpas::api::deployment').with(
-              'database_password' => 'secret',
-              'database_host'     => 'db.example.com',
-              'portbase'          => 14800
+            it { is_expected.to contain_systemproperty('baz').with(
+              'ensure'         => 'present',
+              'value'          => 'test',
+              'portbase'       => '14800',
+              'user'           => 'glassfish',
+              'passwordfile'   => '/home/glassfish/asadmin.pass',
             ) }
-          end
 
-          context "without extra facts" do
-            let(:facts) { facts }
+            it { is_expected.to contain_profiles__glassfish__domain('uitpas').with(
+              'initial_heap' => '1024m',
+              'maximum_heap' => '1536m',
+              'jmx'          => false,
+              'newrelic'     => false,
+              'portbase'     => '14800'
+            ) }
 
-            it { is_expected.not_to contain_mysql_database('uitpas_api') }
-            it { is_expected.not_to contain_profiles__mysql__app_user('uitpas_api@uitpas_api') }
-            it { is_expected.not_to contain_profiles__mysql__app_user('etl@uitpas_api') }
-            it { is_expected.not_to contain_jdbcconnectionpool('mysql_uitpas_api_j2eePool') }
-            it { is_expected.not_to contain_jdbcresource('jdbc/cultuurnet_uitpas') }
-            it { is_expected.not_to contain_class('profiles::uitpas::api::deployment') }
+            it { is_expected.to contain_systemproperty('foo').that_requires('Profiles::Glassfish::Domain[uitpas]') }
+            it { is_expected.to contain_systemproperty('foo').that_notifies('Service[uitpas]') }
+            it { is_expected.to contain_systemproperty('baz').that_requires('Profiles::Glassfish::Domain[uitpas]') }
+            it { is_expected.to contain_systemproperty('baz').that_notifies('Service[uitpas]') }
+
+            context "with fact mysqld_version => 8.0.33" do
+              let(:facts) { facts.merge( { 'mysqld_version' => '8.0.33' } ) }
+
+              it { is_expected.to contain_mysql_database('uitpas_api').with(
+                'charset' => 'utf8mb4',
+                'collate' => 'utf8mb4_unicode_ci'
+              ) }
+
+              it { is_expected.to contain_profiles__mysql__app_user('uitpas_api@uitpas_api').with(
+                'password' => 'secret',
+                'remote'   => true
+              ) }
+
+              it { is_expected.to contain_profiles__mysql__app_user('etl@uitpas_api').with(
+                'password' => 'my_etl_password',
+                'remote'   => true,
+                'readonly' => true
+              ) }
+
+              it { is_expected.to contain_jdbcconnectionpool('mysql_uitpas_api_j2eePool').with(
+                'ensure'              => 'present',
+                'user'                => 'glassfish',
+                'passwordfile'        => '/home/glassfish/asadmin.pass',
+                'portbase'            => '14800',
+                'resourcetype'        => 'javax.sql.DataSource',
+                'dsclassname'         => 'com.mysql.cj.jdbc.MysqlDataSource',
+                'properties'          => {
+                                           'serverName'        => 'db.example.com',
+                                           'portNumber'        => '3306',
+                                           'databaseName'      => 'uitpas_api',
+                                           'User'              => 'uitpas_api',
+                                           'Password'          => 'secret',
+                                           'URL'               => 'jdbc:mysql://db.example.com:3306/uitpas_api',
+                                           'driverClass'       => 'com.mysql.cj.jdbc.Driver',
+                                           'characterEncoding' => 'UTF-8',
+                                           'useUnicode'        => true,
+                                           'useSSL'            => false
+                                         }
+              )}
+
+              it { is_expected.to contain_jdbcresource('jdbc/cultuurnet_uitpas').with(
+                'ensure'         => 'present',
+                'portbase'       => '14800',
+                'user'           => 'glassfish',
+                'passwordfile'   => '/home/glassfish/asadmin.pass',
+                'connectionpool' => 'mysql_uitpas_api_j2eePool'
+              ) }
+
+              it { is_expected.to contain_class('profiles::uitpas::api::deployment').with(
+                'database_password' => 'secret',
+                'database_host'     => 'db.example.com',
+                'portbase'          => 14800
+              ) }
+            end
+
+            context "without extra facts" do
+              let(:facts) { facts }
+
+              it { is_expected.not_to contain_mysql_database('uitpas_api') }
+              it { is_expected.not_to contain_profiles__mysql__app_user('uitpas_api@uitpas_api') }
+              it { is_expected.not_to contain_profiles__mysql__app_user('etl@uitpas_api') }
+              it { is_expected.not_to contain_jdbcconnectionpool('mysql_uitpas_api_j2eePool') }
+              it { is_expected.not_to contain_jdbcresource('jdbc/cultuurnet_uitpas') }
+              it { is_expected.not_to contain_class('profiles::uitpas::api::deployment') }
+            end
           end
-        end
 
         context "with database_password => mysecret and deployment => false" do
           let(:params) { {
@@ -338,15 +327,26 @@ describe 'profiles::uitpas::api' do
 
           it { is_expected.not_to contain_class('profiles::uitpas::api::deployment') }
         end
+      end
+
+      context 'without hieradata' do
+        let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
+
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'database_password'/) }
+      end
+    end
+
+    context 'in the testing environment' do
+      let(:environment) { 'testing' }
+
+      context 'with hieradata' do
+        let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
         context "with database_password => foo and service_status => stopped" do
           let(:params) { {
             'database_password' => 'foo',
             'service_status'    => 'stopped'
           } }
-
-          context 'in the testing environment' do
-            let(:environment) { 'testing' }
 
             it { is_expected.to contain_profiles__glassfish__domain('uitpas').with(
               'initial_heap'      => nil,
