@@ -93,7 +93,7 @@ describe 'profiles::uitpas::api::cron' do
           'command'     => "/usr/bin/curl -q -s 'http://127.0.0.1:4880/uitid/rest/bootstrap/uitpas/clearJpaCache' > /dev/null",
           'environment' => ['MAILTO=infra@publiq.be'],
           'user'        => 'glassfish',
-          'hour'        => '4',
+          'hour'        => '*/6',
           'minute'      => '30'
         ) }
 
