@@ -67,14 +67,12 @@ class profiles::uit::cms (
     require => Class['profiles::mysql::server']
   }
 
-  profiles::mysql::app_user { $database_user:
-    database => $database_name,
+  profiles::mysql::app_user { "${database_user}@${database_name}":
     password => $database_password,
     require  => Mysql_database[$database_name]
   }
 
-  profiles::mysql::app_user { 'etl':
-    database => $database_name,
+  profiles::mysql::app_user { "etl@${database_name}":
     password => lookup('data::mysql::etl::password', Optional[String], 'first', undef),
     readonly => true,
     remote   => true,
@@ -88,7 +86,7 @@ class profiles::uit::cms (
     Class['profiles::redis'] -> Class['profiles::uit::cms::deployment']
     Class['profiles::mysql::server'] -> Class['profiles::uit::cms::deployment']
     Mysql_database['uit_cms'] -> Class['profiles::uit::cms::deployment']
-    Profiles::Mysql::App_user[$database_user] -> Class['profiles::uit::cms::deployment']
+    Profiles::Mysql::App_user["${database_user}@${database_name}"] -> Class['profiles::uit::cms::deployment']
     File["${basedir}/web/sites/default/files"] -> Class['profiles::uit::cms::deployment']
     Class['profiles::uit::cms::deployment'] -> Profiles::Apache::Vhost::Php_fpm["http://${servername}"]
 

@@ -40,8 +40,7 @@ describe 'profiles::uit::notifications' do
           context 'in the acceptance environment' do
             let(:environment) { 'acceptance' }
 
-            it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_notifications').with(
-              'database' => 'uit_api',
+            it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_notifications@uit_api').with(
               'password' => 'p4ssw0rd',
               'remote'   => true,
               'tag'      => 'acceptance'
@@ -51,8 +50,7 @@ describe 'profiles::uit::notifications' do
           context 'in the testing environment' do
             let(:environment) { 'testing' }
 
-            it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_notifications').with(
-              'database' => 'uit_api',
+            it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_notifications@uit_api').with(
               'password' => 'p4ssw0rd',
               'remote'   => true,
               'tag'      => 'testing'
@@ -88,8 +86,7 @@ describe 'profiles::uit::notifications' do
           context 'in the production environment' do
             let(:environment) { 'production' }
 
-            it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_notifications').with(
-              'database' => 'uit_api',
+            it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_notifications@uit_api').with(
               'password' => 'foo',
               'remote'   => true,
               'tag'      => 'production'

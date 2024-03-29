@@ -50,8 +50,7 @@ describe 'profiles::uitpas::api' do
             'collate' => 'utf8mb4_unicode_ci'
           ) }
 
-          it { is_expected.to contain_profiles__mysql__app_user('uitpas_api').with(
-            'database' => 'uitpas_api',
+          it { is_expected.to contain_profiles__mysql__app_user('uitpas_api@uitpas_api').with(
             'password' => 'mypassword',
             'remote'   => false
           ) }
@@ -158,9 +157,9 @@ describe 'profiles::uitpas::api' do
           it { is_expected.to contain_package('mysql-connector-j').that_requires('Apt::Source[publiq-tools]') }
           it { is_expected.to contain_package('liquibase').that_comes_before('Class[profiles::uitpas::api::deployment]') }
           it { is_expected.to contain_package('mysql-connector-j').that_comes_before('Class[profiles::uitpas::api::deployment]') }
-          it { is_expected.to contain_profiles__mysql__app_user('uitpas_api').that_comes_before('Class[profiles::uitpas::api::deployment]') }
+          it { is_expected.to contain_profiles__mysql__app_user('uitpas_api@uitpas_api').that_comes_before('Class[profiles::uitpas::api::deployment]') }
           it { is_expected.to contain_jdbcconnectionpool('mysql_uitpas_api_j2eePool').that_requires('Profiles::Glassfish::Domain[uitpas]') }
-          it { is_expected.to contain_jdbcconnectionpool('mysql_uitpas_api_j2eePool').that_requires('Profiles::Mysql::App_user[uitpas_api]') }
+          it { is_expected.to contain_jdbcconnectionpool('mysql_uitpas_api_j2eePool').that_requires('Profiles::Mysql::App_user[uitpas_api@uitpas_api]') }
           it { is_expected.to contain_jdbcresource('jdbc/cultuurnet_uitpas').that_requires('Jdbcconnectionpool[mysql_uitpas_api_j2eePool]') }
           it { is_expected.to contain_set('server.network-config.protocols.protocol.http-listener-1.http.scheme-mapping').that_requires('Profiles::Glassfish::Domain[uitpas]') }
           it { is_expected.to contain_set('server.network-config.protocols.protocol.http-listener-1.http.scheme-mapping').that_notifies('Service[uitpas]') }
@@ -251,8 +250,7 @@ describe 'profiles::uitpas::api' do
             'collate' => 'utf8mb4_unicode_ci'
           ) }
 
-          it { is_expected.to contain_profiles__mysql__app_user('uitpas_api').with(
-            'database' => 'uitpas_api',
+          it { is_expected.to contain_profiles__mysql__app_user('uitpas_api@uitpas_api').with(
             'password' => 'secret',
             'remote'   => true
           ) }
@@ -297,7 +295,7 @@ describe 'profiles::uitpas::api' do
           let(:facts) { facts }
 
           it { is_expected.not_to contain_mysql_database('uitpas_api') }
-          it { is_expected.not_to contain_profiles__mysql__app_user('uitpas_api') }
+          it { is_expected.not_to contain_profiles__mysql__app_user('uitpas_api@uitpas_api') }
           it { is_expected.not_to contain_jdbcconnectionpool('mysql_uitpas_api_j2eePool') }
           it { is_expected.not_to contain_jdbcresource('jdbc/cultuurnet_uitpas') }
           it { is_expected.not_to contain_class('profiles::uitpas::api::deployment') }

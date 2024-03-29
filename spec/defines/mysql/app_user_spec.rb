@@ -3,18 +3,17 @@ describe 'profiles::mysql::app_user' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with title foobar" do
-        let(:title) { 'foobar' }
+      context "with title foobar@mydb" do
+        let(:title) { 'foobar@mydb' }
 
-        context "with parameters database => mydb and password => mypassword" do
+        context "with password => mypassword" do
           let(:params) { {
-            'database' => 'mydb',
             'password' => 'mypassword'
           } }
 
           it { is_expected.to compile.with_all_deps }
 
-          it { is_expected.to contain_profiles__mysql__app_user('foobar').with(
+          it { is_expected.to contain_profiles__mysql__app_user('foobar@mydb').with(
             'user'     => 'foobar',
             'database' => 'mydb',
             'password' => 'mypassword',
@@ -52,7 +51,7 @@ describe 'profiles::mysql::app_user' do
 
           it { is_expected.to compile.with_all_deps }
 
-          it { is_expected.to contain_profiles__mysql__app_user('foobar').with(
+          it { is_expected.to contain_profiles__mysql__app_user('foobar@mydb').with(
             'user'     => 'testuser',
             'database' => 'testdb',
             'password' => 'testpassword',
@@ -81,27 +80,39 @@ describe 'profiles::mysql::app_user' do
         context "without parameters" do
           let(:params) { {} }
 
-          it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'database'/) }
           it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'password'/) }
         end
       end
 
-      context "with title baz" do
-        let(:title) { 'baz' }
+      context "with title onlyuser" do
+        let(:title) { 'onlyuser' }
+
+        context "with password => mypassword" do
+          let(:params) { {
+            'password' => 'mypassword'
+          } }
+
+          it { expect { catalogue }.to raise_error(Puppet::ParseError, /parameter 'database' expects a String value/) }
+        end
+      end
+
+      context "with title baz@nodb" do
+        let(:title) { 'baz@nodb' }
 
         context "with parameters user => nouser, ensure => absent, database => nodb and password => nopassword" do
           let(:params) { {
             'user'     => 'nouser',
             'ensure'   => 'absent',
-            'database' => 'nodb',
             'password' => 'nopassword'
           } }
 
           it { is_expected.to contain_mysql_user('nouser@127.0.0.1').with(
-            'ensure'        => 'absent'
+            'ensure' => 'absent'
           ) }
 
-          it { is_expected.not_to contain_mysql_grant('nouser@127.0.0.1/nodb.*') }
+          it { is_expected.to contain_mysql_grant('nouser@127.0.0.1/nodb.*').with(
+            'ensure' => 'absent'
+          ) }
         end
       end
     end
