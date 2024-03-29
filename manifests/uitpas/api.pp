@@ -74,6 +74,13 @@ class profiles::uitpas::api (
       require  => Mysql_database[$database_name]
     }
 
+    profiles::mysql::app_user { "etl@${database_name}":
+      password => lookup('data::mysql::etl::password', Optional[String], 'first', undef),
+      readonly => true,
+      remote   => $database_host_remote,
+      require  => Mysql_database[$database_name]
+    }
+
     jdbcconnectionpool { 'mysql_uitpas_api_j2eePool':
       ensure       => 'present',
       resourcetype => 'javax.sql.DataSource',
