@@ -27,6 +27,7 @@ describe 'profiles::jenkins::node' do
         it { is_expected.to contain_apt__source('publiq-jenkins') }
         it { is_expected.to contain_class('profiles::java') }
         it { is_expected.to contain_class('profiles::jenkins::buildtools') }
+        it { is_expected.to contain_class('profiles::jenkins::buildtools::playwright') }
         it { is_expected.to contain_group('jenkins') }
         it { is_expected.to contain_user('jenkins') }
 
