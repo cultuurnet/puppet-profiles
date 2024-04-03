@@ -93,8 +93,16 @@ describe 'profiles::uitpas::api::cron' do
           'command'     => "/usr/bin/curl -q -s 'http://127.0.0.1:4880/uitid/rest/bootstrap/uitpas/clearJpaCache' > /dev/null",
           'environment' => ['MAILTO=infra@publiq.be'],
           'user'        => 'glassfish',
-          'hour'        => '4',
+          'hour'        => '*/6',
           'minute'      => '30'
+        ) }
+
+        it { is_expected.to contain_cron('uitpas clear cache').with(
+          'command'     => "/usr/bin/curl -q -s 'http://127.0.0.1:4880/uitid/rest/bootstrap/uitpas/clearcaches' > /dev/null",
+          'environment' => ['MAILTO=infra@publiq.be'],
+          'user'        => 'glassfish',
+          'hour'        => '6',
+          'minute'      => '15'
         ) }
 
         it { is_expected.to contain_cron('uitpas enduser clearcheckincodes').that_requires('User[glassfish]') }
@@ -107,6 +115,7 @@ describe 'profiles::uitpas::api::cron' do
         it { is_expected.to contain_cron('uitpas autorenew triggerprocess').that_requires('User[glassfish]') }
         it { is_expected.to contain_cron('uitpas balie indexbalies').that_requires('User[glassfish]') }
         it { is_expected.to contain_cron('uitpas clear jpa cache').that_requires('User[glassfish]') }
+        it { is_expected.to contain_cron('uitpas clear cache').that_requires('User[glassfish]') }
       end
 
       context "with portbase => 14800" do
@@ -152,6 +161,10 @@ describe 'profiles::uitpas::api::cron' do
 
         it { is_expected.to contain_cron('uitpas clear jpa cache').with(
           'command'     => "/usr/bin/curl -q -s 'http://127.0.0.1:14880/uitid/rest/bootstrap/uitpas/clearJpaCache' > /dev/null",
+        ) }
+
+        it { is_expected.to contain_cron('uitpas clear cache').with(
+          'command'     => "/usr/bin/curl -q -s 'http://127.0.0.1:14880/uitid/rest/bootstrap/uitpas/clearcaches' > /dev/null",
         ) }
       end
     end
