@@ -8,8 +8,8 @@ describe 'profiles::mysql::server::backup' do
       context "without parameters" do
         let(:params) { { } }
 
-        context "with class profiles::mysql::server present" do
-          let(:pre_condition) { 'include profiles::mysql::server' }
+        context "with class mysql::server present" do
+          let(:pre_condition) { 'include mysql::server' }
 
           it { is_expected.to compile.with_all_deps }
 
@@ -63,8 +63,8 @@ describe 'profiles::mysql::server::backup' do
           'volume_size'  => '20G'
         } }
 
-        context "with class profiles::mysql::server and volume_group backupvg present" do
-          let(:pre_condition) { ['include profiles::mysql::server', 'volume_group { "backupvg": ensure => "present" }'] }
+        context "with class mysql::server and volume_group backupvg present" do
+          let(:pre_condition) { ['include mysql::server', 'volume_group { "backupvg": ensure => "present" }'] }
 
           it { is_expected.to compile.with_all_deps }
 
@@ -97,8 +97,8 @@ describe 'profiles::mysql::server::backup' do
           'volume_size'  => '10G'
         } }
 
-        context "with class profiles::mysql::server and volume_group myvg present" do
-          let(:pre_condition) { ['include profiles::mysql::server', 'volume_group { "myvg": ensure => "present" }'] }
+        context "with class mysql::server and volume_group myvg present" do
+          let(:pre_condition) { ['include mysql::server', 'volume_group { "myvg": ensure => "present" }'] }
 
           it { is_expected.to compile.with_all_deps }
 
