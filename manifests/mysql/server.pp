@@ -4,6 +4,10 @@ class profiles::mysql::server (
   Boolean                                                                       $lvm                   = false,
   Optional[String]                                                              $volume_group          = undef,
   Optional[String]                                                              $volume_size           = undef,
+  Boolean                                                                       $backup_lvm            = false,
+  Optional[String]                                                              $backup_volume_group   = undef,
+  Optional[String]                                                              $backup_volume_size    = undef,
+  Integer                                                                       $backup_retention_days = 7,
   Integer                                                                       $max_open_files        = 1024,
   Integer                                                                       $long_query_time       = 2,
   Enum['READ-COMMITTED', 'REPEATABLE-READ', 'READ-UNCOMMITTED', 'SERIALIZABLE'] $transaction_isolation = 'REPEATABLE-READ'
@@ -128,7 +132,7 @@ class profiles::mysql::server (
     content       => "[Service]\nLimitNOFILE=${max_open_files}"
   }
 
-  class { ::mysql::server:
+  class { '::mysql::server':
     root_password      => $root_password,
     package_name       => 'mysql-server',
     service_name       => 'mysql',
@@ -136,6 +140,15 @@ class profiles::mysql::server (
     managed_dirs       =>  [],
     restart            => true,
     override_options   => $options
+  }
+
+  class { 'profiles::mysql::server::backup':
+    password       => fqdn_rand_string(20, undef, $root_password),
+    lvm            => $backup_lvm,
+    volume_group   => $backup_volume_group,
+    volume_size    => $backup_volume_size,
+    retention_days => $backup_retention_days,
+    require        => Class['mysql::server']
   }
 
   include profiles::mysql::server::logging

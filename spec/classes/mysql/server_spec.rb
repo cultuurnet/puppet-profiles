@@ -16,8 +16,12 @@ describe 'profiles::mysql::server' do
           'lvm'                   => false,
           'volume_group'          => nil,
           'volume_size'           => nil,
+          'backup_lvm'            => false,
+          'backup_volume_group'   => nil,
+          'backup_volume_size'    => nil,
           'max_open_files'        => 1024,
           'long_query_time'       => 2,
+          'backup_retention_days' => 7,
           'transaction_isolation' => 'REPEATABLE-READ'
         ) }
 
@@ -70,6 +74,14 @@ describe 'profiles::mysql::server' do
                                   }
         ) }
 
+        it { is_expected.to contain_class('profiles::mysql::server::backup').with(
+          'password'       => '6oUtalmOuraT8IcBhCMq',
+          'lvm'            => false,
+          'volume_group'   => nil,
+          'volume_size'    => nil,
+          'retention_days' => 7
+        ) }
+
         it { is_expected.to contain_class('profiles::mysql::server::logging') }
 
         it { is_expected.to contain_group('mysql').that_comes_before('Class[mysql::server]') }
@@ -77,13 +89,15 @@ describe 'profiles::mysql::server' do
         it { is_expected.to contain_profiles__mysql__root_my_cnf('localhost').that_comes_before('Class[mysql::server]') }
         it { is_expected.to contain_systemd__dropin_file('mysql override.conf').that_comes_before('Class[mysql::server]') }
         it { is_expected.to contain_systemd__dropin_file('mysql override.conf').that_notifies('Class[mysql::server::service]') }
+        it { is_expected.to contain_class('mysql::server').that_comes_before('Class[profiles::mysql::server::backup]') }
         it { is_expected.to contain_class('mysql::server').that_comes_before('Class[profiles::mysql::server::logging]') }
       end
 
-      context "with volume_group datavg present" do
-        let(:pre_condition) { 'volume_group { "datavg": ensure => "present" }' }
+      context "with volume_groups datavg and backupvg  present" do
+        let(:pre_condition) { 'volume_group { ["datavg", "backupvg"]: ensure => "present" }' }
 
-        context "with root_password => test, listen_address => 0.0.0.0, long_query_time => 5, max_open_files => 5120, lvm => true, volume_group => datavg and volume_size => 20G" do
+
+        context "with root_password => test, listen_address => 0.0.0.0, long_query_time => 5, max_open_files => 5120, lvm => true, volume_group => datavg, volume_size => 20G, backup_lvm => true, backup_volume_group => backupvg, backup_volume_size => 10G and backup_retention_days => 5" do
           let(:params) { {
             'root_password'         => 'test',
             'listen_address'        => '0.0.0.0',
@@ -91,7 +105,11 @@ describe 'profiles::mysql::server' do
             'lvm'                   => true,
             'volume_group'          => 'datavg',
             'volume_size'           => '20G',
+            'backup_lvm'            => true,
+            'backup_volume_group'   => 'backupvg',
+            'backup_volume_size'    => '10G',
             'long_query_time'       => 5,
+            'backup_retention_days' => 5,
             'transaction_isolation' => 'READ-COMMITTED'
           } }
 
@@ -176,6 +194,14 @@ describe 'profiles::mysql::server' do
 
           ) }
 
+          it { is_expected.to contain_class('profiles::mysql::server::backup').with(
+            'password'       => 'WyT9DYvR7jMg62EmF3kJ',
+            'lvm'            => true,
+            'volume_group'   => 'backupvg',
+            'volume_size'    => '10G',
+            'retention_days' => 5
+          ) }
+
           it { is_expected.to contain_mysql_user('root@%').that_requires('Class[mysql::server]') }
           it { is_expected.to contain_mysql_user('root@%').that_requires('Profiles::Mysql::Root_my_cnf[localhost]') }
           it { is_expected.to contain_mysql_grant('root@%/*.*').that_requires('Class[mysql::server]') }
@@ -218,20 +244,43 @@ describe 'profiles::mysql::server' do
               'database_user'     => 'root',
               'database_password' => 'test'
             ) }
+
+            it { is_expected.to contain_class('profiles::mysql::server::backup').with(
+              'password'     => 'cUNSGcrB5ebQLnO902Y6',
+              'lvm'          => true,
+              'volume_group' => 'backupvg',
+              'volume_size'  => '10G'
+            ) }
+          end
+
+          context "on node mydb.example.com" do
+            let(:facts) {
+              facts.merge( { 'networking' => { 'fqdn' => 'mydb.example.com' } } )
+            }
+
+            it { is_expected.to contain_class('profiles::mysql::server::backup').with(
+              'password'     => 'MlTwrxl3cgW1uK4RNd5f',
+              'lvm'          => true,
+              'volume_group' => 'backupvg',
+              'volume_size'  => '10G'
+            ) }
           end
         end
       end
 
-      context "with volume_group myvg present" do
-        let(:pre_condition) { 'volume_group { "myvg": ensure => "present" }' }
+      context "with volume_groups myvg and mybackupvg present" do
+        let(:pre_condition) { 'volume_group { ["myvg", "mybackupvg"]: ensure => "present" }' }
 
-        context "with root_password => foobar, max_open_files => 2048, lvm => true, volume_group => myvg and volume_size => 10G" do
+        context "with root_password => foobar, max_open_files => 2048, lvm => true, volume_group => myvg, volume_size => 10G, backup_lvm => true, backup_volume_group => mybackupvg and backup_volume_size => 8G" do
           let(:params) { {
-            'root_password'  => 'foobar',
-            'max_open_files' => 2048,
-            'lvm'            => true,
-            'volume_group'   => 'myvg',
-            'volume_size'    => '10G'
+            'root_password'       => 'foobar',
+            'max_open_files'      => 2048,
+            'lvm'                 => true,
+            'volume_group'        => 'myvg',
+            'volume_size'         => '10G',
+            'backup_lvm'          => true,
+            'backup_volume_group' => 'mybackupvg',
+            'backup_volume_size'  => '8G',
           } }
 
           it { is_expected.to compile.with_all_deps }
@@ -263,6 +312,13 @@ describe 'profiles::mysql::server' do
             'create_root_my_cnf' => false,
             'managed_dirs'       => [],
             'restart'            => true
+          ) }
+
+          it { is_expected.to contain_class('profiles::mysql::server::backup').with(
+            'password'     => 'Mt152RgDxtVQoAPmoXoH',
+            'lvm'          => true,
+            'volume_group' => 'mybackupvg',
+            'volume_size'  => '8G'
           ) }
         end
       end

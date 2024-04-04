@@ -41,6 +41,9 @@ describe 'profiles::lvm::mount' do
               'options' => nil
             ) }
 
+            it { is_expected.to contain_file('/data') }
+            it { is_expected.not_to contain_file('/data/backup') }
+
             it { is_expected.to contain_file('/data/foo').with(
               'ensure' => 'directory',
               'owner'  => 'root',
@@ -65,6 +68,7 @@ describe 'profiles::lvm::mount' do
             it { is_expected.to contain_logical_volume('foo').that_requires('Volume_group[datavg]') }
             it { is_expected.to contain_logical_volume('foo').that_comes_before('Filesystem[/dev/datavg/foo]') }
             it { is_expected.to contain_filesystem('/dev/datavg/foo').that_comes_before('Mount[/data/foo]') }
+            it { is_expected.to contain_file('/data').that_comes_before('File[/data/foo]') }
             it { is_expected.to contain_file('/data/foo').that_comes_before('Mount[/data/foo]') }
             it { is_expected.to contain_mount('/data/foo').that_comes_before('Exec[/data/foo ownership]') }
           end
@@ -167,14 +171,17 @@ describe 'profiles::lvm::mount' do
         context "with volume_group myvg present" do
           let(:pre_condition) { 'volume_group { "myvg": ensure => "present" }' }
 
-          context 'with volume_group => myvg, size => 5G and mountpoint => /data/mydata' do
+          context 'with volume_group => myvg, size => 5G and mountpoint => /data/backup/mydata' do
             let(:params) { {
               'volume_group' => 'myvg',
               'size'         => '5G',
-              'mountpoint'   => '/data/mydata'
+              'mountpoint'   => '/data/backup/mydata'
             } }
 
             it { is_expected.to compile.with_all_deps }
+
+            it { is_expected.to contain_file('/data') }
+            it { is_expected.to contain_file('/data/backup') }
 
             it { is_expected.to contain_logical_volume('bar').with(
               'ensure'          => 'present',
@@ -189,13 +196,13 @@ describe 'profiles::lvm::mount' do
               'options' => nil
             ) }
 
-            it { is_expected.to contain_file('/data/mydata').with(
+            it { is_expected.to contain_file('/data/backup/mydata').with(
               'ensure' => 'directory',
               'owner'  => 'root',
               'group'  => 'root'
             ) }
 
-            it { is_expected.to contain_mount('/data/mydata').with(
+            it { is_expected.to contain_mount('/data/backup/mydata').with(
               'ensure'  => 'mounted',
               'device'  => '/dev/myvg/bar',
               'fstype'  => 'ext4',
@@ -203,18 +210,18 @@ describe 'profiles::lvm::mount' do
               'atboot'  => true
             ) }
 
-            it { is_expected.to contain_exec('/data/mydata ownership').with(
-              'command'   => 'chown root:root /data/mydata',
+            it { is_expected.to contain_exec('/data/backup/mydata ownership').with(
+              'command'   => 'chown root:root /data/backup/mydata',
               'logoutput' => 'on_failure',
               'path'      => ['/usr/bin', '/bin'],
-              'onlyif'    => "test 'root:root' != $(stat -c '%U:%G' /data/mydata)"
+              'onlyif'    => "test 'root:root' != $(stat -c '%U:%G' /data/backup/mydata)"
             ) }
 
             it { is_expected.to contain_logical_volume('bar').that_requires('Volume_group[myvg]') }
             it { is_expected.to contain_logical_volume('bar').that_comes_before('Filesystem[/dev/myvg/bar]') }
-            it { is_expected.to contain_filesystem('/dev/myvg/bar').that_comes_before('Mount[/data/mydata]') }
-            it { is_expected.to contain_file('/data/mydata').that_comes_before('Mount[/data/mydata]') }
-            it { is_expected.to contain_mount('/data/mydata').that_comes_before('Exec[/data/mydata ownership]') }
+            it { is_expected.to contain_filesystem('/dev/myvg/bar').that_comes_before('Mount[/data/backup/mydata]') }
+            it { is_expected.to contain_file('/data/backup/mydata').that_comes_before('Mount[/data/backup/mydata]') }
+            it { is_expected.to contain_mount('/data/backup/mydata').that_comes_before('Exec[/data/backup/mydata ownership]') }
           end
         end
       end
