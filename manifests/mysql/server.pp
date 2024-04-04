@@ -7,6 +7,7 @@ class profiles::mysql::server (
   Boolean                                                                       $backup_lvm            = false,
   Optional[String]                                                              $backup_volume_group   = undef,
   Optional[String]                                                              $backup_volume_size    = undef,
+  Integer                                                                       $backup_retention_days = 7,
   Integer                                                                       $max_open_files        = 1024,
   Integer                                                                       $long_query_time       = 2,
   Enum['READ-COMMITTED', 'REPEATABLE-READ', 'READ-UNCOMMITTED', 'SERIALIZABLE'] $transaction_isolation = 'REPEATABLE-READ'
@@ -142,11 +143,12 @@ class profiles::mysql::server (
   }
 
   class { 'profiles::mysql::server::backup':
-    password     => fqdn_rand_string(20, undef, $root_password),
-    lvm          => $backup_lvm,
-    volume_group => $backup_volume_group,
-    volume_size  => $backup_volume_size,
-    require      => Class['mysql::server']
+    password       => fqdn_rand_string(20, undef, $root_password),
+    lvm            => $backup_lvm,
+    volume_group   => $backup_volume_group,
+    volume_size    => $backup_volume_size,
+    retention_days => $backup_retention_days,
+    require        => Class['mysql::server']
   }
 
   include profiles::mysql::server::logging

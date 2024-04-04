@@ -21,6 +21,7 @@ describe 'profiles::mysql::server' do
           'backup_volume_size'    => nil,
           'max_open_files'        => 1024,
           'long_query_time'       => 2,
+          'backup_retention_days' => 7,
           'transaction_isolation' => 'REPEATABLE-READ'
         ) }
 
@@ -74,10 +75,11 @@ describe 'profiles::mysql::server' do
         ) }
 
         it { is_expected.to contain_class('profiles::mysql::server::backup').with(
-          'password'     => '6oUtalmOuraT8IcBhCMq',
-          'lvm'          => false,
-          'volume_group' => nil,
-          'volume_size'  => nil
+          'password'       => '6oUtalmOuraT8IcBhCMq',
+          'lvm'            => false,
+          'volume_group'   => nil,
+          'volume_size'    => nil,
+          'retention_days' => 7
         ) }
 
         it { is_expected.to contain_class('profiles::mysql::server::logging') }
@@ -95,7 +97,7 @@ describe 'profiles::mysql::server' do
         let(:pre_condition) { 'volume_group { ["datavg", "backupvg"]: ensure => "present" }' }
 
 
-        context "with root_password => test, listen_address => 0.0.0.0, long_query_time => 5, max_open_files => 5120, lvm => true, volume_group => datavg, volume_size => 20G, backup_lvm => true, backup_volume_group => backupvg and backup_volume_size => 10G" do
+        context "with root_password => test, listen_address => 0.0.0.0, long_query_time => 5, max_open_files => 5120, lvm => true, volume_group => datavg, volume_size => 20G, backup_lvm => true, backup_volume_group => backupvg, backup_volume_size => 10G and backup_retention_days => 5" do
           let(:params) { {
             'root_password'         => 'test',
             'listen_address'        => '0.0.0.0',
@@ -107,6 +109,7 @@ describe 'profiles::mysql::server' do
             'backup_volume_group'   => 'backupvg',
             'backup_volume_size'    => '10G',
             'long_query_time'       => 5,
+            'backup_retention_days' => 5,
             'transaction_isolation' => 'READ-COMMITTED'
           } }
 
@@ -192,10 +195,11 @@ describe 'profiles::mysql::server' do
           ) }
 
           it { is_expected.to contain_class('profiles::mysql::server::backup').with(
-            'password'     => 'WyT9DYvR7jMg62EmF3kJ',
-            'lvm'          => true,
-            'volume_group' => 'backupvg',
-            'volume_size'  => '10G'
+            'password'       => 'WyT9DYvR7jMg62EmF3kJ',
+            'lvm'            => true,
+            'volume_group'   => 'backupvg',
+            'volume_size'    => '10G',
+            'retention_days' => 5
           ) }
 
           it { is_expected.to contain_mysql_user('root@%').that_requires('Class[mysql::server]') }

@@ -14,10 +14,11 @@ describe 'profiles::mysql::server::backup' do
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_class('profiles::mysql::server::backup').with(
-            'password'     => nil,
-            'lvm'          => false,
-            'volume_group' => nil,
-            'volume_size'  => nil
+            'password'       => nil,
+            'lvm'            => false,
+            'volume_group'   => nil,
+            'volume_size'    => nil,
+            'retention_days' => 7
           ) }
 
           it { is_expected.to contain_file('/data') }
@@ -48,19 +49,31 @@ describe 'profiles::mysql::server::backup' do
             'excludedatabases'   => ['mysql', 'sys', 'information_schema', 'performance_schema']
           ) }
 
+          it { is_expected.to contain_cron('Cleanup old MySQL backups').with(
+            'command'  => '/usr/bin/find /data/backup/mysql/archive -type f -mtime +6 -delete',
+            'user'     => 'root',
+            'hour'     => '4',
+            'minute'   => '15',
+            'weekday'  => '*',
+            'monthday' => '*',
+            'month'    => '*'
+          ) }
+
           it { is_expected.to contain_file('/data/backup/mysql').that_requires('File[/data/backup]') }
           it { is_expected.to contain_file('/data/backup/mysql/archive').that_requires('File[/data/backup/mysql]') }
           it { is_expected.to contain_file('/data/backup/mysql').that_comes_before('Class[mysql::server::backup]') }
           it { is_expected.to contain_file('/data/backup/mysql/archive').that_comes_before('Class[mysql::server::backup]') }
+          it { is_expected.to contain_cron('Cleanup old MySQL backups').that_requires('File[/data/backup/mysql/archive]') }
         end
       end
 
-      context "with password => secret, lvm => true, volume_group => backupvg and volume_size => 20G" do
+      context "with password => secret, lvm => true, volume_group => backupvg, volume_size => 20G and retention_days => 10" do
         let(:params) { {
-          'password'     => 'secret',
-          'lvm'          => true,
-          'volume_group' => 'backupvg',
-          'volume_size'  => '20G'
+          'password'       => 'secret',
+          'lvm'            => true,
+          'volume_group'   => 'backupvg',
+          'volume_size'    => '20G',
+          'retention_days' => 10
         } }
 
         context "with class mysql::server and volume_group backupvg present" do
@@ -85,6 +98,16 @@ describe 'profiles::mysql::server::backup' do
             'time'               => [1, 5],
             'postscript'         => 'cp /data/backup/mysql/current/* /data/backup/mysql/archive',
             'excludedatabases'   => ['mysql', 'sys', 'information_schema', 'performance_schema']
+          ) }
+
+          it { is_expected.to contain_cron('Cleanup old MySQL backups').with(
+            'command'  => '/usr/bin/find /data/backup/mysql/archive -type f -mtime +9 -delete',
+            'user'     => 'root',
+            'hour'     => '4',
+            'minute'   => '15',
+            'weekday'  => '*',
+            'monthday' => '*',
+            'month'    => '*'
           ) }
         end
       end

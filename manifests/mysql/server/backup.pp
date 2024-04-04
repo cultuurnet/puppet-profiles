@@ -1,9 +1,12 @@
 class profiles::mysql::server::backup (
-  Optional[String] $password     = undef,
-  Boolean          $lvm          = false,
-  Optional[String] $volume_group = undef,
-  Optional[String] $volume_size  = undef
+  Optional[String] $password       = undef,
+  Boolean          $lvm            = false,
+  Optional[String] $volume_group   = undef,
+  Optional[String] $volume_size    = undef,
+  Integer          $retention_days = 7
 ) inherits ::profiles {
+
+  $mtime = $retention_days - 1
 
   if $lvm {
     unless ($volume_group and $volume_size) {
@@ -51,5 +54,16 @@ class profiles::mysql::server::backup (
     postscript         => 'cp /data/backup/mysql/current/* /data/backup/mysql/archive',
     time               => [1, 5],
     excludedatabases   => ['mysql', 'sys', 'information_schema', 'performance_schema']
+  }
+
+  cron { "Cleanup old MySQL backups":
+    command  => "/usr/bin/find /data/backup/mysql/archive -type f -mtime +${mtime} -delete",
+    user     => 'root',
+    hour     => '4',
+    minute   => '15',
+    weekday  => '*',
+    monthday => '*',
+    month    => '*',
+    require  => File['/data/backup/mysql/archive']
   }
 }
