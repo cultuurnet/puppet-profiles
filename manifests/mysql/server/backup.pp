@@ -50,7 +50,7 @@ class profiles::mysql::server::backup (
     backupdir          => '/data/backup/mysql/current',
     backuprotate       => 1,
     file_per_database  => true,
-    delete_before_dump => true,
+    prescript          => 'rm /data/backup/mysql/current/*',
     postscript         => 'cp /data/backup/mysql/current/* /data/backup/mysql/archive',
     time               => [1, 5],
     excludedatabases   => ['mysql', 'sys', 'information_schema', 'performance_schema']

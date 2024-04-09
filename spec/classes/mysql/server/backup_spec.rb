@@ -43,8 +43,8 @@ describe 'profiles::mysql::server::backup' do
             'backupdir'          => '/data/backup/mysql/current',
             'backuprotate'       => 1,
             'file_per_database'  => true,
-            'delete_before_dump' => true,
             'time'               => [1, 5],
+            'prescript'          => 'rm /data/backup/mysql/current/*',
             'postscript'         => 'cp /data/backup/mysql/current/* /data/backup/mysql/archive',
             'excludedatabases'   => ['mysql', 'sys', 'information_schema', 'performance_schema']
           ) }
@@ -94,8 +94,8 @@ describe 'profiles::mysql::server::backup' do
             'backupdir'          => '/data/backup/mysql/current',
             'backuprotate'       => 1,
             'file_per_database'  => true,
-            'delete_before_dump' => true,
             'time'               => [1, 5],
+            'prescript'          => 'rm /data/backup/mysql/current/*',
             'postscript'         => 'cp /data/backup/mysql/current/* /data/backup/mysql/archive',
             'excludedatabases'   => ['mysql', 'sys', 'information_schema', 'performance_schema']
           ) }
@@ -138,8 +138,8 @@ describe 'profiles::mysql::server::backup' do
             'backupdir'          => '/data/backup/mysql/current',
             'backuprotate'       => 1,
             'file_per_database'  => true,
-            'delete_before_dump' => true,
             'time'               => [1, 5],
+            'prescript'          => 'rm /data/backup/mysql/current/*',
             'postscript'         => 'cp /data/backup/mysql/current/* /data/backup/mysql/archive',
             'excludedatabases'   => ['mysql', 'sys', 'information_schema', 'performance_schema']
           ) }
