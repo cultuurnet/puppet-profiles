@@ -25,6 +25,9 @@ profiles::platform::deployment::config_source: '/path/to/config/source'
 
 profiles::uitdatabank::websocket_server::deployment::config_source: '/path/to/config/source'
 
+profiles::uitid::frontend::deployment::config_source: '/path/to/config/source'
+profiles::uitid::frontend_api::deployment::config_source: '/path/to/config/source'
+
 profiles::publiq::versions::url: 'http://abc.xyz'
 profiles::publiq::versions::service_address: '127.0.1.1'
 profiles::publiq::versions::service_port: 6000
