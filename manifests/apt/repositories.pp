@@ -170,6 +170,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'uitid-frontend-auth0':
+    location => "https://apt.publiq.be/uitid-frontend-auth0-${environment}",
+    release  => $facts['os']['distro']['codename'],
+    repos    => 'main'
+  }
+
   @apt::source { 'uitid-api':
     location => "https://apt.publiq.be/uitid-api-${environment}",
     release  => $facts['os']['distro']['codename'],
