@@ -7,15 +7,16 @@ describe 'profiles::publiq::versions' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with url => 'http://versions.local'" do
+      context "with servername => 'versions.local'" do
         let(:params) { {
-          'url'          => 'http://versions.local'
+          'servername' => 'versions.local'
         } }
 
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::publiq::versions').with(
-          'url'             => 'http://versions.local',
+          'servername'      => 'versions.local',
+          'serveraliases'   => [],
           'deployment'      => true,
           'service_address' => '127.0.0.1',
           'service_port'    => '3000'
@@ -26,7 +27,8 @@ describe 'profiles::publiq::versions' do
         it { is_expected.to contain_class('profiles::publiq::versions::deployment') }
 
         it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://versions.local').with(
-          'destination' => 'http://127.0.0.1:3000/'
+          'destination' => 'http://127.0.0.1:3000/',
+          'aliases'     => []
         ) }
 
         it { is_expected.to contain_class('profiles::publiq::versions::deployment').that_requires('Class[profiles::ruby]') }
@@ -43,10 +45,11 @@ describe 'profiles::publiq::versions' do
         end
       end
 
-      context "with url => http://versions.publiq.dev and deployment => false" do
+      context "with servername => versions.publiq.dev, serveraliases => foo.example.com and deployment => false" do
         let(:params) { {
-          'url'          => 'http://versions.publiq.dev',
-          'deployment'   => false
+          'servername'    => 'versions.publiq.dev',
+          'serveraliases' => 'foo.example.com',
+          'deployment'    => false
         } }
 
         it { is_expected.to compile.with_all_deps }
@@ -55,14 +58,27 @@ describe 'profiles::publiq::versions' do
         it { is_expected.to_not contain_class('profiles::publiq::versions::deployment') }
 
         it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://versions.publiq.dev').with(
-          'destination' => 'http://127.0.0.1:3000/'
+          'destination' => 'http://127.0.0.1:3000/',
+          'aliases'     => 'foo.example.com'
+        ) }
+      end
+
+      context "with servername => myversions.publiq.dev and serveraliases => [bar.example.com, baz.example.com]" do
+        let(:params) { {
+          'servername'    => 'myversions.publiq.dev',
+          'serveraliases' => ['bar.example.com', 'baz.example.com']
+        } }
+
+        it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://myversions.publiq.dev').with(
+          'destination' => 'http://127.0.0.1:3000/',
+          'aliases'     => ['bar.example.com', 'baz.example.com']
         ) }
       end
 
       context "without parameters" do
         let(:params) { { } }
 
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'url'/) }
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'servername'/) }
       end
     end
   end
