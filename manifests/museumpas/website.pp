@@ -4,8 +4,6 @@ class profiles::museumpas::website (
   String $servername                              = undef,
   Variant[String, Array[String]] $serveraliases   = [],
   Variant[String, Array[String]] $image_libraries = ['jpegoptim', 'optipng', 'pngquant', 'gifsicle'],
-  Boolean $install_meilisearch                    = true,
-  Boolean $install_redis                          = true,
   Boolean $deployment                             = true
 ) inherits ::profiles {
 
@@ -26,17 +24,7 @@ class profiles::museumpas::website (
     }
   }
 
-  if $install_redis {
-    include profiles::redis
-  }
-
-  if $install_meilisearch {
-    include profiles::meilisearch
-  }
-
   if $database_host == '127.0.0.1' {
-    include ::profiles::mysql::server
-
     $database_host_remote    = false
     $database_host_available = true
 
