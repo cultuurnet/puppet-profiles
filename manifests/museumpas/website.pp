@@ -1,18 +1,16 @@
 class profiles::museumpas::website (
-  String $mysql_version                           = undef,
-  String $mysql_admin_user                        = 'admin',
-  String $mysql_admin_password                    = undef,
-  String $mysql_host                              = undef,
-  Hash $mysql_databases                           = undef,
+  String $database_password,
+  String $database_host                           = '127.0.0.1',
   String $servername                              = undef,
   Variant[String, Array[String]] $serveraliases   = [],
   Variant[String, Array[String]] $image_libraries = ['jpegoptim', 'optipng', 'pngquant', 'gifsicle'],
-  Boolean $install_meilisearch                    = true,
-  Boolean $install_redis                          = true,
   Boolean $deployment                             = true
 ) inherits ::profiles {
 
   $basedir = '/var/www/museumpas'
+
+  $database_name = 'museumpas'
+  $database_user = 'museumpas'
 
   include apache::mod::proxy
   include apache::mod::proxy_fcgi
@@ -26,12 +24,38 @@ class profiles::museumpas::website (
     }
   }
 
-  if $install_redis {
-    include profiles::redis
+  if $database_host == '127.0.0.1' {
+    $database_host_remote    = false
+    $database_host_available = true
+
+    Class['profiles::mysql::server'] -> Mysql_database[$database_name]
+
+  } else {
+    $database_host_remote    = true
+
+    if $facts['mysqld_version'] {
+      $database_host_available = true
+
+      class { "profiles::mysql::remote_server":
+        host => $database_host
+      } -> Mysql_database[$database_name]
+    } else {
+      $database_host_available = false
+    }
   }
 
-  if $install_meilisearch {
-    include profiles::meilisearch
+  if $database_host_available {
+    mysql_database { $database_name:
+      charset => 'utf8mb4',
+      collate => 'utf8mb4_0900_ai_ci'
+    }
+
+    profiles::mysql::app_user { $database_user:
+      database => $database_name,
+      password => $database_password,
+      remote   => $database_host_remote,
+      require  => Mysql_database[$database_name]
+    }
   }
 
   class { 'locales':
@@ -95,34 +119,6 @@ class profiles::museumpas::website (
                            'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+)" CLIENT_IP=$1',
                          ],
     require           => Class['profiles::apache']
-  }
-
-  file { 'mysqld_version_ext_fact':
-    ensure  => 'file',
-    path    => '/etc/puppetlabs/facter/facts.d/mysqld_version.txt',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => "mysqld_version=${mysql_version}"
-  }
-
-  file { 'root_my_cnf':
-    ensure  => 'file',
-    path    => '/root/.my.cnf',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0400',
-    content => template('profiles/museumpas/website/my.cnf.erb'),
-    require  => [File['mysqld_version_ext_fact']]
-  }
-
-  $mysql_databases.each |$name,$properties| {
-    mysql::db { $name:
-      user     => $properties['user'],
-      password => $properties['password'],
-      host     => $properties['host'],
-      require  => [File['root_my_cnf']]
-    }
   }
 
   if $deployment {
