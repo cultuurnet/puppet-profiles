@@ -29,6 +29,7 @@ class profiles::museumpas::website (
 
     Class['profiles::mysql::server'] -> Mysql_database[$database_name]
   } else {
+    $database_host_remote    = true
     class { "profiles::mysql::remote_server":
       host => $database_host
     }
