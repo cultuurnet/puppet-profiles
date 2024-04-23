@@ -26,28 +26,19 @@ class profiles::museumpas::website (
 
   if $database_host == '127.0.0.1' {
     $database_host_remote    = false
-    $database_host_available = true
 
     Class['profiles::mysql::server'] -> Mysql_database[$database_name]
-
   } else {
-    $database_host_remote    = true
-
-    if $facts['mysqld_version'] {
-      $database_host_available = true
-
-      class { "profiles::mysql::remote_server":
-        host => $database_host
-      } -> Mysql_database[$database_name]
-    } else {
-      $database_host_available = false
+    class { "profiles::mysql::remote_server":
+      host => $database_host
     }
   }
 
-  if $database_host_available {
+  if $facts['mysqld_version'] {
     mysql_database { $database_name:
       charset => 'utf8mb4',
       collate => 'utf8mb4_0900_ai_ci'
+      require => Class['profiles::mysql::remote_server']
     }
 
     profiles::mysql::app_user { $database_user:
