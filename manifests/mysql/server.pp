@@ -49,8 +49,7 @@ class profiles::mysql::server (
 
     @@profiles::mysql::root_my_cnf { $facts['networking']['fqdn']:
       database_user     => $root_user,
-      database_password => $root_password,
-      before            => Class['mysql::server']
+      database_password => $root_password
     }
 
     realize Firewall['400 accept mysql traffic']
