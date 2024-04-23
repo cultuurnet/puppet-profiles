@@ -37,7 +37,7 @@ class profiles::museumpas::website (
   if $facts['mysqld_version'] {
     mysql_database { $database_name:
       charset => 'utf8mb4',
-      collate => 'utf8mb4_0900_ai_ci'
+      collate => 'utf8mb4_0900_ai_ci',
       require => Class['profiles::mysql::remote_server']
     }
 
