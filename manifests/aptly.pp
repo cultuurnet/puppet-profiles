@@ -10,7 +10,7 @@ class profiles::aptly (
   Hash                           $repositories      = {},
   Hash                           $mirrors           = {},
   Boolean                        $lvm               = false,
-  Array[String]                  $architectures     = ['amd64'],
+  Variant[String, Array[String]] $architectures     = 'amd64',
   Optional[String]               $volume_group      = undef,
   Optional[String]               $volume_size       = undef
 ) inherits ::profiles {
@@ -64,8 +64,8 @@ class profiles::aptly (
     api_bind             => $api_bind,
     api_port             => $api_port,
     api_nolock           => true,
-    architectures        => $architectures,
-    require              => [ Apt::Source['aptly'], User['aptly']],
+    architectures        => [$architectures].flatten,
+    require              => [Apt::Source['aptly'], User['aptly']],
     s3_publish_endpoints => $publish_endpoints
   }
 
@@ -168,7 +168,7 @@ class profiles::aptly (
         location      => $attributes['location'],
         distribution  => $attributes['distribution'],
         components    => [$attributes['components']].flatten,
-        architectures => $attributes['architectures'],
+        architectures => [$attributes['architectures']].flatten,
         update        => false,
         keyring       => "${home_dir}/.gnupg/trustedkeys.gpg",
         require       => File['aptly trustedkeys.gpg']
