@@ -64,6 +64,7 @@ class profiles::aptly (
     api_bind             => $api_bind,
     api_port             => $api_port,
     api_nolock           => true,
+    architectures        => $architectures,
     require              => [ Apt::Source['aptly'], User['aptly']],
     s3_publish_endpoints => $publish_endpoints
   }
@@ -167,7 +168,7 @@ class profiles::aptly (
         location      => $attributes['location'],
         distribution  => $attributes['distribution'],
         components    => [$attributes['components']].flatten,
-        architectures => $architectures,
+        architectures => $attributes['architectures'],
         update        => false,
         keyring       => "${home_dir}/.gnupg/trustedkeys.gpg",
         require       => File['aptly trustedkeys.gpg']
