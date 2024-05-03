@@ -23,6 +23,7 @@ describe 'profiles::users' do
         it { is_expected.to contain_user('jenkins').with(
           'ensure'         => 'present',
           'gid'            => 'jenkins',
+          'groups'         => 'docker',
           'home'           => '/var/lib/jenkins',
           'managehome'     => true,
           'purge_ssh_keys' => true,
@@ -33,6 +34,7 @@ describe 'profiles::users' do
         it { is_expected.to contain_user('ubuntu').with(
           'ensure'         => 'present',
           'gid'            => 'ubuntu',
+          'groups'         => 'docker',
           'home'           => '/home/ubuntu',
           'managehome'     => true,
           'purge_ssh_keys' => true,
@@ -43,6 +45,7 @@ describe 'profiles::users' do
         it { is_expected.to contain_user('vagrant').with(
           'ensure'         => 'present',
           'gid'            => 'vagrant',
+          'groups'         => 'docker',
           'home'           => '/home/vagrant',
           'managehome'     => true,
           'purge_ssh_keys' => false,

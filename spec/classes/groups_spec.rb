@@ -7,6 +7,13 @@ describe 'profiles::groups' do
 
       it { is_expected.to compile.with_all_deps }
 
+      context "without virtual resources realized" do
+        it { is_expected.to contain_group('docker').with(
+          'ensure' => 'present',
+          'gid'    => '300'
+        ) }
+      end
+
       context "with all virtual resources realized" do
         let(:pre_condition) { 'Group <| |>' }
 
