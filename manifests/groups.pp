@@ -84,4 +84,6 @@ class profiles::groups inherits ::profiles {
     ensure => 'present',
     gid    => '1006'
   }
+
+  realize Group['docker']
 }
