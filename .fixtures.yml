@@ -120,6 +120,9 @@ fixtures:
     logrotate:
       repo: 'puppet/logrotate'
       ref: '6.1.0'
+    docker:
+      repo: 'puppetlabs/docker'
+      ref: '5.1.0'
   repositories:
     filebeat:
       repo: 'https://github.com/cultuurnet/puppet-filebeat.git'
