@@ -61,17 +61,9 @@ define profiles::puppet::puppetdb::cli::config (
                              }
 
   if ($certificate and $private_key) {
-    [
-      $config_rootdir,
-      "${config_rootdir}/puppet",
-      "${config_rootdir}/puppet/ssl",
-      "${config_rootdir}/puppet/ssl/certs",
-      "${config_rootdir}/puppet/ssl/private_keys"
-    ].each |$directory| {
-      file { $directory:
+    file { [$config_rootdir, "${config_rootdir}/puppet", "${config_rootdir}/puppet/ssl", "${config_rootdir}/puppet/ssl/certs", "${config_rootdir}/puppet/ssl/private_keys"]:
         ensure => 'directory',
         *      => $default_file_attributes
-      }
     }
 
     file { "${ssl_dir}/certs/puppetdb-cli.crt":
