@@ -13,6 +13,7 @@ class profiles::users inherits ::profiles {
   @user { 'jenkins':
     ensure         => 'present',
     gid            => 'jenkins',
+    groups         => 'docker',
     home           => '/var/lib/jenkins',
     managehome     => true,
     purge_ssh_keys => true,
@@ -73,6 +74,7 @@ class profiles::users inherits ::profiles {
   @user { 'ubuntu':
     ensure         => 'present',
     gid            => 'ubuntu',
+    groups         => 'docker',
     home           => '/home/ubuntu',
     managehome     => true,
     purge_ssh_keys => true,
@@ -83,6 +85,7 @@ class profiles::users inherits ::profiles {
   @user { 'vagrant':
     ensure         => 'present',
     gid            => 'vagrant',
+    groups         => 'docker',
     home           => '/home/vagrant',
     managehome     => true,
     purge_ssh_keys => false,
