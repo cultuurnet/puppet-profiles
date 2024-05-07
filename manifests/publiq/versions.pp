@@ -7,6 +7,7 @@ class profiles::publiq::versions (
 ) inherits ::profiles {
 
   include profiles::ruby
+  include profiles::apache
 
   if $deployment {
     include profiles::publiq::versions::deployment

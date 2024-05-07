@@ -21,6 +21,7 @@ describe 'profiles::publiq::versions' do
         ) }
 
         it { is_expected.to contain_class('profiles::ruby') }
+        it { is_expected.to contain_class('profiles::apache') }
 
         it { is_expected.to contain_class('profiles::publiq::versions::deployment') }
 
@@ -53,7 +54,6 @@ describe 'profiles::publiq::versions' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_class('profiles::ruby') }
         it { is_expected.to_not contain_class('profiles::publiq::versions::deployment') }
 
         it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://versions.publiq.dev').with(
