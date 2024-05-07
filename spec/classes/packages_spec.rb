@@ -29,6 +29,10 @@ describe 'profiles::packages' do
           'ensure' => 'present'
         ) }
 
+        it { is_expected.to contain_package('groovy').with(
+          'ensure' => 'present'
+        ) }
+
         it { is_expected.to contain_package('amqp-tools').with(
           'ensure' => 'present'
         ) }
@@ -74,6 +78,14 @@ describe 'profiles::packages' do
         ) }
 
         it { is_expected.to contain_package('mysql-client').with(
+          'ensure' => 'present'
+        ) }
+
+        it { is_expected.to contain_package('nfs-common').with(
+          'ensure' => 'present'
+        ) }
+
+        it { is_expected.to contain_package('iftop').with(
           'ensure' => 'present'
         ) }
 
