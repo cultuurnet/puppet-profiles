@@ -97,6 +97,7 @@ describe 'profiles::packages' do
         it { is_expected.to contain_package('liquibase').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('mysql-connector-j').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('yarn').that_requires('Apt::Source[publiq-tools]') }
+        it { is_expected.to contain_package('rubygem-puppetdb-cli').that_requires('Apt::Source[publiq-tools]') }
       end
     end
   end

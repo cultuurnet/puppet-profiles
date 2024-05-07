@@ -88,6 +88,11 @@ class profiles::packages inherits ::profiles {
     ensure  => 'present'
   }
 
+  @package { 'rubygem-puppetdb-cli':
+    ensure  => 'present',
+    require => Apt::Source['publiq-tools']
+  }
+
   # Realize a list of 'default' packages on all servers
   realize Package['jq']
   realize Package['iftop']
