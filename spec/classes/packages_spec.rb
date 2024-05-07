@@ -29,6 +29,10 @@ describe 'profiles::packages' do
           'ensure' => 'present'
         ) }
 
+        it { is_expected.to contain_package('groovy').with(
+          'ensure' => 'present'
+        ) }
+
         it { is_expected.to contain_package('amqp-tools').with(
           'ensure' => 'present'
         ) }
@@ -77,6 +81,14 @@ describe 'profiles::packages' do
           'ensure' => 'present'
         ) }
 
+        it { is_expected.to contain_package('nfs-common').with(
+          'ensure' => 'present'
+        ) }
+
+        it { is_expected.to contain_package('iftop').with(
+          'ensure' => 'present'
+        ) }
+
         it { is_expected.to contain_package('composer1').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('composer2').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('drush').that_requires('Apt::Source[publiq-tools]') }
@@ -85,6 +97,7 @@ describe 'profiles::packages' do
         it { is_expected.to contain_package('liquibase').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('mysql-connector-j').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('yarn').that_requires('Apt::Source[publiq-tools]') }
+        it { is_expected.to contain_package('rubygem-puppetdb-cli').that_requires('Apt::Source[publiq-tools]') }
       end
     end
   end
