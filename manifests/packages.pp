@@ -83,4 +83,12 @@ class profiles::packages inherits ::profiles {
   @package { 'nfs-common':
     ensure  => 'present'
   }
+
+  @package { 'iftop':
+    ensure  => 'present'
+  }
+
+  # Realize a list of 'default' packages on all servers
+  realize Package['jq']
+  realize Package['iftop']
 }
