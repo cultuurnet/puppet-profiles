@@ -25,13 +25,20 @@ class profiles::publiq::versions (
     require          => [Group['www-data'], User['www-data']]
   }
 
+  file { $basedir:
+    ensure  => 'directory',
+    owner   => 'www-data',
+    group   => 'www-data',
+    require => [Group['www-data'], User['www-data']]
+  }
+
   file { 'publiq-versions-env':
     ensure  => 'file',
     path    => "${basedir}/.env",
     owner   => 'www-data',
     group   => 'www-data',
     content => 'PUPPETDB_CONFIG_SOURCE=\'/var/www/.puppetlabs/client-tools/puppetdb.conf\'',
-    require => [Group['www-data'], User['www-data']]
+    require => [Group['www-data'], User['www-data'], File[$basedir]]
   }
 
   if $deployment {

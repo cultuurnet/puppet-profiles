@@ -35,6 +35,12 @@ describe 'profiles::publiq::versions' do
             'server_urls'      => 'http://localhost:8081'
           ) }
 
+          it { is_expected.to contain_file('/var/www/publiq-versions').with(
+            'ensure'  => 'directory',
+            'owner'   => 'www-data',
+            'group'   => 'www-data'
+          ) }
+
           it { is_expected.to contain_file('publiq-versions-env').with(
             'ensure'  => 'file',
             'path'    => '/var/www/publiq-versions/.env',
@@ -53,8 +59,11 @@ describe 'profiles::publiq::versions' do
           it { is_expected.to contain_class('profiles::publiq::versions::deployment').that_requires('Class[profiles::ruby]') }
           it { is_expected.to contain_profiles__puppet__puppetdb__cli('www-data').that_requires('Group[www-data]') }
           it { is_expected.to contain_profiles__puppet__puppetdb__cli('www-data').that_requires('User[www-data]') }
+          it { is_expected.to contain_file('/var/www/publiq-versions').that_requires('Group[www-data]') }
+          it { is_expected.to contain_file('/var/www/publiq-versions').that_requires('User[www-data]') }
           it { is_expected.to contain_file('publiq-versions-env').that_requires('Group[www-data]') }
           it { is_expected.to contain_file('publiq-versions-env').that_requires('User[www-data]') }
+          it { is_expected.to contain_file('publiq-versions-env').that_requires('File[/var/www/publiq-versions]') }
 
           context "with service_address => 0.0.0.0 and service_port => 5000" do
             let(:params)  { super().merge( {
