@@ -28,7 +28,7 @@ describe 'profiles::publiq::versions' do
           it { is_expected.to contain_group('www-data') }
           it { is_expected.to contain_user('www-data') }
 
-          it { is_expected.to contain_profiles__puppet__puppetdb__cli__config('www-data').with(
+          it { is_expected.to contain_profiles__puppet__puppetdb__cli('www-data').with(
             'certificate_name' => 'versions.local',
             'server_urls'      => 'http://localhost:8081'
           ) }
@@ -49,8 +49,8 @@ describe 'profiles::publiq::versions' do
           ) }
 
           it { is_expected.to contain_class('profiles::publiq::versions::deployment').that_requires('Class[profiles::ruby]') }
-          it { is_expected.to contain_profiles__puppet__puppetdb__cli__config('www-data').that_requires('Group[www-data]') }
-          it { is_expected.to contain_profiles__puppet__puppetdb__cli__config('www-data').that_requires('User[www-data]') }
+          it { is_expected.to contain_profiles__puppet__puppetdb__cli('www-data').that_requires('Group[www-data]') }
+          it { is_expected.to contain_profiles__puppet__puppetdb__cli('www-data').that_requires('User[www-data]') }
           it { is_expected.to contain_file('publiq-versions-env').that_requires('Group[www-data]') }
           it { is_expected.to contain_file('publiq-versions-env').that_requires('User[www-data]') }
 
@@ -89,7 +89,7 @@ describe 'profiles::publiq::versions' do
           it { is_expected.to contain_class('profiles::ruby') }
           it { is_expected.to_not contain_class('profiles::publiq::versions::deployment') }
 
-          it { is_expected.to contain_profiles__puppet__puppetdb__cli__config('www-data').with(
+          it { is_expected.to contain_profiles__puppet__puppetdb__cli('www-data').with(
             'certificate_name' => 'versions.publiq.dev',
             'server_urls'      => 'http://localhost:8081'
           ) }
@@ -110,7 +110,7 @@ describe 'profiles::publiq::versions' do
         context "with hieradata" do
           let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-          it { is_expected.to contain_profiles__puppet__puppetdb__cli__config('www-data').with(
+          it { is_expected.to contain_profiles__puppet__puppetdb__cli('www-data').with(
             'certificate_name' => 'myversions.publiq.dev',
             'server_urls'      => 'http://localhost:8081'
           ) }

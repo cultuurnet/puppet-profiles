@@ -18,7 +18,7 @@ class profiles::publiq::versions (
   realize Group['www-data']
   realize User['www-data']
 
-  profiles::puppet::puppetdb::cli::config { 'www-data':
+  profiles::puppet::puppetdb::cli { 'www-data':
     certificate_name => $servername,
     server_urls      => $puppetdb_url,
     require          => [Group['www-data'], User['www-data']]
