@@ -83,4 +83,9 @@ class profiles::packages inherits ::profiles {
   @package { 'nfs-common':
     ensure  => 'present'
   }
+
+  @package { 'rubygem-puppetdb-cli':
+    ensure  => 'present',
+    require => Apt::Source['publiq-tools']
+  }
 }
