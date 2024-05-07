@@ -1,8 +1,8 @@
 {
   "puppetdb": {
     "server_urls": <%= [@server_urls].flatten %>,
-    "cacert": "<%= @ssl_dir %>/certs/ca.pem",
-    "cert": "<%= @ssl_dir %>/certs/<%= @certificate_filename %>",
-    "key": "<%= @ssl_dir %>/private_keys/<%= @private_key_filename %>"
+    "cacert": "<%= @config_rootdir %>/puppet/ssl/certs/ca.pem",
+    "cert": "<%= @config_rootdir %>/puppet/ssl/certs/<%= @certificate_filename %>",
+    "key": "<%= @config_rootdir %>/puppet/ssl/private_keys/<%= @private_key_filename %>"
   }
 }

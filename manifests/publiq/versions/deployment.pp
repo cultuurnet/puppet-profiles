@@ -1,38 +1,22 @@
 class profiles::publiq::versions::deployment (
   String                     $version         = 'latest',
+  String                     $repository      = 'publiq-versions',
   Stdlib::Ipv4               $service_address = lookup('profiles::publiq::versions::service_address', Stdlib::Ipv4, 'first', '127.0.0.1'),
   Stdlib::Port::Unprivileged $service_port    = lookup('profiles::publiq::versions::service_port', Stdlib::Port::Unprivileged, 'first', 3000),
-  Optional[String]           $certificate     = undef,
-  Optional[String]           $private_key     = undef,
+  Enum['running', 'stopped'] $service_status  = 'running',
   Optional[String]           $puppetdb_url    = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
-  realize Apt::Source['publiq-versions']
+  $basedir = '/var/www/publiq-versions'
+
+  realize Apt::Source[$repository]
   realize Group['www-data']
   realize User['www-data']
 
   package { 'publiq-versions':
     ensure  => $version,
     notify  => [Service['publiq-versions'], Profiles::Deployment::Versions[$title]],
-    require => Apt::Source['publiq-versions']
-  }
-
-  if ($certificate and $private_key and $puppetdb_url) {
-    file { 'publiq-versions-env':
-      ensure  => 'file',
-      path    => '/var/www/publiq-versions/.env',
-      owner   => 'www-data',
-      group   => 'www-data',
-      content => 'PUPPETDB_CONFIG_SOURCE=\'/var/www/.puppetlabs/client-tools/puppetdb.conf\'',
-      notify  => Service['publiq-versions']
-    }
-
-    profiles::puppet::puppetdb::cli::config { 'www-data':
-      server_urls => $puppetdb_url,
-      certificate => $certificate,
-      private_key => $private_key,
-      notify      => Service['publiq-versions']
-    }
+    require => Apt::Source[$repository]
   }
 
   file { 'publiq-versions-service-defaults':
@@ -45,9 +29,12 @@ class profiles::publiq::versions::deployment (
   }
 
   service { 'publiq-versions':
-    ensure    => 'running',
-    hasstatus => true,
-    enable    => true
+    ensure    => $service_status,
+    enable    => $service_status ? {
+                   'running' => true,
+                   'stopped' => false
+                 },
+    hasstatus => true
   }
 
   profiles::deployment::versions { $title:
