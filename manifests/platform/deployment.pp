@@ -33,7 +33,7 @@ class profiles::platform::deployment (
     group   => 'www-data',
     source  => $config_source,
     require => [Package['platform-api'], Group['www-data'], User['www-data']],
-    notify  => Service['platform-api']
+    notify  => [Exec['run platform cache clear'], Service['platform-api']]
   }
 
   exec { 'run platform database migrations':
@@ -44,7 +44,7 @@ class profiles::platform::deployment (
 
   exec { 'run platform cache clear':
     command     => 'php artisan cache:clear',
-    require     => [File['platform-api-config'], Exec['run platform database migrations']],
+    require     => Exec['run platform database migrations'],
     *           => $exec_default_attributes
   }
 
