@@ -5,196 +5,216 @@ describe 'profiles::jenkins::controller::configuration' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with url => https://jenkins.foobar.com/ and admin_password => passw0rd" do
-        let(:params) { {
-          'url'            => 'https://jenkins.foobar.com/',
-          'admin_password' => 'passw0rd'
-        } }
+      context "in the production environment" do
+        let(:environment) { 'production' }
 
-        it { is_expected.to compile.with_all_deps }
+        context "with url => https://jenkins.foobar.com/ and admin_password => passw0rd" do
+          let(:params) { {
+            'url'            => 'https://jenkins.foobar.com/',
+            'admin_password' => 'passw0rd'
+          } }
 
-        it { is_expected.to contain_class('profiles::jenkins::controller::configuration').with(
-          'url'                          => 'https://jenkins.foobar.com/',
-          'admin_password'               => 'passw0rd',
-          'docker_registry_url'          => nil,
-          'docker_registry_credentialid' => nil,
-          'credentials'                  => [],
-          'global_libraries'             => [],
-          'pipelines'                    => [],
-          'users'                        => []
-        ) }
+          context "with hieradata" do
+            let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
+            it { is_expected.to compile.with_all_deps }
+
+            it { is_expected.to contain_class('profiles::jenkins::controller::configuration').with(
+              'url'                          => 'https://jenkins.foobar.com/',
+              'admin_password'               => 'passw0rd',
+              'docker_registry_url'          => nil,
+              'docker_registry_credentialid' => nil,
+              'credentials'                  => [],
+              'global_libraries'             => [],
+              'pipelines'                    => [],
+              'users'                        => [],
+              'puppetdb_url'                 => 'http://localhost:8081'
+            ) }
 
 
-        it { is_expected.to contain_profiles__jenkins__plugin('configuration-as-code').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => {
-                               'url'            => 'https://jenkins.foobar.com/',
-                               'admin_password' => 'passw0rd'
-                             }
-        ) }
+            it { is_expected.to contain_profiles__jenkins__plugin('configuration-as-code').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => {
+                                   'url'            => 'https://jenkins.foobar.com/',
+                                   'admin_password' => 'passw0rd'
+                                 }
+            ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('git').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => {
-                               'user_name'  => 'publiq Jenkins',
-                               'user_email' => 'jenkins@publiq.be'
-                             }
-        ) }
+            it { is_expected.to contain_profiles__jenkins__plugin('git').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => {
+                                   'user_name'  => 'publiq Jenkins',
+                                   'user_email' => 'jenkins@publiq.be'
+                                 }
+            ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('git-client').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => { 'hostkey_verification_strategy' => 'noHostKeyVerificationStrategy' }
-        ) }
+            it { is_expected.to contain_profiles__jenkins__plugin('git-client').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => { 'hostkey_verification_strategy' => 'noHostKeyVerificationStrategy' }
+            ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('swarm').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => nil
-        ) }
+            it { is_expected.to contain_profiles__jenkins__plugin('swarm').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => nil
+            ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('mailer').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => nil
-        ) }
+            it { is_expected.to contain_profiles__jenkins__plugin('mailer').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => nil
+            ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('email-ext').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => nil
-        ) }
+            it { is_expected.to contain_profiles__jenkins__plugin('email-ext').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => nil
+            ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('copyartifact').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => nil
-        ) }
+            it { is_expected.to contain_profiles__jenkins__plugin('copyartifact').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => nil
+            ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('ws-cleanup').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => nil
-        ) }
+            it { is_expected.to contain_profiles__jenkins__plugin('ws-cleanup').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => nil
+            ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('slack').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => nil
-        ) }
+            it { is_expected.to contain_profiles__jenkins__plugin('slack').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => nil
+            ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('workflow-aggregator').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => nil
-        ) }
+            it { is_expected.to contain_profiles__jenkins__plugin('workflow-aggregator').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => nil
+            ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('pipeline-utility-steps').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => nil
-        ) }
+            it { is_expected.to contain_profiles__jenkins__plugin('pipeline-utility-steps').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => nil
+            ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('ssh-steps').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => nil
-        ) }
+            it { is_expected.to contain_profiles__jenkins__plugin('ssh-steps').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => nil
+            ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('blueocean').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => nil
-        ) }
+            it { is_expected.to contain_profiles__jenkins__plugin('blueocean').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => nil
+            ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('uno-choice').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => nil
-        ) }
+            it { is_expected.to contain_profiles__jenkins__plugin('uno-choice').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => nil
+            ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('parameterized-scheduler').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => nil
-        ) }
+            it { is_expected.to contain_profiles__jenkins__plugin('parameterized-scheduler').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => nil
+            ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('amazon-ecr').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => nil
-        ) }
+            it { is_expected.to contain_profiles__jenkins__plugin('amazon-ecr').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => nil
+            ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('plain-credentials').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => []
-        ) }
+            it { is_expected.to contain_profiles__jenkins__plugin('plain-credentials').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => []
+            ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('ssh-credentials').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => []
-        ) }
+            it { is_expected.to contain_profiles__jenkins__plugin('ssh-credentials').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => []
+            ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('aws-credentials').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => []
-        ) }
+            it { is_expected.to contain_profiles__jenkins__plugin('aws-credentials').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => []
+            ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('pipeline-groovy-lib').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => []
-        ) }
+            it { is_expected.to contain_profiles__jenkins__plugin('pipeline-groovy-lib').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => []
+            ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('job-dsl').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => []
-        ) }
+            it { is_expected.to contain_profiles__jenkins__plugin('job-dsl').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => []
+            ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('docker-workflow').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => {
-                               'docker_label'                 => 'docker',
-                               'docker_registry_url'          => nil,
-                               'docker_registry_credentialid' => nil
-                             }
-        ) }
+            it { is_expected.to contain_profiles__jenkins__plugin('docker-workflow').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => {
+                                   'docker_label'                 => 'docker',
+                                   'docker_registry_url'          => nil,
+                                   'docker_registry_credentialid' => nil
+                                 }
+            ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('pipeline-stage-view').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => nil
-        ) }
+            it { is_expected.to contain_profiles__jenkins__plugin('pipeline-stage-view').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => nil
+            ) }
 
-        it { is_expected.to_not contain_file('jenkins users') }
+            it { is_expected.to_not contain_file('jenkins users') }
 
-        it { is_expected.to contain_class('profiles::jenkins::controller::configuration::reload') }
-        it { is_expected.to contain_class('profiles::jenkins::cli::credentials').with(
-          'user'     => 'admin',
-          'password' => 'passw0rd'
-        ) }
+            it { is_expected.to contain_profiles__puppet__puppetdb__cli('jenkins').with(
+              'certificate_name' => 'jenkins-controller-production',
+              'server_urls'      => 'http://localhost:8081'
+            ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('mailer').that_comes_before('Profiles::Jenkins::Plugin[configuration-as-code]') }
-        it { is_expected.to contain_profiles__jenkins__plugin('git').that_comes_before('Profiles::Jenkins::Plugin[pipeline-groovy-lib]') }
-        it { is_expected.to contain_profiles__jenkins__plugin('git').that_comes_before('Profiles::Jenkins::Plugin[job-dsl]') }
-        it { is_expected.to contain_profiles__jenkins__plugin('ssh-credentials').that_comes_before('Profiles::Jenkins::Plugin[job-dsl]') }
-        it { is_expected.to contain_profiles__jenkins__plugin('ssh-credentials').that_comes_before('Profiles::Jenkins::Plugin[pipeline-groovy-lib]') }
-        it { is_expected.to contain_profiles__jenkins__plugin('amazon-ecr').that_comes_before('Profiles::Jenkins::Plugin[docker-workflow]') }
-        it { is_expected.to contain_profiles__jenkins__plugin('git').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
-        it { is_expected.to contain_profiles__jenkins__plugin('git-client').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
-        it { is_expected.to contain_profiles__jenkins__plugin('configuration-as-code').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
-        it { is_expected.to contain_profiles__jenkins__plugin('docker-workflow').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
-        it { is_expected.to contain_class('profiles::jenkins::cli::credentials').that_requires('Class[profiles::jenkins::controller::configuration::reload]') }
+            it { is_expected.to contain_class('profiles::jenkins::controller::configuration::reload') }
+            it { is_expected.to contain_class('profiles::jenkins::cli::credentials').with(
+              'user'     => 'admin',
+              'password' => 'passw0rd'
+            ) }
+
+            it { is_expected.to contain_profiles__jenkins__plugin('mailer').that_comes_before('Profiles::Jenkins::Plugin[configuration-as-code]') }
+            it { is_expected.to contain_profiles__jenkins__plugin('git').that_comes_before('Profiles::Jenkins::Plugin[pipeline-groovy-lib]') }
+            it { is_expected.to contain_profiles__jenkins__plugin('git').that_comes_before('Profiles::Jenkins::Plugin[job-dsl]') }
+            it { is_expected.to contain_profiles__jenkins__plugin('ssh-credentials').that_comes_before('Profiles::Jenkins::Plugin[job-dsl]') }
+            it { is_expected.to contain_profiles__jenkins__plugin('ssh-credentials').that_comes_before('Profiles::Jenkins::Plugin[pipeline-groovy-lib]') }
+            it { is_expected.to contain_profiles__jenkins__plugin('amazon-ecr').that_comes_before('Profiles::Jenkins::Plugin[docker-workflow]') }
+            it { is_expected.to contain_profiles__jenkins__plugin('git').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
+            it { is_expected.to contain_profiles__jenkins__plugin('git-client').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
+            it { is_expected.to contain_profiles__jenkins__plugin('configuration-as-code').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
+            it { is_expected.to contain_profiles__jenkins__plugin('docker-workflow').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
+            it { is_expected.to contain_class('profiles::jenkins::cli::credentials').that_requires('Class[profiles::jenkins::controller::configuration::reload]') }
+          end
+
+          context "without hieradata" do
+            let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
+
+            it { is_expected.to_not contain_profiles__puppet__puppetdb__cli('jenkins') }
+          end
+        end
       end
 
-      context "with url => https://builds.foobar.com/, admin_password => letmein, docker_registry_url => https://docker.registry.com/, docker_registry_credentialid => my_docker_cred, credentials => [{ id => 'foo', type => 'string', secret => 'bla'}, { id => 'awscred', type => 'aws', access_key => 'aws_key', secret_key => 'aws_secret'}, { id => 'userpass', type => 'username_password', username => 'foo', password => 'bar'}], global_libraries => { git_url => 'git@example.com:org/repo.git', git_ref => 'main', credential_id => 'mygitcred'}, pipelines => { 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'keep_builds' => 5} and users => {'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'}" do
+      context "with url => https://builds.foobar.com/, admin_password => letmein, docker_registry_url => https://docker.registry.com/, docker_registry_credentialid => my_docker_cred, credentials => [{ id => 'foo', type => 'string', secret => 'bla'}, { id => 'awscred', type => 'aws', access_key => 'aws_key', secret_key => 'aws_secret'}, { id => 'userpass', type => 'username_password', username => 'foo', password => 'bar'}], global_libraries => { git_url => 'git@example.com:org/repo.git', git_ref => 'main', credential_id => 'mygitcred'}, pipelines => { 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'keep_builds' => 5}, users => {'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'} and puppetdb_url => 'https://foobar.com:4567'" do
         let(:params) { {
           'url'                          => 'https://builds.foobar.com/',
           'admin_password'               => 'letmein',
@@ -208,74 +228,84 @@ describe 'profiles::jenkins::controller::configuration' do
                                             ],
           'global_libraries'             => { 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'},
           'pipelines'                    => { 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'keep_builds' => 5},
-          'users'                        => {'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'}
+          'users'                        => {'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'},
+          'puppetdb_url'                 => 'http://foobar.com:4567'
         } }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('configuration-as-code').with(
-          'configuration' => {
-                               'url'            => 'https://builds.foobar.com/',
-                               'admin_password' => 'letmein'
-                             }
-        ) }
+        context "in the testing environment" do
+          let(:environment) { 'testing' }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('plain-credentials').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => [
-                               { 'id' => 'foo', 'type' => 'string', 'secret' => 'bla'},
-                               { 'id' => 'filecred', 'type' => 'file', 'filename' => 'my_file.txt', 'content' => 'filecontent'},
-                               { 'id' => 'userpass', 'type' => 'username_password', 'username' => 'foo', 'password' => 'bar'}
-                             ]
-        ) }
+          it { is_expected.to contain_profiles__jenkins__plugin('configuration-as-code').with(
+            'configuration' => {
+                                 'url'            => 'https://builds.foobar.com/',
+                                 'admin_password' => 'letmein'
+                               }
+          ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('aws-credentials').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => [{ 'id' => 'awscred', 'type' => 'aws', 'access_key' => 'aws_key', 'secret_key' => 'aws_secret'}]
-        ) }
+          it { is_expected.to contain_profiles__jenkins__plugin('plain-credentials').with(
+            'ensure'        => 'present',
+            'restart'       => false,
+            'configuration' => [
+                                 { 'id' => 'foo', 'type' => 'string', 'secret' => 'bla'},
+                                 { 'id' => 'filecred', 'type' => 'file', 'filename' => 'my_file.txt', 'content' => 'filecontent'},
+                                 { 'id' => 'userpass', 'type' => 'username_password', 'username' => 'foo', 'password' => 'bar'}
+                               ]
+          ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('pipeline-groovy-lib').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => [{ 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}]
-        ) }
+          it { is_expected.to contain_profiles__jenkins__plugin('aws-credentials').with(
+            'ensure'        => 'present',
+            'restart'       => false,
+            'configuration' => [{ 'id' => 'awscred', 'type' => 'aws', 'access_key' => 'aws_key', 'secret_key' => 'aws_secret'}]
+          ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('job-dsl').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => [{ 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'keep_builds' => 5}]
-        ) }
+          it { is_expected.to contain_profiles__jenkins__plugin('pipeline-groovy-lib').with(
+            'ensure'        => 'present',
+            'restart'       => false,
+            'configuration' => [{ 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}]
+          ) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('docker-workflow').with(
-          'ensure'        => 'present',
-          'restart'       => false,
-          'configuration' => {
-                               'docker_label'                 => 'docker',
-                               'docker_registry_url'          => 'https://docker.registry.com/',
-                               'docker_registry_credentialid' => 'my_docker_cred'
-                             }
-        ) }
+          it { is_expected.to contain_profiles__jenkins__plugin('job-dsl').with(
+            'ensure'        => 'present',
+            'restart'       => false,
+            'configuration' => [{ 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'keep_builds' => 5}]
+          ) }
 
-        it { is_expected.to contain_file('jenkins users').with(
-          'ensure' => 'file',
-          'path'   => '/var/lib/jenkins/casc_config/users.yaml'
-        ) }
+          it { is_expected.to contain_profiles__jenkins__plugin('docker-workflow').with(
+            'ensure'        => 'present',
+            'restart'       => false,
+            'configuration' => {
+                                 'docker_label'                 => 'docker',
+                                 'docker_registry_url'          => 'https://docker.registry.com/',
+                                 'docker_registry_credentialid' => 'my_docker_cred'
+                               }
+          ) }
 
-        it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*id: 'foo'$/) }
-        it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*name: 'Foo Bar'$/) }
-        it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*password: 'baz'$/) }
-        it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*emailAddress: 'foo@example.com'$/) }
+          it { is_expected.to contain_file('jenkins users').with(
+            'ensure' => 'file',
+            'path'   => '/var/lib/jenkins/casc_config/users.yaml'
+          ) }
 
-        it { is_expected.to contain_class('profiles::jenkins::cli::credentials').with(
-          'user'     => 'admin',
-          'password' => 'letmein'
-        ) }
+          it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*id: 'foo'$/) }
+          it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*name: 'Foo Bar'$/) }
+          it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*password: 'baz'$/) }
+          it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*emailAddress: 'foo@example.com'$/) }
 
-        it { is_expected.to contain_profiles__jenkins__plugin('plain-credentials').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
-        it { is_expected.to contain_profiles__jenkins__plugin('ssh-credentials').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
-        it { is_expected.to contain_profiles__jenkins__plugin('aws-credentials').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
-        it { is_expected.to contain_file('jenkins users').that_requires('Profiles::Jenkins::Plugin[mailer]') }
-        it { is_expected.to contain_file('jenkins users').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
+          it { is_expected.to contain_profiles__puppet__puppetdb__cli('jenkins').with(
+            'certificate_name' => 'jenkins-controller-testing',
+            'server_urls'      => 'http://foobar.com:4567'
+          ) }
+
+          it { is_expected.to contain_class('profiles::jenkins::cli::credentials').with(
+            'user'     => 'admin',
+            'password' => 'letmein'
+          ) }
+
+          it { is_expected.to contain_profiles__jenkins__plugin('plain-credentials').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
+          it { is_expected.to contain_profiles__jenkins__plugin('ssh-credentials').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
+          it { is_expected.to contain_profiles__jenkins__plugin('aws-credentials').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
+          it { is_expected.to contain_file('jenkins users').that_requires('Profiles::Jenkins::Plugin[mailer]') }
+          it { is_expected.to contain_file('jenkins users').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
+        end
       end
 
       context "with url => https://builds.foobar.com/, admin_password => letmein, docker_registry_url => https://docker2.registry.com/, docker_registry_credentialid => my_docker_cred2, credentials => [{ id => 'token1', type => 'string', secret => 'secret1'}, { id => 'token2', type => 'string', secret => 'secret2'}, { id => 'key1', type => 'private_key', key => 'privkey1'}, { id => 'key2', type => 'private_key', key => 'privkey2'}, { id => 'awscred1', type => 'aws', access_key => 'aws_key1', secret_key => 'aws_secret1'}, { id => 'awscred2', type => 'aws', access_key => 'aws_key2', secret_key => 'aws_secret2'}, { 'id' => 'myfile1', 'type' => 'file', 'filename' => 'my_file1.txt', 'content' => 'spec testfile content 1'}, { 'id' => 'myfile2', 'type' => 'file', 'filename' => 'my_file2.txt', 'content' => 'spec testfile content 2'}], global_libraries => [{'git_url' => 'git@foo.com:bar/baz.git', 'git_ref' => 'develop', 'credential_id' => 'gitkey'}, {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}, { id => 'userpass1', type => 'username_password', username => 'foo1', password => 'bar1'}, { id => 'userpass2', type => 'username_password', username => 'foo2', password => 'bar2'}], pipelines => [{ 'name' => 'baz', 'git_url' => 'git@github.com:bar/baz.git', 'git_ref' => 'refs/heads/develop', 'credential_id' => 'gitkey', keep_builds => 10 }, { 'name' => 'repo', 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred', keep_builds => '2'}] and users => [{'id' => 'user1', 'name' => 'User One', 'password' => 'passw0rd1', 'email' => 'user1@example.com'}, {'id' => 'user2', 'name' => 'User Two', 'password' => 'passw0rd2', 'email' => 'user2@example.com'}]" do
