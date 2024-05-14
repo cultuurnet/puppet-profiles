@@ -11,7 +11,8 @@ class profiles::jenkins::controller (
   Variant[Array,Hash]       $credentials                  = [],
   Variant[Array,Hash]       $global_libraries             = [],
   Variant[Array,Hash]       $pipelines                    = [],
-  Variant[Array,Hash]       $users                        = []
+  Variant[Array,Hash]       $users                        = [],
+  Optional[String]          $puppetdb_url                 = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   include ::profiles::java
@@ -66,6 +67,7 @@ class profiles::jenkins::controller (
     global_libraries             => $global_libraries,
     pipelines                    => $pipelines,
     users                        => $users,
+    puppetdb_url                 => $puppetdb_url,
     require                      => [ Class['profiles::jenkins::controller::service'], Class['profiles::jenkins::cli']]
   }
 
