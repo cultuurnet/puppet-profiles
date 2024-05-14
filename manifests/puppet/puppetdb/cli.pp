@@ -6,7 +6,7 @@ define profiles::puppet::puppetdb::cli (
   include ::profiles
 
   unless $server_urls {
-    fail("Defined resource type Profiles::Puppet::Pupppetdb::Cli[${title}] expects a value for parameter 'server_urls'")
+    fail("Defined resource type Profiles::Puppet::Puppetdb::Cli[${title}] expects a value for parameter 'server_urls'")
   }
 
   realize Apt::Source['publiq-tools']

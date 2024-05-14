@@ -6,7 +6,7 @@ define profiles::puppet::puppetdb::cli::config (
   include ::profiles
 
   unless $server_urls {
-    fail("Defined resource type Profiles::Puppet::Pupppetdb::Cli::Config[${title}] expects a value for parameter 'server_urls'")
+    fail("Defined resource type Profiles::Puppet::Puppetdb::Cli::Config[${title}] expects a value for parameter 'server_urls'")
   }
 
   $default_file_attributes = {
