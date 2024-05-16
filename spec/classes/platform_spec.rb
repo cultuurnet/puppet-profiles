@@ -56,6 +56,7 @@ describe 'profiles::platform' do
           let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
 
           it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }
+          it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'admin_users_source'/) }
         end
       end
 
