@@ -12,8 +12,11 @@ class profiles::puppet::puppetdb::certificate (
 
   if !($certname == $facts['networking']['fqdn']) {
     puppet_certificate { $certname:
-      ensure      => 'present',
-      waitforcert =>  60
+      ensure               => 'present',
+      dns_alt_names        => ["DNS:${certname}", "IP:127.0.0.1"],
+      waitforcert          => 60,
+      renewal_grace_period => 5,
+      clean                => true
     }
 
     Puppet_certificate[$certname] -> File['puppetdb private_key']
