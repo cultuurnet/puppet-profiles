@@ -29,7 +29,8 @@ class profiles::uit::api::deployment (
     group   => 'www-data',
     source  => $config_source,
     require => [Package['uit-api'], Group['www-data'], User['www-data']],
-    notify  => [Exec['uit-api-graphql-schema-update'], Service['uit-api']]
+    # notify  => [Exec['uit-api-graphql-schema-update'], Service['uit-api']]
+    notify  => Service['uit-api']
   }
 
   file { 'uit-api-config-db':
