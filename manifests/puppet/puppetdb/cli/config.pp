@@ -45,9 +45,11 @@ define profiles::puppet::puppetdb::cli::config (
     $private_key_filename = "${certificate_name}.pem"
 
     puppet_certificate { $certificate_name:
-      ensure      => 'present',
-      waitforcert => 60,
-      before      => [File["${config_rootdir}/puppet/ssl/certs/${certificate_filename}"], File["${config_rootdir}/puppet/ssl/private_keys/${private_key_filename}"]]
+      ensure               => 'present',
+      waitforcert          => 60,
+      renewal_grace_period => 5,
+      clean                => true,
+      before               => [File["${config_rootdir}/puppet/ssl/certs/${certificate_filename}"], File["${config_rootdir}/puppet/ssl/private_keys/${private_key_filename}"]]
     }
   } else {
     $certificate_filename = "${trusted['certname']}.pem"
