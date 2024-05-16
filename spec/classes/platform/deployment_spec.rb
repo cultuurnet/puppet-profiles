@@ -5,9 +5,10 @@ describe 'profiles::platform::deployment' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context 'with config_source => /my/config/file' do
+      context 'with config_source => /my/config/file and admin_users_source => /my/config/admin_users' do
         let(:params) { {
-          'config_source' => '/my/config/file'
+          'config_source'      => '/my/config/file',
+          'admin_users_source' => '/my/config/admin_users'
         } }
 
         context 'without extra parameters' do
@@ -42,17 +43,29 @@ describe 'profiles::platform::deployment' do
           'source' => '/my/config/file'
         ) }
 
+        it { is_expected.to contain_file('platform-api-admin-users').with(
+          'ensure' => 'file',
+          'path'   => '/var/www/platform-api/nova_users.php',
+          'owner'  => 'www-data',
+          'group'  => 'www-data',
+          'source' => '/my/config/admin_users'
+        ) }
+
         it { is_expected.to contain_package('platform-api').that_requires('Apt::Source[platform-api]') }
         it { is_expected.to contain_package('platform-api').that_notifies('Profiles::Deployment::Versions[profiles::platform::deployment]') }
         it { is_expected.to contain_file('platform-api-config').that_requires('Group[www-data]') }
         it { is_expected.to contain_file('platform-api-config').that_requires('User[www-data]') }
         it { is_expected.to contain_file('platform-api-config').that_requires('Package[platform-api]') }
+        it { is_expected.to contain_file('platform-api-admin-users').that_requires('Group[www-data]') }
+        it { is_expected.to contain_file('platform-api-admin-users').that_requires('User[www-data]') }
+        it { is_expected.to contain_file('platform-api-admin-users').that_requires('Package[platform-api]') }
       end
 
       context 'without parameters' do
         let(:params) { {} }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'admin_users_source'/) }
       end
     end
   end
