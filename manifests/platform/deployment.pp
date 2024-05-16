@@ -1,8 +1,9 @@
 class profiles::platform::deployment (
   String                     $config_source,
-  String                     $version        = 'latest',
-  String                     $repository     = 'platform-api',
-  Optional[String]           $puppetdb_url   = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+  String                     $admin_users_source,
+  String                     $version            = 'latest',
+  String                     $repository         = 'platform-api',
+  Optional[String]           $puppetdb_url       = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $basedir                 = '/var/www/platform-api'
@@ -32,6 +33,16 @@ class profiles::platform::deployment (
     owner   => 'www-data',
     group   => 'www-data',
     source  => $config_source,
+    require => [Package['platform-api'], Group['www-data'], User['www-data']],
+    notify  => [Exec['run platform cache clear'], Service['platform-api']]
+  }
+
+  file { 'platform-api-admin-users':
+    ensure  => 'file',
+    path    => "${basedir}/nova_users.php",
+    owner   => 'www-data',
+    group   => 'www-data',
+    source  => $admin_users_source,
     require => [Package['platform-api'], Group['www-data'], User['www-data']],
     notify  => [Exec['run platform cache clear'], Service['platform-api']]
   }
