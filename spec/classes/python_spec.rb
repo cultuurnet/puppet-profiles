@@ -10,24 +10,27 @@ describe 'profiles::python' do
       context "without parameters" do
         let(:params) { {} }
 
-        it { is_expected.to contain_package('python3.6').with(
+        it { is_expected.to contain_class('profiles::python').with(
+          'with_dev' => false
+        ) }
+
+        it { is_expected.to contain_package('python3').with(
           'ensure' => 'installed'
         ) }
+
+        it { is_expected.not_to contain_package('python3-pip') }
       end
 
-      context "with version => 3.7" do
-        let(:params) { { 'version' => '3.7' } }
+      context "with with_dev => true" do
+        let(:params) { { 'with_dev' => true } }
 
-        case facts[:os]['release']['major']
-        when '18.04'
-          it { is_expected.to contain_apt__ppa('ppa:deadsnakes/ppa') }
+        it { is_expected.to contain_package('python3').with(
+          'ensure' => 'installed'
+        ) }
 
-          it { is_expected.to contain_package('python3.7').with(
-            'ensure' => 'installed'
-          ) }
-
-          it { is_expected.to contain_package('python3.7').that_requires('Apt::Ppa[ppa:deadsnakes/ppa]') }
-        end
+        it { is_expected.to contain_package('python3-pip').with(
+          'ensure' => 'installed'
+        ) }
       end
     end
   end
