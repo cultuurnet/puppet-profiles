@@ -3,7 +3,7 @@
 jobs:
   <%- [@configuration].flatten.each do |pipeline| -%>
   - script: >
-      pipelineJob('<%= pipeline['name'].strip.downcase.gsub(' ', '-').gsub(/[^\w-]/, '')  %>') {
+      pipelineJob('<%= pipeline['name'].strip.unicode_normalize(:nfd).gsub(/\p{Mn}/, '').downcase.gsub(' ', '-') %>') {
         <%- if pipeline['parameters'] -%>
           parameters {
             <%- pipeline['parameters'].strip.each_line do |line| -%>

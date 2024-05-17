@@ -392,7 +392,7 @@ describe 'profiles::jenkins::plugin' do
                                                           }"
                                  },
                                  {
-                                   'name'             => ' Repo foo  ',
+                                   'name'             => ' Répo foö  ',
                                    'git_url'          => 'git@example.com:org/repo.git',
                                    'git_ref'          => 'main',
                                    'jenkinsfile_path' => 'pipelines/Jenkinsfile.repo',
@@ -423,7 +423,7 @@ describe 'profiles::jenkins::plugin' do
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*parameters {\n\s*booleanParam {\n\s*name\('Flag'\)\n\s*defaultValue\(true\)\n\s*description\('Boolean flag'\)\n\s*}\n\s*}$/) }
 
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*pipelineJob\('repo-foo'\)/) }
-          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*displayName\('Repo foo'\)/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*displayName\('Répo foö'\)/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*url\('git@example.com:org\/repo.git'\)$/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*scriptPath\('pipelines\/Jenkinsfile.repo'\)$/) }
           it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^\s*githubProjectUrl\('https:\/\/github.com\/org\/repo'\)$/) }
