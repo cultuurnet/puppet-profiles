@@ -3,13 +3,19 @@
 jobs:
   <%- [@configuration].flatten.each do |pipeline| -%>
   - script: >
-      pipelineJob('<%= pipeline['name'] %>') {
+      pipelineJob('<%= pipeline['name'].strip.downcase.gsub(' ', '-').gsub(/[^\w-]/, '')  %>') {
         <%- if pipeline['parameters'] -%>
           parameters {
             <%- pipeline['parameters'].strip.each_line do |line| -%>
               <%= line -%>
             <%- end %>
           }
+        <%- end -%>
+          displayName('<%= pipeline['name'].strip %>')
+        <%- if pipeline['description'] -%>
+          description(<%- pipeline['description'].strip.each_line do |line| -%>
+                        <%= line -%>
+                      <%- end -%>)
         <%- end -%>
           properties {
             <%- if pipeline['git_url'] =~ /^git@github.com:/ -%>
