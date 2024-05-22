@@ -125,6 +125,16 @@ class profiles::puppet::puppetserver (
     notify  => Class['profiles::puppet::puppetserver::service']
   }
 
+  hocon_setting { 'puppetserver ca allow-subject-alt-names':
+    ensure  => 'present',
+    path    => '/etc/puppetlabs/puppetserver/conf.d/ca.conf',
+    setting => 'certificate-authority.allow-subject-alt-names',
+    type    => 'boolean',
+    value   => true,
+    require => Class['profiles::puppet::puppetserver::install'],
+    notify  => Class['profiles::puppet::puppetserver::service']
+  }
+
   # Fix ownership of dropsonde directory, to stop the permission errors in puppetserver.log
   file { 'puppetserver dropsonde directory':
     owner   => 'puppet',

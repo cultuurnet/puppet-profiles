@@ -83,6 +83,14 @@ describe 'profiles::puppet::puppetserver' do
             'sort_order'           => 200
           ) }
 
+          it { is_expected.to contain_hocon_setting('puppetserver ca allow-subject-alt-names').with(
+            'ensure'  => 'present',
+            'path'    => '/etc/puppetlabs/puppetserver/conf.d/ca.conf',
+            'setting' => 'certificate-authority.allow-subject-alt-names',
+            'type'    => 'boolean',
+            'value'   => true
+          ) }
+
           it { is_expected.to contain_hocon_setting('puppetserver dropsonde').with(
             'ensure'  => 'present',
             'path'    => '/etc/puppetlabs/puppetserver/conf.d/puppetserver.conf',
@@ -147,6 +155,8 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to contain_file('puppetserver dropsonde directory').that_notifies('Class[profiles::puppet::puppetserver::service]') }
           it { is_expected.to contain_hocon_setting('puppetserver dropsonde').that_requires('Class[profiles::puppet::puppetserver::install]') }
           it { is_expected.to contain_hocon_setting('puppetserver dropsonde').that_notifies('Class[profiles::puppet::puppetserver::service]') }
+          it { is_expected.to contain_hocon_setting('puppetserver ca allow-subject-alt-names').that_requires('Class[profiles::puppet::puppetserver::install]') }
+          it { is_expected.to contain_hocon_setting('puppetserver ca allow-subject-alt-names').that_notifies('Class[profiles::puppet::puppetserver::service]') }
         end
 
         context "with version => 1.2.3, dns_alt_names => puppet.services.example.com, autosign => true, trusted_amis => ami-123, trusted_certnames => [], eyaml => true, eyaml_gpg_key => { 'id' => '6789DEFD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\neyamlkey\n-----END PGP PRIVATE KEY BLOCK-----' }, lookup_hierarchy => { name => Common data, path => common.yaml }, terraform_integration => true, terraform_bucket => mybucket, puppetdb_url => https://puppetdb.example.com:8081, initial_heap_size => 512m, maximum_heap_size => 512m, report_retention_days => 5 and service_status => stopped" do
