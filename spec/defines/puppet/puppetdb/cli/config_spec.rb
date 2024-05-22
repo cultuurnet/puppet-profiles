@@ -92,6 +92,8 @@ describe 'profiles::puppet::puppetdb::cli::config' do
             'source' => 'file:///etc/puppetlabs/puppet/ssl/certs/ca.pem'
           ) }
 
+          it { is_expected.not_to contain_puppet_certificate('node1.example.com') }
+
           it { is_expected.to contain_file('puppetdb-cli-config root').with(
             'ensure' => 'file',
             'path'   => '/root/.puppetlabs/client-tools/puppetdb.conf',
@@ -132,6 +134,16 @@ describe 'profiles::puppet::puppetdb::cli::config' do
           it { is_expected.to contain_file('puppetdb-cli-config root').with_content(/"cacert":\s*"\/root\/.puppetlabs\/puppet\/ssl\/certs\/ca.pem"/) }
           it { is_expected.to contain_file('puppetdb-cli-config root').with_content(/"cert":\s*"\/root\/.puppetlabs\/puppet\/ssl\/certs\/abc123.pem"/) }
           it { is_expected.to contain_file('puppetdb-cli-config root').with_content(/"key":\s*"\/root\/.puppetlabs\/puppet\/ssl\/private_keys\/abc123.pem"/) }
+
+          it { is_expected.to contain_puppet_certificate('abc123').with(
+            'ensure'               => 'present',
+            'waitforcert'          => 60,
+            'renewal_grace_period' => 5,
+            'clean'                => true
+          ) }
+
+          it { is_expected.to contain_puppet_certificate('abc123').that_comes_before('File[/root/.puppetlabs/puppet/ssl/certs/abc123.pem]') }
+          it { is_expected.to contain_puppet_certificate('abc123').that_comes_before('File[/root/.puppetlabs/puppet/ssl/private_keys/abc123.pem]') }
         end
 
         context "without parameters" do
@@ -159,7 +171,7 @@ describe 'profiles::puppet::puppetdb::cli::config' do
         let(:trusted_facts) { { 'certname' => 'node2.example.com' } }
         let(:title) { 'jenkins' }
 
-        context "with server_urls => [https://example.com:1234, https://example.com:5678] and certificate_name => abc123" do
+        context "with server_urls => [https://example.com:1234, https://example.com:5678] and certificate_name => 123abc" do
           let(:params) { {
             'server_urls'      => ['https://example.com:1234', 'https://example.com:5678'],
             'certificate_name' => '123abc'
@@ -187,11 +199,21 @@ describe 'profiles::puppet::puppetdb::cli::config' do
             'source' => 'file:///etc/puppetlabs/puppet/ssl/certs/ca.pem'
           ) }
 
-          it { is_expected.to contain_user('jenkins').that_comes_before('File[puppetdb-cli-config jenkins]') }
           it { is_expected.to contain_file('puppetdb-cli-config jenkins').with_content(/"server_urls":\s*\[\s*"https:\/\/example.com:1234",\s*"https:\/\/example.com:5678"\s*\]/) }
           it { is_expected.to contain_file('puppetdb-cli-config jenkins').with_content(/"cacert":\s*"\/var\/lib\/jenkins\/.puppetlabs\/puppet\/ssl\/certs\/ca.pem"/) }
           it { is_expected.to contain_file('puppetdb-cli-config jenkins').with_content(/"cert":\s*"\/var\/lib\/jenkins\/.puppetlabs\/puppet\/ssl\/certs\/123abc.pem"/) }
           it { is_expected.to contain_file('puppetdb-cli-config jenkins').with_content(/"key":\s*"\/var\/lib\/jenkins\/.puppetlabs\/puppet\/ssl\/private_keys\/123abc.pem"/) }
+
+          it { is_expected.to contain_puppet_certificate('123abc').with(
+            'ensure'               => 'present',
+            'waitforcert'          => 60,
+            'renewal_grace_period' => 5,
+            'clean'                => true
+          ) }
+
+          it { is_expected.to contain_user('jenkins').that_comes_before('File[puppetdb-cli-config jenkins]') }
+          it { is_expected.to contain_puppet_certificate('123abc').that_comes_before('File[/var/lib/jenkins/.puppetlabs/puppet/ssl/certs/123abc.pem]') }
+          it { is_expected.to contain_puppet_certificate('123abc').that_comes_before('File[/var/lib/jenkins/.puppetlabs/puppet/ssl/private_keys/123abc.pem]') }
         end
 
         context "with server_urls => https://example.com:1234" do
@@ -211,6 +233,8 @@ describe 'profiles::puppet::puppetdb::cli::config' do
             'group'  => 'jenkins',
             'mode'   => '0400'
           ) }
+
+          it { is_expected.not_to contain_puppet_certificate('node2.example.com') }
 
           it { is_expected.to contain_user('jenkins').that_comes_before('File[puppetdb-cli-config jenkins]') }
           it { is_expected.to contain_file('puppetdb-cli-config jenkins').with_content(/"server_urls":\s*\[\s*"https:\/\/example.com:1234"\s*\]/) }
@@ -253,6 +277,16 @@ describe 'profiles::puppet::puppetdb::cli::config' do
           it { is_expected.to contain_file('puppetdb-cli-config foobar').with_content(/"cacert":\s*"\/home\/foobar\/.puppetlabs\/puppet\/ssl\/certs\/ca.pem"/) }
           it { is_expected.to contain_file('puppetdb-cli-config foobar').with_content(/"cert":\s*"\/home\/foobar\/.puppetlabs\/puppet\/ssl\/certs\/987zyx.pem"/) }
           it { is_expected.to contain_file('puppetdb-cli-config foobar').with_content(/"key":\s*"\/home\/foobar\/.puppetlabs\/puppet\/ssl\/private_keys\/987zyx.pem"/) }
+
+          it { is_expected.to contain_puppet_certificate('987zyx').with(
+            'ensure'               => 'present',
+            'waitforcert'          => 60,
+            'renewal_grace_period' => 5,
+            'clean'                => true
+          ) }
+
+          it { is_expected.to contain_puppet_certificate('987zyx').that_comes_before('File[/home/foobar/.puppetlabs/puppet/ssl/certs/987zyx.pem]') }
+          it { is_expected.to contain_puppet_certificate('987zyx').that_comes_before('File[/home/foobar/.puppetlabs/puppet/ssl/private_keys/987zyx.pem]') }
         end
 
         context "with server_urls => https://example.com:1234" do
@@ -318,6 +352,16 @@ describe 'profiles::puppet::puppetdb::cli::config' do
           it { is_expected.to contain_file('puppetdb-cli-config www-data').with_content(/"cacert":\s*"\/var\/www\/.puppetlabs\/puppet\/ssl\/certs\/ca.pem"/) }
           it { is_expected.to contain_file('puppetdb-cli-config www-data').with_content(/"cert":\s*"\/var\/www\/.puppetlabs\/puppet\/ssl\/certs\/123abc.pem"/) }
           it { is_expected.to contain_file('puppetdb-cli-config www-data').with_content(/"key":\s*"\/var\/www\/.puppetlabs\/puppet\/ssl\/private_keys\/123abc.pem"/) }
+
+          it { is_expected.to contain_puppet_certificate('123abc').with(
+            'ensure'               => 'present',
+            'waitforcert'          => 60,
+            'renewal_grace_period' => 5,
+            'clean'                => true
+          ) }
+
+          it { is_expected.to contain_puppet_certificate('123abc').that_comes_before('File[/var/www/.puppetlabs/puppet/ssl/certs/123abc.pem]') }
+          it { is_expected.to contain_puppet_certificate('123abc').that_comes_before('File[/var/www/.puppetlabs/puppet/ssl/private_keys/123abc.pem]') }
         end
       end
     end

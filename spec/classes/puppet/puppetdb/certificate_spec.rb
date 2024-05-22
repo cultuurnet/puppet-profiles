@@ -87,8 +87,11 @@ describe 'profiles::puppet::puppetdb::certificate' do
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_puppet_certificate('puppetdb.example.com').with(
-            'ensure'      => 'present',
-            'waitforcert' => '60'
+            'ensure'               => 'present',
+            'waitforcert'          => 60,
+            'renewal_grace_period' => 5,
+            'clean'                => true,
+            'dns_alt_names'        => ['DNS:puppetdb.example.com', 'IP:127.0.0.1']
           ) }
 
           it { is_expected.to contain_file('puppetdb certificate').with(
