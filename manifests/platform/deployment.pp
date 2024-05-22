@@ -53,6 +53,12 @@ class profiles::platform::deployment (
     *           => $exec_default_attributes
   }
 
+  exec { 'run platform database seed':
+    command     => 'php artisan db:seed',
+    require     => [File['platform-api-config'], Exec['run platform database migrations']],
+    *           => $exec_default_attributes
+  }
+
   exec { 'run platform cache clear':
     command     => 'php artisan cache:clear',
     require     => Exec['run platform database migrations'],
