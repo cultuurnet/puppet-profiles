@@ -2,7 +2,7 @@ class profiles::uitpas::cid_logs (
   String                        $hostname,
   String                        $gcs_credentials,
   Variant[String,Array[String]] $aliases         = undef,
-  Stdlib::Ipv4                  $service_address = '127.0.0.1',
+  Stdlib::IP::Address::V4       $service_address = '127.0.0.1',
   Stdlib::Port::Unprivileged    $service_port    = 8080,
   String                        $data_dir        = '/data/cidlogs'
 ) inherits ::profiles {

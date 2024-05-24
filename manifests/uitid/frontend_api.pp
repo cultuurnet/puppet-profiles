@@ -2,7 +2,7 @@ class profiles::uitid::frontend_api (
   String                        $servername,
   Variant[String,Array[String]] $serveraliases   = [],
   Boolean                       $deployment      = true,
-  Stdlib::Ipv4                  $service_address = '127.0.0.1',
+  Stdlib::IP::Address::V4       $service_address = '127.0.0.1',
   Integer                       $service_port    = 4000
 ) inherits ::profiles {
 

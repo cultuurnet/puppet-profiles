@@ -1,5 +1,5 @@
 class profiles::icinga2 (
-  Variant[Stdlib::Ipv4, Array[Stdlib::Ipv4]] $nrpe_allowed_hosts = []
+  Variant[Stdlib::IP::Address::V4, Array[Stdlib::IP::Address::V4]] $nrpe_allowed_hosts = []
 ) inherits ::profiles {
 
   include ::profiles::firewall::rules

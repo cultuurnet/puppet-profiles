@@ -2,7 +2,7 @@ class profiles::uit::frontend (
   String                        $servername,
   Variant[String,Array[String]] $serveraliases       = [],
   Boolean                       $deployment          = true,
-  Stdlib::Ipv4                  $service_address     = '127.0.0.1',
+  Stdlib::IP::Address::V4       $service_address     = '127.0.0.1',
   Integer                       $service_port        = 3000,
   Optional[String]              $redirect_source     = undef,
   Optional[Hash]                $redirect_vhosts     = {},

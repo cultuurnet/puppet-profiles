@@ -1,7 +1,7 @@
 class profiles::puppet::puppetboard (
   String                         $servername,
   Variant[String, Array[String]] $serveraliases   = [],
-  Stdlib::Ipv4                   $service_address = '127.0.0.1',
+  Stdlib::IP::Address::V4        $service_address = '127.0.0.1',
   Stdlib::Port::Unprivileged     $service_port    = 3000,
   Enum['running', 'stopped']     $service_status  = 'running'
 ) inherits ::profiles {

@@ -4,7 +4,7 @@ class profiles::aptly (
   Hash                           $signing_keys      = {},
   Hash                           $trusted_keys      = {},
   String                         $version           = 'latest',
-  Stdlib::Ipv4                   $api_bind          = '127.0.0.1',
+  Stdlib::IP::Address::V4        $api_bind          = '127.0.0.1',
   Stdlib::Port::Unprivileged     $api_port          = 8081,
   Hash                           $publish_endpoints = {},
   Hash                           $repositories      = {},

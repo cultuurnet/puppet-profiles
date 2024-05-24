@@ -1,7 +1,7 @@
 class profiles::publiq::versions (
   String                         $servername,
   Variant[String, Array[String]] $serveraliases   = [],
-  Stdlib::Ipv4                   $service_address = '127.0.0.1',
+  Stdlib::IP::Address::V4        $service_address = '127.0.0.1',
   Stdlib::Port::Unprivileged     $service_port    = 3000,
   Boolean                        $deployment      = true,
   Optional[String]               $puppetdb_url    = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
