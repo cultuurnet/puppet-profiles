@@ -21,7 +21,7 @@ describe 'profiles::puppet::puppetboard' do
             'servername'      => 'puppetboard.example.com',
             'serveraliases'   => [],
             'service_address' => '127.0.0.1',
-            'service_port'    => 3000,
+            'service_port'    => 6000,
             'service_status'  => 'running'
           ) }
 
@@ -38,6 +38,8 @@ describe 'profiles::puppet::puppetboard' do
           it { is_expected.to contain_class('puppetboard').with(
             'install_from'        => 'package',
             'package_name'        => 'puppetboard',
+            'group'               => 'www-data',
+            'user'                => 'www-data',
             'manage_group'        => false,
             'manage_user'         => false,
             'secret_key'          => 'a3Tl84mHAFP1DoOvMDESaXyXcUsC2cPu',
@@ -57,7 +59,7 @@ describe 'profiles::puppet::puppetboard' do
           it { is_expected.to contain_file('puppetboard service defaults').with(
             'ensure'  => 'file',
             'path'    => '/etc/default/puppetboard',
-            'content' => "HOST=127.0.0.1\nPORT=3000"
+            'content' => "HOST=127.0.0.1\nPORT=6000"
           ) }
 
           it { is_expected.to contain_class('profiles::puppet::puppetboard::certificate').with(
@@ -66,7 +68,7 @@ describe 'profiles::puppet::puppetboard' do
           ) }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://puppetboard.example.com').with(
-            'destination' => 'http://127.0.0.1:3000/',
+            'destination' => 'http://127.0.0.1:6000/',
             'aliases'     => []
           ) }
 

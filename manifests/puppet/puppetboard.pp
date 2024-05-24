@@ -2,7 +2,7 @@ class profiles::puppet::puppetboard (
   String                         $servername,
   Variant[String, Array[String]] $serveraliases   = [],
   Stdlib::IP::Address::V4        $service_address = '127.0.0.1',
-  Stdlib::Port::Unprivileged     $service_port    = 3000,
+  Stdlib::Port::Unprivileged     $service_port    = 6000,
   Enum['running', 'stopped']     $service_status  = 'running'
 ) inherits ::profiles {
 
@@ -23,6 +23,8 @@ class profiles::puppet::puppetboard (
   class { '::puppetboard':
     install_from        => 'package',
     package_name        => 'puppetboard',
+    group               => 'www-data',
+    user                => 'www-data',
     manage_group        => false,
     manage_user         => false,
     secret_key          => fqdn_rand_string(32),
