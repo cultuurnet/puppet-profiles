@@ -14,28 +14,28 @@ fixtures:
       ref: '2.4.0'
     augeasproviders_core:
       repo: 'puppet/augeasproviders_core'
-      ref: '3.2.0'
+      ref: '3.2.1'
     augeasproviders_shellvar:
       repo: 'puppet/augeasproviders_shellvar'
       ref: '5.0.0'
     augeasproviders_sysctl:
-      repo: 'herculesteam/augeasproviders_sysctl'
-      ref: '2.6.2'
+      repo: 'puppet/augeasproviders_sysctl'
+      ref: '3.2.0'
     augeasproviders_ssh:
       repo: 'puppet/augeasproviders_ssh'
       ref: '5.0.0'
     stdlib:
       repo: 'puppetlabs/stdlib'
-      ref: '4.25.0'
+      ref: '8.6.0'
     concat:
       repo: 'puppetlabs/concat'
-      ref: '4.2.1'
+      ref: '7.4.0'
     postfix:
       repo: 'thias/postfix'
       ref: '0.3.4'
     apt:
       repo: 'puppetlabs/apt'
-      ref: '4.5.1'
+      ref: '8.4.0'
     staging:
       repo: 'puppet/staging'
       ref: '2.2.0'
@@ -44,16 +44,13 @@ fixtures:
       ref: '2.1.0'
     ntp:
       repo: 'puppetlabs/ntp'
-      ref: '7.0.0'
+      ref: '10.1.0'
     apache:
       repo: 'puppetlabs/apache'
-      ref: '6.3.0'
-    mysql:
-      repo: 'puppetlabs/mysql'
-      ref: '14.0.0'
+      ref: '6.5.1'
     nodejs:
       repo: 'puppet/nodejs'
-      ref: '2.1.0'
+      ref: '9.1.0'
     elasticsearch:
       repo: 'elastic/elasticsearch'
       ref: '6.2.1'
@@ -68,7 +65,7 @@ fixtures:
       ref: '1.6.0'
     sudo:
       repo: 'saz/sudo'
-      ref: '6.0.0'
+      ref: '8.0.0'
     systemd:
       repo: 'puppet/systemd'
       ref: '4.2.0'
@@ -92,7 +89,7 @@ fixtures:
       ref: '1.0.0'
     collectd:
       repo: 'puppet/collectd'
-      ref: '7.0.0'
+      ref: '13.0.0'
     postgresql:
       repo: 'puppetlabs/postgresql'
       ref: '8.2.1'
@@ -104,7 +101,7 @@ fixtures:
       ref: '1.1.0'
     puppet_authorization:
       repo: 'puppetlabs/puppet_authorization'
-      ref: '0.5.1'
+      ref: '1.0.0'
     puppet_certificate:
       repo: 'puppet/puppet_certificate'
       ref: '1.0.0'
@@ -138,7 +135,7 @@ fixtures:
       ref: '0c92c9b'
     glassfish:
       repo: 'https://github.com/cultuurnet/fatmcgav-glassfish.git'
-      ref: '7f4e1c5'
+      ref: '58c8adc'
     mailcatcher:
       repo: 'https://github.com/cultuurnet/puppet-mailcatcher.git'
       ref: '9752479'
@@ -147,9 +144,12 @@ fixtures:
       ref: 'a64a185'
     aptly:
       repo: 'https://github.com/cultuurnet/puppet-aptly.git'
-      ref: '74a1c76'
+      ref: '2d5031b'
     icinga2:
       repo: 'https://github.com/cultuurnet/puppet-icinga2.git'
       ref: '6815f51'
+    mysql:
+      repo: 'https://github.com/cultuurnet/puppetlabs-mysql.git'
+      ref: '844aa07'
   symlinks:
     profiles: "#{source_dir}"
