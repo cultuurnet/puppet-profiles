@@ -10,12 +10,6 @@ class profiles::ca_certificates (
     Package['ca-certificates-publiq'] ~> Exec['Update CA certificates']
   }
 
-  file {'Puppet CA certificate':
-    ensure => 'absent',
-    path   => '/usr/local/share/ca-certificates/puppet-ca.pem',
-    notify => Exec['Update CA certificates']
-  }
-
   [$disabled_ca_certificates].flatten.each |$certificate| {
     augeas { "Disable CA certificate ${certificate}":
       lens    => 'Simplelines.lns',
