@@ -11,9 +11,8 @@ class profiles::ca_certificates (
   }
 
   file {'Puppet CA certificate':
-    ensure => 'file',
+    ensure => 'absent',
     path   => '/usr/local/share/ca-certificates/puppet-ca.pem',
-    source => 'file:///etc/puppetlabs/puppet/ssl/certs/ca.pem',
     notify => Exec['Update CA certificates']
   }
 

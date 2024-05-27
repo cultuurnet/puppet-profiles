@@ -18,12 +18,6 @@ describe 'profiles::ca_certificates' do
         it { is_expected.not_to contain_apt__source('publiq-tools') }
         it { is_expected.not_to contain_package('ca-certificates-publiq') }
 
-        it { is_expected.to contain_file('Puppet CA certificate').with(
-          'ensure' => 'file',
-          'path'   => '/usr/local/share/ca-certificates/puppet-ca.pem',
-          'source' => 'file:///etc/puppetlabs/puppet/ssl/certs/ca.pem'
-        ) }
-
         it { is_expected.to have_augeas_resource_count(0) }
 
         it { is_expected.to contain_exec('Update CA certificates').with(
@@ -31,8 +25,6 @@ describe 'profiles::ca_certificates' do
           'path'        => [ '/usr/local/bin', '/usr/bin', '/usr/sbin', '/bin'],
           'refreshonly' => true
         ) }
-
-        it { is_expected.to contain_file('Puppet CA certificate').that_notifies('Exec[Update CA certificates]') }
       end
 
       context "with disabled_ca_certificates => 'foobar'" do
@@ -51,12 +43,6 @@ describe 'profiles::ca_certificates' do
           'changes' => 'set *[.= \'foobar\'] \'!foobar\'',
         ) }
 
-        it { is_expected.to contain_file('Puppet CA certificate').with(
-          'ensure' => 'file',
-          'path'   => '/usr/local/share/ca-certificates/puppet-ca.pem',
-          'source' => 'file:///etc/puppetlabs/puppet/ssl/certs/ca.pem'
-        ) }
-
         it { is_expected.to contain_exec('Update CA certificates').with(
           'command'     => 'update-ca-certificates',
           'path'        => [ '/usr/local/bin', '/usr/bin', '/usr/sbin', '/bin'],
@@ -64,7 +50,6 @@ describe 'profiles::ca_certificates' do
         ) }
 
         it { is_expected.to contain_augeas('Disable CA certificate foobar').that_notifies('Exec[Update CA certificates]') }
-        it { is_expected.to contain_file('Puppet CA certificate').that_notifies('Exec[Update CA certificates]') }
       end
 
       context "with disabled_ca_certificates => ['badcert', 'expiredcert'] and publiq_development_root_ca => true" do
@@ -76,12 +61,6 @@ describe 'profiles::ca_certificates' do
         it { is_expected.to contain_apt__source('publiq-tools') }
 
         it { is_expected.to contain_package('ca-certificates-publiq') }
-
-        it { is_expected.to contain_file('Puppet CA certificate').with(
-          'ensure' => 'file',
-          'path'   => '/usr/local/share/ca-certificates/puppet-ca.pem',
-          'source' => 'file:///etc/puppetlabs/puppet/ssl/certs/ca.pem'
-        ) }
 
         it { is_expected.to contain_augeas('Disable CA certificate badcert').with(
           'lens'    => 'Simplelines.lns',
@@ -106,7 +85,6 @@ describe 'profiles::ca_certificates' do
         ) }
 
         it { is_expected.to contain_package('ca-certificates-publiq').that_notifies('Exec[Update CA certificates]') }
-        it { is_expected.to contain_file('Puppet CA certificate').that_notifies('Exec[Update CA certificates]') }
         it { is_expected.to contain_augeas('Disable CA certificate badcert').that_notifies('Exec[Update CA certificates]') }
         it { is_expected.to contain_augeas('Disable CA certificate expiredcert').that_notifies('Exec[Update CA certificates]') }
       end
