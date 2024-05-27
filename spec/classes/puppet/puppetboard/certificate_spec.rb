@@ -41,15 +41,6 @@ describe 'profiles::puppet::puppetboard::certificate' do
             'mode'   => '0700'
           ) }
 
-          it { is_expected.to contain_file('puppetboard cacert').with(
-            'ensure' => 'file',
-            'path'   => '/var/www/puppetboard/ssl/ca.pem',
-            'owner'  => 'www-data',
-            'group'  => 'www-data',
-            'mode'   => '0600',
-            'source' => 'file:///etc/puppetlabs/puppet/ssl/certs/ca.pem'
-          ) }
-
           it { is_expected.to contain_file('puppetboard certificate').with(
             'ensure' => 'file',
             'path'   => '/var/www/puppetboard/ssl/public.pem',
@@ -73,9 +64,6 @@ describe 'profiles::puppet::puppetboard::certificate' do
           it { is_expected.to contain_file('puppetboard ssldir').that_requires('Group[www-data]') }
           it { is_expected.to contain_file('puppetboard ssldir').that_requires('User[www-data]') }
           it { is_expected.to contain_file('puppetboard ssldir').that_requires('File[puppetboard basedir]') }
-          it { is_expected.to contain_file('puppetboard cacert').that_requires('Group[www-data]') }
-          it { is_expected.to contain_file('puppetboard cacert').that_requires('User[www-data]') }
-          it { is_expected.to contain_file('puppetboard cacert').that_requires('File[puppetboard ssldir]') }
           it { is_expected.to contain_file('puppetboard certificate').that_requires('Group[www-data]') }
           it { is_expected.to contain_file('puppetboard certificate').that_requires('User[www-data]') }
           it { is_expected.to contain_file('puppetboard certificate').that_requires('File[puppetboard ssldir]') }
@@ -105,10 +93,6 @@ describe 'profiles::puppet::puppetboard::certificate' do
 
           it { is_expected.to contain_file('puppetboard ssldir').with(
             'path'   => '/srv/puppetboard/ssl'
-          ) }
-
-          it { is_expected.to contain_file('puppetboard cacert').with(
-            'path'   => '/srv/puppetboard/ssl/ca.pem'
           ) }
 
           it { is_expected.to contain_file('puppetboard certificate').with(

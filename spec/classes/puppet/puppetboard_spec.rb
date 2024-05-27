@@ -45,7 +45,7 @@ describe 'profiles::puppet::puppetboard' do
             'secret_key'          => 'a3Tl84mHAFP1DoOvMDESaXyXcUsC2cPu',
             'puppetdb_host'       => '127.0.0.1',
             'puppetdb_port'       => 8081,
-            'puppetdb_ssl_verify' => false,
+            'puppetdb_ssl_verify' => true,
             'puppetdb_key'        => '/var/www/puppetboard/ssl/private.pem',
             'puppetdb_cert'       => '/var/www/puppetboard/ssl/public.pem',
             'enable_catalog'      => false,

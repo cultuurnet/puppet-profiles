@@ -30,7 +30,7 @@ class profiles::puppet::puppetboard (
     secret_key          => fqdn_rand_string(32),
     puppetdb_host       => '127.0.0.1',
     puppetdb_port       => 8081,
-    puppetdb_ssl_verify => false,
+    puppetdb_ssl_verify => true,
     puppetdb_key        => "${basedir}/ssl/private.pem",
     puppetdb_cert       => "${basedir}/ssl/public.pem",
     enable_catalog      => false,

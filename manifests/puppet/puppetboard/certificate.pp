@@ -39,15 +39,6 @@ class profiles::puppet::puppetboard::certificate (
     *       => $default_file_attributes
   }
 
-  file { 'puppetboard cacert':
-    ensure  => 'file',
-    path    => "${basedir}/ssl/ca.pem",
-    mode    => '0600',
-    source  => 'file:///etc/puppetlabs/puppet/ssl/certs/ca.pem',
-    require => [Group['www-data'], User['www-data'], File['puppetboard ssldir']],
-    *       => $default_file_attributes
-  }
-
   file { 'puppetboard certificate':
     ensure  => 'file',
     path    => "${basedir}/ssl/public.pem",
