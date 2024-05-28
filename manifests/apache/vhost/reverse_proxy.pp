@@ -4,6 +4,7 @@ define profiles::apache::vhost::reverse_proxy (
   Enum['on', 'off', 'nodecode']  $allow_encoded_slashes = 'off',
   Boolean                        $preserve_host         = false,
   Boolean                        $support_websockets    = false,
+  Boolean                        $auth_openid_connect   = false,
   Hash                           $proxy_params          = {},
   Variant[String, Array[String]] $proxy_keywords        = [],
   Variant[String, Array[String]] $aliases               = []
@@ -68,6 +69,27 @@ define profiles::apache::vhost::reverse_proxy (
     $rewrites = undef
   }
 
+  if $auth_openid_connect {
+    $directories             = {
+                                 'path'      => '/',
+                                 'provider'  => 'location',
+                                 'auth_type' => 'openid_connect',
+                                 'require'   => 'valid-user'
+                               }
+    $openid_connect_settings = {
+                                 'ProviderMetadataURL' => lookup('data::openid::provider_metadata_url', Optional[String], 'first', undef),
+                                 'ClientID'            => lookup('data::openid::client_id', Optional[String], 'first', undef),
+                                 'ClientSecret'        => lookup('data::openid::client_secret', Optional[String], 'first', undef),
+                                 'RedirectURI'         => "https://${servername}/redirect_uri",
+                                 'CryptoPassphrase'    => fqdn_rand_string(32)
+                               }
+    $no_proxy_uris           = ['/redirect_uri']
+  } else {
+    $directories             = undef
+    $openid_connect_settings = undef
+    $no_proxy_uris           = []
+  }
+
   apache::vhost { "${servername}_${port}":
     servername            => $servername,
     serveraliases         => $aliases,
@@ -78,6 +100,9 @@ define profiles::apache::vhost::reverse_proxy (
     docroot               => '/var/www/html',
     manage_docroot        => false,
     access_log_format     => 'extended_json',
+    directories           => $directories,
+    auth_oidc             => $auth_openid_connect,
+    oidc_settings         => $openid_connect_settings,
     setenvif              => [
                                'X-Forwarded-Proto "https" HTTPS=on',
                                'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
@@ -92,11 +117,12 @@ define profiles::apache::vhost::reverse_proxy (
     proxy_preserve_host   => $preserve_host,
     rewrites              => $rewrites,
     proxy_pass            => {
-                               'path'         => '/',
-                               'url'          => $destination,
-                               'keywords'     => [$proxy_keywords].flatten,
-                               'reverse_urls' => $reverse_urls,
-                               'params'       => $proxy_params
+                               'path'          => '/',
+                               'url'           => $destination,
+                               'keywords'      => [$proxy_keywords].flatten,
+                               'reverse_urls'  => $reverse_urls,
+                               'params'        => $proxy_params,
+                               'no_proxy_uris' => $no_proxy_uris
                              }
   }
 }
