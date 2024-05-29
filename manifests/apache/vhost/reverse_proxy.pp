@@ -70,10 +70,12 @@ define profiles::apache::vhost::reverse_proxy (
   }
 
   if $auth_openid_connect {
+    include apache::mod::authn_core
+
     $directories             = {
                                  'path'      => '/',
                                  'provider'  => 'location',
-                                 'auth_type' => 'openid_connect',
+                                 'auth_type' => 'openid-connect',
                                  'require'   => 'valid-user'
                                }
     $openid_connect_settings = {
