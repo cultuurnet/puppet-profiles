@@ -2,6 +2,7 @@ class profiles::uitdatabank::elasticdump_to_gcs (
   String  $gcs_bucket_name,
   String  $gcs_key_file_source,
   String  $index_name,
+  Boolean $schedule             = false,
   Integer $batch_size           = 100,
   Integer $dump_hour            = 0,
   Boolean $source_only          = false,
@@ -51,6 +52,10 @@ class profiles::uitdatabank::elasticdump_to_gcs (
   }
 
   cron { 'elasticdump_to_gcs':
+    ensure      => $schedule ? {
+                     true  => 'present',
+                     false => 'absent'
+                   },
     command     => "/usr/bin/test $(date +\\%0H) -eq ${dump_hour} && /usr/local/bin/elasticdump_to_gcs ${options}",
     environment => [ 'SHELL=/bin/bash', "TZ=${local_timezone}", 'MAILTO=infra@publiq.be'],
     user        => 'ubuntu',
