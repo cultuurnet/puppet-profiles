@@ -22,7 +22,8 @@ describe 'profiles::puppet::puppetboard' do
             'serveraliases'   => [],
             'service_address' => '127.0.0.1',
             'service_port'    => 6000,
-            'service_status'  => 'running'
+            'service_status'  => 'running',
+            'auth'            => false
           ) }
 
           it { is_expected.to contain_apt__source('publiq-tools') }
@@ -68,8 +69,9 @@ describe 'profiles::puppet::puppetboard' do
           ) }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://puppetboard.example.com').with(
-            'destination' => 'http://127.0.0.1:6000/',
-            'aliases'     => []
+            'destination'         => 'http://127.0.0.1:6000/',
+            'aliases'             => [],
+            'auth_openid_connect' => false
           ) }
 
           it { is_expected.to contain_apt__source('publiq-tools').that_comes_before('Class[puppetboard]') }
@@ -80,38 +82,52 @@ describe 'profiles::puppet::puppetboard' do
           it { is_expected.to contain_service('puppetboard').that_subscribes_to('Class[profiles::puppet::puppetboard::certificate]') }
         end
 
-        context "with servername => mypb.example.com, serveraliases => pb.example.com, service_address => 127.0.1.1, service_port => 4000 and service_status => stopped " do
+        context "with servername => mypb.example.com, serveraliases => pb.example.com, service_address => 127.0.1.1, service_port => 4000, service_status => stopped and auth => true" do
           let(:params) { {
             'servername'      => 'mypb.example.com',
-            'serveraliases'  => 'pb.example.com',
+            'serveraliases'   => 'pb.example.com',
             'service_address' => '127.0.1.1',
             'service_port'    => 4000,
-            'service_status'  => 'stopped'
+            'service_status'  => 'stopped',
+            'auth'            => true
           } }
 
-          it { is_expected.to compile.with_all_deps }
+          context "with hieradata" do
+            let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-          it { is_expected.to contain_service('puppetboard').with(
-            'ensure'    => 'stopped',
-            'hasstatus' => true,
-            'enable'    => false
-          ) }
+            it { is_expected.to compile.with_all_deps }
 
-          it { is_expected.to contain_file('puppetboard service defaults').with(
-            'ensure'  => 'file',
-            'path'    => '/etc/default/puppetboard',
-            'content' => "HOST=127.0.1.1\nPORT=4000"
-          ) }
+            it { is_expected.to contain_service('puppetboard').with(
+              'ensure'    => 'stopped',
+              'hasstatus' => true,
+              'enable'    => false
+            ) }
 
-          it { is_expected.to contain_class('profiles::puppet::puppetboard::certificate').with(
-            'certname' => 'mypb.example.com',
-            'basedir'  => '/var/www/puppetboard'
-          ) }
+            it { is_expected.to contain_file('puppetboard service defaults').with(
+              'ensure'  => 'file',
+              'path'    => '/etc/default/puppetboard',
+              'content' => "HOST=127.0.1.1\nPORT=4000"
+            ) }
 
-          it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://mypb.example.com').with(
-            'destination' => 'http://127.0.1.1:4000/',
-            'aliases'     => 'pb.example.com'
-          ) }
+            it { is_expected.to contain_class('profiles::puppet::puppetboard::certificate').with(
+              'certname' => 'mypb.example.com',
+              'basedir'  => '/var/www/puppetboard'
+            ) }
+
+            it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://mypb.example.com').with(
+              'destination'         => 'http://127.0.1.1:4000/',
+              'aliases'             => 'pb.example.com',
+              'auth_openid_connect' => true
+            ) }
+          end
+
+          context "without hieradata" do
+            let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
+
+            it { expect { catalogue }.to raise_error(Puppet::ParseError, /parameter 'oidc_settings' entry 'ProviderMetadataURL' expects/) }
+            it { expect { catalogue }.to raise_error(Puppet::ParseError, /parameter 'oidc_settings' entry 'ClientID' expects/) }
+            it { expect { catalogue }.to raise_error(Puppet::ParseError, /parameter 'oidc_settings' entry 'ClientSecret' expects/) }
+          end
         end
       end
 

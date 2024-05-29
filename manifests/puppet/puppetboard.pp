@@ -3,7 +3,8 @@ class profiles::puppet::puppetboard (
   Variant[String, Array[String]] $serveraliases   = [],
   Stdlib::IP::Address::V4        $service_address = '127.0.0.1',
   Stdlib::Port::Unprivileged     $service_port    = 6000,
-  Enum['running', 'stopped']     $service_status  = 'running'
+  Enum['running', 'stopped']     $service_status  = 'running',
+  Boolean                        $auth            = false
 ) inherits ::profiles {
 
   $basedir = '/var/www/puppetboard'
@@ -60,7 +61,8 @@ class profiles::puppet::puppetboard (
   }
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
-    destination => "http://${service_address}:${service_port}/",
-    aliases     => $serveraliases
+    destination         => "http://${service_address}:${service_port}/",
+    aliases             => $serveraliases,
+    auth_openid_connect => $auth
   }
 }
