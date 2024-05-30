@@ -20,17 +20,4 @@ class profiles::nodejs (
     require               => Apt::Source["nodejs-${major_version}"],
     before                => Package['yarn']
   }
-
-  # Hack until https://github.com/nodejs/gyp-next/pull/204 is merged and the
-  # gyp-next containing the fix is included in nodejs
-  # Narrowed down to specific nodejs version that has been tested
-
-  if $version == '18.17.1-1nodesource1' {
-    file { '/usr/lib/node_modules/npm/node_modules/node-gyp/gyp/pylib/gyp/generator/make.py':
-      ensure  => 'file',
-      source  => 'puppet:///modules/profiles/nodejs/make.py',
-      require => Class['nodejs']
-    }
-  }
-
 }
