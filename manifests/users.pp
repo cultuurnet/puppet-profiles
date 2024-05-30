@@ -71,6 +71,16 @@ class profiles::users inherits ::profiles {
     uid            => '456'
   }
 
+  @user { 'elasticsearch':
+    ensure         => 'present',
+    gid            => 'elasticsearch',
+    home           => '/home/elasticsearch',
+    managehome     => false,
+    purge_ssh_keys => true,
+    shell          => '/bin/false',
+    uid            => '457'
+  }
+
   @user { 'ubuntu':
     ensure         => 'present',
     gid            => 'ubuntu',
