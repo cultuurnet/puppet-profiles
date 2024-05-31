@@ -38,9 +38,12 @@ describe 'profiles::elasticsearch' do
           'instances'         => {}
         ) }
 
+        it { is_expected.to contain_class('profiles::elasticsearch::backup') }
+
         it { is_expected.to contain_class('elasticsearch').that_requires('Apt::Source[elastic-5.x]') }
         it { is_expected.to contain_class('elasticsearch').that_requires('Sysctl[vm.max_map_count]') }
         it { is_expected.to contain_class('elasticsearch').that_requires('Class[profiles::java]') }
+        it { is_expected.to contain_class('profiles::elasticsearch::backup').that_requires('Class[elasticsearch]') }
       end
 
       context "with version => 8.2.1, lvm => true, volume_group => myvg and volume_size => 20G" do

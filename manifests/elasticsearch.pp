@@ -20,10 +20,6 @@ class profiles::elasticsearch (
   realize Group['elasticsearch']
   realize User['elasticsearch']
 
-  # TODO: add /data/backups/elasticsearch directory
-  # TODO: add snapshot repositories and backup schedule (maybe in product profile)
-  # TODO: firewall rules
-
   if $lvm {
     unless ($volume_group and $volume_size) {
       fail("with LVM enabled, expects a value for both 'volume_group' and 'volume_size'")
@@ -64,5 +60,9 @@ class profiles::elasticsearch (
     restart_on_change => true,
     instances         => {},
     require           => [Apt::Source["elastic-${major_version}.x"], Class['::profiles::java']]
+  }
+
+  class { 'profiles::elasticsearch::backup':
+    require => Class['::elasticsearch']
   }
 }
