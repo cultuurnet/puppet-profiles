@@ -54,7 +54,7 @@ class profiles::platform::deployment (
   }
 
   exec { 'run platform database seed':
-    command     => 'php artisan db:seed',
+    command     => 'php artisan db:seed --force',
     require     => [File['platform-api-config'], Exec['run platform database migrations']],
     *           => $exec_default_attributes
   }
