@@ -1,22 +1,52 @@
 class profiles::elasticsearch (
-  String $version = '5.2.2'
+  Optional[String] $version       = undef,
+  Integer          $major_version = if $version { Integer(split($version, /\./)[0]) } else { 5 },
+  Boolean          $lvm           = false,
+  Optional[String] $volume_group  = undef,
+  Optional[String] $volume_size   = undef
 ) inherits ::profiles {
 
-  $major_version = split($version, /\./)[0]
+  if ($version and $major_version) {
+    if Integer(split($version, /\./)[0]) != $major_version {
+      fail("Profiles::Elasticsearch: incompatible combination of 'version' and 'major_version' parameters")
+    }
+  }
+
+  $data_dir = '/var/lib/elasticsearch'
 
   contain ::profiles::java
 
   realize Apt::Source["elastic-${major_version}.x"]
+  realize Group['elasticsearch']
+  realize User['elasticsearch']
 
-  # TODO: parameterize this profile (version, ...)
   # TODO: add /data/backups/elasticsearch directory
   # TODO: add snapshot repositories and backup schedule (maybe in product profile)
-  # TODO: unit tests
   # TODO: firewall rules
 
-  file { '/data/elasticsearch':
-    ensure => 'directory',
-    before => Class['elasticsearch']
+  if $lvm {
+    unless ($volume_group and $volume_size) {
+      fail("with LVM enabled, expects a value for both 'volume_group' and 'volume_size'")
+    }
+
+    profiles::lvm::mount { 'elasticsearchdata':
+      volume_group => $volume_group,
+      size         => $volume_size,
+      mountpoint   => '/data/elasticsearch',
+      fs_type      => 'ext4',
+      owner        => 'elasticsearch',
+      group        => 'elasticsearch',
+      require      => [Group['elasticsearch'], User['elasticsearch']],
+      before       => Class['::elasticsearch']
+    }
+
+    mount { $data_dir:
+      ensure  => 'mounted',
+      device  => '/data/elasticsearch',
+      fstype  => 'none',
+      options => 'rw,bind',
+      require => [Profiles::Lvm::Mount['elasticsearchdata'], Class['::elasticsearch']]
+    }
   }
 
   sysctl { 'vm.max_map_count':
@@ -25,11 +55,14 @@ class profiles::elasticsearch (
   }
 
   class { '::elasticsearch':
-    version           => $version,
+    version           => $version ? {
+                           undef   => false,
+                           default => $version
+                         },
     manage_repo       => false,
     api_timeout       => 30,
     restart_on_change => true,
     instances         => {},
-    require           => [ Apt::Source["elastic-${major_version}.x"], Class['::profiles::java']]
+    require           => [Apt::Source["elastic-${major_version}.x"], Class['::profiles::java']]
   }
 }
