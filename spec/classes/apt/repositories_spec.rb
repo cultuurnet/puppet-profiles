@@ -69,6 +69,7 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'museumpas-mspotm', { :location => 'https://apt.publiq.be/museumpas-mspotm-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'museumpas-website', { :location => 'https://apt.publiq.be/museumpas-website-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'museumpas-website-filament', { :location => 'https://apt.publiq.be/museumpas-website-filament-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'museumpas-partner-website', { :location => 'https://apt.publiq.be/museumpas-partner-website-testing', :repos => 'main', :release => 'focal' }
 
             include_examples 'apt repositories', 'uitdatabank-angular-app', { :location => 'https://apt.publiq.be/uitdatabank-angular-app-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uitdatabank-newsletter-api', { :location => 'https://apt.publiq.be/uitdatabank-newsletter-api-testing', :repos => 'main', :release => 'focal' }
