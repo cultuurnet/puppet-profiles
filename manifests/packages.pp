@@ -93,6 +93,11 @@ class profiles::packages inherits ::profiles {
     require => Apt::Source['publiq-tools']
   }
 
+  @package { 'kubectl':
+    ensure  => 'present',
+    require => Apt::Source['publiq-tools']
+  }
+
   # Realize a list of 'default' packages on all servers
   realize Package['jq']
   realize Package['iftop']
