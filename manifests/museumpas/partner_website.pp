@@ -44,42 +44,10 @@ class profiles::museumpas::partner_website (
 
   realize Firewall['300 accept HTTP traffic']
 
-  apache::vhost { "${servername}_80":
-    servername        => $servername,
-    serveraliases     => [$serveraliases].flatten,
-    docroot           => "${basedir}/web",
-    manage_docroot    => false,
-    request_headers   => [
-                         'unset Proxy early'
-                         ],
-    port              => 80,
-    access_log_format => 'extended_json',
-    directories       => [{
-                           path            => '\.php$',
-                           provider        => 'filesmatch',
-                           custom_fragment => 'SetHandler "proxy:unix:/var/run/php/php-fpm.sock|fcgi://localhost"',
-                         },
-                         {
-                           path            => "${basedir}/web",
-                           options         => [
-                                                'Indexes',
-                                                'FollowSymLinks',
-                                                'MultiViews',
-                                                'ExecCGI',
-                                              ],
-                           allow_override  => [ 'All' ],
-                           headers         => [
-                                                'always set Strict-Transport-Security "max-age=3153600; includeSubdomains;"',
-                                                'always set X-Frame-Options "SAMEORIGIN"',
-                                                'set X-XSS-Protection "1; mode=block"',
-                                                'set X-Content-Type-Options "nosniff"',
-                                              ]
-                         }],
-    setenvif          => [
-                           'X-Forwarded-Proto "https" HTTPS=on',
-                           'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+)" CLIENT_IP=$1',
-                         ],
-    require           => Class['profiles::apache']
+  profiles::apache::vhost::php_fpm { "http://${servername}":
+    basedir              => $basedir,
+    public_web_directory => 'web',
+    aliases              => $serveraliases
   }
 
   if $deployment {
