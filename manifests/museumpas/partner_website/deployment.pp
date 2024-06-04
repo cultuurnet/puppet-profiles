@@ -53,7 +53,7 @@ class profiles::museumpas::partner_website::deployment (
   }
 
   if $robots_source {
-    file { 'museumpas-robots.txt':
+    file { 'museumpas-partner-robots.txt':
       ensure  => 'file',
       path    => "${basedir}/web/robots.txt",
       source  => $robots_source,
