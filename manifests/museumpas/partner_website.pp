@@ -42,8 +42,6 @@ class profiles::museumpas::partner_website (
     }
   }
 
-  realize Firewall['300 accept HTTP traffic']
-
   profiles::apache::vhost::php_fpm { "http://${servername}":
     basedir              => $basedir,
     public_web_directory => 'web',
