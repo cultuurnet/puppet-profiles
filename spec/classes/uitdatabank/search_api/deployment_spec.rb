@@ -28,9 +28,30 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           'restart'    => '/usr/bin/systemctl reload uitdatabank-search-api'
         ) }
 
+        it { is_expected.to contain_profiles__uitdatabank__search_api__listener('uitdatabank-consume-api').with(
+          'ensure'  => 'present',
+          'command' => 'udb3-consume-api',
+          'basedir' => '/var/www/udb3-search-service'
+        ) }
+
+        it { is_expected.to contain_profiles__uitdatabank__search_api__listener('uitdatabank-consume-cli').with(
+          'ensure'  => 'present',
+          'command' => 'udb3-consume-cli',
+          'basedir' => '/var/www/udb3-search-service'
+        ) }
+
+        it { is_expected.to contain_profiles__uitdatabank__search_api__listener('uitdatabank-consume-related').with(
+          'ensure'  => 'present',
+          'command' => 'udb3-consume-related',
+          'basedir' => '/var/www/udb3-search-service'
+        ) }
+
         it { is_expected.to contain_package('uitdatabank-search-api').that_notifies('Profiles::Deployment::Versions[profiles::uitdatabank::search_api::deployment]') }
         it { is_expected.to contain_package('uitdatabank-search-api').that_requires('Apt::Source[uitdatabank-search-api]') }
         it { is_expected.to contain_package('uitdatabank-search-api').that_notifies('Service[uitdatabank-search-api]') }
+        it { is_expected.to contain_package('uitdatabank-search-api').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-api]') }
+        it { is_expected.to contain_package('uitdatabank-search-api').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-cli]') }
+        it { is_expected.to contain_package('uitdatabank-search-api').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-related]') }
         it { is_expected.to contain_service('uitdatabank-search-api').that_requires('Profiles::Php::Fpm_service_alias[uitdatabank-search-api]') }
 
         it { is_expected.not_to contain_package('uitdatabank-search-api').that_notifies('Class[profiles::uitdatabank::search_api::data_migration]') }
@@ -71,6 +92,24 @@ describe 'profiles::uitdatabank::search_api::deployment' do
 
           it { is_expected.to contain_package('uitdatabank-search-api').with(
             'ensure' => '1.2.3'
+          ) }
+
+          it { is_expected.to contain_profiles__uitdatabank__search_api__listener('uitdatabank-consume-api').with(
+            'ensure'  => 'present',
+            'command' => 'udb3-consume-api',
+            'basedir' => '/var/www/foo'
+          ) }
+
+          it { is_expected.to contain_profiles__uitdatabank__search_api__listener('uitdatabank-consume-cli').with(
+            'ensure'  => 'present',
+            'command' => 'udb3-consume-cli',
+            'basedir' => '/var/www/foo'
+          ) }
+
+          it { is_expected.to contain_profiles__uitdatabank__search_api__listener('uitdatabank-consume-related').with(
+            'ensure'  => 'present',
+            'command' => 'udb3-consume-related',
+            'basedir' => '/var/www/foo'
           ) }
 
           it { is_expected.to contain_profiles__deployment__versions('profiles::uitdatabank::search_api::deployment').with(

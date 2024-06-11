@@ -18,6 +18,24 @@ class profiles::uitdatabank::search_api::deployment (
     Package['uitdatabank-search-api'] ~> Class['profiles::uitdatabank::search_api::data_migration']
   }
 
+  profiles::uitdatabank::search_api::listener { 'uitdatabank-consume-api':
+    command   => 'udb3-consume-api',
+    basedir   => $basedir,
+    subscribe => Package['uitdatabank-search-api']
+  }
+
+  profiles::uitdatabank::search_api::listener { 'uitdatabank-consume-cli':
+    command   => 'udb3-consume-cli',
+    basedir   => $basedir,
+    subscribe => Package['uitdatabank-search-api']
+  }
+
+  profiles::uitdatabank::search_api::listener { 'uitdatabank-consume-related':
+    command   => 'udb3-consume-related',
+    basedir   => $basedir,
+    subscribe => Package['uitdatabank-search-api']
+  }
+
   profiles::php::fpm_service_alias { 'uitdatabank-search-api': }
 
   service { 'uitdatabank-search-api':
