@@ -1,10 +1,10 @@
 describe 'profiles::uitdatabank::search_api::listener' do
-  context 'with title => foo' do
-    let(:title) { 'foo' }
+  on_supported_os.each do |os, facts|
+    context "on #{os}" do
+      let(:facts) { facts }
 
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        let(:facts) { facts }
+      context 'with title => foo' do
+        let(:title) { 'foo' }
 
         context 'with command => udb3-consume-api' do
           let(:params) { {
@@ -76,15 +76,9 @@ describe 'profiles::uitdatabank::search_api::listener' do
           it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'command'/) }
         end
       end
-    end
-  end
 
-  context 'with title => bar' do
-    let(:title) { 'bar' }
-
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        let(:facts) { facts }
+      context 'with title => bar' do
+        let(:title) { 'bar' }
 
         context 'with command => bar-baz' do
           let(:params) { {
