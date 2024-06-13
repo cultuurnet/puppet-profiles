@@ -1,7 +1,6 @@
 class profiles::uitdatabank::geojson_data::deployment (
   String           $version        = 'latest',
   String           $repository     = 'uitdatabank-geojson-data',
-  Boolean          $data_migration = false,
   Optional[String] $puppetdb_url   = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
@@ -11,10 +10,6 @@ class profiles::uitdatabank::geojson_data::deployment (
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
     require => Apt::Source[$repository]
-  }
-
-  if $data_migration {
-    Package['uitdatabank-geojson-data'] ~> Class['profiles::uitdatabank::search_api::data_migration']
   }
 
   profiles::deployment::versions { $title:

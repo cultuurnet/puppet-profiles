@@ -46,7 +46,7 @@ describe 'profiles::uitdatabank::geojson_data::deployment' do
           'puppetdb_url'   => 'http://example.com:8000'
         } }
 
-        context "with repository foo and class profiles::uitdatank::search_api::data_migration defined" do
+        context "with repository foo defined" do
           let(:pre_condition) { [
             '@apt::source { "foo": location => "http://localhost", release => "focal", repos => "main" }',
           ] }
