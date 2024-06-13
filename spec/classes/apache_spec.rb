@@ -30,7 +30,11 @@ describe 'profiles::apache' do
           'limitreqfieldsize'     => 8190,
           'service_manage'        => true,
           'service_ensure'        => 'running',
-          'service_enable'        => true
+          'service_enable'        => true,
+          'log_formats'           => {
+                                       'combined_json' => '{ \"remoteIP\": \"%a\", \"remoteLogname\": \"%l\", \"user\": \"%u\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"request\": \"%r\", \"status\": %>s, \"responseBytes\": %b, \"referer\": \"%{Referer}i\", \"userAgent\": \"%{User-Agent}i\" }',
+                                       'extended_json' => '{ \"remoteIP\": \"%{CLIENT_IP}e\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"requestPath\": \"%U\", \"status\": \"%>s\", \"query\": \"%q\", \"method\": \"%m\", \"userAgent\": \"%{User-Agent}i\", \"referer\": \"%{Referer}i\", \"uniqueID\": \"%{UNIQUE_ID}e\", \"duration\": \"%{ms}T\" }'
+                                     }
         ) }
 
         it { is_expected.not_to contain_class('apache::mod::http2') }
@@ -65,7 +69,11 @@ describe 'profiles::apache' do
           'limitreqfieldsize'     => 32766,
           'service_manage'        => true,
           'service_ensure'        => 'stopped',
-          'service_enable'        => false
+          'service_enable'        => false,
+          'log_formats'           => {
+                                       'combined_json' => '{ \"remoteIP\": \"%a\", \"remoteLogname\": \"%l\", \"user\": \"%u\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"request\": \"%r\", \"status\": %>s, \"responseBytes\": %b, \"referer\": \"%{Referer}i\", \"userAgent\": \"%{User-Agent}i\" }',
+                                       'extended_json' => '{ \"remoteIP\": \"%{CLIENT_IP}e\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"requestPath\": \"%U\", \"status\": \"%>s\", \"query\": \"%q\", \"method\": \"%m\", \"userAgent\": \"%{User-Agent}i\", \"referer\": \"%{Referer}i\", \"uniqueID\": \"%{UNIQUE_ID}e\", \"duration\": \"%{ms}T\" }'
+                                     }
         ) }
 
         it { is_expected.to contain_class('apache::mod::http2') }
