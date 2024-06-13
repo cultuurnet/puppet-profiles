@@ -10,7 +10,6 @@ class profiles::uitdatabank::search_api::deployment (
   String           $basedir                = '/var/www/udb3-search-service',
   String           $region_mapping_source  = 'puppet:///modules/profiles/uitdatabank/search_api/mapping_region.json',
   Optional[String] $default_queries_source = undef,
-  Boolean          $data_migration         = false,
   Optional[String] $puppetdb_url           = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
@@ -88,10 +87,6 @@ class profiles::uitdatabank::search_api::deployment (
     themes_source     => $themes_source,
     types_source      => $types_source,
     notify            => [Service['uitdatabank-search-api'], Profiles::Uitdatabank::Search_api::Listener['uitdatabank-consume-api'], Profiles::Uitdatabank::Search_api::Listener['uitdatabank-consume-cli'], Profiles::Uitdatabank::Search_api::Listener['uitdatabank-consume-related']]
-  }
-
-  if $data_migration {
-    Package['uitdatabank-search-api'] ~> Class['profiles::uitdatabank::search_api::data_migration']
   }
 
   profiles::uitdatabank::search_api::listener { 'uitdatabank-consume-api':

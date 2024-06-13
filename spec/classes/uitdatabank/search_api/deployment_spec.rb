@@ -29,7 +29,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           'pubkey_auth0_source'    => '/tmp/pubkey',
           'region_mapping_source'  => 'puppet:///modules/profiles/uitdatabank/search_api/mapping_region.json',
           'default_queries_source' => nil,
-          'data_migration'         => false,
           'puppetdb_url'           => nil
         ) }
 
@@ -179,8 +178,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
         it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').that_requires('Package[uitdatabank-search-api]') }
         it { is_expected.to contain_service('uitdatabank-search-api').that_requires('Profiles::Php::Fpm_service_alias[uitdatabank-search-api]') }
 
-        it { is_expected.not_to contain_package('uitdatabank-search-api').that_notifies('Class[profiles::uitdatabank::search_api::data_migration]') }
-
         context "without hieradata" do
           let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
 
@@ -198,7 +195,7 @@ describe 'profiles::uitdatabank::search_api::deployment' do
         end
       end
 
-      context "with config_source => /foo/config.yml, features_source => /foo/features.yml, facilities_source => /tmp/facilities.txt, themes_source => /tmp/themes.txt, types_source => /tmp/types.txt, version => 1.2.3, repository => foo, basedir => '/var/www/foo', pubkey_auth0_source => /tmp/mypubkey, region_mapping_source => /tmp/mapping.json, default_queries_source => /tmp/default_queries.php, data_migration => true and puppetdb_url => http://example.com:8000" do
+      context "with config_source => /foo/config.yml, features_source => /foo/features.yml, facilities_source => /tmp/facilities.txt, themes_source => /tmp/themes.txt, types_source => /tmp/types.txt, version => 1.2.3, repository => foo, basedir => '/var/www/foo', pubkey_auth0_source => /tmp/mypubkey, region_mapping_source => /tmp/mapping.json, default_queries_source => /tmp/default_queries.php and puppetdb_url => http://example.com:8000" do
         let(:params) { {
           'config_source'          => '/foo/config.yml',
           'features_source'        => '/foo/features.yml',
@@ -211,14 +208,12 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           'pubkey_auth0_source'    => '/tmp/mypubkey',
           'region_mapping_source'  => '/tmp/mapping.json',
           'default_queries_source' => '/tmp/default_queries.php',
-          'data_migration'         => true,
           'puppetdb_url'           => 'http://example.com:8000'
         } }
 
-        context "with repository foo and class profiles::uitdatank::search_api::data_migration defined" do
+        context "with repository foo defined" do
           let(:pre_condition) { [
             '@apt::source { "foo": location => "http://localhost", release => "focal", repos => "main" }',
-            'class { "profiles::uitdatabank::search_api::data_migration": }'
           ] }
 
           it { is_expected.to contain_apt__source('foo') }
@@ -320,7 +315,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           ) }
 
           it { is_expected.to contain_package('uitdatabank-search-api').that_requires('Apt::Source[foo]') }
-          it { is_expected.to contain_package('uitdatabank-search-api').that_notifies('Class[profiles::uitdatabank::search_api::data_migration]') }
           it { is_expected.to contain_file('uitdatabank-search-api-default-queries').that_requires('Group[www-data]') }
           it { is_expected.to contain_file('uitdatabank-search-api-default-queries').that_requires('User[www-data]') }
           it { is_expected.to contain_file('uitdatabank-search-api-default-queries').that_requires('Package[uitdatabank-search-api]') }
