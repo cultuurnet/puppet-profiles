@@ -2,6 +2,7 @@ define profiles::apache::vhost::php_fpm (
   String                         $basedir,
   String                         $public_web_directory = 'public',
   Variant[String, Array[String]] $aliases              = [],
+  String                         $access_log_format    = 'extended_json',
   Enum['unix', 'tcp']            $socket_type          = lookup('profiles::php::fpm_socket_type', Enum['unix', 'tcp'], 'first', 'unix'),
   Optional[String]               $certificate          = undef,
   Optional[Array]                $rewrites             = undef
@@ -56,7 +57,7 @@ define profiles::apache::vhost::php_fpm (
     ssl_key            => $ssl_key,
     docroot            => "${basedir}/${public_web_directory}",
     manage_docroot     => false,
-    access_log_format  => 'extended_json',
+    access_log_format  => $access_log_format,
     access_log_env_var => '!nolog',
     setenvif           => [
                             'X-Forwarded-Proto "https" HTTPS=on',
