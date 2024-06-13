@@ -5,10 +5,13 @@ describe 'profiles::uitdatabank::search_api::deployment' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with config_source => /tmp/config.yml, features_source => /tmp/features.yml and pubkey_auth0_source => /tmp/pubkey" do
+      context "with config_source => /tmp/config.yml, features_source => /tmp/features.yml, facilities_source => /tmp/facilities.yml, themes_source => /tmp/themes.yml, types_source => /tmp/types.yml and pubkey_auth0_source => /tmp/pubkey" do
         let(:params) { {
           'config_source'       => '/tmp/config.yml',
           'features_source'     => '/tmp/features.yml',
+          'facilities_source'   => '/tmp/facilities.yml',
+          'themes_source'       => '/tmp/themes.yml',
+          'types_source'        => '/tmp/types.yml',
           'pubkey_auth0_source' => '/tmp/pubkey'
         } }
 
@@ -17,6 +20,9 @@ describe 'profiles::uitdatabank::search_api::deployment' do
         it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').with(
           'config_source'          => '/tmp/config.yml',
           'features_source'        => '/tmp/features.yml',
+          'facilities_source'      => '/tmp/facilities.yml',
+          'themes_source'          => '/tmp/themes.yml',
+          'types_source'           => '/tmp/types.yml',
           'version'                => 'latest',
           'repository'             => 'uitdatabank-search-api',
           'basedir'                => '/var/www/udb3-search-service',
@@ -51,6 +57,22 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           'source' => '/tmp/features.yml'
         ) }
 
+        it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').with(
+          'ensure' => 'file',
+          'owner'  => 'www-data',
+          'group'  => 'www-data',
+          'path'   => '/var/www/udb3-search-service/facet_mapping_regions.yml',
+          'source' => '/var/www/geojson-data/output/facet_mapping_regions.yml'
+        ) }
+
+        it { is_expected.to contain_file('uitdatabank-search-api-autocomplete').with(
+          'ensure' => 'file',
+          'owner'  => 'www-data',
+          'group'  => 'www-data',
+          'path'   => '/var/www/udb3-search-service/web/autocomplete.json',
+          'source' => '/var/www/geojson-data/output/autocomplete.json'
+        ) }
+
         it { is_expected.to contain_file('uitdatabank-search-api-pubkey-auth0').with(
           'ensure' => 'file',
           'owner'  => 'www-data',
@@ -68,6 +90,13 @@ describe 'profiles::uitdatabank::search_api::deployment' do
         ) }
 
         it { is_expected.not_to contain_file('uitdatabank-search-api-default-queries') }
+
+        it { is_expected.to contain_profiles__uitdatabank__term_mapping('uitdatabank-search-api').with(
+          'basedir'           => '/var/www/udb3-search-service',
+          'facilities_source' => '/tmp/facilities.yml',
+          'themes_source'     => '/tmp/themes.yml',
+          'types_source'      => '/tmp/types.yml'
+        ) }
 
         it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').with(
           'command'     => '/var/www/udb3-search-service/bin/app.php udb3-core:reindex-permanent',
@@ -122,6 +151,13 @@ describe 'profiles::uitdatabank::search_api::deployment' do
         it { is_expected.to contain_file('uitdatabank-search-api-features').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-api]') }
         it { is_expected.to contain_file('uitdatabank-search-api-features').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-cli]') }
         it { is_expected.to contain_file('uitdatabank-search-api-features').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-related]') }
+        it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_requires('Group[www-data]') }
+        it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_requires('User[www-data]') }
+        it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_requires('Package[uitdatabank-search-api]') }
+        it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_notifies('Service[uitdatabank-search-api]') }
+        it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-api]') }
+        it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-cli]') }
+        it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-related]') }
         it { is_expected.to contain_file('uitdatabank-search-api-pubkey-auth0').that_requires('Group[www-data]') }
         it { is_expected.to contain_file('uitdatabank-search-api-pubkey-auth0').that_requires('User[www-data]') }
         it { is_expected.to contain_file('uitdatabank-search-api-pubkey-auth0').that_requires('Package[uitdatabank-search-api]') }
@@ -136,6 +172,10 @@ describe 'profiles::uitdatabank::search_api::deployment' do
         it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-api]') }
         it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-cli]') }
         it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-related]') }
+        it { is_expected.to contain_profiles__uitdatabank__term_mapping('uitdatabank-search-api').that_notifies('Service[uitdatabank-search-api]') }
+        it { is_expected.to contain_profiles__uitdatabank__term_mapping('uitdatabank-search-api').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-api]') }
+        it { is_expected.to contain_profiles__uitdatabank__term_mapping('uitdatabank-search-api').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-cli]') }
+        it { is_expected.to contain_profiles__uitdatabank__term_mapping('uitdatabank-search-api').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-related]') }
         it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').that_requires('Package[uitdatabank-search-api]') }
         it { is_expected.to contain_service('uitdatabank-search-api').that_requires('Profiles::Php::Fpm_service_alias[uitdatabank-search-api]') }
 
@@ -158,10 +198,13 @@ describe 'profiles::uitdatabank::search_api::deployment' do
         end
       end
 
-      context "with config_source => /foo/config.yml, features_source => /foo/features.yml, version => 1.2.3, repository => foo, basedir => '/var/www/foo', pubkey_auth0_source => /tmp/mypubkey, region_mapping_source => /tmp/mapping.json, default_queries_source => /tmp/default_queries.php, data_migration => true and puppetdb_url => http://example.com:8000" do
+      context "with config_source => /foo/config.yml, features_source => /foo/features.yml, facilities_source => /tmp/facilities.txt, themes_source => /tmp/themes.txt, types_source => /tmp/types.txt, version => 1.2.3, repository => foo, basedir => '/var/www/foo', pubkey_auth0_source => /tmp/mypubkey, region_mapping_source => /tmp/mapping.json, default_queries_source => /tmp/default_queries.php, data_migration => true and puppetdb_url => http://example.com:8000" do
         let(:params) { {
           'config_source'          => '/foo/config.yml',
           'features_source'        => '/foo/features.yml',
+          'facilities_source'      => '/tmp/facilities.txt',
+          'themes_source'          => '/tmp/themes.txt',
+          'types_source'           => '/tmp/types.txt',
           'version'                => '1.2.3',
           'repository'             => 'foo',
           'basedir'                => '/var/www/foo',
@@ -200,6 +243,22 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             'source' => '/foo/features.yml'
           ) }
 
+          it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').with(
+            'ensure' => 'file',
+            'owner'  => 'www-data',
+            'group'  => 'www-data',
+            'path'   => '/var/www/foo/facet_mapping_regions.yml',
+            'source' => '/var/www/geojson-data/output/facet_mapping_regions.yml'
+          ) }
+
+          it { is_expected.to contain_file('uitdatabank-search-api-autocomplete').with(
+            'ensure' => 'file',
+            'owner'  => 'www-data',
+            'group'  => 'www-data',
+            'path'   => '/var/www/foo/web/autocomplete.json',
+            'source' => '/var/www/geojson-data/output/autocomplete.json'
+          ) }
+
           it { is_expected.to contain_file('uitdatabank-search-api-pubkey-auth0').with(
             'ensure' => 'file',
             'owner'  => 'www-data',
@@ -222,6 +281,13 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             'group'  => 'www-data',
             'path'   => '/var/www/foo/default_queries.php',
             'source' => '/tmp/default_queries.php'
+          ) }
+
+          it { is_expected.to contain_profiles__uitdatabank__term_mapping('uitdatabank-search-api').with(
+            'basedir'           => '/var/www/foo',
+            'facilities_source' => '/tmp/facilities.txt',
+            'themes_source'     => '/tmp/themes.txt',
+            'types_source'      => '/tmp/types.txt'
           ) }
 
           it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').with(
@@ -270,6 +336,9 @@ describe 'profiles::uitdatabank::search_api::deployment' do
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'features_source'/) }
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'facilities_source'/) }
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'themes_source'/) }
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'types_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'pubkey_auth0_source'/) }
       end
     end

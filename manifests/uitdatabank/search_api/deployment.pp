@@ -1,6 +1,9 @@
 class profiles::uitdatabank::search_api::deployment (
   String           $config_source,
   String           $features_source,
+  String           $facilities_source,
+  String           $themes_source,
+  String           $types_source,
   String           $pubkey_auth0_source,
   String           $version                = 'latest',
   String           $repository             = 'uitdatabank-search-api',
@@ -42,6 +45,20 @@ class profiles::uitdatabank::search_api::deployment (
     *      => $file_default_attributes
   }
 
+  file { 'uitdatabank-search-api-facet-mapping-regions':
+    ensure  => 'file',
+    path    => "${basedir}/facet_mapping_regions.yml",
+    source  => '/var/www/geojson-data/output/facet_mapping_regions.yml',
+    *      => $file_default_attributes
+  }
+
+  file { 'uitdatabank-search-api-autocomplete':
+    ensure  => 'file',
+    path    => "${basedir}/web/autocomplete.json",
+    source  => '/var/www/geojson-data/output/autocomplete.json',
+    *      => $file_default_attributes
+  }
+
   file { 'uitdatabank-search-api-pubkey-auth0':
     ensure => 'file',
     path   => "${basedir}/public-auth0.pem",
@@ -63,6 +80,14 @@ class profiles::uitdatabank::search_api::deployment (
       source => $default_queries_source,
       *      => $file_default_attributes
     }
+  }
+
+  profiles::uitdatabank::term_mapping { 'uitdatabank-search-api':
+    basedir           => $basedir,
+    facilities_source => $facilities_source,
+    themes_source     => $themes_source,
+    types_source      => $types_source,
+    notify            => [Service['uitdatabank-search-api'], Profiles::Uitdatabank::Search_api::Listener['uitdatabank-consume-api'], Profiles::Uitdatabank::Search_api::Listener['uitdatabank-consume-cli'], Profiles::Uitdatabank::Search_api::Listener['uitdatabank-consume-related']]
   }
 
   if $data_migration {
