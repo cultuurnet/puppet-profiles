@@ -26,10 +26,6 @@ describe 'profiles::elasticsearch' do
         it { is_expected.not_to contain_profiles__lvm__mount('elasticsearchdata') }
         it { is_expected.not_to contain_mount('/data/elasticsearch') }
 
-        it { is_expected.to contain_sysctl('vm.max_map_count').with(
-          'value' => '262144'
-        ) }
-
         it { is_expected.to contain_class('elasticsearch').with(
           'version'           => false,
           'manage_repo'       => false,
@@ -41,7 +37,6 @@ describe 'profiles::elasticsearch' do
         it { is_expected.to contain_class('profiles::elasticsearch::backup') }
 
         it { is_expected.to contain_class('elasticsearch').that_requires('Apt::Source[elastic-5.x]') }
-        it { is_expected.to contain_class('elasticsearch').that_requires('Sysctl[vm.max_map_count]') }
         it { is_expected.to contain_class('elasticsearch').that_requires('Class[profiles::java]') }
         it { is_expected.to contain_class('profiles::elasticsearch::backup').that_requires('Class[elasticsearch]') }
       end

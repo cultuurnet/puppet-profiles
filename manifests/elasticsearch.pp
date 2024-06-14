@@ -45,11 +45,6 @@ class profiles::elasticsearch (
     }
   }
 
-  sysctl { 'vm.max_map_count':
-    value  => '262144',
-    before => Class['elasticsearch']
-  }
-
   class { '::elasticsearch':
     version           => $version ? {
                            undef   => false,
