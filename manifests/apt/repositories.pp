@@ -10,8 +10,11 @@ class profiles::apt::repositories {
     }
   }
 
-  $arch     = $facts['os']['architecture']
   $codename = $facts['os']['distro']['codename']
+  $arch     = $facts['os']['architecture'] ? {
+    'amd64'   => 'amd64',
+    'aarch64' => 'arm64'
+  }
 
   # Ubuntu OS repositories
   case $facts['os']['release']['major'] {
