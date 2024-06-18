@@ -1,9 +1,11 @@
 class profiles::elasticsearch (
-  Optional[String] $version       = undef,
-  Integer          $major_version = if $version { Integer(split($version, /\./)[0]) } else { 5 },
-  Boolean          $lvm           = false,
-  Optional[String] $volume_group  = undef,
-  Optional[String] $volume_size   = undef
+  Optional[String] $version           = undef,
+  Integer          $major_version     = if $version { Integer(split($version, /\./)[0]) } else { 5 },
+  Boolean          $lvm               = false,
+  Optional[String] $volume_group      = undef,
+  Optional[String] $volume_size       = undef,
+  String           $initial_heap_size = '512m',
+  String           $maximum_heap_size = '512m'
 ) inherits ::profiles {
 
   if ($version and $major_version) {
@@ -12,7 +14,7 @@ class profiles::elasticsearch (
     }
   }
 
-  $data_dir = '/var/lib/elasticsearch'
+  $datadir = '/var/lib/elasticsearch'
 
   contain ::profiles::java
 
@@ -36,13 +38,34 @@ class profiles::elasticsearch (
       before       => Class['::elasticsearch']
     }
 
-    mount { $data_dir:
+    mount { $datadir:
       ensure  => 'mounted',
       device  => '/data/elasticsearch',
       fstype  => 'none',
       options => 'rw,bind',
-      require => [Profiles::Lvm::Mount['elasticsearchdata'], Class['::elasticsearch']]
+      require => [Profiles::Lvm::Mount['elasticsearchdata'], File[$datadir]],
+      before  => Class['elasticsearch']
     }
+  }
+
+  file { $datadir:
+    ensure  => 'directory',
+    owner   => 'elasticsearch',
+    group   => 'elasticsearch',
+    require => [Group['elasticsearch'], User['elasticsearch']],
+    before  => Class['elasticsearch']
+  }
+
+  augeas { 'elasticsearch-remove-heap-configuration-from-jvm.options':
+    lens    => 'SimpleLines.lns',
+    incl    => '/etc/elasticsearch/jvm.options',
+    context => '/files/etc/elasticsearch/jvm.options',
+    changes => [
+                 "rm *[. =~ regexp('^-Xms.*')]",
+                 "rm *[. =~ regexp('^-Xmx.*')]"
+               ],
+    require => Class['elasticsearch::package'],
+    before  => Class['elasticsearch::config']
   }
 
   class { '::elasticsearch':
@@ -53,11 +76,19 @@ class profiles::elasticsearch (
     manage_repo       => false,
     api_timeout       => 30,
     restart_on_change => true,
-    instances         => {},
+    datadir           => $datadir,
+    manage_datadir    => false,
+    init_defaults     => {
+                           'ES_JAVA_OPTS' => "\"-Xms${initial_heap_size} -Xmx${maximum_heap_size}\""
+                         },
     require           => [Apt::Source["elastic-${major_version}.x"], Class['::profiles::java']]
   }
 
   class { 'profiles::elasticsearch::backup':
     require => Class['::elasticsearch']
   }
+
+  # include ::profiles::elasticsearch::logging
+  # include ::profiles::elasticsearch::monitoring
+  # include ::profiles::elasticsearch::metrics
 }
