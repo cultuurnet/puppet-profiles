@@ -5,6 +5,7 @@ class profiles::jenkins::buildtools inherits ::profiles {
   realize Package['git']
   realize Package['jq']
   realize Package['build-essential']
+  realize Package['kubectl']
 
   include profiles::ruby
 }

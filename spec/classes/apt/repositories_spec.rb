@@ -40,24 +40,24 @@ describe 'profiles::apt::repositories' do
           context "in the testing environment" do
             let(:environment) { 'testing' }
 
-            include_examples 'apt repositories', 'focal', { :location => 'https://apt.publiq.be/focal-testing', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'focal-updates', { :location => 'https://apt.publiq.be/focal-updates-testing', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'focal-security', { :location => 'https://apt.publiq.be/focal-security-testing', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'focal-backports', { :location => 'https://apt.publiq.be/focal-backports-testing', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'puppet', { :location => 'https://apt.publiq.be/puppet-focal-testing', :repos => 'puppet', :release => 'focal' }
-            include_examples 'apt repositories', 'php', { :location => 'https://apt.publiq.be/php-focal-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'focal', { :location => 'https://apt-mirror.publiq.be/focal-amd64-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'focal-updates', { :location => 'https://apt-mirror.publiq.be/focal-updates-amd64-testing', :repos => 'main', :release => 'focal-updates' }
+            include_examples 'apt repositories', 'focal-security', { :location => 'https://apt-mirror.publiq.be/focal-security-amd64-testing', :repos => 'main', :release => 'focal-security' }
+            include_examples 'apt repositories', 'focal-backports', { :location => 'https://apt-mirror.publiq.be/focal-backports-amd64-testing', :repos => 'main', :release => 'focal-backports' }
+            include_examples 'apt repositories', 'puppet', { :location => 'https://apt-mirror.publiq.be/puppet-focal-testing', :repos => 'puppet', :release => 'focal' }
+            include_examples 'apt repositories', 'php', { :location => 'https://apt-mirror.publiq.be/php-focal-testing', :repos => 'main', :release => 'focal' }
 
             # Do we need to check for the architecture for these repositories?
-            include_examples 'apt repositories', 'docker', { :location => 'https://apt.publiq.be/docker-focal-testing', :repos => 'stable', :release => 'focal' }
-            include_examples 'apt repositories', 'newrelic', { :location => 'https://apt.publiq.be/newrelic-testing', :repos => 'non-free', :release => 'focal' }
-            include_examples 'apt repositories', 'newrelic-infra', { :location => 'https://apt.publiq.be/newrelic-infra-focal-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'docker', { :location => 'https://apt-mirror.publiq.be/docker-focal-testing', :repos => 'stable', :release => 'focal' }
+            include_examples 'apt repositories', 'newrelic', { :location => 'https://apt-mirror.publiq.be/newrelic-testing', :repos => 'non-free', :release => 'newrelic' }
+            include_examples 'apt repositories', 'newrelic-infra', { :location => 'https://apt-mirror.publiq.be/newrelic-infra-focal-testing', :repos => 'main', :release => 'focal' }
 
             include_examples 'apt repositories', 'publiq-tools', { :location => 'https://apt.publiq.be/publiq-tools-focal-testing', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'nodejs-16', { :location => 'https://apt.publiq.be/nodejs-16-testing', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'nodejs-18', { :location => 'https://apt.publiq.be/nodejs-18-testing', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'nodejs-20', { :location => 'https://apt.publiq.be/nodejs-20-testing', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'elastic-5.x', { :location => 'https://apt.publiq.be/elastic-5.x-testing', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'elastic-8.x', { :location => 'https://apt.publiq.be/elastic-8.x-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'nodejs-16', { :location => 'https://apt-mirror.publiq.be/nodejs-16-testing', :repos => 'main', :release => 'nodistro' }
+            include_examples 'apt repositories', 'nodejs-18', { :location => 'https://apt-mirror.publiq.be/nodejs-18-testing', :repos => 'main', :release => 'nodistro' }
+            include_examples 'apt repositories', 'nodejs-20', { :location => 'https://apt-mirror.publiq.be/nodejs-20-testing', :repos => 'main', :release => 'nodistro' }
+            include_examples 'apt repositories', 'elastic-5.x', { :location => 'https://apt-mirror.publiq.be/elastic-5.x-testing', :repos => 'main', :release => 'stable' }
+            include_examples 'apt repositories', 'elastic-8.x', { :location => 'https://apt-mirror.publiq.be/elastic-8.x-testing', :repos => 'main', :release => 'stable' }
 
             include_examples 'apt repositories', 'publiq-jenkins', { :location => 'https://apt.publiq.be/publiq-jenkins-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'publiq-prototypes', { :location => 'https://apt.publiq.be/publiq-prototypes-testing', :repos => 'main', :release => 'focal' }
@@ -69,6 +69,7 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'museumpas-mspotm', { :location => 'https://apt.publiq.be/museumpas-mspotm-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'museumpas-website', { :location => 'https://apt.publiq.be/museumpas-website-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'museumpas-website-filament', { :location => 'https://apt.publiq.be/museumpas-website-filament-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'museumpas-partner-website', { :location => 'https://apt.publiq.be/museumpas-partner-website-testing', :repos => 'main', :release => 'focal' }
 
             include_examples 'apt repositories', 'uitdatabank-angular-app', { :location => 'https://apt.publiq.be/uitdatabank-angular-app-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uitdatabank-newsletter-api', { :location => 'https://apt.publiq.be/uitdatabank-newsletter-api-testing', :repos => 'main', :release => 'focal' }
@@ -115,11 +116,11 @@ describe 'profiles::apt::repositories' do
 
             # How do we test a different environment?
             it { is_expected.to contain_apt__source('focal').with(
-              'location' => 'https://apt.publiq.be/focal-acceptance'
+              'location' => 'https://apt-mirror.publiq.be/focal-amd64-acceptance'
             ) }
 
-            include_examples 'apt repositories', 'focal', { :location => 'https://apt.publiq.be/focal-acceptance', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'php', { :location => 'https://apt.publiq.be/php-focal-acceptance', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'focal', { :location => 'https://apt-mirror.publiq.be/focal-amd64-acceptance', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'php', { :location => 'https://apt-mirror.publiq.be/php-focal-acceptance', :repos => 'main', :release => 'focal' }
           end
         end
       end
