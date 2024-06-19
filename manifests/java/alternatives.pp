@@ -24,6 +24,14 @@ class profiles::java::alternatives (
            $jre_commands = $jre_commands_headless + ['policytool']
            $jdk_commands = $jdk_commands_headless + ['appletviewer', 'jconsole']
          }
+
+         alternative_entry { "${jre_home}/lib/jexec":
+           ensure   => 'present',
+           altlink  => '/usr/bin/jexec',
+           altname  => 'jexec',
+           priority => '10',
+           before   => Alternatives['jexec']
+         }
     }
     11: {
           $jre_home  = $java_home
