@@ -34,6 +34,13 @@ profiles::uitid::frontend::deployment::config_source: '/path/to/config/source'
 profiles::uitid::frontend_api::deployment::config_source: '/path/to/config/source'
 profiles::uitid::frontend_auth0::deployment::config_source: '/path/to/config/source'
 
+profiles::uitdatabank::search_api::deployment::config_source: '/path/to/config/source'
+profiles::uitdatabank::search_api::deployment::features_source: '/path/to/config/source'
+profiles::uitdatabank::search_api::deployment::facilities_source: '/path/to/config/source'
+profiles::uitdatabank::search_api::deployment::themes_source: '/path/to/config/source'
+profiles::uitdatabank::search_api::deployment::types_source: '/path/to/config/source'
+profiles::uitdatabank::search_api::deployment::pubkey_auth0_source: '/path/to/config/key'
+
 profiles::publiq::versions::service_address: '127.0.1.1'
 profiles::publiq::versions::service_port: 6000
 

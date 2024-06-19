@@ -40,6 +40,11 @@ class profiles::groups inherits ::profiles {
     gid    => '456'
   }
 
+  @group { 'elasticsearch':
+    ensure => 'present',
+    gid    => '457'
+  }
+
   @group { 'ubuntu':
     ensure => 'present',
     gid    => '1000'

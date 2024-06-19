@@ -7,7 +7,8 @@ define profiles::apache::vhost::reverse_proxy (
   Boolean                        $auth_openid_connect   = false,
   Hash                           $proxy_params          = {},
   Variant[String, Array[String]] $proxy_keywords        = [],
-  Variant[String, Array[String]] $aliases               = []
+  Variant[String, Array[String]] $aliases               = [],
+  String                         $access_log_format     = 'extended_json'
 ) {
 
   include ::profiles
@@ -101,7 +102,7 @@ define profiles::apache::vhost::reverse_proxy (
     ssl_key               => $ssl_key,
     docroot               => '/var/www/html',
     manage_docroot        => false,
-    access_log_format     => 'extended_json',
+    access_log_format     => $access_log_format,
     directories           => $directories,
     auth_oidc             => $auth_openid_connect,
     oidc_settings         => $openid_connect_settings,

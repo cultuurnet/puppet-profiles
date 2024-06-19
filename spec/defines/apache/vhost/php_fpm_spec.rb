@@ -20,6 +20,7 @@ describe 'profiles::apache::vhost::php_fpm' do
               'basedir'              => '/var/www/foo',
               'public_web_directory' => 'public',
               'aliases'              => [],
+              'access_log_format'    => 'extended_json',
               'socket_type'          => 'unix',
               'certificate'          => nil
             ) }
@@ -63,11 +64,12 @@ describe 'profiles::apache::vhost::php_fpm' do
             ) }
           end
 
-          context "with basedir => /tmp/bla, public_web_directory => web, aliases => [smith.example.com, foo.example.com] and socket_type => tcp" do
+          context "with basedir => /tmp/bla, public_web_directory => web, aliases => [smith.example.com, foo.example.com], access_log_format => combined_json and socket_type => tcp" do
             let(:params) { {
               'basedir'              => '/tmp/bla',
               'public_web_directory' => 'web',
               'aliases'              => ['smith.example.com', 'foo.example.com'],
+              'access_log_format'    => 'combined_json',
               'socket_type'          => 'tcp',
             } }
 
@@ -78,7 +80,7 @@ describe 'profiles::apache::vhost::php_fpm' do
               'manage_docroot'     => false,
               'port'               => 80,
               'ssl'                => false,
-              'access_log_format'  => 'extended_json',
+              'access_log_format'  => 'combined_json',
               'access_log_env_var' => '!nolog',
               'request_headers'    => [
                                         'unset Proxy early',

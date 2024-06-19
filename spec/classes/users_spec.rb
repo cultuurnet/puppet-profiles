@@ -133,6 +133,16 @@ describe 'profiles::users' do
           'uid'            => '456'
         ) }
 
+        it { is_expected.to contain_user('elasticsearch').with(
+          'ensure'         => 'present',
+          'gid'            => 'elasticsearch',
+          'home'           => '/home/elasticsearch',
+          'managehome'     => false,
+          'purge_ssh_keys' => true,
+          'shell'          => '/bin/false',
+          'uid'            => '457'
+        ) }
+
         it { is_expected.to contain_user('glassfish').with(
           'ensure'         => 'present',
           'gid'            => 'glassfish',

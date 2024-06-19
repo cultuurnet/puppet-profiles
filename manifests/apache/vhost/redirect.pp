@@ -1,7 +1,8 @@
 define profiles::apache::vhost::redirect (
   Stdlib::Httpurl                $destination,
-  Optional[String]               $certificate  = undef,
-  Variant[String, Array[String]] $aliases      = []
+  Optional[String]               $certificate       = undef,
+  Variant[String, Array[String]] $aliases           = [],
+  String                         $access_log_format = 'extended_json'
 ) {
 
   include ::profiles
@@ -51,7 +52,7 @@ define profiles::apache::vhost::redirect (
     docroot           => '/var/www/html',
     manage_docroot    => false,
     request_headers   => ['unset Proxy early'],
-    access_log_format => 'extended_json',
+    access_log_format => $access_log_format,
     setenvif          => [
                            'X-Forwarded-Proto "https" HTTPS=on',
                            'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'

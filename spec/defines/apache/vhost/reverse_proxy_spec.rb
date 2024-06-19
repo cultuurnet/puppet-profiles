@@ -31,7 +31,8 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                 'proxy_keywords'        => [],
                 'proxy_params'          => {},
                 'support_websockets'    => false,
-                'auth_openid_connect'   => false
+                'auth_openid_connect'   => false,
+                'access_log_format'     => 'extended_json'
               ) }
 
               it { is_expected.to contain_apache__vhost('leonardo.example.com_80').with(
@@ -69,12 +70,13 @@ describe 'profiles::apache::vhost::reverse_proxy' do
               ) }
             end
 
-            context "with destination => http://davinci.example.com, proxy_params => { 'connectiontimeout' => 5 }, auth_openid_connect => true and support_websockets => true" do
+            context "with destination => http://davinci.example.com, proxy_params => { 'connectiontimeout' => 5 }, auth_openid_connect => true, access_log_format => combined_json and support_websockets => true" do
               let(:params) { {
                 'destination'         => 'http://davinci.example.com/',
                 'proxy_params'        => { 'connectiontimeout' => 5 },
                 'auth_openid_connect' => true,
-                'support_websockets'  => true
+                'support_websockets'  => true,
+                'access_log_format'   => 'combined_json'
               } }
 
               it { is_expected.to contain_class('apache::mod::proxy_wstunnel') }
@@ -92,7 +94,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                              'setifempty X-Forwarded-Port "80"',
                                              'setifempty X-Forwarded-Proto "http"'
                                            ],
-                'access_log_format'     => 'extended_json',
+                'access_log_format'     => 'combined_json',
                 'auth_oidc'             => true,
                 'directories'           => {
                                              'path'      => '/',
