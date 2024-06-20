@@ -3,9 +3,9 @@ define profiles::uitdatabank::term_mapping (
   String $facilities_source,
   String $themes_source,
   String $types_source,
-  String $facilities_mapping_filename = 'term_mapping_facilities.yml',
-  String $themes_mapping_filename     = 'term_mapping_themes.yml',
-  String $types_mapping_filename      = 'term_mapping_types.yml'
+  String $facilities_mapping_filename = 'facet_mapping_facilities.yml',
+  String $themes_mapping_filename     = 'facet_mapping_themes.yml',
+  String $types_mapping_filename      = 'facet_mapping_types.yml'
 ) {
 
   include ::profiles

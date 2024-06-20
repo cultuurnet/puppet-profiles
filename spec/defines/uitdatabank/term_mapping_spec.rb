@@ -21,9 +21,9 @@ describe 'profiles::uitdatabank::term_mapping' do
             'facilities_source'           => '/tmp/facilities',
             'themes_source'               => '/tmp/themes',
             'types_source'                => '/tmp/types',
-            'facilities_mapping_filename' => 'term_mapping_facilities.yml',
-            'themes_mapping_filename'     => 'term_mapping_themes.yml',
-            'types_mapping_filename'      => 'term_mapping_types.yml'
+            'facilities_mapping_filename' => 'facet_mapping_facilities.yml',
+            'themes_mapping_filename'     => 'facet_mapping_themes.yml',
+            'types_mapping_filename'      => 'facet_mapping_types.yml'
           ) }
 
           it { is_expected.to contain_group('www-data') }
@@ -31,7 +31,7 @@ describe 'profiles::uitdatabank::term_mapping' do
 
           it { is_expected.to contain_file('foo facilities').with(
             'ensure' => 'file',
-            'path'   => '/var/www/term_mapping_facilities.yml',
+            'path'   => '/var/www/facet_mapping_facilities.yml',
             'source' => '/tmp/facilities',
             'owner'  => 'www-data',
             'group'  => 'www-data',
@@ -40,7 +40,7 @@ describe 'profiles::uitdatabank::term_mapping' do
 
           it { is_expected.to contain_file('foo themes').with(
             'ensure' => 'file',
-            'path'   => '/var/www/term_mapping_themes.yml',
+            'path'   => '/var/www/facet_mapping_themes.yml',
             'source' => '/tmp/themes',
             'owner'  => 'www-data',
             'group'  => 'www-data',
@@ -49,7 +49,7 @@ describe 'profiles::uitdatabank::term_mapping' do
 
           it { is_expected.to contain_file('foo types').with(
             'ensure' => 'file',
-            'path'   => '/var/www/term_mapping_types.yml',
+            'path'   => '/var/www/facet_mapping_types.yml',
             'source' => '/tmp/types',
             'owner'  => 'www-data',
             'group'  => 'www-data',
@@ -128,7 +128,7 @@ describe 'profiles::uitdatabank::term_mapping' do
 
           it { is_expected.to contain_file('bar facilities').with(
             'ensure' => 'file',
-            'path'   => '/var/tmp/term_mapping_facilities.yml',
+            'path'   => '/var/tmp/facet_mapping_facilities.yml',
             'source' => '/tmp/facilities',
             'owner'  => 'www-data',
             'group'  => 'www-data',
@@ -137,7 +137,7 @@ describe 'profiles::uitdatabank::term_mapping' do
 
           it { is_expected.to contain_file('bar themes').with(
             'ensure' => 'file',
-            'path'   => '/var/tmp/term_mapping_themes.yml',
+            'path'   => '/var/tmp/facet_mapping_themes.yml',
             'source' => '/tmp/themes',
             'owner'  => 'www-data',
             'group'  => 'www-data',
@@ -146,7 +146,7 @@ describe 'profiles::uitdatabank::term_mapping' do
 
           it { is_expected.to contain_file('bar types').with(
             'ensure' => 'file',
-            'path'   => '/var/tmp/term_mapping_types.yml',
+            'path'   => '/var/tmp/facet_mapping_types.yml',
             'source' => '/tmp/types',
             'owner'  => 'www-data',
             'group'  => 'www-data',
