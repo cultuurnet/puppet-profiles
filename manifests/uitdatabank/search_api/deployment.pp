@@ -90,19 +90,19 @@ class profiles::uitdatabank::search_api::deployment (
   }
 
   profiles::uitdatabank::search_api::listener { 'uitdatabank-consume-api':
-    command   => 'udb3-consume-api',
+    command   => 'consume-udb3-api',
     basedir   => $basedir,
     subscribe => Package['uitdatabank-search-api']
   }
 
   profiles::uitdatabank::search_api::listener { 'uitdatabank-consume-cli':
-    command   => 'udb3-consume-cli',
+    command   => 'consume-udb3-cli',
     basedir   => $basedir,
     subscribe => Package['uitdatabank-search-api']
   }
 
   profiles::uitdatabank::search_api::listener { 'uitdatabank-consume-related':
-    command   => 'udb3-consume-related',
+    command   => 'consume-udb3-related',
     basedir   => $basedir,
     subscribe => Package['uitdatabank-search-api']
   }

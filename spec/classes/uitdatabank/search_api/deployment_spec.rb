@@ -114,19 +114,19 @@ describe 'profiles::uitdatabank::search_api::deployment' do
 
         it { is_expected.to contain_profiles__uitdatabank__search_api__listener('uitdatabank-consume-api').with(
           'ensure'  => 'present',
-          'command' => 'udb3-consume-api',
+          'command' => 'consume-udb3-api',
           'basedir' => '/var/www/udb3-search-service'
         ) }
 
         it { is_expected.to contain_profiles__uitdatabank__search_api__listener('uitdatabank-consume-cli').with(
           'ensure'  => 'present',
-          'command' => 'udb3-consume-cli',
+          'command' => 'consume-udb3-cli',
           'basedir' => '/var/www/udb3-search-service'
         ) }
 
         it { is_expected.to contain_profiles__uitdatabank__search_api__listener('uitdatabank-consume-related').with(
           'ensure'  => 'present',
-          'command' => 'udb3-consume-related',
+          'command' => 'consume-udb3-related',
           'basedir' => '/var/www/udb3-search-service'
         ) }
 
@@ -294,19 +294,19 @@ describe 'profiles::uitdatabank::search_api::deployment' do
 
           it { is_expected.to contain_profiles__uitdatabank__search_api__listener('uitdatabank-consume-api').with(
             'ensure'  => 'present',
-            'command' => 'udb3-consume-api',
+            'command' => 'consume-udb3-api',
             'basedir' => '/var/www/foo'
           ) }
 
           it { is_expected.to contain_profiles__uitdatabank__search_api__listener('uitdatabank-consume-cli').with(
             'ensure'  => 'present',
-            'command' => 'udb3-consume-cli',
+            'command' => 'consume-udb3-cli',
             'basedir' => '/var/www/foo'
           ) }
 
           it { is_expected.to contain_profiles__uitdatabank__search_api__listener('uitdatabank-consume-related').with(
             'ensure'  => 'present',
-            'command' => 'udb3-consume-related',
+            'command' => 'consume-udb3-related',
             'basedir' => '/var/www/foo'
           ) }
 
