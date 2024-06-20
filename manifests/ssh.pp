@@ -9,6 +9,11 @@ class profiles::ssh(
     notify  => Service['ssh']
   }
 
+  package { 'openssh-server':
+    ensure => 'latest',
+    notify => Service['ssh']
+  }
+
   sshd_config { 'PermitRootLogin':
     ensure => 'present',
     value  => 'no'
