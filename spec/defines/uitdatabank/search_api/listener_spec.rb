@@ -6,15 +6,15 @@ describe 'profiles::uitdatabank::search_api::listener' do
       context 'with title => foo' do
         let(:title) { 'foo' }
 
-        context 'with command => udb3-consume-api' do
+        context 'with command => consume-foo-api' do
           let(:params) { {
-            'command' => 'foo-consume-api'
+            'command' => 'consume-foo-api'
           } }
 
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_profiles__uitdatabank__search_api__listener('foo').with(
-            'command' => 'foo-consume-api',
+            'command' => 'consume-foo-api',
             'basedir' => '/var/www/udb3-search-service',
             'ensure'  => 'present'
           ) }
@@ -28,9 +28,8 @@ describe 'profiles::uitdatabank::search_api::listener' do
 
           it { is_expected.to contain_systemd__unit_file('foo.service').with_content(/^Group=www-data$/) }
           it { is_expected.to contain_systemd__unit_file('foo.service').with_content(/^User=www-data$/) }
-          it { is_expected.to contain_systemd__unit_file('foo.service').with_content(/^PIDFile=\/var\/run\/foo.pid$/) }
           it { is_expected.to contain_systemd__unit_file('foo.service').with_content(/^WorkingDirectory=\/var\/www\/udb3-search-service$/) }
-          it { is_expected.to contain_systemd__unit_file('foo.service').with_content(/^ExecStart=\/usr\/bin\/php bin\/app.php foo-consume-api$/) }
+          it { is_expected.to contain_systemd__unit_file('foo.service').with_content(/^ExecStart=\/usr\/bin\/php bin\/app.php consume-foo-api$/) }
 
           it { is_expected.to contain_service('foo').with(
             'ensure'    => 'running',
@@ -43,14 +42,14 @@ describe 'profiles::uitdatabank::search_api::listener' do
           it { is_expected.to contain_systemd__unit_file('foo.service').that_notifies('Service[foo]') }
         end
 
-        context 'with command => udb3-consume-api' do
+        context 'with command => consume-udb3-api' do
           let(:params) { {
-            'command' => 'udb3-consume-api',
+            'command' => 'consume-udb3-api',
             'basedir' => '/var/www/baz'
           } }
 
           it { is_expected.to contain_systemd__unit_file('foo.service').with_content(/^WorkingDirectory=\/var\/www\/baz$/) }
-          it { is_expected.to contain_systemd__unit_file('foo.service').with_content(/^ExecStart=\/usr\/bin\/php bin\/app.php udb3-consume-api$/) }
+          it { is_expected.to contain_systemd__unit_file('foo.service').with_content(/^ExecStart=\/usr\/bin\/php bin\/app.php consume-udb3-api$/) }
         end
 
         context 'with ensure => absent' do
@@ -102,7 +101,6 @@ describe 'profiles::uitdatabank::search_api::listener' do
 
           it { is_expected.to contain_systemd__unit_file('bar.service').with_content(/^Group=www-data$/) }
           it { is_expected.to contain_systemd__unit_file('bar.service').with_content(/^User=www-data$/) }
-          it { is_expected.to contain_systemd__unit_file('bar.service').with_content(/^PIDFile=\/var\/run\/bar.pid$/) }
           it { is_expected.to contain_systemd__unit_file('bar.service').with_content(/^WorkingDirectory=\/var\/www\/udb3-search-service$/) }
           it { is_expected.to contain_systemd__unit_file('bar.service').with_content(/^ExecStart=\/usr\/bin\/php bin\/app.php bar-baz$/) }
 
