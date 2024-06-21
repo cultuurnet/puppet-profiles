@@ -6,6 +6,7 @@ After=syslog.target network.target
 User=glassfish
 ExecStart=/opt/payara/glassfish/bin/asadmin --passwordfile /home/glassfish/asadmin.pass start-domain <%= @title %>
 ExecStop=/opt/payara/glassfish/bin/asadmin --passwordfile /home/glassfish/asadmin.pass stop-domain <%= @title %>
+ExecStopPost=/usr/bin/rm -rf /opt/payara/glassfish/domains/<%= @title %>/generated
 TimeoutStartSec=120
 TimeoutStopSec=30
 RestartSec=10
