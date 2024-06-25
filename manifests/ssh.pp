@@ -27,7 +27,7 @@ class profiles::ssh(
 
   sshd_config { 'Ciphers':
     ensure => 'present',
-    value  => 'aes256-ctr,aes256-gcm@openssh.com'
+    value  => ['aes256-ctr','aes256-gcm@openssh.com']
   }
 
   service { 'ssh':
