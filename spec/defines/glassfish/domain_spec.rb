@@ -78,34 +78,19 @@ describe 'profiles::glassfish::domain' do
               'month'    => '*'
             ) }
 
+            it { is_expected.to contain_profiles__glassfish__domain__newrelic('foobar-api').with(
+              'ensure'      => 'present',
+              'license_key' => nil,
+              'app_name'    => 'foobar-api-production',
+              'portbase'    => 4800
+            ) }
+
             it { is_expected.to contain_domain('foobar-api').that_requires('Group[glassfish]') }
             it { is_expected.to contain_domain('foobar-api').that_requires('User[glassfish]') }
             it { is_expected.to contain_profiles__glassfish__domain__service('foobar-api').that_requires('Domain[foobar-api]') }
             it { is_expected.to contain_profiles__glassfish__domain__jmx('foobar-api').that_requires('Profiles::Glassfish::Domain::Service[foobar-api]') }
             it { is_expected.to contain_profiles__glassfish__domain__newrelic('foobar-api').that_requires('Profiles::Glassfish::Domain::Service[foobar-api]') }
             it { is_expected.to contain_profiles__glassfish__domain__heap('foobar-api').that_requires('Profiles::Glassfish::Domain::Service[foobar-api]') }
-
-            context "with hieradata" do
-              let(:hiera_config) { 'spec/support/hiera/common.yaml' }
-
-              it { is_expected.to contain_profiles__glassfish__domain__newrelic('foobar-api').with(
-                'ensure'      => 'present',
-                'license_key' => 'my_license_key',
-                'app_name'    => 'foobar-api-production',
-                'portbase'    => 4800
-              ) }
-            end
-
-            context "without hieradata" do
-              let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
-
-              it { is_expected.to contain_profiles__glassfish__domain__newrelic('foobar-api').with(
-                'ensure'      => 'present',
-                'license_key' => nil,
-                'app_name'    => 'foobar-api-production',
-                'portbase'    => 4800
-              ) }
-            end
           end
 
           context 'in the testing environment' do
@@ -190,7 +175,8 @@ describe 'profiles::glassfish::domain' do
 
         context 'with newrelic_app_name => my_fancy_app' do
           let(:params) { {
-            'newrelic_app_name' => 'my_fancy_app'
+            'newrelic_app_name'    => 'my_fancy_app',
+            'newrelic_license_key' => 'my_license'
           } }
 
           it { is_expected.to contain_domain('baz-api').with(
@@ -216,9 +202,10 @@ describe 'profiles::glassfish::domain' do
           ) }
 
           it { is_expected.to contain_profiles__glassfish__domain__newrelic('baz-api').with(
-            'ensure'   => 'present',
-            'app_name' => 'my_fancy_app',
-            'portbase' => 4800
+            'ensure'      => 'present',
+            'app_name'    => 'my_fancy_app',
+            'license_key' => 'my_license',
+            'portbase'    => 4800
           ) }
 
           it { is_expected.to contain_profiles__glassfish__domain__service('baz-api').with(
