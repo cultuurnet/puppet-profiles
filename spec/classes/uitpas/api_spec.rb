@@ -25,7 +25,7 @@ describe 'profiles::uitpas::api' do
               'initial_heap'      => nil,
               'maximum_heap'      => nil,
               'jmx'               => true,
-              'newrelic'          => true,
+              'newrelic'          => false,
               'portbase'          => 4800,
               'service_status'    => 'running',
               'settings'          => {}
@@ -138,7 +138,7 @@ describe 'profiles::uitpas::api' do
               'initial_heap'      => nil,
               'maximum_heap'      => nil,
               'jmx'               => true,
-              'newrelic'          => true,
+              'newrelic'          => false,
               'newrelic_app_name' => 'uitpas-api-production',
               'service_status'    => 'running'
             ) }
@@ -192,14 +192,14 @@ describe 'profiles::uitpas::api' do
             it { is_expected.to contain_class('profiles::uitpas::api::deployment').that_requires('Class[profiles::glassfish]') }
           end
 
-          context "with database_password => secret, database_host => db.example.com, initial_heap => 1024m, maximum_heap => 1536m, jmx => false, newrelic => false, portbase => 14800 and settings => { 'foo' => 'bar', 'baz' => 'test' }" do
+          context "with database_password => secret, database_host => db.example.com, initial_heap => 1024m, maximum_heap => 1536m, jmx => false, newrelic => true, portbase => 14800 and settings => { 'foo' => 'bar', 'baz' => 'test' }" do
             let(:params) { {
               'database_password' => 'secret',
               'database_host'     => 'db.example.com',
               'initial_heap'      => '1024m',
               'maximum_heap'      => '1536m',
               'jmx'               => false,
-              'newrelic'          => false,
+              'newrelic'          => true,
               'portbase'          => 14800,
               'settings'          => { 'foo' => 'bar', 'baz' => 'test' }
             } }
@@ -243,7 +243,7 @@ describe 'profiles::uitpas::api' do
               'initial_heap' => '1024m',
               'maximum_heap' => '1536m',
               'jmx'          => false,
-              'newrelic'     => false,
+              'newrelic'     => true,
               'portbase'     => '14800'
             ) }
 
@@ -352,7 +352,7 @@ describe 'profiles::uitpas::api' do
               'initial_heap'      => nil,
               'maximum_heap'      => nil,
               'jmx'               => true,
-              'newrelic'          => true,
+              'newrelic'          => false,
               'newrelic_app_name' => 'uitpas-api-testing',
               'portbase'          => '4800',
               'service_status'    => 'stopped'
