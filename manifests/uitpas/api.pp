@@ -1,14 +1,15 @@
 class profiles::uitpas::api (
   String                     $database_password,
-  String                     $database_host     = '127.0.0.1',
-  Boolean                    $deployment        = true,
-  Optional[String]           $initial_heap      = undef,
-  Optional[String]           $maximum_heap      = undef,
-  Boolean                    $jmx               = true,
-  Boolean                    $newrelic          = true,
-  Integer                    $portbase          = 4800,
-  Enum['running', 'stopped'] $service_status    = 'running',
-  Hash                       $settings          = {}
+  String                     $database_host        = '127.0.0.1',
+  Boolean                    $deployment           = true,
+  Optional[String]           $initial_heap         = undef,
+  Optional[String]           $maximum_heap         = undef,
+  Boolean                    $jmx                  = true,
+  Boolean                    $newrelic             = false,
+  Optional[String]           $newrelic_license_key = lookup('data::newrelic::license_key', Optional[String], 'first', undef),
+  Integer                    $portbase             = 4800,
+  Enum['running', 'stopped'] $service_status       = 'running',
+  Hash                       $settings             = {}
 ) inherits ::profiles {
 
   $database_name      = 'uitpas_api'
@@ -51,15 +52,16 @@ class profiles::uitpas::api (
   realize Package['mysql-connector-j']
 
   profiles::glassfish::domain { 'uitpas':
-    portbase          => $portbase,
-    initial_heap      => $initial_heap,
-    maximum_heap      => $maximum_heap,
-    jmx               => $jmx,
-    newrelic          => $newrelic,
-    newrelic_app_name => "uitpas-api-${environment}",
-    service_status    => $service_status,
-    require           => Class['profiles::glassfish'],
-    notify            => Service['uitpas']
+    portbase             => $portbase,
+    initial_heap         => $initial_heap,
+    maximum_heap         => $maximum_heap,
+    jmx                  => $jmx,
+    newrelic             => $newrelic,
+    newrelic_app_name    => "uitpas-api-${environment}",
+    newrelic_license_key => $newrelic_license_key,
+    service_status       => $service_status,
+    require              => Class['profiles::glassfish'],
+    notify               => Service['uitpas']
   }
 
   if $database_host_available {

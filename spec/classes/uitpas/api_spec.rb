@@ -19,16 +19,17 @@ describe 'profiles::uitpas::api' do
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to contain_class('profiles::uitpas::api').with(
-              'database_password' => 'mypassword',
-              'database_host'     => '127.0.0.1',
-              'deployment'        => true,
-              'initial_heap'      => nil,
-              'maximum_heap'      => nil,
-              'jmx'               => true,
-              'newrelic'          => true,
-              'portbase'          => 4800,
-              'service_status'    => 'running',
-              'settings'          => {}
+              'database_password'    => 'mypassword',
+              'database_host'        => '127.0.0.1',
+              'deployment'           => true,
+              'initial_heap'         => nil,
+              'maximum_heap'         => nil,
+              'jmx'                  => true,
+              'newrelic'             => false,
+              'newrelic_license_key' => 'my_license_key',
+              'portbase'             => 4800,
+              'service_status'       => 'running',
+              'settings'             => {}
             ) }
 
             it { is_expected.to contain_group('glassfish') }
@@ -134,13 +135,14 @@ describe 'profiles::uitpas::api' do
             ) }
 
             it { is_expected.to contain_profiles__glassfish__domain('uitpas').with(
-              'portbase'          => '4800',
-              'initial_heap'      => nil,
-              'maximum_heap'      => nil,
-              'jmx'               => true,
-              'newrelic'          => true,
-              'newrelic_app_name' => 'uitpas-api-production',
-              'service_status'    => 'running'
+              'portbase'             => '4800',
+              'initial_heap'         => nil,
+              'maximum_heap'         => nil,
+              'jmx'                  => true,
+              'newrelic'             => false,
+              'newrelic_license_key' => 'my_license_key',
+              'newrelic_app_name'    => 'uitpas-api-production',
+              'service_status'       => 'running'
             ) }
 
             it { is_expected.to contain_profiles__glassfish__domain__service_alias('uitpas') }
@@ -192,14 +194,14 @@ describe 'profiles::uitpas::api' do
             it { is_expected.to contain_class('profiles::uitpas::api::deployment').that_requires('Class[profiles::glassfish]') }
           end
 
-          context "with database_password => secret, database_host => db.example.com, initial_heap => 1024m, maximum_heap => 1536m, jmx => false, newrelic => false, portbase => 14800 and settings => { 'foo' => 'bar', 'baz' => 'test' }" do
+          context "with database_password => secret, database_host => db.example.com, initial_heap => 1024m, maximum_heap => 1536m, jmx => false, newrelic => true, portbase => 14800 and settings => { 'foo' => 'bar', 'baz' => 'test' }" do
             let(:params) { {
               'database_password' => 'secret',
               'database_host'     => 'db.example.com',
               'initial_heap'      => '1024m',
               'maximum_heap'      => '1536m',
               'jmx'               => false,
-              'newrelic'          => false,
+              'newrelic'          => true,
               'portbase'          => 14800,
               'settings'          => { 'foo' => 'bar', 'baz' => 'test' }
             } }
@@ -240,11 +242,12 @@ describe 'profiles::uitpas::api' do
             ) }
 
             it { is_expected.to contain_profiles__glassfish__domain('uitpas').with(
-              'initial_heap' => '1024m',
-              'maximum_heap' => '1536m',
-              'jmx'          => false,
-              'newrelic'     => false,
-              'portbase'     => '14800'
+              'initial_heap'         => '1024m',
+              'maximum_heap'         => '1536m',
+              'jmx'                  => false,
+              'newrelic'             => true,
+              'newrelic_license_key' => 'my_license_key',
+              'portbase'             => '14800'
             ) }
 
             it { is_expected.to contain_systemproperty('foo').that_requires('Profiles::Glassfish::Domain[uitpas]') }
@@ -342,20 +345,23 @@ describe 'profiles::uitpas::api' do
       context 'with hieradata' do
         let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-        context "with database_password => foo and service_status => stopped" do
+        context "with database_password => foo, newrelic => true, newrelic_license_key => bar and service_status => stopped" do
           let(:params) { {
-            'database_password' => 'foo',
-            'service_status'    => 'stopped'
+            'database_password'    => 'foo',
+            'newrelic'             => true,
+            'newrelic_license_key' => 'bar',
+            'service_status'       => 'stopped'
           } }
 
             it { is_expected.to contain_profiles__glassfish__domain('uitpas').with(
-              'initial_heap'      => nil,
-              'maximum_heap'      => nil,
-              'jmx'               => true,
-              'newrelic'          => true,
-              'newrelic_app_name' => 'uitpas-api-testing',
-              'portbase'          => '4800',
-              'service_status'    => 'stopped'
+              'initial_heap'         => nil,
+              'maximum_heap'         => nil,
+              'jmx'                  => true,
+              'newrelic'             => true,
+              'newrelic_app_name'    => 'uitpas-api-testing',
+              'newrelic_license_key' => 'bar',
+              'portbase'             => '4800',
+              'service_status'       => 'stopped'
             ) }
 
             it { is_expected.to contain_service('uitpas').with(

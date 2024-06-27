@@ -2,7 +2,7 @@
 data::puppet::puppetdb::url: 'http://localhost:8081'
 data::puppet::puppetserver::url: 'https://puppetserver.example.com:8140'
 
-data::newrelic_license_key: 'my_license_key'
+data::newrelic::license_key: 'my_license_key'
 
 data::openid::provider_metadata_url: 'https://openid.example.com/.well-known/openid-configuration'
 data::openid::client_id: 'abc123'
