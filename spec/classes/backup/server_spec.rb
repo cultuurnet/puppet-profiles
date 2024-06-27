@@ -13,6 +13,8 @@ describe 'profiles::backup::server' do
 
         it { is_expected.to compile.with_all_deps }
 
+        it { is_expected.to contain_package('borgbackup') }
+
         it { is_expected.to contain_group('borgbackup') }
 
         it { is_expected.to contain_user('borgbackup') }
