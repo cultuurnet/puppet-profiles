@@ -105,6 +105,8 @@ describe 'profiles::php' do
               'ensure' => 'present'
             ) }
 
+            it { is_expected.not_to contain_class('profiles::newrelic::php') }
+
             it { is_expected.to contain_class('php::globals').that_requires('Apt::Source[php]') }
             it { is_expected.to contain_class('php').that_requires('Class[php::globals]') }
           end
@@ -195,6 +197,8 @@ describe 'profiles::php' do
             'path' => '/usr/bin/composer2'
           ) }
 
+          it { is_expected.not_to contain_class('profiles::newrelic::php') }
+
           it { is_expected.to contain_package('composer1').that_requires('Class[php]') }
           it { is_expected.to contain_package('composer2').that_requires('Class[php]') }
           it { is_expected.to contain_alternatives('composer').that_requires(['Package[composer1]', 'Package[composer2]']) }
@@ -212,66 +216,81 @@ describe 'profiles::php' do
             'newrelic'                 => true
           } }
 
-          it { is_expected.to contain_class('profiles::php').with(
-            'newrelic_app_name' => 'bbb.example.com'
-          ) }
+          context 'with hieradata' do
+            let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-          it { is_expected.to contain_systemd__dropin_file('php-fpm service override.conf').with(
-            'unit'     => 'php7.4-fpm.service',
-            'filename' => 'override.conf',
-            'content'  => "[Install]\nAlias=php-fpm.service"
-          ) }
+            it { is_expected.to contain_class('profiles::php').with(
+              'newrelic_app_name' => 'bbb.example.com'
+            ) }
 
-          it { is_expected.not_to contain_exec('re-enable php7.4-fpm') }
+            it { is_expected.to contain_systemd__dropin_file('php-fpm service override.conf').with(
+              'unit'     => 'php7.4-fpm.service',
+              'filename' => 'override.conf',
+              'content'  => "[Install]\nAlias=php-fpm.service"
+            ) }
 
-          it { is_expected.to contain_apt__source('publiq-tools') }
+            it { is_expected.not_to contain_exec('re-enable php7.4-fpm') }
 
-          it { is_expected.to contain_package('composer1').with(
-            'ensure' => 'present'
-          ) }
+            it { is_expected.to contain_apt__source('publiq-tools') }
 
-          it { is_expected.to contain_package('composer2').with(
-            'ensure' => 'present'
-          ) }
+            it { is_expected.to contain_package('composer1').with(
+              'ensure' => 'present'
+            ) }
 
-          it { is_expected.to contain_alternatives('composer').with(
-            'path' => '/usr/bin/composer1'
-          ) }
+            it { is_expected.to contain_package('composer2').with(
+              'ensure' => 'present'
+            ) }
 
-          it { is_expected.to contain_class('php').with(
-            'manage_repos'             => false,
-            'composer'                 => false,
-            'dev'                      => false,
-            'pear'                     => false,
-            'settings'                 => {
-                                            'openssl/openssl.cafile' => '/etc/ssl/certs/ca-certificates.crt'
-                                          },
-            'extensions'               => {
-                                            'apcu'     => {},
-                                            'bcmath'   => {},
-                                            'curl'     => {},
-                                            'gd'       => {},
-                                            'intl'     => {},
-                                            'json'     => {},
-                                            'mbstring' => {},
-                                            'mysql'    => {},
-                                            'opcache'  => { 'zend' => true },
-                                            'readline' => {},
-                                            'redis'    => {},
-                                            'tidy'     => {},
-                                            'xml'      => {},
-                                            'zip'      => {}
-                                          },
-            'fpm'                      => true,
-            'fpm_service_ensure'       => 'stopped',
-            'fpm_service_enable'       => false,
-            'fpm_pools'                => { 'www' => {} },
-            'fpm_global_pool_settings' => {
-                                            'listen_owner' => 'www-data',
-                                            'listen_group' => 'www-data',
-                                            'listen'       => '/var/run/php/php-fpm.sock'
-                                          }
-          ) }
+            it { is_expected.to contain_alternatives('composer').with(
+              'path' => '/usr/bin/composer1'
+            ) }
+
+            it { is_expected.to contain_class('php').with(
+              'manage_repos'             => false,
+              'composer'                 => false,
+              'dev'                      => false,
+              'pear'                     => false,
+              'settings'                 => {
+                                              'openssl/openssl.cafile' => '/etc/ssl/certs/ca-certificates.crt'
+                                            },
+              'extensions'               => {
+                                              'apcu'     => {},
+                                              'bcmath'   => {},
+                                              'curl'     => {},
+                                              'gd'       => {},
+                                              'intl'     => {},
+                                              'json'     => {},
+                                              'mbstring' => {},
+                                              'mysql'    => {},
+                                              'opcache'  => { 'zend' => true },
+                                              'readline' => {},
+                                              'redis'    => {},
+                                              'tidy'     => {},
+                                              'xml'      => {},
+                                              'zip'      => {}
+                                            },
+              'fpm'                      => true,
+              'fpm_service_ensure'       => 'stopped',
+              'fpm_service_enable'       => false,
+              'fpm_pools'                => { 'www' => {} },
+              'fpm_global_pool_settings' => {
+                                              'listen_owner' => 'www-data',
+                                              'listen_group' => 'www-data',
+                                              'listen'       => '/var/run/php/php-fpm.sock'
+                                            }
+            ) }
+
+            it { is_expected.to contain_class('profiles::newrelic::php').with(
+              'app_name'    => 'bbb.example.com',
+              'license_key' => 'my_license_key'
+            ) }
+          end
+
+          context 'without hieradata' do
+            let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
+
+            it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'newrelic_license_key'/) }
+          end
         end
       end
     end

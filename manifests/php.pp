@@ -116,19 +116,13 @@ class profiles::php (
   }
 
   if $newrelic {
-    realize Apt::Source['newrelic']
-
-    file { 'newrelic-php5-installer.preseed':
-      path    => '/var/tmp/newrelic-php5-installer.preseed',
-      content => template('profiles/php/newrelic-php5-installer.preseed.erb'),
-      mode    => '0600',
-      backup  => false
+    unless $newrelic_license_key {
+      fail("Class Profiles::Php expects a value for parameter 'newrelic_license_key'")
     }
 
-    package { 'newrelic-php5':
-      ensure       => 'latest',
-      responsefile => '/var/tmp/newrelic-php5-installer.preseed',
-      require      => File['newrelic-php5-installer.preseed']
+    class { 'profiles::newrelic::php':
+      app_name    => $newrelic_app_name,
+      license_key => $newrelic_license_key
     }
   }
 }
