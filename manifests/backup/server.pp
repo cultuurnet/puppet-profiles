@@ -11,6 +11,8 @@ class profiles::backup::server (
   realize(Group['borgbackup'])
   realize(User['borgbackup'])
 
+  realize Package['borgbackup']
+
   @@sshkey { 'backup':
     name => $hostname,
     key  => $::sshrsakey,
