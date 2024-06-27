@@ -6,9 +6,9 @@ class profiles::php (
   Boolean                    $fpm                      = true,
   Enum['unix', 'tcp']        $fpm_socket_type          = 'unix',
   Enum['running', 'stopped'] $fpm_service_status       = 'running',
-  Boolean                    $newrelic_agent           = false,
+  Boolean                    $newrelic                 = false,
   String                     $newrelic_app_name        = $facts['networking']['fqdn'],
-  Optional[String]           $newrelic_license_key     = undef
+  Optional[String]           $newrelic_license_key     = lookup('data::newrelic::license_key', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $default_settings   = {
@@ -115,7 +115,7 @@ class profiles::php (
     }
   }
 
-  if $newrelic_agent {
+  if $newrelic {
     realize Apt::Source['newrelic']
 
     file { 'newrelic-php5-installer.preseed':
