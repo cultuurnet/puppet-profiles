@@ -1,5 +1,5 @@
 class profiles::backup::client (
-   String $private_key = lookup('data::backup::client::private::key', Optional[String], 'first', undef),
+   String $private_key = lookup('data::backup::client::private_key', Optional[String], 'first', undef),
    String $borg_server = lookup('data::backup::server', Optional[String], 'first', undef),
    Hash   $configurations,
  ) inherits ::profiles {
