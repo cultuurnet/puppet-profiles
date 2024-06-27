@@ -20,7 +20,7 @@ describe 'profiles::glassfish::domain' do
               'initial_heap'      => nil,
               'maximum_heap'      => nil,
               'jmx'               => true,
-              'newrelic'          => true,
+              'newrelic'          => false,
               'newrelic_app_name' => 'foobar-api-production',
               'portbase'          => 4800
             ) }
@@ -79,7 +79,7 @@ describe 'profiles::glassfish::domain' do
             ) }
 
             it { is_expected.to contain_profiles__glassfish__domain__newrelic('foobar-api').with(
-              'ensure'      => 'present',
+              'ensure'      => 'absent',
               'license_key' => nil,
               'app_name'    => 'foobar-api-production',
               'portbase'    => 4800
@@ -102,79 +102,86 @@ describe 'profiles::glassfish::domain' do
               'initial_heap'      => nil,
               'maximum_heap'      => nil,
               'jmx'               => true,
-              'newrelic'          => true,
+              'newrelic'          => false,
               'newrelic_app_name' => 'foobar-api-testing',
               'portbase'          => 4800
             ) }
 
             it { is_expected.to contain_profiles__glassfish__domain__newrelic('foobar-api').with(
-              'ensure'      => 'present',
+              'ensure'      => 'absent',
               'app_name'    => 'foobar-api-testing',
               'portbase'    => 4800
             ) }
           end
         end
 
-        context 'with portbase => 14800, initial_heap => 512m, maximum_heap => 1024m, jmx => false, newrelic => false and service_status => stopped' do
+        context 'with portbase => 14800, initial_heap => 512m, maximum_heap => 1024m, jmx => false, newrelic => true and service_status => stopped' do
           let(:params) { {
             'portbase'       => 14800,
             'initial_heap'   => '512m',
             'maximum_heap'   => '1024m',
             'jmx'            => false,
-            'newrelic'       => false,
+            'newrelic'       => true,
             'service_status' => 'stopped'
           } }
 
-          it { is_expected.to contain_domain('foobar-api').with(
-            'ensure'            => 'present',
-            'user'              => 'glassfish',
-            'asadminuser'       => 'admin',
-            'passwordfile'      => '/home/glassfish/asadmin.pass',
-            'portbase'          => '14800',
-            'startoncreate'     => false,
-            'enablesecureadmin' => false,
-            'template'          => nil
-          ) }
+          context 'in the production environment' do
+            let(:environment) { 'production' }
 
-          it { is_expected.to contain_profiles__glassfish__domain__heap('foobar-api').with(
-            'initial'  => '512m',
-            'maximum'  => '1024m',
-            'portbase' => 14800
-          ) }
+            it { is_expected.to contain_domain('foobar-api').with(
+              'ensure'            => 'present',
+              'user'              => 'glassfish',
+              'asadminuser'       => 'admin',
+              'passwordfile'      => '/home/glassfish/asadmin.pass',
+              'portbase'          => '14800',
+              'startoncreate'     => false,
+              'enablesecureadmin' => false,
+              'template'          => nil
+            ) }
 
-          it { is_expected.to contain_profiles__glassfish__domain__jmx('foobar-api').with(
-            'ensure'   => 'absent',
-            'portbase' => 14800
-          ) }
+            it { is_expected.to contain_profiles__glassfish__domain__heap('foobar-api').with(
+              'initial'  => '512m',
+              'maximum'  => '1024m',
+              'portbase' => 14800
+            ) }
 
-          it { is_expected.to contain_profiles__glassfish__domain__newrelic('foobar-api').with(
-            'ensure'   => 'absent',
-            'portbase' => 14800
-          ) }
+            it { is_expected.to contain_profiles__glassfish__domain__jmx('foobar-api').with(
+              'ensure'   => 'absent',
+              'portbase' => 14800
+            ) }
 
-          it { is_expected.to contain_firewall('400 accept glassfish domain foobar-api HTTP traffic').with(
-            'proto'  => 'tcp',
-            'dport'  => '14880',
-            'action' => 'accept'
-          ) }
+            it { is_expected.to contain_profiles__glassfish__domain__newrelic('foobar-api').with(
+              'ensure'      => 'present',
+              'license_key' => nil,
+              'app_name'    => 'foobar-api-production',
+              'portbase'    => 14800
+            ) }
 
-          it { is_expected.to contain_firewall('400 accept glassfish domain foobar-api HTTPS traffic').with(
-            'proto'  => 'tcp',
-            'dport'  => '14881',
-            'action' => 'accept'
-          ) }
+            it { is_expected.to contain_firewall('400 accept glassfish domain foobar-api HTTP traffic').with(
+              'proto'  => 'tcp',
+              'dport'  => '14880',
+              'action' => 'accept'
+            ) }
 
-          it { is_expected.to contain_profiles__glassfish__domain__service('foobar-api').with(
-            'status' => 'stopped'
-          ) }
+            it { is_expected.to contain_firewall('400 accept glassfish domain foobar-api HTTPS traffic').with(
+              'proto'  => 'tcp',
+              'dport'  => '14881',
+              'action' => 'accept'
+            ) }
+
+            it { is_expected.to contain_profiles__glassfish__domain__service('foobar-api').with(
+              'status' => 'stopped'
+            ) }
+          end
         end
       end
 
       context "title baz-api" do
         let(:title) { 'baz-api' }
 
-        context 'with newrelic_app_name => my_fancy_app' do
+        context 'with newrelic => true, newrelic_app_name => my_fancy_app and newrelic_license_key => my_license' do
           let(:params) { {
+            'newrelic'             => true,
             'newrelic_app_name'    => 'my_fancy_app',
             'newrelic_license_key' => 'my_license'
           } }

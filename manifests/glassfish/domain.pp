@@ -4,7 +4,7 @@ define profiles::glassfish::domain (
   Optional[String]           $initial_heap         = undef,
   Optional[String]           $maximum_heap         = undef,
   Boolean                    $jmx                  = true,
-  Boolean                    $newrelic             = true,
+  Boolean                    $newrelic             = false,
   Optional[String]           $newrelic_license_key = undef,
   String                     $newrelic_app_name    = "${title}-${environment}",
   Integer                    $portbase             = 4800
