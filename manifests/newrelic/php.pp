@@ -15,6 +15,6 @@ class profiles::newrelic::php (
   package { 'newrelic-php5':
     ensure       => 'latest',
     responsefile => '/var/tmp/newrelic-php5-installer.preseed',
-    require      => File['newrelic-php5-installer.preseed']
+    require      => [File['newrelic-php5-installer.preseed'], Apt::Source['newrelic']]
   }
 }
