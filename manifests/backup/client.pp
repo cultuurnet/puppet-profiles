@@ -1,5 +1,6 @@
 class profiles::backup::client (
    String $private_key = lookup('data::backup::client::private::key', Optional[String], 'first', undef),
+   String $borg_server = lookup('data::backup::server', Optional[String], 'first', undef),
    Hash   $configurations,
  ) inherits ::profiles {
 
@@ -8,7 +9,6 @@ class profiles::backup::client (
   Sshkey <<| title == 'backup' |>>
 
   $borg_user      = 'borgbackup'
-  $borg_server    = 'backup.services.publiq.be'
   $borg_datadir   = '/data/borgbackup'
   $borg_defaults  = {
     'type'           => 'borg',
