@@ -162,8 +162,8 @@ describe 'profiles::elasticsearch' do
           'backup_retention_days' => 10
         } }
 
-        context "with volume_group mydatavg present" do
-          let(:pre_condition) { 'volume_group { "mydatavg": ensure => "present" }' }
+        context "with volume_groups mydatavg and esbackupvg present" do
+          let(:pre_condition) { ['volume_group { "mydatavg": ensure => "present" }', 'volume_group { "esbackupvg": ensure => "present" }'] }
 
           it { is_expected.to contain_apt__source('elastic-5.x') }
 
