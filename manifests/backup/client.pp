@@ -1,7 +1,7 @@
 class profiles::backup::client (
-   String $private_key = lookup('data::backup::client::private_key', Optional[String], 'first', undef),
-   String $borg_server = lookup('data::backup::server', Optional[String], 'first', undef),
-   Hash   $configurations,
+   String $private_key    = lookup('data::backup::client::private_key', Optional[String], 'first', undef),
+   String $borg_server    = lookup('data::backup::server', Optional[String], 'first', undef),
+   Hash   $configurations = {}
  ) inherits ::profiles {
 
   realize Apt::Source['publiq-tools']
@@ -29,11 +29,15 @@ class profiles::backup::client (
     }
   }
 
-  # generates a hash containing each entry in profiles::backup::client::configurations
-  # values in the $configurations variable are merged with the $borg_defaults
-  #
-  $borg_config = $configurations.reduce({}) |$key, $value| {
-    $key + { $value[0] => $borg_defaults + $configurations[$value[0]] + {'repository' => "${borg_user}@${borg_server}:${borg_datadir}/${facts['clientcert']}-${value[0]}"} }
+  if empty($configurations) {
+    $borg_config = {}
+  } else {
+    # generates a hash containing each entry in profiles::backup::client::configurations
+    # values in the $configurations variable are merged with the $borg_defaults
+    #
+    $borg_config = $configurations.reduce({}) |$key, $value| {
+      $key + { $value[0] => $borg_defaults + $configurations[$value[0]] + {'repository' => "${borg_user}@${borg_server}:${borg_datadir}/${facts['clientcert']}-${value[0]}"} }
+    }
   }
 
   class { 'borgbackup':
