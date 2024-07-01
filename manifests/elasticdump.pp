@@ -15,4 +15,12 @@ class profiles::elasticdump inherits ::profiles {
     altlink  => '/usr/bin/elasticdump',
     require  => Package['elasticdump']
   }
+
+  alternative_entry { '/opt/elasticdump/node_modules/elasticdump/bin/multielasticdump':
+    ensure   => 'present',
+    altname  => 'multielasticdump',
+    priority => 10,
+    altlink  => '/usr/bin/multielasticdump',
+    require  => Package['elasticdump']
+  }
 }

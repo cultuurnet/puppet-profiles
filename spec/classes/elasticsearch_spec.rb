@@ -14,11 +14,16 @@ describe 'profiles::elasticsearch' do
         it { is_expected.to contain_user('elasticsearch') }
 
         it { is_expected.to contain_class('profiles::elasticsearch').with(
-          'major_version'     => 5,
-          'version'           => nil,
-          'lvm'               => false,
-          'initial_heap_size' => '512m',
-          'maximum_heap_size' => '512m'
+          'major_version'         => 5,
+          'version'               => nil,
+          'lvm'                   => false,
+          'initial_heap_size'     => '512m',
+          'maximum_heap_size'     => '512m',
+          'backup_lvm'            => false,
+          'backup_volume_group'   => nil,
+          'backup_volume_size'    => nil,
+          'backup_time'           => [0, 0],
+          'backup_retention_days' => 7
         ) }
 
         it { is_expected.to contain_class('profiles::java') }
@@ -54,7 +59,13 @@ describe 'profiles::elasticsearch' do
           'init_defaults'     => { 'ES_JAVA_OPTS' => '"-Xms512m -Xmx512m"' }
         ) }
 
-        it { is_expected.to contain_class('profiles::elasticsearch::backup') }
+        it { is_expected.to contain_class('profiles::elasticsearch::backup').with(
+          'lvm'            => false,
+          'volume_group'   => nil,
+          'volume_size'    => nil,
+          'time'           => [0, 0],
+          'retention_days' => 7
+        ) }
 
         it { is_expected.to contain_class('elasticsearch').that_requires('Apt::Source[elastic-5.x]') }
         it { is_expected.to contain_class('elasticsearch').that_requires('Class[profiles::java]') }
@@ -66,18 +77,23 @@ describe 'profiles::elasticsearch' do
         it { is_expected.to contain_class('profiles::elasticsearch::backup').that_requires('Class[elasticsearch]') }
       end
 
-      context "with version => 8.2.1, lvm => true, volume_group => myvg, volume_size => 20G, initial_heap_size => 768m and maximum_heap_size => 1024m" do
+      context "with version => 8.2.1, lvm => true, volume_group => myvg, volume_size => 20G, initial_heap_size => 768m, maximum_heap_size => 1024m, backup_lvm => true, backup_volume_group => mybackupvg, backup_volume_size => 10G, backup_time => [10, 10] and backup_retention_days =>5" do
         let(:params) { {
-          'version'           => '8.2.1',
-          'lvm'               => true,
-          'volume_group'      => 'myvg',
-          'volume_size'       => '20G',
-          'initial_heap_size' => '768m',
-          'maximum_heap_size' => '1024m'
+          'version'               => '8.2.1',
+          'lvm'                   => true,
+          'volume_group'          => 'myvg',
+          'volume_size'           => '20G',
+          'initial_heap_size'     => '768m',
+          'maximum_heap_size'     => '1024m',
+          'backup_lvm'            => true,
+          'backup_volume_group'   => 'mybackupvg',
+          'backup_volume_size'    => '10G',
+          'backup_time'           => [10, 10],
+          'backup_retention_days' => 5
         } }
 
-        context "with volume_group myvg present" do
-          let(:pre_condition) { 'volume_group { "myvg": ensure => "present" }' }
+        context "with volume_groups myvg and mybackupvg present" do
+          let(:pre_condition) { ['volume_group { "myvg": ensure => "present" }', 'volume_group { "mybackupvg": ensure => "present" }'] }
 
           it { is_expected.to contain_apt__source('elastic-8.x') }
 
@@ -113,6 +129,14 @@ describe 'profiles::elasticsearch' do
             'init_defaults'     => { 'ES_JAVA_OPTS' => '"-Xms768m -Xmx1024m"' }
           ) }
 
+          it { is_expected.to contain_class('profiles::elasticsearch::backup').with(
+            'lvm'            => true,
+            'volume_group'   => 'mybackupvg',
+            'volume_size'    => '10G',
+            'time'           => [10, 10],
+            'retention_days' => 5
+          ) }
+
           it { is_expected.to contain_profiles__lvm__mount('elasticsearchdata').that_requires('Group[elasticsearch]') }
           it { is_expected.to contain_profiles__lvm__mount('elasticsearchdata').that_requires('User[elasticsearch]') }
           it { is_expected.to contain_file('/var/lib/elasticsearch').that_requires('Group[elasticsearch]') }
@@ -125,16 +149,21 @@ describe 'profiles::elasticsearch' do
         end
       end
 
-      context "with version => 5.2.2, lvm => true, volume_group => mydatavg and volume_size => 10G" do
+      context "with version => 5.2.2, lvm => true, volume_group => mydatavg, volume_size => 10G, backup_lvm => true, backup_volume_group => esbackupvg, backup_volume_size => 5G, backup_time => [1, 15] and backup_retention_days => 10" do
         let(:params) { {
-          'version'      => '5.2.2',
-          'lvm'          => true,
-          'volume_group' => 'mydatavg',
-          'volume_size'  => '10G'
+          'version'               => '5.2.2',
+          'lvm'                   => true,
+          'volume_group'          => 'mydatavg',
+          'volume_size'           => '10G',
+          'backup_lvm'            => true,
+          'backup_volume_group'   => 'esbackupvg',
+          'backup_volume_size'    => '5G',
+          'backup_time'           => [1, 15],
+          'backup_retention_days' => 10
         } }
 
-        context "with volume_group mydatavg present" do
-          let(:pre_condition) { 'volume_group { "mydatavg": ensure => "present" }' }
+        context "with volume_groups mydatavg and esbackupvg present" do
+          let(:pre_condition) { ['volume_group { "mydatavg": ensure => "present" }', 'volume_group { "esbackupvg": ensure => "present" }'] }
 
           it { is_expected.to contain_apt__source('elastic-5.x') }
 
@@ -162,6 +191,14 @@ describe 'profiles::elasticsearch' do
             'datadir'           => '/var/lib/elasticsearch',
             'manage_datadir'    => false,
             'init_defaults'     => { 'ES_JAVA_OPTS' => '"-Xms512m -Xmx512m"' }
+          ) }
+
+          it { is_expected.to contain_class('profiles::elasticsearch::backup').with(
+            'lvm'            => true,
+            'volume_group'   => 'esbackupvg',
+            'volume_size'    => '5G',
+            'time'           => [1, 15],
+            'retention_days' => 10
           ) }
 
           it { is_expected.to contain_class('elasticsearch').that_requires('Apt::Source[elastic-5.x]') }

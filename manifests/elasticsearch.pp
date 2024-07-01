@@ -1,11 +1,16 @@
 class profiles::elasticsearch (
-  Optional[String] $version           = undef,
-  Integer          $major_version     = if $version { Integer(split($version, /\./)[0]) } else { 5 },
-  Boolean          $lvm               = false,
-  Optional[String] $volume_group      = undef,
-  Optional[String] $volume_size       = undef,
-  String           $initial_heap_size = '512m',
-  String           $maximum_heap_size = '512m'
+  Optional[String] $version               = undef,
+  Integer          $major_version         = if $version { Integer(split($version, /\./)[0]) } else { 5 },
+  Boolean          $lvm                   = false,
+  Optional[String] $volume_group          = undef,
+  Optional[String] $volume_size           = undef,
+  String           $initial_heap_size     = '512m',
+  String           $maximum_heap_size     = '512m',
+  Boolean          $backup_lvm            = false,
+  Optional[String] $backup_volume_group   = undef,
+  Optional[String] $backup_volume_size    = undef,
+  Array[Integer]   $backup_time           = [0, 0],
+  Integer          $backup_retention_days = 7
 ) inherits ::profiles {
 
   if ($version and $major_version) {
@@ -85,7 +90,12 @@ class profiles::elasticsearch (
   }
 
   class { 'profiles::elasticsearch::backup':
-    require => Class['::elasticsearch']
+    lvm            => $backup_lvm,
+    volume_group   => $backup_volume_group,
+    volume_size    => $backup_volume_size,
+    time           => $backup_time,
+    retention_days => $backup_retention_days,
+    require        => Class['::elasticsearch']
   }
 
   # include ::profiles::elasticsearch::logging
