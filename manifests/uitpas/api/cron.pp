@@ -5,7 +5,7 @@ class profiles::uitpas::api::cron (
   $http_port               = String($portbase + 80)
   $base_url                = "http://127.0.0.1:${http_port}"
   $cron_default_attributes = {
-                               environment => ['MAILTO=infra@publiq.be'],
+                               environment => ['MAILTO=infra+cron@publiq.be'],
                                user        => 'glassfish',
                                require     => User['glassfish']
                              }

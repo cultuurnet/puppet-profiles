@@ -57,7 +57,7 @@ class profiles::uitdatabank::elasticdump_to_gcs (
                      false => 'absent'
                    },
     command     => "/usr/bin/test $(date +\\%0H) -eq ${dump_hour} && /usr/local/bin/elasticdump_to_gcs ${options}",
-    environment => [ 'SHELL=/bin/bash', "TZ=${local_timezone}", 'MAILTO=infra@publiq.be'],
+    environment => [ 'SHELL=/bin/bash', "TZ=${local_timezone}", 'MAILTO=infra+cron@publiq.be'],
     user        => 'ubuntu',
     hour        => '*',
     minute      => '00',
