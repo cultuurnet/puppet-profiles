@@ -118,7 +118,7 @@ class profiles::uitdatabank::search_api::deployment (
 
   cron { 'uitdatabank-search-api-reindex-permanent':
     command     => "${basedir}/bin/app.php udb3-core:reindex-permanent",
-    environment => ['MAILTO=infra@publiq.be'],
+    environment => ['MAILTO=infra+cron@publiq.be'],
     hour        => '0',
     minute      => '0',
     require     => Package['uitdatabank-search-api']

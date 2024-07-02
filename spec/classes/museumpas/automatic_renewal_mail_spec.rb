@@ -23,7 +23,7 @@ describe 'profiles::museumpas::automatic_renewal_mail' do
 
         it { is_expected.to contain_cron('profiles::museumpas::automatic_renewal_mail').with(
           'ensure'      => 'present',
-          'environment' => [ 'MAILTO=infra@publiq.be'],
+          'environment' => [ 'MAILTO=infra+cron@publiq.be'],
           'command'     => "/usr/bin/curl -X 'POST' -H 'Authorization: Bearer abc' https://museumpas.example.com/rest/system/autorenewalReminder",
           'hour'        => 0,
           'minute'      => 0
@@ -50,7 +50,7 @@ describe 'profiles::museumpas::automatic_renewal_mail' do
 
         it { is_expected.to contain_cron('profiles::museumpas::automatic_renewal_mail').with(
           'ensure'      => 'present',
-          'environment' => [ 'MAILTO=infra@publiq.be'],
+          'environment' => [ 'MAILTO=infra+cron@publiq.be'],
           'command'     => "/usr/bin/curl -X 'POST' -H 'Authorization: Bearer def' https://foo.example.com/rest/system/autorenewalReminder",
           'hour'        => 3,
           'minute'      => 14

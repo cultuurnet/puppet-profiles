@@ -83,7 +83,7 @@ describe 'profiles::uit::cms::deployment' do
 
         it { is_expected.to contain_cron('uit-cms-core-cron').with(
           'command'     => '/var/www/uit-cms/vendor/bin/drush -q core:cron',
-          'environment' => ['MAILTO=infra@publiq.be'],
+          'environment' => ['MAILTO=infra+cron@publiq.be'],
           'user'        => 'www-data',
           'hour'        => '*',
           'minute'      => ['0', '30']
@@ -91,7 +91,7 @@ describe 'profiles::uit::cms::deployment' do
 
         it { is_expected.to contain_cron('uit-cms-curator-sync').with(
           'command'     => '/var/www/uit-cms/vendor/bin/drush -q queue-run curator_sync',
-          'environment' => ['MAILTO=infra@publiq.be'],
+          'environment' => ['MAILTO=infra+cron@publiq.be'],
           'user'        => 'www-data',
           'hour'        => '*',
           'minute'      => '*'

@@ -61,7 +61,7 @@ class profiles::elasticsearch::backup (
 
   cron { 'elasticsearch-backup':
     command     => '/usr/local/sbin/elasticsearchbackup.sh',
-    environment => ['MAILTO=infra@publiq.be'],
+    environment => ['MAILTO=infra+cron@publiq.be'],
     user        => 'root',
     hour        => $time[0],
     minute      => $time[1],

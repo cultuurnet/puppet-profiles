@@ -19,7 +19,7 @@ describe 'profiles::uitpas::api::cron' do
 
         it { is_expected.to contain_cron('uitpas enduser clearcheckincodes').with(
           'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/enduser/clearcheckincodes'",
-          'environment' => ['MAILTO=infra@publiq.be'],
+          'environment' => ['MAILTO=infra+cron@publiq.be'],
           'user'        => 'glassfish',
           'hour'        => '3',
           'minute'      => '5'
@@ -27,7 +27,7 @@ describe 'profiles::uitpas::api::cron' do
 
         it { is_expected.to contain_cron('uitpas milestone batch activity').with(
           'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/milestone/batch/activity'",
-          'environment' => ['MAILTO=infra@publiq.be'],
+          'environment' => ['MAILTO=infra+cron@publiq.be'],
           'user'        => 'glassfish',
           'hour'        => '1',
           'minute'      => '2'
@@ -35,7 +35,7 @@ describe 'profiles::uitpas::api::cron' do
 
         it { is_expected.to contain_cron('uitpas milestone batch points').with(
           'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/milestone/batch/points'",
-          'environment' => ['MAILTO=infra@publiq.be'],
+          'environment' => ['MAILTO=infra+cron@publiq.be'],
           'user'        => 'glassfish',
           'hour'        => '2',
           'minute'      => '2'
@@ -43,7 +43,7 @@ describe 'profiles::uitpas::api::cron' do
 
         it { is_expected.to contain_cron('uitpas milestone batch birthday').with(
           'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/milestone/batch/birthday'",
-          'environment' => ['MAILTO=infra@publiq.be'],
+          'environment' => ['MAILTO=infra+cron@publiq.be'],
           'user'        => 'glassfish',
           'hour'        => '4',
           'minute'      => '2'
@@ -51,7 +51,7 @@ describe 'profiles::uitpas::api::cron' do
 
         it { is_expected.to contain_cron('uitpas passholder indexpointspromotions').with(
           'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/passholder/indexpointspromotions?unindexedOnly=true'",
-          'environment' => ['MAILTO=infra@publiq.be'],
+          'environment' => ['MAILTO=infra+cron@publiq.be'],
           'user'        => 'glassfish',
           'hour'        => '*',
           'minute'      => '34'
@@ -59,7 +59,7 @@ describe 'profiles::uitpas::api::cron' do
 
         it { is_expected.to contain_cron('uitpas autorenew triggerupload').with(
           'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/autorenew/triggerupload'",
-          'environment' => ['MAILTO=infra@publiq.be'],
+          'environment' => ['MAILTO=infra+cron@publiq.be'],
           'user'        => 'glassfish',
           'hour'        => '*',
           'minute'      => '*/10'
@@ -67,7 +67,7 @@ describe 'profiles::uitpas::api::cron' do
 
         it { is_expected.to contain_cron('uitpas autorenew triggerdownload').with(
           'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/autorenew/triggerdownload'",
-          'environment' => ['MAILTO=infra@publiq.be'],
+          'environment' => ['MAILTO=infra+cron@publiq.be'],
           'user'        => 'glassfish',
           'hour'        => '*',
           'minute'      => '*/10'
@@ -75,7 +75,7 @@ describe 'profiles::uitpas::api::cron' do
 
         it { is_expected.to contain_cron('uitpas autorenew triggerprocess').with(
           'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/autorenew/triggerprocess'",
-          'environment' => ['MAILTO=infra@publiq.be'],
+          'environment' => ['MAILTO=infra+cron@publiq.be'],
           'user'        => 'glassfish',
           'hour'        => '*',
           'minute'      => '*/10'
@@ -83,7 +83,7 @@ describe 'profiles::uitpas::api::cron' do
 
         it { is_expected.to contain_cron('uitpas balie indexbalies').with(
           'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/balie/indexbalies'",
-          'environment' => ['MAILTO=infra@publiq.be'],
+          'environment' => ['MAILTO=infra+cron@publiq.be'],
           'user'        => 'glassfish',
           'hour'        => '5',
           'minute'      => '14'
@@ -91,7 +91,7 @@ describe 'profiles::uitpas::api::cron' do
 
         it { is_expected.to contain_cron('uitpas clear jpa cache').with(
           'command'     => "/usr/bin/curl -q -s 'http://127.0.0.1:4880/uitid/rest/bootstrap/uitpas/clearJpaCache' > /dev/null",
-          'environment' => ['MAILTO=infra@publiq.be'],
+          'environment' => ['MAILTO=infra+cron@publiq.be'],
           'user'        => 'glassfish',
           'hour'        => '*/6',
           'minute'      => '30'
@@ -99,7 +99,7 @@ describe 'profiles::uitpas::api::cron' do
 
         it { is_expected.to contain_cron('uitpas clear cache').with(
           'command'     => "/usr/bin/curl -q -s 'http://127.0.0.1:4880/uitid/rest/bootstrap/uitpas/clearcaches' > /dev/null",
-          'environment' => ['MAILTO=infra@publiq.be'],
+          'environment' => ['MAILTO=infra+cron@publiq.be'],
           'user'        => 'glassfish',
           'hour'        => '6',
           'minute'      => '15'

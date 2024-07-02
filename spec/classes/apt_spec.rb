@@ -13,7 +13,7 @@ describe 'profiles::apt' do
       ) }
 
       it { is_expected.to contain_cron('apt clean daily').with(
-        'environment' => [ 'MAILTO=infra@publiq.be'],
+        'environment' => [ 'MAILTO=infra+cron@publiq.be'],
         'command'     => '/usr/bin/apt-get clean',
         'hour'        => '3',
         'minute'      => '0'

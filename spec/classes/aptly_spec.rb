@@ -65,7 +65,7 @@ describe 'profiles::aptly' do
         ) }
 
         it { is_expected.to contain_cron('aptly db cleanup daily').with(
-          'environment' => [ 'MAILTO=infra@publiq.be'],
+          'environment' => [ 'MAILTO=infra+cron@publiq.be'],
           'command'     => '/usr/bin/aptly db cleanup',
           'user'        => 'aptly',
           'hour'        => '4',
