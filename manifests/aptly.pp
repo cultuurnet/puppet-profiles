@@ -95,7 +95,7 @@ class profiles::aptly (
 
   cron { 'aptly db cleanup daily':
     command     => '/usr/bin/aptly db cleanup',
-    environment => [ 'MAILTO=infra@publiq.be'],
+    environment => [ 'MAILTO=infra+cron@publiq.be'],
     user        => 'aptly',
     hour        => '4',
     minute      => '0',

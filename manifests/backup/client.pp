@@ -14,7 +14,7 @@ class profiles::backup::client (
     'type'           => 'borg',
     'borg_rsh'       => 'ssh -i /root/.ssh/backup_rsa',
     'job_verbosity'  => '1',
-    'job_mailto'     => 'infra@publiq.be',
+    'job_mailto'     => 'infra+cron@publiq.be',
     'options'        => {
       'compression'    => 'zlib,9',
       'keep_within'    => '24H',
