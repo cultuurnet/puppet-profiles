@@ -89,6 +89,14 @@ describe 'profiles::packages' do
           'ensure' => 'present'
         ) }
 
+        it { is_expected.to contain_package('borgbackup').with(
+          'ensure' => 'present'
+        ) }
+
+        it { is_expected.to contain_package('borgmatic').with(
+          'ensure' => 'present'
+        ) }
+
         it { is_expected.to contain_package('kubectl').with(
           'ensure' => 'present'
         ) }

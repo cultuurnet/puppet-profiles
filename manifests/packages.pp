@@ -88,6 +88,14 @@ class profiles::packages inherits ::profiles {
     ensure  => 'present'
   }
 
+  @package { 'borgbackup':
+    ensure  => 'present'
+  }
+
+  @package { 'borgmatic':
+    ensure  => 'present'
+  }
+
   @package { 'rubygem-puppetdb-cli':
     ensure  => 'present',
     require => Apt::Source['publiq-tools']
