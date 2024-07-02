@@ -101,6 +101,10 @@ describe 'profiles::packages' do
           'ensure' => 'present'
         ) }
 
+        it { is_expected.to contain_package('argocd').with(
+          'ensure' => 'present'
+        ) }
+
         it { is_expected.to contain_package('composer1').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('composer2').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('drush').that_requires('Apt::Source[publiq-tools]') }
@@ -111,6 +115,7 @@ describe 'profiles::packages' do
         it { is_expected.to contain_package('yarn').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('rubygem-puppetdb-cli').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('kubectl').that_requires('Apt::Source[publiq-tools]') }
+        it { is_expected.to contain_package('argocd').that_requires('Apt::Source[publiq-tools]') }
       end
     end
   end
