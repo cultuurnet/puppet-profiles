@@ -21,6 +21,8 @@ describe 'profiles::gcsfuse' do
           'ensure' => 'directory'
         ) }
 
+        it { is_expected.not_to contain_file('gcsfuse-credentials') }
+
         it { is_expected.to contain_package('gcsfuse').that_requires('Apt::Source[publiq-tools]') }
       end
 
