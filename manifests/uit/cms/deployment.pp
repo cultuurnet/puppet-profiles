@@ -73,7 +73,7 @@ class profiles::uit::cms::deployment (
 
   cron { 'uit-cms-core-cron':
     command     => "${basedir}/vendor/bin/drush -q core:cron",
-    environment => ['MAILTO=infra@publiq.be'],
+    environment => ['MAILTO=infra+cron@publiq.be'],
     user        => 'www-data',
     hour        => '*',
     minute      => ['0', '30'],
@@ -82,7 +82,7 @@ class profiles::uit::cms::deployment (
 
   cron { 'uit-cms-curator-sync':
     command     => "${basedir}/vendor/bin/drush -q queue-run curator_sync",
-    environment => ['MAILTO=infra@publiq.be'],
+    environment => ['MAILTO=infra+cron@publiq.be'],
     user        => 'www-data',
     hour        => '*',
     minute      => '*',

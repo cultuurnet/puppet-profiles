@@ -99,7 +99,7 @@ describe 'profiles::uitdatabank::search_api::deployment' do
 
         it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').with(
           'command'     => '/var/www/udb3-search-service/bin/app.php udb3-core:reindex-permanent',
-          'environment' => ['MAILTO=infra@publiq.be'],
+          'environment' => ['MAILTO=infra+cron@publiq.be'],
           'hour'        => '0',
           'minute'      => '0'
         ) }
@@ -287,7 +287,7 @@ describe 'profiles::uitdatabank::search_api::deployment' do
 
           it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').with(
             'command'     => '/var/www/foo/bin/app.php udb3-core:reindex-permanent',
-            'environment' => ['MAILTO=infra@publiq.be'],
+            'environment' => ['MAILTO=infra+cron@publiq.be'],
             'hour'        => '0',
             'minute'      => '0'
           ) }

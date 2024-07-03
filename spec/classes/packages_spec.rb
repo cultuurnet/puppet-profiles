@@ -89,7 +89,19 @@ describe 'profiles::packages' do
           'ensure' => 'present'
         ) }
 
+        it { is_expected.to contain_package('borgbackup').with(
+          'ensure' => 'present'
+        ) }
+
+        it { is_expected.to contain_package('borgmatic').with(
+          'ensure' => 'present'
+        ) }
+
         it { is_expected.to contain_package('kubectl').with(
+          'ensure' => 'present'
+        ) }
+
+        it { is_expected.to contain_package('argocd').with(
           'ensure' => 'present'
         ) }
 
@@ -103,6 +115,7 @@ describe 'profiles::packages' do
         it { is_expected.to contain_package('yarn').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('rubygem-puppetdb-cli').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('kubectl').that_requires('Apt::Source[publiq-tools]') }
+        it { is_expected.to contain_package('argocd').that_requires('Apt::Source[publiq-tools]') }
       end
     end
   end

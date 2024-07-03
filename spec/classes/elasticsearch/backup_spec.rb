@@ -54,7 +54,7 @@ describe 'profiles::elasticsearch::backup' do
 
         it { is_expected.to contain_cron('elasticsearch-backup').with(
           'command'     => '/usr/local/sbin/elasticsearchbackup.sh',
-          'environment' => ['MAILTO=infra@publiq.be'],
+          'environment' => ['MAILTO=infra+cron@publiq.be'],
           'user'        => 'root',
           'hour'        => 0,
           'minute'      => 0
@@ -110,7 +110,7 @@ describe 'profiles::elasticsearch::backup' do
 
           it { is_expected.to contain_cron('elasticsearch-backup').with(
             'command'     => '/usr/local/sbin/elasticsearchbackup.sh',
-            'environment' => ['MAILTO=infra@publiq.be'],
+            'environment' => ['MAILTO=infra+cron@publiq.be'],
             'user'        => 'root',
             'hour'        => 1,
             'minute'      => 5

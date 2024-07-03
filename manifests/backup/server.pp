@@ -8,12 +8,9 @@ class profiles::backup::server (
   String                         $public_key
 ) inherits ::profiles {
 
-  realize(Group['borgbackup'])
-  realize(User['borgbackup'])
-
-  package { 'borgbackup':
-    ensure  => 'present'
-  }
+  realize Group['borgbackup']
+  realize User['borgbackup']
+  realize Package['borgbackup']
 
   @@sshkey { 'backup':
     name => $hostname,

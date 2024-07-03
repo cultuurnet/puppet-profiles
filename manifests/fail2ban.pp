@@ -13,7 +13,7 @@
 #
 class profiles::fail2ban(
   String                         $action                   = 'action_mb',
-  String                         $email                    = 'infra@publiq.be',
+  String                         $email                    = 'infra+cron@publiq.be',
   String                         $sender                   = "fail2ban@${facts['networking']['fqdn']}",
   Variant[String, Array[String]] $whitelist                = ['127.0.0.1/8'],
   Variant[String, Array[String]] $jails                    = ['ssh', 'ssh-ddos'],

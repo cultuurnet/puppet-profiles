@@ -132,7 +132,7 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.not_to contain_class('profiles::puppet::puppetserver::terraform') }
 
           it { is_expected.to contain_cron('puppetserver_report_retention').with(
-            'environment' => [ 'MAILTO=infra@publiq.be'],
+            'environment' => [ 'MAILTO=infra+cron@publiq.be'],
             'command'     => '/usr/bin/find /opt/puppetlabs/server/data/puppetserver/reports -type f -name "*.yaml" -mtime +0 -exec rm {} \;',
             'hour'        => '0',
             'minute'      => '0'
@@ -242,7 +242,7 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to contain_class('profiles::puppet::puppetserver::hiera').that_comes_before('Class[profiles::puppet::puppetserver::terraform]') }
 
           it { is_expected.to contain_cron('puppetserver_report_retention').with(
-            'environment' => [ 'MAILTO=infra@publiq.be'],
+            'environment' => [ 'MAILTO=infra+cron@publiq.be'],
             'command'     => '/usr/bin/find /opt/puppetlabs/server/data/puppetserver/reports -type f -name "*.yaml" -mtime +4 -exec rm {} \;',
             'hour'        => '0',
             'minute'      => '0'
