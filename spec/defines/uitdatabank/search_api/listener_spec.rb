@@ -26,6 +26,8 @@ describe 'profiles::uitdatabank::search_api::listener' do
             'ensure' => 'present'
           ) }
 
+          it { is_expected.to contain_systemd__unit_file('foo.service').with_content(/^Requires=elasticsearch.service$/) }
+          it { is_expected.to contain_systemd__unit_file('foo.service').with_content(/^After=.*elasticsearch.service.*$/) }
           it { is_expected.to contain_systemd__unit_file('foo.service').with_content(/^Group=www-data$/) }
           it { is_expected.to contain_systemd__unit_file('foo.service').with_content(/^User=www-data$/) }
           it { is_expected.to contain_systemd__unit_file('foo.service').with_content(/^WorkingDirectory=\/var\/www\/udb3-search-service$/) }
