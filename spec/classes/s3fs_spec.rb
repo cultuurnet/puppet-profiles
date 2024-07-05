@@ -5,7 +5,7 @@ describe 'profiles::s3fs' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "without parameters" do
+      context 'without parameters' do
         let(:params) { {} }
 
         it { is_expected.to compile.with_all_deps }
@@ -26,7 +26,7 @@ describe 'profiles::s3fs' do
         ) }
       end
 
-      context "with settings_source => /bar, version => 1.2.3 and puppetdb_url => http://example.com:8000" do
+      context 'with version => 1.2.3, aws_access_key_id => secret_key_id and aws_secret_access_key => secret_access_key' do
         let(:params) { {
           'version'               => '1.2.3',
           'aws_access_key_id'     => 'secret_key_id',
