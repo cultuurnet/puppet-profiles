@@ -19,10 +19,11 @@ describe 'profiles::elasticsearch' do
           'lvm'                   => false,
           'initial_heap_size'     => '512m',
           'maximum_heap_size'     => '512m',
+          'backup'                => true,
           'backup_lvm'            => false,
           'backup_volume_group'   => nil,
           'backup_volume_size'    => nil,
-          'backup_time'           => [0, 0],
+          'backup_hour'           => 0,
           'backup_retention_days' => 7
         ) }
 
@@ -63,7 +64,7 @@ describe 'profiles::elasticsearch' do
           'lvm'            => false,
           'volume_group'   => nil,
           'volume_size'    => nil,
-          'time'           => [0, 0],
+          'dump_hour'      => 0,
           'retention_days' => 7
         ) }
 
@@ -77,7 +78,15 @@ describe 'profiles::elasticsearch' do
         it { is_expected.to contain_class('profiles::elasticsearch::backup').that_requires('Class[elasticsearch]') }
       end
 
-      context "with version => 8.2.1, lvm => true, volume_group => myvg, volume_size => 20G, initial_heap_size => 768m, maximum_heap_size => 1024m, backup_lvm => true, backup_volume_group => mybackupvg, backup_volume_size => 10G, backup_time => [10, 10] and backup_retention_days =>5" do
+      context "with backup => false" do
+        let(:params) { {
+          'backup' => false
+        } }
+
+        it { is_expected.not_to contain_class('profiles::elasticsearch::backup') }
+      end
+
+      context "with version => 8.2.1, lvm => true, volume_group => myvg, volume_size => 20G, initial_heap_size => 768m, maximum_heap_size => 1024m, backup_lvm => true, backup_volume_group => mybackupvg, backup_volume_size => 10G, backup_hour => 10 and backup_retention_days =>5" do
         let(:params) { {
           'version'               => '8.2.1',
           'lvm'                   => true,
@@ -88,7 +97,7 @@ describe 'profiles::elasticsearch' do
           'backup_lvm'            => true,
           'backup_volume_group'   => 'mybackupvg',
           'backup_volume_size'    => '10G',
-          'backup_time'           => [10, 10],
+          'backup_hour'           => 10,
           'backup_retention_days' => 5
         } }
 
@@ -133,7 +142,7 @@ describe 'profiles::elasticsearch' do
             'lvm'            => true,
             'volume_group'   => 'mybackupvg',
             'volume_size'    => '10G',
-            'time'           => [10, 10],
+            'dump_hour'      => 10,
             'retention_days' => 5
           ) }
 
@@ -149,7 +158,7 @@ describe 'profiles::elasticsearch' do
         end
       end
 
-      context "with version => 5.2.2, lvm => true, volume_group => mydatavg, volume_size => 10G, backup_lvm => true, backup_volume_group => esbackupvg, backup_volume_size => 5G, backup_time => [1, 15] and backup_retention_days => 10" do
+      context "with version => 5.2.2, lvm => true, volume_group => mydatavg, volume_size => 10G, backup_lvm => true, backup_volume_group => esbackupvg, backup_volume_size => 5G, backup_hour => 1 and backup_retention_days => 10" do
         let(:params) { {
           'version'               => '5.2.2',
           'lvm'                   => true,
@@ -158,7 +167,7 @@ describe 'profiles::elasticsearch' do
           'backup_lvm'            => true,
           'backup_volume_group'   => 'esbackupvg',
           'backup_volume_size'    => '5G',
-          'backup_time'           => [1, 15],
+          'backup_hour'           => 1,
           'backup_retention_days' => 10
         } }
 
@@ -197,7 +206,7 @@ describe 'profiles::elasticsearch' do
             'lvm'            => true,
             'volume_group'   => 'esbackupvg',
             'volume_size'    => '5G',
-            'time'           => [1, 15],
+            'dump_hour'      => 1,
             'retention_days' => 10
           ) }
 

@@ -6,10 +6,11 @@ class profiles::elasticsearch (
   Optional[String] $volume_size           = undef,
   String           $initial_heap_size     = '512m',
   String           $maximum_heap_size     = '512m',
+  Boolean          $backup                = true,
   Boolean          $backup_lvm            = false,
   Optional[String] $backup_volume_group   = undef,
   Optional[String] $backup_volume_size    = undef,
-  Array[Integer]   $backup_time           = [0, 0],
+  Integer          $backup_hour           = 0,
   Integer          $backup_retention_days = 7
 ) inherits ::profiles {
 
@@ -89,13 +90,15 @@ class profiles::elasticsearch (
     require           => [Apt::Source["elastic-${major_version}.x"], Class['::profiles::java']]
   }
 
-  class { 'profiles::elasticsearch::backup':
-    lvm            => $backup_lvm,
-    volume_group   => $backup_volume_group,
-    volume_size    => $backup_volume_size,
-    time           => $backup_time,
-    retention_days => $backup_retention_days,
-    require        => Class['::elasticsearch']
+  if $backup {
+    class { 'profiles::elasticsearch::backup':
+      lvm            => $backup_lvm,
+      volume_group   => $backup_volume_group,
+      volume_size    => $backup_volume_size,
+      dump_hour      => $backup_hour,
+      retention_days => $backup_retention_days,
+      require        => Class['::elasticsearch']
+    }
   }
 
   # include ::profiles::elasticsearch::logging

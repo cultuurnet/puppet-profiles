@@ -2,7 +2,7 @@ class profiles::elasticsearch::backup (
   Boolean          $lvm            = false,
   Optional[String] $volume_group   = undef,
   Optional[String] $volume_size    = undef,
-  Array[Integer]   $time           = [0, 0],
+  Integer          $dump_hour      = 0,
   Integer          $retention_days = 7
 ) inherits ::profiles {
 
@@ -60,11 +60,11 @@ class profiles::elasticsearch::backup (
   }
 
   cron { 'elasticsearch-backup':
-    command     => '/usr/local/sbin/elasticsearchbackup.sh',
-    environment => ['MAILTO=infra+cron@publiq.be'],
+    command     => "/usr/bin/test $(date +\\%0H) -eq ${dump_hour} && /usr/local/sbin/elasticsearchbackup.sh",
+    environment => ['TZ=Europe/Brussels', 'MAILTO=infra+cron@publiq.be'],
     user        => 'root',
-    hour        => $time[0],
-    minute      => $time[1],
+    hour        => '*',
+    minute      => 0,
     require     => [File['/usr/local/sbin/elasticsearchbackup.sh'], File['/data/backup/elasticsearch/current'], File['/data/backup/elasticsearch/archive']]
   }
 }

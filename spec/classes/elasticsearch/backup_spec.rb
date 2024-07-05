@@ -14,7 +14,7 @@ describe 'profiles::elasticsearch::backup' do
           'lvm'            => false,
           'volume_group'   => nil,
           'volume_size'    => nil,
-          'time'           => [0, 0],
+          'dump_hour'      => 0,
           'retention_days' => 7
         ) }
 
@@ -53,10 +53,10 @@ describe 'profiles::elasticsearch::backup' do
         it { is_expected.to contain_file('/usr/local/sbin/elasticsearchbackup.sh').with_content(/^retention=6$/) }
 
         it { is_expected.to contain_cron('elasticsearch-backup').with(
-          'command'     => '/usr/local/sbin/elasticsearchbackup.sh',
-          'environment' => ['MAILTO=infra+cron@publiq.be'],
+          'command'     => '/usr/bin/test $(date +\\%0H) -eq 0 && /usr/local/sbin/elasticsearchbackup.sh',
+          'environment' => ['TZ=Europe/Brussels', 'MAILTO=infra+cron@publiq.be'],
           'user'        => 'root',
-          'hour'        => 0,
+          'hour'        => '*',
           'minute'      => 0
         ) }
 
@@ -69,12 +69,12 @@ describe 'profiles::elasticsearch::backup' do
         it { is_expected.to contain_cron('elasticsearch-backup').that_requires('File[/usr/local/sbin/elasticsearchbackup.sh]') }
       end
 
-      context "with lvm => true, volume_group => backupvg, volume_size => 20G, time => [1, 5] and retention_days => 10" do
+      context "with lvm => true, volume_group => backupvg, volume_size => 20G, dump_hour => 1 and retention_days => 10" do
         let(:params) { {
           'lvm'            => true,
           'volume_group'   => 'backupvg',
           'volume_size'    => '20G',
-          'time'           => [1, 5],
+          'dump_hour'      => 1,
           'retention_days' => 10
         } }
 
@@ -109,11 +109,11 @@ describe 'profiles::elasticsearch::backup' do
           it { is_expected.to contain_file('/usr/local/sbin/elasticsearchbackup.sh').with_content(/^retention=9$/) }
 
           it { is_expected.to contain_cron('elasticsearch-backup').with(
-            'command'     => '/usr/local/sbin/elasticsearchbackup.sh',
-            'environment' => ['MAILTO=infra+cron@publiq.be'],
+            'command'     => '/usr/bin/test $(date +\\%0H) -eq 1 && /usr/local/sbin/elasticsearchbackup.sh',
+            'environment' => ['TZ=Europe/Brussels', 'MAILTO=infra+cron@publiq.be'],
             'user'        => 'root',
-            'hour'        => 1,
-            'minute'      => 5
+            'hour'        => '*',
+            'minute'      => 0
           ) }
 
           it { is_expected.to contain_file('/data/backup/elasticsearch/current').that_requires('Profiles::Lvm::Mount[elasticsearchbackup]') }
