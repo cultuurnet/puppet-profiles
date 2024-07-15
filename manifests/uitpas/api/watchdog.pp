@@ -17,7 +17,7 @@ class profiles::uitpas::api::watchdog (
   }
 
   file { 'uitpas watchdog script':
-    path    => '/usr/local/bin/uitpas-watchdog.sh'
+    path    => '/usr/local/bin/uitpas-watchdog.sh',
     content => template('profiles/uitpas/api/deployment/uitpas-watchdog.sh.erb'),
     ensure  => 'file',
     owner   => 'ubuntu',
