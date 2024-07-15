@@ -1,0 +1,17 @@
+[Unit]
+Description=UITPAS API Watchdog service
+Wants=basic.target
+After=basic.target network.target glassfish-uitpas.service
+PartOf=glassfish-uitpas.service
+
+[Service]
+User=ubuntu
+Group=ubuntu
+EnvironmentFile=-<%= @configfile %>
+ExecStart=/usr/local/bin/uitpas-watchdog.sh
+Restart=on-failure
+RestartSec=15s
+Type=simple
+
+[Install]
+WantedBy=multi-user.target

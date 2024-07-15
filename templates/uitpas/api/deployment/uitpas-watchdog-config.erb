@@ -1,0 +1,5 @@
+HEALTH_URL="<%= @health_url %>"
+CARDSYSTEM_HEALTH_URL="<%= @cardsystem_health_url %>"
+LOGFILE="<%= @logfile %>"
+SLACK_WEBHOOKS="<%- Array(@slack_webhooks).each do |webhook| -%><%= webhook %> <%- end -%>"
+CHECK_FREQUENCY=<%= @check_frequency %>

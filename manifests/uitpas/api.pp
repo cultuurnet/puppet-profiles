@@ -9,6 +9,7 @@ class profiles::uitpas::api (
   Optional[String]           $newrelic_license_key = lookup('data::newrelic::license_key', Optional[String], 'first', undef),
   Integer                    $portbase             = 4800,
   Enum['running', 'stopped'] $service_status       = 'running',
+  Boolean                    $watchdog_enabled     = true,
   Hash                       $settings             = {}
 ) inherits ::profiles {
 
@@ -195,6 +196,10 @@ class profiles::uitpas::api (
     source  => '/usr/share/java/mysql-connector-j.jar',
     require => Package['mysql-connector-j'],
     before  => Profiles::Glassfish::Domain['uitpas']
+  }
+
+  if $watchdog_enabled {
+    include ::profiles::uitpas::api::watchdog
   }
 
   # include ::profiles::uitpas::api::monitoring

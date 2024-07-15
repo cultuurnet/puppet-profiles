@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# init
+echo "Starting uitpas watchdog with following config values:"
+echo
+echo "HEALTH_URL           = ${HEALTH_URL}"
+echo "CARDSYSTEM_HEALTH_URL= ${CARDSYSTEM_HEALTH_URL}"
+echo "LOGFILE              = ${LOGFILE}"
+echo "SLACK_WEBHOOKS       = ${SLACK_WEBHOOKS}"
+echo "CHECK_FREQUENCY      = ${CHECK_FREQUENCY}"
+echo
+
+# start watchdog loop
+while :
+do
+  # check state
+  /usr/bin/curl -s -k --max-time 30 --fail "${HEALTH_URL}"  >& $LOGFILE
+  ERROR=$?
+
+  if [  $ERROR == 0 ]; then
+     grep "uitpas ok" /tmp/uitpas-watchdog >$ /dev/null
+     ERROR=$?
+     if [  $ERROR == 0 ]; then
+       /usr/bin/curl -s -k --max-time 30 --fail "${CARDSYSTEM_HEALTH_URL}"  >& $LOGFILE
+       ERROR=$?
+     fi
+  fi
+
+  # if error, restart and post to slack
+  if [  $ERROR != 0 ]; then
+    MESSAGE="[PROD] UITPAS status: $ERROR - trying to restart"
+    for SLACK_WEBHOOK in $SLACK_WEBHOOKS
+    do
+      /usr/bin/curl -X POST --data-urlencode "payload={\"username\": \"uitpas watchdog\", \"text\": \"$MESSAGE\", \"icon_emoji\": \":ghost:\"}" $SLACK_WEBHOOK
+    done
+
+    MESSAGE="restarting payara"
+
+    sudo service uitpas stop
+    sudo service uitpas start
+
+    MESSAGE="$MESSAGE DONE"
+    for SLACK_WEBHOOK in $SLACK_WEBHOOKS
+    do
+      /usr/bin/curl -X POST --data-urlencode "payload={\"username\": \"uitpas watchdog\", \"text\": \"$MESSAGE\", \"icon_emoji\": \":ghost:\"}" $SLACK_WEBHOOK
+    done
+  fi
+
+  # repeat every $check_frequency seconds
+  sleep $CHECK_FREQUENCY
+done
