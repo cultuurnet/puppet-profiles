@@ -62,7 +62,7 @@ class profiles::uit::api (
 
     if $recommender_password {
       profiles::mysql::app_user { "recommender@${database_name}":
-        table    => 'user_recommendations',
+        tables   => ['user_recommendations', 'user_info', 'user_interests'],
         password => $recommender_password,
         remote   => true,
         require  => [Mysql_database[$database_name], Class['profiles::uit::api::deployment']]
