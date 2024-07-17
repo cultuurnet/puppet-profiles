@@ -18,7 +18,7 @@ describe 'profiles::mysql::app_user' do
             'database' => 'mydb',
             'password' => 'mypassword',
             'ensure'   => 'present',
-            'table'    => '*',
+            'tables'   => '*',
             'readonly' => false,
             'remote'   => false
           ) }
@@ -39,27 +39,17 @@ describe 'profiles::mysql::app_user' do
           it { is_expected.to contain_mysql_grant('foobar@127.0.0.1/mydb.*').that_requires('Mysql_user[foobar@127.0.0.1]') }
         end
 
-        context "with parameters user => testuser, database => testdb, password => testpassword, table => test, readonly => true and remote => true" do
+        context "with parameters user => testuser, database => testdb, password => testpassword, tables => test, readonly => true and remote => true" do
           let(:params) { {
             'user'     => 'testuser',
             'database' => 'testdb',
             'password' => 'testpassword',
-            'table'    => 'test',
+            'tables'   => 'test',
             'readonly' => true,
             'remote'   => true
           } }
 
           it { is_expected.to compile.with_all_deps }
-
-          it { is_expected.to contain_profiles__mysql__app_user('foobar@mydb').with(
-            'user'     => 'testuser',
-            'database' => 'testdb',
-            'password' => 'testpassword',
-            'ensure'   => 'present',
-            'table'    => 'test',
-            'readonly' => true,
-            'remote'   => true
-          ) }
 
           it { is_expected.to contain_mysql_user('testuser@%').with(
             'ensure'        => 'present',
@@ -98,6 +88,42 @@ describe 'profiles::mysql::app_user' do
 
       context "with title baz@nodb" do
         let(:title) { 'baz@nodb' }
+
+        context "with parameters user => myuser, password => testpassword, tables => [table1, table2], readonly => true and remote => true" do
+          let(:params) { {
+            'user'     => 'myuser',
+            'password' => 'testpassword',
+            'tables'   => ['table1', 'table2'],
+            'readonly' => true,
+            'remote'   => true
+          } }
+
+          it { is_expected.to compile.with_all_deps }
+
+          it { is_expected.to contain_mysql_user('myuser@%').with(
+            'ensure'        => 'present',
+            'password_hash' => '*9F69E47E519D9CA02116BF5796684F7D0D45F8FA'
+          ) }
+
+          it { is_expected.to contain_mysql_grant('myuser@%/nodb.table1').with(
+            'ensure'     => 'present',
+            'options'    => ['GRANT'],
+            'privileges' => ['SELECT', 'SHOW VIEW'],
+            'table'      => 'nodb.table1',
+            'user'       => 'myuser@%',
+          ) }
+
+          it { is_expected.to contain_mysql_grant('myuser@%/nodb.table2').with(
+            'ensure'     => 'present',
+            'options'    => ['GRANT'],
+            'privileges' => ['SELECT', 'SHOW VIEW'],
+            'table'      => 'nodb.table2',
+            'user'       => 'myuser@%',
+          ) }
+
+          it { is_expected.to contain_mysql_grant('myuser@%/nodb.table1').that_requires('Mysql_user[myuser@%]') }
+          it { is_expected.to contain_mysql_grant('myuser@%/nodb.table2').that_requires('Mysql_user[myuser@%]') }
+        end
 
         context "with parameters user => nouser, ensure => absent, database => nodb and password => nopassword" do
           let(:params) { {
