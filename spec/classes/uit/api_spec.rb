@@ -144,7 +144,7 @@ describe 'profiles::uit::api' do
           it { is_expected.to contain_profiles__mysql__app_user('recommender@uit_api').with(
             'user'     => 'recommender',
             'database' => 'uit_api',
-            'table'    => 'user_recommendations',
+            'tables'   => ['user_recommendations', 'user_info', 'user_interests'],
             'remote'   => true,
             'password' => 'foo'
           ) }
