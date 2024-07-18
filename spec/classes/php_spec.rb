@@ -72,19 +72,6 @@ describe 'profiles::php' do
                                             }
             ) }
 
-            it { is_expected.to contain_systemd__dropin_file('php-fpm service override.conf').with(
-              'unit'     => 'php7.4-fpm.service',
-              'filename' => 'override.conf',
-              'content'  => "[Install]\nAlias=php-fpm.service"
-            ) }
-
-            it { is_expected.to contain_exec('re-enable php7.4-fpm').with(
-              'command'     => 'systemctl reenable php7.4-fpm',
-              'path'        => ['/usr/sbin', '/usr/bin'],
-              'refreshonly' => true,
-              'logoutput'   => 'on_failure'
-            ) }
-
             it { is_expected.to contain_package('composer').with(
               'ensure' => 'absent'
             ) }
@@ -223,14 +210,6 @@ describe 'profiles::php' do
               'newrelic_app_name' => 'bbb.example.com'
             ) }
 
-            it { is_expected.to contain_systemd__dropin_file('php-fpm service override.conf').with(
-              'unit'     => 'php7.4-fpm.service',
-              'filename' => 'override.conf',
-              'content'  => "[Install]\nAlias=php-fpm.service"
-            ) }
-
-            it { is_expected.not_to contain_exec('re-enable php7.4-fpm') }
-
             it { is_expected.to contain_apt__source('publiq-tools') }
 
             it { is_expected.to contain_package('composer1').with(
@@ -276,7 +255,7 @@ describe 'profiles::php' do
               'fpm_global_pool_settings' => {
                                               'listen_owner' => 'www-data',
                                               'listen_group' => 'www-data',
-                                              'listen'       => '/var/run/php/php-fpm.sock'
+                                              'listen'       => '/run/php/php7.4-fpm.sock'
                                             }
             ) }
 

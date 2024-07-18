@@ -73,7 +73,7 @@ define profiles::apache::vhost::php_fpm (
                               'path'            => '\.php$',
                               'provider'        => 'filesmatch',
                               'custom_fragment' => $socket_type ? {
-                                                     'unix' => 'SetHandler "proxy:unix:/var/run/php/php-fpm.sock|fcgi://localhost"',
+                                                     'unix' => 'SetHandler "proxy:unix:/run/php/php-fpm.sock|fcgi://localhost"',
                                                      'tcp'  => 'SetHandler "proxy:fcgi://127.0.0.1:9000"'
                                                    }
                             },
