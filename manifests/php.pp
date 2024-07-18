@@ -53,6 +53,16 @@ class profiles::php (
                                                                       }
                                                     }
                       }
+
+    file { 'php-fpm service':
+      ensure => 'link',
+      path   => '/etc/systemd/system/php-fpm.service',
+      target => "/lib/systemd/system/php${version}-fpm.service",
+      notify => Systemd::Daemon_reload['php-fpm']
+    }
+
+    systemd::daemon_reload { 'php-fpm': }
+
   } else {
     $fpm_attributes = {}
   }
