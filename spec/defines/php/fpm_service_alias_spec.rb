@@ -8,30 +8,18 @@ describe 'profiles::php::fpm_service_alias' do
       context "on #{os}" do
         let(:facts) { facts }
 
-        context "without parameters" do
-          let(:params) { {} }
+        it { is_expected.to compile.with_all_deps }
 
-          it { is_expected.to compile.with_all_deps }
-          it { is_expected.to contain_profiles__php__fpm_service_alias('my_service') }
+        it { is_expected.to contain_file('my_service link').with(
+          'ensure'  => 'link',
+          'path'    => '/etc/systemd/system/my_service.service',
+          'target'  => '/etc/systemd/system/php-fpm.service'
+        ) }
 
-          it { is_expected.to contain_systemd__dropin_file('php-fpm service alias my_service').with(
-            'unit'           => 'php7.4-fpm.service',
-            'filename'       => 'my_service.conf',
-            'content'        => "[Install]\nAlias=my_service.service",
-            'notify_service' => false,
-            'daemon_reload'  => false
-          ) }
+        it { is_expected.to contain_systemd__daemon_reload('my_service') }
 
-          it { is_expected.to contain_exec('re-enable php7.4-fpm (my_service)').with(
-            'command'     => 'systemctl reenable php7.4-fpm',
-            'path'        => ['/usr/sbin', '/usr/bin'],
-            'refreshonly' => true,
-            'logoutput'   => 'on_failure'
-          ) }
-
-          it { is_expected.to contain_exec('re-enable php7.4-fpm (my_service)').that_subscribes_to('Systemd::Dropin_file[php-fpm service alias my_service]') }
-          it { is_expected.to contain_systemd__dropin_file('php-fpm service alias my_service').that_requires('Class[profiles::php]') }
-        end
+        it { is_expected.to contain_file('my_service link').that_requires('Class[profiles::php]') }
+        it { is_expected.to contain_file('my_service link').that_notifies('Systemd::Daemon_reload[my_service]') }
       end
     end
   end
@@ -43,27 +31,16 @@ describe 'profiles::php::fpm_service_alias' do
       context "on #{os}" do
         let(:facts) { facts }
 
-        context "with PHP 8.2 installed" do
-          let(:pre_condition) { 'class { profiles::php: version => "8.2" }' }
+        it { is_expected.to contain_file('foo_service link').with(
+          'ensure'  => 'link',
+          'path'    => '/etc/systemd/system/foo_service.service',
+          'target'  => '/etc/systemd/system/php-fpm.service'
+        ) }
 
-          it { is_expected.to contain_systemd__dropin_file('php-fpm service alias foo_service').with(
-            'unit'           => 'php8.2-fpm.service',
-            'filename'       => 'foo_service.conf',
-            'content'        => "[Install]\nAlias=foo_service.service",
-            'notify_service' => false,
-            'daemon_reload'  => false
-          ) }
+        it { is_expected.to contain_systemd__daemon_reload('foo_service') }
 
-          it { is_expected.to contain_exec('re-enable php8.2-fpm (foo_service)').with(
-            'command'     => 'systemctl reenable php8.2-fpm',
-            'path'        => ['/usr/sbin', '/usr/bin'],
-            'refreshonly' => true,
-            'logoutput'   => 'on_failure'
-          ) }
-
-          it { is_expected.to contain_exec('re-enable php8.2-fpm (foo_service)').that_subscribes_to('Systemd::Dropin_file[php-fpm service alias foo_service]') }
-          it { is_expected.to contain_systemd__dropin_file('php-fpm service alias foo_service').that_requires('Class[profiles::php]') }
-        end
+        it { is_expected.to contain_file('foo_service link').that_requires('Class[profiles::php]') }
+        it { is_expected.to contain_file('foo_service link').that_notifies('Systemd::Daemon_reload[foo_service]') }
       end
     end
   end
