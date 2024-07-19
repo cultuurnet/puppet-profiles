@@ -72,18 +72,13 @@ describe 'profiles::php' do
                                             }
             ) }
 
-            it { is_expected.to contain_systemd__dropin_file('php-fpm service override.conf').with(
-              'unit'     => 'php7.4-fpm.service',
-              'filename' => 'override.conf',
-              'content'  => "[Install]\nAlias=php-fpm.service"
+            it { is_expected.to contain_file('php-fpm service').with(
+              'ensure' => 'link',
+              'path'   => '/etc/systemd/system/php-fpm.service',
+              'target' => '/lib/systemd/system/php7.4-fpm.service'
             ) }
 
-            it { is_expected.to contain_exec('re-enable php7.4-fpm').with(
-              'command'     => 'systemctl reenable php7.4-fpm',
-              'path'        => ['/usr/sbin', '/usr/bin'],
-              'refreshonly' => true,
-              'logoutput'   => 'on_failure'
-            ) }
+            it { is_expected.to contain_systemd__daemon_reload('php-fpm') }
 
             it { is_expected.to contain_package('composer').with(
               'ensure' => 'absent'
@@ -109,6 +104,7 @@ describe 'profiles::php' do
 
             it { is_expected.to contain_class('php::globals').that_requires('Apt::Source[php]') }
             it { is_expected.to contain_class('php').that_requires('Class[php::globals]') }
+            it { is_expected.to contain_file('php-fpm service').that_notifies('Systemd::Daemon_reload[php-fpm]') }
           end
 
           context 'without hieradata' do
@@ -179,9 +175,9 @@ describe 'profiles::php' do
             'fpm'                      => false
           ) }
 
-          it { is_expected.not_to contain_systemd__dropin_file('php-fpm service override.conf') }
+          it { is_expected.not_to contain_file('php-fpm service') }
 
-          it { is_expected.not_to contain_exec('re-enable php8.0-fpm') }
+          it { is_expected.not_to contain_systemd__daemon_reload('php-fpm') }
 
           it { is_expected.to contain_apt__source('publiq-tools') }
 
@@ -208,8 +204,9 @@ describe 'profiles::php' do
       context 'on node bbb.example.com' do
         let(:node) { 'bbb.example.com' }
 
-        context 'with composer_default_version => 1, newrelic => true, fpm_socket_type => unix and fpm_service_status => stopped' do
+        context 'with version => 8.2, composer_default_version => 1, newrelic => true, fpm_socket_type => unix and fpm_service_status => stopped' do
           let(:params) { {
+            'version'                  => '8.2',
             'composer_default_version' => 1,
             'fpm_socket_type'          => 'unix',
             'fpm_service_status'       => 'stopped',
@@ -222,14 +219,6 @@ describe 'profiles::php' do
             it { is_expected.to contain_class('profiles::php').with(
               'newrelic_app_name' => 'bbb.example.com'
             ) }
-
-            it { is_expected.to contain_systemd__dropin_file('php-fpm service override.conf').with(
-              'unit'     => 'php7.4-fpm.service',
-              'filename' => 'override.conf',
-              'content'  => "[Install]\nAlias=php-fpm.service"
-            ) }
-
-            it { is_expected.not_to contain_exec('re-enable php7.4-fpm') }
 
             it { is_expected.to contain_apt__source('publiq-tools') }
 
@@ -259,7 +248,6 @@ describe 'profiles::php' do
                                               'curl'     => {},
                                               'gd'       => {},
                                               'intl'     => {},
-                                              'json'     => {},
                                               'mbstring' => {},
                                               'mysql'    => {},
                                               'opcache'  => { 'zend' => true },
@@ -276,9 +264,22 @@ describe 'profiles::php' do
               'fpm_global_pool_settings' => {
                                               'listen_owner' => 'www-data',
                                               'listen_group' => 'www-data',
-                                              'listen'       => '/var/run/php/php-fpm.sock'
+                                              'listen'       => '/run/php/php8.2-fpm.sock'
                                             }
             ) }
+
+            it { is_expected.to contain_class('php::globals').with(
+              'php_version' => '8.2',
+              'config_root' => '/etc/php/8.2'
+            ) }
+
+            it { is_expected.to contain_file('php-fpm service').with(
+              'ensure' => 'link',
+              'path'   => '/etc/systemd/system/php-fpm.service',
+              'target' => '/lib/systemd/system/php8.2-fpm.service'
+            ) }
+
+            it { is_expected.to contain_systemd__daemon_reload('php-fpm') }
 
             it { is_expected.to contain_class('profiles::newrelic::php').with(
               'app_name'    => 'bbb.example.com',

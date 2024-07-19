@@ -53,7 +53,7 @@ describe 'profiles::apache::vhost::php_fpm' do
                                         {
                                           'path'            => '\.php$',
                                           'provider'        => 'filesmatch',
-                                          'custom_fragment' => 'SetHandler "proxy:unix:/var/run/php/php-fpm.sock|fcgi://localhost"'
+                                          'custom_fragment' => 'SetHandler "proxy:unix:/run/php/php-fpm.sock|fcgi://localhost"'
                                         },
                                         {
                                           'path'           => '/var/www/foo',
@@ -243,7 +243,7 @@ describe 'profiles::apache::vhost::php_fpm' do
                                       {
                                         'path'            => '\.php$',
                                         'provider'        => 'filesmatch',
-                                        'custom_fragment' => 'SetHandler "proxy:unix:/var/run/php/php-fpm.sock|fcgi://localhost"'
+                                        'custom_fragment' => 'SetHandler "proxy:unix:/run/php/php-fpm.sock|fcgi://localhost"'
                                       },
                                       {
                                         'path'           => '/var/www/html',

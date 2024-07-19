@@ -48,28 +48,27 @@ class profiles::php (
                                                       listen_owner => 'www-data',
                                                       listen_group => 'www-data',
                                                       listen       => $fpm_socket_type ? {
-                                                                        'unix' => '/var/run/php/php-fpm.sock',
+                                                                        'unix' => "/run/php/php${version}-fpm.sock",
                                                                         'tcp'  => '127.0.0.1:9000'
                                                                       }
                                                     }
                       }
 
-    systemd::dropin_file { 'php-fpm service override.conf':
-      unit     => "php${version}-fpm.service",
-      filename => 'override.conf',
-      content  => "[Install]\nAlias=php-fpm.service"
+    file { 'php-fpm service':
+      ensure => 'link',
+      path   => '/etc/systemd/system/php-fpm.service',
+      target => "/lib/systemd/system/php${version}-fpm.service",
+      notify => Systemd::Daemon_reload['php-fpm']
     }
 
-    if $fpm_service_status == 'running' {
-      exec { "re-enable php${version}-fpm":
-        command     => "systemctl reenable php${version}-fpm",
-        path        => ['/usr/sbin', '/usr/bin'],
-        refreshonly => true,
-        logoutput   => 'on_failure',
-        require     => Class['php'],
-        subscribe   => Systemd::Dropin_file['php-fpm service override.conf']
-      }
+    systemd::daemon_reload { 'php-fpm': }
+
+    file { "/etc/systemd/system/php${version}-fpm.service.d":
+      ensure => 'absent',
+      force  => true,
+      notify => Systemd::Daemon_reload['php-fpm']
     }
+
   } else {
     $fpm_attributes = {}
   }
