@@ -65,12 +65,6 @@ class profiles::php (
 
     systemd::daemon_reload { 'php-fpm': }
 
-    file { "/etc/systemd/system/php${version}-fpm.service.d":
-      ensure => 'absent',
-      force  => true,
-      notify => Systemd::Daemon_reload['php-fpm']
-    }
-
   } else {
     $fpm_attributes = {}
   }
