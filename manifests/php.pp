@@ -6,6 +6,7 @@ class profiles::php (
   Boolean                    $fpm                      = true,
   Enum['unix', 'tcp']        $fpm_socket_type          = 'unix',
   Enum['running', 'stopped'] $fpm_service_status       = 'running',
+  Boolean                    $fpm_restart_on_change    = false,
   Boolean                    $newrelic                 = false,
   String                     $newrelic_app_name        = $facts['networking']['fqdn'],
   Optional[String]           $newrelic_license_key     = lookup('data::newrelic::license_key', Optional[String], 'first', undef)
@@ -52,7 +53,7 @@ class profiles::php (
                                                                             'tcp'  => '127.0.0.1:9000'
                                                                           }
                                                         },
-                        reload_fpm_on_config_changes => false
+                        reload_fpm_on_config_changes => !$fpm_restart_on_change
                       }
 
     file { 'php-fpm service':
@@ -63,12 +64,6 @@ class profiles::php (
     }
 
     systemd::daemon_reload { 'php-fpm': }
-
-    file { "/etc/systemd/system/php${version}-fpm.service.d":
-      ensure => 'absent',
-      force  => true,
-      notify => Systemd::Daemon_reload['php-fpm']
-    }
 
   } else {
     $fpm_attributes = {}

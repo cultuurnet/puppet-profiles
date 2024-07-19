@@ -24,6 +24,7 @@ describe 'profiles::php' do
               'fpm'                      => true,
               'fpm_socket_type'          => 'tcp',
               'fpm_service_status'       => 'running',
+              'fpm_restart_on_change'    => false,
               'newrelic'                 => false,
               'newrelic_app_name'        => 'aaa.example.com',
               'newrelic_license_key'     => 'my_license_key'
@@ -38,38 +39,39 @@ describe 'profiles::php' do
             ) }
 
             it { is_expected.to contain_class('php').with(
-              'manage_repos'             => false,
-              'composer'                 => false,
-              'dev'                      => false,
-              'pear'                     => false,
-              'fpm'                      => true,
-              'settings'                 => {
-                                              'openssl/openssl.cafile' => '/etc/ssl/certs/ca-certificates.crt'
-                                            },
-              'extensions'               => {
-                                              'apcu'     => {},
-                                              'bcmath'   => {},
-                                              'curl'     => {},
-                                              'gd'       => {},
-                                              'intl'     => {},
-                                              'json'     => {},
-                                              'mbstring' => {},
-                                              'mysql'    => {},
-                                              'opcache'  => { 'zend' => true },
-                                              'readline' => {},
-                                              'redis'    => {},
-                                              'tidy'     => {},
-                                              'xml'      => {},
-                                              'zip'      => {}
-                                            },
-              'fpm_service_ensure'       => 'running',
-              'fpm_service_enable'       => true,
-              'fpm_pools'                => { 'www' => {} },
-              'fpm_global_pool_settings' => {
-                                              'listen_owner' => 'www-data',
-                                              'listen_group' => 'www-data',
-                                              'listen'       => '127.0.0.1:9000'
-                                            }
+              'manage_repos'                 => false,
+              'composer'                     => false,
+              'dev'                          => false,
+              'pear'                         => false,
+              'fpm'                          => true,
+              'settings'                     => {
+                                                  'openssl/openssl.cafile' => '/etc/ssl/certs/ca-certificates.crt'
+                                                },
+              'extensions'                   => {
+                                                  'apcu'     => {},
+                                                  'bcmath'   => {},
+                                                  'curl'     => {},
+                                                  'gd'       => {},
+                                                  'intl'     => {},
+                                                  'json'     => {},
+                                                  'mbstring' => {},
+                                                  'mysql'    => {},
+                                                  'opcache'  => { 'zend' => true },
+                                                  'readline' => {},
+                                                  'redis'    => {},
+                                                  'tidy'     => {},
+                                                  'xml'      => {},
+                                                  'zip'      => {}
+                                                },
+              'fpm_service_ensure'           => 'running',
+              'fpm_service_enable'           => true,
+              'fpm_pools'                    => { 'www' => {} },
+              'fpm_global_pool_settings'     => {
+                                                  'listen_owner' => 'www-data',
+                                                  'listen_group' => 'www-data',
+                                                  'listen'       => '127.0.0.1:9000'
+                                                },
+              'reload_fpm_on_config_changes' => true
             ) }
 
             it { is_expected.to contain_file('php-fpm service').with(
@@ -204,12 +206,13 @@ describe 'profiles::php' do
       context 'on node bbb.example.com' do
         let(:node) { 'bbb.example.com' }
 
-        context 'with version => 8.2, composer_default_version => 1, newrelic => true, fpm_socket_type => unix and fpm_service_status => stopped' do
+        context 'with version => 8.2, composer_default_version => 1, newrelic => true, fpm_socket_type => unix, fpm_restart_on_change => true and fpm_service_status => stopped' do
           let(:params) { {
             'version'                  => '8.2',
             'composer_default_version' => 1,
             'fpm_socket_type'          => 'unix',
             'fpm_service_status'       => 'stopped',
+            'fpm_restart_on_change'    => true,
             'newrelic'                 => true
           } }
 
@@ -235,37 +238,38 @@ describe 'profiles::php' do
             ) }
 
             it { is_expected.to contain_class('php').with(
-              'manage_repos'             => false,
-              'composer'                 => false,
-              'dev'                      => false,
-              'pear'                     => false,
-              'settings'                 => {
-                                              'openssl/openssl.cafile' => '/etc/ssl/certs/ca-certificates.crt'
-                                            },
-              'extensions'               => {
-                                              'apcu'     => {},
-                                              'bcmath'   => {},
-                                              'curl'     => {},
-                                              'gd'       => {},
-                                              'intl'     => {},
-                                              'mbstring' => {},
-                                              'mysql'    => {},
-                                              'opcache'  => { 'zend' => true },
-                                              'readline' => {},
-                                              'redis'    => {},
-                                              'tidy'     => {},
-                                              'xml'      => {},
-                                              'zip'      => {}
-                                            },
-              'fpm'                      => true,
-              'fpm_service_ensure'       => 'stopped',
-              'fpm_service_enable'       => false,
-              'fpm_pools'                => { 'www' => {} },
-              'fpm_global_pool_settings' => {
-                                              'listen_owner' => 'www-data',
-                                              'listen_group' => 'www-data',
-                                              'listen'       => '/run/php/php8.2-fpm.sock'
-                                            }
+              'manage_repos'                 => false,
+              'composer'                     => false,
+              'dev'                          => false,
+              'pear'                         => false,
+              'settings'                     => {
+                                                  'openssl/openssl.cafile' => '/etc/ssl/certs/ca-certificates.crt'
+                                                },
+              'extensions'                   => {
+                                                  'apcu'     => {},
+                                                  'bcmath'   => {},
+                                                  'curl'     => {},
+                                                  'gd'       => {},
+                                                  'intl'     => {},
+                                                  'mbstring' => {},
+                                                  'mysql'    => {},
+                                                  'opcache'  => { 'zend' => true },
+                                                  'readline' => {},
+                                                  'redis'    => {},
+                                                  'tidy'     => {},
+                                                  'xml'      => {},
+                                                  'zip'      => {}
+                                                },
+              'fpm'                          => true,
+              'fpm_service_ensure'           => 'stopped',
+              'fpm_service_enable'           => false,
+              'fpm_pools'                    => { 'www' => {} },
+              'fpm_global_pool_settings'     => {
+                                                  'listen_owner' => 'www-data',
+                                                  'listen_group' => 'www-data',
+                                                  'listen'       => '/run/php/php8.2-fpm.sock'
+                                                },
+              'reload_fpm_on_config_changes' => false
             ) }
 
             it { is_expected.to contain_class('php::globals').with(
