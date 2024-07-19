@@ -38,20 +38,21 @@ class profiles::php (
 
   if $fpm {
     $fpm_attributes = {
-                        fpm_service_ensure       => $fpm_service_status,
-                        fpm_service_enable       => $fpm_service_status ? {
-                                                      'running' => true,
-                                                      'stopped' => false
-                                                    },
-                        fpm_pools                => { 'www' => {} }, # https://github.com/voxpupuli/puppet-php/issues/564
-                        fpm_global_pool_settings => {
-                                                      listen_owner => 'www-data',
-                                                      listen_group => 'www-data',
-                                                      listen       => $fpm_socket_type ? {
-                                                                        'unix' => "/run/php/php${version}-fpm.sock",
-                                                                        'tcp'  => '127.0.0.1:9000'
-                                                                      }
-                                                    }
+                        fpm_service_ensure           => $fpm_service_status,
+                        fpm_service_enable           => $fpm_service_status ? {
+                                                          'running' => true,
+                                                          'stopped' => false
+                                                        },
+                        fpm_pools                    => { 'www' => {} }, # https://github.com/voxpupuli/puppet-php/issues/564
+                        fpm_global_pool_settings     => {
+                                                          listen_owner => 'www-data',
+                                                          listen_group => 'www-data',
+                                                          listen       => $fpm_socket_type ? {
+                                                                            'unix' => "/run/php/php${version}-fpm.sock",
+                                                                            'tcp'  => '127.0.0.1:9000'
+                                                                          }
+                                                        },
+                        reload_fpm_on_config_changes => false
                       }
 
     file { 'php-fpm service':
