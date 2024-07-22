@@ -24,6 +24,8 @@ jenkins:
       env:
       - key: 'CI'
         value: 'true'
+      - key: 'YARN_CACHE_FOLDER'
+        value: '/var/lib/jenkins-swarm-client/.cache/yarn'
 unclassified:
   location:
     adminAddress: 'jenkins@publiq.be'
