@@ -15,10 +15,7 @@ class profiles::jenkins::node(
   include ::profiles::jenkins::buildtools
   include ::profiles::jenkins::buildtools::playwright
 
-  $default_file_attributes = {
-                               require => Package['jenkins-swarm-client'],
-                               notify  => Service['jenkins-swarm-client']
-                             }
+  $data_dir                = '/var/lib/jenkins-swarm-client'
   $default_labels          = [
                                $facts['os']['name'],
                                $facts['os']['release']['major'],
@@ -35,7 +32,7 @@ class profiles::jenkins::node(
       fail("with LVM enabled, expects a value for both 'volume_group' and 'volume_size'")
     }
 
-    profiles::lvm::mount { 'jenkins-node':
+    profiles::lvm::mount { 'jenkinsdata':
       volume_group => $volume_group,
       size         => $volume_size,
       mountpoint   => '/data/jenkins',
@@ -45,26 +42,24 @@ class profiles::jenkins::node(
       require      => [Group['jenkins'], User['jenkins']]
     }
 
-    file { 'jenkins-swarm-client_fsroot':
-      ensure  => 'link',
-      path    => '/var/lib/jenkins-swarm-client',
-      target  => '/data/jenkins',
-      force   => true,
-      owner   => 'jenkins',
-      group   => 'jenkins',
-      require => Profiles::Lvm::Mount['jenkins-node'],
+    mount { $data_dir:
+      ensure  => 'mounted',
+      device  => '/data/jenkins',
+      fstype  => 'none',
+      options => 'rw,bind',
+      require => [Profiles::Lvm::Mount['jenkinsdata'], File[$data_dir]],
       before  => Package['jenkins-swarm-client'],
       notify  => Service['jenkins-swarm-client']
     }
-  } else {
-    file { 'jenkins-swarm-client_fsroot':
-      ensure => 'directory',
-      path   => '/var/lib/jenkins-swarm-client',
-      owner  => 'jenkins',
-      group  => 'jenkins',
-      mode   => '0755',
-      *      => $default_file_attributes
-    }
+  }
+
+  file { $data_dir:
+    ensure => 'directory',
+    owner  => 'jenkins',
+    group  => 'jenkins',
+    mode   => '0755',
+    before => Package['jenkins-swarm-client'],
+    notify => Service['jenkins-swarm-client']
   }
 
   package { 'jenkins-swarm-client':
@@ -80,7 +75,8 @@ class profiles::jenkins::node(
     group   => 'jenkins',
     mode    => '0600',
     content => $password,
-    *       => $default_file_attributes
+    require => Package['jenkins-swarm-client'],
+    notify  => Service['jenkins-swarm-client']
   }
 
   file { 'jenkins-swarm-client_node-labels':
@@ -90,7 +86,8 @@ class profiles::jenkins::node(
     group   => 'jenkins',
     mode    => '0644',
     content => [concat($default_labels, $labels)].flatten.join("\n").downcase,
-    *       => $default_file_attributes
+    require => Package['jenkins-swarm-client'],
+    notify  => Service['jenkins-swarm-client']
   }
 
   file { 'jenkins-swarm-client_service-defaults':
@@ -98,7 +95,8 @@ class profiles::jenkins::node(
     path    => '/etc/default/jenkins-swarm-client',
     mode    => '0644',
     content => template('profiles/jenkins/jenkins-swarm-client_service-defaults.erb'),
-    *       => $default_file_attributes
+    require => Package['jenkins-swarm-client'],
+    notify  => Service['jenkins-swarm-client']
   }
 
   service { 'jenkins-swarm-client':
