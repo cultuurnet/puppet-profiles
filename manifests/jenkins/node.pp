@@ -3,6 +3,9 @@ class profiles::jenkins::node(
   String                         $user           = 'admin',
   String                         $password       = lookup('profiles::jenkins::controller::admin_password', String, 'first', ''),
   String                         $controller_url = lookup('profiles::jenkins::controller::url', String, 'first', 'http://localhost:8080/'),
+  Boolean                        $lvm            = false,
+  Optional[String]               $volume_group   = undef,
+  Optional[String]               $volume_size    = undef,
   Integer                        $executors      = 1,
   Variant[String, Array[String]] $labels         = []
 
@@ -27,19 +30,47 @@ class profiles::jenkins::node(
 
   realize Apt::Source['publiq-jenkins']
 
+  if $lvm {
+    unless ($volume_group and $volume_size) {
+      fail("with LVM enabled, expects a value for both 'volume_group' and 'volume_size'")
+    }
+
+    profiles::lvm::mount { 'jenkins-node':
+      volume_group => $volume_group,
+      size         => $volume_size,
+      mountpoint   => '/data/jenkins',
+      fs_type      => 'ext4',
+      owner        => 'jenkins',
+      group        => 'jenkins',
+      require      => [Group['jenkins'], User['jenkins']]
+    }
+
+    file { 'jenkins-swarm-client_fsroot':
+      ensure  => 'link',
+      path    => '/var/lib/jenkins-swarm-client',
+      target  => '/data/jenkins',
+      force   => true,
+      owner   => 'jenkins',
+      group   => 'jenkins',
+      require => Profiles::Lvm::Mount['jenkins-node'],
+      before  => Package['jenkins-swarm-client'],
+      notify  => Service['jenkins-swarm-client']
+    }
+  } else {
+    file { 'jenkins-swarm-client_fsroot':
+      ensure => 'directory',
+      path   => '/var/lib/jenkins-swarm-client',
+      owner  => 'jenkins',
+      group  => 'jenkins',
+      mode   => '0755',
+      *      => $default_file_attributes
+    }
+  }
+
   package { 'jenkins-swarm-client':
     ensure  => $version,
     require => Apt::Source['publiq-jenkins'],
     notify  => Service['jenkins-swarm-client']
-  }
-
-  file { 'jenkins-swarm-client_fsroot':
-    ensure => 'directory',
-    path   => '/var/lib/jenkins-swarm-client',
-    owner  => 'jenkins',
-    group  => 'jenkins',
-    mode   => '0755',
-    *      => $default_file_attributes
   }
 
   file { 'jenkins-swarm-client_passwordfile':
