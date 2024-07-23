@@ -15,7 +15,7 @@ class profiles::jenkins::node(
   include ::profiles::jenkins::buildtools
   include ::profiles::jenkins::buildtools::playwright
 
-  $data_dir                = '/mnt/jenkins-swarm-client'
+  $data_dir                = '/var/lib/jenkins-swarm-client'
   $default_labels          = [
                                $facts['os']['name'],
                                $facts['os']['release']['major'],
