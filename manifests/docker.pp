@@ -6,7 +6,7 @@ class profiles::docker (
   Optional[String] $volume_size    = undef
 ) inherits ::profiles {
 
-  $data_dir = '/mnt/docker'
+  $data_dir = '/var/lib/docker'
 
   realize Apt::Source['docker']
 
@@ -40,7 +40,6 @@ class profiles::docker (
 
   file { $data_dir:
     ensure => 'directory',
-    mode   => '0710',
     before => Class['docker']
   }
 

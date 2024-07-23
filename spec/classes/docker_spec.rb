@@ -21,8 +21,7 @@ describe 'profiles::docker' do
         ) }
 
         it { is_expected.to contain_file('/var/lib/docker').with(
-          'ensure' => 'directory',
-          'mode'   => '0710'
+          'ensure' => 'directory'
         ) }
 
         it { is_expected.to contain_class('docker').with(
@@ -75,8 +74,7 @@ describe 'profiles::docker' do
           ) }
 
           it { is_expected.to contain_file('/var/lib/docker').with(
-            'ensure' => 'directory',
-            'mode'   => '0710'
+            'ensure' => 'directory'
           ) }
 
           it { is_expected.to contain_class('docker').with(
@@ -132,8 +130,7 @@ describe 'profiles::docker' do
           ) }
 
           it { is_expected.to contain_file('/var/lib/docker').with(
-            'ensure' => 'directory',
-            'mode'   => '0710'
+            'ensure' => 'directory'
           ) }
 
           it { is_expected.to contain_mount('/var/lib/docker').that_requires('Profiles::Lvm::Mount[dockerdata]') }
