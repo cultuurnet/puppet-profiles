@@ -327,7 +327,7 @@ describe 'profiles::java::alternatives' do
             ) }
           end
 
-          ['jar', 'jarsigner', 'javac', 'javadoc', 'javap', 'jcmd', 'jdb', 'jdeprscan', 'jdeps', 'jfr', 'jimage', 'jinfo', 'jlink', 'jmap', 'jmod', 'jps', 'jrunscript', 'jshell', 'jstack', 'jstat', 'jstatd', 'serialver', 'jhsd'].each do |command|
+          ['jar', 'jarsigner', 'javac', 'javadoc', 'javap', 'jcmd', 'jdb', 'jdeprscan', 'jdeps', 'jfr', 'jimage', 'jinfo', 'jlink', 'jmap', 'jmod', 'jps', 'jrunscript', 'jshell', 'jstack', 'jstat', 'jstatd', 'serialver', 'jhsdb'].each do |command|
             it { is_expected.to contain_alternatives(command).with(
               'path' => "/usr/lib/jvm/java-17-openjdk-amd64/bin/#{command}"
             ) }
@@ -348,7 +348,7 @@ describe 'profiles::java::alternatives' do
             ) }
           end
 
-          ['jar', 'jarsigner', 'javac', 'javadoc', 'javap', 'jcmd', 'jdb', 'jdeprscan', 'jdeps', 'jfr', 'jimage', 'jinfo', 'jlink', 'jmap', 'jmod', 'jps', 'jrunscript', 'jshell', 'jstack', 'jstat', 'jstatd', 'serialver', 'jhsd', 'jconsole'].each do |command|
+          ['jar', 'jarsigner', 'javac', 'javadoc', 'javap', 'jcmd', 'jdb', 'jdeprscan', 'jdeps', 'jfr', 'jimage', 'jinfo', 'jlink', 'jmap', 'jmod', 'jps', 'jrunscript', 'jshell', 'jstack', 'jstat', 'jstatd', 'serialver', 'jhsdb', 'jconsole'].each do |command|
             it { is_expected.to contain_alternatives(command).with(
               'path' => "/usr/lib/jvm/java-17-openjdk-amd64/bin/#{command}"
             ) }

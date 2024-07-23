@@ -60,7 +60,7 @@ class profiles::java::alternatives (
     17: {
           $jre_home  = $java_home
           $jre_commands_headless = ['java', 'jpackage', 'keytool', 'rmiregistry']
-          $jdk_commands_headless = ['jar', 'jarsigner', 'javac', 'javadoc', 'javap', 'jcmd', 'jdb', 'jdeprscan', 'jdeps', 'jfr', 'jimage', 'jinfo', 'jlink', 'jmap', 'jmod', 'jps', 'jrunscript', 'jshell', 'jstack', 'jstat', 'jstatd', 'serialver', 'jhsd']
+          $jdk_commands_headless = ['jar', 'jarsigner', 'javac', 'javadoc', 'javap', 'jcmd', 'jdb', 'jdeprscan', 'jdeps', 'jfr', 'jimage', 'jinfo', 'jlink', 'jmap', 'jmod', 'jps', 'jrunscript', 'jshell', 'jstack', 'jstat', 'jstatd', 'serialver', 'jhsdb']
           if $headless {
             $jre_commands = $jre_commands_headless
             $jdk_commands = $jdk_commands_headless
