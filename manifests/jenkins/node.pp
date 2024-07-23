@@ -100,8 +100,9 @@ class profiles::jenkins::node(
   }
 
   service { 'jenkins-swarm-client':
-    ensure  => 'running',
-    enable  => 'true',
-    require => [Group['jenkins'], User['jenkins'], Class['profiles::java']]
+    ensure    => 'running',
+    enable    => 'true',
+    require   => [Group['jenkins'], User['jenkins']],
+    subscribe => Class['profiles::java']
   }
 }

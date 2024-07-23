@@ -108,7 +108,7 @@ describe 'profiles::jenkins::node' do
         it { is_expected.to contain_file('jenkins-swarm-client_service-defaults').that_notifies('Service[jenkins-swarm-client]') }
         it { is_expected.to contain_service('jenkins-swarm-client').that_requires('User[jenkins]') }
         it { is_expected.to contain_service('jenkins-swarm-client').that_requires('Group[jenkins]') }
-        it { is_expected.to contain_service('jenkins-swarm-client').that_requires('Class[profiles::java]') }
+        it { is_expected.to contain_service('jenkins-swarm-client').that_subscribes_to('Class[profiles::java]') }
       end
 
       context "with user => jane, password => roe, controller_url => 'http://localhost:5555/', lvm => true, volume_group => myvg, volume_size => 7G and executors => 4" do
