@@ -19,6 +19,9 @@ describe 'profiles::jenkins::node' do
           'password'       => 'doe',
           'version'        => 'latest',
           'controller_url' => 'https://jenkins.example.com/',
+          'lvm'            => false,
+          'volume_group'   => nil,
+          'volume_size'    => nil,
           'executors'      => 1,
           'labels'         => []
         ) }
@@ -35,11 +38,13 @@ describe 'profiles::jenkins::node' do
           'ensure' => 'latest'
         ) }
 
-        it { is_expected.to contain_file('jenkins-swarm-client_fsroot').with(
+        it { is_expected.not_to contain_profiles__lvm__mount('jenkinsdata') }
+        it { is_expected.not_to contain_mount('/var/lib/jenkins-swarm-client') }
+
+        it { is_expected.to contain_file('/var/lib/jenkins-swarm-client').with(
           'ensure'  => 'directory',
           'owner'   => 'jenkins',
           'group'   => 'jenkins',
-          'path'    => '/var/lib/jenkins-swarm-client',
           'mode'    => '0755'
         ) }
 
@@ -88,9 +93,9 @@ describe 'profiles::jenkins::node' do
 
         it { is_expected.to contain_package('jenkins-swarm-client').that_requires('Apt::Source[publiq-jenkins]') }
         it { is_expected.to contain_package('jenkins-swarm-client').that_notifies('Service[jenkins-swarm-client]') }
-        it { is_expected.to contain_file('jenkins-swarm-client_fsroot').that_requires('User[jenkins]') }
-        it { is_expected.to contain_file('jenkins-swarm-client_fsroot').that_requires('Group[jenkins]') }
-        it { is_expected.to contain_file('jenkins-swarm-client_fsroot').that_notifies('Service[jenkins-swarm-client]') }
+        it { is_expected.to contain_file('/var/lib/jenkins-swarm-client').that_requires('User[jenkins]') }
+        it { is_expected.to contain_file('/var/lib/jenkins-swarm-client').that_requires('Group[jenkins]') }
+        it { is_expected.to contain_file('/var/lib/jenkins-swarm-client').that_notifies('Service[jenkins-swarm-client]') }
         it { is_expected.to contain_file('jenkins-swarm-client_passwordfile').that_requires('User[jenkins]') }
         it { is_expected.to contain_file('jenkins-swarm-client_passwordfile').that_requires('Group[jenkins]') }
         it { is_expected.to contain_file('jenkins-swarm-client_passwordfile').that_requires('Package[jenkins-swarm-client]') }
@@ -106,38 +111,76 @@ describe 'profiles::jenkins::node' do
         it { is_expected.to contain_service('jenkins-swarm-client').that_requires('Class[profiles::java]') }
       end
 
-      context "with user => jane, password => roe, controller_url => 'http://localhost:5555/' and executors => 4" do
+      context "with user => jane, password => roe, controller_url => 'http://localhost:5555/', lvm => true, volume_group => myvg, volume_size => 7G and executors => 4" do
         let(:params) { {
           'user'           => 'jane',
           'password'       => 'roe',
           'controller_url' => 'http://localhost:5555/',
+          'lvm'            => true,
+          'volume_group'   => 'myvg',
+          'volume_size'    => '7G',
           'executors'      => 4
         } }
 
-        it { is_expected.to contain_file('jenkins-swarm-client_passwordfile').with(
-          'content' => 'roe'
-        ) }
+        context "with volume_group myvg present" do
+          let(:pre_condition) { 'volume_group { "myvg": ensure => "present" }' }
 
-        it { is_expected.to contain_file('jenkins-swarm-client_service-defaults').with_content(/^JENKINS_USER=jane$/) }
-        it { is_expected.to contain_file('jenkins-swarm-client_service-defaults').with_content(/^CONTROLLER_URL=http:\/\/localhost:5555\/$/) }
-        it { is_expected.to contain_file('jenkins-swarm-client_service-defaults').with_content(/^BUILD_EXECUTORS=4$/) }
+          it { is_expected.to contain_profiles__lvm__mount('jenkinsdata').with(
+            'volume_group' => 'myvg',
+            'size'         => '7G',
+            'mountpoint'   => '/data/jenkins',
+            'fs_type'      => 'ext4',
+            'owner'        => 'jenkins',
+            'group'        => 'jenkins'
+          ) }
 
-        context "with labels => foo" do
-          let(:params) {
-            super().merge({
-              'labels' => 'foo'
-            })
-          }
+          it { is_expected.to contain_mount('/var/lib/jenkins-swarm-client').with(
+            'ensure'  => 'mounted',
+            'device'  => '/data/jenkins',
+            'fstype'  => 'none',
+            'options' => 'rw,bind'
+          ) }
 
-          case facts[:os]['release']['major']
-          when '14.04'
-            it { is_expected.to contain_file('jenkins-swarm-client_node-labels').with(
-              'content' => "ubuntu\n14.04\ntrusty\nfoo"
-            ) }
-          when '16.04'
-            it { is_expected.to contain_file('jenkins-swarm-client_node-labels').with(
-              'content' => "ubuntu\n16.04\nxenial\nfoo"
-            ) }
+          it { is_expected.to contain_file('/var/lib/jenkins-swarm-client').with(
+            'ensure'  => 'directory',
+            'owner'   => 'jenkins',
+            'group'   => 'jenkins',
+            'mode'    => '0755'
+          ) }
+
+          it { is_expected.to contain_file('jenkins-swarm-client_passwordfile').with(
+            'content' => 'roe'
+          ) }
+
+          it { is_expected.to contain_profiles__lvm__mount('jenkinsdata').that_requires('Group[jenkins]') }
+          it { is_expected.to contain_profiles__lvm__mount('jenkinsdata').that_requires('User[jenkins]') }
+          it { is_expected.to contain_mount('/var/lib/jenkins-swarm-client').that_requires('Profiles::Lvm::Mount[jenkinsdata]') }
+          it { is_expected.to contain_mount('/var/lib/jenkins-swarm-client').that_requires('File[/var/lib/jenkins-swarm-client]') }
+          it { is_expected.to contain_mount('/var/lib/jenkins-swarm-client').that_comes_before('Package[jenkins-swarm-client]') }
+          it { is_expected.to contain_mount('/var/lib/jenkins-swarm-client').that_notifies('Service[jenkins-swarm-client]') }
+          it { is_expected.to contain_file('/var/lib/jenkins-swarm-client').that_comes_before('Package[jenkins-swarm-client]') }
+          it { is_expected.to contain_file('/var/lib/jenkins-swarm-client').that_notifies('Service[jenkins-swarm-client]') }
+          it { is_expected.to contain_file('jenkins-swarm-client_service-defaults').with_content(/^JENKINS_USER=jane$/) }
+          it { is_expected.to contain_file('jenkins-swarm-client_service-defaults').with_content(/^CONTROLLER_URL=http:\/\/localhost:5555\/$/) }
+          it { is_expected.to contain_file('jenkins-swarm-client_service-defaults').with_content(/^BUILD_EXECUTORS=4$/) }
+
+          context "with labels => foo" do
+            let(:params) {
+              super().merge({
+                'labels' => 'foo'
+              })
+            }
+
+            case facts[:os]['release']['major']
+            when '14.04'
+              it { is_expected.to contain_file('jenkins-swarm-client_node-labels').with(
+                'content' => "ubuntu\n14.04\ntrusty\nfoo"
+              ) }
+            when '16.04'
+              it { is_expected.to contain_file('jenkins-swarm-client_node-labels').with(
+                'content' => "ubuntu\n16.04\nxenial\nfoo"
+              ) }
+            end
           end
         end
 
@@ -170,6 +213,9 @@ describe 'profiles::jenkins::node' do
           'password'       => 'bar',
           'version'        => 'latest',
           'controller_url' => 'https://foobar.com/',
+          'lvm'            => false,
+          'volume_group'   => nil,
+          'volume_size'    => nil,
           'executors'      => 1,
           'labels'         => []
         ) }
@@ -184,6 +230,9 @@ describe 'profiles::jenkins::node' do
           'password'       => '',
           'version'        => 'latest',
           'controller_url' => 'http://localhost:8080/',
+          'lvm'            => false,
+          'volume_group'   => nil,
+          'volume_size'    => nil,
           'executors'      => 1,
           'labels'         => []
         ) }
