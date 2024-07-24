@@ -48,6 +48,10 @@ describe 'profiles::uitdatabank::search_api' do
             'basedir' => '/var/www/udb3-search-service'
           ) }
 
+          it { is_expected.to contain_class('profiles::uitdatabank::search_api::logging').with(
+            'servername' => 'baz.example.com'
+          ) }
+
           it { is_expected.not_to contain_class('profiles::uitdatabank::search_api::data_migration') }
 
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').that_requires('Class[profiles::uitdatabank::geojson_data::deployment]') }
@@ -89,6 +93,10 @@ describe 'profiles::uitdatabank::search_api' do
                                           'rewrite_cond' => '%{HTTP:X-Api-Key} ^.+',
                                           'rewrite_rule' => '^ - [E=APIKEY:%{HTTP:X-Api-Key}]'
                                       } ]
+          ) }
+
+          it { is_expected.to contain_class('profiles::uitdatabank::search_api::logging').with(
+            'servername' => 'foo.example.com'
           ) }
 
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::data_migration').with(
