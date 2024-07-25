@@ -189,6 +189,18 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'uitid-frontend-keycloak':
+    location => "https://apt.publiq.be/uitid-frontend-keycloak-${environment}",
+    release  => $codename,
+    repos    => 'main'
+  }
+
+  @apt::source { 'uitid-frontend-api-keycloak':
+    location => "https://apt.publiq.be/uitid-frontend-api-keycloak-${environment}",
+    release  => $codename,
+    repos    => 'main'
+  }
+
   @apt::source { 'uitid-api':
     location => "https://apt.publiq.be/uitid-api-${environment}",
     release  => $codename,

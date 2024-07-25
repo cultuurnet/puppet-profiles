@@ -90,7 +90,9 @@ describe 'profiles::apt::repositories' do
 
             include_examples 'apt repositories', 'uitid-app', { :location => 'https://apt.publiq.be/uitid-app-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uitid-frontend', { :location => 'https://apt.publiq.be/uitid-frontend-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uitid-frontend-keycloak', { :location => 'https://apt.publiq.be/uitid-frontend-keycloak-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uitid-frontend-api', { :location => 'https://apt.publiq.be/uitid-frontend-api-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uitid-frontend-api-keycloak', { :location => 'https://apt.publiq.be/uitid-frontend-api-keycloak-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uitid-frontend-auth0', { :location => 'https://apt.publiq.be/uitid-frontend-auth0-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uitid-api', { :location => 'https://apt.publiq.be/uitid-api-testing', :repos => 'main', :release => 'focal' }
 
