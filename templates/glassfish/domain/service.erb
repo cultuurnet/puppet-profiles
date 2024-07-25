@@ -7,7 +7,7 @@ User=glassfish
 ExecStart=/opt/payara/glassfish/bin/asadmin --passwordfile /home/glassfish/asadmin.pass start-domain <%= @title %>
 ExecStop=/opt/payara/glassfish/bin/asadmin --passwordfile /home/glassfish/asadmin.pass stop-domain <%= @title %>
 ExecStopPost=/usr/bin/rm -rf /opt/payara/glassfish/domains/<%= @title %>/generated
-TimeoutStartSec=120
+TimeoutStartSec=240
 TimeoutStopSec=30
 RestartSec=10
 Type=forking
