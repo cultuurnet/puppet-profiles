@@ -1,27 +1,36 @@
 class profiles::uitpas::api (
-  String                     $database_password,
-  String                     $database_host        = '127.0.0.1',
-  Boolean                    $deployment           = true,
-  Optional[String]           $initial_heap         = undef,
-  Optional[String]           $maximum_heap         = undef,
-  Boolean                    $jmx                  = true,
-  Boolean                    $newrelic             = false,
-  Optional[String]           $newrelic_license_key = lookup('data::newrelic::license_key', Optional[String], 'first', undef),
-  Integer                    $portbase             = 4800,
-  Enum['running', 'stopped'] $service_status       = 'running',
-  Hash                       $settings             = {}
+  String                         $servername,
+  String                         $database_password,
+  Variant[String, Array[String]] $serveraliases        = [],
+  String                         $database_host        = '127.0.0.1',
+  Boolean                        $deployment           = true,
+  Optional[String]               $initial_heap         = undef,
+  Optional[String]               $maximum_heap         = undef,
+  Boolean                        $jmx                  = true,
+  Boolean                        $newrelic             = false,
+  Optional[String]               $newrelic_license_key = lookup('data::newrelic::license_key', Optional[String], 'first', undef),
+  Integer                        $portbase             = 4800,
+  Enum['running', 'stopped']     $service_status       = 'running',
+  Hash                           $settings             = {}
 ) inherits ::profiles {
 
-  $database_name      = 'uitpas_api'
-  $database_user      = 'uitpas_api'
-  $default_attributes = {
-                          user         => 'glassfish',
-                          passwordfile => '/home/glassfish/asadmin.pass',
-                          portbase     => String($portbase)
-                        }
+  $database_name              = 'uitpas_api'
+  $database_user              = 'uitpas_api'
+  $glassfish_domain_http_port = $portbase + 80
+  $default_attributes         = {
+                                  user         => 'glassfish',
+                                  passwordfile => '/home/glassfish/asadmin.pass',
+                                  portbase     => String($portbase)
+                                }
 
+  include ::profiles::apache
   include ::profiles::java
   include ::profiles::glassfish
+
+  profiles::apache::vhost::reverse_proxy { "http://${servername}":
+    destination => "http://127.0.0.1:${glassfish_domain_http_port}/uitid/rest/",
+    aliases     => $serveraliases
+  }
 
   if $database_host == '127.0.0.1' {
     include ::profiles::mysql::server
