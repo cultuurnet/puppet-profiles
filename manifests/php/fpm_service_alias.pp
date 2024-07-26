@@ -3,7 +3,7 @@ define profiles::php::fpm_service_alias {
   include ::profiles
   include ::profiles::php
 
-  file { "${title} link":
+  file { "${title} php-fpm service alias link":
     ensure  => 'link',
     path    => "/etc/systemd/system/${title}.service",
     target  => '/etc/systemd/system/php-fpm.service',
