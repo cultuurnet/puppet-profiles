@@ -10,7 +10,7 @@ describe 'profiles::php::fpm_service_alias' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_file('my_service link').with(
+        it { is_expected.to contain_file('my_service php-fpm service alias link').with(
           'ensure'  => 'link',
           'path'    => '/etc/systemd/system/my_service.service',
           'target'  => '/etc/systemd/system/php-fpm.service'
@@ -18,8 +18,8 @@ describe 'profiles::php::fpm_service_alias' do
 
         it { is_expected.to contain_systemd__daemon_reload('my_service') }
 
-        it { is_expected.to contain_file('my_service link').that_requires('Class[profiles::php]') }
-        it { is_expected.to contain_file('my_service link').that_notifies('Systemd::Daemon_reload[my_service]') }
+        it { is_expected.to contain_file('my_service php-fpm service alias link').that_requires('Class[profiles::php]') }
+        it { is_expected.to contain_file('my_service php-fpm service alias link').that_notifies('Systemd::Daemon_reload[my_service]') }
       end
     end
   end
@@ -31,7 +31,7 @@ describe 'profiles::php::fpm_service_alias' do
       context "on #{os}" do
         let(:facts) { facts }
 
-        it { is_expected.to contain_file('foo_service link').with(
+        it { is_expected.to contain_file('foo_service php-fpm service alias link').with(
           'ensure'  => 'link',
           'path'    => '/etc/systemd/system/foo_service.service',
           'target'  => '/etc/systemd/system/php-fpm.service'
@@ -39,8 +39,8 @@ describe 'profiles::php::fpm_service_alias' do
 
         it { is_expected.to contain_systemd__daemon_reload('foo_service') }
 
-        it { is_expected.to contain_file('foo_service link').that_requires('Class[profiles::php]') }
-        it { is_expected.to contain_file('foo_service link').that_notifies('Systemd::Daemon_reload[foo_service]') }
+        it { is_expected.to contain_file('foo_service php-fpm service alias link').that_requires('Class[profiles::php]') }
+        it { is_expected.to contain_file('foo_service php-fpm service alias link').that_notifies('Systemd::Daemon_reload[foo_service]') }
       end
     end
   end
