@@ -11,11 +11,5 @@ define profiles::glassfish::domain::service_alias {
     notify  => Systemd::Daemon_reload[$title]
   }
 
-  file { "/etc/systemd/system/glassfish-${title}.service.d":
-    ensure => 'absent',
-    force  => true,
-    notify  => Systemd::Daemon_reload[$title]
-  }
-
   systemd::daemon_reload { $title: }
 }
