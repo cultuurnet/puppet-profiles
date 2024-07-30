@@ -42,7 +42,10 @@ class profiles::uitdatabank::search_api (
                              } ]
   }
 
-  # include ::profiles::uitdatabank::search_api::logging
+  class { 'profiles::uitdatabank::search_api::logging':
+    servername => $servername
+  }
+
   # include ::profiles::uitdatabank::search_api::monitoring
   # include ::profiles::uitdatabank::search_api::metrics
   # include ::profiles::uitdatabank::search_api::backup

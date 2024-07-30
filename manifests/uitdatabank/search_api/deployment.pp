@@ -17,7 +17,7 @@ class profiles::uitdatabank::search_api::deployment (
                                owner   => 'www-data',
                                group   => 'www-data',
                                require => [Group['www-data'], User['www-data'], Package['uitdatabank-search-api']],
-                               notify  => [Service['uitdatabank-search-api'], Profiles::Uitdatabank::Search_api::Listener['uitdatabank-consume-api'], Profiles::Uitdatabank::Search_api::Listener['uitdatabank-consume-cli'], Profiles::Uitdatabank::Search_api::Listener['uitdatabank-consume-related']]
+                               notify  => [Service['uitdatabank-search-api'], Class['profiles::uitdatabank::search_api::listeners']]
                              }
 
   realize Group['www-data']
@@ -26,7 +26,7 @@ class profiles::uitdatabank::search_api::deployment (
 
   package { 'uitdatabank-search-api':
     ensure  => $version,
-    notify  => [Service['uitdatabank-search-api'], Profiles::Deployment::Versions[$title]],
+    notify  => [Service['uitdatabank-search-api'], Class['profiles::uitdatabank::search_api::listeners'], Profiles::Deployment::Versions[$title]],
     require => Apt::Source[$repository]
   }
 
@@ -86,25 +86,11 @@ class profiles::uitdatabank::search_api::deployment (
     facilities_source => $facilities_source,
     themes_source     => $themes_source,
     types_source      => $types_source,
-    notify            => [Service['uitdatabank-search-api'], Profiles::Uitdatabank::Search_api::Listener['uitdatabank-consume-api'], Profiles::Uitdatabank::Search_api::Listener['uitdatabank-consume-cli'], Profiles::Uitdatabank::Search_api::Listener['uitdatabank-consume-related']]
+    notify            => [Service['uitdatabank-search-api'], Class['profiles::uitdatabank::search_api::listeners']]
   }
 
-  profiles::uitdatabank::search_api::listener { 'uitdatabank-consume-api':
-    command   => 'consume-udb3-api',
-    basedir   => $basedir,
-    subscribe => Package['uitdatabank-search-api']
-  }
-
-  profiles::uitdatabank::search_api::listener { 'uitdatabank-consume-cli':
-    command   => 'consume-udb3-cli',
-    basedir   => $basedir,
-    subscribe => Package['uitdatabank-search-api']
-  }
-
-  profiles::uitdatabank::search_api::listener { 'uitdatabank-consume-related':
-    command   => 'consume-udb3-related',
-    basedir   => $basedir,
-    subscribe => Package['uitdatabank-search-api']
+  class { 'profiles::uitdatabank::search_api::listeners':
+    basedir => $basedir
   }
 
   profiles::php::fpm_service_alias { 'uitdatabank-search-api': }

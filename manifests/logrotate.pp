@@ -16,6 +16,7 @@ class profiles::logrotate inherits ::profiles {
                                rotate_every  => 'day',
                                missingok     => true,
                                create        => true,
+                               copytruncate  => false,
                                ifempty       => true,
                                create_mode   => '0640',
                                compress      => true,
