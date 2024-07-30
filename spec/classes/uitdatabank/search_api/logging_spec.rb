@@ -21,7 +21,7 @@ describe 'profiles::uitdatabank::search_api::logging' do
 
           it { is_expected.to contain_class('profiles::filebeat') }
 
-          it { is_expected.to contain_filebeat__input('foo.example.com_uitdatabank::search_api').with(
+          it { is_expected.to contain_filebeat__input('foo.example.com_uitdatabank::search_api::access').with(
             'paths'    => ['/var/log/apache2/foo.example.com_80_access.log'],
             'doc_type' => 'json',
             'encoding' => 'utf-8',
@@ -30,17 +30,17 @@ describe 'profiles::uitdatabank::search_api::logging' do
                             'add_error_key'   => true
                           },
             'fields'   => {
-                            'log_type'    => 'uitdatabank::search_api',
+                            'log_type'    => 'uitdatabank::search_api::access',
                             'environment' => 'acceptance'
                           }
           ) }
 
-          it { expect(exported_resources).to contain_profiles__logstash__filter_fragment('foo.example.com_uitdatabank::search_api_acceptance').with(
-            'log_type' => 'uitdatabank::search_api',
+          it { expect(exported_resources).to contain_profiles__logstash__filter_fragment('foo.example.com_uitdatabank::search_api::access').with(
+            'log_type' => 'uitdatabank::search_api::access',
             'tag'      => 'acceptance'
           ) }
 
-          it { is_expected.to contain_filebeat__input('foo.example.com_uitdatabank::search_api').that_requires('Class[profiles::filebeat]') }
+          it { is_expected.to contain_filebeat__input('foo.example.com_uitdatabank::search_api::access').that_requires('Class[profiles::filebeat]') }
         end
       end
 
@@ -58,7 +58,7 @@ describe 'profiles::uitdatabank::search_api::logging' do
 
           it { is_expected.to contain_class('profiles::filebeat') }
 
-          it { is_expected.to contain_filebeat__input('bar.example.com_uitdatabank::search_api').with(
+          it { is_expected.to contain_filebeat__input('bar.example.com_uitdatabank::search_api::access').with(
             'paths'    => ['/var/log/apache2/bar.example.com_80_access.log'],
             'doc_type' => 'json',
             'encoding' => 'utf-8',
@@ -67,17 +67,17 @@ describe 'profiles::uitdatabank::search_api::logging' do
                             'add_error_key'   => true
                           },
             'fields'   => {
-                            'log_type'    => 'uitdatabank::search_api',
+                            'log_type'    => 'uitdatabank::search_api::access',
                             'environment' => 'production'
                           }
           ) }
 
-          it { expect(exported_resources).to contain_profiles__logstash__filter_fragment('bar.example.com_uitdatabank::search_api_production').with(
-            'log_type' => 'uitdatabank::search_api',
+          it { expect(exported_resources).to contain_profiles__logstash__filter_fragment('bar.example.com_uitdatabank::search_api::access').with(
+            'log_type' => 'uitdatabank::search_api::access',
             'tag'      => 'production'
           ) }
 
-          it { is_expected.to contain_filebeat__input('bar.example.com_uitdatabank::search_api').that_requires('Class[profiles::filebeat]') }
+          it { is_expected.to contain_filebeat__input('bar.example.com_uitdatabank::search_api::access').that_requires('Class[profiles::filebeat]') }
         end
       end
 

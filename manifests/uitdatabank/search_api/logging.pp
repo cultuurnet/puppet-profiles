@@ -2,7 +2,7 @@ class profiles::uitdatabank::search_api::logging (
   String $servername,
 ) inherits ::profiles {
 
-  $log_type = 'uitdatabank::search_api'
+  $log_type = 'uitdatabank::search_api::access'
 
   include ::profiles::filebeat
 
@@ -21,9 +21,9 @@ class profiles::uitdatabank::search_api::logging (
     require  => Class['profiles::filebeat']
   }
 
-    @@profiles::logstash::filter_fragment { "${servername}_${log_type}_${environment}":
+    @@profiles::logstash::filter_fragment { "${servername}_${log_type}":
       log_type => $log_type,
-      filter   => file('profiles/uitdatabank/search_api/logstash_filter.conf'),
+      filter   => file('profiles/uitdatabank/search_api/logstash_filter_access.conf'),
       tag      => $environment
     }
 
