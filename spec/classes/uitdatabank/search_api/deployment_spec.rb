@@ -112,69 +112,41 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           'restart'    => '/usr/bin/systemctl reload uitdatabank-search-api'
         ) }
 
-        it { is_expected.to contain_profiles__uitdatabank__search_api__listener('uitdatabank-consume-api').with(
-          'ensure'  => 'present',
-          'command' => 'consume-udb3-api',
-          'basedir' => '/var/www/udb3-search-service'
-        ) }
-
-        it { is_expected.to contain_profiles__uitdatabank__search_api__listener('uitdatabank-consume-cli').with(
-          'ensure'  => 'present',
-          'command' => 'consume-udb3-cli',
-          'basedir' => '/var/www/udb3-search-service'
-        ) }
-
-        it { is_expected.to contain_profiles__uitdatabank__search_api__listener('uitdatabank-consume-related').with(
-          'ensure'  => 'present',
-          'command' => 'consume-udb3-related',
+        it { is_expected.to contain_class('profiles::uitdatabank::search_api::listeners').with(
           'basedir' => '/var/www/udb3-search-service'
         ) }
 
         it { is_expected.to contain_package('uitdatabank-search-api').that_notifies('Profiles::Deployment::Versions[profiles::uitdatabank::search_api::deployment]') }
         it { is_expected.to contain_package('uitdatabank-search-api').that_requires('Apt::Source[uitdatabank-search-api]') }
         it { is_expected.to contain_package('uitdatabank-search-api').that_notifies('Service[uitdatabank-search-api]') }
-        it { is_expected.to contain_package('uitdatabank-search-api').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-api]') }
-        it { is_expected.to contain_package('uitdatabank-search-api').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-cli]') }
-        it { is_expected.to contain_package('uitdatabank-search-api').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-related]') }
+        it { is_expected.to contain_package('uitdatabank-search-api').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
         it { is_expected.to contain_file('uitdatabank-search-api-config').that_requires('Group[www-data]') }
         it { is_expected.to contain_file('uitdatabank-search-api-config').that_requires('User[www-data]') }
         it { is_expected.to contain_file('uitdatabank-search-api-config').that_requires('Package[uitdatabank-search-api]') }
         it { is_expected.to contain_file('uitdatabank-search-api-config').that_notifies('Service[uitdatabank-search-api]') }
-        it { is_expected.to contain_file('uitdatabank-search-api-config').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-api]') }
-        it { is_expected.to contain_file('uitdatabank-search-api-config').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-cli]') }
-        it { is_expected.to contain_file('uitdatabank-search-api-config').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-related]') }
+        it { is_expected.to contain_file('uitdatabank-search-api-config').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
         it { is_expected.to contain_file('uitdatabank-search-api-features').that_requires('Group[www-data]') }
         it { is_expected.to contain_file('uitdatabank-search-api-features').that_requires('User[www-data]') }
         it { is_expected.to contain_file('uitdatabank-search-api-features').that_requires('Package[uitdatabank-search-api]') }
         it { is_expected.to contain_file('uitdatabank-search-api-features').that_notifies('Service[uitdatabank-search-api]') }
-        it { is_expected.to contain_file('uitdatabank-search-api-features').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-api]') }
-        it { is_expected.to contain_file('uitdatabank-search-api-features').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-cli]') }
-        it { is_expected.to contain_file('uitdatabank-search-api-features').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-related]') }
+        it { is_expected.to contain_file('uitdatabank-search-api-features').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
         it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_requires('Group[www-data]') }
         it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_requires('User[www-data]') }
         it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_requires('Package[uitdatabank-search-api]') }
         it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_notifies('Service[uitdatabank-search-api]') }
-        it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-api]') }
-        it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-cli]') }
-        it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-related]') }
+        it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
         it { is_expected.to contain_file('uitdatabank-search-api-pubkey-auth0').that_requires('Group[www-data]') }
         it { is_expected.to contain_file('uitdatabank-search-api-pubkey-auth0').that_requires('User[www-data]') }
         it { is_expected.to contain_file('uitdatabank-search-api-pubkey-auth0').that_requires('Package[uitdatabank-search-api]') }
         it { is_expected.to contain_file('uitdatabank-search-api-pubkey-auth0').that_notifies('Service[uitdatabank-search-api]') }
-        it { is_expected.to contain_file('uitdatabank-search-api-pubkey-auth0').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-api]') }
-        it { is_expected.to contain_file('uitdatabank-search-api-pubkey-auth0').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-cli]') }
-        it { is_expected.to contain_file('uitdatabank-search-api-pubkey-auth0').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-related]') }
+        it { is_expected.to contain_file('uitdatabank-search-api-pubkey-auth0').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
         it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').that_requires('Group[www-data]') }
         it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').that_requires('User[www-data]') }
         it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').that_requires('Package[uitdatabank-search-api]') }
         it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').that_notifies('Service[uitdatabank-search-api]') }
-        it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-api]') }
-        it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-cli]') }
-        it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-related]') }
+        it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
         it { is_expected.to contain_profiles__uitdatabank__term_mapping('uitdatabank-search-api').that_notifies('Service[uitdatabank-search-api]') }
-        it { is_expected.to contain_profiles__uitdatabank__term_mapping('uitdatabank-search-api').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-api]') }
-        it { is_expected.to contain_profiles__uitdatabank__term_mapping('uitdatabank-search-api').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-cli]') }
-        it { is_expected.to contain_profiles__uitdatabank__term_mapping('uitdatabank-search-api').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-related]') }
+        it { is_expected.to contain_profiles__uitdatabank__term_mapping('uitdatabank-search-api').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
         it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').that_requires('Package[uitdatabank-search-api]') }
         it { is_expected.to contain_service('uitdatabank-search-api').that_requires('Profiles::Php::Fpm_service_alias[uitdatabank-search-api]') }
 
@@ -292,21 +264,7 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             'minute'      => '0'
           ) }
 
-          it { is_expected.to contain_profiles__uitdatabank__search_api__listener('uitdatabank-consume-api').with(
-            'ensure'  => 'present',
-            'command' => 'consume-udb3-api',
-            'basedir' => '/var/www/foo'
-          ) }
-
-          it { is_expected.to contain_profiles__uitdatabank__search_api__listener('uitdatabank-consume-cli').with(
-            'ensure'  => 'present',
-            'command' => 'consume-udb3-cli',
-            'basedir' => '/var/www/foo'
-          ) }
-
-          it { is_expected.to contain_profiles__uitdatabank__search_api__listener('uitdatabank-consume-related').with(
-            'ensure'  => 'present',
-            'command' => 'consume-udb3-related',
+          it { is_expected.to contain_class('profiles::uitdatabank::search_api::listeners').with(
             'basedir' => '/var/www/foo'
           ) }
 
@@ -319,9 +277,7 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           it { is_expected.to contain_file('uitdatabank-search-api-default-queries').that_requires('User[www-data]') }
           it { is_expected.to contain_file('uitdatabank-search-api-default-queries').that_requires('Package[uitdatabank-search-api]') }
           it { is_expected.to contain_file('uitdatabank-search-api-default-queries').that_notifies('Service[uitdatabank-search-api]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-default-queries').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-api]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-default-queries').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-cli]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-default-queries').that_notifies('Profiles::Uitdatabank::Search_api::Listener[uitdatabank-consume-related]') }
+          it { is_expected.to contain_file('uitdatabank-search-api-default-queries').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
         end
       end
 
