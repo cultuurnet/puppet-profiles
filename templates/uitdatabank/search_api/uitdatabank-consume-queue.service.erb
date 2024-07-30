@@ -8,6 +8,7 @@ User=www-data
 Group=www-data
 WorkingDirectory=<%= @basedir %>
 ExecStart=/usr/bin/php bin/app.php <%= @command %>
+LogLevelMax=3
 Restart=on-failure
 RestartSec=10s
 Type=simple
