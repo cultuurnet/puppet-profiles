@@ -1,0 +1,30 @@
+#!/bin/bash
+
+files=$@
+
+gcs_bucket_name=<%= @gcs_bucket_name %>
+gcs_credentials=/etc/gcsfuse/gcs_credentials.json
+bucket_mountpoint=<%= @bucket_mountpoint %>
+bucket_dumplocation=<%= @bucket_dumplocation %>
+
+function cleanup()
+{
+    fusermount -u ${bucket_mountpoint}
+}
+
+trap cleanup EXIT
+
+echo "Mounting GCS bucket ${gcs_bucket_name} on ${bucket_mountpoint}"
+gcsfuse --implicit-dirs --key-file ${gcs_credentials} ${gcs_bucket_name} ${bucket_mountpoint}
+
+echo "Creating bucket dumplocation ${bucket_dumplocation} in GCS bucket ${gcs_bucket_name} if not present"
+test -d ${bucket_mountpoint}/${bucket_dumplocation} || mkdir -p ${bucket_mountpoint}/${bucket_dumplocation}
+
+for file in ${files}
+do
+    local_dumpfile=$(basename ${file})
+    bucket_dumpfile=${local_dumpfile%%_v*}_full_$(date +%Y%m%d).json
+
+    echo "Copying local dumpfile ${file} to GCS bucket file ${bucket_mountpoint}/${bucket_dumplocation}/${bucket_dumpfile}"
+    /usr/bin/cp ${file} ${bucket_mountpoint}/${bucket_dumplocation}/${bucket_dumpfile}
+done
