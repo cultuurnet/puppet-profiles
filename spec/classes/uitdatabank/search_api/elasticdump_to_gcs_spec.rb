@@ -98,7 +98,20 @@ describe 'profiles::uitdatabank::search_api::elasticdump_to_gcs' do
       context "without parameters" do
         let(:params) { {} }
 
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'gcs_bucket_name'/) }
+        it { is_expected.to contain_class('profiles::uitdatabank::search_api::elasticdump_to_gcs').with(
+          'gcs_bucket_name'        => nil,
+          'gcs_credentials_source' => nil,
+          'schedule'               => false,
+          'bucket_mountpoint'      => '/mnt/gcs',
+          'bucket_dumplocation'    => '',
+          'dump_hour'              => 0,
+          'local_timezone'         => 'UTC'
+        ) }
+
+        it { is_expected.not_to contain_class('profiles::gcsfuse') }
+        it { is_expected.not_to contain_file('/mnt/gcs') }
+        it { is_expected.not_to contain_file('elasticdump_to_gcs') }
+        it { is_expected.not_to contain_cron('elasticdump_to_gcs') }
       end
     end
   end
