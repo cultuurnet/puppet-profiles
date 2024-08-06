@@ -39,7 +39,7 @@ describe 'profiles::google::gcsfuse' do
 
         it { is_expected.to contain_file('gcsfuse-credentials').with(
           'ensure' => 'file',
-          'path'   => '/etc/gcsfuse/gcs_credentials.json',
+          'path'   => '/etc/gcsfuse/credentials.json',
           'source' => '/foo/bar.json'
         ) }
 

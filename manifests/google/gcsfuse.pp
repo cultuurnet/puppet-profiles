@@ -12,7 +12,7 @@ class profiles::google::gcsfuse (
   if $credentials_source {
     file { 'gcsfuse-credentials':
       ensure  => 'file',
-      path    => '/etc/gcsfuse/gcs_credentials.json',
+      path    => '/etc/gcsfuse/credentials.json',
       source  => $credentials_source,
       require => File['/etc/gcsfuse']
     }
