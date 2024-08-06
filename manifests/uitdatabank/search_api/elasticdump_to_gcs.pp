@@ -1,35 +1,25 @@
 class profiles::uitdatabank::search_api::elasticdump_to_gcs (
-  Optional[String] $gcs_bucket_name        = undef,
-  Optional[String] $gcs_credentials_source = undef,
-  Boolean          $schedule               = false,
-  String           $bucket_mountpoint      = '/mnt/gcs',
-  String           $bucket_dumplocation    = '',
-  Integer          $dump_hour              = 0,
-  String           $local_timezone         = 'UTC'
+  Optional[String] $project             = undef,
+  Optional[String] $bucket_name         = undef,
+  String           $bucket_dumplocation = '',
+  Optional[String] $credentials_source  = undef,
+  Boolean          $schedule            = false,
+  Integer          $dump_hour           = 0,
+  String           $local_timezone      = 'UTC'
 ) inherits ::profiles {
 
-  if $gcs_bucket_name {
-    unless $bucket_mountpoint =~ /^\/mnt\// {
-      fail("Class Profiles::Uitdatabank::Elasticdump_to_gcs expects parameter 'bucket_mountpoint' to start with /mnt")
-    }
+  profiles::google::gcloud { 'root':
+    credentials_source => $credentials_source,
+    project            => $project
+  }
 
-    class { 'profiles::gcsfuse':
-      credentials_source => $gcs_credentials_source
-    }
-
-    # We need to create all intermediate directories from /mnt to $bucket_mountpoint, this will provide a list
-    $directory_tree = $bucket_mountpoint.split('/').map |$index, $dir| { $bucket_mountpoint.split('/')[0, $index + 1].join('/') }.filter |$item| { ! $item.empty } - ['/mnt']
-
-    file { $directory_tree:
-      ensure => 'directory'
-    }
-
+  if $bucket_name {
     file { 'elasticdump_to_gcs':
       ensure  => 'file',
       path    => '/usr/local/bin/elasticdump_to_gcs',
       content => template('profiles/uitdatabank/search_api/elasticdump_to_gcs.erb'),
       mode    => '0755',
-      require => Class['profiles::gcsfuse']
+      require => Profiles::Google::Gcloud['root']
     }
 
     cron { 'elasticdump_to_gcs':
@@ -41,7 +31,7 @@ class profiles::uitdatabank::search_api::elasticdump_to_gcs (
       environment => ['SHELL=/bin/bash', "TZ=${local_timezone}", 'MAILTO=infra+cron@publiq.be'],
       hour        => '*',
       minute      => '00',
-      require     => [File['elasticdump_to_gcs'], File[$bucket_mountpoint]]
+      require     => File['elasticdump_to_gcs']
     }
   }
 }
