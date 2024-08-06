@@ -1,4 +1,4 @@
-class profiles::gcsfuse (
+class profiles::google::gcsfuse (
   Optional[String] $credentials_source = undef
 ) inherits ::profiles {
 
