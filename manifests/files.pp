@@ -22,4 +22,11 @@ class profiles::files inherits ::profiles {
     mode   => '0755',
     require => File['/data']
   }
+
+  @file { '/etc/gcloud':
+    ensure  => 'directory',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755'
+  }
 }

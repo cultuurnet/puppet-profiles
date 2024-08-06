@@ -5,29 +5,27 @@ describe 'profiles::uitdatabank::search_api::elasticdump_to_gcs' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with gcs_bucket_name => foo" do
+      context "with project => bla and bucket_name => foo" do
         let(:params) { {
-          'gcs_bucket_name' => 'foo'
+          'project'     => 'bla',
+          'bucket_name' => 'foo'
         } }
 
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::uitdatabank::search_api::elasticdump_to_gcs').with(
-          'gcs_bucket_name'        => 'foo',
-          'gcs_credentials_source' => nil,
-          'schedule'               => false,
-          'bucket_mountpoint'      => '/mnt/gcs',
+          'project'                => 'bla',
+          'bucket_name'            => 'foo',
           'bucket_dumplocation'    => '',
+          'credentials_source'     => nil,
+          'schedule'               => false,
           'dump_hour'              => 0,
           'local_timezone'         => 'UTC'
         ) }
 
-        it { is_expected.to contain_class('profiles::gcsfuse').with(
+        it { is_expected.to contain_profiles__google__gcloud('root').with(
+          'project'            => 'bla',
           'credentials_source' => nil
-        ) }
-
-        it { is_expected.to contain_file('/mnt/gcs').with(
-          'ensure' => 'directory'
         ) }
 
         it { is_expected.to contain_file('elasticdump_to_gcs').with(
@@ -36,8 +34,7 @@ describe 'profiles::uitdatabank::search_api::elasticdump_to_gcs' do
           'mode'   => '0755'
         ) }
 
-        it { is_expected.to contain_file('elasticdump_to_gcs').with_content(/^gcs_bucket_name=foo$/) }
-        it { is_expected.to contain_file('elasticdump_to_gcs').with_content(/^bucket_mountpoint=\/mnt\/gcs$/) }
+        it { is_expected.to contain_file('elasticdump_to_gcs').with_content(/^bucket_name=foo$/) }
         it { is_expected.to contain_file('elasticdump_to_gcs').with_content(/^bucket_dumplocation=$/) }
 
         it { is_expected.to contain_cron('elasticdump_to_gcs').with(
@@ -48,32 +45,24 @@ describe 'profiles::uitdatabank::search_api::elasticdump_to_gcs' do
           'minute'      => '00'
         ) }
 
-        it { is_expected.to contain_file('elasticdump_to_gcs').that_requires('Class[profiles::gcsfuse]') }
+        it { is_expected.to contain_file('elasticdump_to_gcs').that_requires('Profiles::Google::Gcloud[root]') }
         it { is_expected.to contain_cron('elasticdump_to_gcs').that_requires('File[elasticdump_to_gcs]') }
-        it { is_expected.to contain_cron('elasticdump_to_gcs').that_requires('File[/mnt/gcs]') }
       end
 
-      context "with gcs_bucket_name => bar, gcs_credentials_source => /tmp/secret, schedule => true, bucket_mountpoint => /mnt/bar/baz, bucket_dumplocation => dir1/dir2, dump_hour => 12 and local_timezone => Europe/Paris" do
+      context "with project => foobar, bucket_name => bar, credentials_source => /tmp/secret, schedule => true, bucket_dumplocation => dir1/dir2, dump_hour => 12 and local_timezone => Europe/Paris" do
         let(:params) { {
-          'gcs_bucket_name'        => 'bar',
-          'gcs_credentials_source' => '/tmp/secret',
-          'schedule'               => true,
-          'bucket_mountpoint'      => '/mnt/bar/baz',
-          'bucket_dumplocation'    => 'dir1/dir2',
-          'dump_hour'              => 12,
-          'local_timezone'         => 'Europe/Paris'
+          'project'             => 'foobar',
+          'bucket_name'         => 'bar',
+          'credentials_source'  => '/tmp/secret',
+          'schedule'            => true,
+          'bucket_dumplocation' => 'dir1/dir2',
+          'dump_hour'           => 12,
+          'local_timezone'      => 'Europe/Paris'
         } }
 
-        it { is_expected.to contain_class('profiles::gcsfuse').with(
+        it { is_expected.to contain_profiles__google__gcloud('root').with(
+          'project'            => 'foobar',
           'credentials_source' => '/tmp/secret'
-        ) }
-
-        it { is_expected.to contain_file('/mnt/bar').with(
-          'ensure' => 'directory'
-        ) }
-
-        it { is_expected.to contain_file('/mnt/bar/baz').with(
-          'ensure' => 'directory'
         ) }
 
         it { is_expected.to contain_file('elasticdump_to_gcs').with(
@@ -82,8 +71,7 @@ describe 'profiles::uitdatabank::search_api::elasticdump_to_gcs' do
           'mode'   => '0755'
         ) }
 
-        it { is_expected.to contain_file('elasticdump_to_gcs').with_content(/^gcs_bucket_name=bar$/) }
-        it { is_expected.to contain_file('elasticdump_to_gcs').with_content(/^bucket_mountpoint=\/mnt\/bar\/baz$/) }
+        it { is_expected.to contain_file('elasticdump_to_gcs').with_content(/^bucket_name=bar$/) }
         it { is_expected.to contain_file('elasticdump_to_gcs').with_content(/^bucket_dumplocation=dir1\/dir2$/) }
 
         it { is_expected.to contain_cron('elasticdump_to_gcs').with(
@@ -99,17 +87,20 @@ describe 'profiles::uitdatabank::search_api::elasticdump_to_gcs' do
         let(:params) { {} }
 
         it { is_expected.to contain_class('profiles::uitdatabank::search_api::elasticdump_to_gcs').with(
-          'gcs_bucket_name'        => nil,
-          'gcs_credentials_source' => nil,
-          'schedule'               => false,
-          'bucket_mountpoint'      => '/mnt/gcs',
-          'bucket_dumplocation'    => '',
-          'dump_hour'              => 0,
-          'local_timezone'         => 'UTC'
+          'project'             => nil,
+          'bucket_name'         => nil,
+          'bucket_dumplocation' => '',
+          'credentials_source'  => nil,
+          'schedule'            => false,
+          'dump_hour'           => 0,
+          'local_timezone'      => 'UTC'
         ) }
 
-        it { is_expected.not_to contain_class('profiles::gcsfuse') }
-        it { is_expected.not_to contain_file('/mnt/gcs') }
+        it { is_expected.to contain_profiles__google__gcloud('root').with(
+          'project'            => nil,
+          'credentials_source' => nil
+        ) }
+
         it { is_expected.not_to contain_file('elasticdump_to_gcs') }
         it { is_expected.not_to contain_cron('elasticdump_to_gcs') }
       end

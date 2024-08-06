@@ -1,4 +1,4 @@
-describe 'profiles::gcsfuse' do
+describe 'profiles::google::gcsfuse' do
   include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
@@ -10,7 +10,7 @@ describe 'profiles::gcsfuse' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_class('profiles::gcsfuse').with(
+        it { is_expected.to contain_class('profiles::google::gcsfuse').with(
           'credentials_source' => nil
         ) }
 
@@ -39,7 +39,7 @@ describe 'profiles::gcsfuse' do
 
         it { is_expected.to contain_file('gcsfuse-credentials').with(
           'ensure' => 'file',
-          'path'   => '/etc/gcsfuse/gcs_credentials.json',
+          'path'   => '/etc/gcsfuse/credentials.json',
           'source' => '/foo/bar.json'
         ) }
 
