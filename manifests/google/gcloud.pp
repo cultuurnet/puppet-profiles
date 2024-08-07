@@ -22,7 +22,7 @@ define profiles::google::gcloud (
         command     => "/usr/bin/gcloud auth login --cred-file=/etc/gcloud/credentials_${title}.json --project=${project}",
         user        => $title,
         refreshonly => true,
-        require     => [Package['google-cloud-cli'], File["gcloud credentials ${title}"]]
+        subscribe   => [Package['google-cloud-cli'], File["gcloud credentials ${title}"]]
       }
     }
   }
