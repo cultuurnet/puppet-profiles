@@ -1,8 +1,9 @@
 class profiles::uitdatabank::search_api (
   String                         $servername,
-  Variant[String, Array[String]] $serveraliases     = [],
-  Boolean                        $deployment        = true,
-  Boolean                        $data_migration    = false
+  Variant[String, Array[String]] $serveraliases            = [],
+  Optional[String]               $elasticsearch_servername = undef,
+  Boolean                        $deployment               = true,
+  Boolean                        $data_migration           = false
 ) inherits ::profiles {
 
   $basedir = '/var/www/udb3-search-service'
@@ -40,6 +41,12 @@ class profiles::uitdatabank::search_api (
                                 rewrite_cond => '%{HTTP:X-Api-Key} ^.+',
                                 rewrite_rule => '^ - [E=APIKEY:%{HTTP:X-Api-Key}]'
                              } ]
+  }
+
+  if $elasticsearch_servername {
+    profiles::apache::vhost::reverse_proxy { "http://${elasticsearch_servername}":
+      destination => 'http://127.0.0.1:9200/'
+    }
   }
 
   class { 'profiles::uitdatabank::search_api::logging':

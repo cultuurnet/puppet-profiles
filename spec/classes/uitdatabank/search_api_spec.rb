@@ -16,10 +16,11 @@ describe 'profiles::uitdatabank::search_api' do
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_class('profiles::uitdatabank::search_api').with(
-            'servername'        => 'baz.example.com',
-            'serveraliases'     => [],
-            'deployment'        => true,
-            'data_migration'    => false
+            'servername'               => 'baz.example.com',
+            'serveraliases'            => [],
+            'elasticsearch_servername' => nil,
+            'deployment'               => true,
+            'data_migration'           => false
           ) }
 
           it { is_expected.to contain_class('profiles::elasticsearch') }
@@ -69,11 +70,12 @@ describe 'profiles::uitdatabank::search_api' do
         end
       end
 
-      context "with servername => foo.example.com, serveraliases => [alias1.example.com, alias2.example.com] and data_migration => true" do
+      context "with servername => foo.example.com, serveraliases => [alias1.example.com, alias2.example.com], elasticsearch_servername => es.example.com and data_migration => true" do
         let(:params) { {
-          'servername'        => 'foo.example.com',
-          'serveraliases'     => ['alias1.example.com', 'alias2.example.com'],
-          'data_migration'    => true
+          'servername'               => 'foo.example.com',
+          'serveraliases'            => ['alias1.example.com', 'alias2.example.com'],
+          'elasticsearch_servername' => 'es.example.com',
+          'data_migration'           => true
         } }
 
         context 'with hieradata' do
@@ -93,6 +95,10 @@ describe 'profiles::uitdatabank::search_api' do
                                           'rewrite_cond' => '%{HTTP:X-Api-Key} ^.+',
                                           'rewrite_rule' => '^ - [E=APIKEY:%{HTTP:X-Api-Key}]'
                                       } ]
+          ) }
+
+          it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://es.example.com').with(
+            'destination' => 'http://127.0.0.1:9200/'
           ) }
 
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::logging').with(
