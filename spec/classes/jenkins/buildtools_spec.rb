@@ -14,6 +14,7 @@ describe 'profiles::jenkins::buildtools' do
       it { is_expected.to contain_package('build-essential').with( {'ensure' => 'present'}) }
       it { is_expected.to contain_package('kubectl').with( {'ensure' => 'present'}) }
       it { is_expected.to contain_package('argocd').with( {'ensure' => 'present'}) }
+      it { is_expected.to contain_package('mysql-client').with( {'ensure' => 'present'}) }
 
       it { is_expected.to contain_class('profiles::ruby') }
     end
