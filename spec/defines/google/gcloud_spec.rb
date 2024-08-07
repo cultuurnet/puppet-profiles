@@ -67,8 +67,8 @@ describe 'profiles::google::gcloud' do
           ) }
 
           it { is_expected.to contain_file('gcloud credentials jenkins').that_requires('File[/etc/gcloud]') }
-          it { is_expected.to contain_exec('gcloud auth login for user jenkins').that_requires('Package[google-cloud-cli]') }
-          it { is_expected.to contain_exec('gcloud auth login for user jenkins').that_requires('File[gcloud credentials jenkins]') }
+          it { is_expected.to contain_exec('gcloud auth login for user jenkins').that_subscribes_to('Package[google-cloud-cli]') }
+          it { is_expected.to contain_exec('gcloud auth login for user jenkins').that_subscribes_to('File[gcloud credentials jenkins]') }
         end
       end
     end
