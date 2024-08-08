@@ -33,7 +33,7 @@ jenkins:
   viewsTabBar: "standard"
   views:
   - all:
-    name: "all"
+      name: "all"
   <%- @configuration['views'].each do |view| -%>
   - list:
       name: '<%= view['name'] %>'
