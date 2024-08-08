@@ -1,4 +1,8 @@
 ---
+unclassified:
+  location:
+    adminAddress: 'jenkins@publiq.be'
+    url: '<%= @configuration['url'] %>'
 jenkins:
   authorizationStrategy:
     loggedInUsersCanDoAnything:
@@ -26,7 +30,21 @@ jenkins:
         value: 'true'
       - key: 'YARN_CACHE_FOLDER'
         value: '/var/lib/jenkins-swarm-client/.cache/yarn'
-unclassified:
-  location:
-    adminAddress: 'jenkins@publiq.be'
-    url: '<%= @configuration['url'] %>'
+  viewsTabBar: "standard"
+  views:
+  - all:
+    name: "all"
+  <%- @configuration['views'].each do |view| -%>
+  - list:
+      name: <%= view['name'] %>
+      includeRegex: <%= view['regex'] %>
+      columns:
+      - "status"
+      - "weather"
+      - "jobName"
+      - "lastSuccess"
+      - "lastFailure"
+      - "lastDuration"
+      - "buildButton"
+      - "favoriteColumn"
+  <%- end -%>
