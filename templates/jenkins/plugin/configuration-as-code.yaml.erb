@@ -36,8 +36,8 @@ jenkins:
     name: "all"
   <%- @configuration['views'].each do |view| -%>
   - list:
-      name: <%= view['name'] %>
-      includeRegex: <%= view['regex'] %>
+      name: '<%= view['name'] %>'
+      includeRegex: '<%= view['regex'] %>'
       columns:
       - "status"
       - "weather"
