@@ -84,10 +84,10 @@ describe 'profiles::jenkins::plugin' do
       context "with title configuration-as-code" do
         let(:title) { 'configuration-as-code' }
 
-        context "with restart => true and configuration => { 'url' => 'https://foobar.com/', 'admin_password' => 'passw0rd'}" do
+        context "with restart => true and configuration => { 'url' => 'https://foobar.com/', 'admin_password' => 'passw0rd', views => [{ 'name' => 'foo', 'regex' => 'foo.*' }] }" do
           let(:params) { {
               'restart'       => true,
-              'configuration' => { 'url' => 'https://foobar.com/', 'admin_password' => 'passw0rd'}
+              'configuration' => { 'url' => 'https://foobar.com/', 'admin_password' => 'passw0rd', 'views' => [{ 'name' => 'foo', 'regex' => 'foo.*' }] }
           } }
 
           it { is_expected.to contain_exec('jenkins plugin configuration-as-code').with(
@@ -112,15 +112,17 @@ describe 'profiles::jenkins::plugin' do
 
           it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*password: 'passw0rd'$/) }
           it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*url: 'https:\/\/foobar\.com\/'$/) }
+          it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*name: 'foo'$/) }
+          it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*includeRegex: 'foo\.\*'$/) }
 
           it { is_expected.to contain_file('configuration-as-code configuration').that_requires('Group[jenkins]') }
           it { is_expected.to contain_file('configuration-as-code configuration').that_requires('User[jenkins]') }
           it { is_expected.to contain_exec('jenkins plugin configuration-as-code').that_requires('Class[profiles::jenkins::cli]') }
         end
 
-        context "with configuration => { 'url' => 'https://jenkins.example.com/', 'admin_password' => 'jenkins'}" do
+        context "with configuration => { 'url' => 'https://jenkins.example.com/', 'admin_password' => 'jenkins', 'views' => [] }" do
           let(:params) { {
-              'configuration' => { 'url' => 'https://jenkins.example.com/', 'admin_password' => 'jenkins'}
+              'configuration' => { 'url' => 'https://jenkins.example.com/', 'admin_password' => 'jenkins', 'views' => [] }
           } }
 
           it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*password: 'jenkins'$/) }

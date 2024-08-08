@@ -6,6 +6,7 @@ class profiles::jenkins::controller::configuration(
   Variant[Hash, Array[Hash]] $credentials                  = [],
   Variant[Hash, Array[Hash]] $global_libraries             = [],
   Variant[Hash, Array[Hash]] $pipelines                    = [],
+  Variant[Hash, Array[Hash]] $views                        = [],
   Variant[Hash, Array[Hash]] $users                        = [],
   Optional[String]           $puppetdb_url                 = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
@@ -45,7 +46,8 @@ class profiles::jenkins::controller::configuration(
   profiles::jenkins::plugin { 'configuration-as-code':
     configuration => {
                        'url'            => $url,
-                       'admin_password' => $admin_password
+                       'admin_password' => $admin_password,
+                       'views'          => $views
                      },
     require       => Profiles::Jenkins::Plugin['mailer'],
     notify        => Class['profiles::jenkins::controller::configuration::reload']
