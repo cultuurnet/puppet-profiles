@@ -24,7 +24,7 @@ class profiles::mysql::server::newrelic (
     integrations =>[{
       name             => 'nri-mysql',
       interval         => $check_interval,
-      labels           => { env => "$facts['agent_specified_environment']" },
+      labels           => { env => "$::environment" },
       inventory_source => 'config/mysql',
       env              => {
         'HOSTNAME'          => $facts['networking']['fqdn'],
