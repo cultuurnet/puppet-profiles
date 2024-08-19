@@ -7,6 +7,7 @@ class profiles::mysql::server (
   Boolean                                                                       $backup_lvm            = false,
   Optional[String]                                                              $backup_volume_group   = undef,
   Optional[String]                                                              $backup_volume_size    = undef,
+  Optional[String]                                                              $event_scheduler       = 'OFF',
   Integer                                                                       $backup_retention_days = 7,
   Integer                                                                       $max_open_files        = 1024,
   Integer                                                                       $long_query_time       = 2,
@@ -28,7 +29,8 @@ class profiles::mysql::server (
                                'slow_query_log'                 => 'ON',
                                'slow_query_log_file'            => '/var/log/mysql/slow-query.log',
                                'long_query_time'                => "${long_query_time}",
-                               'transaction_isolation'          => $transaction_isolation
+                               'transaction_isolation'          => $transaction_isolation,
+                               'event_scheduler'                => $event_scheduler
                              }
                }
 
