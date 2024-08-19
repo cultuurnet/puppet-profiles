@@ -22,7 +22,8 @@ describe 'profiles::mysql::server' do
           'max_open_files'        => 1024,
           'long_query_time'       => 2,
           'backup_retention_days' => 7,
-          'transaction_isolation' => 'REPEATABLE-READ'
+          'transaction_isolation' => 'REPEATABLE-READ',
+          'event_scheduler'       => 'OFF'
         ) }
 
         it { is_expected.not_to contain_profiles__lvm__mount('mysqldata') }
@@ -69,7 +70,8 @@ describe 'profiles::mysql::server' do
                                                   'slow_query_log'                 => 'ON',
                                                   'slow_query_log_file'            => '/var/log/mysql/slow-query.log',
                                                   'long_query_time'                => '2',
-                                                  'transaction_isolation'          => 'REPEATABLE-READ'
+                                                  'transaction_isolation'          => 'REPEATABLE-READ',
+                                                  'event_scheduler'                => 'OFF'
                                                 }
                                   }
         ) }
@@ -110,7 +112,8 @@ describe 'profiles::mysql::server' do
             'backup_volume_size'    => '10G',
             'long_query_time'       => 5,
             'backup_retention_days' => 5,
-            'transaction_isolation' => 'READ-COMMITTED'
+            'transaction_isolation' => 'READ-COMMITTED',
+            'event_scheduler'       => 'OFF'
           } }
 
           it { is_expected.to compile.with_all_deps }
@@ -188,7 +191,8 @@ describe 'profiles::mysql::server' do
                                                     'slow_query_log'                 => 'ON',
                                                     'slow_query_log_file'            => '/var/log/mysql/slow-query.log',
                                                     'long_query_time'                => '5',
-                                                    'transaction_isolation'          => 'READ-COMMITTED'
+                                                    'transaction_isolation'          => 'READ-COMMITTED',
+                                                    'event_scheduler'                => 'OFF'
                                                   }
                                     }
 

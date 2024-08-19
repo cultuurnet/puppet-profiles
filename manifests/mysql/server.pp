@@ -1,16 +1,18 @@
 class profiles::mysql::server (
-  Optional[String]                                                              $root_password         = undef,
-  Stdlib::IP::Address::V4                                                       $listen_address        = '127.0.0.1',
-  Boolean                                                                       $lvm                   = false,
-  Optional[String]                                                              $volume_group          = undef,
-  Optional[String]                                                              $volume_size           = undef,
-  Boolean                                                                       $backup_lvm            = false,
-  Optional[String]                                                              $backup_volume_group   = undef,
-  Optional[String]                                                              $backup_volume_size    = undef,
-  Integer                                                                       $backup_retention_days = 7,
-  Integer                                                                       $max_open_files        = 1024,
-  Integer                                                                       $long_query_time       = 2,
-  Enum['READ-COMMITTED', 'REPEATABLE-READ', 'READ-UNCOMMITTED', 'SERIALIZABLE'] $transaction_isolation = 'REPEATABLE-READ'
+  Optional[String]                                                              $root_password               = undef,
+  Stdlib::IP::Address::V4                                                       $listen_address              = '127.0.0.1',
+  Boolean                                                                       $newrelic_monitoring_enabled = false,
+  Boolean                                                                       $lvm                         = false,
+  Optional[String]                                                              $volume_group                = undef,
+  Optional[String]                                                              $volume_size                 = undef,
+  Boolean                                                                       $backup_lvm                  = false,
+  Optional[String]                                                              $backup_volume_group         = undef,
+  Optional[String]                                                              $backup_volume_size          = undef,
+  Optional[String]                                                              $event_scheduler             = 'OFF',
+  Integer                                                                       $backup_retention_days       = 7,
+  Integer                                                                       $max_open_files              = 1024,
+  Integer                                                                       $long_query_time             = 2,
+  Enum['READ-COMMITTED', 'REPEATABLE-READ', 'READ-UNCOMMITTED', 'SERIALIZABLE'] $transaction_isolation       = 'REPEATABLE-READ'
 
 ) inherits ::profiles {
 
@@ -28,7 +30,8 @@ class profiles::mysql::server (
                                'slow_query_log'                 => 'ON',
                                'slow_query_log_file'            => '/var/log/mysql/slow-query.log',
                                'long_query_time'                => "${long_query_time}",
-                               'transaction_isolation'          => $transaction_isolation
+                               'transaction_isolation'          => $transaction_isolation,
+                               'event_scheduler'                => $event_scheduler
                              }
                }
 
@@ -151,6 +154,10 @@ class profiles::mysql::server (
   }
 
   include profiles::mysql::server::logging
+
+  if $newrelic_monitoring_enabled {
+    include profiles::mysql::server::newrelic
+  }
 
   Group['mysql'] -> Class['mysql::server']
   User['mysql'] -> Class['mysql::server']
