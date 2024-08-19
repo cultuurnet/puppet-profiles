@@ -46,7 +46,7 @@ class profiles::mysql::server::newrelic (
         configfile => to_yaml($slow_query_log_config)
       }
     },
-    integration_config_files => {
+    integration_configfiles => {
       nri-mysql => {
         integration_config => {
           ensure     => 'present',
