@@ -1,6 +1,6 @@
 class profiles::mysql::server::newrelic (
   String $mysql_user     = lookup('data::mysql::newrelic::user',     String, 'first', undef),
-  Sting  $mysql_password = lookup('data::mysql::newrelic::password', String, 'first', undef),
+  String $mysql_password = lookup('data::mysql::newrelic::password', String, 'first', undef),
   String $license_key    = lookup('data::newrelic::license_key',     String, 'first', undef),
   String $check_interval = '30s',
   String $slow_query_log = '/var/log/mysql/slow-query.log'
