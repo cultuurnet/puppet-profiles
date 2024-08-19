@@ -8,13 +8,14 @@ class profiles::mysql::server::newrelic (
 
   profiles::mysql::app_user { "${mysql_user}@*":
     password => $mysql_password,
-    readonly => true
+    readonly => true,
+    remote   => true
   }
 
   $slow_query_log_config = {
     logs => [{
       name       => "mysql-slow-query-log",
-      file       => " /var/log/mysql/slow-query.log",
+      file       => "/var/log/mysql/slow-query.log",
       attributes => { logtype => "mysql-slow-query-log" }
     }]
   }
@@ -23,7 +24,7 @@ class profiles::mysql::server::newrelic (
     integrations =>[{
       name             => 'nri-mysql',
       interval         => $check_interval,
-      labels           => { env => $evironment },
+      labels           => { env => "$facts['environment']" },
       inventory_source => 'config/mysql',
       env              => {
         'HOSTNAME'          => $facts['networking']['fqdn'],
