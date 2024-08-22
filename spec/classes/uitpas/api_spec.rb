@@ -74,6 +74,12 @@ describe 'profiles::uitpas::api' do
               'readonly' => true
             ) }
 
+            it { is_expected.to contain_profiles__mysql__app_user('2ndline_ro@uitpas_api').with(
+              'password' => 'my_2ndline_ro_password',
+              'remote'   => false,
+              'readonly' => true
+            ) }
+
             it { is_expected.to contain_jdbcconnectionpool('mysql_uitpas_api_j2eePool').with(
               'ensure'              => 'present',
               'user'                => 'glassfish',
@@ -180,6 +186,7 @@ describe 'profiles::uitpas::api' do
             it { is_expected.to contain_profiles__mysql__app_user('uitpas_api@uitpas_api').that_requires('Mysql_database[uitpas_api]') }
             it { is_expected.to contain_profiles__mysql__app_user('uitpas_api@uitpas_api').that_comes_before('Class[profiles::uitpas::api::deployment]') }
             it { is_expected.to contain_profiles__mysql__app_user('etl@uitpas_api').that_requires('Mysql_database[uitpas_api]') }
+            it { is_expected.to contain_profiles__mysql__app_user('2ndline_ro@uitpas_api').that_requires('Mysql_database[uitpas_api]') }
             it { is_expected.to contain_jdbcconnectionpool('mysql_uitpas_api_j2eePool').that_requires('Profiles::Glassfish::Domain[uitpas]') }
             it { is_expected.to contain_jdbcconnectionpool('mysql_uitpas_api_j2eePool').that_requires('Profiles::Mysql::App_user[uitpas_api@uitpas_api]') }
             it { is_expected.to contain_jdbcresource('jdbc/cultuurnet_uitpas').that_requires('Jdbcconnectionpool[mysql_uitpas_api_j2eePool]') }
@@ -290,6 +297,12 @@ describe 'profiles::uitpas::api' do
                 'readonly' => true
               ) }
 
+              it { is_expected.to contain_profiles__mysql__app_user('2ndline_ro@uitpas_api').with(
+                'password' => 'my_2ndline_ro_password',
+                'remote'   => true,
+                'readonly' => true
+              ) }
+
               it { is_expected.to contain_jdbcconnectionpool('mysql_uitpas_api_j2eePool').with(
                 'ensure'              => 'present',
                 'user'                => 'glassfish',
@@ -332,6 +345,7 @@ describe 'profiles::uitpas::api' do
               it { is_expected.not_to contain_mysql_database('uitpas_api') }
               it { is_expected.not_to contain_profiles__mysql__app_user('uitpas_api@uitpas_api') }
               it { is_expected.not_to contain_profiles__mysql__app_user('etl@uitpas_api') }
+              it { is_expected.not_to contain_profiles__mysql__app_user('2ndline_ro@uitpas_api') }
               it { is_expected.not_to contain_jdbcconnectionpool('mysql_uitpas_api_j2eePool') }
               it { is_expected.not_to contain_jdbcresource('jdbc/cultuurnet_uitpas') }
               it { is_expected.not_to contain_class('profiles::uitpas::api::deployment') }
