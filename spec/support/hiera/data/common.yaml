@@ -9,6 +9,7 @@ data::openid::client_id: 'abc123'
 data::openid::client_secret: 'def456'
 
 data::mysql::etl::password: 'my_etl_password'
+data::mysql::2ndline_ro::password: 'my_2ndline_ro_password'
 
 profiles::jenkins::controller::admin_password: 'bar'
 profiles::jenkins::controller::url: 'https://foobar.com/'
