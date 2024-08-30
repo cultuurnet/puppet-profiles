@@ -5,6 +5,7 @@ class profiles::uitdatabank::search_api::deployment (
   String           $themes_source,
   String           $types_source,
   String           $pubkey_auth0_source,
+  String           $pubkey_keycloak_source,
   String           $version                = 'latest',
   String           $repository             = 'uitdatabank-search-api',
   String           $basedir                = '/var/www/udb3-search-service',
@@ -62,6 +63,13 @@ class profiles::uitdatabank::search_api::deployment (
     ensure => 'file',
     path   => "${basedir}/public-auth0.pem",
     source => $pubkey_auth0_source,
+    *      => $file_default_attributes
+  }
+
+  file { 'uitdatabank-search-api-pubkey-keycloak':
+    ensure => 'file',
+    path   => "${basedir}/public-keycloak.pem",
+    source => $pubkey_keycloak_source,
     *      => $file_default_attributes
   }
 

@@ -41,6 +41,7 @@ profiles::uitdatabank::search_api::deployment::facilities_source: '/path/to/conf
 profiles::uitdatabank::search_api::deployment::themes_source: '/path/to/config/source'
 profiles::uitdatabank::search_api::deployment::types_source: '/path/to/config/source'
 profiles::uitdatabank::search_api::deployment::pubkey_auth0_source: '/path/to/config/key'
+profiles::uitdatabank::search_api::deployment::pubkey_keycloak_source: '/path/to/config/key'
 
 profiles::publiq::versions::service_address: '127.0.1.1'
 profiles::publiq::versions::service_port: 6000
