@@ -60,7 +60,7 @@ class profiles::platform::deployment (
   }
 
   exec { 'run platform cache clear':
-    command     => 'php artisan cache:clear',
+    command     => 'php artisan optimize:clear',
     require     => Exec['run platform database migrations'],
     *           => $exec_default_attributes
   }
