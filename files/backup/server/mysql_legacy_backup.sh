@@ -1,8 +1,6 @@
 for HOST in ${MYSQL_SERVERS}
 do
-  if [ ! -d "${BACKUPDIR}/${HOST}"]; then
-    mkdir -v "${BACKUPDIR}/${HOST}"
-  fi
+  mkdir -p "${BACKUPDIR}/${HOST}"
 
   # Get list of databases
   DATABASES=$(mysql -u ${BACKUP_USER} -p${BACKUP_PASSWORD} -h ${HOST} --connect-timeout=10 -Ns -e 'show databases' 2>/dev/null || echo '')
@@ -18,7 +16,7 @@ do
         echo "Skipping ${DATABASE}, which is not a MySQL database"
         ;;
       * )
-        mysqldump -u ${BACKUP_USER} -p${BACKUP_PASSWORD} -h ${HOST} --events --routines --single-transaction --databases ${DATABASE} | gzip > ${HOST}/${DATABASE}-$(date -Iseconds).sql.gz
+        mysqldump -u ${BACKUP_USER} -p${BACKUP_PASSWORD} -h ${HOST} --events --routines --single-transaction --databases ${DATABASE} | gzip > ${BACKUPDIR}/${HOST}/${DATABASE}-$(date -Iseconds).sql.gz
         ;;
       esac
     done
