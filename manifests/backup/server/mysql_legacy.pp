@@ -1,7 +1,7 @@
 class profiles::backup::server::mysql_legacy (
-  Array                          $servers               = undef,
+  Array                          $servers               = [],
   String                         $backup_user           = 'backup',
-  String                         $backup_password       = undef,
+  String                         $backup_password,
   String                         $backupdir             = '/data/mysql_legacy_backups',
   Boolean                        $lvm                   = false,
   Optional[String]               $volume_group          = undef,
@@ -9,6 +9,8 @@ class profiles::backup::server::mysql_legacy (
 ) inherits ::profiles {
 
   realize Package['mysql-client']
+
+  $serverlist = join($servers, ' ')
 
   if $lvm {
     unless ($volume_group and $volume_size) {
@@ -35,15 +37,13 @@ class profiles::backup::server::mysql_legacy (
   file { '/usr/local/bin/mysql_legacy_backup.sh':
     source  => 'puppet:///modules/profiles/backup/server/mysql_legacy_backup.sh',
     ensure  => 'file',
-    owner   => 'root',
-    group   => 'root',
     mode    => '0755',
   }
 
   # cron
   cron { 'mysql-legacy-backup':
     command     => "/usr/local/bin/mysql_legacy_backup.sh",
-    environment => ["MYSQL_SERVERS=${servers}", "BACKUP_USER=${backup_user}", "BACKUP_PASSWORD=${backup_password}", "BACKUPDIR=${backupdir}"],
+    environment => ["MYSQL_SERVERS=${serverlist}", "BACKUP_USER=${backup_user}", "BACKUP_PASSWORD=${backup_password}", "BACKUPDIR=${backupdir}"],
     user        => 'root',
     hour        => '*',
     minute      => 0,
