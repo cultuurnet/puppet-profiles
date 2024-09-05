@@ -2,6 +2,7 @@ class profiles::redis (
   String                  $version          = 'installed',
   Stdlib::IP::Address::V4 $listen_address   = '127.0.0.1',
   Boolean                 $persist_data     = true,
+  Boolean                 $appendonly       = false,
   Optional[String]        $password         = undef,
   Boolean                 $lvm              = false,
   Optional[String]        $volume_group     = undef,
@@ -21,8 +22,14 @@ class profiles::redis (
     realize Firewall['400 accept redis traffic']
   }
 
-  if $lvm {
+  if $appendonly {
+    unless $persist_data {
+      fail("with appendonly enabled, 'persist_data' must be set to true")
+    }
+  }
 
+
+  if $lvm {
     unless ($volume_group and $volume_size) {
       fail("with LVM enabled, expects a value for both 'volume_group' and 'volume_size'")
     }
@@ -53,6 +60,7 @@ class profiles::redis (
     workdir          => $workdir,
     workdir_mode     => '0755',
     save_db_to_disk  => $persist_data,
+    appendonly       => $appendonly,
     bind             => $listen_address,
     requirepass      => $password,
     service_manage   => false,
