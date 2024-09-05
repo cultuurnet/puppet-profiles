@@ -1,10 +1,11 @@
 class profiles::backup::server (
   String                         $hostname,
-  String                         $backupdir       = '/data/borgbackup',
-  Boolean                        $lvm             = false,
-  Optional[String]               $volume_group    = undef,
-  Optional[String]               $volume_size     = undef,
-  Enum['rsa', 'dsa']             $public_key_type = 'rsa',
+  String                         $backupdir                   = '/data/borgbackup',
+  Boolean                        $lvm                         = false,
+  Optional[String]               $volume_group                = undef,
+  Optional[String]               $volume_size                 = undef,
+  Enum['rsa', 'dsa']             $public_key_type             = 'rsa',
+  Boolean                        $mysql_legacy_backup_enabled = false,
   String                         $public_key
 ) inherits ::profiles {
 
@@ -49,5 +50,9 @@ class profiles::backup::server (
       group   => 'borgbackup',
       require => [Group['borgbackup'], User['borgbackup']]
     }
+  }
+
+  if $mysql_legacy_backup_enabled {
+    include profiles::backup::server::mysql_legacy
   }
 }
