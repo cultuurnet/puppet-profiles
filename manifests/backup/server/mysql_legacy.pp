@@ -43,7 +43,7 @@ class profiles::backup::server::mysql_legacy (
   # cron
   cron { 'mysql-legacy-backup':
     command     => "/usr/local/bin/mysql_legacy_backup.sh",
-    environment => ["MYSQL_SERVERS=${serverlist}", "BACKUP_USER=${backup_user}", "BACKUP_PASSWORD=${backup_password}", "BACKUPDIR=${backupdir}"],
+    environment => ["MYSQL_SERVERS=\'${serverlist}\'", "BACKUP_USER=${backup_user}", "BACKUP_PASSWORD=${backup_password}", "BACKUPDIR=${backupdir}"],
     user        => 'root',
     hour        => '*',
     minute      => 0,
