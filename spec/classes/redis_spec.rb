@@ -14,6 +14,7 @@ describe 'profiles::redis' do
           'version'          => 'installed',
           'listen_address'   => '127.0.0.1',
           'persist_data'     => true,
+          'appendonly'       => false,
           'password'         => nil,
           'lvm'              => false,
           'volume_group'     => nil,
@@ -31,6 +32,7 @@ describe 'profiles::redis' do
           'package_ensure'   => 'installed',
           'workdir'          => '/var/lib/redis',
           'save_db_to_disk'  => true,
+          'appendonly'       => false,
           'workdir_mode'     => '0755',
           'bind'             => '127.0.0.1',
           'requirepass'      => nil,
@@ -53,11 +55,13 @@ describe 'profiles::redis' do
       context "with volume_group datavg present" do
         let(:pre_condition) { 'volume_group { "datavg": ensure => "present" }' }
 
-        context "with version => 1.2.3, listen_address => 0.0.0.0, password => mypass, lvm => true, volume_group => datavg, volume_size => 20G, maxmemory => 200mb and maxmemory_policy => noeviction" do
+        context "with version => 1.2.3, listen_address => 0.0.0.0, password => mypass, appendonly => true, lvm => true, volume_group => datavg, volume_size => 20G, maxmemory => 200mb and maxmemory_policy => noeviction" do
           let(:params) { {
             'version'          => '1.2.3',
             'listen_address'   => '0.0.0.0',
             'password'         => 'mypass',
+            'persist_data'     => true,
+            'appendonly'       => true,
             'lvm'              => true,
             'volume_group'     => 'datavg',
             'volume_size'      => '20G',
@@ -71,6 +75,8 @@ describe 'profiles::redis' do
             'package_ensure'   => '1.2.3',
             'bind'             => '0.0.0.0',
             'requirepass'      => 'mypass',
+            'save_db_to_disk'  => true,
+            'appendonly'       => true,
             'maxmemory'        => '200mb',
             'maxmemory_policy' => 'noeviction'
           ) }
@@ -130,6 +136,15 @@ describe 'profiles::redis' do
         } }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /with LVM enabled, expects a value for both 'volume_group' and 'volume_size'/) }
+      end
+
+      context "with persist_data => false, appendonly => true" do
+        let(:params) { {
+          'persist_data' => false,
+          'appendonly'   => true
+        } }
+
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /with appendonly enabled, 'persist_data' must be set to true/) }
       end
      end
    end
