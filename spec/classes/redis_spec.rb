@@ -22,6 +22,7 @@ describe 'profiles::redis' do
           'backup_lvm'            => false,
           'backup_volume_group'   => nil,
           'backup_volume_size'    => nil,
+          'backup_schedule'       => nil,
           'backup_retention_days' => 7,
           'maxmemory'             => nil,
           'maxmemory_policy'      => nil
@@ -49,6 +50,7 @@ describe 'profiles::redis' do
           'lvm'            => false,
           'volume_group'   => nil,
           'volume_size'    => nil,
+          'schedule'       => nil,
           'retention_days' => 7
         ) }
 
@@ -66,7 +68,7 @@ describe 'profiles::redis' do
       context "with volume_groups datavg and backupvg present" do
         let(:pre_condition) { ['volume_group { "datavg": ensure => "present" }', 'volume_group { "backupvg": ensure => "present" }'] }
 
-        context "with version => 1.2.3, listen_address => 0.0.0.0, password => mypass, appendonly => true, lvm => true, volume_group => datavg, volume_size => 20G, backup_lvm => true, backup_volume_group => backupvg, backup_volume_size => 5G and backup_retention_days => 10" do
+        context "with version => 1.2.3, listen_address => 0.0.0.0, password => mypass, appendonly => true, lvm => true, volume_group => datavg, volume_size => 20G, backup_lvm => true, backup_volume_group => backupvg, backup_volume_size => 5G, backup_schedule => hourly and backup_retention_days => 10" do
           let(:params) { {
             'version'               => '1.2.3',
             'listen_address'        => '0.0.0.0',
@@ -79,6 +81,7 @@ describe 'profiles::redis' do
             'backup_lvm'            => true,
             'backup_volume_group'   => 'backupvg',
             'backup_volume_size'    => '5G',
+            'backup_schedule'       => 'hourly',
             'backup_retention_days' => 10
           } }
 
@@ -107,6 +110,7 @@ describe 'profiles::redis' do
             'lvm'            => true,
             'volume_group'   => 'backupvg',
             'volume_size'    => '5G',
+            'schedule'       => 'hourly',
             'retention_days' => 10
           ) }
 
@@ -123,7 +127,7 @@ describe 'profiles::redis' do
       context "with volume_groups myvg and mybackupvg present" do
         let(:pre_condition) { ['volume_group { "myvg": ensure => "present" }', 'volume_group { "mybackupvg": ensure => "present" }'] }
 
-        context "with lvm => true, volume_group => myvg, volume_size => 10G, backup_lvm => true, backup_volume_group => mybackupvg, backup_volume_size => 2G and backup_retention_days => 5" do
+        context "with lvm => true, volume_group => myvg, volume_size => 10G, backup_lvm => true, backup_volume_group => mybackupvg, backup_volume_size => 2G, backup_schedule => daily and backup_retention_days => 5" do
           let(:params) { {
             'lvm'                   => true,
             'volume_group'          => 'myvg',
@@ -131,6 +135,7 @@ describe 'profiles::redis' do
             'backup_lvm'            => true,
             'backup_volume_group'   => 'mybackupvg',
             'backup_volume_size'    => '2G',
+            'backup_schedule'       => 'daily',
             'backup_retention_days' => 5
           } }
 
@@ -146,6 +151,7 @@ describe 'profiles::redis' do
             'lvm'            => true,
             'volume_group'   => 'mybackupvg',
             'volume_size'    => '2G',
+            'schedule'       => 'daily',
             'retention_days' => 5
           ) }
         end
