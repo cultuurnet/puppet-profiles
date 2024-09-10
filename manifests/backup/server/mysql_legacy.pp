@@ -45,8 +45,11 @@ class profiles::backup::server::mysql_legacy (
     command     => "/usr/local/bin/mysql_legacy_backup.sh",
     environment => ["MYSQL_SERVERS=\'${serverlist}\'", "BACKUP_USER=${backup_user}", "BACKUP_PASSWORD=${backup_password}", "BACKUPDIR=${backupdir}"],
     user        => 'root',
-    hour        => '*',
-    minute      => 0,
+    hour        => '4',
+    minute      => '0',
+    weekday     => '*',
+    monthday    => '*',
+    month       => '*',
     require     => File['/usr/local/bin/mysql_legacy_backup.sh']
   }
 
@@ -56,7 +59,7 @@ class profiles::backup::server::mysql_legacy (
     command  => "/usr/bin/find ${backupdir} -type f -name '*.sql.gz' -mtime +7 -delete",
     user     => 'root',
     hour     => '4',
-    minute   => '15',
+    minute   => '45',
     weekday  => '*',
     monthday => '*',
     month    => '*',
