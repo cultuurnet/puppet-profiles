@@ -1,0 +1,23 @@
+#!/bin/bash
+
+backup_directory=/data/backup/redis/current
+archive_directory=/data/backup/redis/archive
+retention=<%= @mtime %>
+
+date_suffix=$(date +%Y%m%d-%H%M%S --date='now')
+
+echo "Removing previous backups"
+/usr/bin/rm -rf ${backup_directory}/*
+
+echo "Copying redis dumpfile to directory ${backup_directory}"
+/usr/bin/cp /var/lib/redis/dump.rdb ${backup_directory}/dump.${date_suffix}.rdb
+
+echo "Copying backups to archive"
+for path in ${backup_directory}/*
+do
+  filename=${path##*/}
+  /usr/bin/test $(date +\\%0H) -eq 0 && /usr/bin/nice -n 19 /bin/bzip2 --fast -c ${path} > ${archive_directory}/${filename}.bz2
+done
+
+echo "Cleaning up archive"
+/usr/bin/find ${archive_directory} -type f -mtime +${retention} -delete

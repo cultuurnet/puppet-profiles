@@ -1,14 +1,19 @@
 class profiles::redis (
-  String                  $version          = 'installed',
-  Stdlib::IP::Address::V4 $listen_address   = '127.0.0.1',
-  Boolean                 $persist_data     = true,
-  Boolean                 $appendonly       = false,
-  Optional[String]        $password         = undef,
-  Boolean                 $lvm              = false,
-  Optional[String]        $volume_group     = undef,
-  Optional[String]        $volume_size      = undef,
-  Optional[String]        $maxmemory        = undef,
-  Optional[String]        $maxmemory_policy = undef
+  String                            $version               = 'installed',
+  Stdlib::IP::Address::V4           $listen_address        = '127.0.0.1',
+  Boolean                           $persist_data          = true,
+  Boolean                           $appendonly            = false,
+  Optional[String]                  $password              = undef,
+  Boolean                           $lvm                   = false,
+  Optional[String]                  $volume_group          = undef,
+  Optional[String]                  $volume_size           = undef,
+  Boolean                           $backup_lvm            = false,
+  Optional[String]                  $backup_volume_group   = undef,
+  Optional[String]                  $backup_volume_size    = undef,
+  Optional[Enum['hourly', 'daily']] $backup_schedule       = undef,
+  Integer                           $backup_retention_days = 7,
+  Optional[String]                  $maxmemory             = undef,
+  Optional[String]                  $maxmemory_policy      = undef
 ) inherits ::profiles {
 
   $workdir = '/var/lib/redis'
@@ -68,6 +73,16 @@ class profiles::redis (
     maxmemory_policy => $maxmemory_policy,
     require          => [Group['redis'], User['redis']],
     notify           => Service['redis-server']
+  }
+
+  if $persist_data {
+    class { 'profiles::redis::backup':
+      lvm            => $backup_lvm,
+      volume_group   => $backup_volume_group,
+      volume_size    => $backup_volume_size,
+      schedule       => $backup_schedule,
+      retention_days => $backup_retention_days
+    }
   }
 
   service { 'redis-server':
