@@ -14,12 +14,20 @@ describe 'profiles::redis::backup' do
           'lvm'            => false,
           'volume_group'   => nil,
           'volume_size'    => nil,
+          'schedule'       => nil,
           'retention_days' => 7
         ) }
 
         it { is_expected.to contain_file('/data') }
         it { is_expected.to contain_file('/data/backup') }
         it { is_expected.to contain_file('/data/backup/redis').with(
+          'ensure' => 'directory',
+          'owner'  => 'root',
+          'group'  => 'root',
+          'mode'   => '0755'
+        ) }
+
+        it { is_expected.to contain_file('/data/backup/redis/current').with(
           'ensure' => 'directory',
           'owner'  => 'root',
           'group'  => 'root',
@@ -33,26 +41,23 @@ describe 'profiles::redis::backup' do
           'mode'   => '0755'
         ) }
 
-        it { is_expected.to contain_cron('Cleanup old redis backups').with(
-          'command'  => '/usr/bin/find /data/backup/redis/archive -type f -mtime +6 -delete',
-          'user'     => 'root',
-          'hour'     => '5',
-          'minute'   => '30',
-          'weekday'  => '*',
-          'monthday' => '*',
-          'month'    => '*'
+        it { is_expected.to contain_cron('redis backup').with(
+          'ensure' => 'absent'
         ) }
 
         it { is_expected.to contain_file('/data/backup/redis').that_requires('File[/data/backup]') }
+        it { is_expected.to contain_file('/data/backup/redis/current').that_requires('File[/data/backup/redis]') }
         it { is_expected.to contain_file('/data/backup/redis/archive').that_requires('File[/data/backup/redis]') }
-        it { is_expected.to contain_cron('Cleanup old redis backups').that_requires('File[/data/backup/redis/archive]') }
+        it { is_expected.to contain_cron('redis backup').that_requires('File[/data/backup/redis/current]') }
+        it { is_expected.to contain_cron('redis backup').that_requires('File[/data/backup/redis/archive]') }
       end
 
-      context "with lvm => true, volume_group => backupvg, volume_size => 20G and retention_days => 10" do
+      context "with lvm => true, volume_group => backupvg, volume_size => 20G, schedule => daily and retention_days => 10" do
         let(:params) { {
           'lvm'            => true,
           'volume_group'   => 'backupvg',
           'volume_size'    => '20G',
+          'schedule'       => 'daily',
           'retention_days' => 10
         } }
 
@@ -68,29 +73,44 @@ describe 'profiles::redis::backup' do
             'fs_type'      => 'ext4'
           ) }
 
-          it { is_expected.to contain_cron('Cleanup old redis backups').with(
-            'command'  => '/usr/bin/find /data/backup/redis/archive -type f -mtime +9 -delete',
-            'user'     => 'root',
-            'hour'     => '5',
-            'minute'   => '30',
-            'weekday'  => '*',
-            'monthday' => '*',
-            'month'    => '*'
+          it { is_expected.to contain_cron('redis backup').with(
+            'ensure'      => 'present',
+            'command'     => '/usr/local/sbin/redisbackup.sh',
+            'environment' => ['TZ=Europe/Brussels', 'MAILTO=infra+cron@publiq.be'],
+            'user'        => 'root',
+            'hour'        => '0',
+            'minute'      => '20',
+            'weekday'     => '*',
+            'monthday'    => '*',
+            'month'       => '*'
           ) }
         end
       end
 
-      context "with lvm => true, volume_group => myvg and volume_size => 10G" do
+      context "with lvm => true, volume_group => myvg, schedule => hourly and volume_size => 10G" do
         let(:params) { {
           'lvm'          => true,
           'volume_group' => 'myvg',
-          'volume_size'  => '10G'
+          'volume_size'  => '10G',
+          'schedule'     => 'hourly'
         } }
 
         context "with volume_group myvg present" do
           let(:pre_condition) { 'volume_group { "myvg": ensure => "present" }' }
 
           it { is_expected.to compile.with_all_deps }
+
+          it { is_expected.to contain_cron('redis backup').with(
+            'ensure'      => 'present',
+            'command'     => '/usr/local/sbin/redisbackup.sh',
+            'environment' => ['TZ=Europe/Brussels', 'MAILTO=infra+cron@publiq.be'],
+            'user'        => 'root',
+            'hour'        => '*',
+            'minute'      => '20',
+            'weekday'     => '*',
+            'monthday'    => '*',
+            'month'       => '*'
+          ) }
 
           it { is_expected.to contain_profiles__lvm__mount('redisbackup').with(
             'volume_group' => 'myvg',
