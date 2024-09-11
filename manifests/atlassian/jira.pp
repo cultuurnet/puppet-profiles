@@ -24,7 +24,7 @@ class profiles::atlassian::jira (
   String  $dbserver,
   String  $dbdriver                = 'com.mysql.jdbc.Driver',
   String  $dbtype                  = 'mysql8',
-  String  $mysql_connector_manage  = false,
+  String  $mysql_connector_manage  = true,
   String  $jvm_xms                 = '4100m',
   String  $jvm_xmx                 = '4100m',
   String  $jvm_permgen             = '768m',
