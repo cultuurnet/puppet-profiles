@@ -60,6 +60,11 @@ class profiles::groups inherits ::profiles {
     gid    => '1001'
   }
 
+  @group { 'jira':
+    ensure => 'present',
+    gid    => '1001'
+  }
+
   @group { 'www-data':
     ensure => 'present',
     gid    => '33'
