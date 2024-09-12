@@ -1,30 +1,12 @@
 class profiles::atlassian::jira (
   String  $version,
   Boolean $data_lvm                = true,
-  String  $installdir_volume_group = 'jiravg',
   String  $installdir_volume_size  = '50G',
-  String  $installdir              = '/opt/jira',
-  String  $homedir_volume_group    = 'jiravg',
   String  $homedir_volume_size     = '20G',
-  String  $homedir                 = '/home/jira',
-  Boolean $mysql_lvm               = false,
-  String  $mysql_volume_group      = 'jiravg',
-  String  $mysql_volume_size       = '50G',
-  Integer $tomcat_port             = 8080,
-  Boolean $manage_user             = false,
   String  $servername,
   String  $serveraliases           = [],
-  String  $javahome                = '/usr/lib/jvm/java-17-openjdk-amd64',
-  String  $jvm_type                = 'openjdk-17',
-  String  $db                      = 'mysql',
-  String  $dbuser                  = 'jirauser',
   String  $dbpassword,
-  String  $dbname                  = 'jiradb',
-  String  $dbport                  = '3306',
   String  $dbserver,
-  String  $dbdriver                = 'com.mysql.jdbc.Driver',
-  String  $dbtype                  = 'mysql8',
-  String  $mysql_connector_manage  = true,
   String  $jvm_xms                 = '4100m',
   String  $jvm_xmx                 = '4100m',
   String  $jvm_permgen             = '768m',
@@ -32,8 +14,12 @@ class profiles::atlassian::jira (
   Boolean $service_manage          = true,
   String  $service_ensure          = 'running',
   Boolean $service_enable          = true,
-  Optional[Hash] $proxy            = {}
 ) inherits ::profiles {
+
+  $dbuser       = 'jirauser'
+  $dbname       = 'jiradb'
+  $dburl_params = 'useUnicode=true&amp;characterEncoding=UTF8&amp;sessionVariables=default_storage_engine=InnoDB'
+  $dburl        = "jdbc:mysql://${dbserver}:3306/${$dbname}?${dburl_params}"
 
   include ::profiles::java
   include ::profiles::apache
@@ -54,18 +40,18 @@ class profiles::atlassian::jira (
     }
 
     profiles::lvm::mount { 'jira_installdir':
-      volume_group => $installdir_volume_group,
+      volume_group => 'jiravg',
       size         => $installdir_volume_size,
-      mountpoint   => $installdir,
+      mountpoint   => '/opt/jira',
       fs_type      => 'ext4',
       owner        => 'jira',
       group        => 'jira',
       require      => User['jira']
     }
     profiles::lvm::mount { 'jira_homedir':
-      volume_group => $homedir_volume_group,
+      volume_group => 'jiravg',
       size         => $homedir_volume_size,
-      mountpoint   => $homedir,
+      mountpoint   => '/home/jira',
       fs_type      => 'ext4',
       owner        => 'jira',
       group        => 'jira',
@@ -124,21 +110,22 @@ class profiles::atlassian::jira (
   # insall jira
   class { 'jira':
     version                => $version,
-    installdir             => $installdir,
-    homedir                => $homedir,
-    tomcat_port            => $tomcat_port,
-    manage_user            => $manage_user,
-    javahome               => $javahome,
-    jvm_type               => $jvm_type,
-    db                     => $db,
+    installdir             => '/opt/jira',
+    homedir                => '/home/jira',
+    tomcat_port            => 8080,
+    manage_user            => false,
+    javahome               => '/usr/lib/jvm/java-17-openjdk-amd64',
+    jvm_type               => 'openjdk-17',
+    db                     => 'mysql',
+    dbport                 => '3306',
+    dbdriver               => 'com.mysql.jdbc.Driver',
+    dbtype                 => 'mysql8',
+    mysql_connector_manage => true,
+    dburl                  => $dburl,
     dbuser                 => $dbuser,
     dbpassword             => $dbpassword,
     dbname                 => $dbname,
-    dbport                 => $dbport,
     dbserver               => $dbserver,
-    dbdriver               => $dbdriver,
-    dbtype                 => $dbtype,
-    mysql_connector_manage => $mysql_connector_manage,
     jvm_xms                => $jvm_xms,
     jvm_xmx                => $jvm_xmx,
     jvm_permgen            => $jvm_permgen,
@@ -146,7 +133,11 @@ class profiles::atlassian::jira (
     service_manage         => $service_manage,
     service_ensure         => $service_ensure,
     service_enable         => $service_enable,
-    proxy                  => $proxy
+    proxy                  => {
+      proxyName  => $servername,
+      proxyPort  => '443',
+      scheme     => 'https'
+    }
   }
 
   # include ::profiles::atlassian::jira::monitoring
