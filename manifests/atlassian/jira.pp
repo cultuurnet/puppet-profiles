@@ -31,7 +31,6 @@ class profiles::atlassian::jira (
 
   realize Group['jira']
   realize User['jira']
-  realize Package['mysql-connector-j']
 
   # setup storage
   if $data_lvm {
