@@ -20,7 +20,7 @@ echo "Copying backups to archive"
 for path in ${backup_directory}/*
 do
     filename=${path##*/}
-    /usr/bin/test $(date +%0H) -eq 0 && /usr/bin/nice -n 19 /bin/bzip2 --fast -c ${path} > ${archive_directory}/${filename}.bz2
+    /usr/bin/nice -n 19 /bin/bzip2 --fast -c ${path} > ${archive_directory}/${filename}.bz2
 done
 
 echo "Cleaning up archive"

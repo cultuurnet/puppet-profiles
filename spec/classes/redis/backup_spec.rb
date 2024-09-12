@@ -75,14 +75,11 @@ describe 'profiles::redis::backup' do
 
           it { is_expected.to contain_cron('redis backup').with(
             'ensure'      => 'present',
-            'command'     => '/usr/local/sbin/redisbackup.sh',
+            'command'     => "/usr/bin/test $(date +\\%0H) -eq 0 && /usr/local/sbin/redisbackup.sh",
             'environment' => ['TZ=Europe/Brussels', 'MAILTO=infra+cron@publiq.be'],
             'user'        => 'root',
-            'hour'        => '0',
-            'minute'      => '20',
-            'weekday'     => '*',
-            'monthday'    => '*',
-            'month'       => '*'
+            'hour'        => '*',
+            'minute'      => '20'
           ) }
         end
       end
@@ -102,14 +99,11 @@ describe 'profiles::redis::backup' do
 
           it { is_expected.to contain_cron('redis backup').with(
             'ensure'      => 'present',
-            'command'     => '/usr/local/sbin/redisbackup.sh',
+            'command'     => '/usr/bin/true && /usr/local/sbin/redisbackup.sh',
             'environment' => ['TZ=Europe/Brussels', 'MAILTO=infra+cron@publiq.be'],
             'user'        => 'root',
             'hour'        => '*',
-            'minute'      => '20',
-            'weekday'     => '*',
-            'monthday'    => '*',
-            'month'       => '*'
+            'minute'      => '20'
           ) }
 
           it { is_expected.to contain_profiles__lvm__mount('redisbackup').with(

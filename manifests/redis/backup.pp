@@ -6,7 +6,12 @@ class profiles::redis::backup (
   Integer                           $retention_days = 7
 ) inherits ::profiles {
 
-  $mtime = $retention_days - 1
+  $mtime       = $retention_days - 1
+  $cron_prefix = $schedule ? {
+                   'daily'  => "/usr/bin/test $(date +\\%0H) -eq 0",
+                   'hourly' => '/usr/bin/true',
+                   default  => '/usr/bin/false'
+                 }
 
   if $lvm {
     unless ($volume_group and $volume_size) {
@@ -62,17 +67,11 @@ class profiles::redis::backup (
                      undef   => 'absent',
                      default => 'present'
                    },
-    command     => '/usr/local/sbin/redisbackup.sh',
+    command     => "${cron_prefix} && /usr/local/sbin/redisbackup.sh",
     environment => ['TZ=Europe/Brussels', 'MAILTO=infra+cron@publiq.be'],
     user        => 'root',
-    hour        => $schedule ? {
-                     'hourly' => '*',
-                     default  => '0'
-                   },
+    hour        => '*',
     minute      => '20',
-    weekday     => '*',
-    monthday    => '*',
-    month       => '*',
     require     => [File['/data/backup/redis/current'], File['/data/backup/redis/archive'], File['/usr/local/sbin/redisbackup.sh']]
   }
 }
