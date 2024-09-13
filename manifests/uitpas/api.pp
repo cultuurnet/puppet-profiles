@@ -138,6 +138,7 @@ class profiles::uitpas::api (
       Package['mysql-connector-j'] -> Class['profiles::uitpas::api::deployment']
       File['Domain uitpas mysql-connector-j'] -> Class['profiles::uitpas::api::deployment']
       Profiles::Mysql::App_user["${database_user}@${database_name}"] -> Class['profiles::uitpas::api::deployment']
+      Class['profiles::uitpas::api::deployment'] ~> Service['uitpas']
     }
   }
 
