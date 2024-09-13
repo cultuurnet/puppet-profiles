@@ -1,13 +1,13 @@
 class profiles::redis::backup (
-  Boolean                           $lvm            = false,
-  Optional[String]                  $volume_group   = undef,
-  Optional[String]                  $volume_size    = undef,
-  Optional[Enum['hourly', 'daily']] $schedule       = undef,
-  Integer                           $retention_days = 7
+  Boolean                           $lvm             = false,
+  Optional[String]                  $volume_group    = undef,
+  Optional[String]                  $volume_size     = undef,
+  Optional[Enum['hourly', 'daily']] $backup_schedule = undef,
+  Integer                           $retention_days  = 7
 ) inherits ::profiles {
 
   $mtime       = $retention_days - 1
-  $cron_prefix = $schedule ? {
+  $cron_prefix = $backup_schedule ? {
                    'daily'  => "/usr/bin/test $(date +\\%0H) -eq 0",
                    'hourly' => '/usr/bin/true',
                    default  => '/usr/bin/false'
@@ -63,7 +63,7 @@ class profiles::redis::backup (
   }
 
   cron { 'redis backup':
-    ensure      => $schedule ? {
+    ensure      => $backup_schedule ? {
                      undef   => 'absent',
                      default => 'present'
                    },

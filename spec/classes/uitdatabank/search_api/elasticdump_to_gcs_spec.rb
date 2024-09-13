@@ -18,7 +18,7 @@ describe 'profiles::uitdatabank::search_api::elasticdump_to_gcs' do
           'bucket_name'            => 'foo',
           'bucket_dumplocation'    => '',
           'credentials_source'     => nil,
-          'schedule'               => false,
+          'dump_schedule'          => false,
           'dump_hour'              => 0,
           'local_timezone'         => 'UTC'
         ) }
@@ -49,12 +49,12 @@ describe 'profiles::uitdatabank::search_api::elasticdump_to_gcs' do
         it { is_expected.to contain_cron('elasticdump_to_gcs').that_requires('File[elasticdump_to_gcs]') }
       end
 
-      context "with project => foobar, bucket_name => bar, credentials_source => /tmp/secret, schedule => true, bucket_dumplocation => dir1/dir2, dump_hour => 12 and local_timezone => Europe/Paris" do
+      context "with project => foobar, bucket_name => bar, credentials_source => /tmp/secret, dump_schedule => true, bucket_dumplocation => dir1/dir2, dump_hour => 12 and local_timezone => Europe/Paris" do
         let(:params) { {
           'project'             => 'foobar',
           'bucket_name'         => 'bar',
           'credentials_source'  => '/tmp/secret',
-          'schedule'            => true,
+          'dump_schedule'       => true,
           'bucket_dumplocation' => 'dir1/dir2',
           'dump_hour'           => 12,
           'local_timezone'      => 'Europe/Paris'
@@ -91,7 +91,7 @@ describe 'profiles::uitdatabank::search_api::elasticdump_to_gcs' do
           'bucket_name'         => nil,
           'bucket_dumplocation' => '',
           'credentials_source'  => nil,
-          'schedule'            => false,
+          'dump_schedule'       => false,
           'dump_hour'           => 0,
           'local_timezone'      => 'UTC'
         ) }

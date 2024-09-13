@@ -3,7 +3,7 @@ class profiles::uitdatabank::search_api::elasticdump_to_gcs (
   Optional[String] $bucket_name         = undef,
   String           $bucket_dumplocation = '',
   Optional[String] $credentials_source  = undef,
-  Boolean          $schedule            = false,
+  Boolean          $dump_schedule       = false,
   Integer          $dump_hour           = 0,
   String           $local_timezone      = 'UTC'
 ) inherits ::profiles {
@@ -23,7 +23,7 @@ class profiles::uitdatabank::search_api::elasticdump_to_gcs (
     }
 
     cron { 'elasticdump_to_gcs':
-      ensure      => $schedule ? {
+      ensure      => $dump_schedule ? {
                        true  => 'present',
                        false => 'absent'
                      },
