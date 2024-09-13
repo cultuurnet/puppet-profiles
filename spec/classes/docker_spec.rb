@@ -33,6 +33,8 @@ describe 'profiles::docker' do
         it { is_expected.to_not contain_profiles__lvm__mount('dockerdata') }
         it { is_expected.to_not contain_mount('/var/lib/docker') }
 
+        it { is_expected.to contain_package('docker-compose') }
+
         it { is_expected.to_not contain_package('qemu-user-static') }
 
         it { is_expected.to contain_cron('docker system prune').with(
@@ -82,6 +84,8 @@ describe 'profiles::docker' do
             'extra_parameters'            => [ '--experimental=true'],
             'docker_users'                => []
           ) }
+
+          it { is_expected.to contain_package('docker-compose') }
 
           it { is_expected.to contain_package('qemu-user-static') }
 

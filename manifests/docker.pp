@@ -34,6 +34,10 @@ class profiles::docker (
     }
   }
 
+  package { 'docker-compose':
+    ensure => 'present'
+  }
+
   if $experimental {
     realize Package['qemu-user-static']
   }
