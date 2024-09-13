@@ -77,11 +77,11 @@ class profiles::redis (
 
   if $persist_data {
     class { 'profiles::redis::backup':
-      lvm            => $backup_lvm,
-      volume_group   => $backup_volume_group,
-      volume_size    => $backup_volume_size,
-      schedule       => $backup_schedule,
-      retention_days => $backup_retention_days
+      lvm             => $backup_lvm,
+      volume_group    => $backup_volume_group,
+      volume_size     => $backup_volume_size,
+      backup_schedule => $backup_schedule,
+      retention_days  => $backup_retention_days
     }
   }
 

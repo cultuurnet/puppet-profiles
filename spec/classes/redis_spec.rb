@@ -47,11 +47,11 @@ describe 'profiles::redis' do
         ) }
 
         it { is_expected.to contain_class('profiles::redis::backup').with(
-          'lvm'            => false,
-          'volume_group'   => nil,
-          'volume_size'    => nil,
-          'schedule'       => nil,
-          'retention_days' => 7
+          'lvm'             => false,
+          'volume_group'    => nil,
+          'volume_size'     => nil,
+          'backup_schedule' => nil,
+          'retention_days'  => 7
         ) }
 
         it { is_expected.to contain_service('redis-server').with(
@@ -107,11 +107,11 @@ describe 'profiles::redis' do
           ) }
 
           it { is_expected.to contain_class('profiles::redis::backup').with(
-            'lvm'            => true,
-            'volume_group'   => 'backupvg',
-            'volume_size'    => '5G',
-            'schedule'       => 'hourly',
-            'retention_days' => 10
+            'lvm'             => true,
+            'volume_group'    => 'backupvg',
+            'volume_size'     => '5G',
+            'backup_schedule' => 'hourly',
+            'retention_days'  => 10
           ) }
 
           it { is_expected.to contain_group('redis').that_comes_before('Profiles::Lvm::Mount[redisdata]') }
@@ -148,11 +148,11 @@ describe 'profiles::redis' do
           ) }
 
           it { is_expected.to contain_class('profiles::redis::backup').with(
-            'lvm'            => true,
-            'volume_group'   => 'mybackupvg',
-            'volume_size'    => '2G',
-            'schedule'       => 'daily',
-            'retention_days' => 5
+            'lvm'             => true,
+            'volume_group'    => 'mybackupvg',
+            'volume_size'     => '2G',
+            'backup_schedule' => 'daily',
+            'retention_days'  => 5
           ) }
         end
       end

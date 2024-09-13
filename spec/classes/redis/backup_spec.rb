@@ -11,11 +11,11 @@ describe 'profiles::redis::backup' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::redis::backup').with(
-          'lvm'            => false,
-          'volume_group'   => nil,
-          'volume_size'    => nil,
-          'schedule'       => nil,
-          'retention_days' => 7
+          'lvm'             => false,
+          'volume_group'    => nil,
+          'volume_size'     => nil,
+          'backup_schedule' => nil,
+          'retention_days'  => 7
         ) }
 
         it { is_expected.to contain_file('/data') }
@@ -52,13 +52,13 @@ describe 'profiles::redis::backup' do
         it { is_expected.to contain_cron('redis backup').that_requires('File[/data/backup/redis/archive]') }
       end
 
-      context "with lvm => true, volume_group => backupvg, volume_size => 20G, schedule => daily and retention_days => 10" do
+      context "with lvm => true, volume_group => backupvg, volume_size => 20G, backup_schedule => daily and retention_days => 10" do
         let(:params) { {
-          'lvm'            => true,
-          'volume_group'   => 'backupvg',
-          'volume_size'    => '20G',
-          'schedule'       => 'daily',
-          'retention_days' => 10
+          'lvm'             => true,
+          'volume_group'    => 'backupvg',
+          'volume_size'     => '20G',
+          'backup_schedule' => 'daily',
+          'retention_days'  => 10
         } }
 
         context "with volume_group backupvg present" do
@@ -84,12 +84,12 @@ describe 'profiles::redis::backup' do
         end
       end
 
-      context "with lvm => true, volume_group => myvg, schedule => hourly and volume_size => 10G" do
+      context "with lvm => true, volume_group => myvg, backup_schedule => hourly and volume_size => 10G" do
         let(:params) { {
-          'lvm'          => true,
-          'volume_group' => 'myvg',
-          'volume_size'  => '10G',
-          'schedule'     => 'hourly'
+          'lvm'             => true,
+          'volume_group'    => 'myvg',
+          'volume_size'     => '10G',
+          'backup_schedule' => 'hourly'
         } }
 
         context "with volume_group myvg present" do
