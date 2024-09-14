@@ -8,6 +8,7 @@ class profiles::docker (
 
   $data_dir = '/var/lib/docker'
 
+  realize Apt::Source['publiq-tools']
   realize Apt::Source['docker']
 
   if $lvm {
@@ -35,7 +36,8 @@ class profiles::docker (
   }
 
   package { 'docker-compose':
-    ensure => 'present'
+    ensure  => 'present',
+    require => Apt::Source['publiq-tools']
   }
 
   if $experimental {
