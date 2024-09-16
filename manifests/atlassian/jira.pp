@@ -11,7 +11,6 @@ class profiles::atlassian::jira (
   String                     $dbserver,
   String                     $jvm_xms                = '4100m',
   String                     $jvm_xmx                = '4100m',
-  String                     $jvm_permgen            = '768m',
   String                     $java_opts
 ) inherits ::profiles {
 
@@ -126,7 +125,6 @@ class profiles::atlassian::jira (
     dbserver               => $dbserver,
     jvm_xms                => $jvm_xms,
     jvm_xmx                => $jvm_xmx,
-    jvm_permgen            => $jvm_permgen,
     java_opts              => $java_opts,
     service_manage         => true,
     service_ensure         => $service_status,
