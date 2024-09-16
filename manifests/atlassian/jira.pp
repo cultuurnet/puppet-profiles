@@ -71,7 +71,7 @@ class profiles::atlassian::jira (
   }
 
   # configure database
-  if $database_host == '127.0.0.1' {
+  if $dbserver == '127.0.0.1' {
     include ::profiles::mysql::server
 
     $database_host_remote    = false
