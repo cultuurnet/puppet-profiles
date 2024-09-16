@@ -1,19 +1,18 @@
 class profiles::atlassian::jira (
-  String  $version,
-  Boolean $data_lvm                = true,
-  String  $installdir_volume_size  = '50G',
-  String  $homedir_volume_size     = '20G',
-  String  $servername,
-  String  $serveraliases           = [],
-  String  $dbpassword,
-  String  $dbserver,
-  String  $jvm_xms                 = '4100m',
-  String  $jvm_xmx                 = '4100m',
-  String  $jvm_permgen             = '768m',
-  String  $java_opts,
-  Boolean $service_manage          = true,
-  String  $service_ensure          = 'running',
-  Boolean $service_enable          = true,
+  String                     $version,
+  Enum['running', 'stopped'] $service_status         = 'running',
+  Boolean                    $lvm                    = false,
+  Optional[String]           $volume_group           = undef,
+  Optional[String]           $installdir_volume_size = undef,
+  String                     $homedir_volume_size    = undef,
+  String                     $servername,
+  String                     $serveraliases          = [],
+  String                     $dbpassword,
+  String                     $dbserver,
+  String                     $jvm_xms                = '4100m',
+  String                     $jvm_xmx                = '4100m',
+  String                     $jvm_permgen            = '768m',
+  String                     $java_opts
 ) inherits ::profiles {
 
   $dbuser       = 'jirauser'
@@ -33,41 +32,41 @@ class profiles::atlassian::jira (
   realize User['jira']
 
   # setup storage
-  if $data_lvm {
-    unless ($data_volume_group and $data_volume_size) {
-      fail("with LVM enabled, expects a value for both 'data_volume_group' and 'data_volume_size'")
+  if $lvm {
+    unless ($volume_group and $installdir_volume_size and $homedir_volume_size) {
+      fail("with LVM enabled, expects a value for 'volume_group', 'installdir_volume_size' and 'homedir_volume_size'")
     }
 
     profiles::lvm::mount { 'jira_installdir':
-      volume_group => 'jiravg',
+      volume_group => $volume_group,
       size         => $installdir_volume_size,
       mountpoint   => '/opt/jira',
       fs_type      => 'ext4',
       owner        => 'jira',
       group        => 'jira',
-      require      => User['jira']
+      require      => [Group['jira'], User['jira']]
     }
     profiles::lvm::mount { 'jira_homedir':
-      volume_group => 'jiravg',
+      volume_group => $volume_group,
       size         => $homedir_volume_size,
       mountpoint   => '/home/jira',
       fs_type      => 'ext4',
       owner        => 'jira',
       group        => 'jira',
-      require      => User['jira']
+      require      => [Group['jira'], User['jira']]
     }
   } else {
     file { $installdir:
       ensure  => 'directory',
       owner   => 'jira',
       group   => 'jira',
-      require      => User['jira']
+      require => [Group['jira'], User['jira']]
     }
     file { $homedir:
       ensure  => 'directory',
       owner   => 'jira',
       group   => 'jira',
-      require      => User['jira']
+      require => [Group['jira'], User['jira']]
     }
   }
 
@@ -129,14 +128,17 @@ class profiles::atlassian::jira (
     jvm_xmx                => $jvm_xmx,
     jvm_permgen            => $jvm_permgen,
     java_opts              => $java_opts,
-    service_manage         => $service_manage,
-    service_ensure         => $service_ensure,
-    service_enable         => $service_enable,
+    service_manage         => true,
+    service_ensure         => $service_status,
+    service_enable         => $service_status ? {
+                                'running' => true,
+                                'stopped' => false
+                              },
     proxy                  => {
-      proxyName  => $servername,
-      proxyPort  => '443',
-      scheme     => 'https'
-    }
+                                proxyName  => $servername,
+                                proxyPort  => '443',
+                                scheme     => 'https'
+                              }
   }
 
   # include ::profiles::atlassian::jira::monitoring
@@ -144,4 +146,3 @@ class profiles::atlassian::jira (
   # include ::profiles::atlassian::jira::backup
   # include ::profiles::atlassian::jira::logging
 }
-
