@@ -113,6 +113,16 @@ class profiles::users inherits ::profiles {
     uid            => '1001'
   }
 
+  @user { 'jira':
+    ensure         => 'present',
+    gid            => 'jira',
+    home           => '/home/jira',
+    managehome     => false,
+    purge_ssh_keys => true,
+    shell          => '/bin/true',
+    uid            => '1001'
+  }
+
   @user { 'www-data':
     ensure         => 'present',
     gid            => 'www-data',
