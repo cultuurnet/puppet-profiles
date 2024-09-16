@@ -6,7 +6,7 @@ class profiles::atlassian::jira (
   Optional[String]           $installdir_volume_size = undef,
   String                     $homedir_volume_size    = undef,
   String                     $servername,
-  String                     $serveraliases          = [],
+  Array                      $serveraliases          = [],
   String                     $dbpassword,
   String                     $dbserver,
   String                     $jvm_xms                = '4100m',
