@@ -97,7 +97,7 @@ class profiles::atlassian::jira (
     homedir                => '/home/jira',
     tomcat_port            => 8080,
     manage_user            => false,
-    javahome               => '/usr/lib/jvm/java-11-openjdk-amd64',
+    javahome               => '/usr/lib/jvm/java-17-openjdk-amd64',
     jvm_type               => 'openjdk-17',
     db                     => 'mysql',
     dbport                 => '3306',
