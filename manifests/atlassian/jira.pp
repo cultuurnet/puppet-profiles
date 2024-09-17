@@ -32,7 +32,7 @@ class profiles::atlassian::jira (
 
   # setup storage
   if ($lvm == true) and ($manage_homedir == false) {
-    unless ($volume_group and $homedir_volume_size) {
+    unless ($volume_group and $volume_size) {
       fail("with LVM enabled, expects a value for 'volume_group' and 'volume_size'")
     }
 
