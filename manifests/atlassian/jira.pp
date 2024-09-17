@@ -4,7 +4,7 @@ class profiles::atlassian::jira (
   Boolean                    $lvm            = false,
   Optional[String]           $volume_group   = undef,
   Optional[String]           $volume_size    = undef,
-  String                     $manage_homedir = false,
+  Boolean                    $manage_homedir = false,
   String                     $servername,
   Array                      $serveraliases  = [],
   String                     $dbpassword,
