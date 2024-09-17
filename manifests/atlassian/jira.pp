@@ -1,16 +1,16 @@
 class profiles::atlassian::jira (
   String                     $version,
-  Enum['running', 'stopped'] $service_status         = 'running',
-  Boolean                    $lvm                    = false,
-  Optional[String]           $volume_group           = undef,
-  Optional[String]           $installdir_volume_size = undef,
-  String                     $homedir_volume_size    = undef,
+  Enum['running', 'stopped'] $service_status = 'running',
+  Boolean                    $lvm            = false,
+  Optional[String]           $volume_group   = undef,
+  Optional[String]           $volume_size    = undef,
+  String                     $manage_homedir = false,
   String                     $servername,
-  Array                      $serveraliases          = [],
+  Array                      $serveraliases  = [],
   String                     $dbpassword,
   String                     $dbserver,
-  String                     $jvm_xms                = '4100m',
-  String                     $jvm_xmx                = '4100m',
+  String                     $jvm_xms        = '4100m',
+  String                     $jvm_xmx        = '4100m',
   String                     $java_opts
 ) inherits ::profiles {
 
@@ -31,23 +31,14 @@ class profiles::atlassian::jira (
   realize User['jira']
 
   # setup storage
-  if $lvm {
-    unless ($volume_group and $installdir_volume_size and $homedir_volume_size) {
-      fail("with LVM enabled, expects a value for 'volume_group', 'installdir_volume_size' and 'homedir_volume_size'")
+  if ($lvm == true) and ($manage_homedir == false) {
+    unless ($volume_group and $homedir_volume_size) {
+      fail("with LVM enabled, expects a value for 'volume_group' and 'volume_size'")
     }
 
-    profiles::lvm::mount { 'jira_installdir':
-      volume_group => $volume_group,
-      size         => $installdir_volume_size,
-      mountpoint   => '/opt/jira',
-      fs_type      => 'ext4',
-      owner        => 'jira',
-      group        => 'jira',
-      require      => [Group['jira'], User['jira']]
-    }
     profiles::lvm::mount { 'jira_homedir':
       volume_group => $volume_group,
-      size         => $homedir_volume_size,
+      size         => $volume_size,
       mountpoint   => '/home/jira',
       fs_type      => 'ext4',
       owner        => 'jira',
@@ -55,12 +46,6 @@ class profiles::atlassian::jira (
       require      => [Group['jira'], User['jira']]
     }
   } else {
-    file { $installdir:
-      ensure  => 'directory',
-      owner   => 'jira',
-      group   => 'jira',
-      require => [Group['jira'], User['jira']]
-    }
     file { $homedir:
       ensure  => 'directory',
       owner   => 'jira',
@@ -108,11 +93,12 @@ class profiles::atlassian::jira (
   class { 'jira':
     version                => $version,
     installdir             => '/opt/jira',
+    manage_homedir         => $manage_homedir,
     homedir                => '/home/jira',
     tomcat_port            => 8080,
     manage_user            => false,
     javahome               => '/usr/lib/jvm/java-11-openjdk-amd64',
-    jvm_type               => 'openjdk-11',
+    jvm_type               => 'openjdk-17',
     db                     => 'mysql',
     dbport                 => '3306',
     dbdriver               => 'com.mysql.jdbc.Driver',
