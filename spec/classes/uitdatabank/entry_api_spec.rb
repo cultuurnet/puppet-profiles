@@ -48,6 +48,8 @@ describe 'profiles::uitdatabank::entry_api' do
           'host' => 'foo.example.com'
         ) }
 
+        it { is_expected.to contain_class('profiles::mysql::rds') }
+
         context "with fact mysqld_version => 8.0.33" do
           let(:facts) { facts.merge( { 'mysqld_version' => '8.0.33' } ) }
 
@@ -63,7 +65,6 @@ describe 'profiles::uitdatabank::entry_api' do
           ) }
 
           it { is_expected.to contain_mysql_database('uitdatabank').that_comes_before('Profiles::Mysql::App_user[entry_api]') }
-          it { is_expected.to contain_mysql_database('uitdatabank').that_requires('Class[profiles::mysql::remote_server]') }
         end
 
         context "without extra facts" do
