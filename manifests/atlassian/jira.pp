@@ -23,8 +23,9 @@ class profiles::atlassian::jira (
   include ::profiles::apache
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
-    destination => "http://127.0.0.1:8080",
-    aliases     => $serveraliases
+    destination         => "http://127.0.0.1:8080",
+    aliases             => $serveraliases,
+    auth_openid_connect => true
   }
 
   realize Group['jira']
