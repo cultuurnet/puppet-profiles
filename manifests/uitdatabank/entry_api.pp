@@ -14,14 +14,14 @@ class profiles::uitdatabank::entry_api (
   } else {
     $database_host_remote = true
 
+    include profiles::mysql::rds
+
     class { 'profiles::mysql::remote_server':
       host => $database_host
     }
 
     if $facts['mysqld_version'] {
       $database_host_available = true
-
-      Class['profiles::mysql::remote_server'] -> Mysql_database[$database_name]
     } else {
       $database_host_available = false
     }
@@ -30,7 +30,7 @@ class profiles::uitdatabank::entry_api (
   if $database_host_available {
     mysql_database { $database_name:
       charset => 'utf8mb4',
-      collate => 'utf8mb4_0900_ai_ci',
+      collate => 'utf8mb4_0900_ai_ci'
     }
 
     profiles::mysql::app_user { $database_user:
