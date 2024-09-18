@@ -23,7 +23,7 @@ class profiles::atlassian::jira (
   include ::profiles::apache
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
-    destination => "http://127.0.0.1:${tomcat_port}",
+    destination => "http://127.0.0.1:8080",
     aliases     => $serveraliases
   }
 
@@ -78,8 +78,8 @@ class profiles::atlassian::jira (
 
   if $database_host_available {
     mysql_database { $dbname:
-      charset => 'utf8mb4',
-      collate => 'utf8mb4_unicode_ci'
+      charset => 'utf8mb4_bin',
+      collate => 'utf8mb4_0900_ai_ci'
     }
 
     profiles::mysql::app_user { "${dbuser}@${dbname}":
