@@ -78,7 +78,7 @@ class profiles::atlassian::jira (
 
   if $database_host_available {
     mysql_database { $dbname:
-      charset => 'utf8mb4_bin',
+      charset => 'utf8mb4',
       collate => 'utf8mb4_0900_ai_ci'
     }
 
