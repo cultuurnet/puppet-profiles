@@ -117,9 +117,12 @@ class profiles::newrelic_infra (
   realize Apt::Source['newrelic-infra']
 
   class { 'newrelic_infra::agent':
-    ensure      => 'latest',
-    license_key => $license_key,
-    manage_repo => $manage_repo
+    ensure            => 'latest',
+    license_key       => $license_key,
+    manage_repo       => $manage_repo,
+    custom_attributes => {
+      environment => "$::environment"
+    }
   }
 
   if $logging {
