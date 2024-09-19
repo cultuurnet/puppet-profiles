@@ -107,7 +107,7 @@
 # Paul Herbosch <paul@publiq.be>
 #
 class profiles::newrelic_infra (
-  String                  $license_key,
+  String                  $license_key              = lookup('data::newrelic::license_key', Optional[String], 'first', undef),
   Boolean                 $manage_repo              = false,
   Optional[Variant[Hash]] $logging                  = undef,
   Optional[Variant[Hash]] $integrations             = undef,
