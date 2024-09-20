@@ -10,8 +10,8 @@ class profiles::atlassian::jira (
   Optional[String]           $volume_size       = undef,
   Boolean                    $manage_homedir    = false,
   Array                      $serveraliases     = [],
-  String                     $initial_heap      = '4100m',
-  String                     $maximum_heap      = '4100m'
+  String                     $initial_heap      = '1024m',
+  String                     $maximum_heap      = '1024m'
 ) inherits ::profiles {
 
   $database_user = 'jirauser'
