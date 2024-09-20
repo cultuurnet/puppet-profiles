@@ -13,6 +13,28 @@ describe 'profiles::mysql::remote_server' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_package('mysql-client') }
+
+        it { is_expected.to contain_class('profiles::mysql::remote_instance').with(
+          'host' => 'db.example.com'
+        ) }
+
+        it { is_expected.to contain_class('profiles::mysql::rds').with(
+          'host' => 'db.example.com'
+        ) }
+      end
+
+      context "with host => mydb.example.com" do
+        let(:params) { {
+          'host' => 'mydb.example.com'
+        } }
+
+        it { is_expected.to contain_class('profiles::mysql::remote_instance').with(
+          'host' => 'mydb.example.com'
+        ) }
+
+        it { is_expected.to contain_class('profiles::mysql::rds').with(
+          'host' => 'mydb.example.com'
+        ) }
       end
 
       context "without parameters" do

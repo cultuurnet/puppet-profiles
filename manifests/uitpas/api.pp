@@ -33,21 +33,21 @@ class profiles::uitpas::api (
   }
 
   if $database_host == '127.0.0.1' {
-    include ::profiles::mysql::server
-
     $database_host_remote    = false
     $database_host_available = true
 
+    include profiles::mysql::server
+
     Class['profiles::mysql::server'] -> Mysql_database[$database_name]
   } else {
-    include ::profiles::mysql::rds
-
     $database_host_remote = true
+
+    class { 'profiles::mysql::remote_server':
+      host => $database_host
+    }
 
     if $facts['mysqld_version'] {
       $database_host_available = true
-
-      Class['profiles::mysql::rds'] -> Mysql_database[$database_name]
     } else {
       $database_host_available = false
     }

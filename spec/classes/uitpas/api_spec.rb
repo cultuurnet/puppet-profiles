@@ -183,6 +183,7 @@ describe 'profiles::uitpas::api' do
             it { is_expected.to contain_package('mysql-connector-j').that_requires('Apt::Source[publiq-tools]') }
             it { is_expected.to contain_package('liquibase').that_comes_before('Class[profiles::uitpas::api::deployment]') }
             it { is_expected.to contain_package('mysql-connector-j').that_comes_before('Class[profiles::uitpas::api::deployment]') }
+            it { is_expected.to contain_class('profiles::mysql::server').that_comes_before('Mysql_database[uitpas_api]') }
             it { is_expected.to contain_profiles__mysql__app_user('uitpas_api@uitpas_api').that_requires('Mysql_database[uitpas_api]') }
             it { is_expected.to contain_profiles__mysql__app_user('uitpas_api@uitpas_api').that_comes_before('Class[profiles::uitpas::api::deployment]') }
             it { is_expected.to contain_profiles__mysql__app_user('etl@uitpas_api').that_requires('Mysql_database[uitpas_api]') }
@@ -226,7 +227,9 @@ describe 'profiles::uitpas::api' do
             } }
 
             it { is_expected.not_to contain_class('profiles::mysql::server') }
-            it { is_expected.to contain_class('profiles::mysql::rds') }
+            it { is_expected.to contain_class('profiles::mysql::remote_server').with(
+              'host' => 'db.example.com'
+            ) }
 
             it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://myserver.example.com').with(
               'destination' => 'http://127.0.0.1:14880/uitid/rest/',
