@@ -4,6 +4,11 @@ class profiles::mysql::remote_server (
 
   realize Package['mysql-client']
 
-  File <<| tag == 'mysqld_version' and tag == $host |>>
-  Profiles::Mysql::Root_my_cnf <<| title == $host |>>
+  class { 'profiles::mysql::remote_instance':
+    host => $host
+  }
+
+  class { 'profiles::mysql::rds':
+    host => $host
+  }
 }
