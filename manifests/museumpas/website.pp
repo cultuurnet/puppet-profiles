@@ -37,12 +37,12 @@ class profiles::museumpas::website (
     class { 'profiles::mysql::remote_server':
       host => $database_host
     }
-  }
 
-  if $facts['mysqld_version'] {
-    $database_host_available = true
-  } else {
-    $database_host_available = true
+    if $facts['mysqld_version'] {
+      $database_host_available = true
+    } else {
+      $database_host_available = false
+    }
   }
 
   if $database_host_available {
