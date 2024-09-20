@@ -10,11 +10,11 @@ class profiles::uitdatabank::entry_api (
     $database_host_remote    = false
     $database_host_available = true
 
+    include profiles::mysql::server
+
     Class['profiles::mysql::server'] -> Mysql_database[$database_name]
   } else {
     $database_host_remote = true
-
-    include profiles::mysql::rds
 
     class { 'profiles::mysql::remote_server':
       host => $database_host

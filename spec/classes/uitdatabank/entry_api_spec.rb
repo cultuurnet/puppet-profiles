@@ -20,6 +20,8 @@ describe 'profiles::uitdatabank::entry_api' do
             'database_host'     => '127.0.0.1'
           ) }
 
+          it { is_expected.to contain_class('profiles::mysql::server') }
+
           it { is_expected.to contain_mysql_database('uitdatabank').with(
             'charset' => 'utf8mb4',
             'collate' => 'utf8mb4_0900_ai_ci'
@@ -47,8 +49,6 @@ describe 'profiles::uitdatabank::entry_api' do
         it { is_expected.to contain_class('profiles::mysql::remote_server').with(
           'host' => 'foo.example.com'
         ) }
-
-        it { is_expected.to contain_class('profiles::mysql::rds') }
 
         context "with fact mysqld_version => 8.0.33" do
           let(:facts) { facts.merge( { 'mysqld_version' => '8.0.33' } ) }

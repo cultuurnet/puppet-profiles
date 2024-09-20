@@ -1,29 +1,29 @@
 class profiles::atlassian::jira (
-  String                     $version,
-  Enum['running', 'stopped'] $service_status = 'running',
-  Boolean                    $lvm            = false,
-  Optional[String]           $volume_group   = undef,
-  Optional[String]           $volume_size    = undef,
-  Boolean                    $manage_homedir = false,
   String                     $servername,
-  Array                      $serveraliases  = [],
-  String                     $dbpassword,
-  String                     $dbserver,
-  String                     $jvm_xms        = '4100m',
-  String                     $jvm_xmx        = '4100m',
-  String                     $java_opts
+  String                     $version,
+  String                     $java_opts,
+  String                     $database_password,
+  String                     $database_host     = '127.0.0.1',
+  Enum['running', 'stopped'] $service_status    = 'running',
+  Boolean                    $lvm               = false,
+  Optional[String]           $volume_group      = undef,
+  Optional[String]           $volume_size       = undef,
+  Boolean                    $manage_homedir    = false,
+  Array                      $serveraliases     = [],
+  String                     $initial_heap      = '4100m',
+  String                     $maximum_heap      = '4100m'
 ) inherits ::profiles {
 
-  $dbuser       = 'jirauser'
-  $dbname       = 'jiradb'
-  $dburl_params = 'useUnicode=true&amp;characterEncoding=UTF8&amp;sessionVariables=default_storage_engine=InnoDB'
-  $dburl        = "jdbc:mysql://${dbserver}:3306/${$dbname}?${dburl_params}"
+  $database_user = 'jirauser'
+  $database_name = 'jiradb'
+  $dburl_params  = 'useUnicode=true&amp;characterEncoding=UTF8&amp;sessionVariables=default_storage_engine=InnoDB'
+  $dburl         = "jdbc:mysql://${database_host}:3306/${$database_name}?${dburl_params}"
 
   include ::profiles::java
   include ::profiles::apache
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
-    destination         => "http://127.0.0.1:8080/",
+    destination         => 'http://127.0.0.1:8080/',
     aliases             => $serveraliases,
     auth_openid_connect => true
   }
@@ -56,41 +56,41 @@ class profiles::atlassian::jira (
   }
 
   # configure database
-  if $dbserver == '127.0.0.1' {
-    include ::profiles::mysql::server
-
+  if $database_host == '127.0.0.1' {
     $database_host_remote    = false
     $database_host_available = true
 
-    Class['profiles::mysql::server'] -> Mysql_database[$dbname]
-  } else {
-    include ::profiles::mysql::rds
+    include profiles::mysql::server
 
+    Class['profiles::mysql::server'] -> Mysql_database[$database_name]
+  } else {
     $database_host_remote = true
+
+    class { 'profiles::mysql::remote_server':
+      host => $database_host
+    }
 
     if $facts['mysqld_version'] {
       $database_host_available = true
-
-      Class['profiles::mysql::rds'] -> Mysql_database[$dbname]
     } else {
       $database_host_available = false
     }
   }
 
   if $database_host_available {
-    mysql_database { $dbname:
+    mysql_database { $database_name:
       charset => 'utf8mb4',
       collate => 'utf8mb4_0900_ai_ci'
     }
 
-    profiles::mysql::app_user { "${dbuser}@${dbname}":
-      password => $dbpassword,
+    profiles::mysql::app_user { "${database_user}@${database_name}":
+      password => $database_password,
       remote   => $database_host_remote,
-      require  => Mysql_database[$dbname]
+      require  => Mysql_database[$database_name]
     }
   }
 
-  # insall jira
+  # install jira
   class { 'jira':
     version                => $version,
     installdir             => '/opt/jira',
@@ -106,12 +106,12 @@ class profiles::atlassian::jira (
     dbtype                 => 'mysql8',
     mysql_connector_manage => true,
     dburl                  => $dburl,
-    dbuser                 => $dbuser,
-    dbpassword             => $dbpassword,
-    dbname                 => $dbname,
-    dbserver               => $dbserver,
-    jvm_xms                => $jvm_xms,
-    jvm_xmx                => $jvm_xmx,
+    dbuser                 => $database_user,
+    dbpassword             => $database_password,
+    dbname                 => $database_name,
+    dbserver               => $database_host,
+    jvm_xms                => $initial_heap,
+    jvm_xmx                => $maximum_heap,
     java_opts              => $java_opts,
     service_manage         => true,
     service_ensure         => $service_status,
