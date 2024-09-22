@@ -4,8 +4,8 @@ class profiles::uitpas::api (
   Variant[String, Array[String]] $serveraliases        = [],
   String                         $database_host        = '127.0.0.1',
   Boolean                        $deployment           = true,
-  Optional[String]               $initial_heap         = undef,
-  Optional[String]               $maximum_heap         = undef,
+  Optional[String]               $initial_heap_size    = undef,
+  Optional[String]               $maximum_heap_size    = undef,
   Boolean                        $jmx                  = true,
   Boolean                        $newrelic             = false,
   Optional[String]               $newrelic_license_key = lookup('data::newrelic::license_key', Optional[String], 'first', undef),
@@ -62,8 +62,8 @@ class profiles::uitpas::api (
 
   profiles::glassfish::domain { 'uitpas':
     portbase             => $portbase,
-    initial_heap         => $initial_heap,
-    maximum_heap         => $maximum_heap,
+    initial_heap_size    => $initial_heap_size,
+    maximum_heap_size    => $maximum_heap_size,
     jmx                  => $jmx,
     newrelic             => $newrelic,
     newrelic_app_name    => "uitpas-api-${environment}",

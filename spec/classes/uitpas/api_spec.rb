@@ -25,8 +25,8 @@ describe 'profiles::uitpas::api' do
               'database_password'    => 'mypassword',
               'database_host'        => '127.0.0.1',
               'deployment'           => true,
-              'initial_heap'         => nil,
-              'maximum_heap'         => nil,
+              'initial_heap_size'    => nil,
+              'maximum_heap_size'    => nil,
               'jmx'                  => true,
               'newrelic'             => false,
               'newrelic_license_key' => 'my_license_key',
@@ -151,8 +151,8 @@ describe 'profiles::uitpas::api' do
 
             it { is_expected.to contain_profiles__glassfish__domain('uitpas').with(
               'portbase'             => '4800',
-              'initial_heap'         => nil,
-              'maximum_heap'         => nil,
+              'initial_heap_size'    => nil,
+              'maximum_heap_size'    => nil,
               'jmx'                  => true,
               'newrelic'             => false,
               'newrelic_license_key' => 'my_license_key',
@@ -212,14 +212,14 @@ describe 'profiles::uitpas::api' do
             it { is_expected.to contain_class('profiles::uitpas::api::deployment').that_notifies('Service[uitpas]') }
           end
 
-          context "with servername => myserver.example.com, serveraliases => foobar.example.com, database_password => secret, database_host => db.example.com, initial_heap => 1024m, maximum_heap => 1536m, jmx => false, newrelic => true, portbase => 14800 and settings => { 'foo' => 'bar', 'baz' => 'test' }" do
+          context "with servername => myserver.example.com, serveraliases => foobar.example.com, database_password => secret, database_host => db.example.com, initial_heap_size => 1024m, maximum_heap_size => 1536m, jmx => false, newrelic => true, portbase => 14800 and settings => { 'foo' => 'bar', 'baz' => 'test' }" do
             let(:params) { {
               'servername'        => 'myserver.example.com',
               'serveraliases'     => 'foobar.example.com',
               'database_password' => 'secret',
               'database_host'     => 'db.example.com',
-              'initial_heap'      => '1024m',
-              'maximum_heap'      => '1536m',
+              'initial_heap_size' => '1024m',
+              'maximum_heap_size' => '1536m',
               'jmx'               => false,
               'newrelic'          => true,
               'portbase'          => 14800,
@@ -269,8 +269,8 @@ describe 'profiles::uitpas::api' do
             ) }
 
             it { is_expected.to contain_profiles__glassfish__domain('uitpas').with(
-              'initial_heap'         => '1024m',
-              'maximum_heap'         => '1536m',
+              'initial_heap_size'    => '1024m',
+              'maximum_heap_size'    => '1536m',
               'jmx'                  => false,
               'newrelic'             => true,
               'newrelic_license_key' => 'my_license_key',
@@ -406,8 +406,8 @@ describe 'profiles::uitpas::api' do
             ) }
 
             it { is_expected.to contain_profiles__glassfish__domain('uitpas').with(
-              'initial_heap'         => nil,
-              'maximum_heap'         => nil,
+              'initial_heap_size'    => nil,
+              'maximum_heap_size'    => nil,
               'jmx'                  => true,
               'newrelic'             => true,
               'newrelic_app_name'    => 'uitpas-api-testing',
