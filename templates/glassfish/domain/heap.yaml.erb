@@ -2,13 +2,13 @@
 glassfish:
   <%= @title %>:
     heap:
-      <%- if @initial -%>
-      initial: '<%= @initial %>'
-      initial_size: '<%= @initial %>'
+      <%- if @initial_size -%>
+      initial: '<%= @initial_size %>'
+      initial_size: '<%= @initial_size %>'
       <%- end -%>
-      <%- if @maximum -%>
-      maximum: '<%= @maximum %>'
-      maximum_size: '<%= @maximum %>'
+      <%- if @maximum_size -%>
+      maximum: '<%= @maximum_size %>'
+      maximum_size: '<%= @maximum_size %>'
       <%- else -%>
       maximum: '<%= @default_maximum_size %>'
       maximum_size: '<%= @default_maximum_size %>'

@@ -10,51 +10,51 @@ describe 'profiles::glassfish::domain::heap' do
         #
         # No facts (initial run)
         # (x) No parameters (initial run)
-        # (x) Parameter maximum (initial run)
-        #       - Parameter maximum == default (512m)
-        #       - Parameter maximum <> default (512m)
-        # (x) Parameter initial (initial run)
-        # (x) Parameters maximum & initial, no facts (initial run)
+        # (x) Parameter maximum_size (initial run)
+        #       - Parameter maximum_size == default (512m)
+        #       - Parameter maximum_size <> default (512m)
+        # (x) Parameter initial_size (initial run)
+        # (x) Parameters maximum_size & initial_size, no facts (initial run)
         #
         # Initial fact
         # (x) No parameters (subsequent runs)
-        # (x) Parameter initial (subsequent runs)
-        #   - Parameter initial == fact
-        #   - Parameter initial <> fact
-        # (x) Parameter maximum (subsequent runs)
-        # (x) Parameters maximum & initial (subsequent runs)
-        #   - Parameter initial == fact
-        #   - Parameter initial <> fact
-        #   - Parameter maximum == default
-        #   - Parameter maximum <> default
+        # (x) Parameter initial_size (subsequent runs)
+        #   - Parameter initial_size == fact
+        #   - Parameter initial_size <> fact
+        # (x) Parameter maximum_size (subsequent runs)
+        # (x) Parameters maximum_size & initial_size (subsequent runs)
+        #   - Parameter initial_size == fact
+        #   - Parameter initial_size <> fact
+        #   - Parameter maximum_size == default
+        #   - Parameter maximum_size <> default
         #
         # Maximum fact
         # (x) No parameters (subsequent runs)
-        # (x) Parameter initial (subsequent runs)
-        # (x) Parameter maximum (subsequent runs)
-        #   - Parameter maximum == fact
-        #   - Parameter maximum <> fact
-        # (x) Parameters maximum & initial (subsequent runs)
-        #   - Parameter maximum == fact
-        #   - Parameter maximum <> fact
+        # (x) Parameter initial_size (subsequent runs)
+        # (x) Parameter maximum_size (subsequent runs)
+        #   - Parameter maximum_size == fact
+        #   - Parameter maximum_size <> fact
+        # (x) Parameters maximum_size & initial_size (subsequent runs)
+        #   - Parameter maximum_size == fact
+        #   - Parameter maximum_size <> fact
         #
         # Maximum & Initial fact
         # (x) No parameters (subsequent runs)
-        #   - Fact maximum == default
-        #   - Fact maximum <> default
-        # (x) Parameter initial (subsequent runs)
-        #   - Parameter initial == fact
-        #   - Parameter initial <> fact
-        #   - Fact maximum == default
-        #   - Fact maximum <> default
-        # (x) Parameter maximum (subsequent runs)
-        #   - Parameter maximum == fact
-        #   - Parameter maximum <> fact
-        # Parameters maximum & initial (subsequent runs)
-        #   - Parameter maximum & initial == fact
-        #   - Parameter maximum <> fact
-        #   - Parameter initial <> fact
-        #   - Parameter maximum & initial <> fact
+        #   - Fact maximum_size == default
+        #   - Fact maximum_size <> default
+        # (x) Parameter initial_size (subsequent runs)
+        #   - Parameter initial_size == fact
+        #   - Parameter initial_size <> fact
+        #   - Fact maximum_size == default
+        #   - Fact maximum_size <> default
+        # (x) Parameter maximum_size (subsequent runs)
+        #   - Parameter maximum_size == fact
+        #   - Parameter maximum_size <> fact
+        # Parameters maximum_size & initial_size (subsequent runs)
+        #   - Parameter maximum_size & initial_size == fact
+        #   - Parameter maximum_size <> fact
+        #   - Parameter initial_size <> fact
+        #   - Parameter maximum_size & initial_size <> fact
 
         context 'without heap facts' do
           let(:facts) { super().merge({}) }
@@ -65,9 +65,9 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to contain_profiles__glassfish__domain__heap('foobar-api').with(
-              'initial'  => nil,
-              'maximum'  => nil,
-              'portbase' => 4800
+              'initial_size' => nil,
+              'maximum_size' => nil,
+              'portbase'     => 4800
             ) }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
@@ -88,9 +88,9 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
-          context 'with maximum => 512m' do
+          context 'with maximum_size => 512m' do
             let(:params) { {
-              'maximum' => '512m'
+              'maximum_size' => '512m'
             } }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
@@ -106,9 +106,9 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
-          context 'with maximum => 1024m' do
+          context 'with maximum_size => 1024m' do
             let(:params) { {
-              'maximum' => '1024m'
+              'maximum_size' => '1024m'
             } }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
@@ -127,9 +127,9 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '1024m'\n      maximum_size: '1024m'$/) }
           end
 
-          context 'with initial => 256m' do
+          context 'with initial_size => 256m' do
             let(:params) { {
-              'initial' => '256m'
+              'initial_size' => '256m'
             } }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
@@ -149,10 +149,10 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      initial_size: '256m'\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
-          context 'with initial => 256m and maximum => 512m' do
+          context 'with initial_size => 256m and maximum_size => 512m' do
             let(:params) { {
-              'initial' => '256m',
-              'maximum' => '512m'
+              'initial_size' => '256m',
+              'maximum_size' => '512m'
             } }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
@@ -172,10 +172,10 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      initial_size: '256m'\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
-          context 'with initial => 256m and maximum => 768m' do
+          context 'with initial_size => 256m and maximum_size => 768m' do
             let(:params) { {
-              'initial' => '256m',
-              'maximum' => '768m'
+              'initial_size' => '256m',
+              'maximum_size' => '768m'
             } }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
@@ -199,9 +199,9 @@ describe 'profiles::glassfish::domain::heap' do
           end
         end
 
-        context 'with initial heap fact 384m' do
+        context 'with initial_size heap fact 384m' do
           let(:facts) { super().merge(
-            { 'glassfish' => { 'foobar-api' => { 'heap' => { 'initial' => '384m' } } } }
+            { 'glassfish' => { 'foobar-api' => { 'heap' => { 'initial_size' => '384m' } } } }
           ) }
 
           context 'without parameters' do
@@ -223,9 +223,9 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
-          context 'with initial => 384m' do
+          context 'with initial_size => 384m' do
             let(:params) { {
-              'initial' => '384m'
+              'initial_size' => '384m'
             } }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
@@ -244,9 +244,9 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '384m'\n      initial_size: '384m'\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
-          context 'with initial => 256m' do
+          context 'with initial_size => 256m' do
             let(:params) { {
-              'initial' => '256m'
+              'initial_size' => '256m'
             } }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal').with(
@@ -269,9 +269,9 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      initial_size: '256m'\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
-          context 'with maximum => 1024m' do
+          context 'with maximum_size => 1024m' do
             let(:params) { {
-              'maximum' => '1024m'
+              'maximum_size' => '1024m'
             } }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal').with(
@@ -294,10 +294,10 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '1024m'\n      maximum_size: '1024m'$/) }
           end
 
-          context 'with initial => 384m and maximum => 1024m' do
+          context 'with initial_size => 384m and maximum_size => 1024m' do
             let(:params) { {
-              'initial' => '384m',
-              'maximum' => '1024m'
+              'initial_size' => '384m',
+              'maximum_size' => '1024m'
             } }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
@@ -319,10 +319,10 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '384m'\n      initial_size: '384m'\n      maximum: '1024m'\n      maximum_size: '1024m'$/) }
           end
 
-          context 'with initial => 512m and maximum => 1024m' do
+          context 'with initial_size => 512m and maximum_size => 1024m' do
             let(:params) { {
-              'initial' => '512m',
-              'maximum' => '1024m'
+              'initial_size' => '512m',
+              'maximum_size' => '1024m'
             } }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal').with(
@@ -348,10 +348,10 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '512m'\n      initial_size: '512m'\n      maximum: '1024m'\n      maximum_size: '1024m'$/) }
           end
 
-          context 'with initial => 512m and maximum => 512m' do
+          context 'with initial_size => 512m and maximum_size => 512m' do
             let(:params) { {
-              'initial' => '512m',
-              'maximum' => '512m'
+              'initial_size' => '512m',
+              'maximum_size' => '512m'
             } }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal').with(
@@ -377,7 +377,7 @@ describe 'profiles::glassfish::domain::heap' do
 
         context 'with maximum heap fact 1024m' do
           let(:facts) { super().merge(
-            { 'glassfish' => { 'foobar-api' => { 'heap' => { 'maximum' => '1024m' } } } }
+            { 'glassfish' => { 'foobar-api' => { 'heap' => { 'maximum_size' => '1024m' } } } }
           ) }
 
           context 'without parameters' do
@@ -399,9 +399,9 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
-          context 'with initial => 256m' do
+          context 'with initial_size => 256m' do
             let(:params) { {
-              'initial' => '256m'
+              'initial_size' => '256m'
             } }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
@@ -424,9 +424,9 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      initial_size: '256m'\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
-          context 'with maximum => 1024m' do
+          context 'with maximum_size => 1024m' do
             let(:params) { {
-              'maximum' => '1024m'
+              'maximum_size' => '1024m'
             } }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
@@ -442,9 +442,9 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '1024m'\n      maximum_size: '1024m'$/) }
           end
 
-          context 'with maximum => 1536m' do
+          context 'with maximum_size => 1536m' do
             let(:params) { {
-              'maximum' => '1536m'
+              'maximum_size' => '1536m'
             } }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
@@ -463,10 +463,10 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '1536m'\n      maximum_size: '1536m'$/) }
           end
 
-          context 'with initial => 400m and maximum => 1024m' do
+          context 'with initial_size => 400m and maximum_size => 1024m' do
             let(:params) { {
-              'initial' => '400m',
-              'maximum' => '1024m'
+              'initial_size' => '400m',
+              'maximum_size' => '1024m'
             } }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
@@ -485,10 +485,10 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '400m'\n      initial_size: '400m'\n      maximum: '1024m'\n      maximum_size: '1024m'$/) }
           end
 
-          context 'with initial => 400m and maximum => 1536m' do
+          context 'with initial_size => 400m and maximum_size => 1536m' do
             let(:params) { {
-              'initial' => '400m',
-              'maximum' => '1536m'
+              'initial_size' => '400m',
+              'maximum_size' => '1536m'
             } }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
@@ -511,9 +511,9 @@ describe 'profiles::glassfish::domain::heap' do
           end
         end
 
-        context 'with initial heap fact 256m and maximum heap fact 768m' do
+        context 'with initial_size heap fact 256m and maximum heap fact 768m' do
           let(:facts) { super().merge(
-            { 'glassfish' => { 'foobar-api' => { 'heap' => { 'initial' => '256m', 'maximum' => '768m' } } } }
+            { 'glassfish' => { 'foobar-api' => { 'heap' => { 'initial_size' => '256m', 'maximum_size' => '768m' } } } }
           ) }
 
           context 'without parameters' do
@@ -537,9 +537,9 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
-          context 'with initial => 400m' do
+          context 'with initial_size => 400m' do
             let(:params) { {
-              'initial' => '400m'
+              'initial_size' => '400m'
             } }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal').with(
@@ -565,9 +565,9 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '400m'\n      initial_size: '400m'\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
-          context 'with initial => 256m' do
+          context 'with initial_size => 256m' do
             let(:params) { {
-              'initial' => '256m'
+              'initial_size' => '256m'
             } }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
@@ -590,9 +590,9 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      initial_size: '256m'\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
-          context 'with maximum => 1024m' do
+          context 'with maximum_size => 1024m' do
             let(:params) { {
-              'maximum' => '1024m'
+              'maximum_size' => '1024m'
             } }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal').with(
@@ -615,9 +615,9 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '1024m'\n      maximum_size: '1024m'$/) }
           end
 
-          context 'with maximum => 768m' do
+          context 'with maximum_size => 768m' do
             let(:params) { {
-              'maximum' => '768m'
+              'maximum_size' => '768m'
             } }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal').with(
@@ -637,10 +637,10 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '768m'\n      maximum_size: '768m'$/) }
           end
 
-          context 'with initial => 256m and maximum => 768m' do
+          context 'with initial_size => 256m and maximum_size => 768m' do
             let(:params) { {
-              'initial' => '256m',
-              'maximum' => '768m'
+              'initial_size' => '256m',
+              'maximum_size' => '768m'
             } }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
@@ -660,10 +660,10 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      initial_size: '256m'\n      maximum: '768m'\n      maximum_size: '768m'$/) }
           end
 
-          context 'with initial => 512m and maximum => 768m' do
+          context 'with initial_size => 512m and maximum_size => 768m' do
             let(:params) { {
-              'initial' => '512m',
-              'maximum' => '768m'
+              'initial_size' => '512m',
+              'maximum_size' => '768m'
             } }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal').with(
@@ -686,10 +686,10 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '512m'\n      initial_size: '512m'\n      maximum: '768m'\n      maximum_size: '768m'$/) }
           end
 
-          context 'with initial => 256m and maximum => 1024m' do
+          context 'with initial_size => 256m and maximum_size => 1024m' do
             let(:params) { {
-              'initial' => '256m',
-              'maximum' => '1024m'
+              'initial_size' => '256m',
+              'maximum_size' => '1024m'
             } }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
@@ -712,10 +712,10 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      initial_size: '256m'\n      maximum: '1024m'\n      maximum_size: '1024m'$/) }
           end
 
-          context 'with initial => 512m and maximum => 1024m' do
+          context 'with initial_size => 512m and maximum_size => 1024m' do
             let(:params) { {
-              'initial' => '512m',
-              'maximum' => '1024m'
+              'initial_size' => '512m',
+              'maximum_size' => '1024m'
             } }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal').with(
@@ -742,9 +742,9 @@ describe 'profiles::glassfish::domain::heap' do
           end
         end
 
-        context 'with initial heap fact 256m and maximum heap fact 512m' do
+        context 'with initial_size heap fact 256m and maximum_size heap fact 512m' do
           let(:facts) { super().merge(
-            { 'glassfish' => { 'foobar-api' => { 'heap' => { 'initial' => '256m', 'maximum' => '512m' } } } }
+            { 'glassfish' => { 'foobar-api' => { 'heap' => { 'initial_size' => '256m', 'maximum_size' => '512m' } } } }
           ) }
 
           context 'without parameters' do
@@ -764,9 +764,9 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
-          context 'with initial => 400m' do
+          context 'with initial_size => 400m' do
             let(:params) { {
-              'initial' => '400m'
+              'initial_size' => '400m'
             } }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal').with(
@@ -789,9 +789,9 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '400m'\n      initial_size: '400m'\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
-          context 'with initial => 256m' do
+          context 'with initial_size => 256m' do
             let(:params) { {
-              'initial' => '256m'
+              'initial_size' => '256m'
             } }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }

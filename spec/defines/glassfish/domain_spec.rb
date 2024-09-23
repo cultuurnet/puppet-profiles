@@ -42,9 +42,9 @@ describe 'profiles::glassfish::domain' do
             ) }
 
             it { is_expected.to contain_profiles__glassfish__domain__heap('foobar-api').with(
-              'initial'  => nil,
-              'maximum'  => nil,
-              'portbase' => 4800
+              'initial_size' => nil,
+              'maximum_size' => nil,
+              'portbase'     => 4800
             ) }
 
             it { is_expected.to contain_profiles__glassfish__domain__jmx('foobar-api').with(
@@ -140,9 +140,9 @@ describe 'profiles::glassfish::domain' do
             ) }
 
             it { is_expected.to contain_profiles__glassfish__domain__heap('foobar-api').with(
-              'initial'  => '512m',
-              'maximum'  => '1024m',
-              'portbase' => 14800
+              'initial_size' => '512m',
+              'maximum_size' => '1024m',
+              'portbase'     => 14800
             ) }
 
             it { is_expected.to contain_profiles__glassfish__domain__jmx('foobar-api').with(
@@ -198,9 +198,9 @@ describe 'profiles::glassfish::domain' do
           ) }
 
           it { is_expected.to contain_profiles__glassfish__domain__heap('baz-api').with(
-            'initial'  => nil,
-            'maximum'  => nil,
-            'portbase' => 4800
+            'initial_size' => nil,
+            'maximum_size' => nil,
+            'portbase'     => 4800
           ) }
 
           it { is_expected.to contain_profiles__glassfish__domain__jmx('baz-api').with(
