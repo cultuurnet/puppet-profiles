@@ -85,7 +85,7 @@ describe 'profiles::glassfish::domain::heap' do
               'path'   => '/etc/puppetlabs/facter/facts.d/glassfish.foobar-api.heap.yaml'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '512m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
           context 'with maximum => 512m' do
@@ -103,7 +103,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx512m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '512m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
           context 'with maximum => 1024m' do
@@ -124,7 +124,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx1024m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '1024m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '1024m'\n      maximum_size: '1024m'$/) }
           end
 
           context 'with initial => 256m' do
@@ -146,7 +146,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx512m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      maximum: '512m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      initial_size: '256m'\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
           context 'with initial => 256m and maximum => 512m' do
@@ -169,7 +169,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx512m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      maximum: '512m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      initial_size: '256m'\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
           context 'with initial => 256m and maximum => 768m' do
@@ -195,7 +195,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx768m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      maximum: '768m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      initial_size: '256m'\n      maximum: '768m'\n      maximum_size: '768m'$/) }
           end
         end
 
@@ -220,7 +220,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx512m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '512m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
           context 'with initial => 384m' do
@@ -241,7 +241,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx512m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '384m'\n      maximum: '512m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '384m'\n      initial_size: '384m'\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
           context 'with initial => 256m' do
@@ -266,7 +266,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx512m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      maximum: '512m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      initial_size: '256m'\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
           context 'with maximum => 1024m' do
@@ -291,7 +291,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx1024m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '1024m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '1024m'\n      maximum_size: '1024m'$/) }
           end
 
           context 'with initial => 384m and maximum => 1024m' do
@@ -316,7 +316,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx1024m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '384m'\n      maximum: '1024m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '384m'\n      initial_size: '384m'\n      maximum: '1024m'\n      maximum_size: '1024m'$/) }
           end
 
           context 'with initial => 512m and maximum => 1024m' do
@@ -345,7 +345,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx1024m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '512m'\n      maximum: '1024m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '512m'\n      initial_size: '512m'\n      maximum: '1024m'\n      maximum_size: '1024m'$/) }
           end
 
           context 'with initial => 512m and maximum => 512m' do
@@ -371,7 +371,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx512m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '512m'\n      maximum: '512m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '512m'\n      initial_size: '512m'\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
         end
 
@@ -396,7 +396,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx512m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '512m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
           context 'with initial => 256m' do
@@ -421,7 +421,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx512m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      maximum: '512m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      initial_size: '256m'\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
           context 'with maximum => 1024m' do
@@ -439,7 +439,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx1024m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '1024m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '1024m'\n      maximum_size: '1024m'$/) }
           end
 
           context 'with maximum => 1536m' do
@@ -460,7 +460,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx1536m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '1536m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '1536m'\n      maximum_size: '1536m'$/) }
           end
 
           context 'with initial => 400m and maximum => 1024m' do
@@ -482,7 +482,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx1024m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '400m'\n      maximum: '1024m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '400m'\n      initial_size: '400m'\n      maximum: '1024m'\n      maximum_size: '1024m'$/) }
           end
 
           context 'with initial => 400m and maximum => 1536m' do
@@ -507,7 +507,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx1536m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '400m'\n      maximum: '1536m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '400m'\n      initial_size: '400m'\n      maximum: '1536m'\n      maximum_size: '1536m'$/) }
           end
         end
 
@@ -534,7 +534,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx512m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '512m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
           context 'with initial => 400m' do
@@ -562,7 +562,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx512m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '400m'\n      maximum: '512m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '400m'\n      initial_size: '400m'\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
           context 'with initial => 256m' do
@@ -587,7 +587,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx512m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      maximum: '512m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      initial_size: '256m'\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
           context 'with maximum => 1024m' do
@@ -612,7 +612,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx1024m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '1024m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '1024m'\n      maximum_size: '1024m'$/) }
           end
 
           context 'with maximum => 768m' do
@@ -634,7 +634,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx768m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '768m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '768m'\n      maximum_size: '768m'$/) }
           end
 
           context 'with initial => 256m and maximum => 768m' do
@@ -657,7 +657,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx768m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      maximum: '768m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      initial_size: '256m'\n      maximum: '768m'\n      maximum_size: '768m'$/) }
           end
 
           context 'with initial => 512m and maximum => 768m' do
@@ -683,7 +683,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx768m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '512m'\n      maximum: '768m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '512m'\n      initial_size: '512m'\n      maximum: '768m'\n      maximum_size: '768m'$/) }
           end
 
           context 'with initial => 256m and maximum => 1024m' do
@@ -709,7 +709,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx1024m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      maximum: '1024m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      initial_size: '256m'\n      maximum: '1024m'\n      maximum_size: '1024m'$/) }
           end
 
           context 'with initial => 512m and maximum => 1024m' do
@@ -738,7 +738,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx1024m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '512m'\n      maximum: '1024m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '512m'\n      initial_size: '512m'\n      maximum: '1024m'\n      maximum_size: '1024m'$/) }
           end
         end
 
@@ -761,7 +761,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx512m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '512m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
           context 'with initial => 400m' do
@@ -786,7 +786,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx512m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '400m'\n      maximum: '512m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '400m'\n      initial_size: '400m'\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
 
           context 'with initial => 256m' do
@@ -808,7 +808,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xmx512m'
             ) }
 
-            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      maximum: '512m'$/) }
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial: '256m'\n      initial_size: '256m'\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
         end
       end
@@ -845,7 +845,7 @@ describe 'profiles::glassfish::domain::heap' do
               'path'   => '/etc/puppetlabs/facter/facts.d/glassfish.baz-api.heap.yaml'
             ) }
 
-            it { is_expected.to contain_file('Domain baz-api heap external facts').with_content(/^---\nglassfish:\n  baz-api:\n    heap:\n      maximum: '512m'$/) }
+            it { is_expected.to contain_file('Domain baz-api heap external facts').with_content(/^---\nglassfish:\n  baz-api:\n    heap:\n      maximum: '512m'\n      maximum_size: '512m'$/) }
           end
         end
       end

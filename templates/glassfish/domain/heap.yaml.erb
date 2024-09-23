@@ -4,10 +4,12 @@ glassfish:
     heap:
       <%- if @initial -%>
       initial: '<%= @initial %>'
+      initial_size: '<%= @initial %>'
       <%- end -%>
       <%- if @maximum -%>
       maximum: '<%= @maximum %>'
+      maximum_size: '<%= @maximum %>'
       <%- else -%>
-      maximum: '<%= @default_maximum %>'
+      maximum: '<%= @default_maximum_size %>'
+      maximum_size: '<%= @default_maximum_size %>'
       <%- end -%>
-

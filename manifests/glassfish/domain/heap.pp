@@ -6,7 +6,7 @@ define profiles::glassfish::domain::heap (
 
   include ::profiles
 
-  $default_maximum              = '512m'
+  $default_maximum_size         = '512m'
   $jvmoption_default_attributes = {
                                     user         => 'glassfish',
                                     passwordfile => '/home/glassfish/asadmin.pass',
@@ -47,10 +47,10 @@ define profiles::glassfish::domain::heap (
         }
       }
     } else {
-      if !($maximum == $default_maximum) {
+      if !($maximum == $default_maximum_size) {
         jvmoption { "Domain ${title} previous maximum heap jvmoption removal":
           ensure => 'absent',
-          option => "-Xmx${default_maximum}",
+          option => "-Xmx${default_maximum_size}",
           *      => $jvmoption_default_attributes
         }
       }
@@ -58,12 +58,12 @@ define profiles::glassfish::domain::heap (
   } else {
     jvmoption { "Domain ${title} maximum heap jvmoption":
       ensure => 'present',
-      option => "-Xmx${default_maximum}",
+      option => "-Xmx${default_maximum_size}",
       *      => $jvmoption_default_attributes
     }
 
     if fact("glassfish.$title.heap.maximum") {
-      if !($default_maximum == $facts['glassfish'][$title]['heap']['maximum']) {
+      if !($default_maximum_size == $facts['glassfish'][$title]['heap']['maximum']) {
         jvmoption { "Domain ${title} previous maximum heap jvmoption removal":
           ensure => 'absent',
           option => "-Xmx${facts['glassfish'][$title]['heap']['maximum']}",
