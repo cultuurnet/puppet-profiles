@@ -201,7 +201,7 @@ describe 'profiles::glassfish::domain::heap' do
 
         context 'with initial heap fact 384m' do
           let(:facts) { super().merge(
-            { 'glassfish' => { 'foobar-api' => { 'heap' => { 'initial' => '384m' } } } }
+            { 'glassfish' => { 'foobar-api' => { 'heap' => { 'initial_size' => '384m' } } } }
           ) }
 
           context 'without parameters' do
@@ -377,7 +377,7 @@ describe 'profiles::glassfish::domain::heap' do
 
         context 'with maximum heap fact 1024m' do
           let(:facts) { super().merge(
-            { 'glassfish' => { 'foobar-api' => { 'heap' => { 'maximum' => '1024m' } } } }
+            { 'glassfish' => { 'foobar-api' => { 'heap' => { 'maximum_size' => '1024m' } } } }
           ) }
 
           context 'without parameters' do
@@ -513,7 +513,7 @@ describe 'profiles::glassfish::domain::heap' do
 
         context 'with initial heap fact 256m and maximum heap fact 768m' do
           let(:facts) { super().merge(
-            { 'glassfish' => { 'foobar-api' => { 'heap' => { 'initial' => '256m', 'maximum' => '768m' } } } }
+            { 'glassfish' => { 'foobar-api' => { 'heap' => { 'initial_size' => '256m', 'maximum_size' => '768m' } } } }
           ) }
 
           context 'without parameters' do
@@ -744,7 +744,7 @@ describe 'profiles::glassfish::domain::heap' do
 
         context 'with initial heap fact 256m and maximum heap fact 512m' do
           let(:facts) { super().merge(
-            { 'glassfish' => { 'foobar-api' => { 'heap' => { 'initial' => '256m', 'maximum' => '512m' } } } }
+            { 'glassfish' => { 'foobar-api' => { 'heap' => { 'initial_size' => '256m', 'maximum_size' => '512m' } } } }
           ) }
 
           context 'without parameters' do

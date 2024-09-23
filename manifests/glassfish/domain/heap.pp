@@ -21,11 +21,11 @@ define profiles::glassfish::domain::heap (
     }
   }
 
-  if fact("glassfish.$title.heap.initial") {
-    if !($initial == $facts['glassfish'][$title]['heap']['initial']) {
+  if fact("glassfish.$title.heap.initial_size") {
+    if !($initial == $facts['glassfish'][$title]['heap']['initial_size']) {
       jvmoption { "Domain ${title} previous initial heap jvmoption removal":
         ensure => 'absent',
-        option => "-Xms${facts['glassfish'][$title]['heap']['initial']}",
+        option => "-Xms${facts['glassfish'][$title]['heap']['initial_size']}",
         *      => $jvmoption_default_attributes
       }
     }
@@ -38,11 +38,11 @@ define profiles::glassfish::domain::heap (
       *      => $jvmoption_default_attributes
     }
 
-    if fact("glassfish.$title.heap.maximum") {
-      if !($maximum == $facts['glassfish'][$title]['heap']['maximum']) {
+    if fact("glassfish.$title.heap.maximum_size") {
+      if !($maximum == $facts['glassfish'][$title]['heap']['maximum_size']) {
         jvmoption { "Domain ${title} previous maximum heap jvmoption removal":
           ensure => 'absent',
-          option => "-Xmx${facts['glassfish'][$title]['heap']['maximum']}",
+          option => "-Xmx${facts['glassfish'][$title]['heap']['maximum_size']}",
           *      => $jvmoption_default_attributes
         }
       }
@@ -62,11 +62,11 @@ define profiles::glassfish::domain::heap (
       *      => $jvmoption_default_attributes
     }
 
-    if fact("glassfish.$title.heap.maximum") {
-      if !($default_maximum_size == $facts['glassfish'][$title]['heap']['maximum']) {
+    if fact("glassfish.$title.heap.maximum_size") {
+      if !($default_maximum_size == $facts['glassfish'][$title]['heap']['maximum_size']) {
         jvmoption { "Domain ${title} previous maximum heap jvmoption removal":
           ensure => 'absent',
-          option => "-Xmx${facts['glassfish'][$title]['heap']['maximum']}",
+          option => "-Xmx${facts['glassfish'][$title]['heap']['maximum_size']}",
           *      => $jvmoption_default_attributes
         }
       }
