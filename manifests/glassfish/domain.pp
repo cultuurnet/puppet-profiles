@@ -29,10 +29,10 @@ define profiles::glassfish::domain (
   }
 
   profiles::glassfish::domain::heap { $title:
-    initial  => $initial_heap_size,
-    maximum  => $maximum_heap_size,
-    portbase => $portbase,
-    require  => Profiles::Glassfish::Domain::Service[$title]
+    initial_size => $initial_heap_size,
+    maximum_size => $maximum_heap_size,
+    portbase     => $portbase,
+    require      => Profiles::Glassfish::Domain::Service[$title]
   }
 
   profiles::glassfish::domain::jmx { $title:
