@@ -10,8 +10,8 @@ class profiles::atlassian::jira (
   Optional[String]           $volume_size       = undef,
   Boolean                    $manage_homedir    = false,
   Array                      $serveraliases     = [],
-  String                     $initial_heap      = '1024m',
-  String                     $maximum_heap      = '1024m'
+  String                     $initial_heap_size = '1024m',
+  String                     $maximum_heap_size = '1024m'
 ) inherits ::profiles {
 
   $database_user = 'jirauser'
@@ -110,8 +110,8 @@ class profiles::atlassian::jira (
     dbpassword             => $database_password,
     dbname                 => $database_name,
     dbserver               => $database_host,
-    jvm_xms                => $initial_heap,
-    jvm_xmx                => $maximum_heap,
+    jvm_xms                => $initial_heap_size,
+    jvm_xmx                => $maximum_heap_size,
     java_opts              => $java_opts,
     service_manage         => true,
     service_ensure         => $service_status,

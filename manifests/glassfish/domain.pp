@@ -1,8 +1,8 @@
 define profiles::glassfish::domain (
   Enum['present', 'absent']  $ensure               = 'present',
   Enum['running', 'stopped'] $service_status       = 'running',
-  Optional[String]           $initial_heap         = undef,
-  Optional[String]           $maximum_heap         = undef,
+  Optional[String]           $initial_heap_size    = undef,
+  Optional[String]           $maximum_heap_size    = undef,
   Boolean                    $jmx                  = true,
   Boolean                    $newrelic             = false,
   Optional[String]           $newrelic_license_key = undef,
@@ -29,8 +29,8 @@ define profiles::glassfish::domain (
   }
 
   profiles::glassfish::domain::heap { $title:
-    initial  => $initial_heap,
-    maximum  => $maximum_heap,
+    initial  => $initial_heap_size,
+    maximum  => $maximum_heap_size,
     portbase => $portbase,
     require  => Profiles::Glassfish::Domain::Service[$title]
   }

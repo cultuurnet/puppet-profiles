@@ -17,8 +17,8 @@ describe 'profiles::glassfish::domain' do
             it { is_expected.to contain_profiles__glassfish__domain('foobar-api').with(
               'ensure'            => 'present',
               'service_status'    => 'running',
-              'initial_heap'      => nil,
-              'maximum_heap'      => nil,
+              'initial_heap_size' => nil,
+              'maximum_heap_size' => nil,
               'jmx'               => true,
               'newrelic'          => false,
               'newrelic_app_name' => 'foobar-api-production',
@@ -99,8 +99,8 @@ describe 'profiles::glassfish::domain' do
             it { is_expected.to contain_profiles__glassfish__domain('foobar-api').with(
               'ensure'            => 'present',
               'service_status'    => 'running',
-              'initial_heap'      => nil,
-              'maximum_heap'      => nil,
+              'initial_heap_size' => nil,
+              'maximum_heap_size' => nil,
               'jmx'               => true,
               'newrelic'          => false,
               'newrelic_app_name' => 'foobar-api-testing',
@@ -115,14 +115,14 @@ describe 'profiles::glassfish::domain' do
           end
         end
 
-        context 'with portbase => 14800, initial_heap => 512m, maximum_heap => 1024m, jmx => false, newrelic => true and service_status => stopped' do
+        context 'with portbase => 14800, initial_heap_size => 512m, maximum_heap_size => 1024m, jmx => false, newrelic => true and service_status => stopped' do
           let(:params) { {
-            'portbase'       => 14800,
-            'initial_heap'   => '512m',
-            'maximum_heap'   => '1024m',
-            'jmx'            => false,
-            'newrelic'       => true,
-            'service_status' => 'stopped'
+            'portbase'          => 14800,
+            'initial_heap_size' => '512m',
+            'maximum_heap_size' => '1024m',
+            'jmx'               => false,
+            'newrelic'          => true,
+            'service_status'    => 'stopped'
           } }
 
           context 'in the production environment' do
