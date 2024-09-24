@@ -17,31 +17,34 @@ describe 'profiles::uitdatabank::entry_api' do
 
           it { is_expected.to contain_class('profiles::uitdatabank::entry_api').with(
             'database_password' => 'mypassword',
-            'database_host'     => '127.0.0.1'
+            'database_host'     => '127.0.0.1',
+            'deployment'        => true
           ) }
 
           it { is_expected.to contain_class('profiles::mysql::server') }
+          it { is_expected.to contain_class('profiles::uitdatabank::entry_api::deployment') }
 
           it { is_expected.to contain_mysql_database('uitdatabank').with(
             'charset' => 'utf8mb4',
             'collate' => 'utf8mb4_0900_ai_ci'
           ) }
 
-          it { is_expected.to contain_profiles__mysql__app_user('entry_api').with(
-            'database' => 'uitdatabank',
+          it { is_expected.to contain_profiles__mysql__app_user('entry_api@uitdatabank').with(
             'password' => 'mypassword',
             'remote'   => false
           ) }
 
-          it { is_expected.to contain_mysql_database('uitdatabank').that_comes_before('Profiles::Mysql::App_user[entry_api]') }
+          it { is_expected.to contain_mysql_database('uitdatabank').that_comes_before('Profiles::Mysql::App_user[entry_api@uitdatabank]') }
           it { is_expected.to contain_mysql_database('uitdatabank').that_requires('Class[profiles::mysql::server]') }
+          it { is_expected.to contain_profiles__mysql__app_user('entry_api@uitdatabank').that_comes_before('Class[profiles::uitdatabank::entry_api::deployment]') }
         end
       end
 
-      context 'with database_password => secret and database_host => foo.example.com' do
+      context 'with database_password => secret, database_host => foo.example.com and deployment => false' do
         let(:params) { {
           'database_password' => 'secret',
-          'database_host'     => 'foo.example.com'
+          'database_host'     => 'foo.example.com',
+          'deployment'        => false
         } }
 
         it { is_expected.to compile.with_all_deps }
@@ -49,6 +52,8 @@ describe 'profiles::uitdatabank::entry_api' do
         it { is_expected.to contain_class('profiles::mysql::remote_server').with(
           'host' => 'foo.example.com'
         ) }
+
+        it { is_expected.not_to contain_class('profiles::uitdatabank::entry_api::deployment') }
 
         context "with fact mysqld_version => 8.0.33" do
           let(:facts) { facts.merge( { 'mysqld_version' => '8.0.33' } ) }
@@ -58,18 +63,17 @@ describe 'profiles::uitdatabank::entry_api' do
             'collate' => 'utf8mb4_0900_ai_ci'
           ) }
 
-          it { is_expected.to contain_profiles__mysql__app_user('entry_api').with(
-            'database' => 'uitdatabank',
+          it { is_expected.to contain_profiles__mysql__app_user('entry_api@uitdatabank').with(
             'password' => 'secret',
             'remote'   => true
           ) }
 
-          it { is_expected.to contain_mysql_database('uitdatabank').that_comes_before('Profiles::Mysql::App_user[entry_api]') }
+          it { is_expected.to contain_mysql_database('uitdatabank').that_comes_before('Profiles::Mysql::App_user[entry_api@uitdatabank]') }
         end
 
         context "without extra facts" do
           it { is_expected.not_to contain_mysql_database('uitdatabank') }
-          it { is_expected.not_to contain_profiles__mysql__app_user('entry_api') }
+          it { is_expected.not_to contain_profiles__mysql__app_user('entry_api@uitdatabank') }
         end
       end
 
