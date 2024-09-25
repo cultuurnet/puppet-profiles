@@ -81,8 +81,7 @@ class profiles::atlassian::confluence (
     manage_user             => false,
     javahome                => '/usr/lib/jvm/java-17-openjdk-amd64',
     jvm_type                => 'openjdk-17',
-    mysql_connector         => true,
-    mysql_connector_install => '/opt/mysql-connector-confluence',
+    mysql_connector         => false,
     jvm_xms                 => $initial_heap_size,
     jvm_xmx                 => $maximum_heap_size,
     java_opts               => $java_opts,
@@ -106,6 +105,13 @@ class profiles::atlassian::confluence (
       value   => $value,
       require => Class[confluence]
     }
+  }
+
+  file { 'Jira mysql-connector-j':
+    ensure  => 'link',
+    path    => "/opt/confluence/atlassian-confluence-${version}/confluence/WEB-INF/lib/mysql-connector-j.jar",
+    source  => '/usr/share/java/mysql-connector-j.jar',
+    require => [Package['mysql-connector-j'],Class['jira']]
   }
 
   # include ::profiles::atlassian::confluence::monitoring
