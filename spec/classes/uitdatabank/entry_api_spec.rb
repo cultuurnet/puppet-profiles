@@ -23,6 +23,9 @@ describe 'profiles::uitdatabank::entry_api' do
 
           it { is_expected.to contain_class('profiles::mysql::server') }
           it { is_expected.to contain_class('profiles::uitdatabank::entry_api::deployment') }
+          it { is_expected.to contain_class('profiles::uitdatabank::entry_api::data_integration').with(
+            'database_name' => 'uitdatabank'
+          ) }
 
           it { is_expected.to contain_mysql_database('uitdatabank').with(
             'charset' => 'utf8mb4',
@@ -37,6 +40,7 @@ describe 'profiles::uitdatabank::entry_api' do
           it { is_expected.to contain_mysql_database('uitdatabank').that_comes_before('Profiles::Mysql::App_user[entry_api@uitdatabank]') }
           it { is_expected.to contain_mysql_database('uitdatabank').that_requires('Class[profiles::mysql::server]') }
           it { is_expected.to contain_profiles__mysql__app_user('entry_api@uitdatabank').that_comes_before('Class[profiles::uitdatabank::entry_api::deployment]') }
+          it { is_expected.to contain_class('profiles::uitdatabank::entry_api::data_integration').that_requires('Class[profiles::uitdatabank::entry_api::deployment]') }
         end
       end
 
@@ -54,6 +58,7 @@ describe 'profiles::uitdatabank::entry_api' do
         ) }
 
         it { is_expected.not_to contain_class('profiles::uitdatabank::entry_api::deployment') }
+        it { is_expected.not_to contain_class('profiles::uitdatabank::entry_api::data_integration') }
 
         context "with fact mysqld_version => 8.0.33" do
           let(:facts) { facts.merge( { 'mysqld_version' => '8.0.33' } ) }
@@ -74,6 +79,48 @@ describe 'profiles::uitdatabank::entry_api' do
         context "without extra facts" do
           it { is_expected.not_to contain_mysql_database('uitdatabank') }
           it { is_expected.not_to contain_profiles__mysql__app_user('entry_api@uitdatabank') }
+        end
+      end
+
+      context 'with database_password => mypassword and database_host => bar.example.com' do
+        let(:params) { {
+          'database_password' => 'mypassword',
+          'database_host'     => 'bar.example.com'
+        } }
+
+        it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to contain_class('profiles::mysql::remote_server').with(
+          'host' => 'bar.example.com'
+        ) }
+
+        context "with fact mysqld_version => 8.0.33" do
+          let(:facts) { facts.merge( { 'mysqld_version' => '8.0.33' } ) }
+
+          it { is_expected.to contain_mysql_database('uitdatabank').with(
+            'charset' => 'utf8mb4',
+            'collate' => 'utf8mb4_0900_ai_ci'
+          ) }
+
+          it { is_expected.to contain_profiles__mysql__app_user('entry_api@uitdatabank').with(
+            'password' => 'mypassword',
+            'remote'   => true
+          ) }
+
+          it { is_expected.to contain_class('profiles::uitdatabank::entry_api::deployment') }
+          it { is_expected.to contain_class('profiles::uitdatabank::entry_api::data_integration').with(
+            'database_name' => 'uitdatabank'
+          ) }
+
+          it { is_expected.to contain_mysql_database('uitdatabank').that_comes_before('Profiles::Mysql::App_user[entry_api@uitdatabank]') }
+          it { is_expected.to contain_class('profiles::uitdatabank::entry_api::data_integration').that_requires('Class[profiles::uitdatabank::entry_api::deployment]') }
+        end
+
+        context "without extra facts" do
+          it { is_expected.not_to contain_mysql_database('uitdatabank') }
+          it { is_expected.not_to contain_profiles__mysql__app_user('entry_api@uitdatabank') }
+          it { is_expected.not_to contain_class('profiles::uitdatabank::entry_api::deployment') }
+          it { is_expected.not_to contain_class('profiles::uitdatabank::entry_api::data_integration') }
         end
       end
 
