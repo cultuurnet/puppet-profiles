@@ -107,7 +107,7 @@
 # Paul Herbosch <paul@publiq.be>
 #
 class profiles::newrelic_infra (
-  String                  $license_key,
+  String                  $license_key              = lookup('data::newrelic::license_key', Optional[String], 'first', undef),
   Boolean                 $manage_repo              = false,
   Optional[Variant[Hash]] $logging                  = undef,
   Optional[Variant[Hash]] $integrations             = undef,
@@ -117,9 +117,12 @@ class profiles::newrelic_infra (
   realize Apt::Source['newrelic-infra']
 
   class { 'newrelic_infra::agent':
-    ensure      => 'latest',
-    license_key => $license_key,
-    manage_repo => $manage_repo
+    ensure            => 'latest',
+    license_key       => $license_key,
+    manage_repo       => $manage_repo,
+    custom_attributes => {
+      environment => "$::environment"
+    }
   }
 
   if $logging {
