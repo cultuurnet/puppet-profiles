@@ -25,13 +25,15 @@ class profiles::atlassian (
 
   if $install_jira and $database_host_available {
     class { 'profiles::atlassian::jira':
-      database_host => $database_host
+      database_host        => $database_host,
+      database_host_remote => $database_host_remote
     }
   }
 
   if $install_confluence and $database_host_available {
     class { 'profiles::atlassian::confluence':
-      database_host => $database_host
+      database_host        => $database_host,
+      database_host_remote => $database_host_remote
     }
   }
 }

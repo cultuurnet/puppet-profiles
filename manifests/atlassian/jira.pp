@@ -3,15 +3,16 @@ class profiles::atlassian::jira (
   String                     $version,
   String                     $java_opts,
   String                     $database_password,
-  String                     $database_host     = '127.0.0.1',
-  Enum['running', 'stopped'] $service_status    = 'running',
-  Boolean                    $lvm               = false,
-  Optional[String]           $volume_group      = undef,
-  Optional[String]           $volume_size       = undef,
-  Boolean                    $manage_homedir    = false,
-  Array                      $serveraliases     = [],
-  String                     $initial_heap_size = '1024m',
-  String                     $maximum_heap_size = '1024m'
+  String                     $database_host        = '127.0.0.1',
+  Boolean                    $database_host_remote = false,
+  Enum['running', 'stopped'] $service_status       = 'running',
+  Boolean                    $lvm                  = false,
+  Optional[String]           $volume_group         = undef,
+  Optional[String]           $volume_size          = undef,
+  Boolean                    $manage_homedir       = false,
+  Array                      $serveraliases        = [],
+  String                     $initial_heap_size    = '1024m',
+  String                     $maximum_heap_size    = '1024m'
 ) inherits ::profiles {
 
   $database_user = 'jirauser'
