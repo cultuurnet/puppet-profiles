@@ -123,6 +123,16 @@ class profiles::users inherits ::profiles {
     uid            => '1001'
   }
 
+  @user { 'confluence':
+    ensure         => 'present',
+    gid            => 'confluence',
+    home           => '/home/confluence',
+    managehome     => false,
+    purge_ssh_keys => true,
+    shell          => '/bin/true',
+    uid            => '999'
+  }
+
   @user { 'www-data':
     ensure         => 'present',
     gid            => 'www-data',
