@@ -107,11 +107,11 @@ class profiles::atlassian::confluence (
     }
   }
 
-  file { 'Jira mysql-connector-j':
+  file { 'Confluence mysql-connector-j':
     ensure  => 'link',
     path    => "/opt/confluence/atlassian-confluence-${version}/confluence/WEB-INF/lib/mysql-connector-j.jar",
     source  => '/usr/share/java/mysql-connector-j.jar',
-    require => [Package['mysql-connector-j'],Class['jira']]
+    require => [Package['mysql-connector-j'],Class['confluence']]
   }
 
   # include ::profiles::atlassian::confluence::monitoring
