@@ -3,22 +3,27 @@ class profiles::atlassian::jira (
   String                     $version,
   String                     $java_opts,
   String                     $database_password,
-  String                     $database_host        = '127.0.0.1',
-  Boolean                    $database_host_remote = false,
-  Enum['running', 'stopped'] $service_status       = 'running',
-  Boolean                    $lvm                  = false,
-  Optional[String]           $volume_group         = undef,
-  Optional[String]           $volume_size          = undef,
-  Boolean                    $manage_homedir       = false,
-  Array                      $serveraliases        = [],
-  String                     $initial_heap_size    = '1024m',
-  String                     $maximum_heap_size    = '1024m'
+  String                     $database_host     = '127.0.0.1',
+  Enum['running', 'stopped'] $service_status    = 'running',
+  Boolean                    $lvm               = false,
+  Optional[String]           $volume_group      = undef,
+  Optional[String]           $volume_size       = undef,
+  Boolean                    $manage_homedir    = false,
+  Array                      $serveraliases     = [],
+  String                     $initial_heap_size = '1024m',
+  String                     $maximum_heap_size = '1024m'
 ) inherits ::profiles {
 
   $database_user = 'jirauser'
   $database_name = 'jiradb'
   $dburl_params  = 'useUnicode=true&amp;characterEncoding=UTF8&amp;sessionVariables=default_storage_engine=InnoDB'
   $dburl         = "jdbc:mysql://${database_host}:3306/${$database_name}?${dburl_params}"
+
+  if $database_host == '127.0.0.1' {
+    $database_host_remote    = false
+  } else {
+    $database_host_remote    = true
+  }
 
   include ::profiles::java
   include ::profiles::apache
