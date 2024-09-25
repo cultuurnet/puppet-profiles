@@ -39,11 +39,16 @@ class profiles::uitdatabank::entry_api (
       remote   => $database_host_remote,
       require  => Mysql_database[$database_name]
     }
-  }
 
-  if $deployment {
-    include profiles::uitdatabank::entry_api::deployment
+    if $deployment {
+      include profiles::uitdatabank::entry_api::deployment
 
-    Profiles::Mysql::App_user["${database_user}@${database_name}"] -> Class['profiles::uitdatabank::entry_api::deployment']
+      class { 'profiles::uitdatabank::entry_api::data_integration':
+        database_name => $database_name
+      }
+
+      Profiles::Mysql::App_user["${database_user}@${database_name}"] -> Class['profiles::uitdatabank::entry_api::deployment']
+      Class['profiles::uitdatabank::entry_api::deployment'] -> Class['profiles::uitdatabank::entry_api::data_integration']
+    }
   }
 }
