@@ -1,6 +1,7 @@
 class profiles::uitdatabank::entry_api (
-  String $database_password,
-  String $database_host     = '127.0.0.1'
+  String  $database_password,
+  String  $database_host     = '127.0.0.1',
+  Boolean $deployment        = true
 ) inherits ::profiles {
 
   $database_name = 'uitdatabank'
@@ -33,11 +34,16 @@ class profiles::uitdatabank::entry_api (
       collate => 'utf8mb4_0900_ai_ci'
     }
 
-    profiles::mysql::app_user { $database_user:
-      database => $database_name,
+    profiles::mysql::app_user { "${database_user}@${database_name}":
       password => $database_password,
       remote   => $database_host_remote,
       require  => Mysql_database[$database_name]
     }
+  }
+
+  if $deployment {
+    include profiles::uitdatabank::entry_api::deployment
+
+    Profiles::Mysql::App_user["${database_user}@${database_name}"] -> Class['profiles::uitdatabank::entry_api::deployment']
   }
 }
