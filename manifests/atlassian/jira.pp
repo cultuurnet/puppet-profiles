@@ -19,6 +19,12 @@ class profiles::atlassian::jira (
   $dburl_params  = 'useUnicode=true&amp;characterEncoding=UTF8&amp;sessionVariables=default_storage_engine=InnoDB'
   $dburl         = "jdbc:mysql://${database_host}:3306/${$database_name}?${dburl_params}"
 
+  if $database_host == '127.0.0.1' {
+    $database_host_remote    = false
+  } else {
+    $database_host_remote    = true
+  }
+
   include ::profiles::java
   include ::profiles::apache
 
