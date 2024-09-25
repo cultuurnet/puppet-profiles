@@ -56,38 +56,15 @@ class profiles::atlassian::jira (
   }
 
   # configure database
-  if $database_host == '127.0.0.1' {
-    $database_host_remote    = false
-    $database_host_available = true
-
-    include profiles::mysql::server
-
-    Class['profiles::mysql::server'] -> Mysql_database[$database_name]
-  } else {
-    $database_host_remote = true
-
-    class { 'profiles::mysql::remote_server':
-      host => $database_host
-    }
-
-    if $facts['mysqld_version'] {
-      $database_host_available = true
-    } else {
-      $database_host_available = false
-    }
+  mysql_database { $database_name:
+    charset => 'utf8mb4',
+    collate => 'utf8mb4_0900_ai_ci'
   }
 
-  if $database_host_available {
-    mysql_database { $database_name:
-      charset => 'utf8mb4',
-      collate => 'utf8mb4_0900_ai_ci'
-    }
-
-    profiles::mysql::app_user { "${database_user}@${database_name}":
-      password => $database_password,
-      remote   => $database_host_remote,
-      require  => Mysql_database[$database_name]
-    }
+  profiles::mysql::app_user { "${database_user}@${database_name}":
+    password => $database_password,
+    remote   => $database_host_remote,
+    require  => Mysql_database[$database_name]
   }
 
   # install jira
