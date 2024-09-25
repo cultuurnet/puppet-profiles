@@ -65,6 +65,11 @@ class profiles::groups inherits ::profiles {
     gid    => '1001'
   }
 
+  @group { 'confluence':
+    ensure => 'present',
+    gid    => '999'
+  }
+
   @group { 'www-data':
     ensure => 'present',
     gid    => '33'
