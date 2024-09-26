@@ -77,6 +77,7 @@ class profiles::atlassian::confluence (
     version                 => $version,
     installdir              => '/opt/confluence',
     homedir                 => '/home/confluence',
+    manage_homedir          => $manage_homedir,
     tomcat_port             => 8090,
     manage_user             => false,
     javahome                => '/usr/lib/jvm/java-17-openjdk-amd64',
