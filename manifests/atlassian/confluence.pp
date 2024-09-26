@@ -103,8 +103,7 @@ class profiles::atlassian::confluence (
 
   $config.each |$key, $value| {
     confluence::conf { $key:
-      value   => $value,
-      require => Class[confluence]
+      value   => $value
     }
   }
 
