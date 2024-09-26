@@ -18,7 +18,7 @@ define profiles::lvm::mount (
   }
 
   # We need to create all intermediate directories from /data or /data/backup to $mountpoint, this will provide a list
-  $directory_tree = $mountpoint.split('/').map |$index, $dir| { $mountpoint.split('/')[0, $index + 1].join('/') }.filter |$item| { ! $item.empty } - ['/data', '/data/backup']
+  $directory_tree = $mountpoint.split('/').map |$index, $dir| { $mountpoint.split('/')[0, $index + 1].join('/') }.filter |$item| { ! $item.empty } - ['/data', '/data/backup', '/home']
 
   unless $group == 'root' { realize Group[$group] }
   unless $owner == 'root' { realize User[$owner] }
