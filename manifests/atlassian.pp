@@ -4,6 +4,8 @@ class profiles::atlassian (
   Boolean $install_confluence = true
 ) inherits ::profiles {
 
+  realize Package['mysql-connector-j']
+
   if $database_host == '127.0.0.1' {
     $database_host_remote    = false
     $database_host_available = true

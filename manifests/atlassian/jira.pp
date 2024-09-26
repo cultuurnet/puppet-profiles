@@ -87,7 +87,7 @@ class profiles::atlassian::jira (
     dbport                 => '3306',
     dbdriver               => 'com.mysql.jdbc.Driver',
     dbtype                 => 'mysql8',
-    mysql_connector_manage => true,
+    mysql_connector_manage => false,
     dburl                  => $dburl,
     dbuser                 => $database_user,
     dbpassword             => $database_password,
@@ -107,6 +107,13 @@ class profiles::atlassian::jira (
                                 proxyPort  => '443',
                                 scheme     => 'https'
                               }
+  }
+
+  file { 'Jira mysql-connector-j':
+    ensure  => 'link',
+    path    => '/opt/jira/atlassian-jira-software-running/lib/mysql-connector-j.jar',
+    source  => '/usr/share/java/mysql-connector-j.jar',
+    require => [Package['mysql-connector-j'],Class['jira']]
   }
 
   # include ::profiles::atlassian::jira::monitoring
