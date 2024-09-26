@@ -130,7 +130,7 @@ class profiles::users inherits ::profiles {
     managehome     => false,
     purge_ssh_keys => true,
     shell          => '/bin/true',
-    uid            => '999'
+    uid            => '1002'
   }
 
   @user { 'www-data':
