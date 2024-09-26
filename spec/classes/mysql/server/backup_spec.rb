@@ -41,11 +41,12 @@ describe 'profiles::mysql::server::backup' do
             'backupuser'         => 'backup',
             'backuppassword'     => nil,
             'backupdir'          => '/data/backup/mysql/current',
+            'backupcompress'     => false,
             'backuprotate'       => 1,
             'file_per_database'  => true,
             'time'               => [1, 5],
-            'prescript'          => 'rm /data/backup/mysql/current/*',
-            'postscript'         => 'cp /data/backup/mysql/current/* /data/backup/mysql/archive',
+            'prescript'          => 'find "${DIR}/" -maxdepth 1 -type f -exec rm {} \;',
+            'postscript'         => 'find "${DIR}/" -type f -name "*.sql" -exec bzip2 -k {} \; && find "${DIR}/" -type f -name "*.sql.bz2" -exec mv {} /data/backup/mysql/archive \;',
             'excludedatabases'   => ['mysql', 'sys', 'information_schema', 'performance_schema']
           ) }
 
@@ -92,11 +93,12 @@ describe 'profiles::mysql::server::backup' do
             'backupuser'         => 'backup',
             'backuppassword'     => 'secret',
             'backupdir'          => '/data/backup/mysql/current',
+            'backupcompress'     => false,
             'backuprotate'       => 1,
             'file_per_database'  => true,
             'time'               => [1, 5],
-            'prescript'          => 'rm /data/backup/mysql/current/*',
-            'postscript'         => 'cp /data/backup/mysql/current/* /data/backup/mysql/archive',
+            'prescript'          => 'find "${DIR}/" -maxdepth 1 -type f -exec rm {} \;',
+            'postscript'         => 'find "${DIR}/" -type f -name "*.sql" -exec bzip2 -k {} \; && find "${DIR}/" -type f -name "*.sql.bz2" -exec mv {} /data/backup/mysql/archive \;',
             'excludedatabases'   => ['mysql', 'sys', 'information_schema', 'performance_schema']
           ) }
 
@@ -136,11 +138,12 @@ describe 'profiles::mysql::server::backup' do
             'backupuser'         => 'backup',
             'backuppassword'     => 'foobar',
             'backupdir'          => '/data/backup/mysql/current',
+            'backupcompress'     => false,
             'backuprotate'       => 1,
             'file_per_database'  => true,
             'time'               => [1, 5],
-            'prescript'          => 'rm /data/backup/mysql/current/*',
-            'postscript'         => 'cp /data/backup/mysql/current/* /data/backup/mysql/archive',
+            'prescript'          => 'find "${DIR}/" -maxdepth 1 -type f -exec rm {} \;',
+            'postscript'         => 'find "${DIR}/" -type f -name "*.sql" -exec bzip2 -k {} \; && find "${DIR}/" -type f -name "*.sql.bz2" -exec mv {} /data/backup/mysql/archive \;',
             'excludedatabases'   => ['mysql', 'sys', 'information_schema', 'performance_schema']
           ) }
         end
