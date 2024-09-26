@@ -85,7 +85,7 @@ class profiles::atlassian::jira (
     jvm_type               => 'openjdk-17',
     db                     => 'mysql',
     dbport                 => '3306',
-    dbdriver               => 'com.mysql.jdbc.Driver',
+    dbdriver               => 'com.mysql.cj.jdbc.Driver',
     dbtype                 => 'mysql8',
     mysql_connector_manage => false,
     dburl                  => $dburl,
