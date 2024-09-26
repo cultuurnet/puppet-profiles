@@ -94,10 +94,10 @@ class profiles::atlassian::confluence (
   }
 
   $config = {
-    hibernate.connection.url          => $dburl,
-    hibernate.connection.username     => $database_user,
-    hibernate.connection.password     => $database_password,
-    hibernate.connection.driver_class => 'com.mysql.cj.jdbc.Driver'
+    'hibernate.connection.url'          => $dburl,
+    'hibernate.connection.username'     => $database_user,
+    'hibernate.connection.password'     => $database_password,
+    'hibernate.connection.driver_class' => 'com.mysql.cj.jdbc.Driver'
   }
 
   $config.each |$key, $value| {
