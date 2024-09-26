@@ -15,7 +15,7 @@ class profiles::atlassian::confluence (
 
   $database_user = 'confluenceuser'
   $database_name = 'confluencedb'
-  $dburl_params  = 'sessionVariables=transaction_isolation=READ-COMMITTED'
+  $dburl_params  = "sessionVariables=transaction_isolation='READ-COMMITTED'"
   $dburl         = "jdbc:mysql://${database_host}:3306/${$database_name}?${dburl_params}"
 
   if $database_host == '127.0.0.1' {
@@ -63,7 +63,7 @@ class profiles::atlassian::confluence (
   # configure database
   mysql_database { $database_name:
     charset => 'utf8mb4',
-    collate => 'utf8mb4_0900_ai_ci'
+    collate => 'utf8mb4_bin'
   }
 
   profiles::mysql::app_user { "${database_user}@${database_name}":
