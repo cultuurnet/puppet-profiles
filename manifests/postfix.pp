@@ -117,7 +117,9 @@ class profiles::postfix (
         smtp_use_tls            => 'yes',
         smtp_tls_security_level => 'may',
         extra_main_parameters   => {
-          'smtp_tls_loglevel'   => '1'
+          'smtp_tls_loglevel'   => '1',
+          'smtpd_recipient_restrictions' => 'permit_mynetworks,reject_unauth_destination',
+          'smtpd_relay_restrictions'     => 'permit_mynetworks,reject_unauth_destination'
         }
       }
     } else {
