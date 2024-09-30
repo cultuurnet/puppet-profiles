@@ -46,7 +46,7 @@ describe 'profiles::mysql::server::backup' do
             'file_per_database'  => true,
             'time'               => [1, 5],
             'prescript'          => 'find "${DIR}/" -maxdepth 1 -type f -exec rm {} \;',
-            'postscript'         => 'find "${DIR}/" -type f -name "*.sql" -exec bzip2 -k {} \; && find "${DIR}/" -type f -name "*.sql.bz2" -exec mv {} /data/backup/mysql/archive \;',
+            'postscript'         => 'find "${DIR}/" -type f -name "*.sql" -exec nice -n 19 bzip2 -k {} \; && find "${DIR}/" -type f -name "*.sql.bz2" -exec mv {} /data/backup/mysql/archive \;',
             'excludedatabases'   => ['mysql', 'sys', 'information_schema', 'performance_schema']
           ) }
 
@@ -98,7 +98,7 @@ describe 'profiles::mysql::server::backup' do
             'file_per_database'  => true,
             'time'               => [1, 5],
             'prescript'          => 'find "${DIR}/" -maxdepth 1 -type f -exec rm {} \;',
-            'postscript'         => 'find "${DIR}/" -type f -name "*.sql" -exec bzip2 -k {} \; && find "${DIR}/" -type f -name "*.sql.bz2" -exec mv {} /data/backup/mysql/archive \;',
+            'postscript'         => 'find "${DIR}/" -type f -name "*.sql" -exec nice -n 19 bzip2 -k {} \; && find "${DIR}/" -type f -name "*.sql.bz2" -exec mv {} /data/backup/mysql/archive \;',
             'excludedatabases'   => ['mysql', 'sys', 'information_schema', 'performance_schema']
           ) }
 
@@ -143,7 +143,7 @@ describe 'profiles::mysql::server::backup' do
             'file_per_database'  => true,
             'time'               => [1, 5],
             'prescript'          => 'find "${DIR}/" -maxdepth 1 -type f -exec rm {} \;',
-            'postscript'         => 'find "${DIR}/" -type f -name "*.sql" -exec bzip2 -k {} \; && find "${DIR}/" -type f -name "*.sql.bz2" -exec mv {} /data/backup/mysql/archive \;',
+            'postscript'         => 'find "${DIR}/" -type f -name "*.sql" -exec nice -n 19 bzip2 -k {} \; && find "${DIR}/" -type f -name "*.sql.bz2" -exec mv {} /data/backup/mysql/archive \;',
             'excludedatabases'   => ['mysql', 'sys', 'information_schema', 'performance_schema']
           ) }
         end

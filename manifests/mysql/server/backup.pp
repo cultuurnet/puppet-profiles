@@ -52,7 +52,7 @@ class profiles::mysql::server::backup (
     backuprotate      => 1,
     file_per_database => true,
     prescript         => 'find "${DIR}/" -maxdepth 1 -type f -exec rm {} \;',
-    postscript        => 'find "${DIR}/" -type f -name "*.sql" -exec bzip2 -k {} \; && find "${DIR}/" -type f -name "*.sql.bz2" -exec mv {} /data/backup/mysql/archive \;',
+    postscript        => 'find "${DIR}/" -type f -name "*.sql" -exec nice -n 19 bzip2 -k {} \; && find "${DIR}/" -type f -name "*.sql.bz2" -exec mv {} /data/backup/mysql/archive \;',
     time              => [1, 5],
     excludedatabases  => ['mysql', 'sys', 'information_schema', 'performance_schema']
   }
