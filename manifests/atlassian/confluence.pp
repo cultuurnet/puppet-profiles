@@ -29,8 +29,7 @@ class profiles::atlassian::confluence (
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
     destination         => 'http://127.0.0.1:8090/',
-    aliases             => $serveraliases,
-    auth_openid_connect => true
+    aliases             => $serveraliases
   }
 
   realize Group['confluence']
