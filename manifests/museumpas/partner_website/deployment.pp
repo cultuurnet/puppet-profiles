@@ -9,7 +9,6 @@ class profiles::museumpas::partner_website::deployment (
 ) inherits ::profiles {
 
   $basedir                 = '/var/www/museumpas-partner'
-  $mount_target_dns_name   = lookup('terraform::efs::mount_target_dns_name', Optional[String], 'first', undef)
 
   realize User['www-data']
   realize Group['www-data']
@@ -20,16 +19,6 @@ class profiles::museumpas::partner_website::deployment (
     ensure  => $version,
     require => Apt::Source[$repository],
     notify  => [Service['museumpas-partner-website'], Profiles::Deployment::Versions[$title]]
-  }
-
-  if $mount_target_dns_name {
-    profiles::nfs::mount { "${mount_target_dns_name}:/":
-      mountpoint    => "${basedir}/web/documents",
-      mount_options => 'nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2',
-      owner         => 'www-data',
-      group         => 'www-data',
-      require       => [Package['museumpas-partner-website'], User['www-data'], Group['www-data']]
-    }
   }
 
   file { 'museumpas-partner-website-config':
