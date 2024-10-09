@@ -17,7 +17,7 @@ describe 'profiles::newrelic::infrastructure' do
             'license_key'    => 'my_license_key',
             'version'        => 'latest',
             'service_status' => 'running',
-            'loglevel'       => 'info',
+            'log_level'      => 'info',
             'attributes'     => {}
           ) }
 
@@ -27,7 +27,7 @@ describe 'profiles::newrelic::infrastructure' do
 
           it { is_expected.to contain_class('profiles::newrelic::infrastructure::configuration').with(
             'license_key' => 'my_license_key',
-            'loglevel'    => 'info',
+            'log_level'   => 'info',
             'attributes'  => {}
           ) }
 
@@ -46,12 +46,12 @@ describe 'profiles::newrelic::infrastructure' do
         end
       end
 
-      context 'with license_key => secret, version => 1.2.3, service_status => stopped, loglevel => debug and attributes => { foo => true, bar => false }' do
+      context 'with license_key => secret, version => 1.2.3, service_status => stopped, log_level => debug and attributes => { foo => true, bar => false }' do
         let(:params) { {
           'license_key'    => 'secret',
           'version'        => '1.2.3',
           'service_status' => 'stopped',
-          'loglevel'       => 'debug',
+          'log_level'      => 'debug',
           'attributes'     => { 'foo' => true, 'bar' => false }
         } }
 
@@ -63,7 +63,7 @@ describe 'profiles::newrelic::infrastructure' do
 
         it { is_expected.to contain_class('profiles::newrelic::infrastructure::configuration').with(
           'license_key' => 'secret',
-          'loglevel'    => 'debug',
+          'log_level'   => 'debug',
           'attributes'  => { 'foo' => true, 'bar' => false }
         ) }
 

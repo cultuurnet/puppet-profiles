@@ -1,6 +1,6 @@
 class profiles::newrelic::infrastructure::configuration (
   String                                  $license_key,
-  Enum['debug', 'info', 'smart', 'trace'] $loglevel    = 'info',
+  Enum['debug', 'info', 'smart', 'trace'] $log_level   = 'info',
   Hash                                    $attributes  = {}
 ) inherits ::profiles {
 

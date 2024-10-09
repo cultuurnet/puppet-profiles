@@ -21,7 +21,7 @@ describe 'profiles::newrelic::infrastructure::configuration' do
 
             it { is_expected.to contain_class('profiles::newrelic::infrastructure::configuration').with(
               'license_key' => 'my_license_key',
-              'loglevel'    => 'info',
+              'log_level'   => 'info',
               'attributes'  => {}
             ) }
 
@@ -57,10 +57,10 @@ describe 'profiles::newrelic::infrastructure::configuration' do
         context 'in the testing environment' do
           let(:environment) { 'testing' }
 
-          context 'with license_key => foobar, loglevel => debug and attributes => { project => foo, size => small }' do
+          context 'with license_key => foobar, log_level => debug and attributes => { project => foo, size => small }' do
             let(:params) { {
               'license_key' => 'foobar',
-              'loglevel'    => 'debug',
+              'log_level'   => 'debug',
               'attributes'  => { 'project' => 'foo', 'size' => 'small' }
             } }
 
