@@ -2,6 +2,7 @@
 license_key: <%= @license_key %>
 display_name: <%= @facts['networking']['fqdn'] %>
 dns_hostname_resolution: false
+pid_file: /run/newrelic-infra/newrelic-infra.pid
 <%- if @facts['ec2_metadata'] -%>
 cloud_provider: aws
 <%- end -%>

@@ -35,6 +35,7 @@ describe 'profiles::newrelic::infrastructure::configuration' do
             it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^license_key: my_license_key$/) }
             it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^display_name: mynode.example.com$/) }
             it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^dns_hostname_resolution: false$/) }
+            it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^pid_file: \/run\/newrelic-infra\/newrelic-infra\.pid$/) }
             it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^cloud_provider: aws$/) }
             it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^\s{2}environment: acceptance$/) }
 
@@ -69,6 +70,7 @@ describe 'profiles::newrelic::infrastructure::configuration' do
             it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^license_key: foobar$/) }
             it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^display_name: test.example.com$/) }
             it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^dns_hostname_resolution: false$/) }
+            it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^pid_file: \/run\/newrelic-infra\/newrelic-infra\.pid$/) }
             it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^\s{2}level: debug$/) }
             it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^\s{2}environment: testing$/) }
             it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^\s{2}project: foo$/) }
