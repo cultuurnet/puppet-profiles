@@ -13,7 +13,7 @@ class profiles::newrelic::infrastructure (
 
     class { 'profiles::newrelic::infrastructure::configuration':
       license_key => $license_key,
-      log_level    => $log_level,
+      log_level   => $log_level,
       attributes  => $attributes
     }
 

@@ -1,3 +1,7 @@
+---
+# Settings documented at:
+# https://docs.newrelic.com/docs/logs/forward-logs/forward-your-logs-using-infrastructure-agent/
+#
 logs:
   - name: <%= @title %>
   <%- if ['file', 'systemd'].include? @source_type -%>
