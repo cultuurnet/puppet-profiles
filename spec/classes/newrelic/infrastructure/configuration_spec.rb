@@ -25,6 +25,18 @@ describe 'profiles::newrelic::infrastructure::configuration' do
               'attributes'  => {}
             ) }
 
+            it { is_expected.to contain_file('/etc/newrelic-infra/integrations.d').with(
+              'ensure'  => 'directory',
+              'recurse' => true,
+              'purge'   => true
+            ) }
+
+            it { is_expected.to contain_file('/etc/newrelic-infra/logging.d').with(
+              'ensure'  => 'directory',
+              'recurse' => true,
+              'purge'   => true
+            ) }
+
             it { is_expected.to contain_file('/etc/newrelic-infra.yml').with(
               'ensure' => 'file',
               'owner'  => 'root',

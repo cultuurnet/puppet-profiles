@@ -17,4 +17,16 @@ class profiles::newrelic::infrastructure::configuration (
     mode    => '0640',
     content => template('profiles/newrelic/infrastructure/newrelic-infra.yml.erb')
   }
+
+  file { '/etc/newrelic-infra/integrations.d':
+    ensure  => 'directory',
+    recurse => true,
+    purge   => true
+  }
+
+  file { '/etc/newrelic-infra/logging.d':
+    ensure  => 'directory',
+    recurse => true,
+    purge   => true
+  }
 }
