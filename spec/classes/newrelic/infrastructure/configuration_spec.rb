@@ -37,11 +37,9 @@ describe 'profiles::newrelic::infrastructure::configuration' do
             it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^dns_hostname_resolution: false$/) }
             it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^pid_file: \/run\/newrelic-infra\/newrelic-infra\.pid$/) }
             it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^cloud_provider: aws$/) }
-            it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^\s{2}environment: acceptance$/) }
-
-            it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^\s{2}level: info$/) }
-            it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^\s{4}max_size_mb: 100$/) }
-            it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^\s{4}max_files: 10$/) }
+            it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^custom_attributes:\n\s{2}environment: acceptance$/) }
+            it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^log:\n\s{2}level: info$/) }
+            it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^\s{2}rotate:\n\s{4}max_size_mb: 100\n\s{4}max_files: 10$/) }
           end
 
           context 'without parameters' do
@@ -71,10 +69,8 @@ describe 'profiles::newrelic::infrastructure::configuration' do
             it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^display_name: test.example.com$/) }
             it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^dns_hostname_resolution: false$/) }
             it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^pid_file: \/run\/newrelic-infra\/newrelic-infra\.pid$/) }
-            it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^\s{2}level: debug$/) }
-            it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^\s{2}environment: testing$/) }
-            it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^\s{2}project: foo$/) }
-            it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^\s{2}size: small$/) }
+            it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^custom_attributes:\n\s{2}environment: testing\n\s{2}project: foo\n\s{2}size: small$/) }
+            it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^log:\n\s{2}level: debug$/) }
 
             it { is_expected.not_to contain_file('/etc/newrelic-infra.yml').with_content(/^cloud_provider: aws$/) }
           end
