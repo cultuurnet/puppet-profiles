@@ -1,0 +1,19 @@
+logs:
+  - name: <%= @title %>
+  <%- if ['file', 'systemd'].include? @source_type -%>
+    <%= @source_type %>: <%= @source %>
+  <%- else -%>
+    <%= @source_type %>:
+    <%- @source.each do |key, value| -%>
+      <%= key %>: <%= value %>
+    <%- end -%>
+  <%- end -%>
+  <%- if @pattern -%>
+    pattern: <%= @pattern %>
+  <%- end -%>
+  <%- unless @attributes.empty? -%>
+    attributes:
+    <%- @attributes.each do |key, value| -%>
+      <%= key %>: <%= value %>
+    <%- end -%>
+  <%- end -%>
