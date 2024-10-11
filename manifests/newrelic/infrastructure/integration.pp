@@ -6,6 +6,7 @@ define profiles::newrelic::infrastructure::integration (
 ) {
 
   include ::profiles
+  include ::profiles::newrelic::infrastructure
 
   $config_dir       = '/etc/newrelic-infra/integrations.d'
   $integration_name = $title ? {
@@ -20,9 +21,11 @@ define profiles::newrelic::infrastructure::integration (
     require => Apt::Source['newrelic-infra']
   }
 
-  file { "${integration_name}-config.yml":
-    ensure   => file,
-    path     => "${config_dir}/${integration_name}-config.yml",
-    content  => template('profiles/newrelic/infrastructure/integration-config.yml.erb')
+  file { "newrelic-infrastructure-${integration_name}-config":
+    ensure  => file,
+    path    => "${config_dir}/${integration_name}-config.yml",
+    content => template('profiles/newrelic/infrastructure/integration-config.yml.erb'),
+    require => [Package["nri-${integration_name}"], Class['profiles::newrelic::infrastructure::install']],
+    notify  => Class['profiles::newrelic::infrastructure::service']
   }
 }
