@@ -1,8 +1,9 @@
 define profiles::newrelic::infrastructure::logging (
-  Variant[String, Hash]                    $source,
-  Enum['file', 'systemd', 'syslog', 'tcp'] $source_type = 'file',
-  Hash                                     $attributes  = {},
-  Optional[String]                         $pattern     = undef
+  Variant[String, Hash]                                 $source,
+  Enum['file', 'systemd', 'syslog', 'tcp', 'fluentbit'] $source_type = 'file',
+  Hash                                                  $attributes  = {},
+  Optional[String]                                      $pattern     = undef,
+  Integer                                               $max_line_kb = 128
 ) {
 
   include ::profiles

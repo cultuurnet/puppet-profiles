@@ -22,7 +22,8 @@ describe 'profiles::newrelic::infrastructure::logging' do
               'source_type' => 'file',
               'source'      => '/var/log/mysql/error.log',
               'pattern'     => nil,
-              'attributes'  => {}
+              'attributes'  => {},
+              'max_line_kb' => 128
             ) }
 
             it { is_expected.to contain_file('newrelic-infrastructure-mysql-error-log').with(
@@ -31,6 +32,7 @@ describe 'profiles::newrelic::infrastructure::logging' do
             ) }
 
             it { is_expected.to contain_file('newrelic-infrastructure-mysql-error-log').with_content(/^logs:\n\s{2}- name: mysql-error-log\n\s{4}file: \/var\/log\/mysql\/error.log$/) }
+            it { is_expected.to contain_file('newrelic-infrastructure-mysql-error-log').with_content(/^\s{4}max_line_kb: 128$/) }
 
             it { is_expected.not_to contain_file('newrelic-infrastructure-mysql-error-log').with_content(/^\s{4}pattern:$/) }
             it { is_expected.not_to contain_file('newrelic-infrastructure-mysql-error-log').with_content(/^\s{4}attributes:$/) }
@@ -43,11 +45,12 @@ describe 'profiles::newrelic::infrastructure::logging' do
         context 'with title => mysql-slow-query-log' do
           let(:title) { 'mysql-slow-query-log' }
 
-          context 'with source => /var/log/mysql/slow-query.log, pattern => WARN|ERROR and attributes => { logtype => mysql-slow-query-log, attribute1 => value }' do
+          context 'with source => /var/log/mysql/slow-query.log, pattern => WARN|ERROR, max_line_kb => 256 and attributes => { logtype => mysql-slow-query-log, attribute1 => value }' do
             let(:params) { {
-              'source'     => '/var/log/mysql/slow-query.log',
-              'pattern'    => 'WARN|ERROR',
-              'attributes' => { 'logtype' => 'mysql-slow-query-log', 'attribute1' => 'value' }
+              'source'      => '/var/log/mysql/slow-query.log',
+              'pattern'     => 'WARN|ERROR',
+              'max_line_kb' => 256,
+              'attributes'  => { 'logtype' => 'mysql-slow-query-log', 'attribute1' => 'value' }
             } }
 
             it { is_expected.to contain_class('profiles::newrelic::infrastructure') }
@@ -57,7 +60,9 @@ describe 'profiles::newrelic::infrastructure::logging' do
               'path'    => '/etc/newrelic-infra/logging.d/mysql-slow-query-log.yml'
             ) }
 
-            it { is_expected.to contain_file('newrelic-infrastructure-mysql-slow-query-log').with_content(/^logs:\n\s{2}- name: mysql-slow-query-log\n\s{4}file: \/var\/log\/mysql\/slow-query.log\n\s{4}pattern: WARN\|ERROR$/) }
+            it { is_expected.to contain_file('newrelic-infrastructure-mysql-slow-query-log').with_content(/^logs:\n\s{2}- name: mysql-slow-query-log\n\s{4}file: \/var\/log\/mysql\/slow-query.log$/) }
+            it { is_expected.to contain_file('newrelic-infrastructure-mysql-slow-query-log').with_content(/^\s{4}pattern: WARN|ERROR$/) }
+            it { is_expected.to contain_file('newrelic-infrastructure-mysql-slow-query-log').with_content(/^\s{4}max_line_kb: 256$/) }
             it { is_expected.to contain_file('newrelic-infrastructure-mysql-slow-query-log').with_content(/^\s{4}attributes:\n\s{6}logtype: mysql-slow-query-log\n\s{6}attribute1: value$/) }
 
             it { is_expected.to contain_file('newrelic-infrastructure-mysql-slow-query-log').that_requires('Class[profiles::newrelic::infrastructure::install]') }
