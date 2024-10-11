@@ -1,7 +1,7 @@
 class profiles::mysql::server (
   Optional[String]                                                              $root_password               = undef,
   Stdlib::IP::Address::V4                                                       $listen_address              = '127.0.0.1',
-  Boolean                                                                       $newrelic_monitoring_enabled = false,
+  Boolean                                                                       $monitoring                  = false,
   Boolean                                                                       $lvm                         = false,
   Optional[String]                                                              $volume_group                = undef,
   Optional[String]                                                              $volume_size                 = undef,
@@ -155,8 +155,10 @@ class profiles::mysql::server (
 
   include profiles::mysql::server::logging
 
-  if $newrelic_monitoring_enabled {
-    include profiles::mysql::server::newrelic
+  if $monitoring {
+    include profiles::mysql::server::monitoring
+
+    Class['mysql::server'] -> Class['profiles::mysql::server::monitoring']
   }
 
   Group['mysql'] -> Class['mysql::server']
