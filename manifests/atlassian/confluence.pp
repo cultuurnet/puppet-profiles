@@ -114,6 +114,14 @@ class profiles::atlassian::confluence (
     require => [Package['mysql-connector-j'],Class['confluence']]
   }
 
+  cron { 'remove-old-confluence-backups':
+    command     => "/usr/bin/find /home/confluence/backups -mtime +1 -name '*.zip' -delete",
+    environment => [ 'MAILTO=infra+cron@publiq.be' ],
+    user        => 'root',
+    hour        => '3',
+    minute      => '40'
+  }
+
   # include ::profiles::atlassian::confluence::monitoring
   # include ::profiles::atlassian::confluence::metrics
   # include ::profiles::atlassian::confluence::backup
