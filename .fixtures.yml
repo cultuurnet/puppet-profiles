@@ -12,6 +12,9 @@ fixtures:
     sshkeys_core:
       repo: 'puppetlabs/sshkeys_core'
       ref: '2.4.0'
+    host_core:
+      repo: 'puppetlabs/host_core'
+      ref: '1.3.0'
     augeasproviders_core:
       repo: 'puppet/augeasproviders_core'
       ref: '3.2.1'
