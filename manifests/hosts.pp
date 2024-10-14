@@ -6,4 +6,10 @@ class profiles::hosts inherits ::profiles {
     ip           => '127.0.0.1',
     target       => '/etc/hosts'
   }
+
+  host { $trusted['hostname']:
+    ensure => 'absent',
+    ip     => '127.0.0.1',
+    target => '/etc/hosts'
+  }
 }

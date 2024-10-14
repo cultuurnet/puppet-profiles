@@ -21,6 +21,12 @@ describe 'profiles::hosts' do
           'ip'           => '127.0.0.1',
           'target'       => '/etc/hosts'
         ) }
+
+        it { is_expected.to contain_host('foo').with(
+          'ensure' => 'absent',
+          'ip'     => '127.0.0.1',
+          'target' => '/etc/hosts'
+        ) }
       end
 
       context 'on node bar.example.com' do
@@ -38,6 +44,12 @@ describe 'profiles::hosts' do
           'host_aliases' => ['bar', 'localhost'],
           'ip'           => '127.0.0.1',
           'target'       => '/etc/hosts'
+        ) }
+
+        it { is_expected.to contain_host('bar').with(
+          'ensure' => 'absent',
+          'ip'     => '127.0.0.1',
+          'target' => '/etc/hosts'
         ) }
       end
     end
