@@ -115,6 +115,14 @@ class profiles::atlassian::jira (
     require => [Package['mysql-connector-j'],Class['jira']]
   }
 
+  cron { 'remove-old-jira-exports':
+    command     => "/usr/bin/find /home/jira/export -mtime +1 -name '*.zip' -delete",
+    environment => [ 'MAILTO=infra+cron@publiq.be' ],
+    user        => 'root',
+    hour        => '3',
+    minute      => '30'
+  }
+
   # include ::profiles::atlassian::jira::monitoring
   # include ::profiles::atlassian::jira::metrics
   # include ::profiles::atlassian::jira::backup
