@@ -1,0 +1,33 @@
+---
+# Settings documented at:
+# https://docs.newrelic.com/docs/infrastructure/host-integrations/infrastructure-integrations-sdk/specifications/host-integrations-standard-configuration-format/
+#
+integrations:
+- name: nri-<%= @integration_name %>
+  inventory_source: integrations/<%= @integration_name %>
+  interval: <%= @check_interval %>
+  timeout: 5s
+  labels:
+    environment: <%= @environment %>
+  <%- @labels.each do |key, value| -%>
+    <%= key %>: <%= value %>
+  <%- end -%>
+<%- unless @conditions.empty? -%>
+  when:
+  <%- @conditions.each do |key, value| -%>
+    <%- if key == 'env_exists' -%>
+    env_exists:
+    <%- value.each do |k, v| -%>
+      <%= k %>: <%= v %>
+    <%- end -%>
+    <%- else -%>
+    <%= key %>: <%= value %>
+    <%- end -%>
+  <%- end -%>
+<%- end -%>
+<%- unless @configuration.empty? -%>
+  env:
+  <%- @configuration.each do |key, value| -%>
+    <%= key %>: <%= value %>
+  <%- end -%>
+<%- end -%>
