@@ -24,8 +24,6 @@ class profiles::newrelic::infrastructure (
     Class['profiles::newrelic::infrastructure::install'] -> Class['profiles::newrelic::infrastructure::configuration']
     Class['profiles::newrelic::infrastructure::configuration'] ~> Class['profiles::newrelic::infrastructure::service']
 
-  } else {
-    fail("Class Profiles::Newrelic::Infrastructure expects a value for parameter 'license_key'")
   }
 }
 
