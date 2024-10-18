@@ -1,0 +1,24 @@
+---
+# Settings documented at:
+# https://docs.newrelic.com/docs/logs/forward-logs/forward-your-logs-using-infrastructure-agent/
+#
+logs:
+  - name: <%= @title %>
+  <%- if ['file', 'systemd'].include? @source_type -%>
+    <%= @source_type %>: <%= @source %>
+  <%- else -%>
+    <%= @source_type %>:
+    <%- @source.each do |key, value| -%>
+      <%= key %>: <%= value %>
+    <%- end -%>
+  <%- end -%>
+    max_line_kb: <%= @max_line_kb %>
+  <%- if @pattern -%>
+    pattern: <%= @pattern %>
+  <%- end -%>
+  <%- unless @attributes.empty? -%>
+    attributes:
+    <%- @attributes.each do |key, value| -%>
+      <%= key %>: <%= value %>
+    <%- end -%>
+  <%- end -%>
