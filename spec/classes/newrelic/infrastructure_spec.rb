@@ -42,7 +42,19 @@ describe 'profiles::newrelic::infrastructure' do
         context 'without hieradata' do
           let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
 
-          it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'license_key'/) }
+          it { is_expected.to compile.with_all_deps }
+
+          it { is_expected.to contain_class('profiles::newrelic::infrastructure').with(
+            'license_key'    => nil,
+            'version'        => 'latest',
+            'service_status' => 'running',
+            'log_level'      => 'info',
+            'attributes'     => {}
+          ) }
+
+          it { is_expected.not_to contain_class('profiles::newrelic::infrastructure::install') }
+          it { is_expected.not_to contain_class('profiles::newrelic::infrastructure::configuration') }
+          it { is_expected.not_to contain_class('profiles::newrelic::infrastructure::service') }
         end
       end
 
