@@ -59,7 +59,7 @@ describe 'profiles::mysql::app_user' do
           it { is_expected.to contain_mysql_grant('testuser@%/testdb.test').with(
             'ensure'     => 'present',
             'options'    => ['GRANT'],
-            'privileges' => ['SELECT', 'SHOW VIEW', 'REPLICATION CLIENT'],
+            'privileges' => ['SELECT', 'SHOW VIEW'],
             'table'      => 'testdb.test',
             'user'       => 'testuser@%',
           ) }
@@ -108,7 +108,7 @@ describe 'profiles::mysql::app_user' do
           it { is_expected.to contain_mysql_grant('myuser@%/nodb.table1').with(
             'ensure'     => 'present',
             'options'    => ['GRANT'],
-            'privileges' => ['SELECT', 'SHOW VIEW', 'REPLICATION CLIENT'],
+            'privileges' => ['SELECT', 'SHOW VIEW'],
             'table'      => 'nodb.table1',
             'user'       => 'myuser@%',
           ) }
@@ -116,7 +116,7 @@ describe 'profiles::mysql::app_user' do
           it { is_expected.to contain_mysql_grant('myuser@%/nodb.table2').with(
             'ensure'     => 'present',
             'options'    => ['GRANT'],
-            'privileges' => ['SELECT', 'SHOW VIEW', 'REPLICATION CLIENT'],
+            'privileges' => ['SELECT', 'SHOW VIEW'],
             'table'      => 'nodb.table2',
             'user'       => 'myuser@%',
           ) }
