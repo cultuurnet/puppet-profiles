@@ -11,7 +11,7 @@ describe 'profiles::mysql::rds' do
         } }
 
         context "with hieradata" do
-          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+          let(:hiera_config) { 'spec/support/hiera/terraform_available.yaml' }
 
           it { is_expected.to compile.with_all_deps }
 
@@ -46,7 +46,7 @@ describe 'profiles::mysql::rds' do
         } }
 
         context "with hieradata" do
-          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+          let(:hiera_config) { 'spec/support/hiera/terraform_available.yaml' }
 
           it { is_expected.to contain_profiles__mysql__root_my_cnf('myrds.example.com').with(
             'database_user'     => 'admin',

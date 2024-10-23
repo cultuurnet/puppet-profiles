@@ -1,0 +1,2 @@
+---
+data::puppet::terraform_integration: true
