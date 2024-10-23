@@ -9,7 +9,10 @@ class profiles::puppet::puppetserver::hiera (
 ) inherits ::profiles {
 
   if $terraform_integration {
-    $lookups = [{ 'name' => 'Terraform data', 'glob' => 'terraform/%{::trusted.certname}/*.yaml' }] + [$lookup_hierarchy].flatten
+    $lookups = [
+                 { 'name' => 'Terraform per-node data', 'glob' => 'terraform/%{::trusted.certname}/*.yaml' },
+                 { 'name' => 'Terraform common data', 'glob' => 'terraform/common.yaml' }
+               ] + [$lookup_hierarchy].flatten
   } else {
     $lookups = [$lookup_hierarchy].flatten
   }
