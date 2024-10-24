@@ -5,7 +5,7 @@ class profiles::puppet::puppetserver::hiera (
                                                        { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
                                                        { 'name' => 'Common data', 'path' => 'common.yaml' }
                                                      ],
-  Boolean                   $terraform_integration = lookup('data::puppet::terraform_integration', Boolean, 'first', false)
+  Boolean                   $terraform_integration = false
 ) inherits ::profiles {
 
   if $terraform_integration {

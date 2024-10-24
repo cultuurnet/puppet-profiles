@@ -157,6 +157,52 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to contain_hocon_setting('puppetserver dropsonde').that_notifies('Class[profiles::puppet::puppetserver::service]') }
           it { is_expected.to contain_hocon_setting('puppetserver ca allow-subject-alt-names').that_requires('Class[profiles::puppet::puppetserver::install]') }
           it { is_expected.to contain_hocon_setting('puppetserver ca allow-subject-alt-names').that_notifies('Class[profiles::puppet::puppetserver::service]') }
+
+          context 'with Terraform integration enabled and data available' do
+            let(:hiera_config) { 'spec/support/hiera/terraform_available.yaml' }
+
+            context 'with terraform_bucket => mybucket' do
+              let(:params) { super().merge(
+                { 'terraform_bucket' => 'mybucket' }
+              ) }
+
+              it { is_expected.to compile.with_all_deps }
+
+              it { is_expected.to contain_class('profiles::puppet::puppetserver').with(
+                'version'                => 'installed',
+                'dns_alt_names'          => nil,
+                'autosign'               => false,
+                'trusted_amis'           => [],
+                'trusted_certnames'      => [],
+                'eyaml'                  => false,
+                'eyaml_gpg_key'          => {},
+                'lookup_hierarchy'       => [
+                                              { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
+                                              { 'name' => 'Common data', 'path' => 'common.yaml' }
+                                            ],
+                'terraform_integration'  => true,
+                'terraform_bucket'       => 'mybucket',
+                'terraform_use_iam_role' => true,
+                'puppetdb_url'           => nil,
+                'puppetdb_version'       => nil,
+                'initial_heap_size'      => nil,
+                'maximum_heap_size'      => nil,
+                'report_retention_days'  => 0,
+                'service_status'         => 'running'
+              ) }
+
+              it { is_expected.to contain_class('profiles::puppet::puppetserver::hiera').with(
+                'eyaml'                 => false,
+                'gpg_key'               => {},
+                'terraform_integration' => true
+              ) }
+
+              it { is_expected.to contain_class('profiles::puppet::puppetserver::terraform').with(
+                'bucket'       => 'mybucket',
+                'use_iam_role' => true
+              ) }
+            end
+          end
         end
 
         context "with version => 1.2.3, dns_alt_names => puppet.services.example.com, autosign => true, trusted_amis => ami-123, trusted_certnames => [], eyaml => true, eyaml_gpg_key => { 'id' => '6789DEFD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\neyamlkey\n-----END PGP PRIVATE KEY BLOCK-----' }, lookup_hierarchy => { name => Common data, path => common.yaml }, terraform_integration => true, terraform_bucket => mybucket, puppetdb_url => https://puppetdb.example.com:8081, initial_heap_size => 512m, maximum_heap_size => 512m, report_retention_days => 5 and service_status => stopped" do
