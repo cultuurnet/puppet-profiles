@@ -83,6 +83,25 @@ describe 'profiles::puppet::puppetserver::hiera' do
         ) }
       end
 
+      context 'with hiera_config available' do
+        let(:hiera_config) { 'spec/support/hiera/terraform_available.yaml' }
+
+        it { is_expected.to contain_class('hiera').with(
+          'hiera_version'      => '5',
+          'hiera_yaml'         => '/etc/puppetlabs/code/hiera.yaml',
+          'puppet_conf_manage' => false,
+          'master_service'     => 'puppetserver',
+          'datadir'            => '/etc/puppetlabs/code/data',
+          'hiera5_defaults'    => { 'datadir' => 'data', 'data_hash' => 'yaml_data' },
+          'hierarchy'          => [
+                                    { 'name' => 'Terraform per-node data', 'glob' => 'terraform/%{::trusted.certname}/*.yaml' },
+                                    { 'name' => 'Terraform common data', 'glob' => 'terraform/common.yaml' },
+                                    { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
+                                    { 'name' => 'Common data', 'path' => 'common.yaml' }
+                                  ]
+        ) }
+      end
+
       context "with eyaml => true, gpg_key => { 'id' => '6789DEFD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\neyaml_key\n-----END PGP PRIVATE KEY BLOCK-----' } and terraform_integration => true" do
         let(:params) { {
           'eyaml'                 => true,
