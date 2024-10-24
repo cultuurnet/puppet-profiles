@@ -14,7 +14,7 @@ class profiles::platform::deployment (
                                environment => ['HOME=/'],
                                logoutput   => true,
                                refreshonly => true,
-                               subscribe   => [Package['platform-api'], File['platform-api-config'], File['platform-api-admin-users']]
+                               before      => [Service['platform-api'], Service['platform-api-horizon']]
                              }
 
   realize Apt::Source[$repository]
@@ -49,24 +49,28 @@ class profiles::platform::deployment (
 
   exec { 'run platform database migrations':
     command     => 'php artisan migrate --force',
+    subscribe   => Package['platform-api'],
     *           => $exec_default_attributes
   }
 
   exec { 'run platform database seed':
     command     => 'php artisan db:seed --force',
     require     => Exec['run platform database migrations'],
+    subscribe   => Package['platform-api'],
     *           => $exec_default_attributes
   }
 
   exec { 'run platform cache clear':
     command     => 'php artisan optimize:clear',
     require     => Exec['run platform database seed'],
+    subscribe   => [Package['platform-api'], File['platform-api-config'], File['platform-api-admin-users']],
     *           => $exec_default_attributes
   }
 
   exec { 'run platform optimize':
     command     => 'php artisan optimize',
     require     => Exec['run platform cache clear'],
+    subscribe   => [Package['platform-api'], File['platform-api-config'], File['platform-api-admin-users']],
     *           => $exec_default_attributes
   }
 
