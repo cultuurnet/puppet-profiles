@@ -10,7 +10,7 @@ class profiles::puppet::puppetserver (
                                                                        { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
                                                                        { 'name' => 'Common data', 'path' => 'common.yaml' }
                                                                      ],
-  Boolean                                  $terraform_integration  = false,
+  Boolean                                  $terraform_integration  = lookup('data::puppet::terraform_integration', Boolean, 'first', false),
   Optional[String]                         $terraform_bucket       = undef,
   Boolean                                  $terraform_use_iam_role = true,
   Optional[Stdlib::Httpurl]                $puppetdb_url           = undef,
