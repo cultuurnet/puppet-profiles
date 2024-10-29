@@ -132,19 +132,22 @@ class profiles::graphite (
   file { "${conf_dir}/carbon.conf":
     ensure  => file,
     content => template("graphite/carbon.conf.erb"),
-    mode    => '0750'
+    mode    => '0750',
+    notify  => Service['carbon-cache']
   }
 
   file { "${conf_dir}/storage-schemas.conf":
     ensure  => file,
     content => template("graphite/storage-schemas.conf.erb"),
-    mode    => '0750'
+    mode    => '0750',
+    notify  => Service['carbon-cache']
   }
 
   file { "${conf_dir}/storage-aggregation.conf":
     ensure  => file,
     content => template("graphite/storage-aggregation.conf.erb"),
-    mode    => '0750'
+    mode    => '0750',
+    notify  => Service['carbon-cache']
   }
 
   systemd::unit_file { 'graphite-web.service':
@@ -152,6 +155,15 @@ class profiles::graphite (
     enable  => true,
     active  => true,
     require => [Package['uwsgi'],Package['uwsgi-plugin-python3']]
+  }
+
+  service { 'carbon-cache':
+    ensure    => $service_status,
+    enable    => $service_status ? {
+                   'running' => true,
+                   'stopped' => false
+                 },
+    hasstatus => true
   }
 
   service { 'graphite-web':
