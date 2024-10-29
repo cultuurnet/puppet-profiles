@@ -129,6 +129,8 @@ class profiles::graphite (
   realize Package['uwsgi']
   realize Package['uwsgi-plugin-python3']
 
+  realize Firewall['500 accept carbon traffic']
+
   file { "${conf_dir}/carbon.conf":
     ensure  => file,
     content => template('profiles/graphite/carbon.conf.erb'),
