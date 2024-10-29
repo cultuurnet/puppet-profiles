@@ -131,21 +131,21 @@ class profiles::graphite (
 
   file { "${conf_dir}/carbon.conf":
     ensure  => file,
-    content => template("graphite/carbon.conf.erb"),
+    content => template('profiles/graphite/carbon.conf.erb'),
     mode    => '0750',
     notify  => Service['carbon-cache']
   }
 
   file { "${conf_dir}/storage-schemas.conf":
     ensure  => file,
-    content => template("graphite/storage-schemas.conf.erb"),
+    content => template('profiles/graphite/storage-schemas.conf.erb'),
     mode    => '0750',
     notify  => Service['carbon-cache']
   }
 
   file { "${conf_dir}/storage-aggregation.conf":
     ensure  => file,
-    content => template("graphite/storage-aggregation.conf.erb"),
+    content => template('profiles/graphite/storage-aggregation.conf.erb'),
     mode    => '0750',
     notify  => Service['carbon-cache']
   }
