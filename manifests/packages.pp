@@ -116,6 +116,22 @@ class profiles::packages inherits ::profiles {
     require => Apt::Source['publiq-tools']
   }
 
+  @package { 'graphite-web':
+    ensure  => 'present'
+  }
+
+  @package { 'graphite-carbon':
+    ensure  => 'present'
+  }
+
+  @package { 'uwsgi':
+    ensure  => 'present'
+  }
+
+  @package { 'uwsgi-plugin-python3':
+    ensure  => 'present'
+  }
+
   # Realize a list of 'default' packages on all servers
   realize Package['jq']
   realize Package['iftop']

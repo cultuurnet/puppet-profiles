@@ -100,5 +100,10 @@ class profiles::groups inherits ::profiles {
     gid    => '1006'
   }
 
+  @group { '_graphite':
+    ensure => 'present',
+    gid    => '1007'
+  }
+
   realize Group['docker']
 }
