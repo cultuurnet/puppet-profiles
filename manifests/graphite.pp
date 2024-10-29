@@ -16,9 +16,9 @@ class profiles::graphite (
 
   $storage_aggregation_rules = {
     '00_min' => {
-      'patter' => '\.min$',
-      'factor' => '0.5',
-      'method' => 'min'
+      'pattern' => '\.min$',
+      'factor'  => '0.5',
+      'method'  => 'min'
     },
     '01_max' => {
       'pattern' => '\.max$',
