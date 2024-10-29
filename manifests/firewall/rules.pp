@@ -59,4 +59,10 @@ class profiles::firewall::rules inherits ::profiles {
     dport  => '3306',
     action => 'accept'
   }
+
+  @firewall { '500 accept carbon traffic':
+    proto  => 'tcp',
+    dport  => '2003',
+    action => 'accept'
+  }
 }
