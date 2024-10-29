@@ -1,0 +1,19 @@
+[Unit]
+Description=Graphite Web frontend
+After=syslog.target network.target remote-fs.target nss-lookup.target
+
+[Service]
+User=_graphite
+Group=_graphite
+PIDFile=/var/run/graphite-web.pid
+WorkingDirectory=/usr/share/graphite-web
+Environment=HOST=<%= @service_address %>
+Environment=PORT=<% @service_port %>
+EnvironmentFile=-/etc/default/graphite-web
+ExecStart=/usr/bin/uwsgi --plugin /usr/lib/uwsgi/plugins/python3_plugin.so --http-socket ${HOST}:${PORT} --wsgi-file graphite.wsgi --master --processes 4 --threads 2
+Restart=on-failure
+RestartSec=5s
+Type=simple
+
+[Install]
+WantedBy=multi-user.target

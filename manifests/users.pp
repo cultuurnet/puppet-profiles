@@ -192,4 +192,14 @@ class profiles::users inherits ::profiles {
     shell          => '/bin/sh',
     uid            => '1006'
   }
+
+  @user { '_graphite':
+    ensure         => 'present',
+    gid            => '_graphite',
+    home           => '/var/lib/graphite',
+    managehome     => false,
+    purge_ssh_keys => true,
+    shell          => '/bin/false',
+    uid            => '1007'
+  }
 }
