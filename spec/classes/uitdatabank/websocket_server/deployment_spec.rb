@@ -1,25 +1,25 @@
 describe 'profiles::uitdatabank::websocket_server::deployment' do
-  context "with config_source => /foo.json" do
-    let(:params) { {
-      'config_source' => '/foo.json'
-    } }
+  include_examples 'operating system support'
 
-    include_examples 'operating system support'
+  on_supported_os.each do |os, facts|
+    context "on #{os}" do
+      let(:facts) { facts }
 
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        let(:facts) { facts }
+      context 'with config_source => /foo.json' do
+        let(:params) { {
+          'config_source' => '/foo.json'
+        } }
 
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::uitdatabank::websocket_server::deployment').with(
-          'config_source'  => '/foo.json',
-          'version'        => 'latest',
-          'service_manage' => true,
-          'service_ensure' => 'running',
-          'service_enable' => true,
-          'listen_port'    => 3000,
-          'puppetdb_url'   => nil
+          'config_source'   => '/foo.json',
+          'version'         => 'latest',
+          'repository'      => 'uitdatabank-websocket-server',
+          'service_status'  => 'running',
+          'service_address' => '127.0.0.1',
+          'service_port'    => 3000,
+          'puppetdb_url'    => nil
         ) }
 
         it { is_expected.to contain_apt__source('uitdatabank-websocket-server') }
@@ -39,7 +39,7 @@ describe 'profiles::uitdatabank::websocket_server::deployment' do
         it { is_expected.to contain_file('uitdatabank-websocket-server-service-defaults').with(
           'ensure'  => 'file',
           'path'    => '/etc/default/uitdatabank-websocket-server',
-          'content' => 'PORT=3000'
+          'content' => "HOST=127.0.0.1\nPORT=3000"
         ) }
 
         it { is_expected.to contain_file('uitdatabank-websocket-server-config').that_requires('Package[uitdatabank-websocket-server]') }
@@ -51,6 +51,8 @@ describe 'profiles::uitdatabank::websocket_server::deployment' do
           'hasstatus' => true
         ) }
 
+        it { is_expected.to contain_package('uitdatabank-websocket-server').that_comes_before('File[uitdatabank-websocket-server-config]') }
+        it { is_expected.to contain_package('uitdatabank-websocket-server').that_comes_before('File[uitdatabank-websocket-server-service-defaults]') }
         it { is_expected.to contain_service('uitdatabank-websocket-server').that_subscribes_to('Package[uitdatabank-websocket-server]') }
         it { is_expected.to contain_service('uitdatabank-websocket-server').that_subscribes_to('File[uitdatabank-websocket-server-config]') }
         it { is_expected.to contain_service('uitdatabank-websocket-server').that_subscribes_to('File[uitdatabank-websocket-server-service-defaults]') }
@@ -63,65 +65,56 @@ describe 'profiles::uitdatabank::websocket_server::deployment' do
           ) }
         end
 
-        context "with hieradata" do
+        context 'with hieradata' do
           let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
           it { is_expected.to contain_profiles__deployment__versions('profiles::uitdatabank::websocket_server::deployment').with(
             'puppetdb_url' => 'http://localhost:8081'
           ) }
         end
+      end
 
-        context "with service_manage => false" do
-          let(:params) {
-            super().merge({
-              'service_manage' => false
-            } )
-          }
+      context 'with repository uitdatabank-websocket-server-alternative defined' do
+        let(:pre_condition) { '@apt::source { "uitdatabank-websocket-server-alternative": location => "http://localhost", release => "focal", repos => "main" }' }
 
-          it { is_expected.not_to contain_file('uitdatabank-websocket-server-service-defaults') }
-          it { is_expected.not_to contain_service('uitdatabank-websocket-server') }
+        context 'with config_source => /bar.json, version => 1.2.3, repository => uitdatabank-websocket-server-alternative, service_address => 0.0.0.0, service_port => 5000, service_status => stopped and puppetdb_url => http://example.com:8000' do
+          let(:params) { {
+            'config_source'   => '/bar.json',
+            'version'         => '1.2.3',
+            'repository'      => 'uitdatabank-websocket-server-alternative',
+            'service_status'  => 'stopped',
+            'service_address' => '0.0.0.0',
+            'service_port'    => 5000,
+            'puppetdb_url'    => 'http://example.com:8000'
+          } }
+
+          it { is_expected.to contain_apt__source('uitdatabank-websocket-server-alternative') }
+
+          it { is_expected.to contain_package('uitdatabank-websocket-server').with('ensure' => '1.2.3') }
+
+          it { is_expected.to contain_file('uitdatabank-websocket-server-config').with(
+            'source' => '/bar.json',
+          ) }
+
+          it { is_expected.to contain_file('uitdatabank-websocket-server-service-defaults').with(
+            'ensure'  => 'file',
+            'path'    => '/etc/default/uitdatabank-websocket-server',
+            'content' => "HOST=0.0.0.0\nPORT=5000"
+          ) }
+
+          it { is_expected.to contain_service('uitdatabank-websocket-server').with(
+            'ensure'    => 'stopped',
+            'enable'    => false
+          ) }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::uitdatabank::websocket_server::deployment').with(
+            'puppetdb_url' => 'http://example.com:8000'
+          ) }
         end
       end
-    end
-  end
 
-  context "with config_source => /bar.json, version => 1.2.3, service_ensure => stopped, service_enable = false and puppetdb_url => http://example.com:8000" do
-    let(:params) { {
-      'config_source'           => '/bar.json',
-      'version'                 => '1.2.3',
-      'service_ensure'          => 'stopped',
-      'service_enable'          => false,
-      'puppetdb_url'            => 'http://example.com:8000'
-    } }
-
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        let(:facts) { facts }
-
-        it { is_expected.to contain_file('uitdatabank-websocket-server-config').with(
-          'source' => '/bar.json',
-        ) }
-
-        it { is_expected.to contain_package('uitdatabank-websocket-server').with( 'ensure' => '1.2.3') }
-
-        it { is_expected.to contain_service('uitdatabank-websocket-server').with(
-          'ensure'    => 'stopped',
-          'enable'    => false
-        ) }
-
-        it { is_expected.to contain_profiles__deployment__versions('profiles::uitdatabank::websocket_server::deployment').with(
-          'puppetdb_url' => 'http://example.com:8000'
-        ) }
-      end
-    end
-  end
-
-  context "without parameters" do
-    let(:params) { {} }
-
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        let(:facts) { facts }
+      context 'without parameters' do
+        let(:params) { {} }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }
       end
