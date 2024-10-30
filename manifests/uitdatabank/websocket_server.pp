@@ -13,12 +13,13 @@ class profiles::uitdatabank::websocket_server (
 
   include ::profiles::nodejs
   include ::profiles::redis
+  include ::profiles::apache
 
   file { $basedir:
     ensure  => 'directory',
     owner   => 'www-data',
     group   => 'www-data',
-    require => [Group['www-data'], User['www-data']]
+    require => [Group['www-data'], User['www-data'], Class['profiles::apache']]
   }
 
   if $deployment {

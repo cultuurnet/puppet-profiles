@@ -37,6 +37,7 @@ describe 'profiles::uitdatabank::websocket_server' do
 
             it { is_expected.to contain_class('profiles::nodejs') }
             it { is_expected.to contain_class('profiles::redis') }
+            it { is_expected.to contain_class('profiles::apache') }
 
             it { is_expected.to contain_class('profiles::uitdatabank::websocket_server::deployment').with(
               'service_address' => '127.0.0.1',
@@ -51,6 +52,7 @@ describe 'profiles::uitdatabank::websocket_server' do
 
             it { is_expected.to contain_file('/var/www/udb3-websocket-server').that_requires('Group[www-data]') }
             it { is_expected.to contain_file('/var/www/udb3-websocket-server').that_requires('User[www-data]') }
+            it { is_expected.to contain_file('/var/www/udb3-websocket-server').that_requires('Class[profiles::apache]') }
             it { is_expected.to contain_class('profiles::uitdatabank::websocket_server::deployment').that_requires('Class[profiles::nodejs]') }
             it { is_expected.to contain_class('profiles::uitdatabank::websocket_server::deployment').that_requires('Class[profiles::redis]') }
             it { is_expected.to contain_class('profiles::uitdatabank::websocket_server::deployment').that_comes_before('Profiles::Apache::Vhost::Reverse_proxy[http://sockets.example.com]') }
