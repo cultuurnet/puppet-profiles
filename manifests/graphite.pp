@@ -173,7 +173,7 @@ class profiles::graphite (
   }
 
   exec { 'Initial django db creation':
-    command     => 'django-admin.py migrate --settings=graphite.settings',
+    command     => '/usr/bin/django-admin migrate --settings=graphite.settings',
     cwd         => '/usr/lib/python3/dist-packages/graphite',
     user        => '_graphite',
     group       => '_graphite',
