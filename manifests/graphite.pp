@@ -1,4 +1,5 @@
 class profiles::graphite (
+  String                     $secret_key,
   Boolean                    $lvm                       = false,
   Optional[String]           $volume_group              = undef,
   Optional[String]           $volume_size               = undef,
@@ -10,9 +11,10 @@ class profiles::graphite (
   Enum['running', 'stopped'] $service_status            = 'running',
 ) inherits ::profiles {
 
-  $conf_dir       = '/etc/carbon'
-  $storage_dir    = '/var/lib/graphite'
-  $local_data_dir = "${storage_dir}/whisper"
+  $carbon_conf_dir       = '/etc/carbon'
+  $storage_dir           = '/var/lib/graphite'
+  $local_data_dir        = "${storage_dir}/whisper"
+  $graphite_web_conf_dir = '/etc/graphite'
 
   $storage_aggregation_rules = {
     '00_min' => {
@@ -124,6 +126,8 @@ class profiles::graphite (
     }
   }
 
+  realize Apt::Source['publiq-tools']
+
   realize Package['graphite-carbon']
   realize Package['graphite-web']
   realize Package['uwsgi']
@@ -131,25 +135,50 @@ class profiles::graphite (
 
   realize Firewall['500 accept carbon traffic']
 
-  file { "${conf_dir}/carbon.conf":
+  file { "${carbon_conf_dir}/carbon.conf":
     ensure  => file,
     content => template('profiles/graphite/carbon.conf.erb'),
-    mode    => '0750',
+    mode    => '0644',
+    owner   => '_graphite',
+    group   => '_graphite',
     notify  => Service['carbon-cache']
   }
 
-  file { "${conf_dir}/storage-schemas.conf":
+  file { "${carbon_conf_dir}/storage-schemas.conf":
     ensure  => file,
     content => template('profiles/graphite/storage-schemas.conf.erb'),
-    mode    => '0750',
+    mode    => '0644',
+    owner   => '_graphite',
+    group   => '_graphite',
     notify  => Service['carbon-cache']
   }
 
-  file { "${conf_dir}/storage-aggregation.conf":
+  file { "${carbon_conf_dir}/storage-aggregation.conf":
     ensure  => file,
     content => template('profiles/graphite/storage-aggregation.conf.erb'),
-    mode    => '0750',
+    mode    => '0644',
+    owner   => '_graphite',
+    group   => '_graphite',
     notify  => Service['carbon-cache']
+  }
+
+  file { "${graphite_web_conf_dir}/local_settings.py":
+    ensure  => file,
+    content => template('profiles/graphite/local_settings.py.erb'),
+    mode    => '0644',
+    owner   => '_graphite',
+    group   => '_graphite',
+    notify  => Service['graphite-web'],
+    require     => Package['graphite-web']
+  }
+
+  exec { 'Initial django db creation':
+    command     => 'django-admin.py migrate --settings=graphite.settings',
+    cwd         => '/usr/lib/python3/dist-packages/graphite',
+    user        => '_graphite',
+    group       => '_graphite',
+    creates     => "${storage_dir}/graphite.db",
+    require     => Package['graphite-web']
   }
 
   systemd::unit_file { 'graphite-web.service':
