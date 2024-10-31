@@ -206,7 +206,7 @@ class profiles::graphite (
     hasstatus => true
   }
 
-  profiles::apache::vhost::reverse_proxy { "http://${servername}":
+  profiles::apache::vhost::graphite_web { "http://${servername}":
     destination         => "http://${service_address}:${service_port}/",
     aliases             => $serveraliases,
     auth_openid_connect => $auth
