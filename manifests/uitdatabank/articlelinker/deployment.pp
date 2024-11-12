@@ -14,7 +14,7 @@ class profiles::uitdatabank::articlelinker::deployment (
 
   package { 'uitdatabank-articlelinker':
     ensure  => $version,
-    notify  => Profiles::Deployment::Versions[$title],
+    notify  => [Service['uitdatabank-articlelinker'], Profiles::Deployment::Versions[$title]],
     require => Apt::Source[$repository]
   }
 
@@ -44,8 +44,7 @@ class profiles::uitdatabank::articlelinker::deployment (
     enable    => $service_status ? {
                    'running' => true,
                    'stopped' => false
-                 },
-    require   => Package['uitdatabank-articlelinker']
+                 }
   }
 
   profiles::deployment::versions { $title:

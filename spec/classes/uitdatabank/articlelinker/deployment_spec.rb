@@ -48,11 +48,11 @@ describe 'profiles::uitdatabank::articlelinker::deployment' do
           'hasstatus' => true
         ) }
 
+        it { is_expected.to contain_package('uitdatabank-articlelinker').that_notifies('Service[uitdatabank-articlelinker]') }
         it { is_expected.to contain_package('uitdatabank-articlelinker').that_notifies('Profiles::Deployment::Versions[profiles::uitdatabank::articlelinker::deployment]') }
         it { is_expected.to contain_package('uitdatabank-articlelinker').that_requires('Apt::Source[uitdatabank-articlelinker]') }
         it { is_expected.to contain_file('uitdatabank-articlelinker-config').that_requires('Package[uitdatabank-articlelinker]') }
         it { is_expected.to contain_file('uitdatabank-articlelinker-service-defaults').that_requires('Package[uitdatabank-articlelinker]') }
-        it { is_expected.to contain_service('uitdatabank-articlelinker').that_requires('Package[uitdatabank-articlelinker]') }
         it { is_expected.to contain_file('uitdatabank-articlelinker-config').that_notifies('Service[uitdatabank-articlelinker]') }
         it { is_expected.to contain_file('uitdatabank-articlelinker-service-defaults').that_notifies('Service[uitdatabank-articlelinker]') }
 
