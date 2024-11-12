@@ -82,7 +82,7 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'uitdatabank-entry-api', { :location => 'https://apt.publiq.be/uitdatabank-entry-api-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uitdatabank-websocket-server', { :location => 'https://apt.publiq.be/uitdatabank-websocket-server-testing', :repos => 'main', :release => 'focal' }
 
-            include_examples 'apt repositories', 'curator-articlelinker', { :location => 'https://apt.publiq.be/curator-articlelinker-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'uitdatabank-articlelinker', { :location => 'https://apt.publiq.be/uitdatabank-articlelinker-testing', :repos => 'main', :release => 'focal' }
 
             include_examples 'apt repositories', 'widgetbeheer-frontend', { :location => 'https://apt.publiq.be/widgetbeheer-frontend-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'projectaanvraag-api', { :location => 'https://apt.publiq.be/projectaanvraag-api-testing', :repos => 'main', :release => 'focal' }
