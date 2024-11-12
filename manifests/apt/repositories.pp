@@ -333,8 +333,8 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
-  @apt::source { 'curator-articlelinker':
-    location => "https://apt.publiq.be/curator-articlelinker-${environment}",
+  @apt::source { 'uitdatabank-articlelinker':
+    location => "https://apt.publiq.be/uitdatabank-articlelinker-${environment}",
     release  => $codename,
     repos    => 'main'
   }
