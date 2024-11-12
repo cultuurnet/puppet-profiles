@@ -30,7 +30,7 @@ describe 'profiles::uitdatabank::articlelinker::deployment' do
 
         it { is_expected.to contain_file('uitdatabank-articlelinker-config').with(
           'ensure' => 'file',
-          'path'   => '/var/www/uitdatabank-articlelinker/config.json',
+          'path'   => '/var/www/uit-articlelinker/config.json',
           'source' => '/foo',
           'owner'  => 'www-data',
           'group'  => 'www-data'

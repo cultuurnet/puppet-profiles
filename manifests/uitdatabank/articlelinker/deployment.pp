@@ -8,7 +8,7 @@ class profiles::uitdatabank::articlelinker::deployment (
   Optional[String]           $puppetdb_url    = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
-  $basedir = '/var/www/uitdatabank-articlelinker'
+  $basedir = '/var/www/uit-articlelinker'
 
   realize Apt::Source[$repository]
 
