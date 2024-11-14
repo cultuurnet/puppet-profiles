@@ -11,8 +11,7 @@ describe 'profiles::uitdatabank::search_api::data_migration' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::uitdatabank::search_api::data_migration').with(
-          'migration_timeout_seconds' => 300,
-          'basedir'                   => '/var/www/udb3-search-service'
+          'migration_timeout_seconds' => 300
         ) }
 
         it { is_expected.to contain_exec('uitdatabank_search_api_data_migration').with(
@@ -25,16 +24,15 @@ describe 'profiles::uitdatabank::search_api::data_migration' do
         ) }
       end
 
-      context "with migration_timeout_seconds => 60 and basedir => /tmp" do
+      context "with migration_timeout_seconds => 60" do
         let(:params) { {
-          'migration_timeout_seconds' => 60,
-          'basedir'                   => '/tmp'
+          'migration_timeout_seconds' => 60
         } }
 
         it { is_expected.to contain_exec('uitdatabank_search_api_data_migration').with(
           'command'     => 'bin/app.php elasticsearch:migrate',
-          'cwd'         => '/tmp',
-          'path'        => ['/usr/local/bin', '/usr/bin', '/bin', '/tmp'],
+          'cwd'         => '/var/www/udb3-search-service',
+          'path'        => ['/usr/local/bin', '/usr/bin', '/bin', '/var/www/udb3-search-service'],
           'logoutput'   => true,
           'timeout'     => 60,
           'refreshonly' => true

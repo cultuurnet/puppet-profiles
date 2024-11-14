@@ -15,13 +15,11 @@ class profiles::uitdatabank::search_api (
     include profiles::uitdatabank::geojson_data::deployment
 
     class { 'profiles::uitdatabank::search_api::deployment':
-      basedir => $basedir,
       require => Class['profiles::uitdatabank::geojson_data::deployment']
     }
 
     if $data_migration {
       class { 'profiles::uitdatabank::search_api::data_migration':
-        basedir   => $basedir,
         subscribe => [Class['profiles::uitdatabank::geojson_data::deployment'], Class['profiles::uitdatabank::search_api::deployment']]
       }
     }
