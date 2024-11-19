@@ -18,6 +18,8 @@ class profiles::museumpas::website (
   include apache::vhosts
   include profiles::firewall::rules
 
+  realize Package['imagemagick']
+
   $image_libraries.each |$image_library| {
     package { $image_library:
       ensure => 'present'
