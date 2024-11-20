@@ -35,7 +35,7 @@ class profiles::uitdatabank::articlelinker (
     destination => "http://${service_address}:${service_port}/"
   }
 
-  # include ::profiles::uitdatabank::websocket_server::monitoring
-  # include ::profiles::uitdatabank::websocket_server::metrics
-  # include ::profiles::uitdatabank::websocket_server::logging
+  # include ::profiles::uitdatabank::articlelinker::monitoring
+  # include ::profiles::uitdatabank::articlelinker::metrics
+  # include ::profiles::uitdatabank::articlelinker::logging
 }
