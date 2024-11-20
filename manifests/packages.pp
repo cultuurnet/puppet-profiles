@@ -136,6 +136,11 @@ class profiles::packages inherits ::profiles {
     ensure => 'present'
   }
 
+  @package { 'rubygem-angular-config':
+    ensure  => 'present',
+    require => Apt::Source['publiq-tools']
+  }
+
   # Realize a list of 'default' packages on all servers
   realize Package['jq']
   realize Package['iftop']

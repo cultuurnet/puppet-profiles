@@ -109,6 +109,10 @@ describe 'profiles::packages' do
           'ensure' => 'present'
         ) }
 
+        it { is_expected.to contain_package('rubygem-angular-config').with(
+          'ensure' => 'present'
+        ) }
+
         it { is_expected.to contain_package('imagemagick').with(
           'ensure' => 'present'
         ) }
@@ -125,6 +129,7 @@ describe 'profiles::packages' do
         it { is_expected.to contain_package('kubectl').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('argocd').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('google-cloud-cli').that_requires('Apt::Source[publiq-tools]') }
+        it { is_expected.to contain_package('rubygem-angular-config').that_requires('Apt::Source[publiq-tools]') }
       end
     end
   end
