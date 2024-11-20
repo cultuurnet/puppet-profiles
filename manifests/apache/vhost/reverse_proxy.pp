@@ -73,24 +73,24 @@ define profiles::apache::vhost::reverse_proxy (
   if $auth_openid_connect {
     include apache::mod::authn_core
 
-    $directories             = {
-                                 'path'      => '/',
-                                 'provider'  => 'location',
-                                 'auth_type' => 'openid-connect',
-                                 'require'   => 'valid-user'
-                               }
-    $openid_connect_settings = {
-                                 'ProviderMetadataURL' => lookup('data::openid::provider_metadata_url', Optional[String], 'first', undef),
-                                 'ClientID'            => lookup('data::openid::client_id', Optional[String], 'first', undef),
-                                 'ClientSecret'        => lookup('data::openid::client_secret', Optional[String], 'first', undef),
-                                 'RedirectURI'         => "https://${servername}/redirect_uri",
-                                 'CryptoPassphrase'    => fqdn_rand_string(32)
-                               }
-    $no_proxy_uris           = ['/redirect_uri']
+    $openid_connect_directories = [{
+                                    'path'      => '/',
+                                    'provider'  => 'location',
+                                    'auth_type' => 'openid-connect',
+                                    'require'   => 'valid-user'
+                                  }]
+    $openid_connect_settings    = {
+                                    'ProviderMetadataURL' => lookup('data::openid::provider_metadata_url', Optional[String], 'first', undef),
+                                    'ClientID'            => lookup('data::openid::client_id', Optional[String], 'first', undef),
+                                    'ClientSecret'        => lookup('data::openid::client_secret', Optional[String], 'first', undef),
+                                    'RedirectURI'         => "https://${servername}/redirect_uri",
+                                    'CryptoPassphrase'    => fqdn_rand_string(32)
+                                  }
+    $no_proxy_uris              = ['/redirect_uri']
   } else {
-    $directories             = undef
-    $openid_connect_settings = undef
-    $no_proxy_uris           = []
+    $openid_connect_directories = []
+    $openid_connect_settings    = undef
+    $no_proxy_uris              = []
   }
 
   apache::vhost { "${servername}_${port}":
@@ -103,7 +103,7 @@ define profiles::apache::vhost::reverse_proxy (
     docroot               => '/var/www/html',
     manage_docroot        => false,
     access_log_format     => $access_log_format,
-    directories           => $directories,
+    directories           => $openid_connect_directories,
     auth_oidc             => $auth_openid_connect,
     oidc_settings         => $openid_connect_settings,
     setenvif              => [
