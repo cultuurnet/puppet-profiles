@@ -8,12 +8,12 @@ class profiles::uitdatabank::search_api::deployment (
   String           $pubkey_keycloak_source,
   String           $version                = 'latest',
   String           $repository             = 'uitdatabank-search-api',
-  String           $basedir                = '/var/www/udb3-search-service',
   String           $region_mapping_source  = 'puppet:///modules/profiles/uitdatabank/search_api/mapping_region.json',
   Optional[String] $default_queries_source = undef,
   Optional[String] $puppetdb_url           = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
+  $basedir                 = '/var/www/udb3-search-service'
   $file_default_attributes = {
                                owner   => 'www-data',
                                group   => 'www-data',

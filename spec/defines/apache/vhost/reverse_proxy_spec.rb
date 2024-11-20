@@ -51,7 +51,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                 'access_log_format'     => 'extended_json',
                 'auth_oidc'             => false,
                 'oidc_settings'         => nil,
-                'directories'           => nil,
+                'directories'           => [],
                 'setenvif'              => [
                                              'X-Forwarded-Proto "https" HTTPS=on',
                                              'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
@@ -96,12 +96,12 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                            ],
                 'access_log_format'     => 'combined_json',
                 'auth_oidc'             => true,
-                'directories'           => {
+                'directories'           => [{
                                              'path'      => '/',
                                              'provider'  => 'location',
                                              'auth_type' => 'openid-connect',
                                              'require'   => 'valid-user'
-                                           },
+                                           }],
                 'oidc_settings'         => {
                                              'ProviderMetadataURL' => 'https://openid.example.com/.well-known/openid-configuration',
                                              'ClientID'            => 'abc123',
@@ -194,7 +194,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                 'proxy_preserve_host'   => true,
                 'allow_encoded_slashes' => 'nodecode',
                 'auth_oidc'             => false,
-                'directories'           => nil,
+                'directories'           => [],
                 'oidc_settings'         => nil,
                 'rewrites'              => [ {
                                              'comment'      => 'Proxy Websocket support',
@@ -261,12 +261,12 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                              'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
                                            ],
                 'auth_oidc'             => true,
-                'directories'           => {
+                'directories'           => [{
                                              'path'      => '/',
                                              'provider'  => 'location',
                                              'auth_type' => 'openid-connect',
                                              'require'   => 'valid-user'
-                                           },
+                                           }],
                 'oidc_settings'         => {
                                              'ProviderMetadataURL' => 'https://openid.example.com/.well-known/openid-configuration',
                                              'ClientID'            => 'abc123',

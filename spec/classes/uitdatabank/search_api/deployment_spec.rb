@@ -26,7 +26,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           'types_source'           => '/tmp/types.yml',
           'version'                => 'latest',
           'repository'             => 'uitdatabank-search-api',
-          'basedir'                => '/var/www/udb3-search-service',
           'pubkey_auth0_source'    => '/tmp/pubkey',
           'pubkey_keycloak_source' => '/tmp/pubkey',
           'region_mapping_source'  => 'puppet:///modules/profiles/uitdatabank/search_api/mapping_region.json',
@@ -169,7 +168,7 @@ describe 'profiles::uitdatabank::search_api::deployment' do
         end
       end
 
-      context "with config_source => /foo/config.yml, features_source => /foo/features.yml, facilities_source => /tmp/facilities.txt, themes_source => /tmp/themes.txt, types_source => /tmp/types.txt, version => 1.2.3, repository => foo, basedir => '/var/www/foo', pubkey_auth0_source => /tmp/mypubkey, pubkey_keycloak_source => /tmp/mypubkey, region_mapping_source => /tmp/mapping.json, default_queries_source => /tmp/default_queries.php and puppetdb_url => http://example.com:8000" do
+      context "with config_source => /foo/config.yml, features_source => /foo/features.yml, facilities_source => /tmp/facilities.txt, themes_source => /tmp/themes.txt, types_source => /tmp/types.txt, version => 1.2.3, repository => foo, pubkey_auth0_source => /tmp/mypubkey, pubkey_keycloak_source => /tmp/mypubkey, region_mapping_source => /tmp/mapping.json, default_queries_source => /tmp/default_queries.php and puppetdb_url => http://example.com:8000" do
         let(:params) { {
           'config_source'          => '/foo/config.yml',
           'features_source'        => '/foo/features.yml',
@@ -178,7 +177,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           'types_source'           => '/tmp/types.txt',
           'version'                => '1.2.3',
           'repository'             => 'foo',
-          'basedir'                => '/var/www/foo',
           'pubkey_auth0_source'    => '/tmp/mypubkey',
           'pubkey_keycloak_source' => '/tmp/mypubkey',
           'region_mapping_source'  => '/tmp/mapping.json',
@@ -201,7 +199,7 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             'ensure' => 'file',
             'owner'  => 'www-data',
             'group'  => 'www-data',
-            'path'   => '/var/www/foo/config.yml',
+            'path'   => '/var/www/udb3-search-service/config.yml',
             'source' => '/foo/config.yml'
           ) }
 
@@ -209,7 +207,7 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             'ensure' => 'file',
             'owner'  => 'www-data',
             'group'  => 'www-data',
-            'path'   => '/var/www/foo/features.yml',
+            'path'   => '/var/www/udb3-search-service/features.yml',
             'source' => '/foo/features.yml'
           ) }
 
@@ -217,7 +215,7 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             'ensure' => 'file',
             'owner'  => 'www-data',
             'group'  => 'www-data',
-            'path'   => '/var/www/foo/facet_mapping_regions.yml',
+            'path'   => '/var/www/udb3-search-service/facet_mapping_regions.yml',
             'source' => '/var/www/geojson-data/output/facet_mapping_regions.yml'
           ) }
 
@@ -225,7 +223,7 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             'ensure' => 'file',
             'owner'  => 'www-data',
             'group'  => 'www-data',
-            'path'   => '/var/www/foo/web/autocomplete.json',
+            'path'   => '/var/www/udb3-search-service/web/autocomplete.json',
             'source' => '/var/www/geojson-data/output/autocomplete.json'
           ) }
 
@@ -233,7 +231,7 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             'ensure' => 'file',
             'owner'  => 'www-data',
             'group'  => 'www-data',
-            'path'   => '/var/www/foo/public-auth0.pem',
+            'path'   => '/var/www/udb3-search-service/public-auth0.pem',
             'source' => '/tmp/mypubkey'
           ) }
 
@@ -241,7 +239,7 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             'ensure' => 'file',
             'owner'  => 'www-data',
             'group'  => 'www-data',
-            'path'   => '/var/www/foo/src/ElasticSearch/Operations/json/mapping_region.json',
+            'path'   => '/var/www/udb3-search-service/src/ElasticSearch/Operations/json/mapping_region.json',
             'source' => '/tmp/mapping.json'
           ) }
 
@@ -249,26 +247,26 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             'ensure' => 'file',
             'owner'  => 'www-data',
             'group'  => 'www-data',
-            'path'   => '/var/www/foo/default_queries.php',
+            'path'   => '/var/www/udb3-search-service/default_queries.php',
             'source' => '/tmp/default_queries.php'
           ) }
 
           it { is_expected.to contain_profiles__uitdatabank__term_mapping('uitdatabank-search-api').with(
-            'basedir'           => '/var/www/foo',
+            'basedir'           => '/var/www/udb3-search-service',
             'facilities_source' => '/tmp/facilities.txt',
             'themes_source'     => '/tmp/themes.txt',
             'types_source'      => '/tmp/types.txt'
           ) }
 
           it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').with(
-            'command'     => '/var/www/foo/bin/app.php udb3-core:reindex-permanent',
+            'command'     => '/var/www/udb3-search-service/bin/app.php udb3-core:reindex-permanent',
             'environment' => ['MAILTO=infra+cron@publiq.be'],
             'hour'        => '0',
             'minute'      => '0'
           ) }
 
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::listeners').with(
-            'basedir' => '/var/www/foo'
+            'basedir' => '/var/www/udb3-search-service'
           ) }
 
           it { is_expected.to contain_profiles__deployment__versions('profiles::uitdatabank::search_api::deployment').with(

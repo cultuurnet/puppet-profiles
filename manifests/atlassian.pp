@@ -4,6 +4,7 @@ class profiles::atlassian (
   Boolean $install_confluence = true
 ) inherits ::profiles {
 
+  realize Apt::Source['publiq-tools']
   realize Package['mysql-connector-j']
 
   if $database_host == '127.0.0.1' {
@@ -25,16 +26,17 @@ class profiles::atlassian (
     }
   }
 
-  if $install_jira and $database_host_available {
-    class { 'profiles::atlassian::jira':
-      database_host => $database_host
+  if $database_host_available {
+    if $install_jira {
+      class { 'profiles::atlassian::jira':
+        database_host => $database_host
+      }
     }
-  }
 
-  if $install_confluence and $database_host_available {
-    class { 'profiles::atlassian::confluence':
-      database_host => $database_host
+    if $install_confluence {
+      class { 'profiles::atlassian::confluence':
+        database_host => $database_host
+      }
     }
   }
 }
-

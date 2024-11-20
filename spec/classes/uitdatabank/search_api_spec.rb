@@ -45,9 +45,7 @@ describe 'profiles::uitdatabank::search_api' do
 
           it { is_expected.to contain_class('profiles::uitdatabank::geojson_data::deployment') }
 
-          it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').with(
-            'basedir' => '/var/www/udb3-search-service'
-          ) }
+          it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment') }
 
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::logging').with(
             'servername' => 'baz.example.com'
@@ -106,9 +104,7 @@ describe 'profiles::uitdatabank::search_api' do
             'servername' => 'foo.example.com'
           ) }
 
-          it { is_expected.to contain_class('profiles::uitdatabank::search_api::data_migration').with(
-            'basedir' => '/var/www/udb3-search-service'
-          ) }
+          it { is_expected.to contain_class('profiles::uitdatabank::search_api::data_migration') }
 
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::data_migration').that_subscribes_to('Class[profiles::uitdatabank::search_api::deployment]') }
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::data_migration').that_subscribes_to('Class[profiles::uitdatabank::geojson_data::deployment]') }
