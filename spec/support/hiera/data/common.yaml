@@ -35,6 +35,8 @@ profiles::uitdatabank::articlelinker::deployment::config_source: '/path/to/confi
 
 profiles::uitdatabank::angular_app::deployment::config_source: '/path/to/config/source'
 
+profiles::uitdatabank::frontend::deployment::config_source: '/path/to/config/source'
+
 profiles::uitid::frontend::deployment::config_source: '/path/to/config/source'
 profiles::uitid::frontend_api::deployment::config_source: '/path/to/config/source'
 profiles::uitid::frontend_auth0::deployment::config_source: '/path/to/config/source'
