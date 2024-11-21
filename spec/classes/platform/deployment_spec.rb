@@ -19,10 +19,11 @@ describe 'profiles::platform::deployment' do
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_class('profiles::platform::deployment').with(
-            'config_source'  => '/my/config/file',
-            'version'        => 'latest',
-            'repository'     => 'platform-api',
-            'puppetdb_url'   => nil
+            'config_source'               => '/my/config/file',
+            'version'                     => 'latest',
+            'repository'                  => 'platform-api',
+            'search_expired_integrations' => false,
+            'puppetdb_url'                => nil
           ) }
         end
 
@@ -51,6 +52,10 @@ describe 'profiles::platform::deployment' do
           'source' => '/my/config/admin_users'
         ) }
 
+        it { is_expected.to contain_cron('platform-search-expired-integrations').with(
+          'ensure' => 'absent'
+        ) }
+
         it { is_expected.to contain_package('platform-api').that_requires('Apt::Source[platform-api]') }
         it { is_expected.to contain_package('platform-api').that_notifies('Profiles::Deployment::Versions[profiles::platform::deployment]') }
         it { is_expected.to contain_file('platform-api-config').that_requires('Group[www-data]') }
@@ -59,6 +64,23 @@ describe 'profiles::platform::deployment' do
         it { is_expected.to contain_file('platform-api-admin-users').that_requires('Group[www-data]') }
         it { is_expected.to contain_file('platform-api-admin-users').that_requires('User[www-data]') }
         it { is_expected.to contain_file('platform-api-admin-users').that_requires('Package[platform-api]') }
+
+        context 'with search_expired_integrations' do
+          let(:params) { super().merge({
+            'search_expired_integrations' => true
+          }) }
+
+          it { is_expected.to contain_cron('platform-search-expired-integrations').with(
+            'ensure'      => 'present',
+            'command'     => 'cd /var/www/platform-api; php artisan integration:search-expired-integrations --force',
+            'environment' => ['MAILTO=infra+cron@publiq.be'],
+            'user'        => 'www-data',
+            'hour'        => '0',
+            'minute'      => '0'
+          ) }
+
+          it { is_expected.to contain_cron('platform-search-expired-integrations').that_requires('Package[platform-api]') }
+        end
       end
 
       context 'without parameters' do
