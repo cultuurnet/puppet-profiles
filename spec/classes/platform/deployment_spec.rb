@@ -52,7 +52,9 @@ describe 'profiles::platform::deployment' do
           'source' => '/my/config/admin_users'
         ) }
 
-        it { is_expected.not_to contain_cron('platform-search-expired-integrations') }
+        it { is_expected.to contain_cron('platform-search-expired-integrations').with(
+          'ensure' => 'absent'
+        ) }
 
         it { is_expected.to contain_package('platform-api').that_requires('Apt::Source[platform-api]') }
         it { is_expected.to contain_package('platform-api').that_notifies('Profiles::Deployment::Versions[profiles::platform::deployment]') }
@@ -69,6 +71,7 @@ describe 'profiles::platform::deployment' do
           }) }
 
           it { is_expected.to contain_cron('platform-search-expired-integrations').with(
+            'ensure'      => 'present',
             'command'     => 'cd /var/www/platform-api; php artisan integration:search-expired-integrations --force',
             'environment' => ['MAILTO=infra+cron@publiq.be'],
             'user'        => 'www-data',

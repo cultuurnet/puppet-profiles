@@ -98,15 +98,17 @@ class profiles::platform::deployment (
     require   => Systemd::Unit_file['platform-api-horizon.service']
   }
 
-  if $search_expired_integrations {
-    cron { 'platform-search-expired-integrations':
-      command     => "cd ${basedir}; php artisan integration:search-expired-integrations --force",
-      environment => ['MAILTO=infra+cron@publiq.be'],
-      user        => 'www-data',
-      hour        => '0',
-      minute      => '0',
-      require     => Package['platform-api']
-    }
+  cron { 'platform-search-expired-integrations':
+    ensure      => $search_expired_integrations ? {
+                     true  => 'present',
+                     false => 'absent'
+                   },
+    command     => "cd ${basedir}; php artisan integration:search-expired-integrations --force",
+    environment => ['MAILTO=infra+cron@publiq.be'],
+    user        => 'www-data',
+    hour        => '0',
+    minute      => '0',
+    require     => Package['platform-api']
   }
 
   profiles::deployment::versions { $title:
