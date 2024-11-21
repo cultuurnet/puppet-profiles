@@ -1,9 +1,10 @@
 class profiles::platform::deployment (
-  String                     $config_source,
-  String                     $admin_users_source,
-  String                     $version            = 'latest',
-  String                     $repository         = 'platform-api',
-  Optional[String]           $puppetdb_url       = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+  String           $config_source,
+  String           $admin_users_source,
+  String           $version                     = 'latest',
+  String           $repository                  = 'platform-api',
+  Boolean          $search_expired_integrations = false,
+  Optional[String] $puppetdb_url                = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $basedir                 = '/var/www/platform-api'
@@ -95,6 +96,17 @@ class profiles::platform::deployment (
     hasstatus => true,
     enable    => true,
     require   => Systemd::Unit_file['platform-api-horizon.service']
+  }
+
+  if $search_expired_integrations {
+    cron { 'platform-search-expired-integrations':
+      command     => "cd ${basedir}; php artisan integration:search-expired-integrations --force",
+      environment => ['MAILTO=infra+cron@publiq.be'],
+      user        => 'www-data',
+      hour        => '0',
+      minute      => '0',
+      require     => Package['platform-api']
+    }
   }
 
   profiles::deployment::versions { $title:
