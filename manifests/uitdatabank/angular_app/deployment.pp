@@ -17,7 +17,8 @@ class profiles::uitdatabank::angular_app::deployment (
 
   package { 'uitdatabank-angular-app':
     ensure  => $version,
-    require => [Apt::Source[$repository], Group['www-data'], User['www-data']]
+    require => [Apt::Source[$repository], Group['www-data'], User['www-data']],
+    notify  => Profiles::Deployment::Versions[$title]
   }
 
   file { 'uitdatabank-angular-app-config':

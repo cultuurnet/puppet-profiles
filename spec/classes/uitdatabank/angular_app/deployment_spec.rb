@@ -52,6 +52,7 @@ describe 'profiles::uitdatabank::angular_app::deployment' do
         it { is_expected.to contain_package('uitdatabank-angular-app').that_requires('Apt::Source[uitdatabank-angular-app]') }
         it { is_expected.to contain_package('uitdatabank-angular-app').that_requires('Group[www-data]') }
         it { is_expected.to contain_package('uitdatabank-angular-app').that_requires('User[www-data]') }
+        it { is_expected.to contain_package('uitdatabank-angular-app').that_notifies('Profiles::Deployment::Versions[profiles::uitdatabank::angular_app::deployment]') }
         it { is_expected.to contain_file('uitdatabank-angular-app-config').that_requires('Package[uitdatabank-angular-app]') }
         it { is_expected.to contain_file('uitdatabank-angular-app-config').that_requires('Group[www-data]') }
         it { is_expected.to contain_file('uitdatabank-angular-app-config').that_requires('User[www-data]') }
