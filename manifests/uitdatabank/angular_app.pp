@@ -11,6 +11,8 @@ class profiles::uitdatabank::angular_app (
 
   include profiles::apache
 
+  apache::mod { 'access_compat': }
+
   file { $basedir:
     ensure  => 'directory',
     owner   => 'www-data',

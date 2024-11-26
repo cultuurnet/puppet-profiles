@@ -35,6 +35,8 @@ describe 'profiles::uitdatabank::angular_app' do
 
             it { is_expected.to contain_class('profiles::apache') }
 
+            it { is_expected.to contain_apache__mod('access_compat') }
+
             it { is_expected.to contain_profiles__apache__vhost__basic('http://app.example.com').with(
               'serveraliases' => [],
               'documentroot'  => '/var/www/udb3-angular-app',
