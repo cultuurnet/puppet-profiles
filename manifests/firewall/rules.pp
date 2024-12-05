@@ -18,6 +18,12 @@ class profiles::firewall::rules inherits ::profiles {
     action => 'accept'
   }
 
+  @firewall { '300 accept webcache traffic':
+    proto  => 'tcp',
+    dport  => '8080',
+    action => 'accept'
+  }
+
   @firewall { '300 accept HTTPS traffic':
     proto  => 'tcp',
     dport  => '443',
