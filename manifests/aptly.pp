@@ -17,7 +17,7 @@ class profiles::aptly (
 
   $data_dir      = '/var/aptly'
   $home_dir      = '/home/aptly'
-  $proxy_timeout = 3600
+  $proxy_timeout = 7200
 
   realize Group['aptly']
   realize User['aptly']
