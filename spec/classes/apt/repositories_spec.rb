@@ -58,6 +58,7 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'nodejs-20', { :location => 'https://apt-mirror.publiq.be/nodejs-20-testing', :repos => 'main', :release => 'nodistro' }
             include_examples 'apt repositories', 'elastic-5.x', { :location => 'https://apt-mirror.publiq.be/elastic-5.x-testing', :repos => 'main', :release => 'stable' }
             include_examples 'apt repositories', 'elastic-8.x', { :location => 'https://apt-mirror.publiq.be/elastic-8.x-testing', :repos => 'main', :release => 'stable' }
+            include_examples 'apt repositories', 'hashicorp', { :location => 'https://apt-mirror.publiq.be/hashicorp-focal-testing', :repos => 'main', :release => 'focal' }
 
             include_examples 'apt repositories', 'publiq-jenkins', { :location => 'https://apt.publiq.be/publiq-jenkins-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'publiq-prototypes', { :location => 'https://apt.publiq.be/publiq-prototypes-testing', :repos => 'main', :release => 'focal' }
