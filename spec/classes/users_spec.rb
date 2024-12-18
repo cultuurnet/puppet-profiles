@@ -147,7 +147,7 @@ describe 'profiles::users' do
           'ensure'         => 'present',
           'gid'            => 'vault',
           'home'           => '/home/vault',
-          'managehome'     => false,
+          'managehome'     => true,
           'purge_ssh_keys' => true,
           'shell'          => '/bin/bash',
           'uid'            => '458'
