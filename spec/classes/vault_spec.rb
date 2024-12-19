@@ -33,9 +33,12 @@ describe 'profiles::vault' do
           'service_status' => 'running'
         ) }
 
+        it { is_expected.to contain_class('profiles::vault::seal') }
+
         it { is_expected.to contain_class('profiles::vault::install').that_comes_before('Class[profiles::vault::configuration]') }
         it { is_expected.to contain_class('profiles::vault::install').that_notifies('Class[profiles::vault::service]') }
         it { is_expected.to contain_class('profiles::vault::configuration').that_notifies('Class[profiles::vault::service]') }
+        it { is_expected.to contain_class('profiles::vault::seal').that_requires('Class[profiles::vault::service]') }
       end
 
       context 'with version => 1.2.3, service_status => stopped and service_address => 0.0.0.0' do
@@ -61,6 +64,8 @@ describe 'profiles::vault' do
           'auto_unseal'    => true,
           'service_status' => 'stopped'
         ) }
+
+        it { is_expected.not_to contain_class('profiles::vault::seal') }
       end
     end
   end
