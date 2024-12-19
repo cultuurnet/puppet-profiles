@@ -12,21 +12,24 @@ describe 'profiles::vault' do
 
         it { is_expected.to contain_class('profiles::vault').with(
           'version'         => 'latest',
+          'auto_unseal'     => false,
           'service_status'  => 'running',
-          'service_address' => '127.0.0.1',
-          'service_port'    => 8200
+          'service_address' => '127.0.0.1'
         ) }
+
+        it { is_expected.not_to contain_firewall('400 accept vault traffic') }
 
         it { is_expected.to contain_class('profiles::vault::install').with(
           'version' => 'latest'
         ) }
 
         it { is_expected.to contain_class('profiles::vault::configuration').with(
-          'service_address' => '127.0.0.1',
-          'service_port'    => 8200
+          'auto_unseal'     => false,
+          'service_address' => '127.0.0.1'
         ) }
 
         it { is_expected.to contain_class('profiles::vault::service').with(
+          'auto_unseal'    => false,
           'service_status' => 'running'
         ) }
 
@@ -35,24 +38,27 @@ describe 'profiles::vault' do
         it { is_expected.to contain_class('profiles::vault::configuration').that_notifies('Class[profiles::vault::service]') }
       end
 
-      context 'with version => 1.2.3, service_status => stopped, service_address => 0.0.0.0 and service_port 18200' do
+      context 'with version => 1.2.3, service_status => stopped and service_address => 0.0.0.0' do
         let(:params) { {
           'version'         => '1.2.3',
+          'auto_unseal'     => true,
           'service_status'  => 'stopped',
-          'service_address' => '0.0.0.0',
-          'service_port'    => 18200
+          'service_address' => '0.0.0.0'
         } }
+
+        it { is_expected.to contain_firewall('400 accept vault traffic') }
 
         it { is_expected.to contain_class('profiles::vault::install').with(
           'version' => '1.2.3'
         ) }
 
         it { is_expected.to contain_class('profiles::vault::configuration').with(
-          'service_address' => '0.0.0.0',
-          'service_port'    => 18200
+          'auto_unseal'     => true,
+          'service_address' => '0.0.0.0'
         ) }
 
         it { is_expected.to contain_class('profiles::vault::service').with(
+          'auto_unseal'    => true,
           'service_status' => 'stopped'
         ) }
       end

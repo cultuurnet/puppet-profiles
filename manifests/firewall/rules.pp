@@ -60,6 +60,12 @@ class profiles::firewall::rules inherits ::profiles {
     action => 'accept'
   }
 
+  @firewall { '400 accept vault traffic':
+    proto  => 'tcp',
+    dport  => '8200',
+    action => 'accept'
+  }
+
   @firewall { '500 accept carbon traffic':
     proto  => 'tcp',
     dport  => '2003',

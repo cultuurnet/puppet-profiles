@@ -69,6 +69,12 @@ describe 'profiles::firewall::rules' do
           'dport' => '3306',
           'action' => 'accept'
         ) }
+
+        it { is_expected.to contain_firewall('400 accept vault traffic').with(
+          'proto' => 'tcp',
+          'dport' => '8200',
+          'action' => 'accept'
+        ) }
       end
     end
   end
