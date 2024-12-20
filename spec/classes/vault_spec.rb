@@ -31,6 +31,21 @@ describe 'profiles::vault' do
           'service_status' => 'running'
         ) }
 
+        context 'without fact vault_initialized' do
+          it { is_expected.to contain_class('profiles::vault::init').with(
+            'gpg_keys' => []
+          ) }
+
+          it { is_expected.to contain_class('profiles::vault::init').that_requires('Class[profiles::vault::service]') }
+          it { is_expected.to contain_class('profiles::vault::init').that_comes_before('Class[profiles::vault::seal]') }
+        end
+
+        context 'with fact vault_initialized' do
+          let(:facts) { facts.merge({ 'vault_initialized' => true }) }
+
+          it { is_expected.not_to contain_class('profiles::vault::init') }
+        end
+
         it { is_expected.to contain_class('profiles::vault::seal').with(
           'auto_unseal' => false
         ) }
@@ -64,6 +79,7 @@ describe 'profiles::vault' do
           'service_status' => 'stopped'
         ) }
 
+        it { is_expected.not_to contain_class('profiles::vault::init') }
         it { is_expected.not_to contain_class('profiles::vault::seal') }
       end
     end

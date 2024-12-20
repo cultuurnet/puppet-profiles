@@ -28,6 +28,14 @@ class profiles::vault (
   }
 
   if $service_status == 'running' {
+    unless $facts['vault_initialized'] {
+      class { 'profiles::vault::init':
+        gpg_keys => [],
+        require  => Class['profiles::vault::service'],
+        before   => Class['profiles::vault::seal']
+      }
+    }
+
     class { 'profiles::vault::seal':
       auto_unseal => $auto_unseal,
       require     => Class['profiles::vault::service']
