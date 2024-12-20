@@ -5,14 +5,13 @@ describe 'profiles::uitdatabank::search_api::deployment' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with config_source => /tmp/config.yml, features_source => /tmp/features.yml, facilities_source => /tmp/facilities.yml, themes_source => /tmp/themes.yml, types_source => /tmp/types.yml, pubkey_auth0_source => /tmp/pubkey and pubkey_keycloak_source => /tmp/pubkey" do
+      context "with config_source => /tmp/config.yml, features_source => /tmp/features.yml, facilities_source => /tmp/facilities.yml, themes_source => /tmp/themes.yml, types_source => /tmp/types.yml and pubkey_keycloak_source => /tmp/pubkey" do
         let(:params) { {
           'config_source'          => '/tmp/config.yml',
           'features_source'        => '/tmp/features.yml',
           'facilities_source'      => '/tmp/facilities.yml',
           'themes_source'          => '/tmp/themes.yml',
           'types_source'           => '/tmp/types.yml',
-          'pubkey_auth0_source'    => '/tmp/pubkey',
           'pubkey_keycloak_source' => '/tmp/pubkey'
         } }
 
@@ -26,7 +25,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           'types_source'           => '/tmp/types.yml',
           'version'                => 'latest',
           'repository'             => 'uitdatabank-search-api',
-          'pubkey_auth0_source'    => '/tmp/pubkey',
           'pubkey_keycloak_source' => '/tmp/pubkey',
           'region_mapping_source'  => 'puppet:///modules/profiles/uitdatabank/search_api/mapping_region.json',
           'default_queries_source' => nil,
@@ -74,11 +72,8 @@ describe 'profiles::uitdatabank::search_api::deployment' do
         ) }
 
         it { is_expected.to contain_file('uitdatabank-search-api-pubkey-auth0').with(
-          'ensure' => 'file',
-          'owner'  => 'www-data',
-          'group'  => 'www-data',
-          'path'   => '/var/www/udb3-search-service/public-auth0.pem',
-          'source' => '/tmp/pubkey'
+          'ensure' => 'absent',
+          'path'   => '/var/www/udb3-search-service/public-auth0.pem'
         ) }
 
         it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').with(
@@ -136,10 +131,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
         it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_requires('Package[uitdatabank-search-api]') }
         it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_notifies('Service[uitdatabank-search-api]') }
         it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
-        it { is_expected.to contain_file('uitdatabank-search-api-pubkey-auth0').that_requires('Group[www-data]') }
-        it { is_expected.to contain_file('uitdatabank-search-api-pubkey-auth0').that_requires('User[www-data]') }
-        it { is_expected.to contain_file('uitdatabank-search-api-pubkey-auth0').that_requires('Package[uitdatabank-search-api]') }
-        it { is_expected.to contain_file('uitdatabank-search-api-pubkey-auth0').that_notifies('Service[uitdatabank-search-api]') }
         it { is_expected.to contain_file('uitdatabank-search-api-pubkey-auth0').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
         it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').that_requires('Group[www-data]') }
         it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').that_requires('User[www-data]') }
@@ -168,7 +159,7 @@ describe 'profiles::uitdatabank::search_api::deployment' do
         end
       end
 
-      context "with config_source => /foo/config.yml, features_source => /foo/features.yml, facilities_source => /tmp/facilities.txt, themes_source => /tmp/themes.txt, types_source => /tmp/types.txt, version => 1.2.3, repository => foo, pubkey_auth0_source => /tmp/mypubkey, pubkey_keycloak_source => /tmp/mypubkey, region_mapping_source => /tmp/mapping.json, default_queries_source => /tmp/default_queries.php and puppetdb_url => http://example.com:8000" do
+      context "with config_source => /foo/config.yml, features_source => /foo/features.yml, facilities_source => /tmp/facilities.txt, themes_source => /tmp/themes.txt, types_source => /tmp/types.txt, version => 1.2.3, repository => foo, pubkey_keycloak_source => /tmp/mypubkey, region_mapping_source => /tmp/mapping.json, default_queries_source => /tmp/default_queries.php and puppetdb_url => http://example.com:8000" do
         let(:params) { {
           'config_source'          => '/foo/config.yml',
           'features_source'        => '/foo/features.yml',
@@ -177,7 +168,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           'types_source'           => '/tmp/types.txt',
           'version'                => '1.2.3',
           'repository'             => 'foo',
-          'pubkey_auth0_source'    => '/tmp/mypubkey',
           'pubkey_keycloak_source' => '/tmp/mypubkey',
           'region_mapping_source'  => '/tmp/mapping.json',
           'default_queries_source' => '/tmp/default_queries.php',
@@ -228,11 +218,8 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           ) }
 
           it { is_expected.to contain_file('uitdatabank-search-api-pubkey-auth0').with(
-            'ensure' => 'file',
-            'owner'  => 'www-data',
-            'group'  => 'www-data',
-            'path'   => '/var/www/udb3-search-service/public-auth0.pem',
-            'source' => '/tmp/mypubkey'
+            'ensure' => 'absent',
+            'path'   => '/var/www/udb3-search-service/public-auth0.pem'
           ) }
 
           it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').with(
@@ -290,7 +277,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'facilities_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'themes_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'types_source'/) }
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'pubkey_auth0_source'/) }
       end
     end
   end

@@ -4,7 +4,6 @@ class profiles::uitdatabank::search_api::deployment (
   String           $facilities_source,
   String           $themes_source,
   String           $types_source,
-  String           $pubkey_auth0_source,
   String           $pubkey_keycloak_source,
   String           $version                = 'latest',
   String           $repository             = 'uitdatabank-search-api',
@@ -60,10 +59,9 @@ class profiles::uitdatabank::search_api::deployment (
   }
 
   file { 'uitdatabank-search-api-pubkey-auth0':
-    ensure => 'file',
+    ensure => 'absent',
     path   => "${basedir}/public-auth0.pem",
-    source => $pubkey_auth0_source,
-    *      => $file_default_attributes
+    notify => [Service['uitdatabank-search-api'], Class['profiles::uitdatabank::search_api::listeners']]
   }
 
   file { 'uitdatabank-search-api-pubkey-keycloak':
