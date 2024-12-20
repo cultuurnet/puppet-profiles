@@ -24,16 +24,16 @@ describe 'profiles::vault' do
         ) }
 
         it { is_expected.to contain_class('profiles::vault::configuration').with(
-          'auto_unseal'     => false,
           'service_address' => '127.0.0.1'
         ) }
 
         it { is_expected.to contain_class('profiles::vault::service').with(
-          'auto_unseal'    => false,
           'service_status' => 'running'
         ) }
 
-        it { is_expected.to contain_class('profiles::vault::seal') }
+        it { is_expected.to contain_class('profiles::vault::seal').with(
+          'auto_unseal' => false
+        ) }
 
         it { is_expected.to contain_class('profiles::vault::install').that_comes_before('Class[profiles::vault::configuration]') }
         it { is_expected.to contain_class('profiles::vault::install').that_notifies('Class[profiles::vault::service]') }
@@ -41,7 +41,7 @@ describe 'profiles::vault' do
         it { is_expected.to contain_class('profiles::vault::seal').that_requires('Class[profiles::vault::service]') }
       end
 
-      context 'with version => 1.2.3, service_status => stopped and service_address => 0.0.0.0' do
+      context 'with version => 1.2.3, auto_unseal => true, service_status => stopped and service_address => 0.0.0.0' do
         let(:params) { {
           'version'         => '1.2.3',
           'auto_unseal'     => true,
@@ -61,7 +61,6 @@ describe 'profiles::vault' do
         ) }
 
         it { is_expected.to contain_class('profiles::vault::service').with(
-          'auto_unseal'    => true,
           'service_status' => 'stopped'
         ) }
 

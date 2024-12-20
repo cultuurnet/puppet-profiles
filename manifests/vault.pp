@@ -24,13 +24,13 @@ class profiles::vault (
   }
 
   class { 'profiles::vault::service':
-    auto_unseal    => $auto_unseal,
     service_status => $service_status
   }
 
   if $service_status == 'running' {
     class { 'profiles::vault::seal':
-      require => Class['profiles::vault::service']
+      auto_unseal => $auto_unseal,
+      require     => Class['profiles::vault::service']
     }
   }
 }

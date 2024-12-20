@@ -11,7 +11,7 @@ describe 'profiles::vault::service' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::vault::service').with(
-          'service_status'  => 'running'
+          'service_status' => 'running'
         ) }
 
         it { is_expected.to contain_service('vault').with(

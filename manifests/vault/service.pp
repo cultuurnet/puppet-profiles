@@ -1,5 +1,5 @@
 class profiles::vault::service (
-  Enum['running', 'stopped'] $service_status = 'running',
+  Enum['running', 'stopped'] $service_status = 'running'
 ) inherits ::profiles {
 
   service { 'vault':
