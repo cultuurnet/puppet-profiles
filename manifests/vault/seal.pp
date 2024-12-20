@@ -1,5 +1,6 @@
 class profiles::vault::seal (
-  Variant[String, Array[String]] $gpg_keys = []
+  Boolean                        $auto_unseal = false,
+  Variant[String, Array[String]] $gpg_keys    = []
 ) inherits ::profiles {
 
   $full_name     = 'Vault'
@@ -15,16 +16,15 @@ class profiles::vault::seal (
     email_address => $email_address
   }
 
-  #initialize vault (gpg) -> exec, only if not initialized
+  # Initialize vault
   unless $facts['vault_initialized'] {
     exec { 'vault_init':
-      command   => "/usr/bin/vault operator init -key-shares=${key_shares} -key-threshold=${key_threshold} -pgp-keys=\"/etc/vault.d/gpg_keys/vault.asc\" -format=json -tls-skip-verify",
+      command   => "/usr/bin/vault operator init -key-shares=${key_shares} -key-threshold=${key_threshold} -pgp-keys=\"/etc/vault.d/gpg_keys/vault.asc\" -tls-skip-verify -format=json > /etc/vault.d/init.json",
       user      => 'vault',
       logoutput => 'on_failure',
       require   => [User['vault'], Class['profiles::vault::gpg_key']]
     }
 
-    #set vault_initialized fact? -> file
     file { 'vault_initialized_external_fact':
       ensure  => 'file',
       path    => '/etc/puppetlabs/facter/facts.d/vault_initialized.txt',
@@ -36,7 +36,40 @@ class profiles::vault::seal (
     }
   }
 
-  #unseal vault -> exec, only if sealed
+  file { 'vault_unseal':
+    ensure  => $auto_unseal ? {
+                 true  => 'file',
+                 false => 'absent'
+               },
+    path    => '/usr/local/bin/vault-unseal',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    #content => template()
+  }
+
+  # Unseal vault
+  if $auto_unseal {
+    exec { 'vault_unseal':
+      command   => '/usr/local/bin/vault-unseal',
+      unless    => '/usr/bin/vault status -tls-skip-verify',
+      user      => 'vault',
+      logoutput => 'on_failure',
+      require   => File['vault_unseal']
+    }
+  }
+
   #set facts for gpg encrypted unseal keys for user gpg keys? -> file
-  #if auto_unseal present -> provide override.conf
+
+  systemd::dropin_file { 'vault_override.conf':
+    ensure         => $auto_unseal ? {
+                        true  => 'present',
+                        false => 'absent'
+                      },
+    unit           => 'vault.service',
+    filename       => 'override.conf',
+    notify_service => false,
+    content        => '[Service]\nExecStartPost=/usr/local/bin/vault-unseal',
+    require        => File['vault_unseal']
+  }
 }
