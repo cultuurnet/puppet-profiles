@@ -1,0 +1,6 @@
+#!/bin/bash
+
+INPUT=$(/usr/bin/cat)
+
+/usr/bin/echo ${INPUT} | /usr/bin/jq -r '.root_token' > ~/.vault_token
+/usr/bin/echo ${INPUT} | /usr/bin/jq -r '.unseal_keys_b64[0]' > ~/encrypted_unseal_key

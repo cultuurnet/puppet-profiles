@@ -1,0 +1,5 @@
+#!/bin/bash
+
+encrypted_unseal_key=$(/usr/bin/cat ${1})
+
+/usr/bin/vault operator unseal -tls-skip-verify $(/usr/bin/echo ${encrypted_unseal_key} | /usr/bin/base64 --decode | /usr/bin/gpg --decrypt --quiet)
