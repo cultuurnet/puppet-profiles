@@ -26,6 +26,9 @@ profiles::uit::recommender_frontend::deployment::config_source: '/path/to/config
 
 profiles::uitpas::balie::deployment::config_source: '/path/to/config/source'
 
+profiles::uitpas::website::frontend::deployment::config_source: '/path/to/config/source'
+profiles::uitpas::website::api::deployment::config_source: '/path/to/config/source'
+
 profiles::platform::deployment::config_source: '/path/to/config/source'
 profiles::platform::deployment::admin_users_source: '/path/to/config/source'
 
