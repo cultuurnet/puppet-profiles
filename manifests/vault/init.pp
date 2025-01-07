@@ -1,19 +1,24 @@
 class profiles::vault::init (
-  Boolean                        $auto_unseal = false,
-  Variant[String, Array[String]] $gpg_keys    = []
+  Boolean $auto_unseal   = false,
+  Integer $key_threshold = 1,
+  Hash    $gpg_keys      = {}
 ) inherits ::profiles {
 
   if (!$auto_unseal and empty($gpg_keys)) {
     fail('without auto_unseal, at least one GPG key has to be provided')
   }
 
-  $key_threshold = 1
+  if ($auto_unseal and $key_threshold > 1) {
+    fail('with auto_unseal, key threshold cannot be higher than 1')
+  }
+
+  $gpg_keys_exports = $gpg_keys.map |Array $gpg_key| { "/etc/vault.d/gpg_keys/${gpg_key[0]}.asc" }
 
   if $auto_unseal {
+    $key_shares      = 1 + length($gpg_keys)
     $full_name       = 'Vault'
     $email_address   = 'vault@publiq.be'
-    $key_shares      = length([$email_address].flatten + [$gpg_keys].flatten)
-    $init_key_string = '/etc/vault.d/gpg_keys/vault.asc'
+    $init_key_string = join(['/etc/vault.d/gpg_keys/vault.asc'] + $gpg_keys_exports, ',')
 
     class { 'profiles::vault::gpg_key':
       full_name     => $full_name,
@@ -21,7 +26,8 @@ class profiles::vault::init (
       before        => Exec['vault_init']
     }
   } else {
-    $key_shares = length([$gpg_keys].flatten)
+    $key_shares      = length($gpg_keys)
+    $init_key_string = join($gpg_keys_exports, ',')
   }
 
   realize Group['vault']
