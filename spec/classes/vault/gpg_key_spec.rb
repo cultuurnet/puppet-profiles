@@ -14,9 +14,10 @@ describe 'profiles::vault::gpg_key' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::vault::gpg_key').with(
-          'full_name'     => 'Vault',
-          'email_address' => 'vault@example.com',
-          'key_length'    => 4096
+          'full_name'          => 'Vault',
+          'email_address'      => 'vault@example.com',
+          'key_length'         => 4096,
+          'gpg_keys_directory' => '/etc/vault.d/gpg_keys'
         ) }
 
         it { is_expected.to contain_group('vault') }
@@ -45,7 +46,7 @@ describe 'profiles::vault::gpg_key' do
         ) }
 
         it { is_expected.to contain_exec('vault_gpg_key_export').with(
-          'command'   => '/usr/bin/gpg --export "Vault" | base64 > /etc/vault.d/gpg_keys/vault.asc',
+          'command'   => '/usr/bin/gpg --export "Vault" | /usr/bin/base64 > /etc/vault.d/gpg_keys/vault.asc',
           'user'      => 'vault',
           'logoutput' => 'on_failure',
           'creates'   => '/etc/vault.d/gpg_keys/vault.asc'
@@ -57,11 +58,12 @@ describe 'profiles::vault::gpg_key' do
         it { is_expected.to contain_exec('vault_gpg_key_export').that_requires('Exec[vault_gpg_key]') }
       end
 
-      context 'with full_name => foo, email_address => foo@bar.com and key_length => 2048' do
+      context 'with full_name => foo, email_address => foo@bar.com, gpg_keys_directory => /tmp and key_length => 2048' do
         let(:params) { {
-          'full_name'     => 'foo',
-          'email_address' => 'foo@bar.com',
-          'key_length'    => 2048
+          'full_name'          => 'foo',
+          'email_address'      => 'foo@bar.com',
+          'gpg_keys_directory' => '/tmp',
+          'key_length'         => 2048
         } }
 
         it { is_expected.to contain_file('vault_gpg_key_gen_script').with_content(/^Key-Length: 2048$/) }
@@ -76,6 +78,12 @@ describe 'profiles::vault::gpg_key' do
           'logoutput' => 'on_failure'
         ) }
 
+        it { is_expected.to contain_exec('vault_gpg_key_export').with(
+          'command'   => '/usr/bin/gpg --export "Vault" | /usr/bin/base64 > /tmp/vault.asc',
+          'user'      => 'vault',
+          'logoutput' => 'on_failure',
+          'creates'   => '/tmp/vault.asc'
+        ) }
       end
 
       context 'without parameters' do

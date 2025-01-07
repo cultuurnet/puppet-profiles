@@ -30,8 +30,9 @@ describe 'profiles::vault::init' do
         ) }
 
         it { is_expected.to contain_class('profiles::vault::gpg_key').with(
-          'full_name'     => 'Vault',
-          'email_address' => 'vault@publiq.be'
+          'full_name'          => 'Vault',
+          'email_address'      => 'vault@publiq.be',
+          'gpg_keys_directory' => '/etc/vault.d/gpg_keys'
         ) }
 
         it { is_expected.to contain_file('vault_process_init').with(

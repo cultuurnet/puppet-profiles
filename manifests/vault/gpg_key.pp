@@ -1,7 +1,8 @@
 class profiles::vault::gpg_key (
   String  $full_name,
   String  $email_address,
-  Integer $key_length    = 4096
+  Integer $key_length         = 4096,
+  String  $gpg_keys_directory = '/etc/vault.d/gpg_keys'
 ) inherits ::profiles {
 
   $full_name_slug = downcase(regsubst($full_name, / /, '_'))
@@ -27,10 +28,10 @@ class profiles::vault::gpg_key (
   }
 
   exec { 'vault_gpg_key_export':
-    command   => "/usr/bin/gpg --export \"${full_name}\" | base64 > /etc/vault.d/gpg_keys/${full_name_slug}.asc",
+    command   => "/usr/bin/gpg --export \"${full_name}\" | /usr/bin/base64 > ${gpg_keys_directory}/${full_name_slug}.asc",
     user      => 'vault',
     logoutput => 'on_failure',
-    creates   => "/etc/vault.d/gpg_keys/${full_name_slug}.asc",
+    creates   => "${gpg_keys_directory}/${full_name_slug}.asc",
     require   => Exec['vault_gpg_key']
   }
 }

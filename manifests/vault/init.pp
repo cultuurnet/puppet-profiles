@@ -34,10 +34,11 @@ class profiles::vault::init (
     $init_key_string = join(["${gpg_keys_directory}/vault.asc"] + $gpg_keys_exports, ',')
 
     class { 'profiles::vault::gpg_key':
-      full_name     => $full_name,
-      email_address => $email_address,
-      before        => Exec['vault_init'],
-      require       => File['vault_gpg_keys']
+      full_name          => $full_name,
+      email_address      => $email_address,
+      gpg_keys_directory => $gpg_keys_directory,
+      before             => Exec['vault_init'],
+      require            => File['vault_gpg_keys']
     }
   } else {
     $key_shares      = length($gpg_keys)
