@@ -2,7 +2,8 @@ class profiles::vault (
   String                     $version         = 'latest',
   Boolean                    $auto_unseal     = false,
   Enum['running', 'stopped'] $service_status  = 'running',
-  String                     $service_address = '127.0.0.1'
+  String                     $service_address = '127.0.0.1',
+  Hash                       $gpg_keys        = {}
 ) inherits ::profiles {
 
   include ::profiles::firewall::rules
@@ -17,7 +18,6 @@ class profiles::vault (
   }
 
   class { 'profiles::vault::configuration':
-    auto_unseal     => $auto_unseal,
     service_address => $service_address,
     require         => Class['profiles::vault::install'],
     notify          => Class['profiles::vault::service']
@@ -30,9 +30,10 @@ class profiles::vault (
   if $service_status == 'running' {
     unless $facts['vault_initialized'] {
       class { 'profiles::vault::init':
-        gpg_keys => [],
-        require  => Class['profiles::vault::service'],
-        before   => Class['profiles::vault::seal']
+        auto_unseal => $auto_unseal,
+        gpg_keys    => $gpg_keys,
+        require     => Class['profiles::vault::service'],
+        before      => Class['profiles::vault::seal']
       }
     }
 

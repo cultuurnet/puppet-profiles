@@ -42,10 +42,9 @@ describe 'profiles::vault::seal' do
           'path'   => '/usr/local/bin/vault-unseal',
           'owner'  => 'root',
           'group'  => 'root',
-          'mode'   => '0755'
+          'mode'   => '0755',
+          'source' => 'puppet:///modules/profiles/vault/vault-unseal'
         ) }
-
-        it { is_expected.to contain_file('vault_unseal').with_content() }
 
         it { is_expected.to contain_exec('vault_unseal').with(
           'command'   => '/usr/local/bin/vault-unseal /home/vault/encrypted_unseal_key',

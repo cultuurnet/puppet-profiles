@@ -6,15 +6,15 @@ class profiles::vault::seal (
   realize User['vault']
 
   file { 'vault_unseal':
-    ensure  => $auto_unseal ? {
+    ensure => $auto_unseal ? {
                  true  => 'file',
                  false => 'absent'
                },
-    path    => '/usr/local/bin/vault-unseal',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
-    #content => template()
+    path   => '/usr/local/bin/vault-unseal',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+    source => 'puppet:///modules/profiles/vault/vault-unseal'
   }
 
   if $auto_unseal {
