@@ -44,13 +44,6 @@ describe 'profiles::vault::gpg_key' do
           'logoutput' => 'on_failure'
         ) }
 
-        it { is_expected.to contain_file('vault_gpg_keys').with(
-          'ensure' => 'directory',
-          'path'   => '/etc/vault.d/gpg_keys',
-          'owner'  => 'vault',
-          'group'  => 'vault'
-        ) }
-
         it { is_expected.to contain_exec('vault_gpg_key_export').with(
           'command'   => '/usr/bin/gpg --export "Vault" | base64 > /etc/vault.d/gpg_keys/vault.asc',
           'user'      => 'vault',
@@ -61,9 +54,6 @@ describe 'profiles::vault::gpg_key' do
         it { is_expected.to contain_file('vault_gpg_key_gen_script').that_requires('Group[vault]') }
         it { is_expected.to contain_file('vault_gpg_key_gen_script').that_requires('User[vault]') }
         it { is_expected.to contain_exec('vault_gpg_key').that_requires('File[vault_gpg_key_gen_script]') }
-        it { is_expected.to contain_file('vault_gpg_keys').that_requires('Group[vault]') }
-        it { is_expected.to contain_file('vault_gpg_keys').that_requires('User[vault]') }
-        it { is_expected.to contain_exec('vault_gpg_key_export').that_requires('File[vault_gpg_keys]') }
         it { is_expected.to contain_exec('vault_gpg_key_export').that_requires('Exec[vault_gpg_key]') }
       end
 
