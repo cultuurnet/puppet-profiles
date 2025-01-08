@@ -1,17 +1,20 @@
 class profiles::elasticsearch (
-  Optional[String] $version               = undef,
-  Integer          $major_version         = if $version { Integer(split($version, /\./)[0]) } else { 5 },
-  Boolean          $lvm                   = false,
-  Optional[String] $volume_group          = undef,
-  Optional[String] $volume_size           = undef,
-  String           $initial_heap_size     = '512m',
-  String           $maximum_heap_size     = '512m',
-  Boolean          $backup                = true,
-  Boolean          $backup_lvm            = false,
-  Optional[String] $backup_volume_group   = undef,
-  Optional[String] $backup_volume_size    = undef,
-  Integer          $backup_hour           = 0,
-  Integer          $backup_retention_days = 7
+  Optional[String] $version                       = undef,
+  Integer          $major_version                 = if $version { Integer(split($version, /\./)[0]) } else { 5 },
+  Boolean          $secure_remote_access          = false,
+  Optional[String] $secure_remote_access_user     = undef,
+  Optional[String] $secure_remote_access_password = undef,
+  Boolean          $lvm                           = false,
+  Optional[String] $volume_group                  = undef,
+  Optional[String] $volume_size                   = undef,
+  String           $initial_heap_size             = '512m',
+  String           $maximum_heap_size             = '512m',
+  Boolean          $backup                        = true,
+  Boolean          $backup_lvm                    = false,
+  Optional[String] $backup_volume_group           = undef,
+  Optional[String] $backup_volume_size            = undef,
+  Integer          $backup_hour                   = 0,
+  Integer          $backup_retention_days         = 7
 ) inherits ::profiles {
 
   if ($version and $major_version) {
@@ -74,6 +77,59 @@ class profiles::elasticsearch (
     before  => Class['elasticsearch::config']
   }
 
+  if $secure_remote_access {
+    unless ($secure_remote_access_user and $secure_remote_access_password) {
+      fail("with secure_remote_access enabled, expects a value for both 'secure_remote_access_user' and 'secure_remote_access_password'")
+    }
+
+    realize Apt::Source['publiq-tools']
+    realize Package['elasticsearch-readonlyrest']
+
+    $es_config = {
+      'network.host'                           => [ "${::ipaddress_eth0}", "127.0.0.1" ],
+      'http.cors.enabled'                      => true,
+      'http.cors.allow-origin'                 => "*",
+      'http.cors.allow-methods'                => "OPTIONS, HEAD, GET, POST, PUT, DELETE",
+      'http.cors.allow-headers'                => "X-Requested-With, X-Auth-Token, Content-Type, Content-Length",
+      'readonlyrest.enable'                    => true,
+      'readonlyrest.response_if_req_forbidden' => 'Access denied!!!',
+      'readonlyrest.access_control_rules'      => [
+        {
+          'name'     => 'Accept all local requests without authentication',
+          'type'     => 'allow',
+          'hosts'    => ['127.0.0.1']
+        },
+        {
+          'name'     => 'Accept all write requests with basic authentication',
+          'auth_key' => "${secure_remote_access_user}:${secure_remote_access_password}",
+          'type'     => 'allow',
+          'method'   => ['POST','PUT','DELETE']
+        },
+        {
+          'name'     => 'Accept all read requests without authentication',
+          'type'     => 'allow',
+          'indices'  => [ '*' ],
+          'actions'  => [ 'indices:data/read/*' ]
+        },
+        {
+          'name'     => 'Deny all write requests',
+          'type'     => 'forbid',
+          'indices'  => [ 'promotions', 'balies' ],
+          'actions'  => [ 'indices:data/write/*' ]
+        }
+      ]
+    }
+
+    $es_plugins = {
+      'readonlyrest' => {
+        'source' => '/opt/elasticsearch-readonlyrest/readonlyrest-1.16.16.zip'
+      }
+    }
+  } else {
+    $es_config  = undef
+    $es_plugins = undef
+  }
+
   class { '::elasticsearch':
     version           => $version ? {
                            undef   => false,
@@ -84,6 +140,8 @@ class profiles::elasticsearch (
     restart_on_change => true,
     datadir           => $datadir,
     manage_datadir    => false,
+    config            => $es_config,
+    plugins           => $es_plugins,
     init_defaults     => {
                            'ES_JAVA_OPTS' => "\"-Xms${initial_heap_size} -Xmx${maximum_heap_size}\""
                          },
