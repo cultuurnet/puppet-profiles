@@ -114,7 +114,7 @@ class profiles::elasticsearch (
         {
           'name'     => 'Deny all write requests',
           'type'     => 'forbid',
-          'indices'  => [ 'promotions', 'balies' ],
+          'indices'  => [ '*' ],
           'actions'  => [ 'indices:data/write/*' ]
         }
       ]
