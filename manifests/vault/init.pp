@@ -1,7 +1,7 @@
 class profiles::vault::init (
-  Boolean $auto_unseal   = false,
-  Integer $key_threshold = 1,
-  Hash    $gpg_keys      = {}
+  Boolean    $auto_unseal   = false,
+  Integer[1] $key_threshold = 1,
+  Hash       $gpg_keys      = {}
 ) inherits ::profiles {
 
   $gpg_keys_directory = '/etc/vault.d/gpg_keys'
@@ -40,7 +40,7 @@ class profiles::vault::init (
   $gpg_keys.each | $fingerprint, $attributes| {
     gnupg_key { $fingerprint:
       ensure      => 'present',
-      key_id      => $fingerprint,
+      key_id      => $fingerprint[-16,16],
       user        => 'vault',
       key_content => $attributes['key'],
       key_type    => 'public',
