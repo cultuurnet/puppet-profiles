@@ -4,16 +4,16 @@ class profiles::vault::init (
   Hash    $gpg_keys      = {}
 ) inherits ::profiles {
 
-  if (!$auto_unseal and empty($gpg_keys)) {
-    fail('without auto_unseal, at least one GPG key has to be provided')
-  }
-
-  if ($auto_unseal and $key_threshold > 1) {
-    fail('with auto_unseal, key threshold cannot be higher than 1')
-  }
-
   $gpg_keys_directory = '/etc/vault.d/gpg_keys'
   $gpg_keys_exports   = $gpg_keys.map |Array $gpg_key| { "${gpg_keys_directory}/${gpg_key[0]}.asc" }
+  $init_key_string    = $auto_unseal ? {
+                          true  => join(["${gpg_keys_directory}/vault.asc"] + $gpg_keys_exports, ','),
+                          false => join($gpg_keys_exports, ',')
+                        }
+  $key_shares         = $auto_unseal ? {
+                          true  => 1 + length($gpg_keys),
+                          false => length($gpg_keys)
+                        }
 
   realize Group['vault']
   realize User['vault']
@@ -28,21 +28,13 @@ class profiles::vault::init (
   }
 
   if $auto_unseal {
-    $key_shares      = 1 + length($gpg_keys)
-    $full_name       = 'Vault'
-    $email_address   = 'vault@publiq.be'
-    $init_key_string = join(["${gpg_keys_directory}/vault.asc"] + $gpg_keys_exports, ',')
-
     class { 'profiles::vault::gpg_key':
-      full_name          => $full_name,
-      email_address      => $email_address,
+      full_name          => 'Vault',
+      email_address      => 'vault@publiq.be',
       gpg_keys_directory => $gpg_keys_directory,
       before             => Exec['vault_init'],
       require            => File['vault_gpg_keys']
     }
-  } else {
-    $key_shares      = length($gpg_keys)
-    $init_key_string = join($gpg_keys_exports, ',')
   }
 
   $gpg_keys.each | $fingerprint, $attributes| {

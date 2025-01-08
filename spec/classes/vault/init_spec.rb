@@ -173,23 +173,6 @@ describe 'profiles::vault::init' do
         it { is_expected.to contain_exec('export_gpg_key cdef3456').that_requires('Gnupg_key[cdef3456]') }
         it { is_expected.to contain_exec('export_gpg_key cdef3456').that_comes_before('Exec[vault_init]') }
       end
-
-      context 'with auto_unseal => true and key_threshold => 3' do
-        let(:params) { {
-          'auto_unseal'   => true,
-          'key_threshold' => 3
-        } }
-
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /with auto_unseal, key threshold cannot be higher than 1/) }
-      end
-
-      context 'with auto_unseal => false' do
-        let(:params) { {
-          'auto_unseal' => false
-        } }
-
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /without auto_unseal, at least one GPG key has to be provided/) }
-      end
     end
   end
 end
