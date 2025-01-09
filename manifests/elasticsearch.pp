@@ -1,20 +1,21 @@
 class profiles::elasticsearch (
-  Optional[String] $version                       = undef,
-  Integer          $major_version                 = if $version { Integer(split($version, /\./)[0]) } else { 5 },
-  Boolean          $secure_remote_access          = false,
-  Optional[String] $secure_remote_access_user     = undef,
-  Optional[String] $secure_remote_access_password = undef,
-  Boolean          $lvm                           = false,
-  Optional[String] $volume_group                  = undef,
-  Optional[String] $volume_size                   = undef,
-  String           $initial_heap_size             = '512m',
-  String           $maximum_heap_size             = '512m',
-  Boolean          $backup                        = true,
-  Boolean          $backup_lvm                    = false,
-  Optional[String] $backup_volume_group           = undef,
-  Optional[String] $backup_volume_size            = undef,
-  Integer          $backup_hour                   = 0,
-  Integer          $backup_retention_days         = 7
+  Optional[String] $version                             = undef,
+  Integer          $major_version                       = if $version { Integer(split($version, /\./)[0]) } else { 5 },
+  Boolean          $secure_remote_access                = false,
+  Optional[String] $secure_remote_access_user           = undef,
+  Optional[String] $secure_remote_access_password       = undef,
+  Optional[String] $secure_remote_access_plugin_version = undef,
+  Boolean          $lvm                                 = false,
+  Optional[String] $volume_group                        = undef,
+  Optional[String] $volume_size                         = undef,
+  String           $initial_heap_size                   = '512m',
+  String           $maximum_heap_size                   = '512m',
+  Boolean          $backup                              = true,
+  Boolean          $backup_lvm                          = false,
+  Optional[String] $backup_volume_group                 = undef,
+  Optional[String] $backup_volume_size                  = undef,
+  Integer          $backup_hour                         = 0,
+  Integer          $backup_retention_days               = 7
 ) inherits ::profiles {
 
   if ($version and $major_version) {
@@ -78,12 +79,16 @@ class profiles::elasticsearch (
   }
 
   if $secure_remote_access {
-    unless ($secure_remote_access_user and $secure_remote_access_password) {
-      fail("with secure_remote_access enabled, expects a value for both 'secure_remote_access_user' and 'secure_remote_access_password'")
+    unless ($secure_remote_access_user and $secure_remote_access_password and $secure_remote_access_plugin_version) {
+      fail("with secure_remote_access enabled, expects a value for 'secure_remote_access_user' and 'secure_remote_access_password' and 'secure_remote_access_plugin_version'")
     }
 
     realize Apt::Source['publiq-tools']
-    realize Package['elasticsearch-readonlyrest']
+
+    package { 'elasticsearch-readonlyrest':
+      ensure  => "${secure_remote_access_plugin_version}-es${version}",
+      require => Apt::Source['publiq-tools']
+    }
 
     $es_config = {
       'network.host'                           => [ "${::ipaddress_eth0}", "127.0.0.1" ],
