@@ -128,7 +128,7 @@ class profiles::elasticsearch (
 
     $es_plugins = {
       'readonlyrest' => {
-        'source' => '/opt/elasticsearch-readonlyrest/readonlyrest-1.16.16.zip'
+        'source' => "/opt/elasticsearch-readonlyrest/v${secure_remote_access_plugin_version}_es${version}.zip"
       }
     }
   } else {
