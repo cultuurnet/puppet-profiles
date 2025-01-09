@@ -6,6 +6,10 @@ class profiles::vault::init (
 
   $gpg_keys_directory = '/etc/vault.d/gpg_keys'
   $gpg_keys_exports   = $gpg_keys.map |Array $gpg_key| { "${gpg_keys_directory}/${gpg_key[0]}.asc" }
+  $gpg_keys_owners    = $auto_unseal ? {
+                          true  => join(["Vault"] + $gpg_keys.map |$fingerprint, $attributes| { $attributes['owner'] }, ','),
+                          false => join($gpg_keys.map |$fingerprint, $attributes| { $attributes['owner'] }, ',')
+                        }
   $init_key_string    = $auto_unseal ? {
                           true  => join(["${gpg_keys_directory}/vault.asc"] + $gpg_keys_exports, ','),
                           false => join($gpg_keys_exports, ',')
@@ -68,7 +72,7 @@ class profiles::vault::init (
   }
 
   exec { 'vault_init':
-    command   => "/usr/bin/vault operator init -key-shares=${key_shares} -key-threshold=${key_threshold} -pgp-keys=\"${init_key_string}\" -tls-skip-verify -format=json | /usr/local/bin/vault-process-init",
+    command   => "/usr/bin/vault operator init -key-shares=${key_shares} -key-threshold=${key_threshold} -pgp-keys=\"${init_key_string}\" -tls-skip-verify -format=json | /usr/local/bin/vault-process-init \"${gpg_keys_owners}\" > /etc/puppetlabs/facter/facts.d/vault_encrypted_unseal_keys.json",
     user      => 'vault',
     logoutput => 'on_failure',
     require   => [User['vault'], File['vault_process_init'], Package['jq']]

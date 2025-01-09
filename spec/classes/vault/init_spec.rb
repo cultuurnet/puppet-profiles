@@ -45,7 +45,7 @@ describe 'profiles::vault::init' do
         ) }
 
         it { is_expected.to contain_exec('vault_init').with(
-          'command'   => '/usr/bin/vault operator init -key-shares=1 -key-threshold=1 -pgp-keys="/etc/vault.d/gpg_keys/vault.asc" -tls-skip-verify -format=json | /usr/local/bin/vault-process-init',
+          'command'   => '/usr/bin/vault operator init -key-shares=1 -key-threshold=1 -pgp-keys="/etc/vault.d/gpg_keys/vault.asc" -tls-skip-verify -format=json | /usr/local/bin/vault-process-init "Vault" > /etc/puppetlabs/facter/facts.d/vault_encrypted_unseal_keys.json',
           'user'      => 'vault',
           'logoutput' => 'on_failure'
         ) }
@@ -68,10 +68,10 @@ describe 'profiles::vault::init' do
         it { is_expected.to contain_file('vault_initialized_external_fact').that_requires('Exec[vault_init]') }
       end
 
-      context 'with auto_unseal => true and gpg_keys => { dcba6789 => { tag => baz, key => -----BEGIN PGP PUBLIC KEY BLOCK-----\nzyx987\n-----END PGP PUBLIC KEY BLOCK----- } }' do
+      context 'with auto_unseal => true and gpg_keys => { dcba6789 => { owner => baz, key => -----BEGIN PGP PUBLIC KEY BLOCK-----\nzyx987\n-----END PGP PUBLIC KEY BLOCK----- } }' do
         let(:params) { {
           'auto_unseal' => true,
-          'gpg_keys'    => { 'dcba6789' => { 'tag' => 'baz', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nzyx987\n-----END PGP PUBLIC KEY BLOCK-----" } }
+          'gpg_keys'    => { 'dcba6789' => { 'owner' => 'baz', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nzyx987\n-----END PGP PUBLIC KEY BLOCK-----" } }
         } }
 
         it { is_expected.to contain_file('vault_gpg_keys').with(
@@ -86,8 +86,7 @@ describe 'profiles::vault::init' do
           'key_id'      => 'dcba6789',
           'key_content' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nzyx987\n-----END PGP PUBLIC KEY BLOCK-----",
           'key_type'    => 'public',
-          'user'        => 'vault',
-          'tag'         => 'baz'
+          'user'        => 'vault'
         ) }
 
         it { is_expected.to contain_exec('export_gpg_key dcba6789').with(
@@ -98,7 +97,7 @@ describe 'profiles::vault::init' do
         ) }
 
         it { is_expected.to contain_exec('vault_init').with(
-          'command'   => '/usr/bin/vault operator init -key-shares=2 -key-threshold=1 -pgp-keys="/etc/vault.d/gpg_keys/vault.asc,/etc/vault.d/gpg_keys/dcba6789.asc" -tls-skip-verify -format=json | /usr/local/bin/vault-process-init',
+          'command'   => '/usr/bin/vault operator init -key-shares=2 -key-threshold=1 -pgp-keys="/etc/vault.d/gpg_keys/vault.asc,/etc/vault.d/gpg_keys/dcba6789.asc" -tls-skip-verify -format=json | /usr/local/bin/vault-process-init "Vault,baz" > /etc/puppetlabs/facter/facts.d/vault_encrypted_unseal_keys.json',
           'user'      => 'vault',
           'logoutput' => 'on_failure'
         ) }
@@ -109,13 +108,13 @@ describe 'profiles::vault::init' do
         it { is_expected.to contain_exec('export_gpg_key dcba6789').that_comes_before('Exec[vault_init]') }
       end
 
-      context 'with auto_unseal => false, key_threshold => 2 and gpg_keys => { abcd1234 => { tag => foo, key => -----BEGIN PGP PUBLIC KEY BLOCK-----\nxyz789\n-----END PGP PUBLIC KEY BLOCK----- }, cdef3456 => { tag => bar, key => -----BEGIN PGP PUBLIC KEY BLOCK-----\n987zyx\n-----END PGP PUBLIC KEY BLOCK----- } }' do
+      context 'with auto_unseal => false, key_threshold => 2 and gpg_keys => { abcd1234 => { owner => foo bar, key => -----BEGIN PGP PUBLIC KEY BLOCK-----\nxyz789\n-----END PGP PUBLIC KEY BLOCK----- }, cdef3456 => { owner => baz bla, key => -----BEGIN PGP PUBLIC KEY BLOCK-----\n987zyx\n-----END PGP PUBLIC KEY BLOCK----- } }' do
         let(:params) { {
           'auto_unseal'   => false,
           'key_threshold' => 2,
           'gpg_keys'      => {
-                               'abcd1234' => { 'tag' => 'foo', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nxyz789\n-----END PGP PUBLIC KEY BLOCK-----" },
-                               'cdef3456' => { 'tag' => 'bar', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\n987zyx\n-----END PGP PUBLIC KEY BLOCK-----" }
+                               'abcd1234' => { 'owner' => 'foo bar', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nxyz789\n-----END PGP PUBLIC KEY BLOCK-----" },
+                               'cdef3456' => { 'owner' => 'baz bla', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\n987zyx\n-----END PGP PUBLIC KEY BLOCK-----" }
                              }
         } }
 
@@ -132,7 +131,6 @@ describe 'profiles::vault::init' do
           'key_content' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nxyz789\n-----END PGP PUBLIC KEY BLOCK-----",
           'key_type'    => 'public',
           'user'        => 'vault',
-          'tag'         => 'foo'
         ) }
 
         it { is_expected.to contain_gnupg_key('cdef3456').with(
@@ -140,8 +138,7 @@ describe 'profiles::vault::init' do
           'key_id'      => 'cdef3456',
           'key_content' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\n987zyx\n-----END PGP PUBLIC KEY BLOCK-----",
           'key_type'    => 'public',
-          'user'        => 'vault',
-          'tag'         => 'bar'
+          'user'        => 'vault'
         ) }
 
         it { is_expected.to contain_exec('export_gpg_key abcd1234').with(
@@ -159,7 +156,7 @@ describe 'profiles::vault::init' do
         ) }
 
         it { is_expected.to contain_exec('vault_init').with(
-          'command'   => '/usr/bin/vault operator init -key-shares=2 -key-threshold=2 -pgp-keys="/etc/vault.d/gpg_keys/abcd1234.asc,/etc/vault.d/gpg_keys/cdef3456.asc" -tls-skip-verify -format=json | /usr/local/bin/vault-process-init',
+          'command'   => '/usr/bin/vault operator init -key-shares=2 -key-threshold=2 -pgp-keys="/etc/vault.d/gpg_keys/abcd1234.asc,/etc/vault.d/gpg_keys/cdef3456.asc" -tls-skip-verify -format=json | /usr/local/bin/vault-process-init "foo bar,baz bla" > /etc/puppetlabs/facter/facts.d/vault_encrypted_unseal_keys.json',
           'user'      => 'vault',
           'logoutput' => 'on_failure'
         ) }
