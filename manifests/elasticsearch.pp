@@ -89,7 +89,6 @@ class profiles::elasticsearch (
       ensure  => "${secure_remote_access_plugin_version}-es${version}",
       require => Apt::Source['publiq-tools'],
       before  => Class['elasticsearch']
-
     }
 
     $es_config = {
