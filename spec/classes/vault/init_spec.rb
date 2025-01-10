@@ -21,6 +21,9 @@ describe 'profiles::vault::init' do
         it { is_expected.to contain_group('vault') }
         it { is_expected.to contain_user('vault') }
         it { is_expected.to contain_package('jq') }
+        it { is_expected.to contain_file('/etc/puppetlabs') }
+        it { is_expected.to contain_file('/etc/puppetlabs/facter') }
+        it { is_expected.to contain_file('/etc/puppetlabs/facter/facts.d') }
 
         it { is_expected.to contain_file('vault_gpg_keys').with(
           'ensure' => 'directory',
@@ -35,42 +38,63 @@ describe 'profiles::vault::init' do
           'gpg_keys_directory' => '/etc/vault.d/gpg_keys'
         ) }
 
-        it { is_expected.to contain_file('vault_process_init').with(
+        it { is_expected.to contain_file('vault_process_init_output').with(
           'ensure'  => 'file',
-          'path'    => '/usr/local/bin/vault-process-init',
+          'path'    => '/usr/local/bin/vault-process-init-output',
           'owner'   => 'root',
           'group'   => 'root',
           'mode'    => '0755',
-          'source'  => 'puppet:///modules/profiles/vault/vault-process-init'
+          'source'  => 'puppet:///modules/profiles/vault/vault-process-init-output'
         ) }
 
         it { is_expected.to contain_exec('vault_init').with(
-          'command'   => '/usr/bin/vault operator init -key-shares=1 -key-threshold=1 -pgp-keys="/etc/vault.d/gpg_keys/vault.asc" -tls-skip-verify -format=json | /usr/local/bin/vault-process-init "Vault" > /etc/puppetlabs/facter/facts.d/vault_encrypted_unseal_keys.json',
+          'command'   => '/usr/bin/vault operator init -key-shares=1 -key-threshold=1 -pgp-keys="/etc/vault.d/gpg_keys/vault.asc" -tls-skip-verify -format=json > /home/vault/vault_init_output.json',
           'user'      => 'vault',
+          'logoutput' => 'on_failure'
+        ) }
+
+        it { is_expected.to contain_exec('vault_root_token').with(
+          'command'   => '/usr/bin/jq -r \'.root_token\' /home/vault/vault_init_output.json > /home/vault/.vault_token',
+          'user'      => 'vault',
+          'creates'   => '/home/vault/.vault_token',
+          'logoutput' => 'on_failure'
+        ) }
+
+        it { is_expected.to contain_exec('vault_auto_unseal_key').with(
+          'command'   => '/usr/bin/jq -r \'.unseal_keys_b64[0]\' /home/vault/vault_init_output.json > /home/vault/encrypted_unseal_key',
+          'user'      => 'vault',
+          'creates'   => '/home/vault/encrypted_unseal_key',
+          'logoutput' => 'on_failure'
+        ) }
+
+        it { is_expected.to contain_exec('vault_unseal_keys_external_fact').with(
+          'command'   => '/usr/bin/cat /home/vault/vault_init_output.json | /usr/local/bin/vault-process-init-output "Vault" > /etc/puppetlabs/facter/facts.d/vault_encrypted_unseal_keys.json',
+          'creates'   => '/etc/puppetlabs/facter/facts.d/vault_encrypted_unseal_keys.json',
           'logoutput' => 'on_failure'
         ) }
 
         it { is_expected.to contain_file('vault_initialized_external_fact').with(
           'ensure'  => 'file',
           'path'    => '/etc/puppetlabs/facter/facts.d/vault_initialized.txt',
-          'owner'   => 'root',
-          'group'   => 'root',
-          'mode'    => '0644',
           'content' => 'vault_initialized=true'
         ) }
 
         it { is_expected.to contain_file('vault_gpg_keys').that_requires('User[vault]') }
         it { is_expected.to contain_file('vault_gpg_keys').that_comes_before('Class[profiles::vault::gpg_key]') }
-        it { is_expected.to contain_exec('vault_init').that_requires('User[vault]') }
         it { is_expected.to contain_exec('vault_init').that_requires('Class[profiles::vault::gpg_key]') }
-        it { is_expected.to contain_exec('vault_init').that_requires('File[vault_process_init]') }
-        it { is_expected.to contain_exec('vault_init').that_requires('Package[jq]') }
+        it { is_expected.to contain_exec('vault_init').that_requires('User[vault]') }
+        it { is_expected.to contain_exec('vault_root_token').that_requires('Package[jq]') }
+        it { is_expected.to contain_exec('vault_root_token').that_requires('Exec[vault_init]') }
+        it { is_expected.to contain_exec('vault_auto_unseal_key').that_requires('Package[jq]') }
+        it { is_expected.to contain_exec('vault_auto_unseal_key').that_requires('Exec[vault_init]') }
+        it { is_expected.to contain_exec('vault_unseal_keys_external_fact').that_requires('Exec[vault_init]') }
+        it { is_expected.to contain_exec('vault_unseal_keys_external_fact').that_requires('Package[jq]') }
         it { is_expected.to contain_file('vault_initialized_external_fact').that_requires('Exec[vault_init]') }
       end
 
-      context 'with auto_unseal => true and gpg_keys => { dcba6789 => { owner => baz, key => -----BEGIN PGP PUBLIC KEY BLOCK-----\nzyx987\n-----END PGP PUBLIC KEY BLOCK----- } }' do
+      context 'with auto_unseal => false and gpg_keys => { dcba6789 => { owner => baz, key => -----BEGIN PGP PUBLIC KEY BLOCK-----\nzyx987\n-----END PGP PUBLIC KEY BLOCK----- } }' do
         let(:params) { {
-          'auto_unseal' => true,
+          'auto_unseal' => false,
           'gpg_keys'    => { 'dcba6789' => { 'owner' => 'baz', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nzyx987\n-----END PGP PUBLIC KEY BLOCK-----" } }
         } }
 
@@ -97,8 +121,28 @@ describe 'profiles::vault::init' do
         ) }
 
         it { is_expected.to contain_exec('vault_init').with(
-          'command'   => '/usr/bin/vault operator init -key-shares=2 -key-threshold=1 -pgp-keys="/etc/vault.d/gpg_keys/vault.asc,/etc/vault.d/gpg_keys/dcba6789.asc" -tls-skip-verify -format=json | /usr/local/bin/vault-process-init "Vault,baz" > /etc/puppetlabs/facter/facts.d/vault_encrypted_unseal_keys.json',
+          'command'   => '/usr/bin/vault operator init -key-shares=1 -key-threshold=1 -pgp-keys="/etc/vault.d/gpg_keys/dcba6789.asc" -tls-skip-verify -format=json > /home/vault/vault_init_output.json',
           'user'      => 'vault',
+          'logoutput' => 'on_failure'
+        ) }
+
+        it { is_expected.not_to contain_exec('vault_auto_unseal_key').with(
+          'command'   => '/usr/bin/jq -r \'.unseal_keys_b64[0]\' /home/vault/vault_init_output.json > /home/vault/encrypted_unseal_key',
+          'user'      => 'vault',
+          'creates'   => '/home/vault/encrypted_unseal_key',
+          'logoutput' => 'on_failure'
+        ) }
+
+        it { is_expected.to contain_exec('vault_root_token').with(
+          'command'   => '/usr/bin/jq -r \'.root_token\' /home/vault/vault_init_output.json > /home/vault/.vault_token',
+          'user'      => 'vault',
+          'creates'   => '/home/vault/.vault_token',
+          'logoutput' => 'on_failure'
+        ) }
+
+        it { is_expected.to contain_exec('vault_unseal_keys_external_fact').with(
+          'command'   => '/usr/bin/cat /home/vault/vault_init_output.json | /usr/local/bin/vault-process-init-output "baz" > /etc/puppetlabs/facter/facts.d/vault_encrypted_unseal_keys.json',
+          'creates'   => '/etc/puppetlabs/facter/facts.d/vault_encrypted_unseal_keys.json',
           'logoutput' => 'on_failure'
         ) }
 
@@ -156,8 +200,28 @@ describe 'profiles::vault::init' do
         ) }
 
         it { is_expected.to contain_exec('vault_init').with(
-          'command'   => '/usr/bin/vault operator init -key-shares=2 -key-threshold=2 -pgp-keys="/etc/vault.d/gpg_keys/abcd1234.asc,/etc/vault.d/gpg_keys/cdef3456.asc" -tls-skip-verify -format=json | /usr/local/bin/vault-process-init "foo bar,baz bla" > /etc/puppetlabs/facter/facts.d/vault_encrypted_unseal_keys.json',
+          'command'   => '/usr/bin/vault operator init -key-shares=2 -key-threshold=2 -pgp-keys="/etc/vault.d/gpg_keys/abcd1234.asc,/etc/vault.d/gpg_keys/cdef3456.asc" -tls-skip-verify -format=json > /home/vault/vault_init_output.json',
           'user'      => 'vault',
+          'logoutput' => 'on_failure'
+        ) }
+
+        it { is_expected.not_to contain_exec('vault_auto_unseal_key').with(
+          'command'   => '/usr/bin/jq -r \'.unseal_keys_b64[0]\' /home/vault/vault_init_output.json > /home/vault/encrypted_unseal_key',
+          'user'      => 'vault',
+          'creates'   => '/home/vault/encrypted_unseal_key',
+          'logoutput' => 'on_failure'
+        ) }
+
+        it { is_expected.to contain_exec('vault_root_token').with(
+          'command'   => '/usr/bin/jq -r \'.root_token\' /home/vault/vault_init_output.json > /home/vault/.vault_token',
+          'user'      => 'vault',
+          'creates'   => '/home/vault/.vault_token',
+          'logoutput' => 'on_failure'
+        ) }
+
+        it { is_expected.to contain_exec('vault_unseal_keys_external_fact').with(
+          'command'   => '/usr/bin/cat /home/vault/vault_init_output.json | /usr/local/bin/vault-process-init-output "foo bar,baz bla" > /etc/puppetlabs/facter/facts.d/vault_encrypted_unseal_keys.json',
+          'creates'   => '/etc/puppetlabs/facter/facts.d/vault_encrypted_unseal_keys.json',
           'logoutput' => 'on_failure'
         ) }
 
