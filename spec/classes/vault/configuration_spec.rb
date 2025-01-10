@@ -13,6 +13,13 @@ describe 'profiles::vault::configuration' do
         it { is_expected.to contain_class('profiles::vault::configuration').with(
           'service_address' => '127.0.0.1'
         ) }
+
+        it { is_expected.to contain_shellvar('VAULT_ADDR environment variable').with(
+          'ensure'   => 'present',
+          'variable' => 'VAULT_ADDR',
+          'target'   => '/etc/environment',
+          'value'    => 'https://127.0.0.1:8200',
+        ) }
       end
 
       context 'with service_address => 0.0.0.0' do
