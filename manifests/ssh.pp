@@ -53,7 +53,7 @@ class profiles::ssh(
     purge => true
   }
 
-  any2array($ssh_authorized_keys_tags).each |$tag| {
+  [$ssh_authorized_keys_tags].flatten.each |$tag| {
     Ssh_authorized_key <| tag == $tag |>
   }
 
