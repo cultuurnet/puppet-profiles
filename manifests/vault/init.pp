@@ -63,7 +63,7 @@ class profiles::vault::init (
     }
 
     exec { "export_gpg_key ${gpg_key['fingerprint']}":
-      command   => "/usr/bin/gpg --export | /usr/bin/base64 > ${gpg_keys_directory}/${gpg_key['fingerprint']}.asc",
+      command   => "/usr/bin/gpg --export ${gpg_key['fingerprint']} | /usr/bin/base64 > ${gpg_keys_directory}/${gpg_key['fingerprint']}.asc",
       user      => 'vault',
       creates   => "${gpg_keys_directory}/${gpg_key['fingerprint']}.asc",
       logoutput => 'on_failure',

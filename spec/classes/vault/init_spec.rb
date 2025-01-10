@@ -114,7 +114,7 @@ describe 'profiles::vault::init' do
         ) }
 
         it { is_expected.to contain_exec('export_gpg_key dcba6789').with(
-          'command'   => '/usr/bin/gpg --export | /usr/bin/base64 > /etc/vault.d/gpg_keys/dcba6789.asc',
+          'command'   => '/usr/bin/gpg --export dcba6789 | /usr/bin/base64 > /etc/vault.d/gpg_keys/dcba6789.asc',
           'creates'   => '/etc/vault.d/gpg_keys/dcba6789.asc',
           'user'      => 'vault',
           'logoutput' => 'on_failure'
@@ -186,14 +186,14 @@ describe 'profiles::vault::init' do
         ) }
 
         it { is_expected.to contain_exec('export_gpg_key abcd1234').with(
-          'command'   => '/usr/bin/gpg --export | /usr/bin/base64 > /etc/vault.d/gpg_keys/abcd1234.asc',
+          'command'   => '/usr/bin/gpg --export abcd1234 | /usr/bin/base64 > /etc/vault.d/gpg_keys/abcd1234.asc',
           'creates'   => '/etc/vault.d/gpg_keys/abcd1234.asc',
           'user'      => 'vault',
           'logoutput' => 'on_failure'
         ) }
 
         it { is_expected.to contain_exec('export_gpg_key cdef3456').with(
-          'command'   => '/usr/bin/gpg --export | /usr/bin/base64 > /etc/vault.d/gpg_keys/cdef3456.asc',
+          'command'   => '/usr/bin/gpg --export cdef3456 | /usr/bin/base64 > /etc/vault.d/gpg_keys/cdef3456.asc',
           'creates'   => '/etc/vault.d/gpg_keys/cdef3456.asc',
           'user'      => 'vault',
           'logoutput' => 'on_failure'
