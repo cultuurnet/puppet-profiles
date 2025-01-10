@@ -4,14 +4,14 @@ class profiles::vault (
   String                     $service_address = '127.0.0.1',
   Boolean                    $auto_unseal     = false,
   Integer[1]                 $key_threshold   = 1,
-  Hash                       $gpg_keys        = {}
+  Variant[Hash,Array[Hash]]  $gpg_keys        = []
 ) inherits ::profiles {
 
   if $auto_unseal {
     if $key_threshold > 1 { fail('with auto_unseal, key threshold cannot be higher than 1') }
   } else {
     if empty($gpg_keys) { fail('without auto_unseal, at least one GPG key has to be provided') }
-    if (length($gpg_keys) > 1 and $key_threshold < 2) { fail('with multiple key shares, key threshold must be higher than 1') }
+    if (length([$gpg_keys].flatten) > 1 and $key_threshold < 2) { fail('with multiple key shares, key threshold must be higher than 1') }
   }
 
   include ::profiles::firewall::rules

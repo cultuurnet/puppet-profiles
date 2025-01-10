@@ -5,9 +5,9 @@ describe 'profiles::vault' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context 'with gpg_keys => { dcba6789 => { owner => baz, key => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nzyx987\n-----END PGP PUBLIC KEY BLOCK-----" } }' do
+      context 'with gpg_keys => { fingerprint => dcba6789, owner => baz, key => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nzyx987\n-----END PGP PUBLIC KEY BLOCK-----" }' do
         let(:params) { {
-          'gpg_keys' => { 'dcba6789' => { 'owner' => 'baz', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nzyx987\n-----END PGP PUBLIC KEY BLOCK-----" } }
+          'gpg_keys' => { 'fingerprint' => 'dcba6789', 'owner' => 'baz', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nzyx987\n-----END PGP PUBLIC KEY BLOCK-----" }
         } }
 
         it { is_expected.to compile.with_all_deps }
@@ -18,7 +18,7 @@ describe 'profiles::vault' do
           'service_status'  => 'running',
           'service_address' => '127.0.0.1',
           'key_threshold'   => 1,
-          'gpg_keys'        => { 'dcba6789' => { 'owner' => 'baz', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nzyx987\n-----END PGP PUBLIC KEY BLOCK-----" } }
+          'gpg_keys'        => { 'fingerprint' => 'dcba6789', 'owner' => 'baz', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nzyx987\n-----END PGP PUBLIC KEY BLOCK-----" }
         ) }
 
         it { is_expected.not_to contain_firewall('400 accept vault traffic') }
@@ -38,7 +38,7 @@ describe 'profiles::vault' do
         context 'without fact vault_initialized' do
           it { is_expected.to contain_class('profiles::vault::init').with(
             'key_threshold' => 1,
-            'gpg_keys'      => { 'dcba6789' => { 'owner' => 'baz', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nzyx987\n-----END PGP PUBLIC KEY BLOCK-----" } }
+            'gpg_keys'      => { 'fingerprint' => 'dcba6789', 'owner' => 'baz', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nzyx987\n-----END PGP PUBLIC KEY BLOCK-----" }
           ) }
 
           it { is_expected.to contain_class('profiles::vault::init').that_requires('Class[profiles::vault::service]') }
@@ -87,17 +87,17 @@ describe 'profiles::vault' do
         it { is_expected.not_to contain_class('profiles::vault::seal') }
       end
 
-      context 'with version => 4.5.6, auto_unseal => false, service_status => running, key_threshold => 2, gpg_keys => { abcd1234 => { owner => foo, key => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nxyz789\n-----END PGP PUBLIC KEY BLOCK-----" }, cdef3456 => { owner => bar, key => "-----BEGIN PGP PUBLIC KEY BLOCK-----\n987zyx\n-----END PGP PUBLIC KEY BLOCK-----" } } and service_address => 0.0.0.0' do
+      context 'with version => 4.5.6, auto_unseal => false, service_status => running, key_threshold => 2, gpg_keys => [{ fingerprint => abcd1234, owner => foo, key => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nxyz789\n-----END PGP PUBLIC KEY BLOCK-----" }, { fingerprint => cdef3456, owner => bar, key => "-----BEGIN PGP PUBLIC KEY BLOCK-----\n987zyx\n-----END PGP PUBLIC KEY BLOCK-----" }] and service_address => 0.0.0.0' do
         let(:params) { {
           'version'         => '4.5.6',
           'service_status'  => 'running',
           'service_address' => '0.0.0.0',
           'auto_unseal'     => false,
           'key_threshold'   => 2,
-          'gpg_keys'        => {
-                                 'abcd1234' => { 'owner' => 'foo', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nxyz789\n-----END PGP PUBLIC KEY BLOCK-----" },
-                                 'cdef3456' => { 'owner' => 'bar', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\n987zyx\n-----END PGP PUBLIC KEY BLOCK-----" }
-                               }
+          'gpg_keys'        => [
+                                 { 'fingerprint' => 'abcd1234', 'owner' => 'foo', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nxyz789\n-----END PGP PUBLIC KEY BLOCK-----" },
+                                 { 'fingerprint' => 'cdef3456', 'owner' => 'bar', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\n987zyx\n-----END PGP PUBLIC KEY BLOCK-----" }
+                               ]
         } }
 
         it { is_expected.to contain_class('profiles::vault::install').with(
@@ -115,10 +115,10 @@ describe 'profiles::vault' do
         it { is_expected.to contain_class('profiles::vault::init').with(
           'auto_unseal'   => false,
           'key_threshold' => 2,
-          'gpg_keys'      => {
-                               'abcd1234' => { 'owner' => 'foo', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nxyz789\n-----END PGP PUBLIC KEY BLOCK-----" },
-                               'cdef3456' => { 'owner' => 'bar', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\n987zyx\n-----END PGP PUBLIC KEY BLOCK-----" }
-                             }
+          'gpg_keys'      => [
+                               { 'fingerprint' => 'abcd1234', 'owner' => 'foo', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nxyz789\n-----END PGP PUBLIC KEY BLOCK-----" },
+                               { 'fingerprint' => 'cdef3456', 'owner' => 'bar', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\n987zyx\n-----END PGP PUBLIC KEY BLOCK-----" }
+                             ]
         ) }
 
         it { is_expected.to contain_class('profiles::vault::seal').with(
@@ -143,13 +143,13 @@ describe 'profiles::vault' do
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /without auto_unseal, at least one GPG key has to be provided/) }
       end
 
-      context 'with auto_unseal => false and gpg_keys => { abcd1234 => { owner => foo, key => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nxyz789\n-----END PGP PUBLIC KEY BLOCK-----" }, cdef3456 => { owner => bar, key => "-----BEGIN PGP PUBLIC KEY BLOCK-----\n987zyx\n-----END PGP PUBLIC KEY BLOCK-----" } }' do
+      context 'with auto_unseal => false and gpg_keys => [{ fingerprint => abcd1234, owner => foo, key => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nxyz789\n-----END PGP PUBLIC KEY BLOCK-----" }, { fingerprint => cdef3456, owner => bar, key => "-----BEGIN PGP PUBLIC KEY BLOCK-----\n987zyx\n-----END PGP PUBLIC KEY BLOCK-----" }]' do
         let(:params) { {
           'auto_unseal' => false,
-          'gpg_keys'    => {
-                             'abcd1234' => { 'owner' => 'foo', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nxyz789\n-----END PGP PUBLIC KEY BLOCK-----" },
-                             'cdef3456' => { 'owner' => 'bar', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\n987zyx\n-----END PGP PUBLIC KEY BLOCK-----" }
-                           }
+          'gpg_keys'    => [
+                             { 'fingerprint' => 'abcd1234', 'owner' => 'foo', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nxyz789\n-----END PGP PUBLIC KEY BLOCK-----" },
+                             { 'fingerprint' => 'cdef3456', 'owner' => 'bar', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\n987zyx\n-----END PGP PUBLIC KEY BLOCK-----" }
+                           ]
         } }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /with multiple key shares, key threshold must be higher than 1/) }
