@@ -1,22 +1,22 @@
 class profiles::vault::init (
-  Boolean    $auto_unseal   = false,
-  Integer[1] $key_threshold = 1,
-  Hash       $gpg_keys      = {}
+  Boolean                   $auto_unseal   = false,
+  Integer[1]                $key_threshold = 1,
+  Variant[Hash,Array[Hash]] $gpg_keys      = []
 ) inherits ::profiles {
 
   $gpg_keys_directory = '/etc/vault.d/gpg_keys'
-  $gpg_keys_exports   = $gpg_keys.map |Array $gpg_key| { "${gpg_keys_directory}/${gpg_key[0]}.asc" }
+  $gpg_keys_exports   = [$gpg_keys].flatten.map |$gpg_key| { "${gpg_keys_directory}/${gpg_key['fingerprint']}.asc" }
   $gpg_keys_owners    = $auto_unseal ? {
-                          true  => join(["Vault"] + $gpg_keys.map |$fingerprint, $attributes| { $attributes['owner'] }, ','),
-                          false => join($gpg_keys.map |$fingerprint, $attributes| { $attributes['owner'] }, ',')
+                          true  => join(["Vault"] + [$gpg_keys].flatten.map |$gpg_key| { $gpg_key['owner'] }, ','),
+                          false => join([$gpg_keys].flatten.map |$gpg_key| { $gpg_key['owner'] }, ',')
                         }
   $init_key_string    = $auto_unseal ? {
                           true  => join(["${gpg_keys_directory}/vault.asc"] + $gpg_keys_exports, ','),
                           false => join($gpg_keys_exports, ',')
                         }
   $key_shares         = $auto_unseal ? {
-                          true  => 1 + length($gpg_keys),
-                          false => length($gpg_keys)
+                          true  => 1 + length([$gpg_keys].flatten),
+                          false => length([$gpg_keys].flatten)
                         }
 
   realize Group['vault']
@@ -52,23 +52,22 @@ class profiles::vault::init (
     }
   }
 
-  $gpg_keys.each | $fingerprint, $attributes| {
-    gnupg_key { $fingerprint:
+  [$gpg_keys].flatten.each |$gpg_key| {
+    gnupg_key { $gpg_key['fingerprint']:
       ensure      => 'present',
-      key_id      => $fingerprint[-16,16],
+      key_id      => $gpg_key['fingerprint'][-16,16],
       user        => 'vault',
-      key_content => $attributes['key'],
+      key_content => $gpg_key['key'],
       key_type    => 'public',
-      tag         => $attributes['tag'],
       require     => User['vault']
     }
 
-    exec { "export_gpg_key ${fingerprint}":
-      command   => "/usr/bin/gpg --export | /usr/bin/base64 > ${gpg_keys_directory}/${fingerprint}.asc",
+    exec { "export_gpg_key ${gpg_key['fingerprint']}":
+      command   => "/usr/bin/gpg --export | /usr/bin/base64 > ${gpg_keys_directory}/${gpg_key['fingerprint']}.asc",
       user      => 'vault',
-      creates   => "${gpg_keys_directory}/${fingerprint}.asc",
+      creates   => "${gpg_keys_directory}/${gpg_key['fingerprint']}.asc",
       logoutput => 'on_failure',
-      require   => [File['vault_gpg_keys'], Gnupg_key[$fingerprint]],
+      require   => [File['vault_gpg_keys'], Gnupg_key[$gpg_key['fingerprint']]],
       before    => Exec['vault_init']
     }
   }

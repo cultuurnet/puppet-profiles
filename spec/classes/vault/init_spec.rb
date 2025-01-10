@@ -15,7 +15,7 @@ describe 'profiles::vault::init' do
         it { is_expected.to contain_class('profiles::vault::init').with(
           'auto_unseal'   => true,
           'key_threshold' => 1,
-          'gpg_keys'      => {}
+          'gpg_keys'      => []
         ) }
 
         it { is_expected.to contain_group('vault') }
@@ -92,10 +92,10 @@ describe 'profiles::vault::init' do
         it { is_expected.to contain_file('vault_initialized_external_fact').that_requires('Exec[vault_init]') }
       end
 
-      context 'with auto_unseal => false and gpg_keys => { dcba6789 => { owner => baz, key => -----BEGIN PGP PUBLIC KEY BLOCK-----\nzyx987\n-----END PGP PUBLIC KEY BLOCK----- } }' do
+      context 'with auto_unseal => false and gpg_keys => { fingerprint => dcba6789, owner => baz, key => -----BEGIN PGP PUBLIC KEY BLOCK-----\nzyx987\n-----END PGP PUBLIC KEY BLOCK----- }' do
         let(:params) { {
           'auto_unseal' => false,
-          'gpg_keys'    => { 'dcba6789' => { 'owner' => 'baz', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nzyx987\n-----END PGP PUBLIC KEY BLOCK-----" } }
+          'gpg_keys'    => { 'fingerprint' => 'dcba6789', 'owner' => 'baz', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nzyx987\n-----END PGP PUBLIC KEY BLOCK-----" }
         } }
 
         it { is_expected.to contain_file('vault_gpg_keys').with(
@@ -152,14 +152,14 @@ describe 'profiles::vault::init' do
         it { is_expected.to contain_exec('export_gpg_key dcba6789').that_comes_before('Exec[vault_init]') }
       end
 
-      context 'with auto_unseal => false, key_threshold => 2 and gpg_keys => { abcd1234 => { owner => foo bar, key => -----BEGIN PGP PUBLIC KEY BLOCK-----\nxyz789\n-----END PGP PUBLIC KEY BLOCK----- }, cdef3456 => { owner => baz bla, key => -----BEGIN PGP PUBLIC KEY BLOCK-----\n987zyx\n-----END PGP PUBLIC KEY BLOCK----- } }' do
+      context 'with auto_unseal => false, key_threshold => 2 and gpg_keys => [{ fingerprint => abcd1234, owner => foo bar, key => -----BEGIN PGP PUBLIC KEY BLOCK-----\nxyz789\n-----END PGP PUBLIC KEY BLOCK----- }, cdef3456 => { owner => baz bla, key => -----BEGIN PGP PUBLIC KEY BLOCK-----\n987zyx\n-----END PGP PUBLIC KEY BLOCK----- }]' do
         let(:params) { {
           'auto_unseal'   => false,
           'key_threshold' => 2,
-          'gpg_keys'      => {
-                               'abcd1234' => { 'owner' => 'foo bar', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nxyz789\n-----END PGP PUBLIC KEY BLOCK-----" },
-                               'cdef3456' => { 'owner' => 'baz bla', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\n987zyx\n-----END PGP PUBLIC KEY BLOCK-----" }
-                             }
+          'gpg_keys'      => [
+                               { 'fingerprint' => 'abcd1234', 'owner' => 'foo bar', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nxyz789\n-----END PGP PUBLIC KEY BLOCK-----" },
+                               { 'fingerprint' => 'cdef3456', 'owner' => 'baz bla', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\n987zyx\n-----END PGP PUBLIC KEY BLOCK-----" }
+                             ]
         } }
 
         it { is_expected.to contain_file('vault_gpg_keys').with(
