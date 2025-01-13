@@ -1,8 +1,9 @@
 class profiles::vault (
   String                     $version         = 'latest',
+  Boolean                    $auto_unseal     = false,
+  String                     $certname        = $facts['networking']['fqdn'],
   Enum['running', 'stopped'] $service_status  = 'running',
   String                     $service_address = '127.0.0.1',
-  Boolean                    $auto_unseal     = false,
   Integer[1]                 $key_threshold   = 1,
   Variant[Hash,Array[Hash]]  $gpg_keys        = []
 ) inherits ::profiles {
@@ -26,6 +27,7 @@ class profiles::vault (
   }
 
   class { 'profiles::vault::configuration':
+    certname        => $certname,
     service_address => $service_address,
     require         => Class['profiles::vault::install'],
     notify          => Class['profiles::vault::service']
