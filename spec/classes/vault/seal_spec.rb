@@ -58,7 +58,7 @@ describe 'profiles::vault::seal' do
           'ensure'         => 'present',
           'filename'       => 'override.conf',
           'notify_service' => false,
-          'content'        => '[Service]\nExecStartPost=/usr/local/bin/vault-unseal /home/vault/encrypted_unseal_key'
+          'content'        => "[Service]\nExecStartPost=/usr/local/bin/vault-unseal /home/vault/encrypted_unseal_key"
         ) }
 
         it { is_expected.to contain_exec('vault_unseal').that_requires('File[vault_unseal]') }
