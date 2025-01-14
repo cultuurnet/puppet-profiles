@@ -1,0 +1,14 @@
+# Full configuration options can be found at https://developer.hashicorp.com/vault/docs/configuration
+
+ui = true
+
+storage "file" {
+  path = "/opt/vault/data"
+}
+
+# HTTPS listener
+listener "tcp" {
+  address       = "<%= @service_address %>:8200"
+  tls_cert_file = "/opt/vault/tls/<%= @cert %>.crt"
+  tls_key_file  = "/opt/vault/tls/<%= @cert %>.key"
+}
