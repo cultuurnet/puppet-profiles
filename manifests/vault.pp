@@ -1,7 +1,7 @@
 class profiles::vault (
   String                     $version         = 'latest',
   Boolean                    $auto_unseal     = false,
-  String                     $certname        = $facts['networking']['fqdn'],
+  Optional[String]           $certname        = undef,
   Enum['running', 'stopped'] $service_status  = 'running',
   String                     $service_address = '127.0.0.1',
   Integer[1]                 $key_threshold   = 1,

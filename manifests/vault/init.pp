@@ -88,9 +88,9 @@ class profiles::vault::init (
   }
 
   exec { 'vault_root_token':
-    command   => '/usr/bin/jq -r \'.root_token\' /home/vault/vault_init_output.json > /home/vault/.vault_token',
+    command   => '/usr/bin/jq -r \'.root_token\' /home/vault/vault_init_output.json > /home/vault/.vault-token',
     user      => 'vault',
-    creates   => '/home/vault/.vault_token',
+    creates   => '/home/vault/.vault-token',
     logoutput => 'on_failure',
     require   => [Exec['vault_init'], Package['jq']]
   }
