@@ -52,5 +52,15 @@ class profiles::vault (
       auto_unseal => $auto_unseal,
       require     => Class['profiles::vault::service']
     }
+
+    if $auto_unseal {
+      class { 'profiles::vault::authentication':
+        require => Class['profiles::vault::seal']
+      }
+
+      class { 'profiles::vault::secrets_engines':
+        require => Class['profiles::vault::seal']
+      }
+    }
   }
 }

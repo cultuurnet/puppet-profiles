@@ -57,10 +57,32 @@ describe 'profiles::vault' do
           'auto_unseal' => false
         ) }
 
+        it { is_expected.not_to contain_class('profiles::vault::authentication') }
+        it { is_expected.not_to contain_class('profiles::vault::secrets_engines') }
+
         it { is_expected.to contain_class('profiles::vault::install').that_comes_before('Class[profiles::vault::configuration]') }
         it { is_expected.to contain_class('profiles::vault::install').that_notifies('Class[profiles::vault::service]') }
         it { is_expected.to contain_class('profiles::vault::configuration').that_notifies('Class[profiles::vault::service]') }
         it { is_expected.to contain_class('profiles::vault::seal').that_requires('Class[profiles::vault::service]') }
+      end
+
+      context 'with auto_unseal => true and certname => myvault.example.com' do
+        let(:params) { {
+          'auto_unseal' => true,
+          'certname'    => 'myvault.example.com',
+        } }
+
+        it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to contain_class('profiles::vault::seal').with(
+          'auto_unseal' => true
+        ) }
+
+        it { is_expected.to contain_class('profiles::vault::authentication') }
+        it { is_expected.to contain_class('profiles::vault::secrets_engines') }
+
+        it { is_expected.to contain_class('profiles::vault::authentication').that_requires('Class[profiles::vault::seal]') }
+        it { is_expected.to contain_class('profiles::vault::secrets_engines').that_requires('Class[profiles::vault::seal]') }
       end
 
       context 'with version => 1.2.3, auto_unseal => true, certname => vault.example.com, service_status => stopped and service_address => 0.0.0.0' do
@@ -89,6 +111,8 @@ describe 'profiles::vault' do
 
         it { is_expected.not_to contain_class('profiles::vault::init') }
         it { is_expected.not_to contain_class('profiles::vault::seal') }
+        it { is_expected.not_to contain_class('profiles::vault::authentication') }
+        it { is_expected.not_to contain_class('profiles::vault::secrets_engines') }
       end
 
       context 'with version => 4.5.6, auto_unseal => false, service_status => running, key_threshold => 2, gpg_keys => [{ fingerprint => abcd1234, owner => foo, key => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nxyz789\n-----END PGP PUBLIC KEY BLOCK-----" }, { fingerprint => cdef3456, owner => bar, key => "-----BEGIN PGP PUBLIC KEY BLOCK-----\n987zyx\n-----END PGP PUBLIC KEY BLOCK-----" }] and service_address => 0.0.0.0' do
