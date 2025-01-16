@@ -109,7 +109,7 @@ class profiles::elasticsearch (
           'name'     => 'Accept all write requests with basic authentication',
           'auth_key' => "${secure_remote_access_user}:${secure_remote_access_password}",
           'type'     => 'allow',
-          'method'   => ['POST','PUT','DELETE']
+          'methods'  => ['POST','PUT','DELETE']
         },
         {
           'name'     => 'Accept all read requests without authentication',
