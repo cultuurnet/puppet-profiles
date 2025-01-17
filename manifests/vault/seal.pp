@@ -25,6 +25,12 @@ class profiles::vault::seal (
       logoutput => 'on_failure',
       require   => File['vault_unseal']
     }
+
+    exec { 'loginctl_enable_linger_vault':
+      command   => '/usr/bin/loginctl enable-linger vault',
+      unless    => '/usr/bin/test "$(/usr/bin/loginctl show-user -p Linger vault)" == "Linger=yes"',
+      logoutput => 'on_failure'
+    }
   }
 
   systemd::dropin_file { 'vault_override.conf':

@@ -23,6 +23,7 @@ describe 'profiles::vault::seal' do
         ) }
 
         it { is_expected.not_to contain_exec('vault_unseal') }
+        it { is_expected.not_to contain_exec('loginctl_enable_linger_vault') }
 
         it { is_expected.to contain_systemd__dropin_file('vault_override.conf').with(
           'unit'           => 'vault.service',
@@ -50,6 +51,12 @@ describe 'profiles::vault::seal' do
           'command'   => '/usr/local/bin/vault-unseal /home/vault/encrypted_unseal_key',
           'user'      => 'vault',
           'unless'    => '/usr/bin/vault status -tls-skip-verify',
+          'logoutput' => 'on_failure'
+        ) }
+
+        it { is_expected.to contain_exec('loginctl_enable_linger_vault').with(
+          'command'   => '/usr/bin/loginctl enable-linger vault',
+          'unless'    => '/usr/bin/test "$(/usr/bin/loginctl show-user -p Linger vault)" == "Linger=yes"',
           'logoutput' => 'on_failure'
         ) }
 
