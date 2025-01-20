@@ -23,7 +23,7 @@ describe 'profiles::vault::authentication' do
         it { is_expected.to contain_exec('vault_cert_auth').with(
           'command'   => '/usr/bin/vault auth enable cert',
           'user'      => 'vault',
-          'onlyif'    => '/usr/bin/test -z "$(/usr/bin/vault auth list -format=json | /usr/bin/jq \'.[] | select(.type == "cert")\')"',
+          'unless'    => '/usr/bin/vault auth list -format=json | /usr/bin/jq -e \'."cert/"\'',
           'logoutput' => 'on_failure'
         ) }
 
