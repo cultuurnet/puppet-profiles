@@ -61,6 +61,10 @@ class profiles::vault (
       class { 'profiles::vault::secrets_engines':
         require => Class['profiles::vault::seal']
       }
+
+      class { 'profiles::vault::policies':
+        require => [Class['profiles::vault::secrets_engines'], Class['profiles::vault::authentication']]
+      }
     }
   }
 }
