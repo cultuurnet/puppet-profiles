@@ -12,14 +12,14 @@ describe 'profiles::vault::secrets_engines' do
 
         it { is_expected.to contain_user('vault') }
 
-        it { is_expected.to contain_exec('vault_kv_secrets_engine').with(
-          'command'   => '/usr/bin/vault secrets enable -version=2 kv',
+        it { is_expected.to contain_exec('vault_puppet_kv_secrets_engine').with(
+          'command'   => '/usr/bin/vault secrets enable -version=2 -path=puppet kv',
           'user'      => 'vault',
-          'onlyif'    => '/usr/bin/test -z "$(/usr/bin/vault secrets list -format=json | /usr/bin/jq \'.[] | select(.type == "kv")\')"',
+          'unless'    => '/usr/bin/vault secrets list -format=json | /usr/bin/jq -e \'."puppet/"\'',
           'logoutput' => 'on_failure'
         ) }
 
-        it { is_expected.to contain_exec('vault_kv_secrets_engine').that_requires('User[vault]') }
+        it { is_expected.to contain_exec('vault_puppet_kv_secrets_engine').that_requires('User[vault]') }
       end
     end
   end
