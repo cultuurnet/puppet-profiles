@@ -71,4 +71,16 @@ class profiles::firewall::rules inherits ::profiles {
     dport  => '2003',
     action => 'accept'
   }
+
+  @firewall { '600 accept elastisearch http traffic':
+    proto  => 'tcp',
+    dport  => '9200',
+    action => 'accept'
+  }
+
+  @firewall { '600 accept elastisearch cluster traffic':
+    proto  => 'tcp',
+    dport  => '9300',
+    action => 'accept'
+  }
 }
