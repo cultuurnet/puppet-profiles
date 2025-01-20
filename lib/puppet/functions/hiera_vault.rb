@@ -1,3 +1,8 @@
+# Copied from Peter Souter hiera_vault repository, original source is licensed
+# under the Apache License, Version 2.0
+#
+# https://github.com/petems/petems-hiera_vault/blob/master/lib/puppet/functions/hiera_vault.rb
+#
 # Cache will keep track of all the results gotten from the Vault server.
 # To avoid leaking secrets both the key looked for and the options are used as
 # the key for the cache so that using the same key with different options will
@@ -79,22 +84,22 @@ Puppet::Functions.create_function(:hiera_vault) do
 
   begin
     require 'json'
-  rescue LoadError => e
+  rescue LoadError => _e
     raise Puppet::DataBinding::LookupError, "[hiera-vault] Must install json gem to use hiera-vault backend"
   end
   begin
     require 'vault'
-  rescue LoadError => e
+  rescue LoadError => _e
     raise Puppet::DataBinding::LookupError, "[hiera-vault] Must install vault gem to use hiera-vault backend"
   end
   begin
     require 'debouncer'
-  rescue LoadError => e
+  rescue LoadError => _e
     raise Puppet::DataBinding::LookupError, "[hiera-vault] Must install debouncer gem to use hiera-vault backend"
   end
   begin
     require 'thread'
-  rescue LoadError => e
+  rescue LoadError => _e
     raise Puppet::DataBinding::LookupError, "[hiera-vault] Must install thread gem to use hiera-vault backend"
   end
 
@@ -293,7 +298,7 @@ Puppet::Functions.create_function(:hiera_vault) do
             end
           end
 
-        else
+          else
             # Turn secret's hash keys into strings allow for nested arrays and hashes
             # this enables support for create resources etc
             new_answer = secret.inject({}) { |h, (k, v)| h[k.to_s] = stringify_keys v; h }
