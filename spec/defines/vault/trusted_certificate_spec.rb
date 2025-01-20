@@ -30,7 +30,7 @@ describe 'profiles::vault::trusted_certificate' do
           ) }
 
           it { is_expected.to contain_exec('vault_trust_cert node01.example.com').with(
-            'command'   => '/usr/bin/vault write auth/cert/certs/node01.example.com display_name=node01.example.com policies=web,prod certificate=@/etc/vault.d/trusted_certs/node01.example.com.pem',
+            'command'   => '/usr/bin/vault write auth/cert/certs/node01.example.com display_name=node01.example.com policies=puppet_certificate certificate=@/etc/vault.d/trusted_certs/node01.example.com.pem',
             'user'      => 'vault',
             'unless'    => '/usr/bin/vault read auth/cert/certs/node01.example.com',
             'logoutput' => 'on_failure'
@@ -57,7 +57,7 @@ describe 'profiles::vault::trusted_certificate' do
           ) }
 
           it { is_expected.to contain_exec('vault_trust_cert node01.example.com').with(
-            'command'   => '/usr/bin/vault write auth/cert/certs/node01.example.com display_name=node01.example.com policies=web,prod certificate=@/tmp/node01.example.com.pem',
+            'command'   => '/usr/bin/vault write auth/cert/certs/node01.example.com display_name=node01.example.com policies=puppet_certificate certificate=@/tmp/node01.example.com.pem',
             'user'      => 'vault',
             'unless'    => '/usr/bin/vault read auth/cert/certs/node01.example.com',
             'logoutput' => 'on_failure'
@@ -84,7 +84,7 @@ describe 'profiles::vault::trusted_certificate' do
           ) }
 
           it { is_expected.to contain_exec('vault_trust_cert node02.example.com').with(
-            'command'   => '/usr/bin/vault write auth/cert/certs/node02.example.com display_name=node02.example.com policies=web,prod certificate=@/etc/vault.d/trusted_certs/node02.example.com.pem',
+            'command'   => '/usr/bin/vault write auth/cert/certs/node02.example.com display_name=node02.example.com policies=puppet_certificate certificate=@/etc/vault.d/trusted_certs/node02.example.com.pem',
             'user'      => 'vault',
             'unless'    => '/usr/bin/vault read auth/cert/certs/node02.example.com',
             'logoutput' => 'on_failure'

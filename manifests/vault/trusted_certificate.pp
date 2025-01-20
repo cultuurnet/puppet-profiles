@@ -21,7 +21,7 @@ define profiles::vault::trusted_certificate (
   }
 
   exec { "vault_trust_cert ${title}":
-    command   => "/usr/bin/vault write auth/cert/certs/${title} display_name=${title} policies=web,prod certificate=@${trusted_certs_directory}/${title}.pem",
+    command   => "/usr/bin/vault write auth/cert/certs/${title} display_name=${title} policies=puppet_certificate certificate=@${trusted_certs_directory}/${title}.pem",
     user      => 'vault',
     unless    => "/usr/bin/vault read auth/cert/certs/${title}",
     logoutput => 'on_failure',
