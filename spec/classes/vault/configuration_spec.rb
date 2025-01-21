@@ -56,7 +56,6 @@ describe 'profiles::vault::configuration' do
         ) }
 
         it { is_expected.not_to contain_shellvar('VAULT_CACERT environment variable') }
-        it { is_expected.not_to contain_class('profiles::vault::certificate') }
 
         it { is_expected.to contain_file('vault log directory').that_requires('Group[vault]') }
         it { is_expected.to contain_file('vault log directory').that_requires('User[vault]') }
@@ -73,10 +72,6 @@ describe 'profiles::vault::configuration' do
           'service_address' => '0.0.0.0',
           'certname'        => 'vault.example.com'
         } }
-
-        it { is_expected.to contain_class('profiles::vault::certificate').with(
-          'certname' => 'vault.example.com'
-        ) }
 
         it { is_expected.to contain_shellvar('VAULT_CACERT environment variable').with(
           'ensure'   => 'present',

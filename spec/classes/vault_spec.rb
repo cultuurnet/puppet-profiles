@@ -27,6 +27,7 @@ describe 'profiles::vault' do
 
         it { is_expected.not_to contain_firewall('400 accept vault traffic') }
 
+        it { is_expected.not_to contain_class('profiles::vault::certificate') }
         it { is_expected.not_to contain_profiles__lvm__mount('vaultdata') }
 
         it { is_expected.to contain_class('profiles::vault::install').with(
@@ -115,6 +116,10 @@ describe 'profiles::vault' do
             'version' => 'latest'
           ) }
 
+          it { is_expected.to contain_class('profiles::vault::certificate').with(
+            'certname' => 'myvault.example.com'
+          ) }
+
           it { is_expected.to contain_class('profiles::vault::authentication') }
           it { is_expected.to contain_class('profiles::vault::secrets_engines') }
           it { is_expected.to contain_class('profiles::vault::policies') }
@@ -125,6 +130,8 @@ describe 'profiles::vault' do
           it { is_expected.to contain_profiles__lvm__mount('vaultdata').that_requires('User[vault]') }
           it { is_expected.to contain_mount('/opt/vault').that_requires('Profiles::Lvm::Mount[vaultdata]') }
           it { is_expected.to contain_mount('/opt/vault').that_comes_before('Class[profiles::vault::install]') }
+          it { is_expected.to contain_class('profiles::vault::certificate').that_requires('Class[profiles::vault::install]') }
+          it { is_expected.to contain_class('profiles::vault::certificate').that_comes_before('Class[profiles::vault::configuration]') }
           it { is_expected.to contain_class('profiles::vault::authentication').that_requires('Class[profiles::vault::seal]') }
           it { is_expected.to contain_class('profiles::vault::secrets_engines').that_requires('Class[profiles::vault::seal]') }
           it { is_expected.to contain_class('profiles::vault::policies').that_requires('Class[profiles::vault::seal]') }
@@ -145,6 +152,10 @@ describe 'profiles::vault' do
 
         it { is_expected.to contain_class('profiles::vault::install').with(
           'version' => '1.2.3'
+        ) }
+
+        it { is_expected.to contain_class('profiles::vault::certificate').with(
+          'certname' => 'vault.example.com'
         ) }
 
         it { is_expected.to contain_class('profiles::vault::configuration').with(

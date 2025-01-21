@@ -18,10 +18,6 @@ class profiles::vault::configuration (
       variable => 'VAULT_CACERT',
       value    => '/etc/puppetlabs/puppet/ssl/certs/ca.pem'
     }
-
-    class { 'profiles::vault::certificate':
-      certname => $certname
-    }
   } else {
     $cert = 'tls'
   }

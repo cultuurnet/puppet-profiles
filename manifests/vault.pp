@@ -61,6 +61,14 @@ class profiles::vault (
     notify  => Class['profiles::vault::service']
   }
 
+  if $certname {
+    class { 'profiles::vault::certificate':
+      certname => $certname,
+      require  => Class['profiles::vault::install'],
+      before   => Class['profiles::vault::configuration']
+    }
+  }
+
   class { 'profiles::vault::configuration':
     certname        => $certname,
     service_address => $service_address,
