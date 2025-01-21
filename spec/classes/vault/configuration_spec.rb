@@ -25,6 +25,13 @@ describe 'profiles::vault::configuration' do
           'group'  => 'vault'
         ) }
 
+        it { is_expected.to contain_file('vault log file').with(
+          'ensure' => 'file',
+          'path'   => '/opt/vault/logs/vault.log',
+          'owner'  => 'vault',
+          'group'  => 'vault'
+        ) }
+
         it { is_expected.to contain_file('vault configuration').with(
           'ensure' => 'file',
           'path'   => '/etc/vault.d/vault.hcl',
@@ -37,7 +44,7 @@ describe 'profiles::vault::configuration' do
         it { is_expected.to contain_file('vault configuration').with_content(/^\s*tls_key_file\s+=\s+"\/opt\/vault\/tls\/tls\.key"$/) }
         it { is_expected.to contain_file('vault configuration').with_content(/^log_level\s+=\s+"info"$/) }
         it { is_expected.to contain_file('vault configuration').with_content(/^log_format\s+=\s+"json"$/) }
-        it { is_expected.to contain_file('vault configuration').with_content(/^log_file\s+=\s+"\/opt\/vault\/logs\/"$/) }
+        it { is_expected.to contain_file('vault configuration').with_content(/^log_file\s+=\s+"\/opt\/vault\/logs\/vault\.log"$/) }
         it { is_expected.to contain_file('vault configuration').with_content(/^log_rotate_duration\s+=\s+"24h"$/) }
         it { is_expected.to contain_file('vault configuration').with_content(/^log_rotate_max_files\s+=\s+7$/) }
 
@@ -53,7 +60,10 @@ describe 'profiles::vault::configuration' do
 
         it { is_expected.to contain_file('vault log directory').that_requires('Group[vault]') }
         it { is_expected.to contain_file('vault log directory').that_requires('User[vault]') }
-        it { is_expected.to contain_file('vault log directory').that_comes_before('File[vault configuration]') }
+        it { is_expected.to contain_file('vault log file').that_requires('Group[vault]') }
+        it { is_expected.to contain_file('vault log file').that_requires('User[vault]') }
+        it { is_expected.to contain_file('vault log file').that_requires('File[vault log directory]') }
+        it { is_expected.to contain_file('vault log file').that_comes_before('File[vault configuration]') }
         it { is_expected.to contain_file('vault configuration').that_requires('Group[vault]') }
         it { is_expected.to contain_file('vault configuration').that_requires('User[vault]') }
       end

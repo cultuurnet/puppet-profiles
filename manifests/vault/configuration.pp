@@ -41,12 +41,20 @@ class profiles::vault::configuration (
     require => [Group['vault'], User['vault']]
   }
 
+  file { 'vault log file':
+    ensure  => 'file',
+    path    => '/opt/vault/logs/vault.log',
+    owner   => 'vault',
+    group   => 'vault',
+    require => [Group['vault'], User['vault'], File['vault log directory']]
+  }
+
   file { 'vault configuration':
     ensure  => 'file',
     path    => '/etc/vault.d/vault.hcl',
     owner   => 'vault',
     group   => 'vault',
     content => template('profiles/vault/vault.hcl.erb'),
-    require => [Group['vault'], User['vault'], File['vault log directory']]
+    require => [Group['vault'], User['vault'], File['vault log file']]
   }
 }
