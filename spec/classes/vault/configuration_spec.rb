@@ -35,6 +35,11 @@ describe 'profiles::vault::configuration' do
         it { is_expected.to contain_file('vault configuration').with_content(/^\s*address\s+=\s+"127\.0\.0\.1:8200"$/) }
         it { is_expected.to contain_file('vault configuration').with_content(/^\s*tls_cert_file\s+=\s+"\/opt\/vault\/tls\/tls\.crt"$/) }
         it { is_expected.to contain_file('vault configuration').with_content(/^\s*tls_key_file\s+=\s+"\/opt\/vault\/tls\/tls\.key"$/) }
+        it { is_expected.to contain_file('vault configuration').with_content(/^log_level\s+=\s+"info"$/) }
+        it { is_expected.to contain_file('vault configuration').with_content(/^log_format\s+=\s+"json"$/) }
+        it { is_expected.to contain_file('vault configuration').with_content(/^log_file\s+=\s+"\/opt\/vault\/logs\/"$/) }
+        it { is_expected.to contain_file('vault configuration').with_content(/^log_rotate_duration\s+=\s+"24h"$/) }
+        it { is_expected.to contain_file('vault configuration').with_content(/^log_rotate_max_files\s+=\s+7$/) }
 
         it { is_expected.to contain_shellvar('VAULT_ADDR environment variable').with(
           'ensure'   => 'present',
