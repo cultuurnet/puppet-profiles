@@ -18,6 +18,13 @@ describe 'profiles::vault::configuration' do
           'certname'        => nil
         ) }
 
+        it { is_expected.to contain_file('vault log directory').with(
+          'ensure' => 'directory',
+          'path'   => '/opt/vault/logs',
+          'owner'  => 'vault',
+          'group'  => 'vault'
+        ) }
+
         it { is_expected.to contain_file('vault configuration').with(
           'ensure' => 'file',
           'path'   => '/etc/vault.d/vault.hcl',
@@ -39,6 +46,9 @@ describe 'profiles::vault::configuration' do
         it { is_expected.not_to contain_shellvar('VAULT_CACERT environment variable') }
         it { is_expected.not_to contain_class('profiles::vault::certificate') }
 
+        it { is_expected.to contain_file('vault log directory').that_requires('Group[vault]') }
+        it { is_expected.to contain_file('vault log directory').that_requires('User[vault]') }
+        it { is_expected.to contain_file('vault log directory').that_comes_before('File[vault configuration]') }
         it { is_expected.to contain_file('vault configuration').that_requires('Group[vault]') }
         it { is_expected.to contain_file('vault configuration').that_requires('User[vault]') }
       end

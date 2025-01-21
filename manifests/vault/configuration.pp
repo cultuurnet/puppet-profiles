@@ -1,7 +1,10 @@
 class profiles::vault::configuration (
-  Optional[String] $certname = undef,
+  Optional[String] $certname        = undef,
   String           $service_address = '127.0.0.1'
 ) inherits ::profiles {
+
+  $log_level            = 'info'
+  $log_rotate_max_files = 7
 
   realize Group['vault']
   realize User['vault']
@@ -30,12 +33,20 @@ class profiles::vault::configuration (
     value    => 'https://127.0.0.1:8200'
   }
 
+  file { 'vault log directory':
+    ensure  => 'directory',
+    path    => '/opt/vault/logs',
+    owner   => 'vault',
+    group   => 'vault',
+    require => [Group['vault'], User['vault']]
+  }
+
   file { 'vault configuration':
     ensure  => 'file',
     path    => '/etc/vault.d/vault.hcl',
     owner   => 'vault',
     group   => 'vault',
     content => template('profiles/vault/vault.hcl.erb'),
-    require => [Group['vault'], User['vault']]
+    require => [Group['vault'], User['vault'], File['vault log directory']]
   }
 }
