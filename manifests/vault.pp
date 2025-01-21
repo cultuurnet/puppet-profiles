@@ -5,7 +5,10 @@ class profiles::vault (
   Enum['running', 'stopped'] $service_status  = 'running',
   String                     $service_address = '127.0.0.1',
   Integer[1]                 $key_threshold   = 1,
-  Variant[Hash,Array[Hash]]  $gpg_keys        = []
+  Variant[Hash,Array[Hash]]  $gpg_keys        = [],
+  Boolean                    $lvm             = false,
+  Optional[String]           $volume_group    = undef,
+  Optional[String]           $volume_size     = undef
 ) inherits ::profiles {
 
   if $auto_unseal {
@@ -16,6 +19,38 @@ class profiles::vault (
   }
 
   include ::profiles::firewall::rules
+
+  if $lvm {
+    unless ($volume_group and $volume_size) {
+      fail("with LVM enabled, expects a value for both 'volume_group' and 'volume_size'")
+    }
+
+    profiles::lvm::mount { 'vaultdata':
+      volume_group => $volume_group,
+      size         => $volume_size,
+      mountpoint   => '/data/vault',
+      fs_type      => 'ext4',
+      owner        => 'vault',
+      group        => 'vault',
+      require      => [Group['vault'], User['vault']]
+    }
+
+    file { '/opt/vault':
+      ensure  => 'directory',
+      owner   => 'vault',
+      group   => 'vault',
+      require => [Group['vault'], User['vault']]
+    }
+
+    mount { '/opt/vault':
+      ensure  => 'mounted',
+      device  => '/data/vault',
+      fstype  => 'none',
+      options => 'rw,bind',
+      require => [Profiles::Lvm::Mount['vaultdata'], File['/opt/vault']],
+      before  => Class['profiles::vault::install']
+    }
+  }
 
   if !($service_address == '127.0.0.1') {
     realize Firewall['400 accept vault traffic']
