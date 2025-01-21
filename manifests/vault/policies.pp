@@ -14,7 +14,7 @@ class profiles::vault::policies (
     require => [Group['vault'], User['vault']]
   }
 
-  profiles::vault::policy { 'puppet_cert':
+  profiles::vault::policy { 'puppet_certificate':
     policy             => 'path "puppet/*" { capabilities = ["read"] }',
     policies_directory => $policies_directory,
     require            => File['vault_policies']

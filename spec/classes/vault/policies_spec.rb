@@ -20,14 +20,14 @@ describe 'profiles::vault::policies' do
           'group'  => 'vault'
         ) }
 
-        it { is_expected.to contain_profiles__vault__policy('puppet_cert').with(
+        it { is_expected.to contain_profiles__vault__policy('puppet_certificate').with(
           'policy'             => 'path "puppet/*" { capabilities = ["read"] }',
           'policies_directory' => '/etc/vault.d/policies'
         ) }
 
         it { is_expected.to contain_file('vault_policies').that_requires('Group[vault]') }
         it { is_expected.to contain_file('vault_policies').that_requires('User[vault]') }
-        it { is_expected.to contain_profiles__vault__policy('puppet_cert').that_requires('File[vault_policies]') }
+        it { is_expected.to contain_profiles__vault__policy('puppet_certificate').that_requires('File[vault_policies]') }
       end
     end
   end
