@@ -1,5 +1,6 @@
 class profiles::ca_certificates (
   Variant[String, Array[String]] $disabled_ca_certificates = [],
+  Boolean                        $puppet_ca                = true,
   Boolean                        $publiq_development_ca    = false
 ) inherits ::profiles {
 
@@ -19,6 +20,22 @@ class profiles::ca_certificates (
       changes => "set *[.= '${certificate}'] '!${certificate}'",
       notify => Exec['Update CA certificates']
     }
+  }
+
+  file { 'Puppet CA certificate directory':
+    ensure => 'directory',
+    path   => '/usr/local/share/ca-certificates/puppet'
+  }
+
+  file { 'Puppet CA certificate':
+    ensure  => $puppet_ca ? {
+                true  => 'file',
+                false => 'absent'
+              },
+    path    => '/usr/local/share/ca-certificates/puppet/puppet-ca.crt',
+    source  => '/etc/puppetlabs/puppet/ssl/certs/ca.pem',
+    require => File['Puppet CA certificate directory'],
+    notify  => Exec['Update CA certificates']
   }
 
   exec { 'Update CA certificates':
