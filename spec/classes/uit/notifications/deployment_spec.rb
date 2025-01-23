@@ -46,6 +46,7 @@ describe 'profiles::uit::notifications::deployment' do
           'cwd'         => '/var/www/uit-notifications',
           'path'        => ['/usr/local/bin', '/usr/bin', '/bin', '/var/www/uit-notifications'],
           'environment' => ['AWS_ACCESS_KEY_ID=secret_key_id', 'AWS_SECRET_ACCESS_KEY=secret_access_key'],
+          'timeout'     => 600,
           'logoutput'   => true,
           'user'        => 'www-data',
           'refreshonly' => true
