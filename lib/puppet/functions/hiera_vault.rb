@@ -71,34 +71,25 @@ Puppet::Functions.create_function(:hiera_vault) do
 
     answer = nil
 
-    # Only kv mounts supported so far
-    option['mounts'].each_pair do |mount, paths|
+    # Only kv v2 mounts supported
+    options['mounts'].each_pair do |mount, paths|
       interpolate(context, paths).each do |path|
         secretpath = context.interpolate(File.join(mount, path))
 
         context.explain { "[hiera-vault] Looking in path #{secretpath} for #{key}" }
 
         secret = nil
+        paths  = []
 
-        paths = []
+        paths << File.join(mount, path, 'data', key).chomp('/')
+        paths << File.join(mount, 'data', path, key).chomp('/')
 
-        if options.fetch("v2_guess_mount", true)
-          paths << [:v2, File.join(mount, path, 'data', key).chomp('/')]
-          paths << [:v2, File.join(mount, 'data', path, key).chomp('/')]
-        else
-          paths << [:v2, File.join(mount, path, key).chomp('/')]
-          paths << [:v2, File.join(mount, key).chomp('/')] if key.start_with?(path)
-        end
-
-        paths << [:v1, File.join(mount, path, key)] if options.fetch("v1_lookup", true)
-
-        paths.each do |version_path|
+        paths.each do |path|
           begin
-            version, path = version_path[0], version_path[1]
             context.explain { "[hiera-vault] Checking path: #{path}" }
             response = hiera_vault_client.logical.read(path)
             next if response.nil?
-            secret = version == :v1 ? response.data : response.data[:data]
+            secret = response.data[:data]
           rescue Vault::HTTPConnectionError
             msg = "[hiera-vault] Could not connect to read secret: #{secretpath}"
             context.explain { msg }
