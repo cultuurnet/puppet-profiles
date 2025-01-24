@@ -43,6 +43,7 @@ describe 'profiles::vault::configuration' do
         it { is_expected.to contain_file('vault configuration').with_content(/^\s*tls_cert_file\s+=\s+"\/opt\/vault\/tls\/tls\.crt"$/) }
         it { is_expected.to contain_file('vault configuration').with_content(/^\s*tls_key_file\s+=\s+"\/opt\/vault\/tls\/tls\.key"$/) }
         it { is_expected.to contain_file('vault configuration').with_content(/^log_level\s+=\s+"info"$/) }
+        it { is_expected.to contain_file('vault configuration').with_content(/^log_requests_level\s+=\s+"info"$/) }
         it { is_expected.to contain_file('vault configuration').with_content(/^log_format\s+=\s+"json"$/) }
         it { is_expected.to contain_file('vault configuration').with_content(/^log_file\s+=\s+"\/opt\/vault\/logs\/vault\.log"$/) }
         it { is_expected.to contain_file('vault configuration').with_content(/^log_rotate_duration\s+=\s+"24h"$/) }
