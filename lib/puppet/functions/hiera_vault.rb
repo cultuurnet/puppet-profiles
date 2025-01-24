@@ -106,12 +106,8 @@ Puppet::Functions.create_function(:hiera_vault) do
         context.explain { "[hiera-vault] Read secret: #{key}" }
         # Turn secret's hash keys into strings allow for nested arrays and hashes
         # this enables support for create resources etc
-        new_answer = secret.inject({}) { |h, (k, v)| h[k.to_s] = stringify_keys v; h }
-
-        unless new_answer.nil?
-          answer = new_answer
-          break
-        end
+        answer = secret.inject({}) { |h, (k, v)| h[k.to_s] = stringify_keys v; h }
+        break
       end
 
       break unless answer.nil?
