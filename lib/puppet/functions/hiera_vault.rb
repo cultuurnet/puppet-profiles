@@ -71,14 +71,8 @@ Puppet::Functions.create_function(:hiera_vault) do
 
     answer = nil
 
-    if options['mounts']['generic']
-      raise ArgumentError, "[hiera-vault] generic is no longer valid - change to kv"
-    else
-      kv_mounts = options['mounts'].dup
-    end
-
     # Only kv mounts supported so far
-    kv_mounts.each_pair do |mount, paths|
+    option['mounts'].each_pair do |mount, paths|
       interpolate(context, paths).each do |path|
         secretpath = context.interpolate(File.join(mount, path))
 
@@ -119,28 +113,9 @@ Puppet::Functions.create_function(:hiera_vault) do
         next if secret.nil?
 
         context.explain { "[hiera-vault] Read secret: #{key}" }
-        if (options['default_field'] and ( ['ignore', nil].include?(options['default_field_behavior']) ||
-        (secret.has_key?(options['default_field'].to_sym) && secret.length == 1) ) )
-
-        if ! secret.has_key?(options['default_field'].to_sym)
-          return nil
-        end
-
-        new_answer = secret[options['default_field'].to_sym]
-
-        if options['default_field_parse'] == 'json'
-          begin
-            new_answer = JSON.parse(new_answer, :quirks_mode => true)
-          rescue JSON::ParserError => e
-            context.explain { "[hiera-vault] Could not parse string as json: #{e}" }
-          end
-        end
-
-        else
-          # Turn secret's hash keys into strings allow for nested arrays and hashes
-          # this enables support for create resources etc
-          new_answer = secret.inject({}) { |h, (k, v)| h[k.to_s] = stringify_keys v; h }
-        end
+        # Turn secret's hash keys into strings allow for nested arrays and hashes
+        # this enables support for create resources etc
+        new_answer = secret.inject({}) { |h, (k, v)| h[k.to_s] = stringify_keys v; h }
 
         unless new_answer.nil?
           answer = new_answer
