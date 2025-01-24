@@ -5,12 +5,6 @@
 require_relative 'hiera_vault/authentication.rb'
 
 Puppet::Functions.create_function(:hiera_vault) do
-
-  begin
-    require 'json'
-  rescue LoadError => _e
-    raise Puppet::DataBinding::LookupError, "[hiera-vault] Must install json gem to use hiera-vault backend"
-  end
   begin
     require 'vault'
   rescue LoadError => _e
