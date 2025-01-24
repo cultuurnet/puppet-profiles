@@ -21,7 +21,6 @@ Puppet::Functions.create_function(:hiera_vault) do
     raise Puppet::DataBinding::LookupError, "[hiera-vault] Must install thread gem to use hiera-vault backend"
   end
 
-
   dispatch :lookup_key do
     param 'Variant[String, Numeric]', :key
     param 'Hash', :options
@@ -66,7 +65,6 @@ Puppet::Functions.create_function(:hiera_vault) do
     vault_get(key, options, context)
   end
 
-
   def vault_get(key, options, context)
     if ! ['string','json',nil].include?(options['default_field_parse'])
       raise ArgumentError, "[hiera-vault] invalid value for default_field_parse: '#{options['default_field_parse']}', should be one of 'string','json'"
@@ -81,7 +79,6 @@ Puppet::Functions.create_function(:hiera_vault) do
       if $hiera_vault_client.nil?
         $hiera_vault_client = Vault::Client.new
       end
-
 
       begin
         $hiera_vault_client.configure do |config|
@@ -108,7 +105,6 @@ Puppet::Functions.create_function(:hiera_vault) do
       end
 
       answer = nil
-      strict_mode = (options.key?('strict_mode') and options['strict_mode'])
 
       if options['mounts']['generic']
         raise ArgumentError, "[hiera-vault] generic is no longer valid - change to kv"
@@ -151,7 +147,7 @@ Puppet::Functions.create_function(:hiera_vault) do
             rescue Vault::HTTPError => e
               msg = "[hiera-vault] Could not read secret #{secretpath}: #{e.errors.join("\n").rstrip}"
               context.explain { msg }
-              raise Puppet::DataBinding::LookupError, "#{msg} - (strict_mode is true so raising as error)" if strict_mode
+              raise Puppet::DataBinding::LookupError, msg
             end
           end
 
@@ -190,7 +186,7 @@ Puppet::Functions.create_function(:hiera_vault) do
         break unless answer.nil?
       end
 
-      raise Puppet::DataBinding::LookupError, "[hiera-vault] Could not find secret #{key}" if answer.nil? and strict_mode
+      raise Puppet::DataBinding::LookupError, "[hiera-vault] Could not find secret #{key}" if answer.nil?
 
       answer = context.not_found if answer.nil?
       $hiera_vault_shutdown.call
