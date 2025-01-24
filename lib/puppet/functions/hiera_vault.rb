@@ -37,21 +37,7 @@ Puppet::Functions.create_function(:hiera_vault) do
     end
   }
 
-  def vault_token(options)
-    token = nil
-
-    token = ENV['VAULT_TOKEN'] unless ENV['VAULT_TOKEN'].nil?
-    token ||= options['token'] unless options['token'].nil?
-
-    if token.to_s.start_with?('/') and File.exist?(token)
-      token = File.read(token).strip.chomp
-    end
-
-    token
-  end
-
   def lookup_key(key, options, context)
-
     if confine_keys = options['confine_to_keys']
       raise ArgumentError, '[hiera-vault] confine_to_keys must be an array' unless confine_keys.is_a?(Array)
 
@@ -77,21 +63,11 @@ Puppet::Functions.create_function(:hiera_vault) do
       end
     end
 
-    if vault_token(options) == 'IGNORE-VAULT'
-      context.explain { "[hiera-vault] token set to IGNORE-VAULT - Quitting early" }
-      return context.not_found
-    end
-
-    if vault_token(options).nil?
-      raise ArgumentError, '[hiera-vault] no token set in options and no token in VAULT_TOKEN'
-    end
-
     vault_get(key, options, context)
   end
 
 
   def vault_get(key, options, context)
-
     if ! ['string','json',nil].include?(options['default_field_parse'])
       raise ArgumentError, "[hiera-vault] invalid value for default_field_parse: '#{options['default_field_parse']}', should be one of 'string','json'"
     end
@@ -110,13 +86,15 @@ Puppet::Functions.create_function(:hiera_vault) do
       begin
         $hiera_vault_client.configure do |config|
           config.address = options['address'] unless options['address'].nil?
-          config.token = vault_token(options)
           config.ssl_pem_file = options['ssl_pem_file'] unless options['ssl_pem_file'].nil?
           config.ssl_verify = options['ssl_verify'] unless options['ssl_verify'].nil?
           config.ssl_ca_cert = options['ssl_ca_cert'] if config.respond_to? :ssl_ca_cert
           config.ssl_ca_path = options['ssl_ca_path'] if config.respond_to? :ssl_ca_path
           config.ssl_ciphers = options['ssl_ciphers'] if config.respond_to? :ssl_ciphers
         end
+
+        context.explain { "[hiera-vault] Using #{options['authentication']['method']} authentication" }
+        authenticate(options['authentication'], $hiera_vault_client, context)
 
         if $hiera_vault_client.sys.seal_status.sealed?
           raise Puppet::DataBinding::LookupError, "[hiera-vault] vault is sealed"
