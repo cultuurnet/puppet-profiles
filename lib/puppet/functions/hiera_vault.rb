@@ -1,5 +1,4 @@
-# Copied from Peter Souter hiera_vault repository, original source is licensed
-# under the Apache License, Version 2.0
+# Originally copied from Peter Souter hiera_vault repository, licensed under the Apache License, Version 2.0
 #
 # https://github.com/petems/petems-hiera_vault/blob/master/lib/puppet/functions/hiera_vault.rb
 #
@@ -79,6 +78,8 @@ class Cache
     end
   end
 end
+
+require_relative 'hiera_vault/authentication.rb'
 
 Puppet::Functions.create_function(:hiera_vault) do
 
