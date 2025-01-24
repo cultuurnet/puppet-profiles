@@ -47,14 +47,6 @@ Puppet::Functions.create_function(:hiera_vault) do
   end
 
   def vault_get(key, options, context)
-    if ! ['string','json',nil].include?(options['default_field_parse'])
-      raise ArgumentError, "[hiera-vault] invalid value for default_field_parse: '#{options['default_field_parse']}', should be one of 'string','json'"
-    end
-
-    if ! ['ignore','only',nil].include?(options['default_field_behavior'])
-      raise ArgumentError, "[hiera-vault] invalid value for default_field_behavior: '#{options['default_field_behavior']}', should be one of 'ignore','only'"
-    end
-
     hiera_vault_client = Vault::Client.new
 
     begin
