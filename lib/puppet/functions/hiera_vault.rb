@@ -74,31 +74,21 @@ Puppet::Functions.create_function(:hiera_vault) do
     # Only kv v2 mounts supported
     options['mounts'].each_pair do |mount, paths|
       interpolate(context, paths).each do |path|
-        secretpath = context.interpolate(File.join(mount, path))
-
-        context.explain { "[hiera-vault] Looking in path #{secretpath} for #{key}" }
+        context.explain { "[hiera-vault] Looking on mount #{mount} in path #{path} for #{key}" }
 
         secret = nil
-        paths  = []
 
-        paths << File.join(mount, path, 'data', key).chomp('/')
-        paths << File.join(mount, 'data', path, key).chomp('/')
-
-        paths.each do |path|
-          begin
-            context.explain { "[hiera-vault] Checking path: #{path}" }
-            response = hiera_vault_client.logical.read(path)
-            next if response.nil?
-            secret = response.data[:data]
-          rescue Vault::HTTPConnectionError
-            msg = "[hiera-vault] Could not connect to read secret: #{secretpath}"
-            context.explain { msg }
-            raise Puppet::DataBinding::LookupError, msg
-          rescue Vault::HTTPError => e
-            msg = "[hiera-vault] Could not read secret #{secretpath}: #{e.errors.join("\n").rstrip}"
-            context.explain { msg }
-            raise Puppet::DataBinding::LookupError, msg
-          end
+        begin
+          context.explain { "[hiera-vault] Checking path: #{path} on mount: #{mount}" }
+          secret = hiera_vault_client.kv(mount).read(File.join(path, key).chomp('/'))
+        rescue Vault::HTTPConnectionError
+          msg = "[hiera-vault] Could not connect to read secret: #{path} on mount: #{mount}"
+          context.explain { msg }
+          raise Puppet::DataBinding::LookupError, msg
+        rescue Vault::HTTPError => e
+          msg = "[hiera-vault] Could not read secret #{path} on mount #{mount}: #{e.errors.join("\n").rstrip}"
+          context.explain { msg }
+          raise Puppet::DataBinding::LookupError, msg
         end
 
         next if secret.nil?
@@ -106,7 +96,7 @@ Puppet::Functions.create_function(:hiera_vault) do
         context.explain { "[hiera-vault] Read secret: #{key}" }
         # Turn secret's hash keys into strings allow for nested arrays and hashes
         # this enables support for create resources etc
-        answer = secret.inject({}) { |h, (k, v)| h[k.to_s] = stringify_keys v; h }
+        answer = secret.data.inject({}) { |h, (k, v)| h[k.to_s] = stringify_keys v; h }
         break
       end
 
