@@ -91,6 +91,9 @@ class profiles::elasticsearch (
       before  => Class['elasticsearch']
     }
 
+    realize Firewall['600 accept elasticsearch http traffic']
+    realize Firewall['600 accept elasticsearch cluster traffic']
+
     $es_config = {
       'network.host'                           => [ "${::ipaddress_eth0}", "127.0.0.1" ],
       'http.cors.enabled'                      => true,
