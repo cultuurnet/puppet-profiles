@@ -216,7 +216,7 @@ describe 'profiles::vault' do
         } }
 
         context "with volume_group datavg and backupvg present" do
-          let(:pre_condition) { 'volume_group { "datavg": ensure => "present" }' }
+          let(:pre_condition) { 'volume_group { ["datavg", "backupvg"]: ensure => "present" }' }
 
           it { is_expected.to contain_profiles__lvm__mount('vaultdata').with(
             'volume_group' => 'datavg',

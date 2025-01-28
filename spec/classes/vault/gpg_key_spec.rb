@@ -79,10 +79,10 @@ describe 'profiles::vault::gpg_key' do
         ) }
 
         it { is_expected.to contain_exec('vault_gpg_key_export').with(
-          'command'   => '/usr/bin/gpg --export "Vault" | /usr/bin/base64 > /tmp/vault.asc',
+          'command'   => '/usr/bin/gpg --export "foo" | /usr/bin/base64 > /tmp/foo.asc',
           'user'      => 'vault',
           'logoutput' => 'on_failure',
-          'creates'   => '/tmp/vault.asc'
+          'creates'   => '/tmp/foo.asc'
         ) }
       end
 
