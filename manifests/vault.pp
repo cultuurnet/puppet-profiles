@@ -1,14 +1,18 @@
 class profiles::vault (
-  String                     $version         = 'latest',
-  Boolean                    $auto_unseal     = false,
-  Optional[String]           $certname        = undef,
-  Enum['running', 'stopped'] $service_status  = 'running',
-  String                     $service_address = '127.0.0.1',
-  Integer[1]                 $key_threshold   = 1,
-  Variant[Hash,Array[Hash]]  $gpg_keys        = [],
-  Boolean                    $lvm             = false,
-  Optional[String]           $volume_group    = undef,
-  Optional[String]           $volume_size     = undef
+  String                     $version               = 'latest',
+  Boolean                    $auto_unseal           = false,
+  Optional[String]           $certname              = undef,
+  Enum['running', 'stopped'] $service_status        = 'running',
+  String                     $service_address       = '127.0.0.1',
+  Integer[1]                 $key_threshold         = 1,
+  Variant[Hash,Array[Hash]]  $gpg_keys              = [],
+  Boolean                    $lvm                   = false,
+  Optional[String]           $volume_group          = undef,
+  Optional[String]           $volume_size           = undef,
+  Boolean                    $backup_lvm            = false,
+  Optional[String]           $backup_volume_group   = undef,
+  Optional[String]           $backup_volume_size    = undef,
+  Integer                    $backup_retention_days = 7
 ) inherits ::profiles {
 
   if $auto_unseal {
@@ -78,6 +82,13 @@ class profiles::vault (
 
   class { 'profiles::vault::service':
     service_status => $service_status
+  }
+
+  class { 'profiles::vault::backup':
+    lvm            => $backup_lvm,
+    volume_group   => $backup_volume_group,
+    volume_size    => $backup_volume_size,
+    retention_days => $backup_retention_days
   }
 
   if $service_status == 'running' {
