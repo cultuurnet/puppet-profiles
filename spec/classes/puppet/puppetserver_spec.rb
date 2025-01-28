@@ -25,6 +25,9 @@ describe 'profiles::puppet::puppetserver' do
                                           { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
                                           { 'name' => 'Common data', 'path' => 'common.yaml' }
                                         ],
+            'vault_integration'      => false,
+            'vault_address'          => nil,
+            'vault_mounts'           => {},
             'terraform_integration'  => false,
             'terraform_bucket'       => nil,
             'terraform_use_iam_role' => true,
@@ -129,6 +132,8 @@ describe 'profiles::puppet::puppetserver' do
             'version' => nil
           ) }
 
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::vault') }
+
           it { is_expected.not_to contain_class('profiles::puppet::puppetserver::terraform') }
 
           it { is_expected.to contain_cron('puppetserver_report_retention').with(
@@ -157,14 +162,20 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to contain_hocon_setting('puppetserver dropsonde').that_notifies('Class[profiles::puppet::puppetserver::service]') }
           it { is_expected.to contain_hocon_setting('puppetserver ca allow-subject-alt-names').that_requires('Class[profiles::puppet::puppetserver::install]') }
           it { is_expected.to contain_hocon_setting('puppetserver ca allow-subject-alt-names').that_notifies('Class[profiles::puppet::puppetserver::service]') }
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::vault').that_comes_before('Class[profiles::puppet::puppetserver::hiera]') }
 
-          context 'with Terraform integration enabled and data available' do
+          context 'with Terraform and Vault integration enabled and data available' do
             let(:hiera_config) { 'spec/support/hiera/terraform_available.yaml' }
 
-            context 'with terraform_bucket => mybucket' do
-              let(:params) { super().merge(
-                { 'terraform_bucket' => 'mybucket' }
-              ) }
+            context 'with vault_integration => true, vault_address => https://vault.example.com:8200, vault_mounts => { foo => [bar, baz] } and terraform_bucket => mybucket' do
+              let(:params) {
+                super().merge( {
+                  'vault_integration' => true,
+                  'vault_address'     => 'https://vault.example.com:8200',
+                  'vault_mounts'      => { 'foo' => ['bar', 'baz'] },
+                  'terraform_bucket'  => 'mybucket'
+                } )
+              }
 
               it { is_expected.to compile.with_all_deps }
 
@@ -180,6 +191,9 @@ describe 'profiles::puppet::puppetserver' do
                                               { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
                                               { 'name' => 'Common data', 'path' => 'common.yaml' }
                                             ],
+                'vault_integration'      => true,
+                'vault_address'          => 'https://vault.example.com:8200',
+                'vault_mounts'           => { 'foo' => ['bar', 'baz'] },
                 'terraform_integration'  => true,
                 'terraform_bucket'       => 'mybucket',
                 'terraform_use_iam_role' => true,
@@ -194,13 +208,21 @@ describe 'profiles::puppet::puppetserver' do
               it { is_expected.to contain_class('profiles::puppet::puppetserver::hiera').with(
                 'eyaml'                 => false,
                 'gpg_key'               => {},
-                'terraform_integration' => true
+                'terraform_integration' => true,
+                'vault_integration'     => true,
+                'vault_address'         => 'https://vault.example.com:8200',
+                'vault_mounts'          => { 'foo' => ['bar', 'baz'] },
               ) }
+
+              it { is_expected.to contain_class('profiles::puppet::puppetserver::vault') }
 
               it { is_expected.to contain_class('profiles::puppet::puppetserver::terraform').with(
                 'bucket'       => 'mybucket',
                 'use_iam_role' => true
               ) }
+
+              it { is_expected.to contain_class('profiles::puppet::puppetserver::vault').that_comes_before('Class[profiles::puppet::puppetserver::hiera]') }
+              it { is_expected.to contain_class('profiles::puppet::puppetserver::vault').that_notifies('Class[profiles::puppet::puppetserver::service]') }
             end
           end
         end
@@ -308,7 +330,7 @@ describe 'profiles::puppet::puppetserver' do
       context "on host bbb.example.com" do
         let(:node) { 'bbb.example.com' }
 
-        context "with autosign => true, trusted_amis => [], trusted_certnames => [a.example.com, b.example.com, *.c.example.com], eyaml => true, eyaml_gpg_key => { 'id' => '1234ABCD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK-----' }, terraform_integration => true, terraform_bucket => foobar, terraform_use_iam_role => false, puppetdb_url => https://foo.example.com:1234, puppetdb_version => 7.8.9 and dns_alt_names => [puppet1.services.example.com, puppet2.services.example.com]" do
+        context "with autosign => true, trusted_amis => [], trusted_certnames => [a.example.com, b.example.com, *.c.example.com], eyaml => true, eyaml_gpg_key => { 'id' => '1234ABCD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK-----' }, terraform_integration => true, terraform_bucket => foobar, terraform_use_iam_role => false, vault_integration => true, vault_address => https://localhost:8443, vault_mounts => { 'snafu' => ['foo', 'bar'], 'test' => ['baz', 'bla'] }, puppetdb_url => https://foo.example.com:1234, puppetdb_version => 7.8.9 and dns_alt_names => [puppet1.services.example.com, puppet2.services.example.com]" do
           let(:params) { {
             'autosign'               => true,
             'trusted_amis'           => [],
@@ -321,6 +343,9 @@ describe 'profiles::puppet::puppetserver' do
             'terraform_integration'  => true,
             'terraform_bucket'       => 'foobar',
             'terraform_use_iam_role' => false,
+            'vault_integration'      => true,
+            'vault_address'          => 'https://localhost:8443',
+            'vault_mounts'           => { 'snafu' => ['foo', 'bar'], 'test' => ['baz', 'bla'] },
             'puppetdb_url'           => 'https://foo.example.com:1234',
             'puppetdb_version'       => '7.8.9',
             'dns_alt_names'          => ['puppet1.services.example.com', 'puppet2.services.example.com'],
@@ -343,6 +368,7 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to contain_class('profiles::puppet::puppetserver::hiera').with(
             'eyaml'                 => true,
             'terraform_integration' => true,
+            'vault_integration'     => true,
             'gpg_key'               => {
                                          'id'      => '1234ABCD',
                                          'content' => "-----BEGIN PGP PRIVATE KEY BLOCK-----\nfoobar\n-----END PGP PRIVATE KEY BLOCK-----"
@@ -353,6 +379,8 @@ describe 'profiles::puppet::puppetserver' do
             'bucket'       => 'foobar',
             'use_iam_role' => false
           ) }
+
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::vault') }
 
           it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').with(
             'url'     => 'https://foo.example.com:1234',
@@ -370,8 +398,8 @@ describe 'profiles::puppet::puppetserver' do
 
         context "with autosign => true and trusted_amis => ['ami-234', 'ami-567']" do
           let(:params) { {
-            'autosign'          => true,
-            'trusted_amis'      => ['ami-234', 'ami-567'],
+            'autosign'     => true,
+            'trusted_amis' => ['ami-234', 'ami-567']
           } }
 
           it { is_expected.to contain_class('profiles::puppet::puppetserver::autosign').with(

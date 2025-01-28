@@ -33,15 +33,9 @@ describe 'profiles::puppet::agent' do
           'force'  => true
         ) }
 
-        it { is_expected.to contain_file('puppet agent facter datadir').with(
-          'ensure' => 'directory',
-          'path'   => '/etc/puppetlabs/facter'
-        ) }
-
-        it { is_expected.to contain_file('puppet agent facts.d datadir').with(
-          'ensure' => 'directory',
-          'path'   => '/etc/puppetlabs/facter/facts.d'
-        ) }
+        it { is_expected.to contain_file('/etc/puppetlabs') }
+        it { is_expected.to contain_file('/etc/puppetlabs/facter') }
+        it { is_expected.to contain_file('/etc/puppetlabs/facter/facts.d') }
 
         it { is_expected.to contain_service('puppet').with(
           'ensure'    => 'stopped',
@@ -81,6 +75,7 @@ describe 'profiles::puppet::agent' do
         ) }
 
         it { is_expected.to contain_apt__source('puppet').that_comes_before('Package[puppet-agent]') }
+        it { is_expected.to contain_package('puppet-agent').that_requires('File[/etc/puppetlabs/facter/facts.d]') }
         it { is_expected.to contain_package('puppet-agent').that_notifies('Service[puppet]') }
         it { is_expected.to contain_file('puppet agent production environment hiera.yaml').that_requires('Package[puppet-agent]') }
         it { is_expected.to contain_file('puppet agent production environment datadir').that_requires('Package[puppet-agent]') }

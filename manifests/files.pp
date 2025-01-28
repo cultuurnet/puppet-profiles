@@ -17,16 +17,39 @@ class profiles::files inherits ::profiles {
 
   @file { '/data/backup':
     ensure  => 'directory',
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0755',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
     require => File['/data']
   }
 
   @file { '/etc/gcloud':
-    ensure  => 'directory',
+    ensure => 'directory',
     owner  => 'root',
     group  => 'root',
     mode   => '0755'
+  }
+
+  @file { '/etc/puppetlabs':
+    ensure => 'directory',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755'
+  }
+
+  @file { '/etc/puppetlabs/facter':
+    ensure => 'directory',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+    require => File['/etc/puppetlabs']
+  }
+
+  @file { '/etc/puppetlabs/facter/facts.d':
+    ensure  => 'directory',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    require => File['/etc/puppetlabs/facter']
   }
 }

@@ -143,6 +143,16 @@ describe 'profiles::users' do
           'uid'            => '457'
         ) }
 
+        it { is_expected.to contain_user('vault').with(
+          'ensure'         => 'present',
+          'gid'            => 'vault',
+          'home'           => '/home/vault',
+          'managehome'     => true,
+          'purge_ssh_keys' => true,
+          'shell'          => '/bin/bash',
+          'uid'            => '458'
+        ) }
+
         it { is_expected.to contain_user('glassfish').with(
           'ensure'         => 'present',
           'gid'            => 'glassfish',

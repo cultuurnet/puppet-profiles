@@ -11,10 +11,12 @@ describe 'profiles::terraform' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::terraform').with(
-          'version'          => 'latest'
+          'version'           => 'latest',
+          'terrafile_version' => 'latest'
         ) }
 
         it { is_expected.to contain_apt__source('publiq-tools') }
+        it { is_expected.to contain_apt__source('hashicorp') }
 
         it { is_expected.to contain_package('terraform').with(
           'ensure' => 'latest'
@@ -24,10 +26,11 @@ describe 'profiles::terraform' do
           'ensure' => 'latest'
         ) }
 
+        it { is_expected.to contain_apt__source('hashicorp').that_comes_before('Package[terraform]') }
         it { is_expected.to contain_apt__source('publiq-tools').that_comes_before('Package[terrafile]') }
       end
 
-      context "with version => 1.2.3" do
+      context "with version => 1.2.3 and terrafile_version => 4.5.6" do
         let(:params) { {
           'version'           => '1.2.3',
           'terrafile_version' => '4.5.6'
