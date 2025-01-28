@@ -31,7 +31,6 @@ class profiles::puppet::puppetserver::hiera (
                                              'options'    => {
                                                                'confine_to_keys' => ['^vault:.*'],
                                                                'strip_from_keys' => ['vault:'],
-                                                               'ssl_verify'      => true,
                                                                'address'         => $vault_address,
                                                                'ssl_verify'      => true,
                                                                'ssl_ca_cert'     => '/etc/puppetlabs/puppet/ssl/certs/ca.pem',
