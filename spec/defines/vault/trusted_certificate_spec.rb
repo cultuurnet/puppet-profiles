@@ -15,6 +15,7 @@ describe 'profiles::vault::trusted_certificate' do
 
           it { is_expected.to contain_profiles__vault__trusted_certificate('node01.example.com').with(
             'trusted_certs_directory' => '/etc/vault.d/trusted_certs',
+            'policies'                => 'puppet_certificate',
             'certificate'             => 'abc'
           ) }
 
@@ -42,9 +43,10 @@ describe 'profiles::vault::trusted_certificate' do
           it { is_expected.to contain_exec('vault_trust_cert node01.example.com').that_requires('File[vault trusted cert node01.example.com]') }
         end
 
-        context 'with trusted_certs_directory => /tmp and certificate => xyz' do
+        context 'with trusted_certs_directory => /tmp policies => [foo, bar] and certificate => xyz' do
           let(:params) { {
             'trusted_certs_directory' => '/tmp',
+            'policies'                => ['foo', 'bar'],
             'certificate'             => 'xyz'
           } }
 
@@ -57,7 +59,7 @@ describe 'profiles::vault::trusted_certificate' do
           ) }
 
           it { is_expected.to contain_exec('vault_trust_cert node01.example.com').with(
-            'command'   => '/usr/bin/vault write auth/cert/certs/node01.example.com display_name=node01.example.com policies=puppet_certificate certificate=@/tmp/node01.example.com.pem',
+            'command'   => '/usr/bin/vault write auth/cert/certs/node01.example.com display_name=node01.example.com policies=foo,bar certificate=@/tmp/node01.example.com.pem',
             'user'      => 'vault',
             'unless'    => '/usr/bin/vault read auth/cert/certs/node01.example.com',
             'logoutput' => 'on_failure'
