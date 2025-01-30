@@ -81,6 +81,16 @@ class profiles::users inherits ::profiles {
     uid            => '457'
   }
 
+  @user { 'vault':
+    ensure         => 'present',
+    gid            => 'vault',
+    home           => '/home/vault',
+    managehome     => true,
+    purge_ssh_keys => true,
+    shell          => '/bin/bash',
+    uid            => '458'
+  }
+
   @user { 'ubuntu':
     ensure         => 'present',
     gid            => 'ubuntu',

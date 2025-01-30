@@ -15,7 +15,7 @@ class profiles::ssh_authorized_keys(
         user => 'ubuntu',
         type => $key_attributes['type'],
         key  => $key_attributes['key'],
-        tag  => $attributes['tag']
+        tag  => $attributes['tags']
       }
     }
   }

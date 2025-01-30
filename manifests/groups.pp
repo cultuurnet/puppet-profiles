@@ -45,6 +45,11 @@ class profiles::groups inherits ::profiles {
     gid    => '457'
   }
 
+  @group { 'vault':
+    ensure => 'present',
+    gid    => '458'
+  }
+
   @group { 'ubuntu':
     ensure => 'present',
     gid    => '1000'

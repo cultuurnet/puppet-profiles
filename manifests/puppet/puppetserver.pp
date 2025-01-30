@@ -10,6 +10,9 @@ class profiles::puppet::puppetserver (
                                                                        { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
                                                                        { 'name' => 'Common data', 'path' => 'common.yaml' }
                                                                      ],
+  Boolean                                  $vault_integration      = false,
+  Optional[String]                         $vault_address          = undef,
+  Hash                                     $vault_mounts           = {},
   Boolean                                  $terraform_integration  = lookup('data::puppet::terraform_integration', Boolean, 'first', false),
   Optional[String]                         $terraform_bucket       = undef,
   Boolean                                  $terraform_use_iam_role = true,
@@ -101,8 +104,16 @@ class profiles::puppet::puppetserver (
     gpg_key               => $eyaml_gpg_key,
     lookup_hierarchy      => $lookup_hierarchy,
     terraform_integration => $terraform_integration,
+    vault_integration     => $vault_integration,
+    vault_address         => $vault_address,
+    vault_mounts          => $vault_mounts,
     require               => Class['profiles::puppet::puppetserver::install'],
     notify                => Class['profiles::puppet::puppetserver::service']
+  }
+
+  class { 'profiles::puppet::puppetserver::vault':
+    before => Class['profiles::puppet::puppetserver::hiera'],
+    notify => Class['profiles::puppet::puppetserver::service']
   }
 
   if $terraform_integration {

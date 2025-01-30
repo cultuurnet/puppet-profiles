@@ -128,6 +128,13 @@ class profiles::apt::repositories {
     repos        => 'puppet'
   }
 
+  @apt::source { 'hashicorp':
+    location     => "https://apt-mirror.publiq.be/hashicorp-${codename}-${environment}",
+    release      => $codename,
+    architecture => $arch,
+    repos        => 'main'
+  }
+
   # Project repositories
   @apt::source { 'uit-mail-subscriptions':
     location => "https://apt.publiq.be/uit-mail-subscriptions-${environment}",

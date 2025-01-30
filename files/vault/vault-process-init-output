@@ -1,0 +1,13 @@
+#!/bin/bash
+
+KEY_OWNERS=${1}
+INPUT=$(/usr/bin/cat)
+
+while IFS=',' read -ra OWNER; do
+    for counter in `/usr/bin/seq 0 $(( ${#OWNER[@]} - 1 ))`; do
+        owner="${OWNER[${counter}]}"
+	key=$(/usr/bin/echo ${INPUT} | /usr/bin/jq -r ".unseal_keys_b64[${counter}]")
+
+        /usr/bin/echo $(/usr/bin/jq -n --arg key "$owner" --arg value "$key" '{ ($key): ($value) }')
+    done | /usr/bin/jq -s add
+done <<< "${KEY_OWNERS}" | /usr/bin/jq '{ "vault_encrypted_unseal_keys": . }'
