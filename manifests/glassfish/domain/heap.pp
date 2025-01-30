@@ -6,12 +6,15 @@ define profiles::glassfish::domain::heap (
 
   include ::profiles
 
+  realize File['/etc/puppetlabs/facter/facts.d']
+
   $default_maximum_size         = '512m'
   $jvmoption_default_attributes = {
                                     user         => 'glassfish',
                                     passwordfile => '/home/glassfish/asadmin.pass',
                                     portbase     => String($portbase)
                                   }
+
 
   if $initial_size {
     jvmoption { "Domain ${title} initial heap jvmoption":
@@ -76,6 +79,7 @@ define profiles::glassfish::domain::heap (
   file { "Domain ${title} heap external facts":
     ensure  => 'file',
     path    => "/etc/puppetlabs/facter/facts.d/glassfish.${title}.heap.yaml",
-    content => template('profiles/glassfish/domain/heap.yaml.erb')
+    content => template('profiles/glassfish/domain/heap.yaml.erb'),
+    require => File['/etc/puppetlabs/facter/facts.d']
   }
 }
