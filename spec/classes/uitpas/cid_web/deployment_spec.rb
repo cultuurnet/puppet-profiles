@@ -80,7 +80,7 @@ cid-web
           let(:params) { {
             'config_source'   => '/bar',
             'version'         => '1.2.3',
-            'repository'      => 'uitpas-frontend-alternative',
+            'repository'      => 'uitpas-cid-web-alternative',
             'service_status'  => 'stopped',
             'service_address' => '0.0.0.0',
             'service_port'    => 6000
