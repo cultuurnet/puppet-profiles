@@ -27,7 +27,6 @@ describe 'profiles::uitpas::cid_web::deployment' do
         it { is_expected.to contain_package('uitpas-cid-web').with(
           'ensure' => 'latest'
         ) }
-cid-web
         it { is_expected.to contain_file('uitpas-cid-web-config').with(
           'ensure' => 'file',
           'path'   => '/var/www/uitpas-cid-web/.env',
