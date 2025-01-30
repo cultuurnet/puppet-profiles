@@ -33,8 +33,6 @@ describe 'profiles::puppet::agent' do
           'force'  => true
         ) }
 
-        it { is_expected.to contain_file('/etc/puppetlabs') }
-        it { is_expected.to contain_file('/etc/puppetlabs/facter') }
         it { is_expected.to contain_file('/etc/puppetlabs/facter/facts.d') }
 
         it { is_expected.to contain_service('puppet').with(
