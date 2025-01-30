@@ -52,4 +52,11 @@ class profiles::files inherits ::profiles {
     mode    => '0755',
     require => File['/etc/puppetlabs/facter']
   }
+
+  # Realize a list of 'default' files on all servers
+  realize File['/data']
+
+  realize File['/etc/puppetlabs']
+  realize File['/etc/puppetlabs/facter']
+  realize File['/etc/puppetlabs/facter/facts.d']
 }
