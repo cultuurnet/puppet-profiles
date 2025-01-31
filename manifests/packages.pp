@@ -141,7 +141,7 @@ class profiles::packages inherits ::profiles {
     require => Apt::Source['publiq-tools']
   }
 
-  # Realize a list of 'default' packages on all servers
+  # Realize a list of 'default' packages on all nodes
   realize Package['jq']
   realize Package['iftop']
 }

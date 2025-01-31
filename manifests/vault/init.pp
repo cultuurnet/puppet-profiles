@@ -22,8 +22,6 @@ class profiles::vault::init (
   realize Group['vault']
   realize User['vault']
   realize Package['jq']
-  realize File['/etc/puppetlabs']
-  realize File['/etc/puppetlabs/facter']
   realize File['/etc/puppetlabs/facter/facts.d']
 
   file { 'vault_gpg_keys':
@@ -99,13 +97,13 @@ class profiles::vault::init (
     command   => "/usr/bin/cat /home/vault/vault_init_output.json | /usr/local/bin/vault-process-init-output \"${gpg_keys_owners}\" > /etc/puppetlabs/facter/facts.d/vault_encrypted_unseal_keys.json",
     creates   => '/etc/puppetlabs/facter/facts.d/vault_encrypted_unseal_keys.json',
     logoutput => 'on_failure',
-    require   => [Exec['vault_init'], Package['jq'], File['vault_process_init_output']]
+    require   => [Exec['vault_init'], Package['jq'], File['vault_process_init_output'], File['/etc/puppetlabs/facter/facts.d']]
   }
 
   file { 'vault_initialized_external_fact':
     ensure  => 'file',
     path    => '/etc/puppetlabs/facter/facts.d/vault_initialized.txt',
     content => 'vault_initialized=true',
-    require => Exec['vault_init']
+    require => [Exec['vault_init'], File['/etc/puppetlabs/facter/facts.d']]
   }
 }

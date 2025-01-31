@@ -25,9 +25,15 @@ describe 'profiles::vault::policies' do
           'policies_directory' => '/etc/vault.d/policies'
         ) }
 
+        it { is_expected.to contain_profiles__vault__policy('ui_certificate').with(
+          'policy'             => 'path "puppet/*" { capabilities = ["create", "update", "patch", "delete", "list"] }',
+          'policies_directory' => '/etc/vault.d/policies'
+        ) }
+
         it { is_expected.to contain_file('vault_policies').that_requires('Group[vault]') }
         it { is_expected.to contain_file('vault_policies').that_requires('User[vault]') }
         it { is_expected.to contain_profiles__vault__policy('puppet_certificate').that_requires('File[vault_policies]') }
+        it { is_expected.to contain_profiles__vault__policy('ui_certificate').that_requires('File[vault_policies]') }
       end
     end
   end

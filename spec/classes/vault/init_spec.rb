@@ -21,8 +21,6 @@ describe 'profiles::vault::init' do
         it { is_expected.to contain_group('vault') }
         it { is_expected.to contain_user('vault') }
         it { is_expected.to contain_package('jq') }
-        it { is_expected.to contain_file('/etc/puppetlabs') }
-        it { is_expected.to contain_file('/etc/puppetlabs/facter') }
         it { is_expected.to contain_file('/etc/puppetlabs/facter/facts.d') }
 
         it { is_expected.to contain_file('vault_gpg_keys').with(
@@ -89,7 +87,9 @@ describe 'profiles::vault::init' do
         it { is_expected.to contain_exec('vault_auto_unseal_key').that_requires('Exec[vault_init]') }
         it { is_expected.to contain_exec('vault_unseal_keys_external_fact').that_requires('Exec[vault_init]') }
         it { is_expected.to contain_exec('vault_unseal_keys_external_fact').that_requires('Package[jq]') }
+        it { is_expected.to contain_exec('vault_unseal_keys_external_fact').that_requires('File[/etc/puppetlabs/facter/facts.d]') }
         it { is_expected.to contain_file('vault_initialized_external_fact').that_requires('Exec[vault_init]') }
+        it { is_expected.to contain_file('vault_initialized_external_fact').that_requires('File[/etc/puppetlabs/facter/facts.d]') }
       end
 
       context 'with auto_unseal => false and gpg_keys => { fingerprint => dcba6789, owner => baz, key => -----BEGIN PGP PUBLIC KEY BLOCK-----\nzyx987\n-----END PGP PUBLIC KEY BLOCK----- }' do
