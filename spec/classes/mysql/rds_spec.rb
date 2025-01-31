@@ -15,6 +15,8 @@ describe 'profiles::mysql::rds' do
 
           it { is_expected.to compile.with_all_deps }
 
+          it { is_expected.to contain_file('/etc/puppetlabs/facter/facts.d') }
+
           it { is_expected.to contain_file('mysqld_version_external_fact').with(
             'ensure'  => 'file',
             'path'    => '/etc/puppetlabs/facter/facts.d/mysqld_version.txt',
@@ -28,6 +30,8 @@ describe 'profiles::mysql::rds' do
             'database_user'     => 'admin',
             'database_password' => 'mypass'
           ) }
+
+          it { is_expected.to contain_file('mysqld_version_external_fact').that_requires('File[/etc/puppetlabs/facter/facts.d]') }
         end
 
         context "without hieradata" do

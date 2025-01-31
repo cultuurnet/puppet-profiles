@@ -19,4 +19,10 @@ class profiles::vault::policies (
     policies_directory => $policies_directory,
     require            => File['vault_policies']
   }
+
+  profiles::vault::policy { 'ui_certificate':
+    policy             => 'path "puppet/*" { capabilities = ["create", "update", "patch", "delete", "list"] }',
+    policies_directory => $policies_directory,
+    require            => File['vault_policies']
+  }
 }

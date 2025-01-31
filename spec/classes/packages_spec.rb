@@ -131,6 +131,20 @@ describe 'profiles::packages' do
         it { is_expected.to contain_package('google-cloud-cli').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('rubygem-angular-config').that_requires('Apt::Source[publiq-tools]') }
       end
+
+      context "without package virtual resources realized" do
+        let(:pre_condition) { [
+          'Apt::Source <| |>'
+        ] }
+
+        it { is_expected.to contain_package('jq').with(
+          'ensure' => 'present'
+        ) }
+
+        it { is_expected.to contain_package('iftop').with(
+          'ensure' => 'present'
+        ) }
+      end
     end
   end
 end

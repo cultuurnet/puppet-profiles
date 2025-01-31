@@ -64,6 +64,8 @@ describe 'profiles::glassfish::domain::heap' do
 
             it { is_expected.to compile.with_all_deps }
 
+            it { is_expected.to contain_file('/etc/puppetlabs/facter/facts.d') }
+
             it { is_expected.to contain_profiles__glassfish__domain__heap('foobar-api').with(
               'initial_size' => nil,
               'maximum_size' => nil,
@@ -86,6 +88,8 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum_size: '512m'$/) }
+
+            it { is_expected.to contain_file('Domain foobar-api heap external facts').that_requires('File[/etc/puppetlabs/facter/facts.d]') }
           end
 
           context 'with maximum_size => 512m' do
@@ -824,6 +828,8 @@ describe 'profiles::glassfish::domain::heap' do
 
             it { is_expected.to compile.with_all_deps }
 
+            it { is_expected.to contain_file('/etc/puppetlabs/facter/facts.d') }
+
             it { is_expected.to contain_profiles__glassfish__domain__heap('baz-api').with(
               'initial'  => nil,
               'maximum'  => nil,
@@ -846,6 +852,8 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain baz-api heap external facts').with_content(/^---\nglassfish:\n  baz-api:\n    heap:\n      maximum_size: '512m'$/) }
+
+            it { is_expected.to contain_file('Domain baz-api heap external facts').that_requires('File[/etc/puppetlabs/facter/facts.d]') }
           end
         end
       end

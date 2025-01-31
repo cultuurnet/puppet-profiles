@@ -10,9 +10,6 @@ class profiles::puppet::agent (
                                     }
 
   realize Apt::Source['puppet']
-
-  realize File['/etc/puppetlabs']
-  realize File['/etc/puppetlabs/facter']
   realize File['/etc/puppetlabs/facter/facts.d']
 
   package { 'puppet-agent':
