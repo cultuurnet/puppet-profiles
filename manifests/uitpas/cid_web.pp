@@ -3,7 +3,7 @@ class profiles::uitpas::cid_web (
   Variant[String,Array[String]] $serveraliases   = [],
   Boolean                       $deployment      = true,
   Stdlib::IP::Address::V4       $service_address = '127.0.0.1',
-  Integer                       $service_port    = 3000,
+  Integer                       $service_port    = 4000,
 ) inherits ::profiles {
 
   $basedir = '/var/www/uitpas-cid-web'
