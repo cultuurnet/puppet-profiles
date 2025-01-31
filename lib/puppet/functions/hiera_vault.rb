@@ -51,9 +51,15 @@ Puppet::Functions.create_function(:hiera_vault) do
 
     begin
       hiera_vault_client.configure do |config|
-        config.address = options['address'] unless options['address'].nil?
-        config.ssl_verify = options['ssl_verify'] unless options['ssl_verify'].nil?
+        config.address     = options['address'] unless options['address'].nil?
+        config.ssl_verify  = options['ssl_verify'] unless options['ssl_verify'].nil?
         config.ssl_ca_cert = options['ssl_ca_cert'] if config.respond_to? :ssl_ca_cert
+        config.ssl_ciphers = [
+                               'TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256',
+                               'TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256',
+                               'TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384',
+                               'TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384'
+                             ]
       end
 
       context.explain { "[hiera-vault] Using #{options['authentication']['method']} authentication" }
