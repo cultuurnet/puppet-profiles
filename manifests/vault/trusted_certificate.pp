@@ -17,7 +17,7 @@ define profiles::vault::trusted_certificate (
     owner   => 'vault',
     group   => 'vault',
     content => $certificate ? {
-                 undef   => file("/etc/puppetlabs/puppet/ssl/certs/${title}.pem"),
+                 undef   => file("/etc/puppetlabs/puppetserver/ca/signed/${title}.pem"),
                  default => $certificate
                },
     require => [Group['vault'], User['vault']]
