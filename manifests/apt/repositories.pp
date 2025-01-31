@@ -274,6 +274,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'uitpas-cid-web':
+    location => "https://apt.publiq.be/uitpas-cid-web-${environment}",
+    release  => $codename,
+    repos    => 'main'
+  }
+
   @apt::source { 'uitpas-groepspas-frontend':
     location => "https://apt.publiq.be/uitpas-groepspas-frontend-${environment}",
     release  => $codename,
