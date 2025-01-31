@@ -108,16 +108,16 @@ class profiles::vault (
     }
 
     if $auto_unseal {
-      class { 'profiles::vault::authentication':
-        require => Class['profiles::vault::seal']
-      }
-
       class { 'profiles::vault::secrets_engines':
         require => Class['profiles::vault::seal']
       }
 
       class { 'profiles::vault::policies':
-        require => [Class['profiles::vault::secrets_engines'], Class['profiles::vault::authentication']]
+        require => Class['profiles::vault::secrets_engines']
+      }
+
+      class { 'profiles::vault::authentication':
+        require => Class['profiles::vault::policies']
       }
     }
   }

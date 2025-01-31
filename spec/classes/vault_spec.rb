@@ -155,6 +155,7 @@ describe 'profiles::vault' do
           it { is_expected.to contain_class('profiles::vault::certificate').that_requires('Class[profiles::vault::install]') }
           it { is_expected.to contain_class('profiles::vault::certificate').that_comes_before('Class[profiles::vault::configuration]') }
           it { is_expected.to contain_class('profiles::vault::authentication').that_requires('Class[profiles::vault::seal]') }
+          it { is_expected.to contain_class('profiles::vault::authentication').that_requires('Class[profiles::vault::policies]') }
           it { is_expected.to contain_class('profiles::vault::secrets_engines').that_requires('Class[profiles::vault::seal]') }
           it { is_expected.to contain_class('profiles::vault::policies').that_requires('Class[profiles::vault::seal]') }
           it { is_expected.to contain_class('profiles::vault::policies').that_requires('Class[profiles::vault::secrets_engines]') }
