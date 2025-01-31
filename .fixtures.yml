@@ -155,4 +155,5 @@ fixtures:
       repo: 'https://github.com/cultuurnet/puppetlabs-mysql.git'
       ref: '844aa07'
   symlinks:
+    appconfig: "#{source_dir}/spec/support/appconfig"
     profiles: "#{source_dir}"
