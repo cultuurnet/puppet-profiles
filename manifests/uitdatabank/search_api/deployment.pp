@@ -58,12 +58,6 @@ class profiles::uitdatabank::search_api::deployment (
     *      => $file_default_attributes
   }
 
-  file { 'uitdatabank-search-api-pubkey-auth0':
-    ensure => 'absent',
-    path   => "${basedir}/public-auth0.pem",
-    notify => [Service['uitdatabank-search-api'], Class['profiles::uitdatabank::search_api::listeners']]
-  }
-
   file { 'uitdatabank-search-api-pubkey-keycloak':
     ensure => 'file',
     path   => "${basedir}/public-keycloak.pem",
