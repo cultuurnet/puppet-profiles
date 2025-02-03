@@ -71,11 +71,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           'source' => '/var/www/geojson-data/output/autocomplete.json'
         ) }
 
-        it { is_expected.to contain_file('uitdatabank-search-api-pubkey-auth0').with(
-          'ensure' => 'absent',
-          'path'   => '/var/www/udb3-search-service/public-auth0.pem'
-        ) }
-
         it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').with(
           'ensure' => 'file',
           'owner'  => 'www-data',
@@ -131,7 +126,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
         it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_requires('Package[uitdatabank-search-api]') }
         it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_notifies('Service[uitdatabank-search-api]') }
         it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
-        it { is_expected.to contain_file('uitdatabank-search-api-pubkey-auth0').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
         it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').that_requires('Group[www-data]') }
         it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').that_requires('User[www-data]') }
         it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').that_requires('Package[uitdatabank-search-api]') }
@@ -215,11 +209,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             'group'  => 'www-data',
             'path'   => '/var/www/udb3-search-service/web/autocomplete.json',
             'source' => '/var/www/geojson-data/output/autocomplete.json'
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-search-api-pubkey-auth0').with(
-            'ensure' => 'absent',
-            'path'   => '/var/www/udb3-search-service/public-auth0.pem'
           ) }
 
           it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').with(
