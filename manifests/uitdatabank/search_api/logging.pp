@@ -21,11 +21,11 @@ class profiles::uitdatabank::search_api::logging (
     require  => Class['profiles::filebeat']
   }
 
-    @@profiles::logstash::filter_fragment { "${servername}_${log_type}":
-      log_type => $log_type,
-      filter   => file('profiles/uitdatabank/search_api/logstash_filter_access.conf'),
-      tag      => $environment
-    }
+  @@profiles::logstash::filter_fragment { "${servername}_${log_type}":
+    log_type => $log_type,
+    filter   => file('profiles/uitdatabank/search_api/logstash_filter_access.conf'),
+    tag      => $environment
+  }
 
   # TODO: Add this to the logstash server
   #

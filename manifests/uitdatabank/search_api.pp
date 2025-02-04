@@ -9,13 +9,14 @@ class profiles::uitdatabank::search_api (
   $basedir = '/var/www/udb3-search-service'
 
   include profiles::php
+  include profiles::redis
   include profiles::elasticsearch
 
   if $deployment {
     include profiles::uitdatabank::geojson_data::deployment
 
     class { 'profiles::uitdatabank::search_api::deployment':
-      require => Class['profiles::uitdatabank::geojson_data::deployment']
+      require => [Class['profiles::redis'], Class['profiles::elasticsearch'], Class['profiles::php'], Class['profiles::uitdatabank::geojson_data::deployment']]
     }
 
     if $data_migration {
