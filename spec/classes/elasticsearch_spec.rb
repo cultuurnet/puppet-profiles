@@ -17,6 +17,9 @@ describe 'profiles::elasticsearch' do
           'major_version'         => 5,
           'version'               => nil,
           'lvm'                   => false,
+          'volume_group'          => nil,
+          'volume_size'           => nil,
+          'log_volume_size'       => nil,
           'initial_heap_size'     => '512m',
           'maximum_heap_size'     => '512m',
           'backup'                => true,
@@ -57,6 +60,7 @@ describe 'profiles::elasticsearch' do
           'restart_on_change' => true,
           'datadir'           => '/var/lib/elasticsearch',
           'manage_datadir'    => false,
+          'manage_logdir'     => true,
           'init_defaults'     => { 'ES_JAVA_OPTS' => '"-Xms512m -Xmx512m"' }
         ) }
 
@@ -86,12 +90,13 @@ describe 'profiles::elasticsearch' do
         it { is_expected.not_to contain_class('profiles::elasticsearch::backup') }
       end
 
-      context "with version => 8.2.1, lvm => true, volume_group => myvg, volume_size => 20G, initial_heap_size => 768m, maximum_heap_size => 1024m, backup_lvm => true, backup_volume_group => mybackupvg, backup_volume_size => 10G, backup_hour => 10 and backup_retention_days =>5" do
+      context "with version => 8.2.1, lvm => true, volume_group => myvg, volume_size => 20G, log_volume_size => 5G, initial_heap_size => 768m, maximum_heap_size => 1024m, backup_lvm => true, backup_volume_group => mybackupvg, backup_volume_size => 10G, backup_hour => 10 and backup_retention_days =>5" do
         let(:params) { {
           'version'               => '8.2.1',
           'lvm'                   => true,
           'volume_group'          => 'myvg',
           'volume_size'           => '20G',
+          'log_volume_size'       => '5G',
           'initial_heap_size'     => '768m',
           'maximum_heap_size'     => '1024m',
           'backup_lvm'            => true,
@@ -128,6 +133,28 @@ describe 'profiles::elasticsearch' do
             'group'  => 'elasticsearch'
           ) }
 
+          it { is_expected.to contain_profiles__lvm__mount('elasticsearchlogs').with(
+            'volume_group' => 'myvg',
+            'size'         => '5G',
+            'mountpoint'   => '/data/elasticsearchlogs',
+            'fs_type'      => 'ext4',
+            'owner'        => 'elasticsearch',
+            'group'        => 'elasticsearch'
+          ) }
+
+          it { is_expected.to contain_mount('/var/log/elasticsearch').with(
+            'ensure'  => 'mounted',
+            'device'  => '/data/elasticsearchlogs',
+            'fstype'  => 'none',
+            'options' => 'rw,bind'
+          ) }
+
+          it { is_expected.to contain_file('/var/log/elasticsearch').with(
+            'ensure' => 'directory',
+            'owner'  => 'elasticsearch',
+            'group'  => 'elasticsearch'
+          ) }
+
           it { is_expected.to contain_class('elasticsearch').with(
             'version'           => '8.2.1',
             'manage_repo'       => false,
@@ -135,6 +162,7 @@ describe 'profiles::elasticsearch' do
             'restart_on_change' => true,
             'datadir'           => '/var/lib/elasticsearch',
             'manage_datadir'    => false,
+            'manage_logdir'     => false,
             'init_defaults'     => { 'ES_JAVA_OPTS' => '"-Xms768m -Xmx1024m"' }
           ) }
 
@@ -154,6 +182,14 @@ describe 'profiles::elasticsearch' do
           it { is_expected.to contain_mount('/var/lib/elasticsearch').that_requires('Profiles::Lvm::Mount[elasticsearchdata]') }
           it { is_expected.to contain_mount('/var/lib/elasticsearch').that_requires('File[/var/lib/elasticsearch]') }
           it { is_expected.to contain_mount('/var/lib/elasticsearch').that_comes_before('Class[elasticsearch]') }
+          it { is_expected.to contain_profiles__lvm__mount('elasticsearchlogs').that_requires('Group[elasticsearch]') }
+          it { is_expected.to contain_profiles__lvm__mount('elasticsearchlogs').that_requires('User[elasticsearch]') }
+          it { is_expected.to contain_file('/var/log/elasticsearch').that_requires('Group[elasticsearch]') }
+          it { is_expected.to contain_file('/var/log/elasticsearch').that_requires('User[elasticsearch]') }
+          it { is_expected.to contain_file('/var/log/elasticsearch').that_comes_before('Class[elasticsearch]') }
+          it { is_expected.to contain_mount('/var/log/elasticsearch').that_requires('Profiles::Lvm::Mount[elasticsearchlogs]') }
+          it { is_expected.to contain_mount('/var/log/elasticsearch').that_requires('File[/var/log/elasticsearch]') }
+          it { is_expected.to contain_mount('/var/log/elasticsearch').that_comes_before('Class[elasticsearch]') }
           it { is_expected.to contain_class('elasticsearch').that_requires('Apt::Source[elastic-8.x]') }
         end
       end
@@ -192,6 +228,9 @@ describe 'profiles::elasticsearch' do
             'options' => 'rw,bind'
           ) }
 
+          it { is_expected.not_to contain_profiles__lvm__mount('elasticsearchlogs') }
+          it { is_expected.not_to contain_mount('/var/log/elasticsearch') }
+
           it { is_expected.to contain_class('elasticsearch').with(
             'version'           => '5.2.2',
             'manage_repo'       => false,
@@ -199,6 +238,7 @@ describe 'profiles::elasticsearch' do
             'restart_on_change' => true,
             'datadir'           => '/var/lib/elasticsearch',
             'manage_datadir'    => false,
+            'manage_logdir'     => true,
             'init_defaults'     => { 'ES_JAVA_OPTS' => '"-Xms512m -Xmx512m"' }
           ) }
 
