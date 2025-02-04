@@ -5,11 +5,11 @@ class profiles::uitdatabank::search_api::data_migration (
   $basedir = '/var/www/udb3-search-service'
 
   exec { 'uitdatabank_search_api_data_migration':
-      command     => 'bin/app.php elasticsearch:migrate',
-      cwd         => $basedir,
-      path        => [ '/usr/local/bin', '/usr/bin', '/bin', $basedir],
-      logoutput   => true,
-      timeout     => $migration_timeout_seconds,
-      refreshonly => true
-    }
+    command     => 'bin/app.php elasticsearch:migrate',
+    cwd         => $basedir,
+    path        => [ '/usr/local/bin', '/usr/bin', '/bin', $basedir],
+    logoutput   => true,
+    timeout     => $migration_timeout_seconds,
+    refreshonly => true
+  }
 }

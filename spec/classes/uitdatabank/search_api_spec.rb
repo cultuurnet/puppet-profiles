@@ -26,6 +26,7 @@ describe 'profiles::uitdatabank::search_api' do
           it { is_expected.to contain_class('profiles::elasticsearch') }
           it { is_expected.to contain_class('profiles::apache') }
           it { is_expected.to contain_class('profiles::php') }
+          it { is_expected.to contain_class('profiles::redis') }
 
           it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://baz.example.com').with(
             'basedir'              => '/var/www/udb3-search-service',
@@ -54,6 +55,9 @@ describe 'profiles::uitdatabank::search_api' do
           it { is_expected.not_to contain_class('profiles::uitdatabank::search_api::data_migration') }
 
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').that_requires('Class[profiles::uitdatabank::geojson_data::deployment]') }
+          it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').that_requires('Class[profiles::elasticsearch]') }
+          it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').that_requires('Class[profiles::php]') }
+          it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').that_requires('Class[profiles::redis]') }
         end
 
         context 'without hieradata' do
