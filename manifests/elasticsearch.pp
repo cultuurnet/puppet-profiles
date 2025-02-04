@@ -8,6 +8,7 @@ class profiles::elasticsearch (
   Boolean          $lvm                                 = false,
   Optional[String] $volume_group                        = undef,
   Optional[String] $volume_size                         = undef,
+  Optional[String] $log_volume_size                     = undef,
   String           $initial_heap_size                   = '512m',
   String           $maximum_heap_size                   = '512m',
   Boolean          $backup                              = true,
@@ -25,6 +26,7 @@ class profiles::elasticsearch (
   }
 
   $datadir = '/var/lib/elasticsearch'
+  $logdir = '/var/log/elasticsearch'
 
   contain ::profiles::java
 
@@ -55,6 +57,36 @@ class profiles::elasticsearch (
       options => 'rw,bind',
       require => [Profiles::Lvm::Mount['elasticsearchdata'], File[$datadir]],
       before  => Class['elasticsearch']
+    }
+
+    if $log_volume_size {
+      profiles::lvm::mount { 'elasticsearchlogs':
+        volume_group => $volume_group,
+        size         => $log_volume_size,
+        mountpoint   => '/data/elasticsearchlogs',
+        fs_type      => 'ext4',
+        owner        => 'elasticsearch',
+        group        => 'elasticsearch',
+        require      => [Group['elasticsearch'], User['elasticsearch']],
+        before       => Class['::elasticsearch']
+      }
+
+      file { $logdir:
+        ensure  => 'directory',
+        owner   => 'elasticsearch',
+        group   => 'elasticsearch',
+        require => [Group['elasticsearch'], User['elasticsearch']],
+        before  => Class['elasticsearch']
+      }
+
+      mount { $logdir:
+        ensure  => 'mounted',
+        device  => '/data/elasticsearchlogs',
+        fstype  => 'none',
+        options => 'rw,bind',
+        require => [Profiles::Lvm::Mount['elasticsearchlogs'], File[$logdir]],
+        before  => Class['elasticsearch']
+      }
     }
   }
 
@@ -149,6 +181,10 @@ class profiles::elasticsearch (
     restart_on_change => true,
     datadir           => $datadir,
     manage_datadir    => false,
+    manage_logdir     => $log_volume_size ? {
+                           undef   => true,
+                           default => false
+                         },
     config            => $es_config,
     plugins           => $es_plugins,
     init_defaults     => {
