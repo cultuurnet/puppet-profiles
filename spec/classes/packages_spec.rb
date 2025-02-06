@@ -49,6 +49,10 @@ describe 'profiles::packages' do
           'ensure' => 'present'
         ) }
 
+        it { is_expected.to contain_package('yq').with(
+          'ensure' => 'present'
+        ) }
+
         it { is_expected.to contain_package('gcsfuse').with(
           'ensure' => 'present'
         ) }
@@ -138,6 +142,10 @@ describe 'profiles::packages' do
         ] }
 
         it { is_expected.to contain_package('jq').with(
+          'ensure' => 'present'
+        ) }
+
+        it { is_expected.to contain_package('yq').with(
           'ensure' => 'present'
         ) }
 

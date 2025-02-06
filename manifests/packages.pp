@@ -44,6 +44,10 @@ class profiles::packages inherits ::profiles {
     ensure => 'present'
   }
 
+  @package { 'yq':
+    ensure => 'present'
+  }
+
   @package { 'gcsfuse':
     ensure  => 'present',
     require => Apt::Source['publiq-tools']
@@ -143,5 +147,6 @@ class profiles::packages inherits ::profiles {
 
   # Realize a list of 'default' packages on all nodes
   realize Package['jq']
+  realize Package['yq']
   realize Package['iftop']
 }
