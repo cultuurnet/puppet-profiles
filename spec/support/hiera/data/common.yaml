@@ -58,6 +58,8 @@ profiles::uitdatabank::jwt_provider_uitidv1::deployment::config_source: '/path/t
 profiles::uitdatabank::jwt_provider_uitidv1::deployment::private_key_source: '/path/to/privkey/source'
 profiles::uitdatabank::jwt_provider_uitidv1::deployment::public_key_source: '/path/to/pubkey/source'
 
+profiles::uitdatabank::jwt_provider::deployment::config_source: '/path/to/config/source'
+
 profiles::publiq::versions::service_address: '127.0.1.1'
 profiles::publiq::versions::service_port: 6000
 
