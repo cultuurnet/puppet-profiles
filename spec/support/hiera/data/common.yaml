@@ -54,6 +54,10 @@ profiles::uitdatabank::search_api::deployment::types_source: '/path/to/config/so
 profiles::uitdatabank::search_api::deployment::pubkey_auth0_source: '/path/to/config/key'
 profiles::uitdatabank::search_api::deployment::pubkey_keycloak_source: '/path/to/config/key'
 
+profiles::uitdatabank::jwt_provider_uitidv1::deployment::config_source: '/path/to/config/source'
+profiles::uitdatabank::jwt_provider_uitidv1::deployment::private_key_source: '/path/to/privkey/source'
+profiles::uitdatabank::jwt_provider_uitidv1::deployment::public_key_source: '/path/to/pubkey/source'
+
 profiles::publiq::versions::service_address: '127.0.1.1'
 profiles::publiq::versions::service_port: 6000
 
