@@ -45,39 +45,13 @@ describe 'profiles::uit::cms::deployment' do
           'group'  => 'www-data'
         ) }
 
-        it { is_expected.to contain_exec('uit-cms-cache-rebuild pre').with(
-          'command'     => 'drush cache:rebuild',
+        it { is_expected.to contain_exec('uit-cms-drush-deploy').with(
+          'command'     => 'drush deploy -v -y',
           'cwd'         => '/var/www/uit-cms',
           'path'        => ['/usr/local/bin', '/usr/bin', '/bin', '/var/www/uit-cms/vendor/bin'],
           'environment' => ['HOME=/'],
           'user'        => 'www-data',
-          'refreshonly' => true
-        ) }
-
-        it { is_expected.to contain_exec('uit-cms-updatedb').with(
-          'command'     => 'drush updatedb -y',
-          'cwd'         => '/var/www/uit-cms',
-          'path'        => ['/usr/local/bin', '/usr/bin', '/bin', '/var/www/uit-cms/vendor/bin'],
-          'environment' => ['HOME=/'],
-          'user'        => 'www-data',
-          'refreshonly' => true
-        ) }
-
-        it { is_expected.to contain_exec('uit-cms-config-import').with(
-          'command'     => 'drush config:import -y',
-          'cwd'         => '/var/www/uit-cms',
-          'path'        => ['/usr/local/bin', '/usr/bin', '/bin', '/var/www/uit-cms/vendor/bin'],
-          'environment' => ['HOME=/'],
-          'user'        => 'www-data',
-          'refreshonly' => true
-        ) }
-
-        it { is_expected.to contain_exec('uit-cms-cache-rebuild post').with(
-          'command'     => 'drush cache:rebuild',
-          'cwd'         => '/var/www/uit-cms',
-          'path'        => ['/usr/local/bin', '/usr/bin', '/bin', '/var/www/uit-cms/vendor/bin'],
-          'environment' => ['HOME=/'],
-          'user'        => 'www-data',
+          'logoutput'   => 'on_failure',
           'refreshonly' => true
         ) }
 
@@ -113,29 +87,14 @@ describe 'profiles::uit::cms::deployment' do
         it { is_expected.to contain_file('uit-cms-drush-config').that_requires('User[www-data]') }
         it { is_expected.to contain_file('uit-cms-drush-config').that_requires('Package[uit-cms]') }
         it { is_expected.to contain_file('uit-cms-drush-config').that_notifies('Service[uit-cms]') }
-        it { is_expected.to contain_exec('uit-cms-cache-rebuild pre').that_requires('User[www-data]') }
-        it { is_expected.to contain_exec('uit-cms-cache-rebuild pre').that_subscribes_to('Package[uit-cms]') }
-        it { is_expected.to contain_exec('uit-cms-cache-rebuild pre').that_subscribes_to('File[uit-cms-settings]') }
-        it { is_expected.to contain_exec('uit-cms-cache-rebuild pre').that_subscribes_to('File[uit-cms-drush-config]') }
-        it { is_expected.to contain_exec('uit-cms-updatedb').that_requires('User[www-data]') }
-        it { is_expected.to contain_exec('uit-cms-updatedb').that_subscribes_to('Package[uit-cms]') }
-        it { is_expected.to contain_exec('uit-cms-updatedb').that_subscribes_to('File[uit-cms-settings]') }
-        it { is_expected.to contain_exec('uit-cms-updatedb').that_subscribes_to('File[uit-cms-drush-config]') }
-        it { is_expected.to contain_exec('uit-cms-updatedb').that_requires('Exec[uit-cms-cache-rebuild pre]') }
-        it { is_expected.to contain_exec('uit-cms-config-import').that_requires('User[www-data]') }
-        it { is_expected.to contain_exec('uit-cms-config-import').that_subscribes_to('Package[uit-cms]') }
-        it { is_expected.to contain_exec('uit-cms-config-import').that_subscribes_to('File[uit-cms-settings]') }
-        it { is_expected.to contain_exec('uit-cms-config-import').that_subscribes_to('File[uit-cms-drush-config]') }
-        it { is_expected.to contain_exec('uit-cms-config-import').that_requires('Exec[uit-cms-updatedb]') }
-        it { is_expected.to contain_exec('uit-cms-cache-rebuild post').that_requires('User[www-data]') }
-        it { is_expected.to contain_exec('uit-cms-cache-rebuild post').that_subscribes_to('Package[uit-cms]') }
-        it { is_expected.to contain_exec('uit-cms-cache-rebuild post').that_subscribes_to('File[uit-cms-settings]') }
-        it { is_expected.to contain_exec('uit-cms-cache-rebuild post').that_subscribes_to('File[uit-cms-drush-config]') }
-        it { is_expected.to contain_exec('uit-cms-cache-rebuild post').that_requires('Exec[uit-cms-config-import]') }
+        it { is_expected.to contain_exec('uit-cms-drush-deploy').that_requires('User[www-data]') }
+        it { is_expected.to contain_exec('uit-cms-drush-deploy').that_subscribes_to('Package[uit-cms]') }
+        it { is_expected.to contain_exec('uit-cms-drush-deploy').that_subscribes_to('File[uit-cms-settings]') }
+        it { is_expected.to contain_exec('uit-cms-drush-deploy').that_subscribes_to('File[uit-cms-drush-config]') }
         it { is_expected.to contain_cron('uit-cms-core-cron').that_requires('User[www-data]') }
-        it { is_expected.to contain_cron('uit-cms-core-cron').that_requires('Exec[uit-cms-cache-rebuild post]') }
+        it { is_expected.to contain_cron('uit-cms-core-cron').that_requires('Exec[uit-cms-drush-deploy]') }
         it { is_expected.to contain_cron('uit-cms-curator-sync').that_requires('User[www-data]') }
-        it { is_expected.to contain_cron('uit-cms-curator-sync').that_requires('Exec[uit-cms-cache-rebuild post]') }
+        it { is_expected.to contain_cron('uit-cms-curator-sync').that_requires('Exec[uit-cms-drush-deploy]') }
         it { is_expected.to contain_service('uit-cms').that_requires('Profiles::Php::Fpm_service_alias[uit-cms]') }
 
         context "without hieradata" do
