@@ -114,6 +114,13 @@ class profiles::apt::repositories {
     repos        => 'main'
   }
 
+  @apt::source { 'nodejs-22':
+    location     => "https://apt-mirror.publiq.be/nodejs-22-${environment}",
+    release      => 'nodistro',
+    architecture => $arch,
+    repos        => 'main'
+  }
+
   @apt::source { 'php':
     location     => "https://apt-mirror.publiq.be/php-${codename}-${environment}",
     release      => $codename,
