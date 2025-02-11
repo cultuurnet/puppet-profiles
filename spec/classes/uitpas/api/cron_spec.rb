@@ -126,7 +126,7 @@ describe 'profiles::uitpas::api::cron' do
 
         it { is_expected.to contain_cron('uitpas milestone batch birthday').with(
           'command'     => "/usr/bin/curl 'http://127.0.0.1:14880/uitid/rest/uitpas/milestone/batch/birthday' >> /var/log/uitpas-cron/birthday.log 2>&1",
-        )
+        ) }
 
         it { is_expected.to contain_cron('uitpas passholder indexpointspromotions').with(
           'command'     => "/usr/bin/curl 'http://127.0.0.1:14880/uitid/rest/uitpas/passholder/indexpointspromotions?unindexedOnly=true' >> /var/log/uitpas-cron/indexpointspromotions.log 2>&1",
