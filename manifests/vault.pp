@@ -6,6 +6,7 @@ class profiles::vault (
   String                     $service_address       = '127.0.0.1',
   Integer[1]                 $key_threshold         = 1,
   Variant[Hash,Array[Hash]]  $gpg_keys              = [],
+  Optional[Integer]          $lease_ttl_seconds     = undef,
   Boolean                    $lvm                   = false,
   Optional[String]           $volume_group          = undef,
   Optional[String]           $volume_size           = undef,
@@ -117,7 +118,8 @@ class profiles::vault (
       }
 
       class { 'profiles::vault::authentication':
-        require => Class['profiles::vault::policies']
+        lease_ttl_seconds => $lease_ttl_seconds,
+        require           => Class['profiles::vault::policies']
       }
     }
   }

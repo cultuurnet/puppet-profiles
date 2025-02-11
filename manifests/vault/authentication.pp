@@ -1,4 +1,5 @@
 class profiles::vault::authentication (
+  Optional[Integer] $lease_ttl_seconds = undef
 ) inherits ::profiles {
 
   $trusted_certs_directory = '/etc/vault.d/trusted_certs'
@@ -20,6 +21,24 @@ class profiles::vault::authentication (
     unless    => '/usr/bin/vault auth list -format=json | /usr/bin/jq -e \'."cert/"\'',
     logoutput => 'on_failure',
     require   => User['vault']
+  }
+
+  if $lease_ttl_seconds {
+    exec { 'vault_cert_default_lease_ttl':
+      command   => "/usr/bin/vault auth tune -default-lease-ttl=${lease_ttl_seconds} cert",
+      user      => 'vault',
+      unless    => "/usr/bin/vault read -format=json sys/auth/cert/tune | /usr/bin/jq -e '.data | select(.default_lease_ttl==${lease_ttl_seconds})'",
+      logoutput => 'on_failure',
+      require   => [User['vault'], Exec['vault_cert_auth']]
+    }
+
+    exec { 'vault_cert_max_lease_ttl':
+      command   => "/usr/bin/vault auth tune -max-lease-ttl=${lease_ttl_seconds} cert",
+      user      => 'vault',
+      unless    => "/usr/bin/vault read -format=json sys/auth/cert/tune | /usr/bin/jq -e '.data | select(.max_lease_ttl==${lease_ttl_seconds})'",
+      logoutput => 'on_failure',
+      require   => [User['vault'], Exec['vault_cert_auth']]
+    }
   }
 
   if $settings::storeconfigs {
