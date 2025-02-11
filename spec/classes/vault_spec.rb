@@ -20,6 +20,7 @@ describe 'profiles::vault' do
           'service_address'       => '127.0.0.1',
           'key_threshold'         => 1,
           'gpg_keys'              => { 'fingerprint' => 'dcba6789', 'owner' => 'baz', 'key' => "-----BEGIN PGP PUBLIC KEY BLOCK-----\nzyx987\n-----END PGP PUBLIC KEY BLOCK-----" },
+          'lease_ttl_seconds'     => nil,
           'lvm'                   => false,
           'volume_group'          => nil,
           'volume_size'           => nil,
@@ -83,10 +84,11 @@ describe 'profiles::vault' do
         it { is_expected.to contain_class('profiles::vault::seal').that_requires('Class[profiles::vault::service]') }
       end
 
-      context 'with auto_unseal => true, certname => myvault.example.com, lvm => true, volume_group => myvg, volume_size => 10G, backup_lvm => true, backup_volume_group => mybackupvg, backup_volume_size => 5G and backup_retention_days => 10' do
+      context 'with auto_unseal => true, certname => myvault.example.com, lease_ttl_seconds => 1800, lvm => true, volume_group => myvg, volume_size => 10G, backup_lvm => true, backup_volume_group => mybackupvg, backup_volume_size => 5G and backup_retention_days => 10' do
         let(:params) { {
           'auto_unseal'           => true,
           'certname'              => 'myvault.example.com',
+          'lease_ttl_seconds'     => 1800,
           'lvm'                   => true,
           'volume_group'          => 'myvg',
           'volume_size'           => '10G',
@@ -142,7 +144,10 @@ describe 'profiles::vault' do
             'certname' => 'myvault.example.com'
           ) }
 
-          it { is_expected.to contain_class('profiles::vault::authentication') }
+          it { is_expected.to contain_class('profiles::vault::authentication').with(
+            'lease_ttl_seconds' => 1800
+          ) }
+
           it { is_expected.to contain_class('profiles::vault::secrets_engines') }
           it { is_expected.to contain_class('profiles::vault::policies') }
 
