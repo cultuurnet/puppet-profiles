@@ -18,72 +18,63 @@ describe 'profiles::uitpas::api::cron' do
         it { is_expected.to contain_user('glassfish') }
 
         it { is_expected.to contain_cron('uitpas enduser clearcheckincodes').with(
-          'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/enduser/clearcheckincodes'",
-          'environment' => ['MAILTO=infra+cron@publiq.be'],
+          'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/enduser/clearcheckincodes' >> /var/log/uitpas-cron/clearcheckincodes.log 2>&1",
           'user'        => 'glassfish',
           'hour'        => '3',
           'minute'      => '5'
         ) }
 
         it { is_expected.to contain_cron('uitpas milestone batch activity').with(
-          'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/milestone/batch/activity'",
-          'environment' => ['MAILTO=infra+cron@publiq.be'],
+          'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/milestone/batch/activity' >> /var/log/uitpas-cron/activity.log 2>&1",
           'user'        => 'glassfish',
           'hour'        => '1',
           'minute'      => '2'
         ) }
 
         it { is_expected.to contain_cron('uitpas milestone batch points').with(
-          'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/milestone/batch/points'",
-          'environment' => ['MAILTO=infra+cron@publiq.be'],
+          'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/milestone/batch/points' >> /var/log/uitpas-cron/points.log 2>&1",
           'user'        => 'glassfish',
           'hour'        => '2',
           'minute'      => '2'
         ) }
 
         it { is_expected.to contain_cron('uitpas milestone batch birthday').with(
-          'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/milestone/batch/birthday'",
-          'environment' => ['MAILTO=infra+cron@publiq.be'],
+          'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/milestone/batch/birthday' >> /var/log/uitpas-cron/birthday.log 2>&1",
           'user'        => 'glassfish',
           'hour'        => '4',
           'minute'      => '2'
         ) }
 
         it { is_expected.to contain_cron('uitpas passholder indexpointspromotions').with(
-          'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/passholder/indexpointspromotions?unindexedOnly=true'",
-          'environment' => ['MAILTO=infra+cron@publiq.be'],
+          'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/passholder/indexpointspromotions?unindexedOnly=true' >> /var/log/uitpas-cron/indexpointspromotions.log 2>&1",
           'user'        => 'glassfish',
           'hour'        => '*',
           'minute'      => '34'
         ) }
 
         it { is_expected.to contain_cron('uitpas autorenew triggerupload').with(
-          'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/autorenew/triggerupload'",
-          'environment' => ['MAILTO=infra+cron@publiq.be'],
+          'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/autorenew/triggerupload' >> /var/log/uitpas-cron/triggerupload.log 2>&1",
           'user'        => 'glassfish',
           'hour'        => '*',
           'minute'      => '*/10'
         ) }
 
         it { is_expected.to contain_cron('uitpas autorenew triggerdownload').with(
-          'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/autorenew/triggerdownload'",
-          'environment' => ['MAILTO=infra+cron@publiq.be'],
+          'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/autorenew/triggerdownload' >> /var/log/uitpas-cron/triggerdownload.log 2>&1",
           'user'        => 'glassfish',
           'hour'        => '*',
           'minute'      => '*/10'
         ) }
 
         it { is_expected.to contain_cron('uitpas autorenew triggerprocess').with(
-          'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/autorenew/triggerprocess'",
-          'environment' => ['MAILTO=infra+cron@publiq.be'],
+          'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/autorenew/triggerprocess' >> /var/log/uitpas-cron/triggerprocess.log 2>&1",
           'user'        => 'glassfish',
           'hour'        => '*',
           'minute'      => '*/10'
         ) }
 
         it { is_expected.to contain_cron('uitpas balie indexbalies').with(
-          'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/balie/indexbalies'",
-          'environment' => ['MAILTO=infra+cron@publiq.be'],
+          'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/uitpas/balie/indexbalies' >> /var/log/uitpas-cron/indexbalies.log 2>&1",
           'user'        => 'glassfish',
           'hour'        => '5',
           'minute'      => '14'
@@ -91,7 +82,6 @@ describe 'profiles::uitpas::api::cron' do
 
         it { is_expected.to contain_cron('uitpas clear jpa cache').with(
           'command'     => "/usr/bin/curl -q -s 'http://127.0.0.1:4880/uitid/rest/bootstrap/uitpas/clearJpaCache' > /dev/null",
-          'environment' => ['MAILTO=infra+cron@publiq.be'],
           'user'        => 'glassfish',
           'hour'        => '*/6',
           'minute'      => '30'
@@ -99,7 +89,6 @@ describe 'profiles::uitpas::api::cron' do
 
         it { is_expected.to contain_cron('uitpas clear cache').with(
           'command'     => "/usr/bin/curl -q -s 'http://127.0.0.1:4880/uitid/rest/bootstrap/uitpas/clearcaches' > /dev/null",
-          'environment' => ['MAILTO=infra+cron@publiq.be'],
           'user'        => 'glassfish',
           'hour'        => '6',
           'minute'      => '15'
@@ -124,39 +113,39 @@ describe 'profiles::uitpas::api::cron' do
         } }
 
         it { is_expected.to contain_cron('uitpas enduser clearcheckincodes').with(
-          'command'     => "/usr/bin/curl 'http://127.0.0.1:14880/uitid/rest/uitpas/enduser/clearcheckincodes'",
+          'command'     => "/usr/bin/curl 'http://127.0.0.1:14880/uitid/rest/uitpas/enduser/clearcheckincodes' >> /var/log/uitpas-cron/clearcheckincodes.log 2>&1",
         ) }
 
         it { is_expected.to contain_cron('uitpas milestone batch activity').with(
-          'command'     => "/usr/bin/curl 'http://127.0.0.1:14880/uitid/rest/uitpas/milestone/batch/activity'",
+          'command'     => "/usr/bin/curl 'http://127.0.0.1:14880/uitid/rest/uitpas/milestone/batch/activity' >> /var/log/uitpas-cron/activity.log 2>&1",
         ) }
 
         it { is_expected.to contain_cron('uitpas milestone batch points').with(
-          'command'     => "/usr/bin/curl 'http://127.0.0.1:14880/uitid/rest/uitpas/milestone/batch/points'",
+          'command'     => "/usr/bin/curl 'http://127.0.0.1:14880/uitid/rest/uitpas/milestone/batch/points' >> /var/log/uitpas-cron/points.log 2>&1",
         ) }
 
         it { is_expected.to contain_cron('uitpas milestone batch birthday').with(
-          'command'     => "/usr/bin/curl 'http://127.0.0.1:14880/uitid/rest/uitpas/milestone/batch/birthday'",
+          'command'     => "/usr/bin/curl 'http://127.0.0.1:14880/uitid/rest/uitpas/milestone/batch/birthday' >> /var/log/uitpas-cron/birthday.log 2>&1",
         ) }
 
         it { is_expected.to contain_cron('uitpas passholder indexpointspromotions').with(
-          'command'     => "/usr/bin/curl 'http://127.0.0.1:14880/uitid/rest/uitpas/passholder/indexpointspromotions?unindexedOnly=true'",
+          'command'     => "/usr/bin/curl 'http://127.0.0.1:14880/uitid/rest/uitpas/passholder/indexpointspromotions?unindexedOnly=true' >> /var/log/uitpas-cron/indexpointspromotions.log 2>&1",
         ) }
 
         it { is_expected.to contain_cron('uitpas autorenew triggerupload').with(
-          'command'     => "/usr/bin/curl 'http://127.0.0.1:14880/uitid/rest/uitpas/autorenew/triggerupload'",
+          'command'     => "/usr/bin/curl 'http://127.0.0.1:14880/uitid/rest/uitpas/autorenew/triggerupload' >> /var/log/uitpas-cron/triggerupload.log 2>&1",
         ) }
 
         it { is_expected.to contain_cron('uitpas autorenew triggerdownload').with(
-          'command'     => "/usr/bin/curl 'http://127.0.0.1:14880/uitid/rest/uitpas/autorenew/triggerdownload'",
+          'command'     => "/usr/bin/curl 'http://127.0.0.1:14880/uitid/rest/uitpas/autorenew/triggerdownload' >> /var/log/uitpas-cron/triggerdownload.log 2>&1",
         ) }
 
         it { is_expected.to contain_cron('uitpas autorenew triggerprocess').with(
-          'command'     => "/usr/bin/curl 'http://127.0.0.1:14880/uitid/rest/uitpas/autorenew/triggerprocess'",
+          'command'     => "/usr/bin/curl 'http://127.0.0.1:14880/uitid/rest/uitpas/autorenew/triggerprocess' >> /var/log/uitpas-cron/triggerprocess.log 2>&1",
         ) }
 
         it { is_expected.to contain_cron('uitpas balie indexbalies').with(
-          'command'     => "/usr/bin/curl 'http://127.0.0.1:14880/uitid/rest/uitpas/balie/indexbalies'",
+          'command'     => "/usr/bin/curl 'http://127.0.0.1:14880/uitid/rest/uitpas/balie/indexbalies' >> /var/log/uitpas-cron/indexbalies.log 2>&1",
         ) }
 
         it { is_expected.to contain_cron('uitpas clear jpa cache').with(
