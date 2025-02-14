@@ -8,22 +8,21 @@ class profiles::newrelic::infrastructure (
 
   if $license_key {
     class { 'profiles::newrelic::infrastructure::install':
-      version => $version
+      version => $version,
+      notify  => Class['profiles::newrelic::infrastructure::service']
     }
 
     class { 'profiles::newrelic::infrastructure::configuration':
       license_key => $license_key,
       log_level   => $log_level,
-      attributes  => $attributes
+      attributes  => $attributes,
+      require     => Class['profiles::newrelic::infrastructure::install'],
+      notify      => Class['profiles::newrelic::infrastructure::service']
     }
 
     class { 'profiles::newrelic::infrastructure::service':
       status => $service_status
     }
-
-    Class['profiles::newrelic::infrastructure::install'] -> Class['profiles::newrelic::infrastructure::configuration']
-    Class['profiles::newrelic::infrastructure::configuration'] ~> Class['profiles::newrelic::infrastructure::service']
-
   }
 }
 
