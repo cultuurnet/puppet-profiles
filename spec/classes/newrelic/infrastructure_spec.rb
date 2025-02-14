@@ -36,6 +36,7 @@ describe 'profiles::newrelic::infrastructure' do
           ) }
 
           it { is_expected.to contain_class('profiles::newrelic::infrastructure::install').that_comes_before('Class[profiles::newrelic::infrastructure::configuration]') }
+          it { is_expected.to contain_class('profiles::newrelic::infrastructure::install').that_notifies('Class[profiles::newrelic::infrastructure::service]') }
           it { is_expected.to contain_class('profiles::newrelic::infrastructure::configuration').that_notifies('Class[profiles::newrelic::infrastructure::service]') }
         end
 

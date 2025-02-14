@@ -44,6 +44,13 @@ describe 'profiles::newrelic::infrastructure::configuration' do
               'mode'   => '0640'
             ) }
 
+            it { is_expected.to contain_systemd__dropin_file('newrelic-infra_override.conf').with(
+              'unit'           => 'newrelic-infra.service',
+              'ensure'         => 'present',
+              'filename'       => 'override.conf',
+              'content'        => "[Service]\nPIDFile=/run/newrelic-infra/newrelic-infra.pid"
+            ) }
+
             it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^license_key: my_license_key$/) }
             it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^display_name: mynode.example.com$/) }
             it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^dns_hostname_resolution: false$/) }
