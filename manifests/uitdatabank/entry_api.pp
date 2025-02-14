@@ -1,7 +1,8 @@
 class profiles::uitdatabank::entry_api (
   String  $database_password,
-  String  $database_host     = '127.0.0.1',
-  Boolean $deployment        = true
+  String  $job_interface_servername,
+  String  $database_host            = '127.0.0.1',
+  Boolean $deployment               = true
 ) inherits ::profiles {
 
   $database_name = 'uitdatabank'
@@ -50,5 +51,9 @@ class profiles::uitdatabank::entry_api (
       Profiles::Mysql::App_user["${database_user}@${database_name}"] -> Class['profiles::uitdatabank::entry_api::deployment']
       Class['profiles::uitdatabank::entry_api::deployment'] -> Class['profiles::uitdatabank::entry_api::data_integration']
     }
+  }
+
+  class { 'profiles::uitdatabank::resque_web':
+    servername => $job_interface_servername
   }
 }
