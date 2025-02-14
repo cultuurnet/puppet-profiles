@@ -18,6 +18,13 @@ class profiles::newrelic::infrastructure::configuration (
     content => template('profiles/newrelic/infrastructure/newrelic-infra.yml.erb')
   }
 
+  systemd::dropin_file { 'newrelic-infra_override.conf':
+    ensure   => 'present',
+    unit     => 'newrelic-infra.service',
+    filename => 'override.conf',
+    content  => "[Service]\nPIDFile=/run/newrelic-infra/newrelic-infra.pid"
+  }
+
   file { '/etc/newrelic-infra/integrations.d':
     ensure  => 'directory',
     recurse => true,
