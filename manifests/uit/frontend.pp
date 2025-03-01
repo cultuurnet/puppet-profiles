@@ -171,7 +171,7 @@ class profiles::uit::frontend (
                             'unset Proxy early'
                           ],
     port               => 80,
-    access_log_format  => 'extended_json',
+    access_log_format  => 'x_fwd_for_extended_json',
     access_log_env_var => '!nolog',
     directories        => [{
                             path           => '/',
