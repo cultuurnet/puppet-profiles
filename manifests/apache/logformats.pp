@@ -39,7 +39,7 @@ class profiles::apache::logformats inherits ::profiles {
                     \"uniqueID\": \"%{UNIQUE_ID}e\", \
                     \"duration\": \"%{ms}T\" \
                     }\
-                    | EXTENDED_JSON
+                    | X_FWD_FOR_EXTENDED_JSON
 
   $apikey_json    = @("APIKEY_JSON"/L)
                     { \"remoteIP\": \"%{CLIENT_IP}e\", \
