@@ -21,7 +21,7 @@ describe 'profiles::apache' do
         it { is_expected.to contain_user('www-data') }
 
         it { is_expected.to contain_class('apache').with(
-          'mpm_module'            => false,l
+          'mpm_module'            => false,
           'manage_group'          => false,
           'manage_user'           => false,
           'default_vhost'         => true,
