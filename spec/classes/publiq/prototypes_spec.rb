@@ -29,7 +29,10 @@ describe 'profiles::publiq::prototypes' do
           'virtual_docroot'   => '/var/www/prototypes/%1',
           'docroot_owner'     => 'www-data',
           'docroot_group'     => 'www-data',
-          'request_headers'   => ['unset Proxy early'],
+          'request_headers'   => [
+                                   'unset Proxy early',
+                                   'set X-Unique-Id %{UNIQUE_ID}e'
+                                 ],
           'port'              => 80,
           'access_log_format' => 'extended_json',
           'setenvif'          => [
@@ -59,7 +62,10 @@ describe 'profiles::publiq::prototypes' do
           'virtual_docroot'   => '/var/www/prototypes/%1',
           'docroot_owner'     => 'www-data',
           'docroot_group'     => 'www-data',
-          'request_headers'   => ['unset Proxy early'],
+          'request_headers'   => [
+                                   'unset Proxy early',
+                                   'set X-Unique-Id %{UNIQUE_ID}e'
+                                 ],
           'port'              => 80,
           'access_log_format' => 'extended_json',
           'setenvif'          => [
@@ -95,7 +101,10 @@ describe 'profiles::publiq::prototypes' do
             'virtual_docroot'   => '/var/www/prototypes/%1',
             'docroot_owner'     => 'www-data',
             'docroot_group'     => 'www-data',
-            'request_headers'   => ['unset Proxy early'],
+            'request_headers'   => [
+                                     'unset Proxy early',
+                                     'set X-Unique-Id %{UNIQUE_ID}e'
+                                   ],
             'access_log_format' => 'extended_json',
             'setenvif'          => [
                                      'X-Forwarded-Proto "https" HTTPS=on',

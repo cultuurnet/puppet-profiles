@@ -42,6 +42,7 @@ describe 'profiles::apache::vhost::php_fpm' do
               'access_log_env_var' => '!nolog',
               'request_headers'    => [
                                         'unset Proxy early',
+                                        'set X-Unique-Id %{UNIQUE_ID}e',
                                         'setifempty X-Forwarded-Port "80"',
                                         'setifempty X-Forwarded-Proto "http"'
                                       ],
@@ -84,6 +85,7 @@ describe 'profiles::apache::vhost::php_fpm' do
               'access_log_env_var' => '!nolog',
               'request_headers'    => [
                                         'unset Proxy early',
+                                        'set X-Unique-Id %{UNIQUE_ID}e',
                                         'setifempty X-Forwarded-Port "80"',
                                         'setifempty X-Forwarded-Proto "http"'
                                       ],
@@ -127,6 +129,7 @@ describe 'profiles::apache::vhost::php_fpm' do
               'access_log_env_var' => '!nolog',
               'request_headers'    => [
                                         'unset Proxy early',
+                                        'set X-Unique-Id %{UNIQUE_ID}e',
                                         'setifempty X-Forwarded-Port "80"',
                                         'setifempty X-Forwarded-Proto "http"'
                                       ],
@@ -188,6 +191,7 @@ describe 'profiles::apache::vhost::php_fpm' do
               'access_log_env_var' => '!nolog',
               'request_headers'    => [
                                         'unset Proxy early',
+                                        'set X-Unique-Id %{UNIQUE_ID}e',
                                         'setifempty X-Forwarded-Port "443"',
                                         'setifempty X-Forwarded-Proto "https"'
                                       ],
@@ -232,6 +236,7 @@ describe 'profiles::apache::vhost::php_fpm' do
             'access_log_env_var' => '!nolog',
             'request_headers'    => [
                                       'unset Proxy early',
+                                      'set X-Unique-Id %{UNIQUE_ID}e',
                                       'setifempty X-Forwarded-Port "80"',
                                       'setifempty X-Forwarded-Proto "http"'
                                     ],

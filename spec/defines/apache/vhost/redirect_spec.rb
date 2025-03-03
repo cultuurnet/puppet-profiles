@@ -32,7 +32,10 @@ describe 'profiles::apache::vhost::redirect' do
             'manage_docroot'    => false,
             'port'              => 80,
             'ssl'               => false,
-            'request_headers'   => ['unset Proxy early'],
+            'request_headers'   => [
+                                     'unset Proxy early',
+                                     'set X-Unique-Id %{UNIQUE_ID}e'
+                                   ],
             'access_log_format' => 'extended_json',
             'setenvif'          => [
                                      'X-Forwarded-Proto "https" HTTPS=on',

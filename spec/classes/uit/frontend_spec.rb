@@ -64,7 +64,10 @@ describe 'profiles::uit::frontend' do
               'access_log_env_var' => '!nolog',
               'custom_fragment'    => nil,
               'error_documents'    => [],
-              'request_headers'    => ['unset Proxy early'],
+              'request_headers'    => [
+                                        'unset Proxy early',
+                                        'set X-Unique-Id %{UNIQUE_ID}e'
+                                      ],
               'directories'        => [{
                                         'path'           => '/',
                                         'options'        => ['Indexes', 'MultiViews'],

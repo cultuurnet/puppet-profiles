@@ -111,12 +111,8 @@ define profiles::apache::vhost::graphite_web (
     directories           => $directories,
     auth_oidc             => $auth_openid_connect,
     oidc_settings         => $openid_connect_settings,
-    setenvif              => [
-                               'X-Forwarded-Proto "https" HTTPS=on',
-                               'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
-                             ],
-    request_headers       => [
-                               'unset Proxy early',
+    setenvif              => $profiles::apache::defaults::setenvif,
+    request_headers       => $profiles::apache::defaults::request_headers + [
                                "setifempty X-Forwarded-Port \"${port}\"",
                                "setifempty X-Forwarded-Proto \"${transport}\""
                              ],

@@ -30,6 +30,7 @@ describe 'profiles::apache::vhost::basic' do
             'ssl'                => false,
             'request_headers'    => [
                                       'unset Proxy early',
+                                      'set X-Unique-Id %{UNIQUE_ID}e',
                                       'setifempty X-Forwarded-Port "80"',
                                       'setifempty X-Forwarded-Proto "http"'
                                     ],
@@ -72,6 +73,7 @@ describe 'profiles::apache::vhost::basic' do
             'oidc_settings'      => nil,
             'request_headers'    => [
                                       'unset Proxy early',
+                                      'set X-Unique-Id %{UNIQUE_ID}e',
                                       'setifempty X-Forwarded-Port "80"',
                                       'setifempty X-Forwarded-Proto "http"'
                                     ],
@@ -155,6 +157,7 @@ describe 'profiles::apache::vhost::basic' do
                 'ssl_key'            => '/etc/ssl/private/wildcard.example.com.key',
                 'request_headers'    => [
                                           'unset Proxy early',
+                                          'set X-Unique-Id %{UNIQUE_ID}e',
                                           'setifempty X-Forwarded-Port "443"',
                                           'setifempty X-Forwarded-Proto "https"'
                                         ],

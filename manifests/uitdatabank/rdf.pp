@@ -9,13 +9,6 @@ class profiles::uitdatabank::rdf (
   $port                  = 80
   $transport             = 'http'
   $backend_url_sanitized = regsubst($backend_url, '/$', '')
-  $request_headers       = [
-                             'unset Proxy early',
-                             'set X-Unique-Id %{UNIQUE_ID}e',
-                             "setifempty X-Forwarded-Port \"${port}\"",
-                             "setifempty X-Forwarded-Proto \"${transport}\"",
-                             'set Accept "text/turtle"'
-                           ]
   $rewrites              = [ {
                              comment      => 'Reverse proxy /(events|places|organizers)/<uuid> to backend',
                              rewrite_cond => [
@@ -54,12 +47,13 @@ class profiles::uitdatabank::rdf (
     port              => $port,
     access_log_format => 'extended_json',
     ssl_proxyengine   => $https_backend,
-    request_headers   => $request_headers,
-    rewrites          => $rewrites,
-    setenvif          => [
-                           'X-Forwarded-Proto "https" HTTPS=on',
-                           'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+    request_headers   => $profiles::apache::defaults::request_headers + [
+                           "setifempty X-Forwarded-Port \"${port}\"",
+                           "setifempty X-Forwarded-Proto \"${transport}\"",
+                           'set Accept "text/turtle"'
                          ],
+    rewrites          => $rewrites,
+    setenvif          => $profiles::apache::defaults::setenvif,
     require           => [Class['apache::mod::proxy'], Class['apache::mod::proxy_http']]
   }
 
