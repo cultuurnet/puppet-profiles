@@ -38,7 +38,7 @@ describe 'profiles::apache::vhost::basic' do
             'access_log_env_var' => '!nolog',
             'setenvif'           => [
                                       'X-Forwarded-Proto "https" HTTPS=on',
-                                      'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                      'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                     ],
             'directories'        => [
                                       {
@@ -81,7 +81,7 @@ describe 'profiles::apache::vhost::basic' do
             'access_log_env_var' => '!nolog',
             'setenvif'           => [
                                       'X-Forwarded-Proto "https" HTTPS=on',
-                                      'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                      'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                     ],
             'directories'        => [
                                       {
@@ -165,7 +165,7 @@ describe 'profiles::apache::vhost::basic' do
                 'access_log_env_var' => '!nolog',
                 'setenvif'           => [
                                           'X-Forwarded-Proto "https" HTTPS=on',
-                                          'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                          'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                         ],
                 'auth_oidc'          => true,
                 'oidc_settings'      => {

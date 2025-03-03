@@ -39,7 +39,7 @@ describe 'profiles::apache::vhost::redirect' do
             'access_log_format' => 'extended_json',
             'setenvif'          => [
                                      'X-Forwarded-Proto "https" HTTPS=on',
-                                     'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                     'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                    ],
             'redirect_source'   => '/',
             'redirect_dest'     => 'https://davinci.example.com/',

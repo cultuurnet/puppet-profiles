@@ -7,6 +7,6 @@ class profiles::apache::defaults inherits ::profiles {
 
   $setenvif        = [
                        'X-Forwarded-Proto "https" HTTPS=on',
-                       'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                       'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                      ]
 }

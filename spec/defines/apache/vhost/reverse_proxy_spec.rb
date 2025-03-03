@@ -55,7 +55,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                 'directories'           => [],
                 'setenvif'              => [
                                              'X-Forwarded-Proto "https" HTTPS=on',
-                                             'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                             'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                            ],
                 'allow_encoded_slashes' => 'off',
                 'proxy_preserve_host'   => false,
@@ -113,7 +113,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                            },
                 'setenvif'              => [
                                              'X-Forwarded-Proto "https" HTTPS=on',
-                                             'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                             'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                            ],
                 'allow_encoded_slashes' => 'off',
                 'proxy_preserve_host'   => false,
@@ -182,7 +182,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                 'access_log_format'     => 'extended_json',
                 'setenvif'              => [
                                              'X-Forwarded-Proto "https" HTTPS=on',
-                                             'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                             'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                            ],
                 'ssl'                   => true,
                 'ssl_cert'              => '/etc/ssl/certs/foobar.example.com.bundle.crt',
@@ -261,7 +261,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                 'access_log_format'     => 'extended_json',
                 'setenvif'              => [
                                              'X-Forwarded-Proto "https" HTTPS=on',
-                                             'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                             'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                            ],
                 'auth_oidc'             => true,
                 'directories'           => [{

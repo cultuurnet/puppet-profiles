@@ -37,7 +37,7 @@ describe 'profiles::uitdatabank::rdf' do
                                  ],
           'setenvif'          => [
                                    'X-Forwarded-Proto "https" HTTPS=on',
-                                   'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                   'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                  ],
           'rewrites'          => [ {
                                    'comment'      => 'Reverse proxy /(events|places|organizers)/<uuid> to backend',
@@ -87,7 +87,7 @@ describe 'profiles::uitdatabank::rdf' do
                                  ],
           'setenvif'          => [
                                    'X-Forwarded-Proto "https" HTTPS=on',
-                                   'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                   'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                  ],
           'rewrites'          => [ {
                                    'comment'      => 'Reverse proxy /(events|places|organizers)/<uuid> to backend',

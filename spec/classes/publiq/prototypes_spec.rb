@@ -37,7 +37,7 @@ describe 'profiles::publiq::prototypes' do
           'access_log_format' => 'extended_json',
           'setenvif'          => [
                                    'X-Forwarded-Proto "https" HTTPS=on',
-                                   'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                   'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                  ],
           'ssl'               => false
         ) }
@@ -70,7 +70,7 @@ describe 'profiles::publiq::prototypes' do
           'access_log_format' => 'extended_json',
           'setenvif'          => [
                                    'X-Forwarded-Proto "https" HTTPS=on',
-                                   'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                   'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                  ],
           'ssl'               => false
         ) }
@@ -108,7 +108,7 @@ describe 'profiles::publiq::prototypes' do
             'access_log_format' => 'extended_json',
             'setenvif'          => [
                                      'X-Forwarded-Proto "https" HTTPS=on',
-                                     'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                     'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                    ],
             'port'              => 443,
             'ssl'               => true,
