@@ -11,6 +11,7 @@ class profiles::apache (
     fail('The HTTP/2 protocol is not supported with MPM module prefork')
   }
 
+  include profiles::apache::defaults
   include profiles::apache::logformats
 
   realize Group['www-data']
