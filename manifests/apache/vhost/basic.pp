@@ -81,17 +81,13 @@ define profiles::apache::vhost::basic (
     manage_docroot     => false,
     auth_oidc          => $auth_openid_connect,
     oidc_settings      => $openid_connect_settings,
-    request_headers    => [
-                            'unset Proxy early',
+    request_headers    => $profiles::apache::defaults::request_headers + [
                             "setifempty X-Forwarded-Port \"${port}\"",
                             "setifempty X-Forwarded-Proto \"${transport}\""
                           ],
     access_log_format  => $access_log_format,
     access_log_env_var => '!nolog',
-    setenvif           => [
-                            'X-Forwarded-Proto "https" HTTPS=on',
-                            'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
-                          ],
+    setenvif           => $profiles::apache::defaults::setenvif,
     directories        => $openid_connect_directories + $default_directories + [$directories].flatten
   }
 }

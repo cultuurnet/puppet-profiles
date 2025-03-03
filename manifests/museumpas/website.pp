@@ -88,9 +88,7 @@ class profiles::museumpas::website (
     serveraliases     => [$serveraliases].flatten,
     docroot           => "${basedir}/public",
     manage_docroot    => false,
-    request_headers   => [
-                         'unset Proxy early'
-                         ],
+    request_headers   => $profiles::apache::defaults::request_headers,
     port              => 80,
     access_log_format => 'extended_json',
     directories       => [{
@@ -115,12 +113,9 @@ class profiles::museumpas::website (
                                               ]
                          }],
     redirect_status   => 'permanent',
-    redirect_source   => [ '/privacy' ],
-    redirect_dest     => [ '/nl/voorwaarden-privacy-museumpas' ],
-    setenvif          => [
-                           'X-Forwarded-Proto "https" HTTPS=on',
-                           'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+)" CLIENT_IP=$1',
-                         ],
+    redirect_source   => ['/privacy'],
+    redirect_dest     => ['/nl/voorwaarden-privacy-museumpas'],
+    setenvif          => $profiles::apache::defaults::setenvif,
     require           => Class['profiles::apache']
   }
 

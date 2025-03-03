@@ -167,9 +167,7 @@ class profiles::uit::frontend (
     serveraliases      => [$serveraliases].flatten,
     docroot            => $basedir,
     manage_docroot     => false,
-    request_headers    => [
-                            'unset Proxy early'
-                          ],
+    request_headers    => $profiles::apache::defaults::request_headers,
     port               => 80,
     access_log_format  => 'extended_json',
     access_log_env_var => '!nolog',
@@ -197,15 +195,12 @@ class profiles::uit::frontend (
                             aliasmatch => '^/(css/|img/|js/|icons/|_nuxt/|sw.js)(.*)$',
                             path       => "${basedir}/packages/app/.output/public/\$1\$2"
                           }],
-    rewrites           => [ $rewrite_maintenance_page, $rewrite_deployment_page ].filter |$item| { $item } + $rewrites_compression,
+    rewrites           => [$rewrite_maintenance_page, $rewrite_deployment_page].filter |$item| { $item } + $rewrites_compression,
     headers            => $headers_compression,
-    error_documents    => [ $error_document_maintenance_page, $error_document_deployment_page ].filter |$item| { $item },
+    error_documents    => [$error_document_maintenance_page, $error_document_deployment_page].filter |$item| { $item },
     custom_fragment    => $vhost_custom_fragment,
-    setenvif           => [
-                            'X-Forwarded-Proto "https" HTTPS=on',
-                            'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
-                          ],
-    require => [Class['profiles::apache'], File['/var/www/uit-frontend']]
+    setenvif           => $profiles::apache::defaults::setenvif,
+    require            => [Class['profiles::apache'], File['/var/www/uit-frontend']]
   }
 
   $redirect_vhosts.each |$name, $attributes| {

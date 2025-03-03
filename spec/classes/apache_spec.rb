@@ -20,6 +20,8 @@ describe 'profiles::apache' do
         it { is_expected.to contain_group('www-data') }
         it { is_expected.to contain_user('www-data') }
 
+        it { is_expected.to contain_class('profiles::apache::defaults') }
+
         it { is_expected.to contain_class('apache').with(
           'mpm_module'            => false,
           'manage_group'          => false,

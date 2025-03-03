@@ -18,15 +18,12 @@ define profiles::uit::frontend::redirect_vhosts (
     serveraliases      => $aliases,
     docroot            => '/var/www',
     manage_docroot     => false,
-    request_headers    => ['unset Proxy early'],
+    request_headers    => $profiles::apache::defaults::request_headers,
     port               => 80,
     access_log_format  => 'extended_json',
     access_log_env_var => '!nolog',
     custom_fragment    => "Include /var/www/.redirect.${title}",
-    setenvif           => [
-                            'X-Forwarded-Proto "https" HTTPS=on',
-                            'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
-                          ],
-    require => File["${title}-redirects"]
+    setenvif           => $profiles::apache::defaults::setenvif,
+    require            => File["${title}-redirects"]
   }
 }

@@ -45,6 +45,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                 'ssl_proxyengine'       => false,
                 'request_headers'       => [
                                              'unset Proxy early',
+                                             'set X-Unique-Id %{UNIQUE_ID}e',
                                              'setifempty X-Forwarded-Port "80"',
                                              'setifempty X-Forwarded-Proto "http"'
                                            ],
@@ -54,7 +55,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                 'directories'           => [],
                 'setenvif'              => [
                                              'X-Forwarded-Proto "https" HTTPS=on',
-                                             'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                             'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                            ],
                 'allow_encoded_slashes' => 'off',
                 'proxy_preserve_host'   => false,
@@ -91,6 +92,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                 'ssl_proxyengine'       => false,
                 'request_headers'       => [
                                              'unset Proxy early',
+                                             'set X-Unique-Id %{UNIQUE_ID}e',
                                              'setifempty X-Forwarded-Port "80"',
                                              'setifempty X-Forwarded-Proto "http"'
                                            ],
@@ -111,7 +113,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                            },
                 'setenvif'              => [
                                              'X-Forwarded-Proto "https" HTTPS=on',
-                                             'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                             'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                            ],
                 'allow_encoded_slashes' => 'off',
                 'proxy_preserve_host'   => false,
@@ -180,7 +182,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                 'access_log_format'     => 'extended_json',
                 'setenvif'              => [
                                              'X-Forwarded-Proto "https" HTTPS=on',
-                                             'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                             'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                            ],
                 'ssl'                   => true,
                 'ssl_cert'              => '/etc/ssl/certs/foobar.example.com.bundle.crt',
@@ -188,6 +190,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                 'ssl_proxyengine'       => true,
                 'request_headers'       => [
                                              'unset Proxy early',
+                                             'set X-Unique-Id %{UNIQUE_ID}e',
                                              'setifempty X-Forwarded-Port "443"',
                                              'setifempty X-Forwarded-Proto "https"'
                                            ],
@@ -258,7 +261,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                 'access_log_format'     => 'extended_json',
                 'setenvif'              => [
                                              'X-Forwarded-Proto "https" HTTPS=on',
-                                             'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                             'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                            ],
                 'auth_oidc'             => true,
                 'directories'           => [{
@@ -278,6 +281,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                 'ssl_proxyengine'       => false,
                 'request_headers'       => [
                                              'unset Proxy early',
+                                             'set X-Unique-Id %{UNIQUE_ID}e',
                                              'setifempty X-Forwarded-Port "80"',
                                              'setifempty X-Forwarded-Proto "http"'
                                            ],

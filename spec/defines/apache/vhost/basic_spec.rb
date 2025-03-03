@@ -30,6 +30,7 @@ describe 'profiles::apache::vhost::basic' do
             'ssl'                => false,
             'request_headers'    => [
                                       'unset Proxy early',
+                                      'set X-Unique-Id %{UNIQUE_ID}e',
                                       'setifempty X-Forwarded-Port "80"',
                                       'setifempty X-Forwarded-Proto "http"'
                                     ],
@@ -37,7 +38,7 @@ describe 'profiles::apache::vhost::basic' do
             'access_log_env_var' => '!nolog',
             'setenvif'           => [
                                       'X-Forwarded-Proto "https" HTTPS=on',
-                                      'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                      'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                     ],
             'directories'        => [
                                       {
@@ -72,6 +73,7 @@ describe 'profiles::apache::vhost::basic' do
             'oidc_settings'      => nil,
             'request_headers'    => [
                                       'unset Proxy early',
+                                      'set X-Unique-Id %{UNIQUE_ID}e',
                                       'setifempty X-Forwarded-Port "80"',
                                       'setifempty X-Forwarded-Proto "http"'
                                     ],
@@ -79,7 +81,7 @@ describe 'profiles::apache::vhost::basic' do
             'access_log_env_var' => '!nolog',
             'setenvif'           => [
                                       'X-Forwarded-Proto "https" HTTPS=on',
-                                      'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                      'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                     ],
             'directories'        => [
                                       {
@@ -155,6 +157,7 @@ describe 'profiles::apache::vhost::basic' do
                 'ssl_key'            => '/etc/ssl/private/wildcard.example.com.key',
                 'request_headers'    => [
                                           'unset Proxy early',
+                                          'set X-Unique-Id %{UNIQUE_ID}e',
                                           'setifempty X-Forwarded-Port "443"',
                                           'setifempty X-Forwarded-Proto "https"'
                                         ],
@@ -162,7 +165,7 @@ describe 'profiles::apache::vhost::basic' do
                 'access_log_env_var' => '!nolog',
                 'setenvif'           => [
                                           'X-Forwarded-Proto "https" HTTPS=on',
-                                          'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                          'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                         ],
                 'auth_oidc'          => true,
                 'oidc_settings'      => {

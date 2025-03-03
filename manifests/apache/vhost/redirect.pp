@@ -51,12 +51,9 @@ define profiles::apache::vhost::redirect (
     ssl_key           => $ssl_key,
     docroot           => '/var/www/html',
     manage_docroot    => false,
-    request_headers   => ['unset Proxy early'],
+    request_headers   => $profiles::apache::defaults::request_headers,
     access_log_format => $access_log_format,
-    setenvif          => [
-                           'X-Forwarded-Proto "https" HTTPS=on',
-                           'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
-                         ],
+    setenvif          => $profiles::apache::defaults::setenvif,
     redirect_source   => '/',
     redirect_dest     => "${dest}/",
     redirect_status   => 'permanent'

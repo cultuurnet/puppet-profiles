@@ -29,12 +29,15 @@ describe 'profiles::publiq::prototypes' do
           'virtual_docroot'   => '/var/www/prototypes/%1',
           'docroot_owner'     => 'www-data',
           'docroot_group'     => 'www-data',
-          'request_headers'   => ['unset Proxy early'],
+          'request_headers'   => [
+                                   'unset Proxy early',
+                                   'set X-Unique-Id %{UNIQUE_ID}e'
+                                 ],
           'port'              => 80,
           'access_log_format' => 'extended_json',
           'setenvif'          => [
                                    'X-Forwarded-Proto "https" HTTPS=on',
-                                   'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                   'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                  ],
           'ssl'               => false
         ) }
@@ -59,12 +62,15 @@ describe 'profiles::publiq::prototypes' do
           'virtual_docroot'   => '/var/www/prototypes/%1',
           'docroot_owner'     => 'www-data',
           'docroot_group'     => 'www-data',
-          'request_headers'   => ['unset Proxy early'],
+          'request_headers'   => [
+                                   'unset Proxy early',
+                                   'set X-Unique-Id %{UNIQUE_ID}e'
+                                 ],
           'port'              => 80,
           'access_log_format' => 'extended_json',
           'setenvif'          => [
                                    'X-Forwarded-Proto "https" HTTPS=on',
-                                   'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                   'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                  ],
           'ssl'               => false
         ) }
@@ -95,11 +101,14 @@ describe 'profiles::publiq::prototypes' do
             'virtual_docroot'   => '/var/www/prototypes/%1',
             'docroot_owner'     => 'www-data',
             'docroot_group'     => 'www-data',
-            'request_headers'   => ['unset Proxy early'],
+            'request_headers'   => [
+                                     'unset Proxy early',
+                                     'set X-Unique-Id %{UNIQUE_ID}e'
+                                   ],
             'access_log_format' => 'extended_json',
             'setenvif'          => [
                                      'X-Forwarded-Proto "https" HTTPS=on',
-                                     'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                     'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                    ],
             'port'              => 443,
             'ssl'               => true,

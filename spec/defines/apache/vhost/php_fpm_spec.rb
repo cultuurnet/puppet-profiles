@@ -42,12 +42,13 @@ describe 'profiles::apache::vhost::php_fpm' do
               'access_log_env_var' => '!nolog',
               'request_headers'    => [
                                         'unset Proxy early',
+                                        'set X-Unique-Id %{UNIQUE_ID}e',
                                         'setifempty X-Forwarded-Port "80"',
                                         'setifempty X-Forwarded-Proto "http"'
                                       ],
               'setenvif'           => [
                                         'X-Forwarded-Proto "https" HTTPS=on',
-                                        'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                        'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                       ],
               'directories'        => [
                                         {
@@ -84,12 +85,13 @@ describe 'profiles::apache::vhost::php_fpm' do
               'access_log_env_var' => '!nolog',
               'request_headers'    => [
                                         'unset Proxy early',
+                                        'set X-Unique-Id %{UNIQUE_ID}e',
                                         'setifempty X-Forwarded-Port "80"',
                                         'setifempty X-Forwarded-Proto "http"'
                                       ],
               'setenvif'           => [
                                         'X-Forwarded-Proto "https" HTTPS=on',
-                                        'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                        'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                       ],
               'directories'        => [
                                         {
@@ -127,12 +129,13 @@ describe 'profiles::apache::vhost::php_fpm' do
               'access_log_env_var' => '!nolog',
               'request_headers'    => [
                                         'unset Proxy early',
+                                        'set X-Unique-Id %{UNIQUE_ID}e',
                                         'setifempty X-Forwarded-Port "80"',
                                         'setifempty X-Forwarded-Proto "http"'
                                       ],
               'setenvif'           => [
                                         'X-Forwarded-Proto "https" HTTPS=on',
-                                        'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                        'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                       ],
               'directories'        => [
                                         {
@@ -188,12 +191,13 @@ describe 'profiles::apache::vhost::php_fpm' do
               'access_log_env_var' => '!nolog',
               'request_headers'    => [
                                         'unset Proxy early',
+                                        'set X-Unique-Id %{UNIQUE_ID}e',
                                         'setifempty X-Forwarded-Port "443"',
                                         'setifempty X-Forwarded-Proto "https"'
                                       ],
               'setenvif'           => [
                                         'X-Forwarded-Proto "https" HTTPS=on',
-                                        'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                        'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                       ],
               'directories'        => [
                                         {
@@ -232,12 +236,13 @@ describe 'profiles::apache::vhost::php_fpm' do
             'access_log_env_var' => '!nolog',
             'request_headers'    => [
                                       'unset Proxy early',
+                                      'set X-Unique-Id %{UNIQUE_ID}e',
                                       'setifempty X-Forwarded-Port "80"',
                                       'setifempty X-Forwarded-Proto "http"'
                                     ],
             'setenvif'           => [
                                       'X-Forwarded-Proto "https" HTTPS=on',
-                                      'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                      'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                     ],
             'directories'        => [
                                       {

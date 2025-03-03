@@ -32,11 +32,14 @@ describe 'profiles::apache::vhost::redirect' do
             'manage_docroot'    => false,
             'port'              => 80,
             'ssl'               => false,
-            'request_headers'   => ['unset Proxy early'],
+            'request_headers'   => [
+                                     'unset Proxy early',
+                                     'set X-Unique-Id %{UNIQUE_ID}e'
+                                   ],
             'access_log_format' => 'extended_json',
             'setenvif'          => [
                                      'X-Forwarded-Proto "https" HTTPS=on',
-                                     'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                     'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                    ],
             'redirect_source'   => '/',
             'redirect_dest'     => 'https://davinci.example.com/',
