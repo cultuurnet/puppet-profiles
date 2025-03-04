@@ -1,21 +1,23 @@
 class profiles::uitdatabank::websocket_server::deployment (
-  String           $config_source,
-  String           $version        = 'latest',
-  Boolean          $service_manage = true,
-  String           $service_ensure = 'running',
-  Boolean          $service_enable = true,
-  Integer          $listen_port    = lookup('profiles::uitdatabank::websocket_server::listen_port', Integer, 'first', 3000),
-  Optional[String] $puppetdb_url   = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+  String                     $config_source,
+  String                     $version         = 'latest',
+  String                     $repository      = 'uitdatabank-websocket-server',
+  Enum['running', 'stopped'] $service_status  = 'running',
+  Stdlib::IP::Address::V4    $service_address = '127.0.0.1',
+  Integer                    $service_port    = 3000,
+  Optional[String]           $puppetdb_url    = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $basedir = '/var/www/udb3-websocket-server'
 
-  realize Apt::Source['uitdatabank-websocket-server']
+  realize Apt::Source[$repository]
+  realize Group['www-data']
+  realize User['www-data']
 
   package { 'uitdatabank-websocket-server':
     ensure  => $version,
-    notify  => Profiles::Deployment::Versions[$title],
-    require => Apt::Source['uitdatabank-websocket-server']
+    require => [Apt::Source[$repository], Group['www-data'], User['www-data']],
+    notify  => [Service['uitdatabank-websocket-server'], Profiles::Deployment::Versions[$title]]
   }
 
   file { 'uitdatabank-websocket-server-config':
@@ -24,23 +26,25 @@ class profiles::uitdatabank::websocket_server::deployment (
     owner   => 'www-data',
     group   => 'www-data',
     source  => $config_source,
-    require => Package['uitdatabank-websocket-server']
+    require => [Package['uitdatabank-websocket-server'], Group['www-data'], User['www-data']],
+    notify  => Service['uitdatabank-websocket-server']
   }
 
-  if $service_manage {
-    file { 'uitdatabank-websocket-server-service-defaults':
-      ensure  => 'file',
-      path    => '/etc/default/uitdatabank-websocket-server',
-      content => "PORT=${listen_port}",
-      require => Package['uitdatabank-websocket-server']
-    }
+  file { 'uitdatabank-websocket-server-service-defaults':
+    ensure  => 'file',
+    path    => '/etc/default/uitdatabank-websocket-server',
+    content => "HOST=${service_address}\nPORT=${service_port}",
+    require => Package['uitdatabank-websocket-server'],
+    notify  => Service['uitdatabank-websocket-server']
+  }
 
-    service { 'uitdatabank-websocket-server':
-      ensure    => $service_ensure,
-      enable    => $service_enable,
-      subscribe => [Package['uitdatabank-websocket-server'], File['uitdatabank-websocket-server-config'], File['uitdatabank-websocket-server-service-defaults']],
-      hasstatus => true
-    }
+  service { 'uitdatabank-websocket-server':
+    ensure    => $service_status,
+    enable    => $service_status ? {
+                   'running' => true,
+                   'stopped' => false
+                 },
+    hasstatus => true
   }
 
   profiles::deployment::versions { $title:

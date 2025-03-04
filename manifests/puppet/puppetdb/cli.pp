@@ -1,23 +1,19 @@
-class profiles::puppet::puppetdb::cli (
-  Variant[String, Array[String]] $server_urls,
-  Variant[String, Array[String]] $users          = 'root',
-  Optional[String]               $certificate    = undef,
-  Optional[String]               $private_key    = undef,
-  Optional[String]               $ca_certificate = undef
-) inherits ::profiles {
+define profiles::puppet::puppetdb::cli (
+  Optional[String]                         $certificate_name = undef,
+  Optional[Variant[String, Array[String]]] $server_urls      = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+) {
 
-  realize Apt::Source['publiq-tools']
+  include ::profiles
 
-  package { 'rubygem-puppetdb-cli':
-    require => Apt::Source['publiq-tools']
+  unless $server_urls {
+    fail("Defined resource type Profiles::Puppet::Puppetdb::Cli[${title}] expects a value for parameter 'server_urls'")
   }
 
-  [$users].flatten.each |$user| {
-    profiles::puppet::puppetdb::cli::config { $user:
-      server_urls    => $server_urls,
-      certificate    => $certificate,
-      private_key    => $private_key,
-      ca_certificate => $ca_certificate
-    }
+  realize Apt::Source['publiq-tools']
+  realize Package['rubygem-puppetdb-cli']
+
+  profiles::puppet::puppetdb::cli::config { $title:
+    certificate_name => $certificate_name,
+    server_urls      => $server_urls
   }
 }

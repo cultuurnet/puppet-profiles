@@ -13,7 +13,7 @@ class profiles::museumpas::automatic_renewal_mail (
 
   cron { $title:
     ensure      => $ensure,
-    environment => [ 'MAILTO=infra@publiq.be'],
+    environment => [ 'MAILTO=infra+cron@publiq.be'],
     command     => "/usr/bin/curl -X 'POST' -H 'Authorization: Bearer ${jwt_token}' ${api_url}/rest/system/autorenewalReminder",
     hour        => $hour,
     minute      => $minute

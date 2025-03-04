@@ -1,105 +1,78 @@
 define profiles::puppet::puppetdb::cli::config (
-  Variant[String,Array[String]] $server_urls,
-  Optional[String]              $certificate    = undef,
-  Optional[String]              $private_key    = undef,
-  Optional[String]              $ca_certificate = undef
+  Optional[String]                        $certificate_name = undef,
+  Optional[Variant[String,Array[String]]] $server_urls      = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) {
 
   include ::profiles
 
-  case $title {
-    'root':    {
-                 if ($certificate and $private_key) {
-                   $config_rootdir       = '/root/.puppetlabs'
-                   $certificate_filename = 'puppetdb-cli.crt'
-                   $private_key_filename = 'puppetdb-cli.key'
-                 } else {
-                   $config_rootdir = '/etc/puppetlabs'
-                   $certificate_filename = "${trusted['certname']}.pem"
-                   $private_key_filename = "${trusted['certname']}.pem"
-                 }
-               }
-    'jenkins': {
-                 if ($certificate and $private_key) {
-                   $config_rootdir = "/var/lib/${title}/.puppetlabs"
-                   $certificate_filename = 'puppetdb-cli.crt'
-                   $private_key_filename = 'puppetdb-cli.key'
-                 } else {
-                   fail("Profiles::Puppetdb::Cli::Config[${title}] expects a value for parameters 'certificate' and 'private_key'")
-                 }
-
-                 realize Group['jenkins']
-                 realize User['jenkins']
-               }
-    'www-data': {
-                 if ($certificate and $private_key) {
-                   $config_rootdir = '/var/www/.puppetlabs'
-                   $certificate_filename = 'puppetdb-cli.crt'
-                   $private_key_filename = 'puppetdb-cli.key'
-                 } else {
-                   fail("Profiles::Puppetdb::Cli::Config[${title}] expects a value for parameters 'certificate' and 'private_key'")
-                 }
-
-                 realize Group['www-data']
-                 realize User['www-data']
-               }
-    default:   {
-                 if ($certificate and $private_key) {
-                   $config_rootdir = "/home/${title}/.puppetlabs"
-                   $certificate_filename = 'puppetdb-cli.crt'
-                   $private_key_filename = 'puppetdb-cli.key'
-                 } else {
-                   fail("Profiles::Puppetdb::Cli::Config[${title}] expects a value for parameters 'certificate' and 'private_key'")
-                 }
-               }
+  unless $server_urls {
+    fail("Defined resource type Profiles::Puppet::Puppetdb::Cli::Config[${title}] expects a value for parameter 'server_urls'")
   }
 
-  $ssl_dir                 = "${config_rootdir}/puppet/ssl"
   $default_file_attributes = {
-                               owner => $title,
-                               group => $title
+                               owner   => $title,
+                               group   => $title
                              }
 
-  if ($certificate and $private_key) {
-    [
-      $config_rootdir,
-      "${config_rootdir}/puppet",
-      "${config_rootdir}/puppet/ssl",
-      "${config_rootdir}/puppet/ssl/certs",
-      "${config_rootdir}/puppet/ssl/private_keys"
-    ].each |$directory| {
-      file { $directory:
-        ensure => 'directory',
-        *      => $default_file_attributes
-      }
-    }
+  case $title {
+    'root':     {
+                  $config_rootdir = '/root/.puppetlabs'
+                }
+    'jenkins':  {
+                  $config_rootdir = "/var/lib/${title}/.puppetlabs"
 
-    file { "${ssl_dir}/certs/puppetdb-cli.crt":
-      ensure  => 'file',
-      content => $certificate,
-      *       => $default_file_attributes
-    }
+                  realize Group['jenkins']
+                  realize User['jenkins']
+                }
+    'www-data': {
+                  $config_rootdir = '/var/www/.puppetlabs'
 
-    file { "${ssl_dir}/private_keys/puppetdb-cli.key":
-      ensure  => 'file',
-      mode    => '0400',
-      content => $private_key,
-      *       => $default_file_attributes
-    }
+                  realize Group['www-data']
+                  realize User['www-data']
+                }
+    default:    {
+                  $config_rootdir = "/home/${title}/.puppetlabs"
+                }
   }
 
-  if $ca_certificate {
-    file { "${ssl_dir}/certs/ca.pem":
-      ensure  => 'file',
-      content => $ca_certificate,
-      *       => $default_file_attributes
+  file { [$config_rootdir, "${config_rootdir}/puppet", "${config_rootdir}/puppet/ssl", "${config_rootdir}/puppet/ssl/certs", "${config_rootdir}/puppet/ssl/private_keys"]:
+    ensure  => 'directory',
+    *       => $default_file_attributes
+  }
+
+  if $certificate_name {
+    $certificate_filename = "${certificate_name}.pem"
+    $private_key_filename = "${certificate_name}.pem"
+
+    puppet_certificate { $certificate_name:
+      ensure               => 'present',
+      waitforcert          => 60,
+      renewal_grace_period => 5,
+      clean                => true,
+      before               => [File["${config_rootdir}/puppet/ssl/certs/${certificate_filename}"], File["${config_rootdir}/puppet/ssl/private_keys/${private_key_filename}"]]
     }
   } else {
-    file { "${ssl_dir}/certs/ca.pem":
-      ensure => 'file',
-      source => '/etc/puppetlabs/puppet/ssl/certs/ca.pem',
-      *      => $default_file_attributes
-    }
+    $certificate_filename = "${trusted['certname']}.pem"
+    $private_key_filename = "${trusted['certname']}.pem"
+  }
+
+  file { "${config_rootdir}/puppet/ssl/certs/${certificate_filename}":
+    ensure  => 'file',
+    source  => "file:///etc/puppetlabs/puppet/ssl/certs/${certificate_filename}",
+    *       => $default_file_attributes
+  }
+
+  file { "${config_rootdir}/puppet/ssl/private_keys/${private_key_filename}":
+    ensure  => 'file',
+    mode    => '0400',
+    source  => "file:///etc/puppetlabs/puppet/ssl/private_keys/${private_key_filename}",
+    *       => $default_file_attributes
+  }
+
+  file { "${config_rootdir}/puppet/ssl/certs/ca.pem":
+    ensure => 'file',
+    source => 'file:///etc/puppetlabs/puppet/ssl/certs/ca.pem',
+    *      => $default_file_attributes
   }
 
   file { "${config_rootdir}/client-tools":

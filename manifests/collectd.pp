@@ -1,6 +1,6 @@
 class profiles::collectd (
-  Boolean          $enable        = true,
-  Optional[String] $graphite_host = undef
+  Boolean                                  $enable         = true,
+  Optional[Variant[String, Array[String]]] $graphite_hosts = undef
 ) inherits ::profiles {
 
   if $enable {
@@ -38,9 +38,14 @@ class profiles::collectd (
   class { 'collectd::plugin::processes': }
   class { 'collectd::plugin::vmem': }
 
-  if $graphite_host {
+  # if $graphite_host {
+  #   class { 'collectd::plugin::write_graphite':
+  #     carbons => { $graphite_host => { 'graphitehost' => $graphite_host } }
+  #   }
+  # }
+  if $graphite_hosts {
     class { 'collectd::plugin::write_graphite':
-      carbons => { $graphite_host => { 'graphitehost' => $graphite_host } }
+      carbons => [$graphite_hosts].flatten.reduce({}) |Hash $all_carbons, String $graphite_host| { $all_carbons + { $graphite_host => { 'graphitehost' => $graphite_host } } }
     }
   }
 }

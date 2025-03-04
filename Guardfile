@@ -1,7 +1,7 @@
-ignore %r{^spec/fixtures/}
+directories ['spec/defines', 'spec/classes', 'spec/unit', 'lib', 'manifests']
 
 guard :rspec, cmd: 'bundle exec rspec', first_match: true do
-  watch('spec/spec_helper.rb')    { 'spec' }
   watch(%r{^spec/.+_spec\.rb$})
-  watch(%r{^manifests/(.+)\.pp$}) { |m| if File.exists?("spec/classes/#{m[1]}_spec.rb"); "spec/classes/#{m[1]}_spec.rb" else "spec/defines/#{m[1]}_spec.rb" end }
+  watch(%r{^lib/(.+)\.rb$})       { |match| "spec/unit/#{match[1]}_spec.rb" }
+  watch(%r{^manifests/(.+)\.pp$}) { |match| File.exists?("spec/classes/#{match[1]}_spec.rb") ? "spec/classes/#{match[1]}_spec.rb" : "spec/defines/#{match[1]}_spec.rb" }
 end

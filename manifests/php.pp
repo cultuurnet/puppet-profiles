@@ -6,12 +6,18 @@ class profiles::php (
   Boolean                    $fpm                      = true,
   Enum['unix', 'tcp']        $fpm_socket_type          = 'unix',
   Enum['running', 'stopped'] $fpm_service_status       = 'running',
-  Boolean                    $newrelic_agent           = false,
+  Boolean                    $fpm_restart_on_change    = false,
+  Boolean                    $newrelic                 = false,
   String                     $newrelic_app_name        = $facts['networking']['fqdn'],
-  Optional[String]           $newrelic_license_key     = undef
+  Optional[String]           $newrelic_license_key     = lookup('data::newrelic::license_key', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
+  $default_settings   = {
+                          'openssl/openssl.cafile' => '/etc/ssl/certs/ca-certificates.crt'
+                        }
+
   $default_extensions = {
+                          'apcu'     => {},
                           'bcmath'   => {},
                           'curl'     => {},
                           'gd'       => {},
@@ -33,38 +39,32 @@ class profiles::php (
 
   if $fpm {
     $fpm_attributes = {
-                        fpm_service_ensure       => $fpm_service_status,
-                        fpm_service_enable       => $fpm_service_status ? {
-                                                      'running' => true,
-                                                      'stopped' => false
-                                                    },
-                        fpm_pools                => { 'www' => {} }, # https://github.com/voxpupuli/puppet-php/issues/564
-                        fpm_global_pool_settings => {
-                                                      listen_owner => 'www-data',
-                                                      listen_group => 'www-data',
-                                                      listen       => $fpm_socket_type ? {
-                                                                        'unix' => '/var/run/php/php-fpm.sock',
-                                                                        'tcp'  => '127.0.0.1:9000'
-                                                                      }
-                                                    }
+                        fpm_service_ensure           => $fpm_service_status,
+                        fpm_service_enable           => $fpm_service_status ? {
+                                                          'running' => true,
+                                                          'stopped' => false
+                                                        },
+                        fpm_pools                    => { 'www' => {} }, # https://github.com/voxpupuli/puppet-php/issues/564
+                        fpm_global_pool_settings     => {
+                                                          listen_owner => 'www-data',
+                                                          listen_group => 'www-data',
+                                                          listen       => $fpm_socket_type ? {
+                                                                            'unix' => "/run/php/php${version}-fpm.sock",
+                                                                            'tcp'  => '127.0.0.1:9000'
+                                                                          }
+                                                        },
+                        reload_fpm_on_config_changes => !$fpm_restart_on_change
                       }
 
-    systemd::dropin_file { 'php-fpm service override.conf':
-      unit     => "php${version}-fpm.service",
-      filename => 'override.conf',
-      content  => "[Install]\nAlias=php-fpm.service"
+    file { 'php-fpm service':
+      ensure => 'link',
+      path   => '/etc/systemd/system/php-fpm.service',
+      target => "/lib/systemd/system/php${version}-fpm.service",
+      notify => Systemd::Daemon_reload['php-fpm']
     }
 
-    if $fpm_service_status == 'running' {
-      exec { "re-enable php${version}-fpm":
-        command     => "systemctl reenable php${version}-fpm",
-        path        => ['/usr/sbin', '/usr/bin'],
-        refreshonly => true,
-        logoutput   => 'on_failure',
-        require     => Class['php'],
-        subscribe   => Systemd::Dropin_file['php-fpm service override.conf']
-      }
-    }
+    systemd::daemon_reload { 'php-fpm': }
+
   } else {
     $fpm_attributes = {}
   }
@@ -83,7 +83,7 @@ class profiles::php (
     composer     => false,
     dev          => false,
     pear         => false,
-    settings     => $settings,
+    settings     => $default_settings + $settings,
     extensions   => $default_extensions + $version_dependent_default_extensions + $extensions,
     fpm          => $fpm,
     *            => $fpm_attributes
@@ -110,20 +110,14 @@ class profiles::php (
     }
   }
 
-  if $newrelic_agent {
-    realize Apt::Source['newrelic']
-
-    file { 'newrelic-php5-installer.preseed':
-      path    => '/var/tmp/newrelic-php5-installer.preseed',
-      content => template('profiles/php/newrelic-php5-installer.preseed.erb'),
-      mode    => '0600',
-      backup  => false
+  if $newrelic {
+    unless $newrelic_license_key {
+      fail("Class Profiles::Php expects a value for parameter 'newrelic_license_key'")
     }
 
-    package { 'newrelic-php5':
-      ensure       => 'latest',
-      responsefile => '/var/tmp/newrelic-php5-installer.preseed',
-      require      => File['newrelic-php5-installer.preseed']
+    class { 'profiles::newrelic::php':
+      app_name    => $newrelic_app_name,
+      license_key => $newrelic_license_key
     }
   }
 }

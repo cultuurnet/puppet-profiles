@@ -12,68 +12,90 @@ describe 'profiles::jenkins::controller' do
           'admin_password' => 'passw0rd'
         } }
 
-        it { is_expected.to compile.with_all_deps }
+        context "with hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-        it { is_expected.to contain_class('profiles::jenkins::controller').with(
-          'url'                          => 'https://jenkins.example.com/',
-          'admin_password'               => 'passw0rd',
-          'version'                      => 'latest',
-          'lvm'                          => false,
-          'certificate'                  => nil,
-          'docker_registry_url'          => nil,
-          'docker_registry_credentialid' => nil,
-          'credentials'                  => [],
-          'global_libraries'             => [],
-          'pipelines'                    => [],
-          'users'                        => []
-        ) }
+          it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_class('profiles::java') }
+          it { is_expected.to contain_class('profiles::jenkins::controller').with(
+            'url'                          => 'https://jenkins.example.com/',
+            'admin_password'               => 'passw0rd',
+            'version'                      => 'latest',
+            'lvm'                          => false,
+            'certificate'                  => nil,
+            'docker_registry_url'          => nil,
+            'docker_registry_credentialid' => nil,
+            'credentials'                  => [],
+            'global_libraries'             => [],
+            'pipelines'                    => [],
+            'views'                        => [],
+            'users'                        => [],
+            'puppetdb_url'                 => 'http://localhost:8081'
+          ) }
 
-        it { is_expected.not_to contain_profiles__lvm__mount('jenkins') }
+          it { is_expected.to contain_class('profiles::java') }
 
-        it { is_expected.to contain_class('profiles::jenkins::controller::install').with(
-          'version' => 'latest'
-        ) }
+          it { is_expected.not_to contain_profiles__lvm__mount('jenkins') }
 
-        it { is_expected.to contain_class('profiles::jenkins::controller::configuration').with(
-          'url'                          => 'https://jenkins.example.com/',
-          'admin_password'               => 'passw0rd',
-          'docker_registry_url'          => nil,
-          'docker_registry_credentialid' => nil,
-          'credentials'                  => [],
-          'global_libraries'             => [],
-          'users'                        => []
-        ) }
+          it { is_expected.to contain_class('profiles::jenkins::controller::install').with(
+            'version' => 'latest'
+          ) }
 
-        it { is_expected.to contain_class('profiles::jenkins::controller::service') }
+          it { is_expected.to contain_class('profiles::jenkins::controller::configuration').with(
+            'url'                          => 'https://jenkins.example.com/',
+            'admin_password'               => 'passw0rd',
+            'docker_registry_url'          => nil,
+            'docker_registry_credentialid' => nil,
+            'credentials'                  => [],
+            'global_libraries'             => [],
+            'users'                        => [],
+            'puppetdb_url'                 => 'http://localhost:8081'
+          ) }
 
-        it { is_expected.to contain_class('profiles::jenkins::cli').with(
-          'version'        => 'latest',
-          'controller_url' => 'http://127.0.0.1:8080/'
-        ) }
+          it { is_expected.to contain_class('profiles::jenkins::controller::service') }
 
-        it { is_expected.to_not contain_profiles__apache__vhost__redirect('http://jenkins.example.com') }
+          it { is_expected.to contain_class('profiles::jenkins::cli').with(
+            'version'        => 'latest',
+            'controller_url' => 'http://127.0.0.1:8080/'
+          ) }
 
-        it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://jenkins.example.com').with(
-          'destination'           => 'http://127.0.0.1:8080/',
-          'preserve_host'         => true,
-          'allow_encoded_slashes' => 'nodecode',
-          'proxy_keywords'        => 'nocanon',
-          'support_websockets'    => true
-        ) }
+          it { is_expected.to_not contain_profiles__apache__vhost__redirect('http://jenkins.example.com') }
 
-        it { is_expected.to contain_class('profiles::jenkins::controller::install').that_requires('Class[profiles::java]') }
-        it { is_expected.to contain_class('profiles::jenkins::controller::install').that_notifies('Class[profiles::jenkins::controller::service]') }
-        it { is_expected.to contain_class('profiles::jenkins::controller::configuration').that_requires('Class[profiles::jenkins::controller::service]') }
-        it { is_expected.to contain_class('profiles::jenkins::controller::configuration').that_requires('Class[profiles::jenkins::cli]') }
-        it { is_expected.to contain_class('profiles::jenkins::cli').that_requires('Profiles::Apache::Vhost::Reverse_proxy[http://jenkins.example.com]') }
+          it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://jenkins.example.com').with(
+            'destination'           => 'http://127.0.0.1:8080/',
+            'preserve_host'         => true,
+            'allow_encoded_slashes' => 'nodecode',
+            'proxy_keywords'        => 'nocanon',
+            'support_websockets'    => true
+          ) }
+
+          it { is_expected.to contain_class('profiles::jenkins::controller::install').that_requires('Class[profiles::java]') }
+          it { is_expected.to contain_class('profiles::jenkins::controller::install').that_notifies('Class[profiles::jenkins::controller::service]') }
+          it { is_expected.to contain_class('profiles::jenkins::controller::configuration').that_requires('Class[profiles::jenkins::controller::service]') }
+          it { is_expected.to contain_class('profiles::jenkins::controller::configuration').that_requires('Class[profiles::jenkins::cli]') }
+          it { is_expected.to contain_class('profiles::jenkins::cli').that_requires('Profiles::Apache::Vhost::Reverse_proxy[http://jenkins.example.com]') }
+        end
+
+        context "without hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
+
+          it { is_expected.to contain_class('profiles::jenkins::controller::configuration').with(
+            'url'                          => 'https://jenkins.example.com/',
+            'admin_password'               => 'passw0rd',
+            'docker_registry_url'          => nil,
+            'docker_registry_credentialid' => nil,
+            'credentials'                  => [],
+            'global_libraries'             => [],
+            'users'                        => [],
+            'puppetdb_url'                 => nil
+          ) }
+        end
       end
 
       context "with volume_group datavg present" do
         let(:pre_condition) { 'volume_group { "datavg": ensure => "present" }' }
 
-        context "with url => https://foobar.example.com/, admin_password => letmein, certificate => foobar.example.com, version => 1.2.3, lvm => true, volume_group => datavg, volume_size => 20G, docker_registry_url => https://my.docker.registry.com/, docker_registry_credentialid => my_docker_cred, credentials => [{ id => 'token1', type => 'string', secret => 'secret1'}, { id => 'token2', type => 'string', secret => 'secret2'}], global_libraries => [{'git_url' => 'git@foo.com:bar/baz.git', 'git_ref' => 'develop', 'credential_id' => 'gitkey'}, {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}], pipelines => [{ 'name' => 'baz', 'git_url' => 'git@github.com:bar/baz.git', 'git_ref' => 'refs/heads/develop', 'credential_id' => 'gitkey', keep_builds => 10 }, { 'name' => 'repo', 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred', keep_builds => '2' }] and users => [{'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'}, {'id' => 'user1', 'name' => 'User One', 'password' => 'passw0rd', 'email' => 'user1@example.com'}]" do
+        context "with url => https://foobar.example.com/, admin_password => letmein, certificate => foobar.example.com, version => 1.2.3, lvm => true, volume_group => datavg, volume_size => 20G, docker_registry_url => https://my.docker.registry.com/, docker_registry_credentialid => my_docker_cred, credentials => [{ id => 'token1', type => 'string', secret => 'secret1'}, { id => 'token2', type => 'string', secret => 'secret2'}], global_libraries => [{'git_url' => 'git@foo.com:bar/baz.git', 'git_ref' => 'develop', 'credential_id' => 'gitkey'}, {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}], pipelines => [{ 'name' => 'baz', 'git_url' => 'git@github.com:bar/baz.git', 'git_ref' => 'refs/heads/develop', 'credential_id' => 'gitkey', keep_builds => 10 }, { 'name' => 'repo', 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred', keep_builds => '2' }], views => [{ 'name' => 'testview', 'regex' => 'Test.*' }], users => [{'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'}, {'id' => 'user1', 'name' => 'User One', 'password' => 'passw0rd', 'email' => 'user1@example.com'}] and puppetdb_url => 'http://example.com:8081'" do
           let(:params) { {
             'url'                          => 'https://foobar.example.com/',
             'admin_password'               => 'letmein',
@@ -116,10 +138,17 @@ describe 'profiles::jenkins::controller' do
                                                   'keep_builds'   => 2
                                                 }
                                               ],
+            'views'                        => [
+                                                {
+                                                  'name'  => 'testview',
+                                                  'regex' => 'Test.*'
+                                                }
+                                              ],
             'users'                        => [
                                                 {'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'},
                                                 {'id' => 'user1', 'name' => 'User One', 'password' => 'passw0rd', 'email' => 'user1@example.com'}
-                                              ]
+                                              ],
+            'puppetdb_url'                 => 'http://example.com:8081'
           } }
 
           it { is_expected.to compile.with_all_deps }
@@ -185,10 +214,17 @@ describe 'profiles::jenkins::controller' do
                                                   'keep_builds'   => 2
                                                 }
                                               ],
+            'views'                        => [
+                                                {
+                                                  'name'  => 'testview',
+                                                  'regex' => 'Test.*'
+                                                }
+                                              ],
             'users'                        => [
                                                 {'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'},
                                                 {'id' => 'user1', 'name' => 'User One', 'password' => 'passw0rd', 'email' => 'user1@example.com'}
-                                              ]
+                                              ],
+            'puppetdb_url'                 => 'http://example.com:8081'
           ) }
 
           it { is_expected.to contain_class('profiles::jenkins::cli').with(

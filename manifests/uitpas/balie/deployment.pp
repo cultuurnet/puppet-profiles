@@ -4,7 +4,7 @@ class profiles::uitpas::balie::deployment (
   String                     $version           = 'latest',
   String                     $repository        = 'uitpas-balie',
   Enum['running', 'stopped'] $service_status    = 'running',
-  Stdlib::Ipv4               $service_address   = '127.0.0.1',
+  Stdlib::IP::Address::V4    $service_address   = '127.0.0.1',
   Integer                    $service_port      = 4000,
   Optional[String]           $puppetdb_url      = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {

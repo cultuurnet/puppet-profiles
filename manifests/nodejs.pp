@@ -16,9 +16,8 @@ class profiles::nodejs (
 
   class { '::nodejs':
     manage_package_repo   => false,
-    nodejs_package_ensure => $version
+    nodejs_package_ensure => $version,
+    require               => Apt::Source["nodejs-${major_version}"],
+    before                => Package['yarn']
   }
-
-  Apt::Source["nodejs-${major_version}"] -> Class['nodejs']
-  Class['nodejs'] -> Package['yarn']
 }

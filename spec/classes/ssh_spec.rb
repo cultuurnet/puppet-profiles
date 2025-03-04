@@ -12,6 +12,10 @@ describe 'profiles::ssh' do
 
         it { is_expected.to compile.with_all_deps }
 
+        it { is_expected.to contain_package('openssh-server').with(
+          'ensure' => 'latest'
+        ) }
+
         it { is_expected.to contain_sshd_config('PermitRootLogin').with(
           'ensure' => 'present',
           'value'  => 'no'
@@ -50,6 +54,8 @@ describe 'profiles::ssh' do
         ) }
 
         it { is_expected.to have_ssh_authorized_key_resource_count(0) }
+
+        it { is_expected.to contain_package('openssh-server').that_notifies('Service[ssh]') }
       end
 
       context "with ssh_authorized_keys_tags => publiq" do

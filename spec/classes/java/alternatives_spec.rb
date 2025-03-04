@@ -32,6 +32,13 @@ describe 'profiles::java::alternatives' do
             }
           ) }
 
+          it { is_expected.to contain_alternative_entry('/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/jexec').with(
+            'ensure'   => 'present',
+            'altlink'  => '/usr/bin/jexec',
+            'altname'  => 'jexec',
+            'priority' => '10'
+          ) }
+
           it { is_expected.to contain_alternatives('jexec').with(
             'path' => '/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/jexec'
           ) }
@@ -41,6 +48,8 @@ describe 'profiles::java::alternatives' do
               'path' => "/usr/lib/jvm/java-8-openjdk-amd64/jre/bin/#{command}"
             ) }
           end
+
+          it { is_expected.to contain_alternative_entry('/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/jexec').that_comes_before('Alternatives[jexec]') }
         end
 
         context "with distribution => jre and headless => false" do
@@ -318,7 +327,7 @@ describe 'profiles::java::alternatives' do
             ) }
           end
 
-          ['jar', 'jarsigner', 'javac', 'javadoc', 'javap', 'jcmd', 'jdb', 'jdeprscan', 'jdeps', 'jfr', 'jimage', 'jinfo', 'jlink', 'jmap', 'jmod', 'jps', 'jrunscript', 'jshell', 'jstack', 'jstat', 'jstatd', 'serialver', 'jhsd'].each do |command|
+          ['jar', 'jarsigner', 'javac', 'javadoc', 'javap', 'jcmd', 'jdb', 'jdeprscan', 'jdeps', 'jfr', 'jimage', 'jinfo', 'jlink', 'jmap', 'jmod', 'jps', 'jrunscript', 'jshell', 'jstack', 'jstat', 'jstatd', 'serialver', 'jhsdb'].each do |command|
             it { is_expected.to contain_alternatives(command).with(
               'path' => "/usr/lib/jvm/java-17-openjdk-amd64/bin/#{command}"
             ) }
@@ -339,7 +348,7 @@ describe 'profiles::java::alternatives' do
             ) }
           end
 
-          ['jar', 'jarsigner', 'javac', 'javadoc', 'javap', 'jcmd', 'jdb', 'jdeprscan', 'jdeps', 'jfr', 'jimage', 'jinfo', 'jlink', 'jmap', 'jmod', 'jps', 'jrunscript', 'jshell', 'jstack', 'jstat', 'jstatd', 'serialver', 'jhsd', 'jconsole'].each do |command|
+          ['jar', 'jarsigner', 'javac', 'javadoc', 'javap', 'jcmd', 'jdb', 'jdeprscan', 'jdeps', 'jfr', 'jimage', 'jinfo', 'jlink', 'jmap', 'jmod', 'jps', 'jrunscript', 'jshell', 'jstack', 'jstat', 'jstatd', 'serialver', 'jhsdb', 'jconsole'].each do |command|
             it { is_expected.to contain_alternatives(command).with(
               'path' => "/usr/lib/jvm/java-17-openjdk-amd64/bin/#{command}"
             ) }

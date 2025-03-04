@@ -20,6 +20,7 @@ describe 'profiles::apache::vhost::php_fpm' do
               'basedir'              => '/var/www/foo',
               'public_web_directory' => 'public',
               'aliases'              => [],
+              'access_log_format'    => 'extended_json',
               'socket_type'          => 'unix',
               'certificate'          => nil
             ) }
@@ -41,18 +42,19 @@ describe 'profiles::apache::vhost::php_fpm' do
               'access_log_env_var' => '!nolog',
               'request_headers'    => [
                                         'unset Proxy early',
+                                        'set X-Unique-Id %{UNIQUE_ID}e',
                                         'setifempty X-Forwarded-Port "80"',
                                         'setifempty X-Forwarded-Proto "http"'
                                       ],
               'setenvif'           => [
                                         'X-Forwarded-Proto "https" HTTPS=on',
-                                        'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                        'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                       ],
               'directories'        => [
                                         {
                                           'path'            => '\.php$',
                                           'provider'        => 'filesmatch',
-                                          'custom_fragment' => 'SetHandler "proxy:unix:/var/run/php/php-fpm.sock|fcgi://localhost"'
+                                          'custom_fragment' => 'SetHandler "proxy:unix:/run/php/php-fpm.sock|fcgi://localhost"'
                                         },
                                         {
                                           'path'           => '/var/www/foo',
@@ -63,11 +65,12 @@ describe 'profiles::apache::vhost::php_fpm' do
             ) }
           end
 
-          context "with basedir => /tmp/bla, public_web_directory => web, aliases => [smith.example.com, foo.example.com] and socket_type => tcp" do
+          context "with basedir => /tmp/bla, public_web_directory => web, aliases => [smith.example.com, foo.example.com], access_log_format => combined_json and socket_type => tcp" do
             let(:params) { {
               'basedir'              => '/tmp/bla',
               'public_web_directory' => 'web',
               'aliases'              => ['smith.example.com', 'foo.example.com'],
+              'access_log_format'    => 'combined_json',
               'socket_type'          => 'tcp',
             } }
 
@@ -78,16 +81,17 @@ describe 'profiles::apache::vhost::php_fpm' do
               'manage_docroot'     => false,
               'port'               => 80,
               'ssl'                => false,
-              'access_log_format'  => 'extended_json',
+              'access_log_format'  => 'combined_json',
               'access_log_env_var' => '!nolog',
               'request_headers'    => [
                                         'unset Proxy early',
+                                        'set X-Unique-Id %{UNIQUE_ID}e',
                                         'setifempty X-Forwarded-Port "80"',
                                         'setifempty X-Forwarded-Proto "http"'
                                       ],
               'setenvif'           => [
                                         'X-Forwarded-Proto "https" HTTPS=on',
-                                        'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                        'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                       ],
               'directories'        => [
                                         {
@@ -125,12 +129,13 @@ describe 'profiles::apache::vhost::php_fpm' do
               'access_log_env_var' => '!nolog',
               'request_headers'    => [
                                         'unset Proxy early',
+                                        'set X-Unique-Id %{UNIQUE_ID}e',
                                         'setifempty X-Forwarded-Port "80"',
                                         'setifempty X-Forwarded-Proto "http"'
                                       ],
               'setenvif'           => [
                                         'X-Forwarded-Proto "https" HTTPS=on',
-                                        'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                        'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                       ],
               'directories'        => [
                                         {
@@ -186,12 +191,13 @@ describe 'profiles::apache::vhost::php_fpm' do
               'access_log_env_var' => '!nolog',
               'request_headers'    => [
                                         'unset Proxy early',
+                                        'set X-Unique-Id %{UNIQUE_ID}e',
                                         'setifempty X-Forwarded-Port "443"',
                                         'setifempty X-Forwarded-Proto "https"'
                                       ],
               'setenvif'           => [
                                         'X-Forwarded-Proto "https" HTTPS=on',
-                                        'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                        'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                       ],
               'directories'        => [
                                         {
@@ -230,18 +236,19 @@ describe 'profiles::apache::vhost::php_fpm' do
             'access_log_env_var' => '!nolog',
             'request_headers'    => [
                                       'unset Proxy early',
+                                      'set X-Unique-Id %{UNIQUE_ID}e',
                                       'setifempty X-Forwarded-Port "80"',
                                       'setifempty X-Forwarded-Proto "http"'
                                     ],
             'setenvif'           => [
                                       'X-Forwarded-Proto "https" HTTPS=on',
-                                      'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                      'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                     ],
             'directories'        => [
                                       {
                                         'path'            => '\.php$',
                                         'provider'        => 'filesmatch',
-                                        'custom_fragment' => 'SetHandler "proxy:unix:/var/run/php/php-fpm.sock|fcgi://localhost"'
+                                        'custom_fragment' => 'SetHandler "proxy:unix:/run/php/php-fpm.sock|fcgi://localhost"'
                                       },
                                       {
                                         'path'           => '/var/www/html',

@@ -1,14 +1,19 @@
 class profiles::backup::server (
   String                         $hostname,
-  Variant[String, Array[String]] $physical_volumes,
-  String                         $backupdir,
-  String                         $public_key,
-  Enum['rsa', 'dsa']             $public_key_type = 'rsa',
-  String                         $size = '1G'
+  String                         $backupdir                   = '/data/borgbackup',
+  Boolean                        $lvm                         = false,
+  Optional[String]               $volume_group                = undef,
+  Optional[String]               $volume_size                 = undef,
+  Enum['rsa', 'dsa']             $public_key_type             = 'rsa',
+  Boolean                        $mysql_legacy_backup_enabled = false,
+  String                         $public_key
 ) inherits ::profiles {
 
-  realize(Group['borgbackup'])
-  realize(User['borgbackup'])
+  realize Group['borgbackup']
+  realize User['borgbackup']
+  realize Package['borgbackup']
+
+  User <| title == 'ubuntu' |> { groups +> ['borgbackup'] }
 
   @@sshkey { 'backup':
     name => $hostname,
@@ -20,54 +25,34 @@ class profiles::backup::server (
     key     => $public_key,
     type    => $public_key_type,
     options => "command=\"borg serve --restrict-to-path ${backupdir}\"",
-    user    => 'borgbackup'
+    user    => 'borgbackup',
+    require => [Group['borgbackup'], User['borgbackup']]
   }
 
-  any2array($physical_volumes).each |$physical_volume| {
-    physical_volume { $physical_volume:
-      ensure => present
+  if $lvm {
+    unless ($volume_group and $volume_size) {
+      fail("with LVM enabled, expects a value for both 'volume_group' and 'volume_size'")
+    }
+
+    profiles::lvm::mount { 'borgbackup':
+      volume_group => $volume_group,
+      size         => $volume_size,
+      mountpoint   => $backupdir,
+      fs_type      => 'ext4',
+      owner        => 'borgbackup',
+      group        => 'borgbackup',
+      require      => [Group['borgbackup'], User['borgbackup']],
+    }
+  } else {
+    file { $backupdir:
+      ensure  => 'directory',
+      owner   => 'borgbackup',
+      group   => 'borgbackup',
+      require => [Group['borgbackup'], User['borgbackup']]
     }
   }
 
-  volume_group { 'backupvg':
-    ensure           => present,
-    physical_volumes => $physical_volumes,
+  if $mysql_legacy_backup_enabled {
+    include profiles::backup::server::mysql_legacy
   }
-
-  logical_volume { 'backup':
-    ensure       => present,
-    volume_group => 'backupvg',
-    size         => $size,
-  }
-
-  filesystem { '/dev/backupvg/backup':
-    ensure  => present,
-    fs_type => 'ext4'
-  }
-
-  exec { "create ${backupdir}":
-    command => "install -o borgbackup -g borgbackup -d ${backupdir}",
-    unless  => "test -d ${backupdir}",
-    path    => '/usr/bin:/usr/sbin:/bin'
-  }
-
-  mount { $backupdir:
-    ensure  => 'mounted',
-    device  => '/dev/backupvg/backup',
-    options => 'defaults',
-    atboot  => true,
-    fstype  => 'ext4'
-  }
-
-  file { $backupdir:
-    ensure => 'directory',
-    owner  => 'borgbackup',
-    group  => 'borgbackup'
-  }
-
-  User['borgbackup'] -> Ssh_authorized_key['backup']
-  User['borgbackup'] -> Exec["create ${backupdir}"]
-  Exec["create ${backupdir}"] -> Mount[$backupdir]
-  Filesystem['/dev/backupvg/backup'] -> Mount[$backupdir]
-  Mount[$backupdir] -> File[$backupdir]
 }

@@ -1,0 +1,5 @@
+---
+vault:testproject/testcomponent:
+  my_first_secret: 'abc123'
+  my_second_secret: 'def456'
+

@@ -3,6 +3,7 @@ class profiles::lvm (
 ) inherits ::profiles {
 
   realize Apt::Source['publiq-tools']
+  realize File['/data']
 
   package { 'amazon-ec2-utils':
     ensure  => 'latest',
@@ -21,14 +22,6 @@ class profiles::lvm (
 
   class { 'lvm':
     manage_pkg => true
-  }
-
-  file { 'data':
-    ensure => 'directory',
-    group  => 'root',
-    mode   => '0755',
-    owner  => 'root',
-    path   => '/data'
   }
 
   $volume_groups.each |String $vg_name, Hash $vg_properties| {

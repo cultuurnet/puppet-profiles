@@ -37,7 +37,7 @@ describe 'profiles::uitdatabank::rdf' do
                                  ],
           'setenvif'          => [
                                    'X-Forwarded-Proto "https" HTTPS=on',
-                                   'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                   'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                  ],
           'rewrites'          => [ {
                                    'comment'      => 'Reverse proxy /(events|places|organizers)/<uuid> to backend',
@@ -46,6 +46,13 @@ describe 'profiles::uitdatabank::rdf' do
                                                        '%{REQUEST_URI} "^/(events|places|organizers)/[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$"'
                                                      ],
                                    'rewrite_rule' => '^/(events|places|organizers)/(.*)$ https://foo.example.com/$1/$2 [P]'
+                                 }, {
+                                   'comment'      => 'Reverse proxy /id/(event|place|organizer)/udb/<uuid> to backend',
+                                   'rewrite_cond' => [
+                                                       '%{REQUEST_URI} "^/id/(event|place|organizer)/udb/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$" [OR]',
+                                                       '%{REQUEST_URI} "^/id/(event|place|organizer)/udb/[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$"'
+                                                     ],
+                                   'rewrite_rule' => '^/id/(event|place|organizer)/udb/(.*)$ https://foo.example.com/$1s/$2 [P]'
                                  } ]
         ) }
 
@@ -80,7 +87,7 @@ describe 'profiles::uitdatabank::rdf' do
                                  ],
           'setenvif'          => [
                                    'X-Forwarded-Proto "https" HTTPS=on',
-                                   'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
+                                   'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                  ],
           'rewrites'          => [ {
                                    'comment'      => 'Reverse proxy /(events|places|organizers)/<uuid> to backend',
@@ -89,6 +96,13 @@ describe 'profiles::uitdatabank::rdf' do
                                                      '%{REQUEST_URI} "^/(events|places|organizers)/[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$"'
                                                    ],
                                    'rewrite_rule' => '^/(events|places|organizers)/(.*)$ http://bar.example.com/$1/$2 [P]'
+                                 }, {
+                                   'comment'      => 'Reverse proxy /id/(event|place|organizer)/udb/<uuid> to backend',
+                                   'rewrite_cond' => [
+                                                     '%{REQUEST_URI} "^/id/(event|place|organizer)/udb/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$" [OR]',
+                                                     '%{REQUEST_URI} "^/id/(event|place|organizer)/udb/[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$"'
+                                                   ],
+                                   'rewrite_rule' => '^/id/(event|place|organizer)/udb/(.*)$ http://bar.example.com/$1s/$2 [P]'
                                  } ]
         ) }
       end

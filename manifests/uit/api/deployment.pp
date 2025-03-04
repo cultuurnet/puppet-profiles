@@ -29,7 +29,8 @@ class profiles::uit::api::deployment (
     group   => 'www-data',
     source  => $config_source,
     require => [Package['uit-api'], Group['www-data'], User['www-data']],
-    notify  => [Exec['uit-api-graphql-schema-update'], Service['uit-api']]
+    # notify  => [Exec['uit-api-graphql-schema-update'], Service['uit-api']]
+    notify  => Service['uit-api']
   }
 
   file { 'uit-api-config-db':
@@ -51,17 +52,20 @@ class profiles::uit::api::deployment (
     notify  => Service['uit-api']
   }
 
-  exec { 'uit-api-graphql-schema-update':
-    command     => 'yarn graphql typeorm migration:run',
-    cwd         => $basedir,
-    user        => 'www-data',
-    group       => 'www-data',
-    path        => [ '/usr/local/bin', '/usr/bin', '/bin', $basedir],
-    refreshonly => true,
-    require     => [Group['www-data'], User['www-data']],
-    subscribe   => [Package['uit-api'], File['uit-api-config-graphql']],
-    notify      => Service['uit-api']
-  }
+  # 2024-05-16: temp disable, requested by Simon
+  # because of Graphql upgrade
+  #
+  # exec { 'uit-api-graphql-schema-update':
+  #   command     => 'yarn graphql typeorm migration:run',
+  #   cwd         => $basedir,
+  #   user        => 'www-data',
+  #   group       => 'www-data',
+  #   path        => [ '/usr/local/bin', '/usr/bin', '/bin', $basedir],
+  #   refreshonly => true,
+  #   require     => [Group['www-data'], User['www-data']],
+  #   subscribe   => [Package['uit-api'], File['uit-api-config-graphql']],
+  #   notify      => Service['uit-api']
+  # }
 
   exec { 'uit-api-db-schema-update':
     command     => 'yarn db typeorm migration:run',

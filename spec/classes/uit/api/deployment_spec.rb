@@ -56,14 +56,14 @@ describe 'profiles::uit::api::deployment' do
         it { is_expected.to contain_file('uit-api-service-defaults').with_content(/^PORT=4000$/) }
         it { is_expected.to contain_file('uit-api-service-defaults').with_content(/^NODE_OPTIONS=--max_old_space_size=512$/) }
 
-        it { is_expected.to contain_exec('uit-api-graphql-schema-update').with(
-          'command'     => 'yarn graphql typeorm migration:run',
-          'cwd'         => '/var/www/uit-api',
-          'user'        => 'www-data',
-          'group'       => 'www-data',
-          'path'        => ['/usr/local/bin', '/usr/bin', '/bin', '/var/www/uit-api'],
-          'refreshonly' => true
-        ) }
+        # it { is_expected.to contain_exec('uit-api-graphql-schema-update').with(
+        #   'command'     => 'yarn graphql typeorm migration:run',
+        #   'cwd'         => '/var/www/uit-api',
+        #   'user'        => 'www-data',
+        #   'group'       => 'www-data',
+        #   'path'        => ['/usr/local/bin', '/usr/bin', '/bin', '/var/www/uit-api'],
+        #   'refreshonly' => true
+        # ) }
 
         it { is_expected.to contain_exec('uit-api-db-schema-update').with(
           'command'     => 'yarn db typeorm migration:run',
@@ -81,14 +81,14 @@ describe 'profiles::uit::api::deployment' do
         ) }
 
         it { is_expected.to contain_package('uit-api').that_requires('Apt::Source[uit-api]') }
-        it { is_expected.to contain_package('uit-api').that_notifies('Exec[uit-api-graphql-schema-update]') }
+        # it { is_expected.to contain_package('uit-api').that_notifies('Exec[uit-api-graphql-schema-update]') }
         it { is_expected.to contain_package('uit-api').that_notifies('Exec[uit-api-db-schema-update]') }
         it { is_expected.to contain_package('uit-api').that_notifies('Service[uit-api]') }
         it { is_expected.to contain_package('uit-api').that_notifies('Profiles::Deployment::Versions[profiles::uit::api::deployment]') }
         it { is_expected.to contain_file('uit-api-config-graphql').that_requires('Package[uit-api]') }
         it { is_expected.to contain_file('uit-api-config-graphql').that_requires('Group[www-data]') }
         it { is_expected.to contain_file('uit-api-config-graphql').that_requires('User[www-data]') }
-        it { is_expected.to contain_file('uit-api-config-graphql').that_notifies('Exec[uit-api-graphql-schema-update]') }
+        # it { is_expected.to contain_file('uit-api-config-graphql').that_notifies('Exec[uit-api-graphql-schema-update]') }
         it { is_expected.to contain_file('uit-api-config-graphql').that_notifies('Service[uit-api]') }
         it { is_expected.to contain_file('uit-api-config-db').that_requires('Package[uit-api]') }
         it { is_expected.to contain_file('uit-api-config-db').that_requires('Group[www-data]') }
@@ -96,8 +96,8 @@ describe 'profiles::uit::api::deployment' do
         it { is_expected.to contain_file('uit-api-config-db').that_notifies('Exec[uit-api-db-schema-update]') }
         it { is_expected.to contain_file('uit-api-config-db').that_notifies('Service[uit-api]') }
         it { is_expected.to contain_file('uit-api-service-defaults').that_notifies('Service[uit-api]') }
-        it { is_expected.to contain_exec('uit-api-graphql-schema-update').that_notifies('Service[uit-api]') }
-        it { is_expected.to contain_exec('uit-api-graphql-schema-update').that_requires('User[www-data]') }
+        # it { is_expected.to contain_exec('uit-api-graphql-schema-update').that_notifies('Service[uit-api]') }
+        # it { is_expected.to contain_exec('uit-api-graphql-schema-update').that_requires('User[www-data]') }
         it { is_expected.to contain_exec('uit-api-db-schema-update').that_notifies('Service[uit-api]') }
         it { is_expected.to contain_exec('uit-api-db-schema-update').that_requires('User[www-data]') }
 

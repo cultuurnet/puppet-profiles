@@ -5,22 +5,52 @@ class profiles::puppet::puppetserver::hiera (
                                                        { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
                                                        { 'name' => 'Common data', 'path' => 'common.yaml' }
                                                      ],
-  Boolean                   $terraform_integration = false
+  Boolean                   $terraform_integration = false,
+  Boolean                   $vault_integration     = false,
+  Optional[String]          $vault_address         = undef,
+  Hash                      $vault_mounts          = {}
 ) inherits ::profiles {
 
-  if $terraform_integration {
-    $lookups = [{ 'name' => 'Terraform data', 'glob' => 'terraform/%{::trusted.certname}/*.yaml' }] + [$lookup_hierarchy].flatten
-  } else {
-    $lookups = [$lookup_hierarchy].flatten
+  if $vault_integration {
+    if (!$vault_address or empty($vault_mounts)) {
+      fail("Class Profiles::Puppet::Puppetserver::Hiera expects a non-empty value for parameters 'vault_address' and 'vault_mounts' when Vault integration is enabled")
+    }
   }
+
+  $terraform_lookup_hierarchy = $terraform_integration ? {
+                                  true  => [
+                                             { 'name' => 'Terraform per-node data', 'glob' => 'terraform/%{::trusted.certname}/*.yaml' },
+                                             { 'name' => 'Terraform common data', 'path' => 'terraform/common.yaml' }
+                                           ],
+                                  false => []
+                                }
+  $vault_lookup_hierarchy     = $vault_integration ? {
+                                  true  => [ {
+                                             'name'       => 'Vault data',
+                                             'lookup_key' => 'hiera_vault',
+                                             'options'    => {
+                                                               'confine_to_keys' => ['^vault:.*'],
+                                                               'strip_from_keys' => ['vault:'],
+                                                               'address'         => $vault_address,
+                                                               'ssl_verify'      => true,
+                                                               'ssl_ca_cert'     => '/etc/puppetlabs/puppet/ssl/certs/ca.pem',
+                                                               'authentication'  => {
+                                                                                      'method' => 'tls_certificate',
+                                                                                      'config' => { 'certname' => $trusted['certname'] }
+                                                                                    },
+                                                               'mounts'          => $vault_mounts
+                                                             }
+                                           } ],
+                                  false => []
+                                }
 
   if $eyaml {
     if empty($gpg_key) {
-      fail("Class Profiles::Puppet::Puppetserver::Eyaml expects a non-empty value for parameter 'gpg_key' when eyaml is enabled")
+      fail("Class Profiles::Puppet::Puppetserver::Hiera expects a non-empty value for parameter 'gpg_key' when eyaml is enabled")
     }
 
     $package_ensure = 'installed'
-    $hierarchy      = $lookups.map |Hash $lookup| { $lookup + { 'lookup_key' => 'eyaml_lookup_key', 'options' => { 'gpg_gnupghome' => '/opt/puppetlabs/server/data/puppetserver/.gnupg' } } }
+    $hierarchy      = $terraform_lookup_hierarchy + $vault_lookup_hierarchy + flatten([$lookup_hierarchy]).map |Hash $lookup| { $lookup + { 'lookup_key' => 'eyaml_lookup_key', 'options' => { 'gpg_gnupghome' => '/opt/puppetlabs/server/data/puppetserver/.gnupg' } } }
 
     realize Group['puppet']
     realize User['puppet']
@@ -53,7 +83,7 @@ class profiles::puppet::puppetserver::hiera (
     Package['hiera-eyaml'] -> Package['hiera-eyaml-gpg']
   } else {
     $package_ensure = 'absent'
-    $hierarchy      = $lookups
+    $hierarchy      = $terraform_lookup_hierarchy + $vault_lookup_hierarchy + flatten([$lookup_hierarchy])
 
     file { 'puppetserver eyaml configdir':
       ensure => 'absent',

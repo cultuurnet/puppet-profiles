@@ -12,12 +12,15 @@ describe 'profiles::apache' do
           'mpm_module'        => 'prefork',
           'mpm_module_config' => {},
           'http2'             => false,
+          'limitreqfieldsize' => 8190,
           'service_status'    => 'running',
           'metrics'           => true
         ) }
 
         it { is_expected.to contain_group('www-data') }
         it { is_expected.to contain_user('www-data') }
+
+        it { is_expected.to contain_class('profiles::apache::defaults') }
 
         it { is_expected.to contain_class('apache').with(
           'mpm_module'            => false,
@@ -26,9 +29,15 @@ describe 'profiles::apache' do
           'default_vhost'         => true,
           'protocols'             => ['http/1.1'],
           'protocols_honor_order' => true,
+          'limitreqfieldsize'     => 8190,
           'service_manage'        => true,
           'service_ensure'        => 'running',
-          'service_enable'        => true
+          'service_enable'        => true,
+          'log_formats'           => {
+                                       'combined_json' => '{ \"remoteIP\": \"%a\", \"remoteLogname\": \"%l\", \"user\": \"%u\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"request\": \"%r\", \"status\": %>s, \"responseBytes\": %b, \"referer\": \"%{Referer}i\", \"userAgent\": \"%{User-Agent}i\" }',
+                                       'extended_json' => '{ \"remoteIP\": \"%{CLIENT_IP}e\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"requestPath\": \"%U\", \"status\": \"%>s\", \"query\": \"%q\", \"method\": \"%m\", \"userAgent\": \"%{User-Agent}i\", \"referer\": \"%{Referer}i\", \"uniqueID\": \"%{UNIQUE_ID}e\", \"duration\": \"%{ms}T\" }',
+                                       'apikey_json'   => '{ \"remoteIP\": \"%{CLIENT_IP}e\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"requestPath\": \"%U\", \"status\": \"%>s\", \"query\": \"%q\", \"method\": \"%m\", \"userAgent\": \"%{User-Agent}i\", \"referer\": \"%{Referer}i\", \"uniqueID\": \"%{UNIQUE_ID}e\", \"duration\": \"%{ms}T\", \"apiKey\": \"%{APIKEY}e\", \"jwtToken\": \"%{JWTTOKEN}e\", \"clientProperties\": \"%{X-Client-Properties}i\" }'
+                                     }
         ) }
 
         it { is_expected.not_to contain_class('apache::mod::http2') }
@@ -43,13 +52,14 @@ describe 'profiles::apache' do
         it { is_expected.to contain_user('www-data').that_comes_before('Class[apache]') }
       end
 
-      context "with mpm_module => worker, mpm_module_config => { startservers => 8, maxclients => 256 }, http2 => true, service_status => stopped and metrics => false" do
+      context "with mpm_module => worker, mpm_module_config => { startservers => 8, maxclients => 256 }, http2 => true, limitreqfieldsize => 32766, service_status => stopped and metrics => false" do
         let(:params) { {
-          'mpm_module'        => 'worker',
-          'mpm_module_config' => { 'startservers' => 8, 'maxclients' => 256 },
-          'http2'             => true,
-          'service_status'    => 'stopped',
-          'metrics'           => false
+          'mpm_module'            => 'worker',
+          'mpm_module_config'     => { 'startservers' => 8, 'maxclients' => 256 },
+          'http2'                 => true,
+          'limitreqfieldsize'     => 32766,
+          'service_status'        => 'stopped',
+          'metrics'               => false
         } }
 
         it { is_expected.to contain_class('apache').with(
@@ -59,9 +69,15 @@ describe 'profiles::apache' do
           'default_vhost'         => true,
           'protocols'             => ['h2c', 'http/1.1'],
           'protocols_honor_order' => true,
+          'limitreqfieldsize'     => 32766,
           'service_manage'        => true,
           'service_ensure'        => 'stopped',
-          'service_enable'        => false
+          'service_enable'        => false,
+          'log_formats'           => {
+                                       'combined_json' => '{ \"remoteIP\": \"%a\", \"remoteLogname\": \"%l\", \"user\": \"%u\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"request\": \"%r\", \"status\": %>s, \"responseBytes\": %b, \"referer\": \"%{Referer}i\", \"userAgent\": \"%{User-Agent}i\" }',
+                                       'extended_json' => '{ \"remoteIP\": \"%{CLIENT_IP}e\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"requestPath\": \"%U\", \"status\": \"%>s\", \"query\": \"%q\", \"method\": \"%m\", \"userAgent\": \"%{User-Agent}i\", \"referer\": \"%{Referer}i\", \"uniqueID\": \"%{UNIQUE_ID}e\", \"duration\": \"%{ms}T\" }',
+                                       'apikey_json'   => '{ \"remoteIP\": \"%{CLIENT_IP}e\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"requestPath\": \"%U\", \"status\": \"%>s\", \"query\": \"%q\", \"method\": \"%m\", \"userAgent\": \"%{User-Agent}i\", \"referer\": \"%{Referer}i\", \"uniqueID\": \"%{UNIQUE_ID}e\", \"duration\": \"%{ms}T\", \"apiKey\": \"%{APIKEY}e\", \"jwtToken\": \"%{JWTTOKEN}e\", \"clientProperties\": \"%{X-Client-Properties}i\" }'
+                                     }
         ) }
 
         it { is_expected.to contain_class('apache::mod::http2') }

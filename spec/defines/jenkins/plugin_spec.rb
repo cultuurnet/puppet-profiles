@@ -84,10 +84,10 @@ describe 'profiles::jenkins::plugin' do
       context "with title configuration-as-code" do
         let(:title) { 'configuration-as-code' }
 
-        context "with restart => true and configuration => { 'url' => 'https://foobar.com/', 'admin_password' => 'passw0rd'}" do
+        context "with restart => true and configuration => { 'url' => 'https://foobar.com/', 'admin_password' => 'passw0rd', views => [{ 'name' => 'foo', 'regex' => 'foo.*' }] }" do
           let(:params) { {
               'restart'       => true,
-              'configuration' => { 'url' => 'https://foobar.com/', 'admin_password' => 'passw0rd'}
+              'configuration' => { 'url' => 'https://foobar.com/', 'admin_password' => 'passw0rd', 'views' => [{ 'name' => 'foo', 'regex' => 'foo.*' }] }
           } }
 
           it { is_expected.to contain_exec('jenkins plugin configuration-as-code').with(
@@ -112,15 +112,17 @@ describe 'profiles::jenkins::plugin' do
 
           it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*password: 'passw0rd'$/) }
           it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*url: 'https:\/\/foobar\.com\/'$/) }
+          it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*name: 'foo'$/) }
+          it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*includeRegex: 'foo\.\*'$/) }
 
           it { is_expected.to contain_file('configuration-as-code configuration').that_requires('Group[jenkins]') }
           it { is_expected.to contain_file('configuration-as-code configuration').that_requires('User[jenkins]') }
           it { is_expected.to contain_exec('jenkins plugin configuration-as-code').that_requires('Class[profiles::jenkins::cli]') }
         end
 
-        context "with configuration => { 'url' => 'https://jenkins.example.com/', 'admin_password' => 'jenkins'}" do
+        context "with configuration => { 'url' => 'https://jenkins.example.com/', 'admin_password' => 'jenkins', 'views' => [] }" do
           let(:params) { {
-              'configuration' => { 'url' => 'https://jenkins.example.com/', 'admin_password' => 'jenkins'}
+              'configuration' => { 'url' => 'https://jenkins.example.com/', 'admin_password' => 'jenkins', 'views' => [] }
           } }
 
           it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*password: 'jenkins'$/) }
@@ -345,10 +347,10 @@ describe 'profiles::jenkins::plugin' do
       context "with title job-dsl" do
         let(:title) { 'job-dsl' }
 
-        context "with configuration => { 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'auto_build' => true, 'keep_builds' => 5 }" do
+        context "with configuration => { 'name' => 'Myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'auto_build' => true, 'keep_builds' => 5 }" do
           let(:params) { {
               'configuration' => {
-                                   'name'          => 'myrepo',
+                                   'name'          => 'Myrepo',
                                    'git_url'       => 'git@example.com:org/myrepo.git',
                                    'git_ref'       => 'refs/heads/main',
                                    'credential_id' => 'mygitcred',
@@ -365,6 +367,7 @@ describe 'profiles::jenkins::plugin' do
           ) }
 
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*pipelineJob\('myrepo'\)/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*displayName\('Myrepo'\)/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*url\('git@example.com:org\/myrepo.git'\)$/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*scriptPath\('Jenkinsfile'\)$/) }
           it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^\s*githubProjectUrl/) }
@@ -375,10 +378,10 @@ describe 'profiles::jenkins::plugin' do
           it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^\s*parameters {\n\s*}$/) }
         end
 
-        context "with configuration => [{ 'name' => 'baz', 'git_url' => 'git@github.com:bar/baz.git', 'git_ref' => 'refs/heads/develop', 'jenkinsfile_path' => 'Jenkinsfile.baz', 'credential_id' => 'gitkey', keep_builds => 10, parameters => booleanParam { name('Flag') defaultValue(true) description('Boolean flag')} }, { 'name' => 'repo', 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'jenkinsfile_path' => 'pipelines/Jenkinsfile.repo', 'credential_id' => 'mygitcred', keep_builds => '2', parameters => parameters => stringParam { name('String') defaultValue('') description('String parameter example') trim(true)} booleanParam { name('Myflag') defaultValue(true) description('Boolean flag example')} }]" do
+        context "with configuration => [{ 'name' => 'Baz Test', 'git_url' => 'git@github.com:bar/baz.git', 'git_ref' => 'refs/heads/develop', 'jenkinsfile_path' => 'Jenkinsfile.baz', 'credential_id' => 'gitkey', keep_builds => 10, parameters => booleanParam { name('Flag') defaultValue(true) description('Boolean flag')} }, { 'name' => 'repo', 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'jenkinsfile_path' => 'pipelines/Jenkinsfile.repo', 'credential_id' => 'mygitcred', keep_builds => '2', parameters => parameters => stringParam { name('String') defaultValue('') description('String parameter example') trim(true)} booleanParam { name('Myflag') defaultValue(true) description('Boolean flag example')} }]" do
           let(:params) { {
               'configuration' => [{
-                                   'name'             => 'baz',
+                                   'name'             => 'Baz Test',
                                    'git_url'          => 'git@github.com:bar/baz.git',
                                    'git_ref'          => 'refs/heads/develop',
                                    'jenkinsfile_path' => 'Jenkinsfile.baz',
@@ -391,7 +394,7 @@ describe 'profiles::jenkins::plugin' do
                                                           }"
                                  },
                                  {
-                                   'name'             => 'repo',
+                                   'name'             => ' Répo foö  ',
                                    'git_url'          => 'git@example.com:org/repo.git',
                                    'git_ref'          => 'main',
                                    'jenkinsfile_path' => 'pipelines/Jenkinsfile.repo',
@@ -411,7 +414,8 @@ describe 'profiles::jenkins::plugin' do
                                  }]
           } }
 
-          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*pipelineJob\('baz'\)/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*pipelineJob\('baz-test'\)/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*displayName\('Baz Test'\)/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*url\('git@github.com:bar\/baz.git'\)$/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*scriptPath\('Jenkinsfile.baz'\)$/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*githubProjectUrl\('https:\/\/github.com\/bar\/baz'\)$/) }
@@ -420,7 +424,8 @@ describe 'profiles::jenkins::plugin' do
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*numToKeepStr\('10'\)$/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*parameters {\n\s*booleanParam {\n\s*name\('Flag'\)\n\s*defaultValue\(true\)\n\s*description\('Boolean flag'\)\n\s*}\n\s*}$/) }
 
-          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*pipelineJob\('repo'\)/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*pipelineJob\('repo-foo'\)/) }
+          it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*displayName\('Répo foö'\)/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*url\('git@example.com:org\/repo.git'\)$/) }
           it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*scriptPath\('pipelines\/Jenkinsfile.repo'\)$/) }
           it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^\s*githubProjectUrl\('https:\/\/github.com\/org\/repo'\)$/) }

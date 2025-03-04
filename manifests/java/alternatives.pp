@@ -24,6 +24,14 @@ class profiles::java::alternatives (
            $jre_commands = $jre_commands_headless + ['policytool']
            $jdk_commands = $jdk_commands_headless + ['appletviewer', 'jconsole']
          }
+
+         alternative_entry { "${jre_home}/lib/jexec":
+           ensure   => 'present',
+           altlink  => '/usr/bin/jexec',
+           altname  => 'jexec',
+           priority => '10',
+           before   => Alternatives['jexec']
+         }
     }
     11: {
           $jre_home  = $java_home
@@ -52,7 +60,7 @@ class profiles::java::alternatives (
     17: {
           $jre_home  = $java_home
           $jre_commands_headless = ['java', 'jpackage', 'keytool', 'rmiregistry']
-          $jdk_commands_headless = ['jar', 'jarsigner', 'javac', 'javadoc', 'javap', 'jcmd', 'jdb', 'jdeprscan', 'jdeps', 'jfr', 'jimage', 'jinfo', 'jlink', 'jmap', 'jmod', 'jps', 'jrunscript', 'jshell', 'jstack', 'jstat', 'jstatd', 'serialver', 'jhsd']
+          $jdk_commands_headless = ['jar', 'jarsigner', 'javac', 'javadoc', 'javap', 'jcmd', 'jdb', 'jdeprscan', 'jdeps', 'jfr', 'jimage', 'jinfo', 'jlink', 'jmap', 'jmod', 'jps', 'jrunscript', 'jshell', 'jstack', 'jstat', 'jstatd', 'serialver', 'jhsdb']
           if $headless {
             $jre_commands = $jre_commands_headless
             $jdk_commands = $jdk_commands_headless

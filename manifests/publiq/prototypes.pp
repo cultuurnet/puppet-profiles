@@ -43,12 +43,9 @@ class profiles::publiq::prototypes (
     virtual_docroot   => "${basedir}/%1",
     docroot_owner     => 'www-data',
     docroot_group     => 'www-data',
-    request_headers   => ['unset Proxy early'],
+    request_headers   => $profiles::apache::defaults::request_headers,
     access_log_format => 'extended_json',
-    setenvif          => [
-                           'X-Forwarded-Proto "https" HTTPS=on',
-                           'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
-                         ],
+    setenvif          => $profiles::apache::defaults::setenvif,
     ssl               => $https,
     port              => $port,
     ssl_cert          => "/etc/ssl/certs/${certificate}.bundle.crt",

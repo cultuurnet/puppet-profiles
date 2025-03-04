@@ -27,8 +27,26 @@ class profiles::apache::logformats inherits ::profiles {
                     }\
                     | EXTENDED_JSON
 
+  $apikey_json    = @("APIKEY_JSON"/L)
+                    { \"remoteIP\": \"%{CLIENT_IP}e\", \
+                    \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \
+                    \"requestPath\": \"%U\", \
+                    \"status\": \"%>s\", \
+                    \"query\": \"%q\", \
+                    \"method\": \"%m\", \
+                    \"userAgent\": \"%{User-Agent}i\", \
+                    \"referer\": \"%{Referer}i\", \
+                    \"uniqueID\": \"%{UNIQUE_ID}e\", \
+                    \"duration\": \"%{ms}T\", \
+                    \"apiKey\": \"%{APIKEY}e\", \
+                    \"jwtToken\": \"%{JWTTOKEN}e\", \
+                    \"clientProperties\": \"%{X-Client-Properties}i\" \
+                    }\
+                    | APIKEY_JSON
+
   $all  = {
             'combined_json' => $combined_json,
-            'extended_json' => $extended_json
+            'extended_json' => $extended_json,
+            'apikey_json'   => $apikey_json
           }
 }

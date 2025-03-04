@@ -18,6 +18,12 @@ class profiles::firewall::rules inherits ::profiles {
     action => 'accept'
   }
 
+  @firewall { '300 accept webcache traffic':
+    proto  => 'tcp',
+    dport  => '8080',
+    action => 'accept'
+  }
+
   @firewall { '300 accept HTTPS traffic':
     proto  => 'tcp',
     dport  => '443',
@@ -51,6 +57,36 @@ class profiles::firewall::rules inherits ::profiles {
   @firewall { '400 accept meilisearch traffic':
     proto  => 'tcp',
     dport  => '7700',
+    action => 'accept'
+  }
+
+  @firewall { '400 accept mysql traffic':
+    proto  => 'tcp',
+    dport  => '3306',
+    action => 'accept'
+  }
+
+  @firewall { '400 accept vault traffic':
+    proto  => 'tcp',
+    dport  => '8200',
+    action => 'accept'
+  }
+
+  @firewall { '500 accept carbon traffic':
+    proto  => 'tcp',
+    dport  => '2003',
+    action => 'accept'
+  }
+
+  @firewall { '600 accept elasticsearch http traffic':
+    proto  => 'tcp',
+    dport  => '9200',
+    action => 'accept'
+  }
+
+  @firewall { '600 accept elasticsearch cluster traffic':
+    proto  => 'tcp',
+    dport  => '9300',
     action => 'accept'
   }
 }

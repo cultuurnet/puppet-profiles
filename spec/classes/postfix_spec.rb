@@ -38,7 +38,12 @@ describe 'profiles::postfix' do
             'message_size_limit'      => '0',
             'mailbox_size_limit'      => '0',
             'smtp_tls_security_level' => 'may',
-            'extra_main_parameters'   => { 'smtp_tls_loglevel' => '1' }
+            'extra_main_parameters'   => {
+                                           'smtp_tls_loglevel'            => '1',
+                                           'smtpd_recipient_restrictions' => 'permit_mynetworks,reject_unauth_destination',
+                                           'smtpd_relay_restrictions'     => 'permit_mynetworks,reject_unauth_destination'
+
+                                         }
           ) }
 
           it { is_expected.not_to contain_postfix__dbfile('virtual') }
@@ -125,7 +130,12 @@ describe 'profiles::postfix' do
             'message_size_limit'      => '0',
             'mailbox_size_limit'      => '0',
             'smtp_tls_security_level' => 'may',
-            'extra_main_parameters'   => { 'smtp_tls_loglevel' => '1' }
+            'extra_main_parameters'   => {
+                                           'smtp_tls_loglevel'            => '1',
+                                           'smtpd_recipient_restrictions' => 'permit_mynetworks,reject_unauth_destination',
+                                           'smtpd_relay_restrictions'     => 'permit_mynetworks,reject_unauth_destination'
+
+                                         }
           ) }
 
           it { is_expected.not_to contain_postfix__dbfile('virtual') }
@@ -157,7 +167,12 @@ describe 'profiles::postfix' do
             'message_size_limit'      => '0',
             'mailbox_size_limit'      => '0',
             'smtp_tls_security_level' => 'may',
-            'extra_main_parameters'   => { 'smtp_tls_loglevel' => '1' }
+            'extra_main_parameters'   => {
+                                           'smtp_tls_loglevel'            => '1',
+                                           'smtpd_recipient_restrictions' => 'permit_mynetworks,reject_unauth_destination',
+                                           'smtpd_relay_restrictions'     => 'permit_mynetworks,reject_unauth_destination'
+
+                                         }
           ) }
         end
       end

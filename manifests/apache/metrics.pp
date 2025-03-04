@@ -1,14 +1,18 @@
-class profiles::apache::metrics inherits ::profiles {
+class profiles::apache::metrics (
+  String $endpoint = '/server-status'
+) inherits ::profiles {
+
+  $status_url = "http://127.0.0.1/${regsubst($endpoint, '^/', '')}?auto"
 
   include profiles::apache
   include profiles::collectd
 
   class { 'apache::mod::status':
     requires    => 'ip 127.0.0.1',
-    status_path => '/server-status'
+    status_path => "/${regsubst($endpoint, '^/', '')}"
   }
 
   class { 'collectd::plugin::apache':
-    instances => { 'localhost' => { 'url' => 'http://127.0.0.1/server-status?auto' } }
+    instances => { 'localhost' => { 'url' => $status_url } }
   }
 }

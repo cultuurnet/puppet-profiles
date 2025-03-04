@@ -31,12 +31,11 @@ describe 'profiles::lvm' do
           'manage_pkg' => true
         ) }
 
-        it { is_expected.to contain_file('data').with(
+        it { is_expected.to contain_file('/data').with(
           'ensure' => 'directory',
           'group'  => 'root',
           'mode'   => '0755',
-          'owner'  => 'root',
-          'path'   => '/data'
+          'owner'  => 'root'
         ) }
 
         it { is_expected.to have_physical_volume_resource_count(0) }
@@ -65,7 +64,7 @@ describe 'profiles::lvm' do
         it { is_expected.to contain_physical_volume('/dev/xvdb').that_comes_before('Volume_group[datavg]') }
 
         context "with terraform provided volume size for xvdb set to 60g" do
-          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+          let(:hiera_config) { 'spec/support/hiera/terraform_available.yaml' }
 
           context "with physical extent count for /dev/xvdb being 15359" do
             let(:facts) {
@@ -138,7 +137,7 @@ describe 'profiles::lvm' do
         it { is_expected.to contain_physical_volume('/dev/xvdd').that_comes_before('Volume_group[data2vg]') }
 
         context "with terraform provided volume size for xvdb set to 60g, for xvdc to 40g and for xvdd to 20g" do
-          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+          let(:hiera_config) { 'spec/support/hiera/terraform_available.yaml' }
 
           context "with physical extent count for /dev/xdvb being 15359, for /dev/xvdc being  and for /dev/xvdd being " do
             let(:facts) {

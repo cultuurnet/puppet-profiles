@@ -1,15 +1,22 @@
 class profiles::mysql::server (
-  Optional[String]        $root_password   = undef,
-  Stdlib::IP::Address::V4 $listen_address  = '127.0.0.1',
-  Boolean                 $lvm             = false,
-  Optional[String]        $volume_group    = undef,
-  Optional[String]        $volume_size     = undef,
-  Integer                 $max_open_files  = 1024,
-  Integer                 $long_query_time = 2
+  Optional[String]                                                              $root_password               = undef,
+  Stdlib::IP::Address::V4                                                       $listen_address              = '127.0.0.1',
+  Boolean                                                                       $monitoring                  = false,
+  Boolean                                                                       $lvm                         = false,
+  Optional[String]                                                              $volume_group                = undef,
+  Optional[String]                                                              $volume_size                 = undef,
+  Boolean                                                                       $backup_lvm                  = false,
+  Optional[String]                                                              $backup_volume_group         = undef,
+  Optional[String]                                                              $backup_volume_size          = undef,
+  Optional[String]                                                              $event_scheduler             = 'OFF',
+  Integer                                                                       $backup_retention_days       = 7,
+  Integer                                                                       $max_open_files              = 1024,
+  Integer                                                                       $long_query_time             = 2,
+  Enum['READ-COMMITTED', 'REPEATABLE-READ', 'READ-UNCOMMITTED', 'SERIALIZABLE'] $transaction_isolation       = 'REPEATABLE-READ'
+
 ) inherits ::profiles {
 
   $root_user = 'root'
-  $host      = 'localhost'
   $options   = {
                  'client' => { 'default-character-set' => 'utf8mb4' },
                  'mysql'  => { 'default-character-set' => 'utf8mb4' },
@@ -22,9 +29,59 @@ class profiles::mysql::server (
                                'innodb_file_per_table'          => 'ON',
                                'slow_query_log'                 => 'ON',
                                'slow_query_log_file'            => '/var/log/mysql/slow-query.log',
-                               'long_query_time'                => "${long_query_time}"
+                               'long_query_time'                => "${long_query_time}",
+                               'transaction_isolation'          => $transaction_isolation,
+                               'event_scheduler'                => $event_scheduler
                              }
                }
+
+  include profiles::firewall::rules
+
+  if $listen_address == '127.0.0.1' {
+    profiles::mysql::root_my_cnf { 'localhost':
+      database_user     => $root_user,
+      database_password => $root_password,
+      before            => Class['mysql::server']
+    }
+  } else {
+    profiles::mysql::root_my_cnf { 'localhost':
+      database_user     => $root_user,
+      database_password => $root_password,
+      before            => Class['mysql::server']
+    }
+
+    @@profiles::mysql::root_my_cnf { $facts['networking']['fqdn']:
+      database_user     => $root_user,
+      database_password => $root_password
+    }
+
+    realize Firewall['400 accept mysql traffic']
+
+    if $facts['mysqld_version'] {
+      @@file { 'mysqld_version_external_fact':
+        ensure  => 'file',
+        path    => '/etc/puppetlabs/facter/facts.d/mysqld_version.txt',
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0644',
+        content => "mysqld_version=${facts['mysqld_version']}",
+        tag     => ['mysqld_version', $facts['networking']['fqdn']]
+      }
+    }
+
+    mysql_user { "${root_user}@%":
+      password_hash => mysql::password($root_password),
+      require       => [Class['mysql::server'], Profiles::Mysql::Root_my_cnf['localhost']]
+    }
+
+    mysql_grant { "${root_user}@%/*.*":
+      user          => "${root_user}@%",
+      options       => ['GRANT'],
+      privileges    => ['ALL'],
+      table         => '*.*',
+      require       => [Class['mysql::server'], Profiles::Mysql::Root_my_cnf['localhost']]
+    }
+  }
 
   realize Group['mysql']
   realize User['mysql']
@@ -71,23 +128,13 @@ class profiles::mysql::server (
     }
   }
 
-  file { 'root_my_cnf':
-    ensure  => 'file',
-    path    => '/root/.my.cnf',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0400',
-    content => template('profiles/mysql/my.cnf.erb'),
-    before  => Class['mysql::server']
-  }
-
   systemd::dropin_file { 'mysql override.conf':
     unit          => 'mysql.service',
     filename      => 'override.conf',
     content       => "[Service]\nLimitNOFILE=${max_open_files}"
   }
 
-  class { ::mysql::server:
+  class { '::mysql::server':
     root_password      => $root_password,
     package_name       => 'mysql-server',
     service_name       => 'mysql',
@@ -97,11 +144,26 @@ class profiles::mysql::server (
     override_options   => $options
   }
 
-  include profiles::mysql::logging
+  class { 'profiles::mysql::server::backup':
+    password       => fqdn_rand_string(20, undef, $root_password),
+    lvm            => $backup_lvm,
+    volume_group   => $backup_volume_group,
+    volume_size    => $backup_volume_size,
+    retention_days => $backup_retention_days,
+    require        => Class['mysql::server']
+  }
+
+  include profiles::mysql::server::logging
+
+  if $monitoring {
+    include profiles::mysql::server::monitoring
+
+    Class['mysql::server'] -> Class['profiles::mysql::server::monitoring']
+  }
 
   Group['mysql'] -> Class['mysql::server']
   User['mysql'] -> Class['mysql::server']
   Systemd::Dropin_file['mysql override.conf'] -> Class['mysql::server']
   Systemd::Dropin_file['mysql override.conf'] ~> Class['mysql::server::service']
-  Class['mysql::server'] -> Class['profiles::mysql::logging']
+  Class['mysql::server'] -> Class['profiles::mysql::server::logging']
 }

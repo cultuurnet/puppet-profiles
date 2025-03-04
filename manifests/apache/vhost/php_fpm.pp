@@ -2,8 +2,10 @@ define profiles::apache::vhost::php_fpm (
   String                         $basedir,
   String                         $public_web_directory = 'public',
   Variant[String, Array[String]] $aliases              = [],
+  String                         $access_log_format    = 'extended_json',
   Enum['unix', 'tcp']            $socket_type          = lookup('profiles::php::fpm_socket_type', Enum['unix', 'tcp'], 'first', 'unix'),
-  Optional[String]               $certificate          = undef
+  Optional[String]               $certificate          = undef,
+  Optional[Array]                $rewrites             = undef
 ) {
 
   include ::profiles
@@ -55,14 +57,10 @@ define profiles::apache::vhost::php_fpm (
     ssl_key            => $ssl_key,
     docroot            => "${basedir}/${public_web_directory}",
     manage_docroot     => false,
-    access_log_format  => 'extended_json',
+    access_log_format  => $access_log_format,
     access_log_env_var => '!nolog',
-    setenvif           => [
-                            'X-Forwarded-Proto "https" HTTPS=on',
-                            'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
-                          ],
-    request_headers    => [
-                            'unset Proxy early',
+    setenvif           => $profiles::apache::defaults::setenvif,
+    request_headers    => $profiles::apache::defaults::request_headers + [
                             "setifempty X-Forwarded-Port \"${port}\"",
                             "setifempty X-Forwarded-Proto \"${transport}\""
                           ],
@@ -71,7 +69,7 @@ define profiles::apache::vhost::php_fpm (
                               'path'            => '\.php$',
                               'provider'        => 'filesmatch',
                               'custom_fragment' => $socket_type ? {
-                                                     'unix' => 'SetHandler "proxy:unix:/var/run/php/php-fpm.sock|fcgi://localhost"',
+                                                     'unix' => 'SetHandler "proxy:unix:/run/php/php-fpm.sock|fcgi://localhost"',
                                                      'tcp'  => 'SetHandler "proxy:fcgi://127.0.0.1:9000"'
                                                    }
                             },
@@ -80,6 +78,7 @@ define profiles::apache::vhost::php_fpm (
                               'options'        => ['Indexes','FollowSymLinks','MultiViews'],
                               'allow_override' => 'All'
                             }
-                          ]
+                          ],
+    rewrites           => $rewrites
   }
 }

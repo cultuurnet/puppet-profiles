@@ -2,15 +2,46 @@
 data::puppet::puppetdb::url: 'http://localhost:8081'
 data::puppet::puppetserver::url: 'https://puppetserver.example.com:8140'
 
+data::newrelic::license_key: 'my_license_key'
+
+data::openid::provider_metadata_url: 'https://openid.example.com/.well-known/openid-configuration'
+data::openid::client_id: 'abc123'
+data::openid::client_secret: 'def456'
+
+data::mysql::etl::password: 'my_etl_password'
+data::mysql::2ndline_ro::password: 'my_2ndline_ro_password'
+
 profiles::jenkins::controller::admin_password: 'bar'
 profiles::jenkins::controller::url: 'https://foobar.com/'
 
 profiles::uit::frontend::deployment::config_source: '/path/to/config/source'
 profiles::uit::api::deployment::config_source: '/path/to/config/source'
+profiles::uit::cms::deployment::config_source: '/path/to/config/source'
+profiles::uit::cms::deployment::drush_config_source: '/path/to/config/source'
+profiles::uit::notifications::deployment::config_source: '/path/to/config/source'
+profiles::uit::notifications::deployment::aws_access_key_id: 'abcd1234'
+profiles::uit::notifications::deployment::aws_secret_access_key: '4321dcba'
 profiles::uit::mail_subscriptions::deployment::config_source: '/path/to/config/source'
 profiles::uit::recommender_frontend::deployment::config_source: '/path/to/config/source'
+
 profiles::uitpas::balie::deployment::config_source: '/path/to/config/source'
+
+profiles::uitpas::website::frontend::deployment::config_source: '/path/to/config/source'
+profiles::uitpas::website::api::deployment::config_source: '/path/to/config/source'
+
+profiles::uitpas::cid_web::deployment::config_source: '/path/to/config/source'
+
 profiles::platform::deployment::config_source: '/path/to/config/source'
+profiles::platform::deployment::admin_users_source: '/path/to/config/source'
+
+profiles::uitdatabank::websocket_server::deployment::config_source: '/path/to/config/source'
+
+profiles::uitdatabank::articlelinker::deployment::config_source: '/path/to/config/source'
+
+profiles::uitdatabank::angular_app::deployment::config_source: '/path/to/config/source'
+
+profiles::uitdatabank::frontend::deployment::config_source: '/path/to/config/source'
+
 profiles::uitdatabank::entry_api::deployment::config_source: '/path/to/config/source'
 profiles::uitdatabank::entry_api::deployment::admin_permissions_source: '/path/to/admin/permissions/source'
 profiles::uitdatabank::entry_api::deployment::client_permissions_source: '/path/to/client/permissions/source'
@@ -22,9 +53,24 @@ profiles::uitdatabank::entry_api::deployment::term_mapping_facilities_source: '/
 profiles::uitdatabank::entry_api::deployment::term_mapping_themes_source: '/path/to/themes_source'
 profiles::uitdatabank::entry_api::deployment::term_mapping_types_source: '/path/to/types_source'
 
-profiles::uitdatabank::websocket_server::deployment::config_source: '/path/to/config/source'
+profiles::uitdatabank::search_api::deployment::config_source: '/path/to/config/source'
+profiles::uitdatabank::search_api::deployment::features_source: '/path/to/config/source'
+profiles::uitdatabank::search_api::deployment::facilities_source: '/path/to/config/source'
+profiles::uitdatabank::search_api::deployment::themes_source: '/path/to/config/source'
+profiles::uitdatabank::search_api::deployment::types_source: '/path/to/config/source'
+profiles::uitdatabank::search_api::deployment::pubkey_auth0_source: '/path/to/config/key'
+profiles::uitdatabank::search_api::deployment::pubkey_keycloak_source: '/path/to/config/key'
 
-profiles::publiq::versions::url: 'http://abc.xyz'
+profiles::uitdatabank::jwt_provider_uitidv1::deployment::config_source: '/path/to/config/source'
+profiles::uitdatabank::jwt_provider_uitidv1::deployment::private_key_source: '/path/to/privkey/source'
+profiles::uitdatabank::jwt_provider_uitidv1::deployment::public_key_source: '/path/to/pubkey/source'
+
+profiles::uitdatabank::jwt_provider::deployment::config_source: '/path/to/config/source'
+
+profiles::uitid::frontend::deployment::config_source: '/path/to/config/source'
+profiles::uitid::frontend_api::deployment::config_source: '/path/to/config/source'
+profiles::uitid::frontend_auth0::deployment::config_source: '/path/to/config/source'
+
 profiles::publiq::versions::service_address: '127.0.1.1'
 profiles::publiq::versions::service_port: 6000
 
@@ -38,22 +84,24 @@ profiles::certificates::certificates:
 
 profiles::ssh_authorized_keys::keys:
   'publiq first key':
-    tag: 'publiq'
+    tags: 'publiq'
     keys:
       type: 'ssh-rsa'
       key: 'abcd'
   'publiq second key':
-    tag: 'publiq'
+    tags:
+      - 'publiq'
+      - 'example'
     keys:
       type: 'ssh-ed25519'
       key: 'defg'
   'foobar first key':
-    tag: 'foobar'
+    tags: 'foobar'
     keys:
       type: 'ssh-rsa'
       key: '0123'
   'acme first key':
-    tag: 'acme'
+    tags: 'acme'
     keys:
       type: 'ssh-rsa'
       key: '4567'
@@ -72,7 +120,3 @@ profiles::filebeat::logging:
     keepfiles: '7'
 
 profiles::php::fpm_socket_type: 'tcp'
-
-terraform::volumes::ebs::xvdb::size: 60
-terraform::volumes::ebs::xvdc::size: 40
-terraform::volumes::ebs::xvdd::size: 20

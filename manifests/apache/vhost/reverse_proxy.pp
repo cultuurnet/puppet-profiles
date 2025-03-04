@@ -4,9 +4,11 @@ define profiles::apache::vhost::reverse_proxy (
   Enum['on', 'off', 'nodecode']  $allow_encoded_slashes = 'off',
   Boolean                        $preserve_host         = false,
   Boolean                        $support_websockets    = false,
+  Boolean                        $auth_openid_connect   = false,
   Hash                           $proxy_params          = {},
   Variant[String, Array[String]] $proxy_keywords        = [],
-  Variant[String, Array[String]] $aliases               = []
+  Variant[String, Array[String]] $aliases               = [],
+  String                         $access_log_format     = 'extended_json'
 ) {
 
   include ::profiles
@@ -68,6 +70,29 @@ define profiles::apache::vhost::reverse_proxy (
     $rewrites = undef
   }
 
+  if $auth_openid_connect {
+    include apache::mod::authn_core
+
+    $openid_connect_directories = [{
+                                    'path'      => '/',
+                                    'provider'  => 'location',
+                                    'auth_type' => 'openid-connect',
+                                    'require'   => 'valid-user'
+                                  }]
+    $openid_connect_settings    = {
+                                    'ProviderMetadataURL' => lookup('data::openid::provider_metadata_url', Optional[String], 'first', undef),
+                                    'ClientID'            => lookup('data::openid::client_id', Optional[String], 'first', undef),
+                                    'ClientSecret'        => lookup('data::openid::client_secret', Optional[String], 'first', undef),
+                                    'RedirectURI'         => "https://${servername}/redirect_uri",
+                                    'CryptoPassphrase'    => fqdn_rand_string(32)
+                                  }
+    $no_proxy_uris              = ['/redirect_uri']
+  } else {
+    $openid_connect_directories = []
+    $openid_connect_settings    = undef
+    $no_proxy_uris              = []
+  }
+
   apache::vhost { "${servername}_${port}":
     servername            => $servername,
     serveraliases         => $aliases,
@@ -77,13 +102,12 @@ define profiles::apache::vhost::reverse_proxy (
     ssl_key               => $ssl_key,
     docroot               => '/var/www/html',
     manage_docroot        => false,
-    access_log_format     => 'extended_json',
-    setenvif              => [
-                               'X-Forwarded-Proto "https" HTTPS=on',
-                               'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
-                             ],
-    request_headers       => [
-                               'unset Proxy early',
+    access_log_format     => $access_log_format,
+    directories           => $openid_connect_directories,
+    auth_oidc             => $auth_openid_connect,
+    oidc_settings         => $openid_connect_settings,
+    setenvif              => $profiles::apache::defaults::setenvif,
+    request_headers       => $profiles::apache::defaults::request_headers + [
                                "setifempty X-Forwarded-Port \"${port}\"",
                                "setifempty X-Forwarded-Proto \"${transport}\""
                              ],
@@ -92,11 +116,12 @@ define profiles::apache::vhost::reverse_proxy (
     proxy_preserve_host   => $preserve_host,
     rewrites              => $rewrites,
     proxy_pass            => {
-                               'path'         => '/',
-                               'url'          => $destination,
-                               'keywords'     => [$proxy_keywords].flatten,
-                               'reverse_urls' => $reverse_urls,
-                               'params'       => $proxy_params
+                               'path'          => '/',
+                               'url'           => $destination,
+                               'keywords'      => [$proxy_keywords].flatten,
+                               'reverse_urls'  => $reverse_urls,
+                               'params'        => $proxy_params,
+                               'no_proxy_uris' => $no_proxy_uris
                              }
   }
 }

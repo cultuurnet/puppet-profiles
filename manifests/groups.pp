@@ -40,6 +40,16 @@ class profiles::groups inherits ::profiles {
     gid    => '456'
   }
 
+  @group { 'elasticsearch':
+    ensure => 'present',
+    gid    => '457'
+  }
+
+  @group { 'vault':
+    ensure => 'present',
+    gid    => '458'
+  }
+
   @group { 'ubuntu':
     ensure => 'present',
     gid    => '1000'
@@ -53,6 +63,16 @@ class profiles::groups inherits ::profiles {
   @group { 'borgbackup':
     ensure => 'present',
     gid    => '1001'
+  }
+
+  @group { 'jira':
+    ensure => 'present',
+    gid    => '1001'
+  }
+
+  @group { 'confluence':
+    ensure => 'present',
+    gid    => '1002'
   }
 
   @group { 'www-data':
@@ -74,4 +94,21 @@ class profiles::groups inherits ::profiles {
     ensure => 'present',
     gid    => '1004'
   }
+
+  @group { 'glassfish':
+    ensure => 'present',
+    gid    => '1005'
+  }
+
+  @group { 'ssm-user':
+    ensure => 'present',
+    gid    => '1006'
+  }
+
+  @group { '_graphite':
+    ensure => 'present',
+    gid    => '1007'
+  }
+
+  realize Group['docker']
 }

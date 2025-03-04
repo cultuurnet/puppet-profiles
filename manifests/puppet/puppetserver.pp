@@ -10,7 +10,10 @@ class profiles::puppet::puppetserver (
                                                                        { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
                                                                        { 'name' => 'Common data', 'path' => 'common.yaml' }
                                                                      ],
-  Boolean                                  $terraform_integration  = false,
+  Boolean                                  $vault_integration      = false,
+  Optional[String]                         $vault_address          = undef,
+  Hash                                     $vault_mounts           = {},
+  Boolean                                  $terraform_integration  = lookup('data::puppet::terraform_integration', Boolean, 'first', false),
   Optional[String]                         $terraform_bucket       = undef,
   Boolean                                  $terraform_use_iam_role = true,
   Optional[Stdlib::Httpurl]                $puppetdb_url           = undef,
@@ -101,8 +104,16 @@ class profiles::puppet::puppetserver (
     gpg_key               => $eyaml_gpg_key,
     lookup_hierarchy      => $lookup_hierarchy,
     terraform_integration => $terraform_integration,
+    vault_integration     => $vault_integration,
+    vault_address         => $vault_address,
+    vault_mounts          => $vault_mounts,
     require               => Class['profiles::puppet::puppetserver::install'],
     notify                => Class['profiles::puppet::puppetserver::service']
+  }
+
+  class { 'profiles::puppet::puppetserver::vault':
+    before => Class['profiles::puppet::puppetserver::hiera'],
+    notify => Class['profiles::puppet::puppetserver::service']
   }
 
   if $terraform_integration {
@@ -122,6 +133,16 @@ class profiles::puppet::puppetserver (
 
   class { 'profiles::puppet::puppetserver::install':
     version => $version,
+    notify  => Class['profiles::puppet::puppetserver::service']
+  }
+
+  hocon_setting { 'puppetserver ca allow-subject-alt-names':
+    ensure  => 'present',
+    path    => '/etc/puppetlabs/puppetserver/conf.d/ca.conf',
+    setting => 'certificate-authority.allow-subject-alt-names',
+    type    => 'boolean',
+    value   => true,
+    require => Class['profiles::puppet::puppetserver::install'],
     notify  => Class['profiles::puppet::puppetserver::service']
   }
 
@@ -167,7 +188,7 @@ class profiles::puppet::puppetserver (
   }
 
   cron {'puppetserver_report_retention':
-    environment => [ 'MAILTO=infra@publiq.be'],
+    environment => [ 'MAILTO=infra+cron@publiq.be'],
     command     => "/usr/bin/find /opt/puppetlabs/server/data/puppetserver/reports -type f -name \"*.yaml\" -mtime +${retention_days} -exec rm {} \\;",
     hour        => '0',
     minute      => '0'

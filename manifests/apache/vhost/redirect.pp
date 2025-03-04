@@ -1,7 +1,8 @@
 define profiles::apache::vhost::redirect (
   Stdlib::Httpurl                $destination,
-  Optional[String]               $certificate  = undef,
-  Variant[String, Array[String]] $aliases      = []
+  Optional[String]               $certificate       = undef,
+  Variant[String, Array[String]] $aliases           = [],
+  String                         $access_log_format = 'extended_json'
 ) {
 
   include ::profiles
@@ -50,12 +51,9 @@ define profiles::apache::vhost::redirect (
     ssl_key           => $ssl_key,
     docroot           => '/var/www/html',
     manage_docroot    => false,
-    request_headers   => ['unset Proxy early'],
-    access_log_format => 'extended_json',
-    setenvif          => [
-                           'X-Forwarded-Proto "https" HTTPS=on',
-                           'X-Forwarded-For "^(\d{1,3}+\.\d{1,3}+\.\d{1,3}+\.\d{1,3}+).*" CLIENT_IP=$1'
-                         ],
+    request_headers   => $profiles::apache::defaults::request_headers,
+    access_log_format => $access_log_format,
+    setenvif          => $profiles::apache::defaults::setenvif,
     redirect_source   => '/',
     redirect_dest     => "${dest}/",
     redirect_status   => 'permanent'

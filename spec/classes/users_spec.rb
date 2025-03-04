@@ -23,6 +23,7 @@ describe 'profiles::users' do
         it { is_expected.to contain_user('jenkins').with(
           'ensure'         => 'present',
           'gid'            => 'jenkins',
+          'groups'         => 'docker',
           'home'           => '/var/lib/jenkins',
           'managehome'     => true,
           'purge_ssh_keys' => true,
@@ -33,6 +34,7 @@ describe 'profiles::users' do
         it { is_expected.to contain_user('ubuntu').with(
           'ensure'         => 'present',
           'gid'            => 'ubuntu',
+          'groups'         => 'docker',
           'home'           => '/home/ubuntu',
           'managehome'     => true,
           'purge_ssh_keys' => true,
@@ -43,6 +45,7 @@ describe 'profiles::users' do
         it { is_expected.to contain_user('vagrant').with(
           'ensure'         => 'present',
           'gid'            => 'vagrant',
+          'groups'         => 'docker',
           'home'           => '/home/vagrant',
           'managehome'     => true,
           'purge_ssh_keys' => false,
@@ -128,6 +131,46 @@ describe 'profiles::users' do
           'purge_ssh_keys' => true,
           'shell'          => '/bin/false',
           'uid'            => '456'
+        ) }
+
+        it { is_expected.to contain_user('elasticsearch').with(
+          'ensure'         => 'present',
+          'gid'            => 'elasticsearch',
+          'home'           => '/home/elasticsearch',
+          'managehome'     => false,
+          'purge_ssh_keys' => true,
+          'shell'          => '/bin/false',
+          'uid'            => '457'
+        ) }
+
+        it { is_expected.to contain_user('vault').with(
+          'ensure'         => 'present',
+          'gid'            => 'vault',
+          'home'           => '/home/vault',
+          'managehome'     => true,
+          'purge_ssh_keys' => true,
+          'shell'          => '/bin/bash',
+          'uid'            => '458'
+        ) }
+
+        it { is_expected.to contain_user('glassfish').with(
+          'ensure'         => 'present',
+          'gid'            => 'glassfish',
+          'home'           => '/home/glassfish',
+          'managehome'     => true,
+          'purge_ssh_keys' => true,
+          'shell'          => '/bin/bash',
+          'uid'            => '1005'
+        ) }
+
+        it { is_expected.to contain_user('ssm-user').with(
+          'ensure'         => 'present',
+          'gid'            => 'ssm-user',
+          'home'           => '/home/ssm-user',
+          'managehome'     => true,
+          'purge_ssh_keys' => true,
+          'shell'          => '/bin/sh',
+          'uid'            => '1006'
         ) }
       end
     end

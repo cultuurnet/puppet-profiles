@@ -7,6 +7,13 @@ describe 'profiles::groups' do
 
       it { is_expected.to compile.with_all_deps }
 
+      context "without virtual resources realized" do
+        it { is_expected.to contain_group('docker').with(
+          'ensure' => 'present',
+          'gid'    => '300'
+        ) }
+      end
+
       context "with all virtual resources realized" do
         let(:pre_condition) { 'Group <| |>' }
 
@@ -73,6 +80,26 @@ describe 'profiles::groups' do
         it { is_expected.to contain_group('mysql').with(
           'ensure' => 'present',
           'gid'    => '456'
+        ) }
+
+        it { is_expected.to contain_group('elasticsearch').with(
+          'ensure' => 'present',
+          'gid'    => '457'
+        ) }
+
+        it { is_expected.to contain_group('vault').with(
+          'ensure' => 'present',
+          'gid'    => '458'
+        ) }
+
+        it { is_expected.to contain_group('glassfish').with(
+          'ensure' => 'present',
+          'gid'    => '1005'
+        ) }
+
+        it { is_expected.to contain_group('ssm-user').with(
+          'ensure' => 'present',
+          'gid'    => '1006'
         ) }
       end
     end

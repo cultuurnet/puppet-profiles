@@ -5,15 +5,16 @@ class profiles::puppet::agent (
 ) inherits ::profiles {
 
   $default_ini_setting_attributes = {
-                                      path    => '/etc/puppetlabs/puppet/puppet.conf',
-                                      notify  => Service['puppet']
+                                      path   => '/etc/puppetlabs/puppet/puppet.conf',
+                                      notify => Service['puppet']
                                     }
 
   realize Apt::Source['puppet']
+  realize File['/etc/puppetlabs/facter/facts.d']
 
   package { 'puppet-agent':
     ensure  => $version,
-    require => Apt::Source['puppet'],
+    require => [Apt::Source['puppet'], File['/etc/puppetlabs/facter/facts.d']],
     notify  => Service['puppet']
   }
 
@@ -28,18 +29,6 @@ class profiles::puppet::agent (
     path    => '/etc/puppetlabs/code/environments/production/data',
     force   => true,
     require => Package['puppet-agent']
-  }
-
-  file { 'puppet agent facter datadir':
-    ensure  => 'directory',
-    path    => '/etc/puppetlabs/facter',
-    require => Package['puppet-agent']
-  }
-
-  file { 'puppet agent facts.d datadir':
-    ensure  => 'directory',
-    path    => '/etc/puppetlabs/facter/facts.d',
-    require => File['puppet agent facter datadir']
   }
 
   if $puppetserver {

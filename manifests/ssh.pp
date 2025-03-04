@@ -9,6 +9,11 @@ class profiles::ssh(
     notify  => Service['ssh']
   }
 
+  package { 'openssh-server':
+    ensure => 'latest',
+    notify => Service['ssh']
+  }
+
   sshd_config { 'PermitRootLogin':
     ensure => 'present',
     value  => 'no'
@@ -48,7 +53,7 @@ class profiles::ssh(
     purge => true
   }
 
-  any2array($ssh_authorized_keys_tags).each |$tag| {
+  [$ssh_authorized_keys_tags].flatten.each |$tag| {
     Ssh_authorized_key <| tag == $tag |>
   }
 

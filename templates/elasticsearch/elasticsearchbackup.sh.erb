@@ -1,0 +1,24 @@
+#!/bin/bash
+
+limit=1000
+backup_directory=/data/backup/elasticsearch/current
+archive_directory=/data/backup/elasticsearch/archive
+retention=<%= @mtime %>
+
+date_suffix=$(date +%Y%m%d-%H%M%S --date='now')
+
+echo "Removing previous backups"
+/usr/bin/rm -rf ${backup_directory}/*
+
+echo "Dumping all indices to directory ${backup_directory}"
+/usr/bin/multielasticdump --direction=dump --match='^.*$' --input=http://127.0.0.1:9200 --includeType=data --output=${backup_directory} --limit=${limit}
+
+echo "Copying backups to archive"
+for path in ${backup_directory}/*
+do
+  filename=${path##*/}
+  /usr/bin/nice -n 19 /bin/bzip2 --fast -c ${path} > ${archive_directory}/${filename%.json}_${date_suffix}.json.bz2
+done
+
+echo "Cleaning up archive"
+/usr/bin/find ${archive_directory} -type f -mtime +${retention} -delete

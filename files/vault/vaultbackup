@@ -1,0 +1,9 @@
+#!/bin/bash
+
+mv /data/backup/vault/current/*.tar.gz /data/backup/vault/archive
+
+tar cvzf /data/backup/vault/current/vault_$(date +%Y.%m.%d.%H%M%S).tar.gz \
+        /opt/vault \
+        /home/vault/.vault-token \
+        /home/vault/encrypted_unseal_key \
+        /home/vault/vault_init_output.json

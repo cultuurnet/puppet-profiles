@@ -4,7 +4,7 @@ class profiles::uit::frontend::deployment (
   String                     $version              = 'latest',
   String                     $repository           = 'uit-frontend',
   Enum['running', 'stopped'] $service_status       = 'running',
-  Stdlib::Ipv4               $service_address      = '127.0.0.1',
+  Stdlib::IP::Address::V4    $service_address      = '127.0.0.1',
   Integer                    $service_port         = 3000,
   Optional[String]           $newrelic_license_key = undef,
   Optional[String]           $newrelic_app_name    = undef,

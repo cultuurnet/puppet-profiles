@@ -1,4 +1,8 @@
 ---
+unclassified:
+  location:
+    adminAddress: 'jenkins@publiq.be'
+    url: '<%= @configuration['url'] %>'
 jenkins:
   authorizationStrategy:
     loggedInUsersCanDoAnything:
@@ -6,6 +10,9 @@ jenkins:
   numExecutors: 0
   slaveAgentPort: 0
   mode: NORMAL
+  markupFormatter:
+    rawHtml:
+      disableSyntaxHighlighting: false
   securityRealm:
     local:
       allowsSignup: false
@@ -21,7 +28,25 @@ jenkins:
       env:
       - key: 'CI'
         value: 'true'
-unclassified:
-  location:
-    adminAddress: 'jenkins@publiq.be'
-    url: '<%= @configuration['url'] %>'
+      - key: 'YARN_CACHE_FOLDER'
+        value: '/var/lib/jenkins-swarm-client/.cache/yarn'
+      - key: 'COMPOSER_CACHE_DIR'
+        value: '/var/lib/jenkins-swarm-client/.cache/composer'
+  viewsTabBar: "standard"
+  views:
+  - all:
+      name: "all"
+  <%- @configuration['views'].each do |view| -%>
+  - list:
+      name: '<%= view['name'] %>'
+      includeRegex: '<%= view['regex'] %>'
+      columns:
+      - "status"
+      - "weather"
+      - "jobName"
+      - "lastSuccess"
+      - "lastFailure"
+      - "lastDuration"
+      - "buildButton"
+      - "favoriteColumn"
+  <%- end -%>

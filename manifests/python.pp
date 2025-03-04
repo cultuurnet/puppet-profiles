@@ -1,14 +1,14 @@
 class profiles::python (
-  String $version = '3.6'
+  Boolean $with_dev = false
 ) inherits ::profiles {
 
-  if $version == '3.7' {
-    realize Apt::Ppa['ppa:deadsnakes/ppa']
-
-    Apt::Ppa['ppa:deadsnakes/ppa'] -> Package["python${version}"]
+  if $with_dev {
+    package { 'python3-pip':
+      ensure => 'installed'
+    }
   }
 
-  package { "python${version}":
+  package { 'python3':
     ensure => 'installed'
   }
 }

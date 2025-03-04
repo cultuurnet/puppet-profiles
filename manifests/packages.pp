@@ -1,7 +1,7 @@
 class profiles::packages inherits ::profiles {
 
   @package { 'composer':
-    ensure  => 'absent'
+    ensure => 'absent'
   }
 
   @package { 'composer1':
@@ -44,6 +44,10 @@ class profiles::packages inherits ::profiles {
     ensure => 'present'
   }
 
+  @package { 'yq':
+    ensure => 'present'
+  }
+
   @package { 'gcsfuse':
     ensure  => 'present',
     require => Apt::Source['publiq-tools']
@@ -54,7 +58,7 @@ class profiles::packages inherits ::profiles {
     require => Apt::Source['publiq-tools']
   }
 
-  @package { 'mysql-connector-java':
+  @package { 'mysql-connector-j':
     ensure  => 'present',
     require => Apt::Source['publiq-tools']
   }
@@ -69,14 +73,80 @@ class profiles::packages inherits ::profiles {
   }
 
   @package { 'qemu-user-static':
-    ensure  => 'present'
+    ensure => 'present'
   }
 
   @package { 'build-essential':
-    ensure  => 'present'
+    ensure => 'present'
+  }
+
+  @package { 'mysql-client':
+    ensure => 'present'
   }
 
   @package { 'nfs-common':
-    ensure  => 'present'
+    ensure => 'present'
   }
+
+  @package { 'iftop':
+    ensure => 'present'
+  }
+
+  @package { 'borgbackup':
+    ensure => 'present'
+  }
+
+  @package { 'borgmatic':
+    ensure => 'present'
+  }
+
+  @package { 'rubygem-puppetdb-cli':
+    ensure  => 'present',
+    require => Apt::Source['publiq-tools']
+  }
+
+  @package { 'kubectl':
+    ensure  => 'present',
+    require => Apt::Source['publiq-tools']
+  }
+
+  @package { 'argocd':
+    ensure  => 'present',
+    require => Apt::Source['publiq-tools']
+  }
+
+  @package { 'google-cloud-cli':
+    ensure  => 'present',
+    require => Apt::Source['publiq-tools']
+  }
+
+  @package { 'graphite-web':
+    ensure => 'present'
+  }
+
+  @package { 'graphite-carbon':
+    ensure => 'present'
+  }
+
+  @package { 'uwsgi':
+    ensure => 'present'
+  }
+
+  @package { 'uwsgi-plugin-python3':
+    ensure => 'present'
+  }
+
+  @package { 'imagemagick':
+    ensure => 'present'
+  }
+
+  @package { 'rubygem-angular-config':
+    ensure  => 'present',
+    require => Apt::Source['publiq-tools']
+  }
+
+  # Realize a list of 'default' packages on all nodes
+  realize Package['jq']
+  realize Package['yq']
+  realize Package['iftop']
 }
