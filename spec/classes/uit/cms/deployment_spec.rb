@@ -68,7 +68,7 @@ describe 'profiles::uit::cms::deployment' do
           'environment' => ['MAILTO=infra+cron@publiq.be'],
           'user'        => 'www-data',
           'hour'        => '*',
-          'minute'      => '*'
+          'minute'      => '5'
         ) }
 
         it { is_expected.to contain_profiles__php__fpm_service_alias('uit-cms') }
