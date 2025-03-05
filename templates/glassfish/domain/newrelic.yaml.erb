@@ -96,7 +96,7 @@ common: &default_settings
     forwarding:
 
       # When true, application logs will be forwarded to New Relic. The default is true.
-      enabled: true
+      enabled: false
 
       # Application log events are collected up to the configured amount. Afterwards,
       # events are sampled to maintain an even distribution across the harvest cycle.
@@ -184,7 +184,7 @@ common: &default_settings
     # Transaction tracer is enabled by default. Set this to false to turn it off.
     # This feature is not available to Lite accounts and is automatically disabled.
     # Default is true.
-    enabled: true
+    enabled: false
 
     # Threshold in seconds for when to collect a transaction
     # trace. When the response time of a controller action exceeds
@@ -271,7 +271,7 @@ common: &default_settings
 
     # Set to false to disable distributed tracing.
     # Default is true.
-    enabled: true
+    enabled: false
 
     # Agent versions 5.10.0+ utilize both the newrelic header and W3C Trace Context headers for distributed tracing.
     # The newrelic distributed tracing header allows interoperability with older agents that don't support W3C Trace Context headers.
