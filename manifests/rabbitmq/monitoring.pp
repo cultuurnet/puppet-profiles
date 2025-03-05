@@ -5,7 +5,7 @@ class profiles::rabbitmq::monitoring (
   String  $check_interval    = '15s',
   String  $exchanges_regexes = '[".*"]',
   String  $queues_regexes    = '[".*"]',
-  String  $vhosts,           = '[".*"]'
+  String  $vhosts            = '[".*"]'
 ) inherits ::profiles {
 
   $rabbitmq_credentials = lookup('vault:testproject/rabbitmq')
