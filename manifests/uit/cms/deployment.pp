@@ -65,7 +65,7 @@ class profiles::uit::cms::deployment (
     environment => ['MAILTO=infra+cron@publiq.be'],
     user        => 'www-data',
     hour        => '*',
-    minute      => '*',
+    minute      => '5',
     require     => [User['www-data'], Exec['uit-cms-drush-deploy']]
   }
 
