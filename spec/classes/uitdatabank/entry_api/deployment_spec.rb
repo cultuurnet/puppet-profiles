@@ -144,26 +144,8 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           'hasstatus' => true
         ) }
 
-        it { is_expected.to contain_systemd__unit_file('uitdatabank-event-export-worker@.service').with_content(/PartOf=uitdatabank-event-export-workers.target/) }
-        it { is_expected.to contain_systemd__unit_file('uitdatabank-event-export-worker@.service').with_content(/WorkingDirectory=\/var\/www\/udb3-backend/) }
-        it { is_expected.to contain_systemd__unit_file('uitdatabank-event-export-worker@.service').with_content(/Environment=APP_INCLUDE=\/var\/www\/udb3-backend\/worker_bootstrap.php/) }
-        it { is_expected.to contain_systemd__unit_file('uitdatabank-event-export-worker@.service').with_content(/Environment=QUEUE=event_export/) }
-        it { is_expected.to contain_systemd__unit_file('uitdatabank-event-export-worker@.service').with_content(/ExecStart=\/usr\/bin\/php resque.php/) }
-
-        it { is_expected.to contain_service('uitdatabank-event-export-worker@1').with(
-          'ensure'    => 'running',
-          'enable'    => true,
-          'hasstatus' => true
-        ) }
-
-        it { is_expected.not_to contain_service('uitdatabank-event-export-worker@2') }
-
-        it { is_expected.to contain_systemd__unit_file('uitdatabank-event-export-workers.target').with_content(/Wants=uitdatabank-event-export-worker@1.service/) }
-
-        it { is_expected.to contain_service('uitdatabank-event-export-workers').with(
-          'ensure'    => 'running',
-          'enable'    => true,
-          'hasstatus' => true
+        it { is_expected.to contain_class('profiles::uitdatabank::entry_api::event_export_workers').with(
+          'count' => 1
         ) }
 
         it { is_expected.to contain_package('uitdatabank-entry-api').that_requires('Apt::Source[uitdatabank-entry-api]') }
@@ -202,14 +184,11 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
         it { is_expected.to contain_service('uitdatabank-amqp-listener-uitpas').that_subscribes_to('Service[uitdatabank-entry-api]') }
         it { is_expected.to contain_systemd__unit_file('uitdatabank-bulk-label-offer-worker.service').that_notifies('Service[uitdatabank-bulk-label-offer-worker]') }
         it { is_expected.to contain_service('uitdatabank-bulk-label-offer-worker').that_subscribes_to('Service[uitdatabank-entry-api]') }
-        it { is_expected.to contain_systemd__unit_file('uitdatabank-event-export-worker@.service').that_notifies('Service[uitdatabank-event-export-worker@1]') }
-        it { is_expected.to contain_service('uitdatabank-event-export-worker@1').that_subscribes_to('Service[uitdatabank-entry-api]') }
-        it { is_expected.to contain_systemd__unit_file('uitdatabank-event-export-workers.target').that_notifies('Service[uitdatabank-event-export-workers]') }
-        it { is_expected.to contain_service('uitdatabank-event-export-workers').that_subscribes_to('Service[uitdatabank-entry-api]') }
         it { is_expected.to contain_exec('uitdatabank-entry-api-db-migrate').that_notifies('Service[uitdatabank-entry-api]') }
         it { is_expected.to contain_profiles__uitdatabank__terms('uitdatabank-entry-api').that_requires('Package[uitdatabank-entry-api]') }
         it { is_expected.to contain_profiles__uitdatabank__terms('uitdatabank-entry-api').that_notifies('Service[uitdatabank-entry-api]') }
         it { is_expected.to contain_profiles__php__fpm_service_alias('uitdatabank-entry-api').that_notifies('Service[uitdatabank-entry-api]') }
+        it { is_expected.to contain_service('uitdatabank-entry-api').that_notifies('Class[profiles::uitdatabank::entry_api::event_export_workers]') }
 
         context "without hieradata" do
           let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
@@ -239,22 +218,18 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           it { is_expected.to contain_systemd__unit_file('uitdatabank-amqp-listener-uitpas.service').with(
             'ensure' => 'absent'
           ) }
+
           it { is_expected.not_to contain_service('uitdatabank-amqp-listener-uitpas') }
 
           it { is_expected.to contain_systemd__unit_file('uitdatabank-bulk-label-offer-worker.service').with(
             'ensure' => 'absent'
           ) }
+
           it { is_expected.not_to contain_service('uitdatabank-bulk-label-offer-worker') }
 
-          it { is_expected.to contain_systemd__unit_file('uitdatabank-event-export-worker@.service').with(
-            'ensure' => 'absent'
+          it { is_expected.to contain_class('profiles::uitdatabank::entry_api::event_export_workers').with(
+            'count' => 0
           ) }
-          it { is_expected.not_to contain_service('uitdatabank-event-export-worker@1') }
-
-          it { is_expected.to contain_systemd__unit_file('uitdatabank-event-export-workers.target').with(
-            'ensure' => 'absent'
-          ) }
-          it { is_expected.not_to contain_service('uitdatabank-event-export-workers') }
         end
 
         context "with event_export_worker_count => 3" do
@@ -262,34 +237,9 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
             { 'event_export_worker_count' => 3 }
           ) }
 
-          it { is_expected.to contain_service('uitdatabank-event-export-worker@1').with(
-            'ensure'    => 'running',
-            'enable'    => true,
-            'hasstatus' => true
+          it { is_expected.to contain_class('profiles::uitdatabank::entry_api::event_export_workers').with(
+            'count' => 3
           ) }
-
-          it { is_expected.to contain_service('uitdatabank-event-export-worker@2').with(
-            'ensure'    => 'running',
-            'enable'    => true,
-            'hasstatus' => true
-          ) }
-
-          it { is_expected.to contain_service('uitdatabank-event-export-worker@3').with(
-            'ensure'    => 'running',
-            'enable'    => true,
-            'hasstatus' => true
-          ) }
-
-          it { is_expected.not_to contain_service('uitdatabank-event-export-worker@4') }
-
-          it { is_expected.to contain_systemd__unit_file('uitdatabank-event-export-workers.target').with_content(/Wants=uitdatabank-event-export-worker@1.service uitdatabank-event-export-worker@2.service uitdatabank-event-export-worker@3.service/) }
-
-          it { is_expected.to contain_systemd__unit_file('uitdatabank-event-export-worker@.service').that_notifies('Service[uitdatabank-event-export-worker@1]') }
-          it { is_expected.to contain_systemd__unit_file('uitdatabank-event-export-worker@.service').that_notifies('Service[uitdatabank-event-export-worker@2]') }
-          it { is_expected.to contain_systemd__unit_file('uitdatabank-event-export-worker@.service').that_notifies('Service[uitdatabank-event-export-worker@3]') }
-          it { is_expected.to contain_service('uitdatabank-event-export-worker@1').that_subscribes_to('Service[uitdatabank-entry-api]') }
-          it { is_expected.to contain_service('uitdatabank-event-export-worker@2').that_subscribes_to('Service[uitdatabank-entry-api]') }
-          it { is_expected.to contain_service('uitdatabank-event-export-worker@3').that_subscribes_to('Service[uitdatabank-entry-api]') }
         end
       end
 

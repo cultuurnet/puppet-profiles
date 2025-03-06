@@ -116,7 +116,7 @@ class profiles::uitdatabank::entry_api::deployment (
       ensure    => 'running',
       enable    => true,
       hasstatus => true,
-      subscribe => Service['uitdatabank-entry-api']
+      subscribe => Service[$service_name]
     }
   } else {
     systemd::unit_file { 'uitdatabank-amqp-listener-uitpas.service':
@@ -134,7 +134,7 @@ class profiles::uitdatabank::entry_api::deployment (
       ensure    => 'running',
       enable    => true,
       hasstatus => true,
-      subscribe => Service['uitdatabank-entry-api']
+      subscribe => Service[$service_name]
     }
   } else {
     systemd::unit_file { 'uitdatabank-bulk-label-offer-worker.service':
@@ -142,41 +142,10 @@ class profiles::uitdatabank::entry_api::deployment (
     }
   }
 
-  if $event_export_worker_count > 0 {
-    systemd::unit_file { 'uitdatabank-event-export-worker@.service':
-      content => template('profiles/uitdatabank/entry_api/uitdatabank-event-export-worker@.service.erb')
-    }
-
-    Integer[1, $event_export_worker_count].each |$id| {
-      service { "uitdatabank-event-export-worker@${id}":
-        ensure    => 'running',
-        enable    => true,
-        hasstatus => true,
-        subscribe => [Systemd::Unit_file['uitdatabank-event-export-worker@.service'], Service['uitdatabank-entry-api']]
-      }
-    }
-
-    systemd::unit_file { 'uitdatabank-event-export-workers.target':
-      content => template('profiles/uitdatabank/entry_api/uitdatabank-event-export-workers.target.erb'),
-      notify  => Service['uitdatabank-event-export-workers']
-    }
-
-    service { 'uitdatabank-event-export-workers':
-      ensure    => 'running',
-      enable    => true,
-      hasstatus => true,
-      subscribe => Service['uitdatabank-entry-api']
-    }
-  } else {
-    systemd::unit_file { 'uitdatabank-event-export-worker@.service':
-      ensure => 'absent'
-    }
-
-    systemd::unit_file { 'uitdatabank-event-export-workers.target':
-      ensure => 'absent'
-    }
+  class { 'profiles::uitdatabank::entry_api::event_export_workers':
+    count     => $event_export_worker_count,
+    subscribe => Service[$service_name]
   }
-
 
   profiles::deployment::versions { $title:
     puppetdb_url => $puppetdb_url
