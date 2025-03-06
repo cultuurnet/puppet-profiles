@@ -24,9 +24,9 @@ class profiles::rabbitmq::monitoring (
                         'PORT'               => $port,
                         'USERNAME'           => $rabbitmq_credentials['username'],
                         'PASSWORD'           => $rabbitmq_credentials['password'],
-                        'EXCHANGES_REGEXES'  => $exchanges_regexes,
-                        'QUEUES_REGEXES'     => $queues_regexes,
-                        'VHOSTS_REGEXES'     => $vhosts_regexes
+                        'EXCHANGES_REGEXES'  => "\'${exchanges_regexes}\'",
+                        'QUEUES_REGEXES'     => "\'${queues_regexes}\'",
+                        'VHOSTS_REGEXES'     => "\'${vhosts_regexes}\'"
                       },
   }
 }
