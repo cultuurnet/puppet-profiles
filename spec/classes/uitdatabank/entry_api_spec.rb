@@ -32,6 +32,8 @@ describe 'profiles::uitdatabank::entry_api' do
               'database_name' => 'uitdatabank'
             ) }
 
+            it { is_expected.to contain_class('profiles::uitdatabank::entry_api::cron') }
+
             it { is_expected.to contain_mysql_database('uitdatabank').with(
               'charset' => 'utf8mb4',
               'collate' => 'utf8mb4_0900_ai_ci'
@@ -50,6 +52,7 @@ describe 'profiles::uitdatabank::entry_api' do
             it { is_expected.to contain_mysql_database('uitdatabank').that_requires('Class[profiles::mysql::server]') }
             it { is_expected.to contain_profiles__mysql__app_user('entry_api@uitdatabank').that_comes_before('Class[profiles::uitdatabank::entry_api::deployment]') }
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api::data_integration').that_requires('Class[profiles::uitdatabank::entry_api::deployment]') }
+            it { is_expected.to contain_class('profiles::uitdatabank::entry_api::cron').that_requires('Class[profiles::uitdatabank::entry_api::deployment]') }
           end
         end
 
@@ -73,6 +76,7 @@ describe 'profiles::uitdatabank::entry_api' do
 
           it { is_expected.not_to contain_class('profiles::uitdatabank::entry_api::deployment') }
           it { is_expected.not_to contain_class('profiles::uitdatabank::entry_api::data_integration') }
+          it { is_expected.not_to contain_class('profiles::uitdatabank::entry_api::cron') }
 
           context "with fact mysqld_version => 8.0.33" do
             let(:facts) { facts.merge( { 'mysqld_version' => '8.0.33' } ) }
@@ -130,6 +134,8 @@ describe 'profiles::uitdatabank::entry_api' do
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api::data_integration').with(
               'database_name' => 'uitdatabank'
             ) }
+
+            it { is_expected.to contain_class('profiles::uitdatabank::entry_api::cron') }
 
             it { is_expected.to contain_mysql_database('uitdatabank').that_comes_before('Profiles::Mysql::App_user[entry_api@uitdatabank]') }
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api::data_integration').that_requires('Class[profiles::uitdatabank::entry_api::deployment]') }

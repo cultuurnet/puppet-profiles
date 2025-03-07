@@ -45,11 +45,15 @@ class profiles::uitdatabank::entry_api (
       include profiles::uitdatabank::entry_api::deployment
 
       class { 'profiles::uitdatabank::entry_api::data_integration':
-        database_name => $database_name
+        database_name => $database_name,
+        require       => Class['profiles::uitdatabank::entry_api::deployment']
+      }
+
+      class { 'profiles::uitdatabank::entry_api::cron':
+        require => Class['profiles::uitdatabank::entry_api::deployment']
       }
 
       Profiles::Mysql::App_user["${database_user}@${database_name}"] -> Class['profiles::uitdatabank::entry_api::deployment']
-      Class['profiles::uitdatabank::entry_api::deployment'] -> Class['profiles::uitdatabank::entry_api::data_integration']
     }
   }
 
