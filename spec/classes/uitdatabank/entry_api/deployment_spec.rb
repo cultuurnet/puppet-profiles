@@ -5,18 +5,20 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context 'with config_source => /foo.json, admin_permissions_source => /tmp/admin_permissions_source, client_permissions_source => /tmp/client_permissions_source, pubkey_uitidv1_source => /tmp/pub_uitidv1.pem, pubkey_keycloak_source => /tmp/pub_keycloak.pem, externalid_mapping_organizer_source => /tmp/externalid_organizer_source, externalid_mapping_place_source => /tmp/externalid_place_source, term_mapping_facilities_source => /tmp/facilities_source, term_mapping_themes_source => /tmp/themes_source and term_mapping_types_source => /tmp/types_source' do
+      context 'with config_source => /foo.json, admin_permissions_source => /tmp/admin_permissions_source, client_permissions_source => /tmp/client_permissions_source, movie_fetcher_config_source => /tmp/movie_fetcher_config_source, completeness_source => /tmp/completeness_source, externalid_mapping_organizer_source => /tmp/externalid_organizer_source, externalid_mapping_place_source => /tmp/externalid_place_source, term_mapping_facilities_source => /tmp/facilities_source, term_mapping_themes_source => /tmp/themes_source and term_mapping_types_source => /tmp/types_source, pubkey_uitidv1_source => /tmp/pub_uitidv1.pem and pubkey_keycloak_source => /tmp/pub_keycloak.pem' do
         let(:params) { {
           'config_source'                       => '/foo.json',
           'admin_permissions_source'            => '/tmp/admin_permissions_source',
           'client_permissions_source'           => '/tmp/client_permissions_source',
-          'pubkey_uitidv1_source'               => '/tmp/pub_uitidv1.pem',
-          'pubkey_keycloak_source'              => '/tmp/pub_keycloak.pem',
+          'movie_fetcher_config_source'         => '/tmp/movie_fetcher_config_source',
+          'completeness_source'                 => '/tmp/completeness_source',
           'externalid_mapping_organizer_source' => '/tmp/externalid_organizer_source',
           'externalid_mapping_place_source'     => '/tmp/externalid_place_source',
           'term_mapping_facilities_source'      => '/tmp/facilities_source',
           'term_mapping_themes_source'          => '/tmp/themes_source',
-          'term_mapping_types_source'           => '/tmp/types_source'
+          'term_mapping_types_source'           => '/tmp/types_source',
+          'pubkey_uitidv1_source'               => '/tmp/pub_uitidv1.pem',
+          'pubkey_keycloak_source'              => '/tmp/pub_keycloak.pem'
         } }
 
         it { is_expected.to compile.with_all_deps }
@@ -25,13 +27,15 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           'config_source'                       => '/foo.json',
           'admin_permissions_source'            => '/tmp/admin_permissions_source',
           'client_permissions_source'           => '/tmp/client_permissions_source',
-          'pubkey_uitidv1_source'               => '/tmp/pub_uitidv1.pem',
-          'pubkey_keycloak_source'              => '/tmp/pub_keycloak.pem',
+          'movie_fetcher_config_source'         => '/tmp/movie_fetcher_config_source',
+          'completeness_source'                 => '/tmp/completeness_source',
           'externalid_mapping_organizer_source' => '/tmp/externalid_organizer_source',
           'externalid_mapping_place_source'     => '/tmp/externalid_place_source',
           'term_mapping_facilities_source'      => '/tmp/facilities_source',
           'term_mapping_themes_source'          => '/tmp/themes_source',
           'term_mapping_types_source'           => '/tmp/types_source',
+          'pubkey_uitidv1_source'               => '/tmp/pub_uitidv1.pem',
+          'pubkey_keycloak_source'              => '/tmp/pub_keycloak.pem',
           'version'                             => 'latest',
           'repository'                          => 'uitdatabank-entry-api',
           'bulk_label_offer_worker'             => 'present',
@@ -71,20 +75,20 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           'source' => '/tmp/client_permissions_source'
         ) }
 
-        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').with(
+        it { is_expected.to contain_file('uitdatabank-entry-api-movie-fetcher-config').with(
           'ensure' => 'file',
-          'path'   => '/var/www/udb3-backend/public.pem',
+          'path'   => '/var/www/udb3-backend/config.kinepolis.php',
           'owner'  => 'www-data',
           'group'  => 'www-data',
-          'source' => '/tmp/pub_uitidv1.pem'
+          'source' => '/tmp/movie_fetcher_config_source'
         ) }
 
-        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').with(
+        it { is_expected.to contain_file('uitdatabank-entry-api-completeness').with(
           'ensure' => 'file',
-          'path'   => '/var/www/udb3-backend/public-keycloak.pem',
+          'path'   => '/var/www/udb3-backend/config.completeness.php',
           'owner'  => 'www-data',
           'group'  => 'www-data',
-          'source' => '/tmp/pub_keycloak.pem'
+          'source' => '/tmp/completeness_source'
         ) }
 
         it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-organizer').with(
@@ -115,6 +119,22 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           'facilities_mapping_source' => '/tmp/facilities_source',
           'themes_mapping_source'     => '/tmp/themes_source',
           'types_mapping_source'      => '/tmp/types_source'
+        ) }
+
+        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').with(
+          'ensure' => 'file',
+          'path'   => '/var/www/udb3-backend/public.pem',
+          'owner'  => 'www-data',
+          'group'  => 'www-data',
+          'source' => '/tmp/pub_uitidv1.pem'
+        ) }
+
+        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').with(
+          'ensure' => 'file',
+          'path'   => '/var/www/udb3-backend/public-keycloak.pem',
+          'owner'  => 'www-data',
+          'group'  => 'www-data',
+          'source' => '/tmp/pub_keycloak.pem'
         ) }
 
         it { is_expected.to contain_profiles__php__fpm_service_alias('uitdatabank-entry-api') }
@@ -156,14 +176,14 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
         it { is_expected.to contain_file('uitdatabank-entry-api-client-permissions').that_requires('User[www-data]') }
         it { is_expected.to contain_file('uitdatabank-entry-api-client-permissions').that_requires('Package[uitdatabank-entry-api]') }
         it { is_expected.to contain_file('uitdatabank-entry-api-client-permissions').that_notifies('Service[uitdatabank-entry-api]') }
-        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').that_requires('Group[www-data]') }
-        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').that_requires('User[www-data]') }
-        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').that_requires('Package[uitdatabank-entry-api]') }
-        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').that_notifies('Service[uitdatabank-entry-api]') }
-        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').that_requires('Group[www-data]') }
-        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').that_requires('User[www-data]') }
-        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').that_requires('Package[uitdatabank-entry-api]') }
-        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').that_notifies('Service[uitdatabank-entry-api]') }
+        it { is_expected.to contain_file('uitdatabank-entry-api-movie-fetcher-config').that_requires('Group[www-data]') }
+        it { is_expected.to contain_file('uitdatabank-entry-api-movie-fetcher-config').that_requires('User[www-data]') }
+        it { is_expected.to contain_file('uitdatabank-entry-api-movie-fetcher-config').that_requires('Package[uitdatabank-entry-api]') }
+        it { is_expected.to contain_file('uitdatabank-entry-api-movie-fetcher-config').that_notifies('Service[uitdatabank-entry-api]') }
+        it { is_expected.to contain_file('uitdatabank-entry-api-completeness').that_requires('Group[www-data]') }
+        it { is_expected.to contain_file('uitdatabank-entry-api-completeness').that_requires('User[www-data]') }
+        it { is_expected.to contain_file('uitdatabank-entry-api-completeness').that_requires('Package[uitdatabank-entry-api]') }
+        it { is_expected.to contain_file('uitdatabank-entry-api-completeness').that_notifies('Service[uitdatabank-entry-api]') }
         it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-organizer').that_requires('Group[www-data]') }
         it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-organizer').that_requires('User[www-data]') }
         it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-organizer').that_requires('Package[uitdatabank-entry-api]') }
@@ -172,6 +192,14 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
         it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-place').that_requires('User[www-data]') }
         it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-place').that_requires('Package[uitdatabank-entry-api]') }
         it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-place').that_notifies('Service[uitdatabank-entry-api]') }
+        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').that_requires('Group[www-data]') }
+        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').that_requires('User[www-data]') }
+        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').that_requires('Package[uitdatabank-entry-api]') }
+        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').that_notifies('Service[uitdatabank-entry-api]') }
+        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').that_requires('Group[www-data]') }
+        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').that_requires('User[www-data]') }
+        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').that_requires('Package[uitdatabank-entry-api]') }
+        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').that_notifies('Service[uitdatabank-entry-api]') }
         it { is_expected.to contain_exec('uitdatabank-entry-api-db-migrate').that_notifies('Service[uitdatabank-entry-api]') }
         it { is_expected.to contain_profiles__uitdatabank__terms('uitdatabank-entry-api').that_requires('Package[uitdatabank-entry-api]') }
         it { is_expected.to contain_profiles__uitdatabank__terms('uitdatabank-entry-api').that_notifies('Service[uitdatabank-entry-api]') }
@@ -230,18 +258,20 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
         end
       end
 
-      context 'with config_source => /etc/bar.json, admin_permissions_source => /etc/admin_permissions_source, client_permissions_source => /etc/client_permissions_source, pubkey_uitidv1_source => /etc/pub_uitidv1.pem, pubkey_keycloak_source => /etc/pub_keycloak.pem, externalid_mapping_organizer_source => /etc/externalid_organizer_source, externalid_mapping_place_source => /etc/externalid_place_source, term_mapping_facilities_source => /etc/facilities_source, term_mapping_themes_source => /etc/themes_source and term_mapping_types_source => /etc/types_source' do
+      context 'with config_source => /etc/bar.json, admin_permissions_source => /etc/admin_permissions_source, client_permissions_source => /etc/client_permissions_source, movie_fetcher_config_source => /etc/movie_fetcher_config_source, completeness_source => /etc/completeness_source, externalid_mapping_organizer_source => /etc/externalid_organizer_source, externalid_mapping_place_source => /etc/externalid_place_source, term_mapping_facilities_source => /etc/facilities_source, term_mapping_themes_source => /etc/themes_source, term_mapping_types_source => /etc/types_source, pubkey_uitidv1_source => /etc/pub_uitidv1.pem and pubkey_keycloak_source => /etc/pub_keycloak.pem' do
         let(:params) { {
           'config_source'                       => '/etc/bar.json',
           'admin_permissions_source'            => '/etc/admin_permissions_source',
           'client_permissions_source'           => '/etc/client_permissions_source',
-          'pubkey_uitidv1_source'               => '/etc/pub_uitidv1.pem',
-          'pubkey_keycloak_source'              => '/etc/pub_keycloak.pem',
+          'movie_fetcher_config_source'         => '/etc/movie_fetcher_config_source',
+          'completeness_source'                 => '/etc/completeness_source',
           'externalid_mapping_organizer_source' => '/etc/externalid_organizer_source',
           'externalid_mapping_place_source'     => '/etc/externalid_place_source',
           'term_mapping_facilities_source'      => '/etc/facilities_source',
           'term_mapping_themes_source'          => '/etc/themes_source',
-          'term_mapping_types_source'           => '/etc/types_source'
+          'term_mapping_types_source'           => '/etc/types_source',
+          'pubkey_uitidv1_source'               => '/etc/pub_uitidv1.pem',
+          'pubkey_keycloak_source'              => '/etc/pub_keycloak.pem'
         } }
 
         it { is_expected.to contain_file('uitdatabank-entry-api-config').with(
@@ -256,12 +286,12 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           'source' => '/etc/client_permissions_source'
         ) }
 
-        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').with(
-          'source' => '/etc/pub_uitidv1.pem'
+        it { is_expected.to contain_file('uitdatabank-entry-api-movie-fetcher-config').with(
+          'source' => '/etc/movie_fetcher_config_source'
         ) }
 
-        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').with(
-          'source' => '/etc/pub_keycloak.pem'
+        it { is_expected.to contain_file('uitdatabank-entry-api-completeness').with(
+          'source' => '/etc/completeness_source'
         ) }
 
         it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-organizer').with(
@@ -271,6 +301,15 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
         it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-place').with(
           'source' => '/etc/externalid_place_source'
         ) }
+
+        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').with(
+          'source' => '/etc/pub_uitidv1.pem'
+        ) }
+
+        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').with(
+          'source' => '/etc/pub_keycloak.pem'
+        ) }
+
       end
 
       context 'without parameters' do
@@ -279,6 +318,8 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'admin_permissions_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'client_permissions_source'/) }
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'movie_fetcher_config_source'/) }
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'completeness_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'externalid_mapping_place_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'externalid_mapping_organizer_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'term_mapping_facilities_source'/) }

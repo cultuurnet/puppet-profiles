@@ -2,6 +2,8 @@ class profiles::uitdatabank::entry_api::deployment (
   String                    $config_source,
   String                    $admin_permissions_source,
   String                    $client_permissions_source,
+  String                    $movie_fetcher_config_source,
+  String                    $completeness_source,
   String                    $externalid_mapping_organizer_source,
   String                    $externalid_mapping_place_source,
   String                    $term_mapping_facilities_source,
@@ -55,15 +57,15 @@ class profiles::uitdatabank::entry_api::deployment (
     *      => $file_default_attributes
   }
 
-  file { 'uitdatabank-entry-api-pubkey-uitidv1':
-    path   => "${basedir}/public.pem",
-    source => $pubkey_uitidv1_source,
+  file { 'uitdatabank-entry-api-movie-fetcher-config':
+    path   => "${basedir}/config.kinepolis.php",
+    source => $movie_fetcher_config_source,
     *      => $file_default_attributes
   }
 
-  file { 'uitdatabank-entry-api-pubkey-keycloak':
-    path   => "${basedir}/public-keycloak.pem",
-    source => $pubkey_keycloak_source,
+  file { 'uitdatabank-entry-api-completeness':
+    path   => "${basedir}/config.completeness.php",
+    source => $completeness_source,
     *      => $file_default_attributes
   }
 
@@ -76,6 +78,18 @@ class profiles::uitdatabank::entry_api::deployment (
   file { 'uitdatabank-entry-api-externalid-mapping-place':
     path   => "${basedir}/config.external_id_mapping_place.php",
     source => $externalid_mapping_place_source,
+    *      => $file_default_attributes
+  }
+
+  file { 'uitdatabank-entry-api-pubkey-uitidv1':
+    path   => "${basedir}/public.pem",
+    source => $pubkey_uitidv1_source,
+    *      => $file_default_attributes
+  }
+
+  file { 'uitdatabank-entry-api-pubkey-keycloak':
+    path   => "${basedir}/public-keycloak.pem",
+    source => $pubkey_keycloak_source,
     *      => $file_default_attributes
   }
 
