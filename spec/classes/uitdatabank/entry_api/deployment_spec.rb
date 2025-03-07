@@ -5,7 +5,7 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with config_source => /foo.json, admin_permissions_source => /tmp/admin_permissions_source, client_permissions_source => /tmp/client_permissions_source, pubkey_uitidv1_source => /tmp/pub_uitidv1.pem, pubkey_keycloak_source => /tmp/pub_keycloak.pem, externalid_mapping_organizer_source => /tmp/externalid_organizer_source, externalid_mapping_place_source => /tmp/externalid_place_source, term_mapping_facilities_source => /tmp/facilities_source, term_mapping_themes_source => /tmp/themes_source and term_mapping_types_source => /tmp/types_source" do
+      context 'with config_source => /foo.json, admin_permissions_source => /tmp/admin_permissions_source, client_permissions_source => /tmp/client_permissions_source, pubkey_uitidv1_source => /tmp/pub_uitidv1.pem, pubkey_keycloak_source => /tmp/pub_keycloak.pem, externalid_mapping_organizer_source => /tmp/externalid_organizer_source, externalid_mapping_place_source => /tmp/externalid_place_source, term_mapping_facilities_source => /tmp/facilities_source, term_mapping_themes_source => /tmp/themes_source and term_mapping_types_source => /tmp/types_source' do
         let(:params) { {
           'config_source'                       => '/foo.json',
           'admin_permissions_source'            => '/tmp/admin_permissions_source',
@@ -35,7 +35,7 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           'version'                             => 'latest',
           'repository'                          => 'uitdatabank-entry-api',
           'bulk_label_offer_worker'             => 'present',
-          'amqp_listener_uitpas'                => true,
+          'amqp_listener_uitpas'                => 'present',
           'event_export_worker_count'           => 1
         ) }
 
@@ -125,12 +125,9 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           'restart'    => '/usr/bin/systemctl reload uitdatabank-entry-api'
         ) }
 
-        it { is_expected.to contain_systemd__unit_file('uitdatabank-amqp-listener-uitpas.service').with_content(/WorkingDirectory=\/var\/www\/udb3-backend/) }
-        it { is_expected.to contain_systemd__unit_file('uitdatabank-amqp-listener-uitpas.service').with_content(/ExecStart=\/usr\/bin\/php bin\/udb3.php amqp-listen-uitpas/) }
-        it { is_expected.to contain_service('uitdatabank-amqp-listener-uitpas').with(
-          'ensure'    => 'running',
-          'enable'    => true,
-          'hasstatus' => true
+        it { is_expected.to contain_class('profiles::uitdatabank::entry_api::amqp_listener_uitpas').with(
+          'ensure'  => 'present',
+          'basedir' => '/var/www/udb3-backend'
         ) }
 
         it { is_expected.to contain_class('profiles::uitdatabank::entry_api::bulk_label_offer_worker').with(
@@ -175,16 +172,15 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
         it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-place').that_requires('User[www-data]') }
         it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-place').that_requires('Package[uitdatabank-entry-api]') }
         it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-place').that_notifies('Service[uitdatabank-entry-api]') }
-        it { is_expected.to contain_systemd__unit_file('uitdatabank-amqp-listener-uitpas.service').that_notifies('Service[uitdatabank-amqp-listener-uitpas]') }
-        it { is_expected.to contain_service('uitdatabank-amqp-listener-uitpas').that_subscribes_to('Service[uitdatabank-entry-api]') }
         it { is_expected.to contain_exec('uitdatabank-entry-api-db-migrate').that_notifies('Service[uitdatabank-entry-api]') }
         it { is_expected.to contain_profiles__uitdatabank__terms('uitdatabank-entry-api').that_requires('Package[uitdatabank-entry-api]') }
         it { is_expected.to contain_profiles__uitdatabank__terms('uitdatabank-entry-api').that_notifies('Service[uitdatabank-entry-api]') }
         it { is_expected.to contain_profiles__php__fpm_service_alias('uitdatabank-entry-api').that_notifies('Service[uitdatabank-entry-api]') }
+        it { is_expected.to contain_service('uitdatabank-entry-api').that_notifies('Class[profiles::uitdatabank::entry_api::amqp_listener_uitpas]') }
         it { is_expected.to contain_service('uitdatabank-entry-api').that_notifies('Class[profiles::uitdatabank::entry_api::bulk_label_offer_worker]') }
         it { is_expected.to contain_service('uitdatabank-entry-api').that_notifies('Class[profiles::uitdatabank::entry_api::event_export_workers]') }
 
-        context "without hieradata" do
+        context 'without hieradata' do
           let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
 
           it { is_expected.to contain_profiles__deployment__versions('profiles::uitdatabank::entry_api::deployment').with(
@@ -192,7 +188,7 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           ) }
         end
 
-        context "with hieradata" do
+        context 'with hieradata' do
           let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
           it { is_expected.to contain_profiles__deployment__versions('profiles::uitdatabank::entry_api::deployment').with(
@@ -200,20 +196,17 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           ) }
         end
 
-        context "with bulk_label_offer_worker => absent, amqp_listener_uitpas => false and event_export_worker_count => 0" do
-          let(:params) { super().merge(
-            {
-              'amqp_listener_uitpas'      => false,
-              'bulk_label_offer_worker'   => 'absent',
-              'event_export_worker_count' => 0
-            }
-          ) }
+        context 'with bulk_label_offer_worker => absent, amqp_listener_uitpas => absent and event_export_worker_count => 0' do
+          let(:params) { super().merge( {
+            'amqp_listener_uitpas'      => 'absent',
+            'bulk_label_offer_worker'   => 'absent',
+            'event_export_worker_count' => 0
+          }) }
 
-          it { is_expected.to contain_systemd__unit_file('uitdatabank-amqp-listener-uitpas.service').with(
-            'ensure' => 'absent'
+          it { is_expected.to contain_class('profiles::uitdatabank::entry_api::amqp_listener_uitpas').with(
+            'ensure'  => 'absent',
+            'basedir' => '/var/www/udb3-backend'
           ) }
-
-          it { is_expected.not_to contain_service('uitdatabank-amqp-listener-uitpas') }
 
           it { is_expected.to contain_class('profiles::uitdatabank::entry_api::bulk_label_offer_worker').with(
             'ensure'  => 'absent',
@@ -226,10 +219,10 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           ) }
         end
 
-        context "with event_export_worker_count => 3" do
-          let(:params) { super().merge(
-            { 'event_export_worker_count' => 3 }
-          ) }
+        context 'with event_export_worker_count => 3' do
+          let(:params) { super().merge({
+            'event_export_worker_count' => 3
+          }) }
 
           it { is_expected.to contain_class('profiles::uitdatabank::entry_api::event_export_workers').with(
             'count' => 3
@@ -237,7 +230,7 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
         end
       end
 
-      context "with config_source => /etc/bar.json, admin_permissions_source => /etc/admin_permissions_source, client_permissions_source => /etc/client_permissions_source, pubkey_uitidv1_source => /etc/pub_uitidv1.pem, pubkey_keycloak_source => /etc/pub_keycloak.pem, externalid_mapping_organizer_source => /etc/externalid_organizer_source, externalid_mapping_place_source => /etc/externalid_place_source, term_mapping_facilities_source => /etc/facilities_source, term_mapping_themes_source => /etc/themes_source and term_mapping_types_source => /etc/types_source" do
+      context 'with config_source => /etc/bar.json, admin_permissions_source => /etc/admin_permissions_source, client_permissions_source => /etc/client_permissions_source, pubkey_uitidv1_source => /etc/pub_uitidv1.pem, pubkey_keycloak_source => /etc/pub_keycloak.pem, externalid_mapping_organizer_source => /etc/externalid_organizer_source, externalid_mapping_place_source => /etc/externalid_place_source, term_mapping_facilities_source => /etc/facilities_source, term_mapping_themes_source => /etc/themes_source and term_mapping_types_source => /etc/types_source' do
         let(:params) { {
           'config_source'                       => '/etc/bar.json',
           'admin_permissions_source'            => '/etc/admin_permissions_source',
@@ -280,7 +273,7 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
         ) }
       end
 
-      context "without parameters" do
+      context 'without parameters' do
         let(:params) { {} }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }

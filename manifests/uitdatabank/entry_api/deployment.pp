@@ -1,20 +1,20 @@
 class profiles::uitdatabank::entry_api::deployment (
-  String           $config_source,
-  String           $admin_permissions_source,
-  String           $client_permissions_source,
-  String           $externalid_mapping_organizer_source,
-  String           $externalid_mapping_place_source,
-  String           $term_mapping_facilities_source,
-  String           $term_mapping_themes_source,
-  String           $term_mapping_types_source,
-  String           $pubkey_uitidv1_source,
-  String           $pubkey_keycloak_source,
-  String           $version                             = 'latest',
-  String           $repository                          = 'uitdatabank-entry-api',
-  Enum['present', 'absent'] $bulk_label_offer_worker    = 'present',
-  Boolean          $amqp_listener_uitpas                = true,
-  Integer[0]       $event_export_worker_count           = 1,
-  Optional[String] $puppetdb_url                        = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+  String                    $config_source,
+  String                    $admin_permissions_source,
+  String                    $client_permissions_source,
+  String                    $externalid_mapping_organizer_source,
+  String                    $externalid_mapping_place_source,
+  String                    $term_mapping_facilities_source,
+  String                    $term_mapping_themes_source,
+  String                    $term_mapping_types_source,
+  String                    $pubkey_uitidv1_source,
+  String                    $pubkey_keycloak_source,
+  String                    $version                             = 'latest',
+  String                    $repository                          = 'uitdatabank-entry-api',
+  Enum['present', 'absent'] $amqp_listener_uitpas                = 'present',
+  Enum['present', 'absent'] $bulk_label_offer_worker             = 'present',
+  Integer[0]                $event_export_worker_count           = 1,
+  Optional[String]          $puppetdb_url                        = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $basedir                 = '/var/www/udb3-backend'
@@ -106,22 +106,10 @@ class profiles::uitdatabank::entry_api::deployment (
     subscribe  => Profiles::Php::Fpm_service_alias[$service_name],
   }
 
-  if $amqp_listener_uitpas {
-    systemd::unit_file { 'uitdatabank-amqp-listener-uitpas.service':
-      content => template('profiles/uitdatabank/entry_api/uitdatabank-amqp-listener-uitpas.service.erb'),
-      notify  => Service['uitdatabank-amqp-listener-uitpas']
-    }
-
-    service { 'uitdatabank-amqp-listener-uitpas':
-      ensure    => 'running',
-      enable    => true,
-      hasstatus => true,
-      subscribe => Service[$service_name]
-    }
-  } else {
-    systemd::unit_file { 'uitdatabank-amqp-listener-uitpas.service':
-      ensure => 'absent'
-    }
+  class { 'profiles::uitdatabank::entry_api::amqp_listener_uitpas':
+    ensure    => $amqp_listener_uitpas,
+    basedir   => $basedir,
+    subscribe => Service[$service_name]
   }
 
   class { 'profiles::uitdatabank::entry_api::bulk_label_offer_worker':
