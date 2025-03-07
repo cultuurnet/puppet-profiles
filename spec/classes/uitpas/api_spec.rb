@@ -179,6 +179,10 @@ describe 'profiles::uitpas::api' do
               'database_host'     => '127.0.0.1'
             ) }
 
+            it { is_expected.to contain_class('profiles::uitpas::api::cron').with(
+              'portbase' => 4800
+            ) }
+
             it { is_expected.to contain_package('liquibase').that_requires('Apt::Source[publiq-tools]') }
             it { is_expected.to contain_package('mysql-connector-j').that_requires('Apt::Source[publiq-tools]') }
             it { is_expected.to contain_package('liquibase').that_comes_before('Class[profiles::uitpas::api::deployment]') }
@@ -210,6 +214,7 @@ describe 'profiles::uitpas::api' do
             it { is_expected.to contain_file('Domain uitpas mysql-connector-j').that_comes_before('Class[profiles::uitpas::api::deployment]') }
             it { is_expected.to contain_class('profiles::uitpas::api::deployment').that_requires('Class[profiles::glassfish]') }
             it { is_expected.to contain_class('profiles::uitpas::api::deployment').that_notifies('Service[uitpas]') }
+            it { is_expected.to contain_class('profiles::uitpas::api::cron').that_requires('Class[profiles::uitpas::api::deployment]') }
           end
 
           context "with servername => myserver.example.com, serveraliases => foobar.example.com, database_password => secret, database_host => db.example.com, initial_heap_size => 1024m, maximum_heap_size => 1536m, jmx => false, newrelic => true, portbase => 14800 and settings => { 'foo' => 'bar', 'baz' => 'test' }" do
@@ -341,6 +346,10 @@ describe 'profiles::uitpas::api' do
                 'database_host'     => 'db.example.com',
                 'portbase'          => 14800
               ) }
+
+              it { is_expected.to contain_class('profiles::uitpas::api::cron').with(
+                'portbase' => 14800
+              ) }
             end
 
             context "without extra facts" do
@@ -374,6 +383,7 @@ describe 'profiles::uitpas::api' do
             ) }
 
             it { is_expected.not_to contain_class('profiles::uitpas::api::deployment') }
+            it { is_expected.not_to contain_class('profiles::uitpas::api::cron') }
           end
         end
       end
