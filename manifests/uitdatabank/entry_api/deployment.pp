@@ -11,7 +11,7 @@ class profiles::uitdatabank::entry_api::deployment (
   String           $pubkey_keycloak_source,
   String           $version                             = 'latest',
   String           $repository                          = 'uitdatabank-entry-api',
-  Boolean          $bulk_label_offer_worker             = true,
+  Enum['present', 'absent'] $bulk_label_offer_worker    = 'present',
   Boolean          $amqp_listener_uitpas                = true,
   Integer[0]       $event_export_worker_count           = 1,
   Optional[String] $puppetdb_url                        = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
@@ -124,22 +124,10 @@ class profiles::uitdatabank::entry_api::deployment (
     }
   }
 
-  if $bulk_label_offer_worker {
-    systemd::unit_file { 'uitdatabank-bulk-label-offer-worker.service':
-      content => template('profiles/uitdatabank/entry_api/uitdatabank-bulk-label-offer-worker.service.erb'),
-      notify  => Service['uitdatabank-bulk-label-offer-worker']
-    }
-
-    service { 'uitdatabank-bulk-label-offer-worker':
-      ensure    => 'running',
-      enable    => true,
-      hasstatus => true,
-      subscribe => Service[$service_name]
-    }
-  } else {
-    systemd::unit_file { 'uitdatabank-bulk-label-offer-worker.service':
-      ensure => 'absent'
-    }
+  class { 'profiles::uitdatabank::entry_api::bulk_label_offer_worker':
+    ensure    => $bulk_label_offer_worker,
+    basedir   => $basedir,
+    subscribe => Service[$service_name]
   }
 
   class { 'profiles::uitdatabank::entry_api::event_export_workers':

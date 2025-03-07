@@ -34,7 +34,7 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           'term_mapping_types_source'           => '/tmp/types_source',
           'version'                             => 'latest',
           'repository'                          => 'uitdatabank-entry-api',
-          'bulk_label_offer_worker'             => true,
+          'bulk_label_offer_worker'             => 'present',
           'amqp_listener_uitpas'                => true,
           'event_export_worker_count'           => 1
         ) }
@@ -133,19 +133,14 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           'hasstatus' => true
         ) }
 
-        it { is_expected.to contain_systemd__unit_file('uitdatabank-bulk-label-offer-worker.service').with_content(/WorkingDirectory=\/var\/www\/udb3-backend\/vendor\/chrisboulton\/php-resque/) }
-        it { is_expected.to contain_systemd__unit_file('uitdatabank-bulk-label-offer-worker.service').with_content(/Environment=APP_INCLUDE=\/var\/www\/udb3-backend\/worker_bootstrap.php/) }
-        it { is_expected.to contain_systemd__unit_file('uitdatabank-bulk-label-offer-worker.service').with_content(/Environment=QUEUE=bulk_label_offer/) }
-        it { is_expected.to contain_systemd__unit_file('uitdatabank-bulk-label-offer-worker.service').with_content(/ExecStart=\/usr\/bin\/php resque.php/) }
-
-        it { is_expected.to contain_service('uitdatabank-bulk-label-offer-worker').with(
-          'ensure'    => 'running',
-          'enable'    => true,
-          'hasstatus' => true
+        it { is_expected.to contain_class('profiles::uitdatabank::entry_api::bulk_label_offer_worker').with(
+          'ensure'  => 'present',
+          'basedir' => '/var/www/udb3-backend'
         ) }
 
         it { is_expected.to contain_class('profiles::uitdatabank::entry_api::event_export_workers').with(
-          'count' => 1
+          'count'   => 1,
+          'basedir' => '/var/www/udb3-backend'
         ) }
 
         it { is_expected.to contain_package('uitdatabank-entry-api').that_requires('Apt::Source[uitdatabank-entry-api]') }
@@ -182,12 +177,11 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
         it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-place').that_notifies('Service[uitdatabank-entry-api]') }
         it { is_expected.to contain_systemd__unit_file('uitdatabank-amqp-listener-uitpas.service').that_notifies('Service[uitdatabank-amqp-listener-uitpas]') }
         it { is_expected.to contain_service('uitdatabank-amqp-listener-uitpas').that_subscribes_to('Service[uitdatabank-entry-api]') }
-        it { is_expected.to contain_systemd__unit_file('uitdatabank-bulk-label-offer-worker.service').that_notifies('Service[uitdatabank-bulk-label-offer-worker]') }
-        it { is_expected.to contain_service('uitdatabank-bulk-label-offer-worker').that_subscribes_to('Service[uitdatabank-entry-api]') }
         it { is_expected.to contain_exec('uitdatabank-entry-api-db-migrate').that_notifies('Service[uitdatabank-entry-api]') }
         it { is_expected.to contain_profiles__uitdatabank__terms('uitdatabank-entry-api').that_requires('Package[uitdatabank-entry-api]') }
         it { is_expected.to contain_profiles__uitdatabank__terms('uitdatabank-entry-api').that_notifies('Service[uitdatabank-entry-api]') }
         it { is_expected.to contain_profiles__php__fpm_service_alias('uitdatabank-entry-api').that_notifies('Service[uitdatabank-entry-api]') }
+        it { is_expected.to contain_service('uitdatabank-entry-api').that_notifies('Class[profiles::uitdatabank::entry_api::bulk_label_offer_worker]') }
         it { is_expected.to contain_service('uitdatabank-entry-api').that_notifies('Class[profiles::uitdatabank::entry_api::event_export_workers]') }
 
         context "without hieradata" do
@@ -206,11 +200,11 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           ) }
         end
 
-        context "with bulk_label_offer_worker => false, amqp_listener_uitpas => false and event_export_worker_count => 0" do
+        context "with bulk_label_offer_worker => absent, amqp_listener_uitpas => false and event_export_worker_count => 0" do
           let(:params) { super().merge(
             {
               'amqp_listener_uitpas'      => false,
-              'bulk_label_offer_worker'   => false,
+              'bulk_label_offer_worker'   => 'absent',
               'event_export_worker_count' => 0
             }
           ) }
@@ -221,14 +215,14 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
 
           it { is_expected.not_to contain_service('uitdatabank-amqp-listener-uitpas') }
 
-          it { is_expected.to contain_systemd__unit_file('uitdatabank-bulk-label-offer-worker.service').with(
-            'ensure' => 'absent'
+          it { is_expected.to contain_class('profiles::uitdatabank::entry_api::bulk_label_offer_worker').with(
+            'ensure'  => 'absent',
+            'basedir' => '/var/www/udb3-backend'
           ) }
 
-          it { is_expected.not_to contain_service('uitdatabank-bulk-label-offer-worker') }
-
           it { is_expected.to contain_class('profiles::uitdatabank::entry_api::event_export_workers').with(
-            'count' => 0
+            'count'   => 0,
+            'basedir' => '/var/www/udb3-backend'
           ) }
         end
 
