@@ -5,13 +5,13 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with config_source => /foo.json, admin_permissions_source => /tmp/admin_permissions_source, client_permissions_source => /tmp/client_permissions_source, pubkey_uitidv1_source => /tmp/pub_uitidv1.pem, pubkey_auth0_source => /tmp/pub_auth0.pem, externalid_mapping_organizer_source => /tmp/externalid_organizer_source, externalid_mapping_place_source => /tmp/externalid_place_source, term_mapping_facilities_source => /tmp/facilities_source, term_mapping_themes_source => /tmp/themes_source and term_mapping_types_source => /tmp/types_source" do
+      context "with config_source => /foo.json, admin_permissions_source => /tmp/admin_permissions_source, client_permissions_source => /tmp/client_permissions_source, pubkey_uitidv1_source => /tmp/pub_uitidv1.pem, pubkey_keycloak_source => /tmp/pub_keycloak.pem, externalid_mapping_organizer_source => /tmp/externalid_organizer_source, externalid_mapping_place_source => /tmp/externalid_place_source, term_mapping_facilities_source => /tmp/facilities_source, term_mapping_themes_source => /tmp/themes_source and term_mapping_types_source => /tmp/types_source" do
         let(:params) { {
           'config_source'                       => '/foo.json',
           'admin_permissions_source'            => '/tmp/admin_permissions_source',
           'client_permissions_source'           => '/tmp/client_permissions_source',
           'pubkey_uitidv1_source'               => '/tmp/pub_uitidv1.pem',
-          'pubkey_auth0_source'                 => '/tmp/pub_auth0.pem',
+          'pubkey_keycloak_source'              => '/tmp/pub_keycloak.pem',
           'externalid_mapping_organizer_source' => '/tmp/externalid_organizer_source',
           'externalid_mapping_place_source'     => '/tmp/externalid_place_source',
           'term_mapping_facilities_source'      => '/tmp/facilities_source',
@@ -26,7 +26,7 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           'admin_permissions_source'            => '/tmp/admin_permissions_source',
           'client_permissions_source'           => '/tmp/client_permissions_source',
           'pubkey_uitidv1_source'               => '/tmp/pub_uitidv1.pem',
-          'pubkey_auth0_source'                 => '/tmp/pub_auth0.pem',
+          'pubkey_keycloak_source'              => '/tmp/pub_keycloak.pem',
           'externalid_mapping_organizer_source' => '/tmp/externalid_organizer_source',
           'externalid_mapping_place_source'     => '/tmp/externalid_place_source',
           'term_mapping_facilities_source'      => '/tmp/facilities_source',
@@ -79,12 +79,12 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           'source' => '/tmp/pub_uitidv1.pem'
         ) }
 
-        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-auth0').with(
+        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').with(
           'ensure' => 'file',
-          'path'   => '/var/www/udb3-backend/public-auth0.pem',
+          'path'   => '/var/www/udb3-backend/public-keycloak.pem',
           'owner'  => 'www-data',
           'group'  => 'www-data',
-          'source' => '/tmp/pub_auth0.pem'
+          'source' => '/tmp/pub_keycloak.pem'
         ) }
 
         it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-organizer').with(
@@ -168,10 +168,10 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
         it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').that_requires('User[www-data]') }
         it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').that_requires('Package[uitdatabank-entry-api]') }
         it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').that_notifies('Service[uitdatabank-entry-api]') }
-        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-auth0').that_requires('Group[www-data]') }
-        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-auth0').that_requires('User[www-data]') }
-        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-auth0').that_requires('Package[uitdatabank-entry-api]') }
-        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-auth0').that_notifies('Service[uitdatabank-entry-api]') }
+        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').that_requires('Group[www-data]') }
+        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').that_requires('User[www-data]') }
+        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').that_requires('Package[uitdatabank-entry-api]') }
+        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').that_notifies('Service[uitdatabank-entry-api]') }
         it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-organizer').that_requires('Group[www-data]') }
         it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-organizer').that_requires('User[www-data]') }
         it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-organizer').that_requires('Package[uitdatabank-entry-api]') }
@@ -243,13 +243,13 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
         end
       end
 
-      context "with config_source => /etc/bar.json, admin_permissions_source => /etc/admin_permissions_source, client_permissions_source => /etc/client_permissions_source, pubkey_uitidv1_source => /etc/pub_uitidv1.pem, pubkey_auth0_source => /etc/pub_auth0.pem, externalid_mapping_organizer_source => /etc/externalid_organizer_source, externalid_mapping_place_source => /etc/externalid_place_source, term_mapping_facilities_source => /etc/facilities_source, term_mapping_themes_source => /etc/themes_source and term_mapping_types_source => /etc/types_source" do
+      context "with config_source => /etc/bar.json, admin_permissions_source => /etc/admin_permissions_source, client_permissions_source => /etc/client_permissions_source, pubkey_uitidv1_source => /etc/pub_uitidv1.pem, pubkey_keycloak_source => /etc/pub_keycloak.pem, externalid_mapping_organizer_source => /etc/externalid_organizer_source, externalid_mapping_place_source => /etc/externalid_place_source, term_mapping_facilities_source => /etc/facilities_source, term_mapping_themes_source => /etc/themes_source and term_mapping_types_source => /etc/types_source" do
         let(:params) { {
           'config_source'                       => '/etc/bar.json',
           'admin_permissions_source'            => '/etc/admin_permissions_source',
           'client_permissions_source'           => '/etc/client_permissions_source',
           'pubkey_uitidv1_source'               => '/etc/pub_uitidv1.pem',
-          'pubkey_auth0_source'                 => '/etc/pub_auth0.pem',
+          'pubkey_keycloak_source'              => '/etc/pub_keycloak.pem',
           'externalid_mapping_organizer_source' => '/etc/externalid_organizer_source',
           'externalid_mapping_place_source'     => '/etc/externalid_place_source',
           'term_mapping_facilities_source'      => '/etc/facilities_source',
@@ -273,8 +273,8 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           'source' => '/etc/pub_uitidv1.pem'
         ) }
 
-        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-auth0').with(
-          'source' => '/etc/pub_auth0.pem'
+        it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').with(
+          'source' => '/etc/pub_keycloak.pem'
         ) }
 
         it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-organizer').with(
@@ -298,7 +298,7 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'term_mapping_themes_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'term_mapping_types_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'pubkey_uitidv1_source'/) }
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'pubkey_auth0_source'/) }
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'pubkey_keycloak_source'/) }
       end
     end
   end

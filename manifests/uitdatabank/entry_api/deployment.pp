@@ -3,7 +3,7 @@ class profiles::uitdatabank::entry_api::deployment (
   String           $admin_permissions_source,
   String           $client_permissions_source,
   String           $pubkey_uitidv1_source,
-  String           $pubkey_auth0_source,
+  String           $pubkey_keycloak_source,
   String           $externalid_mapping_organizer_source,
   String           $externalid_mapping_place_source,
   String           $term_mapping_facilities_source,
@@ -61,9 +61,9 @@ class profiles::uitdatabank::entry_api::deployment (
     *      => $file_default_attributes
   }
 
-  file { 'uitdatabank-entry-api-pubkey-auth0':
-    path   => "${basedir}/public-auth0.pem",
-    source => $pubkey_auth0_source,
+  file { 'uitdatabank-entry-api-pubkey-keycloak':
+    path   => "${basedir}/public-keycloak.pem",
+    source => $pubkey_keycloak_source,
     *      => $file_default_attributes
   }
 
