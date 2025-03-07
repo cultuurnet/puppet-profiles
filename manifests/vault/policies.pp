@@ -25,4 +25,10 @@ class profiles::vault::policies (
     policies_directory => $policies_directory,
     require            => File['vault_policies']
   }
+
+  profiles::vault::policy { 'atlassian_token':
+    policy             => 'path "puppet/+/atlassian/*" { capabilities = ["read"] }',
+    policies_directory => $policies_directory,
+    require            => File['vault_policies']
+  }
 }
