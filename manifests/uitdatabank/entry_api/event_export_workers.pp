@@ -1,8 +1,7 @@
 class profiles::uitdatabank::entry_api::event_export_workers (
-  Integer[0] $count = 1,
+  Integer[0] $count   = 1,
+  String     $basedir = '/var/www/udb3-backend'
 ) inherits ::profiles {
-
-  $basedir = '/var/www/udb3-backend'
 
   realize Group['www-data']
   realize User['www-data']

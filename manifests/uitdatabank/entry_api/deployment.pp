@@ -2,13 +2,13 @@ class profiles::uitdatabank::entry_api::deployment (
   String           $config_source,
   String           $admin_permissions_source,
   String           $client_permissions_source,
-  String           $pubkey_uitidv1_source,
-  String           $pubkey_keycloak_source,
   String           $externalid_mapping_organizer_source,
   String           $externalid_mapping_place_source,
   String           $term_mapping_facilities_source,
   String           $term_mapping_themes_source,
   String           $term_mapping_types_source,
+  String           $pubkey_uitidv1_source,
+  String           $pubkey_keycloak_source,
   String           $version                             = 'latest',
   String           $repository                          = 'uitdatabank-entry-api',
   Boolean          $bulk_label_offer_worker             = true,
@@ -144,6 +144,7 @@ class profiles::uitdatabank::entry_api::deployment (
 
   class { 'profiles::uitdatabank::entry_api::event_export_workers':
     count     => $event_export_worker_count,
+    basedir   => $basedir,
     subscribe => Service[$service_name]
   }
 

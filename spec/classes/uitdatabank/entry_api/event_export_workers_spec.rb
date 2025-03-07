@@ -11,7 +11,8 @@ describe 'profiles::uitdatabank::entry_api::event_export_workers' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::uitdatabank::entry_api::event_export_workers').with(
-          'count' => 1
+          'count'   => 1,
+          'basedir' => '/var/www/udb3-backend'
         ) }
 
         it { is_expected.to contain_group('www-data') }
@@ -110,12 +111,16 @@ describe 'profiles::uitdatabank::entry_api::event_export_workers' do
         end
       end
 
-      context 'with count => 3' do
+      context 'with count => 3 and basedir => /var/www/foo' do
         let(:params) { {
-          'count' => 3
+          'count'   => 3,
+          'basedir' => '/var/www/foo'
         } }
 
         it { is_expected.to contain_systemd__unit_file('uitdatabank-event-export-workers.target').with_content(/Wants=uitdatabank-event-export-worker@1.service uitdatabank-event-export-worker@2.service uitdatabank-event-export-worker@3.service/) }
+
+        it { is_expected.to contain_systemd__unit_file('uitdatabank-event-export-worker@.service').with_content(/WorkingDirectory=\/var\/www\/foo/) }
+        it { is_expected.to contain_systemd__unit_file('uitdatabank-event-export-worker@.service').with_content(/Environment=APP_INCLUDE=\/var\/www\/foo\/worker_bootstrap.php/) }
 
         it { is_expected.to contain_file('uitdatabank_event_export_worker_count_external_fact').with(
           'content' => 'uitdatabank_event_export_worker_count=3'
