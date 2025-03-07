@@ -27,7 +27,7 @@ class profiles::vault::seal (
     }
 
     loginctl_user { 'vault':
-      linger  => enabled,
+      linger  => 'enabled',
       require => [Group['vault'], User['vault']]
     }
   }
