@@ -133,6 +133,11 @@ class profiles::uitpas::api (
         portbase          => $portbase
       }
 
+      class { 'profiles::uitpas::api::cron':
+        portbase => $portbase,
+        require  => Class['profiles::uitpas::api::deployment']
+      }
+
       Class['profiles::glassfish'] -> Class['profiles::uitpas::api::deployment']
       Package['liquibase'] -> Class['profiles::uitpas::api::deployment']
       Package['mysql-connector-j'] -> Class['profiles::uitpas::api::deployment']
