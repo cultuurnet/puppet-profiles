@@ -1,10 +1,15 @@
 class profiles::uitdatabank::entry_api (
   String  $database_password,
   String  $job_interface_servername,
-  String  $database_host            = '127.0.0.1',
-  Boolean $deployment               = true
+  String  $database_host                     = '127.0.0.1',
+  Boolean $deployment                        = true,
+  Boolean $schedule_process_duplicates       = false,
+  Boolean $schedule_movie_fetcher            = false,
+  Boolean $schedule_add_trailers             = false,
+  Boolean $schedule_replay_mismatched_events = false
 ) inherits ::profiles {
 
+  $basedir       = '/var/www/udb3-backend'
   $database_name = 'uitdatabank'
   $database_user = 'entry_api'
 
@@ -50,7 +55,11 @@ class profiles::uitdatabank::entry_api (
       }
 
       class { 'profiles::uitdatabank::entry_api::cron':
-        require => Class['profiles::uitdatabank::entry_api::deployment']
+        schedule_process_duplicates       => $schedule_process_duplicates,
+        schedule_movie_fetcher            => $schedule_movie_fetcher,
+        schedule_add_trailers             => $schedule_add_trailers,
+        schedule_replay_mismatched_events => $schedule_replay_mismatched_events,
+        require                           => Class['profiles::uitdatabank::entry_api::deployment']
       }
 
       Profiles::Mysql::App_user["${database_user}@${database_name}"] -> Class['profiles::uitdatabank::entry_api::deployment']

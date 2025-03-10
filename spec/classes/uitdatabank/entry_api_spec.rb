@@ -20,10 +20,14 @@ describe 'profiles::uitdatabank::entry_api' do
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api').with(
-              'database_password'        => 'mypassword',
-              'database_host'            => '127.0.0.1',
-              'job_interface_servername' => 'jobs.example.com',
-              'deployment'               => true
+              'database_password'                 => 'mypassword',
+              'database_host'                     => '127.0.0.1',
+              'job_interface_servername'          => 'jobs.example.com',
+              'deployment'                        => true,
+              'schedule_process_duplicates'       => false,
+              'schedule_movie_fetcher'            => false,
+              'schedule_add_trailers'             => false,
+              'schedule_replay_mismatched_events' => false
             ) }
 
             it { is_expected.to contain_class('profiles::mysql::server') }
@@ -32,7 +36,13 @@ describe 'profiles::uitdatabank::entry_api' do
               'database_name' => 'uitdatabank'
             ) }
 
-            it { is_expected.to contain_class('profiles::uitdatabank::entry_api::cron') }
+            it { is_expected.to contain_class('profiles::uitdatabank::entry_api::cron').with(
+              'basedir'                           => '/var/www/udb3-backend',
+              'schedule_process_duplicates'       => false,
+              'schedule_movie_fetcher'            => false,
+              'schedule_add_trailers'             => false,
+              'schedule_replay_mismatched_events' => false
+            ) }
 
             it { is_expected.to contain_mysql_database('uitdatabank').with(
               'charset' => 'utf8mb4',
@@ -100,11 +110,15 @@ describe 'profiles::uitdatabank::entry_api' do
           end
         end
 
-        context 'with database_password => mypassword, database_host => bar.example.com and job_interface_servername => baz.example.com' do
+        context 'with database_password => mypassword, database_host => bar.example.com, job_interface_servername => baz.example.com, schedule_process_duplicates => true, schedule_movie_fetcher => true, schedule_add_trailers => true and schedule_replay_mismatched_events => true' do
           let(:params) { {
-            'database_password'        => 'mypassword',
-            'database_host'            => 'bar.example.com',
-            'job_interface_servername' => 'baz.example.com'
+            'database_password'                 => 'mypassword',
+            'database_host'                     => 'bar.example.com',
+            'job_interface_servername'          => 'baz.example.com',
+            'schedule_process_duplicates'       => true,
+            'schedule_movie_fetcher'            => true,
+            'schedule_add_trailers'             => true,
+            'schedule_replay_mismatched_events' => true
           } }
 
           it { is_expected.to compile.with_all_deps }
@@ -135,7 +149,13 @@ describe 'profiles::uitdatabank::entry_api' do
               'database_name' => 'uitdatabank'
             ) }
 
-            it { is_expected.to contain_class('profiles::uitdatabank::entry_api::cron') }
+            it { is_expected.to contain_class('profiles::uitdatabank::entry_api::cron').with(
+              'basedir'                           => '/var/www/udb3-backend',
+              'schedule_process_duplicates'       => true,
+              'schedule_movie_fetcher'            => true,
+              'schedule_add_trailers'             => true,
+              'schedule_replay_mismatched_events' => true
+            ) }
 
             it { is_expected.to contain_mysql_database('uitdatabank').that_comes_before('Profiles::Mysql::App_user[entry_api@uitdatabank]') }
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api::data_integration').that_requires('Class[profiles::uitdatabank::entry_api::deployment]') }
