@@ -20,13 +20,12 @@ class profiles::uitdatabank::entry_api::deployment (
 ) inherits ::profiles {
 
   $basedir                 = '/var/www/udb3-backend'
-  $service_name            = 'uitdatabank-entry-api'
   $file_default_attributes = {
                                ensure  => 'file',
                                owner   => 'www-data',
                                group   => 'www-data',
                                require => [Group['www-data'], User['www-data'], Package['uitdatabank-entry-api']],
-                               notify  => Service[$service_name]
+                               notify  => Service['uitdatabank-entry-api']
                              }
 
   realize Apt::Source[$repository]
@@ -36,7 +35,7 @@ class profiles::uitdatabank::entry_api::deployment (
   package { 'uitdatabank-entry-api':
     ensure  => $version,
     require => Apt::Source[$repository],
-    notify  => [Service[$service_name], Profiles::Deployment::Versions[$title]]
+    notify  => [Service['uitdatabank-entry-api'], Profiles::Deployment::Versions[$title]]
   }
 
   file { 'uitdatabank-entry-api-config':
@@ -99,7 +98,7 @@ class profiles::uitdatabank::entry_api::deployment (
     themes_mapping_source     => $term_mapping_themes_source,
     types_mapping_source      => $term_mapping_types_source,
     require                   => Package['uitdatabank-entry-api'],
-    notify                    => Service[$service_name]
+    notify                    => Service['uitdatabank-entry-api']
   }
 
   exec { 'uitdatabank-entry-api-db-migrate':
@@ -108,34 +107,38 @@ class profiles::uitdatabank::entry_api::deployment (
     path        => [$basedir],
     refreshonly => true,
     subscribe   => Package['uitdatabank-entry-api'],
-    notify      => Service[$service_name]
+    notify      => Service['uitdatabank-entry-api']
   }
 
-  profiles::php::fpm_service_alias { $service_name: }
+  profiles::php::fpm_service_alias { 'uitdatabank-entry-api': }
 
-  service { $service_name:
+  service { 'uitdatabank-entry-api':
     hasstatus  => true,
     hasrestart => true,
-    restart    => "/usr/bin/systemctl reload ${service_name}",
-    subscribe  => Profiles::Php::Fpm_service_alias[$service_name],
+    restart    => "/usr/bin/systemctl reload uitdatabank-entry-api",
+    subscribe  => Profiles::Php::Fpm_service_alias['uitdatabank-entry-api'],
   }
 
   class { 'profiles::uitdatabank::entry_api::amqp_listener_uitpas':
     ensure    => $amqp_listener_uitpas,
     basedir   => $basedir,
-    subscribe => Service[$service_name]
+    subscribe => Service['uitdatabank-entry-api']
   }
 
   class { 'profiles::uitdatabank::entry_api::bulk_label_offer_worker':
     ensure    => $bulk_label_offer_worker,
     basedir   => $basedir,
-    subscribe => Service[$service_name]
+    subscribe => Service['uitdatabank-entry-api']
   }
 
   class { 'profiles::uitdatabank::entry_api::event_export_workers':
     count     => $event_export_worker_count,
     basedir   => $basedir,
-    subscribe => Service[$service_name]
+    subscribe => Service['uitdatabank-entry-api']
+  }
+
+  class { 'profiles::uitdatabank::entry_api::logging':
+    basedir => $basedir
   }
 
   profiles::deployment::versions { $title:

@@ -160,6 +160,10 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           'basedir' => '/var/www/udb3-backend'
         ) }
 
+        it { is_expected.to contain_class('profiles::uitdatabank::entry_api::logging').with(
+          'basedir' => '/var/www/udb3-backend'
+        ) }
+
         it { is_expected.to contain_package('uitdatabank-entry-api').that_requires('Apt::Source[uitdatabank-entry-api]') }
         it { is_expected.to contain_package('uitdatabank-entry-api').that_notifies('Exec[uitdatabank-entry-api-db-migrate]') }
         it { is_expected.to contain_package('uitdatabank-entry-api').that_notifies('Service[uitdatabank-entry-api]') }
