@@ -17,12 +17,13 @@ describe 'profiles::apache::vhost::php_fpm' do
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://winston.example.com').with(
-              'basedir'              => '/var/www/foo',
-              'public_web_directory' => 'public',
-              'aliases'              => [],
-              'access_log_format'    => 'extended_json',
-              'socket_type'          => 'unix',
-              'certificate'          => nil
+              'basedir'               => '/var/www/foo',
+              'public_web_directory'  => 'public',
+              'aliases'               => [],
+              'access_log_format'     => 'extended_json',
+              'allow_encoded_slashes' => 'off',
+              'socket_type'           => 'unix',
+              'certificate'           => nil
             ) }
 
             it { is_expected.to contain_firewall('300 accept HTTP traffic') }
@@ -32,79 +33,82 @@ describe 'profiles::apache::vhost::php_fpm' do
             it { is_expected.to contain_class('apache::mod::rewrite') }
 
             it { is_expected.to contain_apache__vhost('winston.example.com_80').with(
-              'servername'         => 'winston.example.com',
-              'serveraliases'      => [],
-              'docroot'            => '/var/www/foo/public',
-              'manage_docroot'     => false,
-              'port'               => 80,
-              'ssl'                => false,
-              'access_log_format'  => 'extended_json',
-              'access_log_env_var' => '!nolog',
-              'request_headers'    => [
-                                        'unset Proxy early',
-                                        'set X-Unique-Id %{UNIQUE_ID}e',
-                                        'setifempty X-Forwarded-Port "80"',
-                                        'setifempty X-Forwarded-Proto "http"'
-                                      ],
-              'setenvif'           => [
-                                        'X-Forwarded-Proto "https" HTTPS=on',
-                                        'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
-                                      ],
-              'directories'        => [
-                                        {
-                                          'path'            => '\.php$',
-                                          'provider'        => 'filesmatch',
-                                          'custom_fragment' => 'SetHandler "proxy:unix:/run/php/php-fpm.sock|fcgi://localhost"'
-                                        },
-                                        {
-                                          'path'           => '/var/www/foo',
-                                          'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
-                                          'allow_override' => 'All'
-                                        }
-                                      ]
+              'servername'            => 'winston.example.com',
+              'serveraliases'         => [],
+              'docroot'               => '/var/www/foo/public',
+              'manage_docroot'        => false,
+              'port'                  => 80,
+              'ssl'                   => false,
+              'allow_encoded_slashes' => 'off',
+              'access_log_format'     => 'extended_json',
+              'access_log_env_var'    => '!nolog',
+              'request_headers'       => [
+                                           'unset Proxy early',
+                                           'set X-Unique-Id %{UNIQUE_ID}e',
+                                           'setifempty X-Forwarded-Port "80"',
+                                           'setifempty X-Forwarded-Proto "http"'
+                                         ],
+              'setenvif'              => [
+                                           'X-Forwarded-Proto "https" HTTPS=on',
+                                           'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
+                                         ],
+              'directories'           => [
+                                           {
+                                             'path'            => '\.php$',
+                                             'provider'        => 'filesmatch',
+                                             'custom_fragment' => 'SetHandler "proxy:unix:/run/php/php-fpm.sock|fcgi://localhost"'
+                                           },
+                                           {
+                                             'path'           => '/var/www/foo',
+                                             'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
+                                             'allow_override' => 'All'
+                                           }
+                                         ]
             ) }
           end
 
-          context "with basedir => /tmp/bla, public_web_directory => web, aliases => [smith.example.com, foo.example.com], access_log_format => combined_json and socket_type => tcp" do
+          context "with basedir => /tmp/bla, public_web_directory => web, aliases => [smith.example.com, foo.example.com], allow_encoded_slashes => nodecode, access_log_format => combined_json and socket_type => tcp" do
             let(:params) { {
-              'basedir'              => '/tmp/bla',
-              'public_web_directory' => 'web',
-              'aliases'              => ['smith.example.com', 'foo.example.com'],
-              'access_log_format'    => 'combined_json',
-              'socket_type'          => 'tcp',
+              'basedir'               => '/tmp/bla',
+              'public_web_directory'  => 'web',
+              'aliases'               => ['smith.example.com', 'foo.example.com'],
+              'allow_encoded_slashes' => 'nodecode',
+              'access_log_format'     => 'combined_json',
+              'socket_type'           => 'tcp'
             } }
 
             it { is_expected.to contain_apache__vhost('winston.example.com_80').with(
-              'servername'         => 'winston.example.com',
-              'serveraliases'      => ['smith.example.com', 'foo.example.com'],
-              'docroot'            => '/tmp/bla/web',
-              'manage_docroot'     => false,
-              'port'               => 80,
-              'ssl'                => false,
-              'access_log_format'  => 'combined_json',
-              'access_log_env_var' => '!nolog',
-              'request_headers'    => [
-                                        'unset Proxy early',
-                                        'set X-Unique-Id %{UNIQUE_ID}e',
-                                        'setifempty X-Forwarded-Port "80"',
-                                        'setifempty X-Forwarded-Proto "http"'
-                                      ],
-              'setenvif'           => [
-                                        'X-Forwarded-Proto "https" HTTPS=on',
-                                        'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
-                                      ],
-              'directories'        => [
-                                        {
-                                          'path'            => '\.php$',
-                                          'provider'        => 'filesmatch',
-                                          'custom_fragment' => 'SetHandler "proxy:fcgi://127.0.0.1:9000"'
-                                        },
-                                        {
-                                          'path'           => '/tmp/bla',
-                                          'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
-                                          'allow_override' => 'All'
-                                        }
-                                      ]
+              'servername'            => 'winston.example.com',
+              'serveraliases'         => ['smith.example.com', 'foo.example.com'],
+              'docroot'               => '/tmp/bla/web',
+              'manage_docroot'        => false,
+              'port'                  => 80,
+              'ssl'                   => false,
+              'allow_encoded_slashes' => 'nodecode',
+              'access_log_format'     => 'combined_json',
+              'access_log_env_var'    => '!nolog',
+              'request_headers'       => [
+                                           'unset Proxy early',
+                                           'set X-Unique-Id %{UNIQUE_ID}e',
+                                           'setifempty X-Forwarded-Port "80"',
+                                           'setifempty X-Forwarded-Proto "http"'
+                                         ],
+              'setenvif'              => [
+                                           'X-Forwarded-Proto "https" HTTPS=on',
+                                           'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
+                                         ],
+              'directories'           => [
+                                           {
+                                             'path'            => '\.php$',
+                                             'provider'        => 'filesmatch',
+                                             'custom_fragment' => 'SetHandler "proxy:fcgi://127.0.0.1:9000"'
+                                           },
+                                           {
+                                             'path'           => '/tmp/bla',
+                                             'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
+                                             'allow_override' => 'All'
+                                           }
+                                         ]
             ) }
           end
         end
@@ -119,36 +123,37 @@ describe 'profiles::apache::vhost::php_fpm' do
             } }
 
             it { is_expected.to contain_apache__vhost('winston.example.com_80').with(
-              'servername'         => 'winston.example.com',
-              'serveraliases'      => ['mysite.example.com'],
-              'docroot'            => '/var/www/bar/public',
-              'manage_docroot'     => false,
-              'port'               => 80,
-              'ssl'                => false,
-              'access_log_format'  => 'extended_json',
-              'access_log_env_var' => '!nolog',
-              'request_headers'    => [
-                                        'unset Proxy early',
-                                        'set X-Unique-Id %{UNIQUE_ID}e',
-                                        'setifempty X-Forwarded-Port "80"',
-                                        'setifempty X-Forwarded-Proto "http"'
-                                      ],
-              'setenvif'           => [
-                                        'X-Forwarded-Proto "https" HTTPS=on',
-                                        'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
-                                      ],
-              'directories'        => [
-                                        {
-                                          'path'            => '\.php$',
-                                          'provider'        => 'filesmatch',
-                                          'custom_fragment' => 'SetHandler "proxy:fcgi://127.0.0.1:9000"'
-                                        },
-                                        {
-                                          'path'           => '/var/www/bar',
-                                          'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
-                                          'allow_override' => 'All'
-                                        }
-                                      ]
+              'servername'            => 'winston.example.com',
+              'serveraliases'         => ['mysite.example.com'],
+              'docroot'               => '/var/www/bar/public',
+              'manage_docroot'        => false,
+              'port'                  => 80,
+              'ssl'                   => false,
+              'allow_encoded_slashes' => 'off',
+              'access_log_format'     => 'extended_json',
+              'access_log_env_var'    => '!nolog',
+              'request_headers'       => [
+                                           'unset Proxy early',
+                                           'set X-Unique-Id %{UNIQUE_ID}e',
+                                           'setifempty X-Forwarded-Port "80"',
+                                           'setifempty X-Forwarded-Proto "http"'
+                                         ],
+              'setenvif'              => [
+                                           'X-Forwarded-Proto "https" HTTPS=on',
+                                           'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
+                                         ],
+              'directories'           => [
+                                           {
+                                             'path'            => '\.php$',
+                                             'provider'        => 'filesmatch',
+                                             'custom_fragment' => 'SetHandler "proxy:fcgi://127.0.0.1:9000"'
+                                           },
+                                           {
+                                             'path'           => '/var/www/bar',
+                                             'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
+                                             'allow_override' => 'All'
+                                           }
+                                         ]
             ) }
           end
         end
@@ -179,38 +184,39 @@ describe 'profiles::apache::vhost::php_fpm' do
             it { is_expected.to contain_profiles__certificate('wildcard.example.com') }
 
             it { is_expected.to contain_apache__vhost('goldstein.example.com_443').with(
-              'servername'         => 'goldstein.example.com',
-              'serveraliases'      => [],
-              'docroot'            => '/data/web/public',
-              'manage_docroot'     => false,
-              'port'               => 443,
-              'ssl'                => true,
-              'ssl_cert'           => '/etc/ssl/certs/wildcard.example.com.bundle.crt',
-              'ssl_key'            => '/etc/ssl/private/wildcard.example.com.key',
-              'access_log_format'  => 'extended_json',
-              'access_log_env_var' => '!nolog',
-              'request_headers'    => [
-                                        'unset Proxy early',
-                                        'set X-Unique-Id %{UNIQUE_ID}e',
-                                        'setifempty X-Forwarded-Port "443"',
-                                        'setifempty X-Forwarded-Proto "https"'
-                                      ],
-              'setenvif'           => [
-                                        'X-Forwarded-Proto "https" HTTPS=on',
-                                        'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
-                                      ],
-              'directories'        => [
-                                        {
-                                          'path'            => '\.php$',
-                                          'provider'        => 'filesmatch',
-                                          'custom_fragment' => 'SetHandler "proxy:fcgi://127.0.0.1:9000"'
-                                        },
-                                        {
-                                          'path'           => '/data/web',
-                                          'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
-                                          'allow_override' => 'All'
-                                        }
-                                      ]
+              'servername'            => 'goldstein.example.com',
+              'serveraliases'         => [],
+              'docroot'               => '/data/web/public',
+              'manage_docroot'        => false,
+              'port'                  => 443,
+              'ssl'                   => true,
+              'ssl_cert'              => '/etc/ssl/certs/wildcard.example.com.bundle.crt',
+              'ssl_key'               => '/etc/ssl/private/wildcard.example.com.key',
+              'allow_encoded_slashes' => 'off',
+              'access_log_format'     => 'extended_json',
+              'access_log_env_var'    => '!nolog',
+              'request_headers'       => [
+                                           'unset Proxy early',
+                                           'set X-Unique-Id %{UNIQUE_ID}e',
+                                           'setifempty X-Forwarded-Port "443"',
+                                           'setifempty X-Forwarded-Proto "https"'
+                                         ],
+              'setenvif'              => [
+                                           'X-Forwarded-Proto "https" HTTPS=on',
+                                           'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
+                                         ],
+              'directories'           => [
+                                           {
+                                             'path'            => '\.php$',
+                                             'provider'        => 'filesmatch',
+                                             'custom_fragment' => 'SetHandler "proxy:fcgi://127.0.0.1:9000"'
+                                           },
+                                           {
+                                             'path'           => '/data/web',
+                                             'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
+                                             'allow_override' => 'All'
+                                           }
+                                         ]
             ) }
           end
         end
@@ -226,36 +232,37 @@ describe 'profiles::apache::vhost::php_fpm' do
           } }
 
           it { is_expected.to contain_apache__vhost('julia.example.com_80').with(
-            'servername'         => 'julia.example.com',
-            'serveraliases'      => [],
-            'docroot'            => '/var/www/html/public',
-            'manage_docroot'     => false,
-            'port'               => 80,
-            'ssl'                => false,
-            'access_log_format'  => 'extended_json',
-            'access_log_env_var' => '!nolog',
-            'request_headers'    => [
-                                      'unset Proxy early',
-                                      'set X-Unique-Id %{UNIQUE_ID}e',
-                                      'setifempty X-Forwarded-Port "80"',
-                                      'setifempty X-Forwarded-Proto "http"'
-                                    ],
-            'setenvif'           => [
-                                      'X-Forwarded-Proto "https" HTTPS=on',
-                                      'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
-                                    ],
-            'directories'        => [
-                                      {
-                                        'path'            => '\.php$',
-                                        'provider'        => 'filesmatch',
-                                        'custom_fragment' => 'SetHandler "proxy:unix:/run/php/php-fpm.sock|fcgi://localhost"'
-                                      },
-                                      {
-                                        'path'           => '/var/www/html',
-                                        'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
-                                        'allow_override' => 'All'
-                                      }
-                                    ]
+            'servername'            => 'julia.example.com',
+            'serveraliases'         => [],
+            'docroot'               => '/var/www/html/public',
+            'manage_docroot'        => false,
+            'port'                  => 80,
+            'ssl'                   => false,
+            'allow_encoded_slashes' => 'off',
+            'access_log_format'     => 'extended_json',
+            'access_log_env_var'    => '!nolog',
+            'request_headers'       => [
+                                         'unset Proxy early',
+                                         'set X-Unique-Id %{UNIQUE_ID}e',
+                                         'setifempty X-Forwarded-Port "80"',
+                                         'setifempty X-Forwarded-Proto "http"'
+                                       ],
+            'setenvif'              => [
+                                         'X-Forwarded-Proto "https" HTTPS=on',
+                                         'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
+                                       ],
+            'directories'           => [
+                                         {
+                                           'path'            => '\.php$',
+                                           'provider'        => 'filesmatch',
+                                           'custom_fragment' => 'SetHandler "proxy:unix:/run/php/php-fpm.sock|fcgi://localhost"'
+                                         },
+                                         {
+                                           'path'           => '/var/www/html',
+                                           'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
+                                           'allow_override' => 'All'
+                                         }
+                                       ]
           ) }
         end
 

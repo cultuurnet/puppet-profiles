@@ -1,11 +1,12 @@
 define profiles::apache::vhost::php_fpm (
   String                         $basedir,
-  String                         $public_web_directory = 'public',
-  Variant[String, Array[String]] $aliases              = [],
-  String                         $access_log_format    = 'extended_json',
-  Enum['unix', 'tcp']            $socket_type          = lookup('profiles::php::fpm_socket_type', Enum['unix', 'tcp'], 'first', 'unix'),
-  Optional[String]               $certificate          = undef,
-  Optional[Array]                $rewrites             = undef
+  String                         $public_web_directory  = 'public',
+  Variant[String, Array[String]] $aliases               = [],
+  Enum['on', 'off', 'nodecode']  $allow_encoded_slashes = 'off',
+  String                         $access_log_format     = 'extended_json',
+  Enum['unix', 'tcp']            $socket_type           = lookup('profiles::php::fpm_socket_type', Enum['unix', 'tcp'], 'first', 'unix'),
+  Optional[String]               $certificate           = undef,
+  Optional[Array]                $rewrites              = undef
 ) {
 
   include ::profiles
@@ -49,36 +50,37 @@ define profiles::apache::vhost::php_fpm (
   }
 
   apache::vhost { "${servername}_${port}":
-    servername         => $servername,
-    serveraliases      => [$aliases].flatten,
-    port               => $port,
-    ssl                => $https,
-    ssl_cert           => $ssl_cert,
-    ssl_key            => $ssl_key,
-    docroot            => "${basedir}/${public_web_directory}",
-    manage_docroot     => false,
-    access_log_format  => $access_log_format,
-    access_log_env_var => '!nolog',
-    setenvif           => $profiles::apache::defaults::setenvif,
-    request_headers    => $profiles::apache::defaults::request_headers + [
-                            "setifempty X-Forwarded-Port \"${port}\"",
-                            "setifempty X-Forwarded-Proto \"${transport}\""
-                          ],
-    directories        => [
-                            {
-                              'path'            => '\.php$',
-                              'provider'        => 'filesmatch',
-                              'custom_fragment' => $socket_type ? {
-                                                     'unix' => 'SetHandler "proxy:unix:/run/php/php-fpm.sock|fcgi://localhost"',
-                                                     'tcp'  => 'SetHandler "proxy:fcgi://127.0.0.1:9000"'
-                                                   }
-                            },
-                            {
-                              'path'           => $basedir,
-                              'options'        => ['Indexes','FollowSymLinks','MultiViews'],
-                              'allow_override' => 'All'
-                            }
-                          ],
-    rewrites           => $rewrites
+    servername            => $servername,
+    serveraliases         => [$aliases].flatten,
+    port                  => $port,
+    ssl                   => $https,
+    ssl_cert              => $ssl_cert,
+    ssl_key               => $ssl_key,
+    docroot               => "${basedir}/${public_web_directory}",
+    manage_docroot        => false,
+    access_log_format     => $access_log_format,
+    access_log_env_var    => '!nolog',
+    allow_encoded_slashes => $allow_encoded_slashes,
+    setenvif              => $profiles::apache::defaults::setenvif,
+    request_headers       => $profiles::apache::defaults::request_headers + [
+                               "setifempty X-Forwarded-Port \"${port}\"",
+                               "setifempty X-Forwarded-Proto \"${transport}\""
+                             ],
+    directories           => [
+                               {
+                                 'path'            => '\.php$',
+                                 'provider'        => 'filesmatch',
+                                 'custom_fragment' => $socket_type ? {
+                                                        'unix' => 'SetHandler "proxy:unix:/run/php/php-fpm.sock|fcgi://localhost"',
+                                                        'tcp'  => 'SetHandler "proxy:fcgi://127.0.0.1:9000"'
+                                                      }
+                               },
+                               {
+                                 'path'           => $basedir,
+                                 'options'        => ['Indexes','FollowSymLinks','MultiViews'],
+                                 'allow_override' => 'All'
+                               }
+                             ],
+    rewrites              => $rewrites
   }
 }
