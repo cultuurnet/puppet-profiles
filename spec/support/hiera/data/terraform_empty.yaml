@@ -1,0 +1,4 @@
+---
+data::puppet::terraform_integration: true
+
+terraform::available: true

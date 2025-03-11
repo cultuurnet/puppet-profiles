@@ -20,6 +20,7 @@ class profiles::uitdatabank::entry_api::deployment (
 ) inherits ::profiles {
 
   $basedir                 = '/var/www/udb3-backend'
+  $mount_target_dns_name   = lookup('terraform::efs::mount_target_dns_name', Optional[String], 'first', undef)
   $file_default_attributes = {
                                ensure  => 'file',
                                owner   => 'www-data',
@@ -36,6 +37,16 @@ class profiles::uitdatabank::entry_api::deployment (
     ensure  => $version,
     require => Apt::Source[$repository],
     notify  => [Service['uitdatabank-entry-api'], Profiles::Deployment::Versions[$title]]
+  }
+
+  if $mount_target_dns_name {
+    profiles::nfs::mount { "${mount_target_dns_name}:/":
+      mountpoint    => "${basedir}/web/downloads",
+      mount_options => 'nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2',
+      owner         => 'www-data',
+      group         => 'www-data',
+      require       => [Package['uitdatabank-entry-api'], User['www-data'], Group['www-data']]
+    }
   }
 
   file { 'uitdatabank-entry-api-config':

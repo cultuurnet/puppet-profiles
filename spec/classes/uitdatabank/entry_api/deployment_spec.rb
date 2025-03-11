@@ -212,6 +212,27 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
         it { is_expected.to contain_service('uitdatabank-entry-api').that_notifies('Class[profiles::uitdatabank::entry_api::bulk_label_offer_worker]') }
         it { is_expected.to contain_service('uitdatabank-entry-api').that_notifies('Class[profiles::uitdatabank::entry_api::event_export_workers]') }
 
+        context 'without Terraform NFS mount hieradata' do
+          let(:hiera_config) { 'spec/support/hiera/terraform_empty.yaml' }
+
+          it { is_expected.not_to contain_profiles__nfs__mount('foo.fs-1234.efs.eu-west-1.amazonaws.com:/') }
+        end
+
+        context 'with Terraform NFS mount hieradata' do
+          let(:hiera_config) { 'spec/support/hiera/terraform_available.yaml' }
+
+          it { is_expected.to contain_profiles__nfs__mount('foo.fs-1234.efs.eu-west-1.amazonaws.com:/').with(
+            'mountpoint'    => '/var/www/udb3-backend/web/downloads',
+            'mount_options' => 'nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2',
+            'owner'         => 'www-data',
+            'group'         => 'www-data'
+          ) }
+
+          it { is_expected.to contain_profiles__nfs__mount('foo.fs-1234.efs.eu-west-1.amazonaws.com:/').that_requires('Group[www-data]') }
+          it { is_expected.to contain_profiles__nfs__mount('foo.fs-1234.efs.eu-west-1.amazonaws.com:/').that_requires('User[www-data]') }
+          it { is_expected.to contain_profiles__nfs__mount('foo.fs-1234.efs.eu-west-1.amazonaws.com:/').that_requires('Package[uitdatabank-entry-api]') }
+        end
+
         context 'without hieradata' do
           let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
 
