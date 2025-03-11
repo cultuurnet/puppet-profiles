@@ -219,7 +219,7 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
         end
 
         context 'with Terraform NFS mount hieradata' do
-          let(:hiera_config) { 'spec/support/hiera/terraform_available.yaml' }
+          let(:hiera_config) { 'spec/support/hiera/terraform_common.yaml' }
 
           it { is_expected.to contain_profiles__nfs__mount('foo.fs-1234.efs.eu-west-1.amazonaws.com:/').with(
             'mountpoint'    => '/var/www/udb3-backend/web/downloads',

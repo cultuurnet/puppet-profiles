@@ -2,14 +2,3 @@
 data::puppet::terraform_integration: true
 
 terraform::available: true
-
-terraform::volumes::ebs::xvdb::size: 60
-terraform::volumes::ebs::xvdc::size: 40
-terraform::volumes::ebs::xvdd::size: 20
-
-terraform::rds::mysqld_version: '8.0.33'
-terraform::rds::user: 'admin'
-terraform::rds::password: 'mypass'
-terraform::rds::host: 'myrdshost.example.com'
-
-terraform::efs::mount_target_dns_name: 'foo.fs-1234.efs.eu-west-1.amazonaws.com'

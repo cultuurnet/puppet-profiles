@@ -10,8 +10,8 @@ describe 'profiles::mysql::rds' do
           'host' => 'rds.example.com'
         } }
 
-        context "with hieradata" do
-          let(:hiera_config) { 'spec/support/hiera/terraform_available.yaml' }
+        context "with Terraform MySQL hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/terraform_common.yaml' }
 
           it { is_expected.to compile.with_all_deps }
 
@@ -49,8 +49,8 @@ describe 'profiles::mysql::rds' do
           'host' => 'myrds.example.com'
         } }
 
-        context "with hieradata" do
-          let(:hiera_config) { 'spec/support/hiera/terraform_available.yaml' }
+        context "with Terraform MySQL hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/terraform_common.yaml' }
 
           it { is_expected.to contain_profiles__mysql__root_my_cnf('myrds.example.com').with(
             'database_user'     => 'admin',
