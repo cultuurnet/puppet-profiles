@@ -13,6 +13,8 @@ class profiles::uitdatabank::entry_api (
   $database_name = 'uitdatabank'
   $database_user = 'entry_api'
 
+  include profiles::redis
+
   if $database_host == '127.0.0.1' {
     $database_host_remote    = false
     $database_host_available = true
@@ -63,6 +65,7 @@ class profiles::uitdatabank::entry_api (
       }
 
       Profiles::Mysql::App_user["${database_user}@${database_name}"] -> Class['profiles::uitdatabank::entry_api::deployment']
+      Class['profiles::redis'] -> Class['profiles::uitdatabank::entry_api::deployment']
     }
   }
 
