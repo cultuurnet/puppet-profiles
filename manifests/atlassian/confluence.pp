@@ -97,7 +97,7 @@ class profiles::atlassian::confluence (
 
   if $vault_enabled {
     $vault_token = lookup('vault:atlassian/vault_token')
-    $vault_url   = lookup('data::vault:url')
+    $vault_url   = lookup('data::vault::url')
 
     systemd::dropin_file { 'override.conf':
       unit    => 'confluence.service',
