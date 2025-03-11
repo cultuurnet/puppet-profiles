@@ -6,7 +6,7 @@ PartOf=uitdatabank-event-export-workers.target
 [Service]
 User=www-data
 Group=www-data
-PIDFile=/var/run/udb3-event-export-worker@%i.pid
+PIDFile=/var/run/uitdatabank-event-export-worker@%i.pid
 WorkingDirectory=<%= @basedir %>/vendor/chrisboulton/php-resque
 Environment=APP_INCLUDE=<%= @basedir %>/worker_bootstrap.php
 Environment=INTERVAL=1
