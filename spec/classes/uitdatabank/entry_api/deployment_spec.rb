@@ -39,6 +39,7 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           'version'                             => 'latest',
           'repository'                          => 'uitdatabank-entry-api',
           'bulk_label_offer_worker'             => 'present',
+          'mail_worker'                         => 'present',
           'amqp_listener_uitpas'                => 'present',
           'event_export_worker_count'           => 1
         ) }
@@ -155,6 +156,11 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           'basedir' => '/var/www/udb3-backend'
         ) }
 
+        it { is_expected.to contain_class('profiles::uitdatabank::entry_api::mail_worker').with(
+          'ensure'  => 'present',
+          'basedir' => '/var/www/udb3-backend'
+        ) }
+
         it { is_expected.to contain_class('profiles::uitdatabank::entry_api::event_export_workers').with(
           'count'   => 1,
           'basedir' => '/var/www/udb3-backend'
@@ -210,6 +216,7 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
         it { is_expected.to contain_profiles__php__fpm_service_alias('uitdatabank-entry-api').that_notifies('Service[uitdatabank-entry-api]') }
         it { is_expected.to contain_service('uitdatabank-entry-api').that_notifies('Class[profiles::uitdatabank::entry_api::amqp_listener_uitpas]') }
         it { is_expected.to contain_service('uitdatabank-entry-api').that_notifies('Class[profiles::uitdatabank::entry_api::bulk_label_offer_worker]') }
+        it { is_expected.to contain_service('uitdatabank-entry-api').that_notifies('Class[profiles::uitdatabank::entry_api::mail_worker]') }
         it { is_expected.to contain_service('uitdatabank-entry-api').that_notifies('Class[profiles::uitdatabank::entry_api::event_export_workers]') }
 
         context 'without Terraform NFS mount hieradata' do
@@ -249,10 +256,11 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           ) }
         end
 
-        context 'with bulk_label_offer_worker => absent, amqp_listener_uitpas => absent and event_export_worker_count => 0' do
+        context 'with bulk_label_offer_worker => absent, mail_worker => absent, amqp_listener_uitpas => absent and event_export_worker_count => 0' do
           let(:params) { super().merge( {
             'amqp_listener_uitpas'      => 'absent',
             'bulk_label_offer_worker'   => 'absent',
+            'mail_worker'               => 'absent',
             'event_export_worker_count' => 0
           }) }
 
@@ -262,6 +270,11 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           ) }
 
           it { is_expected.to contain_class('profiles::uitdatabank::entry_api::bulk_label_offer_worker').with(
+            'ensure'  => 'absent',
+            'basedir' => '/var/www/udb3-backend'
+          ) }
+
+          it { is_expected.to contain_class('profiles::uitdatabank::entry_api::mail_worker').with(
             'ensure'  => 'absent',
             'basedir' => '/var/www/udb3-backend'
           ) }

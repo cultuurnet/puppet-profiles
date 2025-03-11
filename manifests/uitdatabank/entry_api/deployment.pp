@@ -15,6 +15,7 @@ class profiles::uitdatabank::entry_api::deployment (
   String                    $repository                          = 'uitdatabank-entry-api',
   Enum['present', 'absent'] $amqp_listener_uitpas                = 'present',
   Enum['present', 'absent'] $bulk_label_offer_worker             = 'present',
+  Enum['present', 'absent'] $mail_worker                         = 'present',
   Integer[0]                $event_export_worker_count           = 1,
   Optional[String]          $puppetdb_url                        = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
@@ -138,6 +139,12 @@ class profiles::uitdatabank::entry_api::deployment (
 
   class { 'profiles::uitdatabank::entry_api::bulk_label_offer_worker':
     ensure    => $bulk_label_offer_worker,
+    basedir   => $basedir,
+    subscribe => Service['uitdatabank-entry-api']
+  }
+
+  class { 'profiles::uitdatabank::entry_api::mail_worker':
+    ensure    => $mail_worker,
     basedir   => $basedir,
     subscribe => Service['uitdatabank-entry-api']
   }
