@@ -5,6 +5,7 @@ class profiles::atlassian::confluence (
   String                     $database_password,
   String                     $database_host     = '127.0.0.1',
   Boolean                    $lvm               = false,
+  Boolean                    $vault_enabled     = false,
   Optional[String]           $volume_group      = undef,
   Optional[String]           $volume_size       = undef,
   Boolean                    $manage_homedir    = false,
@@ -94,11 +95,37 @@ class profiles::atlassian::confluence (
                             }
   }
 
-  $config = {
-    'hibernate.connection.url'          => $dburl,
-    'hibernate.connection.username'     => $database_user,
-    'hibernate.connection.password'     => $database_password,
-    'hibernate.connection.driver_class' => 'com.mysql.cj.jdbc.Driver'
+  if $vault_enabled {
+    $vault_token = lookup('vault:atlassian/vault_token')
+    $vault_url   = lookup('data::vault:url')
+
+    systemd::dropin_file { 'override.conf':
+      unit    => 'confluence.service',
+      content => "[Service]\nEnvironment=\"SECRET_STORE_VAULT_TOKEN=${vault_token['token']}\"",
+      require => Class['confluence']
+    }
+
+    $database_credential = {
+      "mount"    => "puppet",
+      "path"     => "puppet/data/testing/atlassian/confluence",
+      "key"      => "mysql_password",
+      "endpoint" => $vault_url
+    }
+
+    $config = {
+      'hibernate.connection.url'          => $dburl,
+      'hibernate.connection.username'     => $database_user,
+      'hibernate.connection.password'     => to_json($database_credential),
+      'hibernate.connection.driver_class' => 'com.mysql.cj.jdbc.Driver',
+      'jdbc.password.decrypter.classname' => 'com.atlassian.secrets.store.vault.VaultSecretStore'
+    }
+  } else {
+    $config = {
+      'hibernate.connection.url'          => $dburl,
+      'hibernate.connection.username'     => $database_user,
+      'hibernate.connection.password'     => $database_password,
+      'hibernate.connection.driver_class' => 'com.mysql.cj.jdbc.Driver'
+    }
   }
 
   $config.each |$key, $value| {
