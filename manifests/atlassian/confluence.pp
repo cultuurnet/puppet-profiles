@@ -101,8 +101,7 @@ class profiles::atlassian::confluence (
 
     systemd::dropin_file { 'override.conf':
       unit    => 'confluence.service',
-      content => "[Service]\nEnvironment=\"SECRET_STORE_VAULT_TOKEN=${vault_token['token']}\"",
-      require => Class['confluence']
+      content => "[Service]\nEnvironment=\"SECRET_STORE_VAULT_TOKEN=${vault_token['token']}\""
     }
 
     $database_credential = {
