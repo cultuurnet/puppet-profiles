@@ -106,7 +106,7 @@ class profiles::atlassian::confluence (
 
     $database_credential = {
       "mount"    => "puppet",
-      "path"     => "puppet/data/testing/atlassian/confluence",
+      "path"     => "testing/atlassian/confluence",
       "key"      => "mysql_password",
       "endpoint" => $vault_url
     }
@@ -114,7 +114,7 @@ class profiles::atlassian::confluence (
     $config = {
       'hibernate.connection.url'          => $dburl,
       'hibernate.connection.username'     => $database_user,
-      'hibernate.connection.password'     => to_json($database_credential),
+      'hibernate.connection.password'     => regsubst(to_json($database_credential),'"','\"',"G"),
       'hibernate.connection.driver_class' => 'com.mysql.cj.jdbc.Driver',
       'jdbc.password.decrypter.classname' => 'com.atlassian.secrets.store.vault.VaultSecretStore'
     }
