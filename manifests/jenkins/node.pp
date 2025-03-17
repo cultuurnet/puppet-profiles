@@ -25,8 +25,6 @@ class profiles::jenkins::node(
   realize Group['jenkins']
   realize User['jenkins']
 
-  realize Apt::Source['publiq-tools']
-  realize Package['aws-cli']
   realize Apt::Source['publiq-jenkins']
 
   if $lvm {

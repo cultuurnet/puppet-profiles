@@ -18,9 +18,7 @@ class profiles::jenkins::controller (
 
   include ::profiles::java
 
-  realize Apt::Source['publiq-tools']
-  realize Package['google-cloud-cli']
-  
+
   $hostname   = split($url, '/')[2]
 
   if $lvm {
