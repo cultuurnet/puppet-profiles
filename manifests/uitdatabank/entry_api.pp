@@ -1,5 +1,6 @@
 class profiles::uitdatabank::entry_api (
   String           $database_password,
+  String           $servername,
   String           $job_interface_servername,
   Optional[String] $uitpas_servername                 = undef,
   String           $database_host                     = '127.0.0.1',
@@ -75,5 +76,9 @@ class profiles::uitdatabank::entry_api (
 
   class { 'profiles::uitdatabank::resque_web':
     servername => $job_interface_servername
+  }
+
+  profiles::apache::vhost::reverse_proxy { "http://${uitpas_servername}":
+    destination => "https://${servername}/uitpas/"
   }
 }

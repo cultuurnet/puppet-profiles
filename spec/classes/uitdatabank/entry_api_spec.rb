@@ -8,9 +8,10 @@ describe 'profiles::uitdatabank::entry_api' do
       context 'with hieradata' do
         let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-        context 'with database_password => mypassword and job_interface_servername => jobs.example.com' do
+        context 'with database_password => mypassword, servername => uitdatabank.example.com and job_interface_servername => jobs.example.com' do
           let(:params) { {
             'database_password'        => 'mypassword',
+            'servername'               => 'uitdatabank.example.com',
             'job_interface_servername' => 'jobs.example.com'
           } }
 
@@ -25,6 +26,7 @@ describe 'profiles::uitdatabank::entry_api' do
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api').with(
               'database_password'                 => 'mypassword',
               'database_host'                     => '127.0.0.1',
+              'servername'                        => 'uitdatabank.example.com',
               'job_interface_servername'          => 'jobs.example.com',
               'uitpas_servername'                 => nil,
               'deployment'                        => true,
@@ -73,11 +75,13 @@ describe 'profiles::uitdatabank::entry_api' do
           end
         end
 
-        context 'with database_password => secret, database_host => foo.example.com, job_interface_servername => bar.example.com and deployment => false' do
+        context 'with database_password => secret, database_host => foo.example.com, servername => uitdatabank.example.com, job_interface_servername => bar.example.com, uitpas_servername => uitpas.example.com and deployment => false' do
           let(:params) { {
             'database_password'        => 'secret',
             'database_host'            => 'foo.example.com',
+            'servername'               => 'uitdatabank.example.com',
             'job_interface_servername' => 'bar.example.com',
+            'uitpas_servername'        => 'uitpas.example.com',
             'deployment'               => false
           } }
 
@@ -89,6 +93,10 @@ describe 'profiles::uitdatabank::entry_api' do
 
           it { is_expected.to contain_class('profiles::uitdatabank::resque_web').with(
             'servername' => 'bar.example.com'
+          ) }
+
+          it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://uitpas.example.com').with(
+            'destination' => 'https://uitdatabank.example.com/uitpas/'
           ) }
 
           it { is_expected.not_to contain_class('profiles::uitdatabank::entry_api::deployment') }
@@ -117,11 +125,13 @@ describe 'profiles::uitdatabank::entry_api' do
           end
         end
 
-        context 'with database_password => mypassword, database_host => bar.example.com, job_interface_servername => baz.example.com, schedule_process_duplicates => true, schedule_movie_fetcher => true, schedule_add_trailers => true and schedule_replay_mismatched_events => true' do
+        context 'with database_password => mypassword, database_host => bar.example.com, servername => foo.example.com, job_interface_servername => baz.example.com, uitpas_servername => myuitpas.example.com, schedule_process_duplicates => true, schedule_movie_fetcher => true, schedule_add_trailers => true and schedule_replay_mismatched_events => true' do
           let(:params) { {
             'database_password'                 => 'mypassword',
             'database_host'                     => 'bar.example.com',
+            'servername'                        => 'foo.example.com',
             'job_interface_servername'          => 'baz.example.com',
+            'uitpas_servername'                 => 'myuitpas.example.com',
             'schedule_process_duplicates'       => true,
             'schedule_movie_fetcher'            => true,
             'schedule_add_trailers'             => true,
@@ -136,6 +146,10 @@ describe 'profiles::uitdatabank::entry_api' do
 
           it { is_expected.to contain_class('profiles::uitdatabank::resque_web').with(
             'servername' => 'baz.example.com'
+          ) }
+
+          it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://myuitpas.example.com').with(
+            'destination' => 'https://foo.example.com/uitpas/'
           ) }
 
           context "with fact mysqld_version => 8.0.33" do
