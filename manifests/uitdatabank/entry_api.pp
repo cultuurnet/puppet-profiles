@@ -1,17 +1,21 @@
 class profiles::uitdatabank::entry_api (
-  String  $database_password,
-  String  $job_interface_servername,
-  String  $database_host                     = '127.0.0.1',
-  Boolean $deployment                        = true,
-  Boolean $schedule_process_duplicates       = false,
-  Boolean $schedule_movie_fetcher            = false,
-  Boolean $schedule_add_trailers             = false,
-  Boolean $schedule_replay_mismatched_events = false
+  String           $database_password,
+  String           $job_interface_servername,
+  Optional[String] $uitpas_servername                 = undef,
+  String           $database_host                     = '127.0.0.1',
+  Boolean          $deployment                        = true,
+  Boolean          $schedule_process_duplicates       = false,
+  Boolean          $schedule_movie_fetcher            = false,
+  Boolean          $schedule_add_trailers             = false,
+  Boolean          $schedule_replay_mismatched_events = false
 ) inherits ::profiles {
 
   $basedir       = '/var/www/udb3-backend'
   $database_name = 'uitdatabank'
   $database_user = 'entry_api'
+
+  realize Apt::Source['publiq-tools']
+  realize Package['prince']
 
   include profiles::redis
 

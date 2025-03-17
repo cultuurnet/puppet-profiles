@@ -19,10 +19,14 @@ describe 'profiles::uitdatabank::entry_api' do
 
             it { is_expected.to compile.with_all_deps }
 
+            it { is_expected.to contain_apt__source('publiq-tools') }
+            it { is_expected.to contain_package('prince') }
+
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api').with(
               'database_password'                 => 'mypassword',
               'database_host'                     => '127.0.0.1',
               'job_interface_servername'          => 'jobs.example.com',
+              'uitpas_servername'                 => nil,
               'deployment'                        => true,
               'schedule_process_duplicates'       => false,
               'schedule_movie_fetcher'            => false,
@@ -59,6 +63,7 @@ describe 'profiles::uitdatabank::entry_api' do
               'servername' => 'jobs.example.com'
             ) }
 
+            it { is_expected.to contain_package('prince').that_requires('Apt::Source[publiq-tools]') }
             it { is_expected.to contain_mysql_database('uitdatabank').that_comes_before('Profiles::Mysql::App_user[entry_api@uitdatabank]') }
             it { is_expected.to contain_mysql_database('uitdatabank').that_requires('Class[profiles::mysql::server]') }
             it { is_expected.to contain_profiles__mysql__app_user('entry_api@uitdatabank').that_comes_before('Class[profiles::uitdatabank::entry_api::deployment]') }
