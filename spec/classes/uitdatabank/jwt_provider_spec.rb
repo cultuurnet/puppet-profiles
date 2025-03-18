@@ -32,11 +32,11 @@ describe 'profiles::uitdatabank::jwt_provider' do
             'rewrites'             => [ {
                                           'comment'      => 'Capture apiKey from URL parameters',
                                           'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
-                                          'rewrite_rule' => '^ - [E=APIKEY:%1]'
+                                          'rewrite_rule' => '^ - [E=API_KEY:%1]'
                                         }, {
                                           'comment'      => 'Capture apiKey from X-Api-Key header',
                                           'rewrite_cond' => '%{HTTP:X-Api-Key} ^.+',
-                                          'rewrite_rule' => '^ - [E=APIKEY:%{HTTP:X-Api-Key}]'
+                                          'rewrite_rule' => '^ - [E=API_KEY:%{HTTP:X-Api-Key}]'
                                       } ]
           ) }
 
@@ -67,11 +67,11 @@ describe 'profiles::uitdatabank::jwt_provider' do
           'rewrites'             => [ {
                                         'comment'      => 'Capture apiKey from URL parameters',
                                         'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
-                                        'rewrite_rule' => '^ - [E=APIKEY:%1]'
+                                        'rewrite_rule' => '^ - [E=API_KEY:%1]'
                                       }, {
                                         'comment'      => 'Capture apiKey from X-Api-Key header',
                                         'rewrite_cond' => '%{HTTP:X-Api-Key} ^.+',
-                                        'rewrite_rule' => '^ - [E=APIKEY:%{HTTP:X-Api-Key}]'
+                                        'rewrite_rule' => '^ - [E=API_KEY:%{HTTP:X-Api-Key}]'
                                     } ]
         ) }
 

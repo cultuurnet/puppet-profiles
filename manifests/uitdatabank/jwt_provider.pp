@@ -19,15 +19,15 @@ class profiles::uitdatabank::jwt_provider (
     basedir              => $basedir,
     public_web_directory => 'web',
     aliases              => $serveraliases,
-    access_log_format    => 'apikey_json',
+    access_log_format    => 'api_key_json',
     rewrites             => [ {
                                 comment      => 'Capture apiKey from URL parameters',
                                 rewrite_cond => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
-                                rewrite_rule => '^ - [E=APIKEY:%1]'
+                                rewrite_rule => '^ - [E=API_KEY:%1]'
                               }, {
                                 comment      => 'Capture apiKey from X-Api-Key header',
                                 rewrite_cond => '%{HTTP:X-Api-Key} ^.+',
-                                rewrite_rule => '^ - [E=APIKEY:%{HTTP:X-Api-Key}]'
+                                rewrite_rule => '^ - [E=API_KEY:%{HTTP:X-Api-Key}]'
                              } ]
   }
 
