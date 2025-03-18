@@ -6,7 +6,7 @@ define profiles::apache::vhost::php_fpm (
   String                         $access_log_format     = 'extended_json',
   Enum['unix', 'tcp']            $socket_type           = lookup('profiles::php::fpm_socket_type', Enum['unix', 'tcp'], 'first', 'unix'),
   Optional[String]               $certificate           = undef,
-  Optional[Array]                $rewrites              = undef
+  Variant[Hash, Array[Hash]]     $rewrites              = [],
 ) {
 
   include ::profiles
@@ -81,6 +81,6 @@ define profiles::apache::vhost::php_fpm (
                                  'allow_override' => 'All'
                                }
                              ],
-    rewrites              => $rewrites
+    rewrites              => [$rewrites].flatten
   }
 }

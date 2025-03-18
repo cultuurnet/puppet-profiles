@@ -23,7 +23,8 @@ describe 'profiles::apache::vhost::php_fpm' do
               'access_log_format'     => 'extended_json',
               'allow_encoded_slashes' => 'off',
               'socket_type'           => 'unix',
-              'certificate'           => nil
+              'certificate'           => nil,
+              'rewrites'              => []
             ) }
 
             it { is_expected.to contain_firewall('300 accept HTTP traffic') }
@@ -52,29 +53,32 @@ describe 'profiles::apache::vhost::php_fpm' do
                                            'X-Forwarded-Proto "https" HTTPS=on',
                                            'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                          ],
-              'directories'           => [
-                                           {
-                                             'path'            => '\.php$',
-                                             'provider'        => 'filesmatch',
-                                             'custom_fragment' => 'SetHandler "proxy:unix:/run/php/php-fpm.sock|fcgi://localhost"'
-                                           },
-                                           {
-                                             'path'           => '/var/www/foo',
-                                             'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
-                                             'allow_override' => 'All'
-                                           }
-                                         ]
+              'directories'           => [{
+                                           'path'            => '\.php$',
+                                           'provider'        => 'filesmatch',
+                                           'custom_fragment' => 'SetHandler "proxy:unix:/run/php/php-fpm.sock|fcgi://localhost"'
+                                         }, {
+                                           'path'           => '/var/www/foo',
+                                           'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
+                                           'allow_override' => 'All'
+                                         }],
+              'rewrites'              => []
             ) }
           end
 
-          context "with basedir => /tmp/bla, public_web_directory => web, aliases => [smith.example.com, foo.example.com], allow_encoded_slashes => nodecode, access_log_format => combined_json and socket_type => tcp" do
+          context "with basedir => /tmp/bla, public_web_directory => web, aliases => [smith.example.com, foo.example.com], allow_encoded_slashes => nodecode, access_log_format => combined_json, rewrites => { comment => Capture apiKey from URL parameters, rewrite_cond => %{QUERY_STRING} (?:^|&)apiKey=([^&]+), rewrite_rule => ^ - [E=API_KEY:%1] } and socket_type => tcp" do
             let(:params) { {
               'basedir'               => '/tmp/bla',
               'public_web_directory'  => 'web',
               'aliases'               => ['smith.example.com', 'foo.example.com'],
               'allow_encoded_slashes' => 'nodecode',
               'access_log_format'     => 'combined_json',
-              'socket_type'           => 'tcp'
+              'socket_type'           => 'tcp',
+              'rewrites'              => {
+                                           'comment'      => 'Capture apiKey from URL parameters',
+                                           'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
+                                           'rewrite_rule' => '^ - [E=API_KEY:%1]'
+                                         }
             } }
 
             it { is_expected.to contain_apache__vhost('winston.example.com_80').with(
@@ -97,18 +101,20 @@ describe 'profiles::apache::vhost::php_fpm' do
                                            'X-Forwarded-Proto "https" HTTPS=on',
                                            'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                          ],
-              'directories'           => [
-                                           {
-                                             'path'            => '\.php$',
-                                             'provider'        => 'filesmatch',
-                                             'custom_fragment' => 'SetHandler "proxy:fcgi://127.0.0.1:9000"'
-                                           },
-                                           {
-                                             'path'           => '/tmp/bla',
-                                             'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
-                                             'allow_override' => 'All'
-                                           }
-                                         ]
+              'directories'           => [{
+                                           'path'            => '\.php$',
+                                           'provider'        => 'filesmatch',
+                                           'custom_fragment' => 'SetHandler "proxy:fcgi://127.0.0.1:9000"'
+                                         }, {
+                                           'path'           => '/tmp/bla',
+                                           'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
+                                           'allow_override' => 'All'
+                                         }],
+              'rewrites'              => [{
+                                           'comment'      => 'Capture apiKey from URL parameters',
+                                           'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
+                                           'rewrite_rule' => '^ - [E=API_KEY:%1]'
+                                         }]
             ) }
           end
         end
@@ -142,18 +148,16 @@ describe 'profiles::apache::vhost::php_fpm' do
                                            'X-Forwarded-Proto "https" HTTPS=on',
                                            'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                          ],
-              'directories'           => [
-                                           {
-                                             'path'            => '\.php$',
-                                             'provider'        => 'filesmatch',
-                                             'custom_fragment' => 'SetHandler "proxy:fcgi://127.0.0.1:9000"'
-                                           },
-                                           {
-                                             'path'           => '/var/www/bar',
-                                             'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
-                                             'allow_override' => 'All'
-                                           }
-                                         ]
+              'directories'           => [{
+                                           'path'            => '\.php$',
+                                           'provider'        => 'filesmatch',
+                                           'custom_fragment' => 'SetHandler "proxy:fcgi://127.0.0.1:9000"'
+                                         }, {
+                                           'path'           => '/var/www/bar',
+                                           'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
+                                           'allow_override' => 'All'
+                                         }],
+              'rewrites'              => []
             ) }
           end
         end
@@ -173,10 +177,19 @@ describe 'profiles::apache::vhost::php_fpm' do
             it { expect { catalogue }.to raise_error(Puppet::Error, /expects a value for parameter certificate when using HTTPS/) }
           end
 
-          context "with basedir => /data/web and certificate => wildcard.example.com" do
+          context "with basedir => /data/web, certificate => wildcard.example.com and rewrites => [{ comment => Capture apiKey from URL parameters, rewrite_cond => %{QUERY_STRING} (?:^|&)apiKey=([^&]+), rewrite_rule => ^ - [E=API_KEY:%1] }, comment => Capture clientId from URL parameters, rewrite_cond => %{QUERY_STRING} (?:^|&)clientId=([^&]+), rewrite_rule => ^ - [E=CLIENT_ID:%1] }]" do
             let(:params) { {
               'basedir'     => '/data/web',
-              'certificate' => 'wildcard.example.com'
+              'certificate' => 'wildcard.example.com',
+              'rewrites'    => [{
+                                 'comment'      => 'Capture apiKey from URL parameters',
+                                 'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
+                                 'rewrite_rule' => '^ - [E=API_KEY:%1]'
+                               }, {
+                                 'comment'      => 'Capture clientId from URL parameters',
+                                 'rewrite_cond' => '%{QUERY_STRING} (?:^|&)clientId=([^&]+)',
+                                 'rewrite_rule' => '^ - [E=CLIENT_ID:%1]'
+                               }]
             } }
 
             it { is_expected.to contain_firewall('300 accept HTTPS traffic') }
@@ -205,18 +218,24 @@ describe 'profiles::apache::vhost::php_fpm' do
                                            'X-Forwarded-Proto "https" HTTPS=on',
                                            'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
                                          ],
-              'directories'           => [
-                                           {
-                                             'path'            => '\.php$',
-                                             'provider'        => 'filesmatch',
-                                             'custom_fragment' => 'SetHandler "proxy:fcgi://127.0.0.1:9000"'
-                                           },
-                                           {
-                                             'path'           => '/data/web',
-                                             'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
-                                             'allow_override' => 'All'
-                                           }
-                                         ]
+              'directories'           => [{
+                                           'path'            => '\.php$',
+                                           'provider'        => 'filesmatch',
+                                           'custom_fragment' => 'SetHandler "proxy:fcgi://127.0.0.1:9000"'
+                                         }, {
+                                           'path'           => '/data/web',
+                                           'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
+                                           'allow_override' => 'All'
+                                         }],
+              'rewrites'              => [{
+                                           'comment'      => 'Capture apiKey from URL parameters',
+                                           'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
+                                           'rewrite_rule' => '^ - [E=API_KEY:%1]'
+                                         }, {
+                                           'comment'      => 'Capture clientId from URL parameters',
+                                           'rewrite_cond' => '%{QUERY_STRING} (?:^|&)clientId=([^&]+)',
+                                           'rewrite_rule' => '^ - [E=CLIENT_ID:%1]'
+                                         }]
             ) }
           end
         end
@@ -262,7 +281,8 @@ describe 'profiles::apache::vhost::php_fpm' do
                                            'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
                                            'allow_override' => 'All'
                                          }
-                                       ]
+                                       ],
+            'rewrites'              => []
           ) }
         end
 

@@ -20,9 +20,6 @@ describe 'profiles::uitdatabank::entry_api' do
 
             it { is_expected.to compile.with_all_deps }
 
-            it { is_expected.to contain_apt__source('publiq-tools') }
-            it { is_expected.to contain_package('prince') }
-
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api').with(
               'database_password'                 => 'mypassword',
               'database_host'                     => '127.0.0.1',
@@ -36,11 +33,36 @@ describe 'profiles::uitdatabank::entry_api' do
               'schedule_replay_mismatched_events' => false
             ) }
 
+            it { is_expected.to contain_apt__source('publiq-tools') }
+            it { is_expected.to contain_package('prince') }
+
             it { is_expected.to contain_class('profiles::mysql::server') }
             it { is_expected.to contain_class('profiles::redis') }
+            it { is_expected.to contain_class('profiles::apache') }
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api::deployment') }
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api::data_integration').with(
               'database_name' => 'uitdatabank'
+            ) }
+
+            it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://uitdatabank.example.com').with(
+              'basedir'               => '/var/www/udb3-backend',
+              'public_web_directory'  => 'web',
+              'aliases'               => [],
+              'allow_encoded_slashes' => 'nodecode',
+              'access_log_format'     => 'api_key_json',
+              'rewrites'              => [ {
+                                           'comment'      => 'Capture apiKey from URL parameters',
+                                           'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
+                                           'rewrite_rule' => '^ - [E=API_KEY:%1]'
+                                         }, {
+                                           'comment'      => 'Capture apiKey from X-Api-Key header',
+                                           'rewrite_cond' => '%{HTTP:X-Api-Key} ^.+',
+                                           'rewrite_rule' => '^ - [E=API_KEY:%{HTTP:X-Api-Key}]'
+                                         }, {
+                                           'comment'      => 'Capture JWT token from Authorization header',
+                                           'rewrite_cond' => '%{HTTP:Authorization} "^Bearer (.+)"',
+                                           'rewrite_rule' => '^ - [E=JWT_TOKEN:%1]'
+                                         } ]
             ) }
 
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api::cron').with(

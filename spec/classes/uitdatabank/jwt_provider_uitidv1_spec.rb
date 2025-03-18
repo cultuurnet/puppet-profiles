@@ -28,7 +28,7 @@ describe 'profiles::uitdatabank::jwt_provider_uitidv1' do
             'basedir'              => '/var/www/jwt-provider-uitidv1',
             'public_web_directory' => 'web',
             'aliases'              => [],
-            'access_log_format'    => 'apikey_json',
+            'access_log_format'    => 'api_key_json',
             'rewrites'             => [ {
                                           'comment'      => 'Capture apiKey from URL parameters',
                                           'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
@@ -63,7 +63,7 @@ describe 'profiles::uitdatabank::jwt_provider_uitidv1' do
           'basedir'              => '/var/www/jwt-provider-uitidv1',
           'public_web_directory' => 'web',
           'aliases'              => ['jwt-alias1.example.com', 'jwt-alias2.example.com'],
-          'access_log_format'    => 'apikey_json',
+          'access_log_format'    => 'api_key_json',
           'rewrites'             => [ {
                                         'comment'      => 'Capture apiKey from URL parameters',
                                         'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',

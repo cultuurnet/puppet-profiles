@@ -32,7 +32,7 @@ describe 'profiles::uitdatabank::search_api' do
             'basedir'              => '/var/www/udb3-search-service',
             'public_web_directory' => 'web',
             'aliases'              => [],
-            'access_log_format'    => 'apikey_json',
+            'access_log_format'    => 'api_key_json',
             'rewrites'             => [ {
                                           'comment'      => 'Capture apiKey from URL parameters',
                                           'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
@@ -87,7 +87,7 @@ describe 'profiles::uitdatabank::search_api' do
             'basedir'              => '/var/www/udb3-search-service',
             'public_web_directory' => 'web',
             'aliases'              => ['alias1.example.com', 'alias2.example.com'],
-            'access_log_format'    => 'apikey_json',
+            'access_log_format'    => 'api_key_json',
             'rewrites'             => [ {
                                           'comment'      => 'Capture apiKey from URL parameters',
                                           'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
