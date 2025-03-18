@@ -39,6 +39,7 @@ class profiles::apache::logformats inherits ::profiles {
                     \"uniqueID\": \"%{UNIQUE_ID}e\", \
                     \"duration\": \"%{ms}T\", \
                     \"apiKey\": \"%{API_KEY}e\", \
+                    \"clientId\": \"%{CLIENT_ID}e\", \
                     \"jwtToken\": \"%{JWT_TOKEN}e\", \
                     \"clientProperties\": \"%{X-Client-Properties}i\" \
                     }\
