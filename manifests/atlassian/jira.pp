@@ -77,7 +77,7 @@ class profiles::atlassian::jira (
     $vault_token = lookup('vault:atlassian/vault_token')
     $vault_url   = lookup('data::vault::url')
 
-    systemd::dropin_file { 'override.conf':
+    systemd::dropin_file { 'jira-override.conf':
       unit    => 'jira.service',
       content => "[Service]\nEnvironment=\"SECRET_STORE_VAULT_TOKEN=${vault_token['token']}\""
     }
