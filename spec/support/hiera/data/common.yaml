@@ -42,16 +42,24 @@ profiles::uitdatabank::angular_app::deployment::config_source: '/path/to/config/
 
 profiles::uitdatabank::frontend::deployment::config_source: '/path/to/config/source'
 
-profiles::uitid::frontend::deployment::config_source: '/path/to/config/source'
-profiles::uitid::frontend_api::deployment::config_source: '/path/to/config/source'
-profiles::uitid::frontend_auth0::deployment::config_source: '/path/to/config/source'
+profiles::uitdatabank::entry_api::deployment::config_source: '/path/to/config/source'
+profiles::uitdatabank::entry_api::deployment::admin_permissions_source: '/path/to/admin/permissions/source'
+profiles::uitdatabank::entry_api::deployment::client_permissions_source: '/path/to/client/permissions/source'
+profiles::uitdatabank::entry_api::deployment::movie_fetcher_config_source: '/path/to/movie/fetcher/config/source'
+profiles::uitdatabank::entry_api::deployment::completeness_source: '/path/to/completeness/source'
+profiles::uitdatabank::entry_api::deployment::externalid_mapping_organizer_source: '/path/to/externalid/mapping/organizer/source'
+profiles::uitdatabank::entry_api::deployment::externalid_mapping_place_source: '/path/to/externalid/mapping/place/source'
+profiles::uitdatabank::entry_api::deployment::term_mapping_facilities_source: '/path/to/facilities_source'
+profiles::uitdatabank::entry_api::deployment::term_mapping_themes_source: '/path/to/themes_source'
+profiles::uitdatabank::entry_api::deployment::term_mapping_types_source: '/path/to/types_source'
+profiles::uitdatabank::entry_api::deployment::pubkey_uitidv1_source: '/path/to/pubkey/uitidv1/source'
+profiles::uitdatabank::entry_api::deployment::pubkey_keycloak_source: '/path/to/pubkey/keycloak/source'
 
 profiles::uitdatabank::search_api::deployment::config_source: '/path/to/config/source'
 profiles::uitdatabank::search_api::deployment::features_source: '/path/to/config/source'
 profiles::uitdatabank::search_api::deployment::facilities_source: '/path/to/config/source'
 profiles::uitdatabank::search_api::deployment::themes_source: '/path/to/config/source'
 profiles::uitdatabank::search_api::deployment::types_source: '/path/to/config/source'
-profiles::uitdatabank::search_api::deployment::pubkey_auth0_source: '/path/to/config/key'
 profiles::uitdatabank::search_api::deployment::pubkey_keycloak_source: '/path/to/config/key'
 
 profiles::uitdatabank::jwt_provider_uitidv1::deployment::config_source: '/path/to/config/source'
@@ -59,6 +67,10 @@ profiles::uitdatabank::jwt_provider_uitidv1::deployment::private_key_source: '/p
 profiles::uitdatabank::jwt_provider_uitidv1::deployment::public_key_source: '/path/to/pubkey/source'
 
 profiles::uitdatabank::jwt_provider::deployment::config_source: '/path/to/config/source'
+
+profiles::uitid::frontend::deployment::config_source: '/path/to/config/source'
+profiles::uitid::frontend_api::deployment::config_source: '/path/to/config/source'
+profiles::uitid::frontend_auth0::deployment::config_source: '/path/to/config/source'
 
 profiles::publiq::versions::service_address: '127.0.1.1'
 profiles::publiq::versions::service_port: 6000

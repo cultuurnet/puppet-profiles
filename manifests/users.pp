@@ -91,6 +91,16 @@ class profiles::users inherits ::profiles {
     uid            => '458'
   }
 
+  @user { 'mailpit':
+    ensure         => 'present',
+    gid            => 'mailpit',
+    home           => '/home/mailpit',
+    managehome     => false,
+    purge_ssh_keys => true,
+    shell          => '/bin/false',
+    uid            => '459'
+  }
+
   @user { 'ubuntu':
     ensure         => 'present',
     gid            => 'ubuntu',

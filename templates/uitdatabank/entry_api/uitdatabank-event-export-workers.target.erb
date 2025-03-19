@@ -1,0 +1,6 @@
+[Unit]
+Description=UiTdatabank event export workers
+Wants=<%= Array(1..(@count || 1)).map { |num| "uitdatabank-event-export-worker@#{num}.service" }.join(' ') %>
+
+[Install]
+WantedBy=multi-user.target

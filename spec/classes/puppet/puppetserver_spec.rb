@@ -165,7 +165,7 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to contain_class('profiles::puppet::puppetserver::vault').that_comes_before('Class[profiles::puppet::puppetserver::hiera]') }
 
           context 'with Terraform and Vault integration enabled and data available' do
-            let(:hiera_config) { 'spec/support/hiera/terraform_available.yaml' }
+            let(:hiera_config) { 'spec/support/hiera/terraform_common.yaml' }
 
             context 'with vault_integration => true, vault_address => https://vault.example.com:8200, vault_mounts => { foo => [bar, baz] } and terraform_bucket => mybucket' do
               let(:params) {

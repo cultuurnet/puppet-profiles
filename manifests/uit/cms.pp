@@ -99,11 +99,11 @@ class profiles::uit::cms (
     basedir              => $basedir,
     public_web_directory => 'web',
     aliases              => $serveraliases,
-    rewrites             => [ {
-                                comment      => 'Redirect all requests to /tip/ to the frontend vhost',
-                                rewrite_map  => "hostnames 'txt:/var/www/uit-cms/hostnames.txt'",
-                                rewrite_rule => '^/tip/(.*)$ ${hostnames:%{HTTP_HOST}}/tip/$1 [R=301,NE,L]'
-                            } ]
+    rewrites             => [{
+                              comment      => 'Redirect all requests to /tip/ to the frontend vhost',
+                              rewrite_map  => "hostnames 'txt:/var/www/uit-cms/hostnames.txt'",
+                              rewrite_rule => '^/tip/(.*)$ ${hostnames:%{HTTP_HOST}}/tip/$1 [R=301,NE,L]'
+                            }]
   }
 
   # include ::profiles::uit::cms::logging

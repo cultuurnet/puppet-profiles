@@ -36,7 +36,7 @@ describe 'profiles::apache' do
           'log_formats'           => {
                                        'combined_json' => '{ \"remoteIP\": \"%a\", \"remoteLogname\": \"%l\", \"user\": \"%u\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"request\": \"%r\", \"status\": %>s, \"responseBytes\": %b, \"referer\": \"%{Referer}i\", \"userAgent\": \"%{User-Agent}i\" }',
                                        'extended_json' => '{ \"remoteIP\": \"%{CLIENT_IP}e\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"requestPath\": \"%U\", \"status\": \"%>s\", \"query\": \"%q\", \"method\": \"%m\", \"userAgent\": \"%{User-Agent}i\", \"referer\": \"%{Referer}i\", \"uniqueID\": \"%{UNIQUE_ID}e\", \"duration\": \"%{ms}T\" }',
-                                       'apikey_json'   => '{ \"remoteIP\": \"%{CLIENT_IP}e\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"requestPath\": \"%U\", \"status\": \"%>s\", \"query\": \"%q\", \"method\": \"%m\", \"userAgent\": \"%{User-Agent}i\", \"referer\": \"%{Referer}i\", \"uniqueID\": \"%{UNIQUE_ID}e\", \"duration\": \"%{ms}T\", \"apiKey\": \"%{APIKEY}e\", \"jwtToken\": \"%{JWTTOKEN}e\", \"clientProperties\": \"%{X-Client-Properties}i\" }'
+                                       'api_key_json'  => '{ \"remoteIP\": \"%{CLIENT_IP}e\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"requestPath\": \"%U\", \"status\": \"%>s\", \"query\": \"%q\", \"method\": \"%m\", \"userAgent\": \"%{User-Agent}i\", \"referer\": \"%{Referer}i\", \"uniqueID\": \"%{UNIQUE_ID}e\", \"duration\": \"%{ms}T\", \"apiKey\": \"%{API_KEY}e\", \"clientId\": \"%{CLIENT_ID}e\", \"jwtToken\": \"%{JWT_TOKEN}e\", \"clientProperties\": \"%{X-Client-Properties}i\" }'
                                      }
         ) }
 
@@ -76,7 +76,7 @@ describe 'profiles::apache' do
           'log_formats'           => {
                                        'combined_json' => '{ \"remoteIP\": \"%a\", \"remoteLogname\": \"%l\", \"user\": \"%u\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"request\": \"%r\", \"status\": %>s, \"responseBytes\": %b, \"referer\": \"%{Referer}i\", \"userAgent\": \"%{User-Agent}i\" }',
                                        'extended_json' => '{ \"remoteIP\": \"%{CLIENT_IP}e\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"requestPath\": \"%U\", \"status\": \"%>s\", \"query\": \"%q\", \"method\": \"%m\", \"userAgent\": \"%{User-Agent}i\", \"referer\": \"%{Referer}i\", \"uniqueID\": \"%{UNIQUE_ID}e\", \"duration\": \"%{ms}T\" }',
-                                       'apikey_json'   => '{ \"remoteIP\": \"%{CLIENT_IP}e\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"requestPath\": \"%U\", \"status\": \"%>s\", \"query\": \"%q\", \"method\": \"%m\", \"userAgent\": \"%{User-Agent}i\", \"referer\": \"%{Referer}i\", \"uniqueID\": \"%{UNIQUE_ID}e\", \"duration\": \"%{ms}T\", \"apiKey\": \"%{APIKEY}e\", \"jwtToken\": \"%{JWTTOKEN}e\", \"clientProperties\": \"%{X-Client-Properties}i\" }'
+                                       'api_key_json'  => '{ \"remoteIP\": \"%{CLIENT_IP}e\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"requestPath\": \"%U\", \"status\": \"%>s\", \"query\": \"%q\", \"method\": \"%m\", \"userAgent\": \"%{User-Agent}i\", \"referer\": \"%{Referer}i\", \"uniqueID\": \"%{UNIQUE_ID}e\", \"duration\": \"%{ms}T\", \"apiKey\": \"%{API_KEY}e\", \"clientId\": \"%{CLIENT_ID}e\", \"jwtToken\": \"%{JWT_TOKEN}e\", \"clientProperties\": \"%{X-Client-Properties}i\" }'
                                      }
         ) }
 

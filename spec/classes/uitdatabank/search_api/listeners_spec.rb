@@ -10,14 +10,14 @@ describe 'profiles::uitdatabank::search_api::listeners' do
 
         it { is_expected.to compile.with_all_deps }
 
+        it { is_expected.to contain_class('profiles::uitdatabank::search_api::listeners').with(
+          'basedir' => '/var/www/udb3-search-service'
+        ) }
+
         it { is_expected.to contain_group('www-data') }
         it { is_expected.to contain_user('www-data') }
 
         it { is_expected.to contain_class('profiles::logrotate') }
-
-        it { is_expected.to contain_class('profiles::uitdatabank::search_api::listeners').with(
-          'basedir' => '/var/www/udb3-search-service'
-        ) }
 
         it { is_expected.to contain_profiles__uitdatabank__search_api__listener('uitdatabank-consume-api').with(
           'ensure'  => 'present',

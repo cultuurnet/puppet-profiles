@@ -121,6 +121,10 @@ describe 'profiles::packages' do
           'ensure' => 'present'
         ) }
 
+        it { is_expected.to contain_package('prince').with(
+          'ensure' => 'present'
+        ) }
+
         it { is_expected.to contain_package('composer1').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('composer2').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('drush').that_requires('Apt::Source[publiq-tools]') }
@@ -134,6 +138,7 @@ describe 'profiles::packages' do
         it { is_expected.to contain_package('argocd').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('google-cloud-cli').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('rubygem-angular-config').that_requires('Apt::Source[publiq-tools]') }
+        it { is_expected.to contain_package('prince').that_requires('Apt::Source[publiq-tools]') }
       end
 
       context "without package virtual resources realized" do

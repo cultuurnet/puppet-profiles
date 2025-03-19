@@ -92,6 +92,11 @@ describe 'profiles::groups' do
           'gid'    => '458'
         ) }
 
+        it { is_expected.to contain_group('mailpit').with(
+          'ensure' => 'present',
+          'gid'    => '459'
+        ) }
+
         it { is_expected.to contain_group('glassfish').with(
           'ensure' => 'present',
           'gid'    => '1005'

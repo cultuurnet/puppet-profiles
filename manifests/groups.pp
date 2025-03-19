@@ -50,6 +50,11 @@ class profiles::groups inherits ::profiles {
     gid    => '458'
   }
 
+  @group { 'mailpit':
+    ensure => 'present',
+    gid    => '459'
+  }
+
   @group { 'ubuntu':
     ensure => 'present',
     gid    => '1000'

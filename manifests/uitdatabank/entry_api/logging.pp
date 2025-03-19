@@ -1,6 +1,6 @@
-class profiles::uitdatabank::entry_api::logging inherits ::profiles {
-
-  $basedir = '/var/www/udb3-backend'
+class profiles::uitdatabank::entry_api::logging (
+  String $basedir = '/var/www/udb3-backend'
+) inherits ::profiles {
 
   realize Group['www-data']
   realize User['www-data']
@@ -12,7 +12,7 @@ class profiles::uitdatabank::entry_api::logging inherits ::profiles {
     rotate       => 10,
     create_owner => 'www-data',
     create_group => 'www-data',
-    postrotate   => 'systemctl restart udb3-amqp-listener-uitpas udb3-bulk-label-offer-worker udb3-event-export-workers.target',
+    postrotate   => 'systemctl restart uitdatabank-*',
     require      => [Group['www-data'], User['www-data']],
     *            => $profiles::logrotate::default_rule_attributes
   }

@@ -1,0 +1,8 @@
+---
+:backends:
+  - yaml
+:yaml:
+  :datadir: spec/support/hiera/data
+:hierarchy:
+  - terraform_empty
+  - common

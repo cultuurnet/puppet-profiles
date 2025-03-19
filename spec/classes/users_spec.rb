@@ -153,6 +153,16 @@ describe 'profiles::users' do
           'uid'            => '458'
         ) }
 
+        it { is_expected.to contain_user('mailpit').with(
+          'ensure'         => 'present',
+          'gid'            => 'mailpit',
+          'home'           => '/home/mailpit',
+          'managehome'     => false,
+          'purge_ssh_keys' => true,
+          'shell'          => '/bin/false',
+          'uid'            => '459'
+        ) }
+
         it { is_expected.to contain_user('glassfish').with(
           'ensure'         => 'present',
           'gid'            => 'glassfish',

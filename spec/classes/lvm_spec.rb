@@ -63,8 +63,8 @@ describe 'profiles::lvm' do
         it { is_expected.to contain_physical_volume('/dev/xvdb').that_requires('Class[lvm]') }
         it { is_expected.to contain_physical_volume('/dev/xvdb').that_comes_before('Volume_group[datavg]') }
 
-        context "with terraform provided volume size for xvdb set to 60g" do
-          let(:hiera_config) { 'spec/support/hiera/terraform_available.yaml' }
+        context "with Terraform provided volume size for xvdb set to 60g" do
+          let(:hiera_config) { 'spec/support/hiera/terraform_common.yaml' }
 
           context "with physical extent count for /dev/xvdb being 15359" do
             let(:facts) {
@@ -92,7 +92,7 @@ describe 'profiles::lvm' do
           end
         end
 
-        context "without terraform provided volume size for xvdb" do
+        context "without Terraform provided volume size for xvdb" do
           let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
 
           it { is_expected.not_to contain_exec('resize physical volume /dev/xvdb') }
@@ -136,8 +136,8 @@ describe 'profiles::lvm' do
         it { is_expected.to contain_physical_volume('/dev/xvdc').that_comes_before('Volume_group[data2vg]') }
         it { is_expected.to contain_physical_volume('/dev/xvdd').that_comes_before('Volume_group[data2vg]') }
 
-        context "with terraform provided volume size for xvdb set to 60g, for xvdc to 40g and for xvdd to 20g" do
-          let(:hiera_config) { 'spec/support/hiera/terraform_available.yaml' }
+        context "with Terraform provided volume size for xvdb set to 60g, for xvdc to 40g and for xvdd to 20g" do
+          let(:hiera_config) { 'spec/support/hiera/terraform_common.yaml' }
 
           context "with physical extent count for /dev/xdvb being 15359, for /dev/xvdc being  and for /dev/xvdd being " do
             let(:facts) {
@@ -187,7 +187,7 @@ describe 'profiles::lvm' do
           end
         end
 
-        context "without terraform provided volume size for xvdb" do
+        context "without Terraform provided volume size for xvdb" do
           let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
 
           it { is_expected.not_to contain_exec('resize physical volume /dev/xvdb') }

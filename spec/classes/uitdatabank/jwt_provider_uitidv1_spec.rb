@@ -28,15 +28,15 @@ describe 'profiles::uitdatabank::jwt_provider_uitidv1' do
             'basedir'              => '/var/www/jwt-provider-uitidv1',
             'public_web_directory' => 'web',
             'aliases'              => [],
-            'access_log_format'    => 'apikey_json',
+            'access_log_format'    => 'api_key_json',
             'rewrites'             => [ {
                                           'comment'      => 'Capture apiKey from URL parameters',
                                           'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
-                                          'rewrite_rule' => '^ - [E=APIKEY:%1]'
+                                          'rewrite_rule' => '^ - [E=API_KEY:%1]'
                                         }, {
                                           'comment'      => 'Capture apiKey from X-Api-Key header',
                                           'rewrite_cond' => '%{HTTP:X-Api-Key} ^.+',
-                                          'rewrite_rule' => '^ - [E=APIKEY:%{HTTP:X-Api-Key}]'
+                                          'rewrite_rule' => '^ - [E=API_KEY:%{HTTP:X-Api-Key}]'
                                       } ]
           ) }
 
@@ -63,15 +63,15 @@ describe 'profiles::uitdatabank::jwt_provider_uitidv1' do
           'basedir'              => '/var/www/jwt-provider-uitidv1',
           'public_web_directory' => 'web',
           'aliases'              => ['jwt-alias1.example.com', 'jwt-alias2.example.com'],
-          'access_log_format'    => 'apikey_json',
+          'access_log_format'    => 'api_key_json',
           'rewrites'             => [ {
                                         'comment'      => 'Capture apiKey from URL parameters',
                                         'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
-                                        'rewrite_rule' => '^ - [E=APIKEY:%1]'
+                                        'rewrite_rule' => '^ - [E=API_KEY:%1]'
                                       }, {
                                         'comment'      => 'Capture apiKey from X-Api-Key header',
                                         'rewrite_cond' => '%{HTTP:X-Api-Key} ^.+',
-                                        'rewrite_rule' => '^ - [E=APIKEY:%{HTTP:X-Api-Key}]'
+                                        'rewrite_rule' => '^ - [E=API_KEY:%{HTTP:X-Api-Key}]'
                                     } ]
         ) }
 
