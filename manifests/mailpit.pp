@@ -15,6 +15,14 @@ class profiles::mailpit (
     require => Apt::Source['publiq-tools']
   }
 
+  file { 'mailpit-datadir':
+    ensure  => 'directory',
+    path    => '/var/lib/mailpit',
+    owner   => 'mailpit',
+    group   => 'mailpit',
+    require => [Group['mailpit'], User['mailpit']]
+  }
+
   file { 'mailpit-service-defaults':
     ensure  => 'file',
     path    => '/etc/default/mailpit',
@@ -26,6 +34,6 @@ class profiles::mailpit (
     ensure    => 'running',
     enable    => true,
     hasstatus => true,
-    require   => [Group['mailpit'], User['mailpit']]
+    require   => [Group['mailpit'], User['mailpit'], File['mailpit-datadir']]
   }
 }
