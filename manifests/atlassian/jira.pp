@@ -6,6 +6,7 @@ class profiles::atlassian::jira (
   String                     $database_host     = '127.0.0.1',
   Enum['running', 'stopped'] $service_status    = 'running',
   Boolean                    $lvm               = false,
+  Boolean                    $vault_enabled     = false,
   Optional[String]           $volume_group      = undef,
   Optional[String]           $volume_size       = undef,
   Boolean                    $manage_homedir    = false,
@@ -72,6 +73,27 @@ class profiles::atlassian::jira (
     require  => Mysql_database[$database_name]
   }
 
+  if $vault_enabled {
+    $vault_token = lookup('vault:atlassian/vault_token')
+    $vault_url   = lookup('data::vault::url')
+
+    systemd::dropin_file { 'override.conf':
+      unit    => 'jira.service',
+      content => "[Service]\nEnvironment=\"SECRET_STORE_VAULT_TOKEN=${vault_token['token']}\""
+    }
+
+    $vault_credential = {
+      "mount"    => "puppet",
+      "path"     => "testing/atlassian/jira",
+      "key"      => "mysql_password",
+      "endpoint" => $vault_url
+    }
+
+    $database_credential = regsubst(to_json($vault_credential),'"','\"',"G")
+  } else {
+    $database_credential = $database_password
+  }
+
   # install jira
   class { 'jira':
     version                => $version,
@@ -89,12 +111,13 @@ class profiles::atlassian::jira (
     mysql_connector_manage => false,
     dburl                  => $dburl,
     dbuser                 => $database_user,
-    dbpassword             => $database_password,
+    dbpassword             => $database_credential,
     dbname                 => $database_name,
     dbserver               => $database_host,
     jvm_xms                => $initial_heap_size,
     jvm_xmx                => $maximum_heap_size,
     java_opts              => $java_opts,
+    vault_enabled          => $vault_enabled,
     service_manage         => true,
     service_ensure         => $service_status,
     service_enable         => $service_status ? {
