@@ -18,6 +18,7 @@ class profiles::jenkins::controller (
 
   include ::profiles::java
 
+
   $hostname   = split($url, '/')[2]
 
   if $lvm {

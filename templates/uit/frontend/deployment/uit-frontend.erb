@@ -5,4 +5,7 @@ NUXT_TELEMETRY_DISABLED=1
 <%- if @newrelic_license_key -%>
 NEW_RELIC_LICENSE_KEY=<%= @newrelic_license_key %>
 NEW_RELIC_APP_NAME=<%= @newrelic_app_name %>
+NEW_RELIC_TRACER_ENABLED=false
+NEW_RELIC_DISTRIBUTED_TRACING_ENABLED=false
+NEW_RELIC_TRANSACTION_EVENTS_ENABLED=false
 <%- end -%>
