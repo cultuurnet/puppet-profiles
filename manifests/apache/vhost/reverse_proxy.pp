@@ -52,6 +52,8 @@ define profiles::apache::vhost::reverse_proxy (
 
   if $destination =~ /^https/ {
     $https_destination    = true
+
+    include apache::mod::ssl
   } else {
     $https_destination    = false
   }

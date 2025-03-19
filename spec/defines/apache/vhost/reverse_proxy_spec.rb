@@ -22,6 +22,8 @@ describe 'profiles::apache::vhost::reverse_proxy' do
 
               it { is_expected.to contain_firewall('300 accept HTTP traffic') }
 
+              it { is_expected.not_to contain_class('apache::mod::ssl') }
+
               it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://leonardo.example.com').with(
                 'destination'           => 'http://davinci.example.com/',
                 'certificate'           => nil,
@@ -82,6 +84,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
 
               it { is_expected.to contain_class('apache::mod::proxy_wstunnel') }
               it { is_expected.to contain_class('apache::mod::authn_core') }
+              it { is_expected.not_to contain_class('apache::mod::ssl') }
 
               it { is_expected.to contain_apache__vhost('leonardo.example.com_80').with(
                 'servername'            => 'leonardo.example.com',
@@ -174,6 +177,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
               it { is_expected.to contain_profiles__certificate('foobar.example.com') }
 
               it { is_expected.to contain_class('apache::mod::proxy_wstunnel') }
+              it { is_expected.to contain_class('apache::mod::ssl') }
 
               it { is_expected.to contain_apache__vhost('michelangelo.example.com_443').with(
                 'servername'            => 'michelangelo.example.com',
@@ -244,13 +248,14 @@ describe 'profiles::apache::vhost::reverse_proxy' do
           context "with hieradata" do
             let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-            context "with destination => http://buonarotti.example.com/ and auth_openid_connect => true" do
+            context "with destination => https://buonarotti.example.com/ and auth_openid_connect => true" do
               let(:params) { {
-                'destination'         => 'http://buonarotti.example.com/',
+                'destination'         => 'https://buonarotti.example.com/',
                 'auth_openid_connect' => true
               } }
 
               it { is_expected.to contain_class('apache::mod::authn_core') }
+              it { is_expected.to contain_class('apache::mod::ssl') }
 
               it { is_expected.to contain_apache__vhost('raphael.example.com_80').with(
                 'servername'            => 'raphael.example.com',
@@ -278,7 +283,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                              'CryptoPassphrase'    => 'eFRxI8X8h4zOZ9Die6UEoqkbbzKJ4xvP'
                                            },
                 'ssl'                   => false,
-                'ssl_proxyengine'       => false,
+                'ssl_proxyengine'       => true,
                 'request_headers'       => [
                                              'unset Proxy early',
                                              'set X-Unique-Id %{UNIQUE_ID}e',
@@ -290,9 +295,9 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                 'rewrites'              => nil,
                 'proxy_pass'            => {
                                              'path'          => '/',
-                                             'url'           => 'http://buonarotti.example.com/',
+                                             'url'           => 'https://buonarotti.example.com/',
                                              'keywords'      => [],
-                                             'reverse_urls'  => 'http://buonarotti.example.com/',
+                                             'reverse_urls'  => 'https://buonarotti.example.com/',
                                              'params'        => {},
                                              'no_proxy_uris' => ['/redirect_uri']
                                            }
