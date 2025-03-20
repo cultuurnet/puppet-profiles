@@ -25,10 +25,6 @@ class profiles::newrelic::infrastructure::configuration (
     content  => "[Service]\nPIDFile=/run/newrelic-infra/newrelic-infra.pid"
   }
 
-  file { '/etc/systemd/system/newrelic-infra.service.d':
-    ensure => 'absent'
-  }
-
   systemd::unit_file { 'newrelic-infra.service':
     ensure  => 'present',
     enable  => true,
