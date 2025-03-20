@@ -111,7 +111,7 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
         it { is_expected.to contain_exec('uitdatabank-entry-api-db-migrate').with(
            'command'     => 'vendor/bin/doctrine-dbal --no-interaction migrations:migrate',
            'cwd'         => '/var/www/udb3-backend',
-           'path'        => ['/var/www/udb3-backend'],
+           'path'        => ['/usr/local/bin', '/usr/bin', '/bin', '/var/www/udb3-backend'],
            'refreshonly' => true
         ) }
 

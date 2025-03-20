@@ -116,7 +116,7 @@ class profiles::uitdatabank::entry_api::deployment (
   exec { 'uitdatabank-entry-api-db-migrate':
     command     => 'vendor/bin/doctrine-dbal --no-interaction migrations:migrate',
     cwd         => $basedir,
-    path        => [$basedir],
+    path        => ['/usr/local/bin', '/usr/bin', '/bin', $basedir],
     refreshonly => true,
     subscribe   => Package['uitdatabank-entry-api'],
     notify      => Service['uitdatabank-entry-api']
