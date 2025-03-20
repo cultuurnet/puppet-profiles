@@ -5,7 +5,10 @@ After=syslog.target network.target remote-fs.target nss-lookup.target
 [Service]
 User=www-data
 Group=www-data
-PIDFile=/var/run/uitdatabank-amqp-listener-uitpas.pid
+PermissionsStartOnly=true
+RuntimeDirectory=uitdatabank-entry-api
+RuntimeDirectoryMode=0755
+PIDFile=/run/uitdatabank-entry-api/uitdatabank-amqp-listener-uitpas.pid
 WorkingDirectory=<%= @basedir %>
 ExecStart=/usr/bin/php bin/udb3.php amqp-listen-uitpas
 Restart=on-failure
