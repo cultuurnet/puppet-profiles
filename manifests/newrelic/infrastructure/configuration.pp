@@ -19,10 +19,21 @@ class profiles::newrelic::infrastructure::configuration (
   }
 
   systemd::dropin_file { 'newrelic-infra_override.conf':
-    ensure   => 'present',
+    ensure   => 'absent',
     unit     => 'newrelic-infra.service',
     filename => 'override.conf',
     content  => "[Service]\nPIDFile=/run/newrelic-infra/newrelic-infra.pid"
+  }
+
+  file { '/etc/systemd/system/newrelic-infra.service.d':
+    ensure => 'absent'
+  }
+
+  systemd::unit_file { 'newrelic-infra.service':
+    ensure  => 'present',
+    enable  => true,
+    active  => true,
+    source  => 'puppet:///modules/profiles/newrelic/newrelic-infra.service'
   }
 
   file { '/etc/newrelic-infra/integrations.d':

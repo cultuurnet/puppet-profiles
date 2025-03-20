@@ -44,11 +44,11 @@ describe 'profiles::newrelic::infrastructure::configuration' do
               'mode'   => '0640'
             ) }
 
-            it { is_expected.to contain_systemd__dropin_file('newrelic-infra_override.conf').with(
-              'unit'           => 'newrelic-infra.service',
-              'ensure'         => 'present',
-              'filename'       => 'override.conf',
-              'content'        => "[Service]\nPIDFile=/run/newrelic-infra/newrelic-infra.pid"
+            it { is_expected.to contain_systemd__unit_file('newrelic-infra.service').with(
+              'ensure' => 'present',
+              'enable' => true,
+              'active' => true,
+              'source' => 'puppet:///modules/profiles/newrelic/newrelic-infra.service'
             ) }
 
             it { is_expected.to contain_file('/etc/newrelic-infra.yml').with_content(/^license_key: my_license_key$/) }
