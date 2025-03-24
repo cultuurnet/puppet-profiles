@@ -89,7 +89,7 @@ class profiles::atlassian::jira (
       "endpoint" => $vault_url
     }
 
-    $database_credential = regsubst(to_json($vault_credential),'"','\"',"G")
+    $database_credential = to_json($vault_credential)
   } else {
     $database_credential = $database_password
   }
