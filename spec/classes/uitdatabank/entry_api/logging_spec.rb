@@ -5,48 +5,86 @@ describe 'profiles::uitdatabank::entry_api::logging' do
     context "on #{os}" do
       let(:facts) { facts }
 
+      context 'with servername => foo.example.com' do
+        let(:params) { {
+          'servername' => 'foo.example.com'
+        } }
+
+        context 'in the acceptance environment' do
+          let(:environment) { 'acceptance' }
+
+          it { is_expected.to compile.with_all_deps }
+
+          it { is_expected.to contain_class('profiles::uitdatabank::entry_api::logging').with(
+            'servername' => 'foo.example.com'
+          ) }
+
+          it { is_expected.to contain_class('profiles::filebeat') }
+
+          it { is_expected.to contain_filebeat__input('foo.example.com_uitdatabank::entry_api::access').with(
+            'paths'    => ['/var/log/apache2/foo.example.com_80_access.log'],
+            'doc_type' => 'json',
+            'encoding' => 'utf-8',
+            'json'     => {
+                            'keys_under_root' => true,
+                            'add_error_key'   => true
+                          },
+            'fields'   => {
+                            'log_type'    => 'uitdatabank::entry_api::access',
+                            'environment' => 'acceptance'
+                          }
+          ) }
+
+          it { expect(exported_resources).to contain_profiles__logstash__filter_fragment('foo.example.com_uitdatabank::entry_api::access').with(
+            'log_type' => 'uitdatabank::entry_api::access',
+            'tag'      => 'acceptance'
+          ) }
+
+          it { is_expected.to contain_filebeat__input('foo.example.com_uitdatabank::entry_api::access').that_requires('Class[profiles::filebeat]') }
+        end
+      end
+
+      context 'with servername => bar.example.com' do
+        let(:params) { {
+          'servername' => 'bar.example.com'
+        } }
+
+        context 'in the production environment' do
+          let(:environment) { 'production' }
+
+          it { is_expected.to contain_class('profiles::uitdatabank::entry_api::logging').with(
+            'servername' => 'bar.example.com'
+          ) }
+
+          it { is_expected.to contain_class('profiles::filebeat') }
+
+          it { is_expected.to contain_filebeat__input('bar.example.com_uitdatabank::entry_api::access').with(
+            'paths'    => ['/var/log/apache2/bar.example.com_80_access.log'],
+            'doc_type' => 'json',
+            'encoding' => 'utf-8',
+            'json'     => {
+                            'keys_under_root' => true,
+                            'add_error_key'   => true
+                          },
+            'fields'   => {
+                            'log_type'    => 'uitdatabank::entry_api::access',
+                            'environment' => 'production'
+                          }
+          ) }
+
+          it { expect(exported_resources).to contain_profiles__logstash__filter_fragment('bar.example.com_uitdatabank::entry_api::access').with(
+            'log_type' => 'uitdatabank::entry_api::access',
+            'tag'      => 'production'
+          ) }
+
+          it { is_expected.to contain_filebeat__input('bar.example.com_uitdatabank::entry_api::access').that_requires('Class[profiles::filebeat]') }
+        end
+      end
+
       context 'without parameters' do
         let(:params) { {} }
 
-        it { is_expected.to compile.with_all_deps }
-
-        it { is_expected.to contain_class('profiles::uitdatabank::entry_api::logging').with(
-          'basedir' => '/var/www/udb3-backend'
-        ) }
-
-        it { is_expected.to contain_group('www-data') }
-        it { is_expected.to contain_user('www-data') }
-
-        it { is_expected.to contain_class('profiles::logrotate') }
-
-        it { is_expected.to contain_logrotate__rule('uitdatabank-entry-api').with(
-          'path'          => '/var/www/udb3-backend/log/*.log',
-          'rotate'        => 10,
-          'create_owner'  => 'www-data',
-          'create_group'  => 'www-data',
-          'postrotate'    => 'systemctl restart uitdatabank-*',
-          'rotate_every'  => 'day',
-          'missingok'     => true,
-          'create'        => true,
-          'ifempty'       => true,
-          'create_mode'   => '0640',
-          'compress'      => true,
-          'delaycompress' => true,
-          'sharedscripts' => true
-        ) }
-
-        it { is_expected.to contain_logrotate__rule('uitdatabank-entry-api').that_requires('Group[www-data]') }
-        it { is_expected.to contain_logrotate__rule('uitdatabank-entry-api').that_requires('User[www-data]') }
-      end
-
-      context 'with basedir => /tmp/foo' do
-        let(:params) { {
-          'basedir' => '/tmp/foo'
-        } }
-
-        it { is_expected.to contain_logrotate__rule('uitdatabank-entry-api').with(
-          'path' => '/tmp/foo/log/*.log',
-        ) }
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'servername'/) }
       end
     end
   end
