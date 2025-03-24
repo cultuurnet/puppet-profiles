@@ -121,4 +121,8 @@ class profiles::uitdatabank::entry_api (
   profiles::apache::vhost::reverse_proxy { "http://${uitpas_servername}":
     destination => "https://${servername}/uitpas/"
   }
+
+  class { 'profiles::uitdatabank::entry_api::logging':
+    servername => $servername
+  }
 }

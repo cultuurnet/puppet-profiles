@@ -1,5 +1,5 @@
 class profiles::uitdatabank::search_api::logging (
-  String $servername,
+  String $servername
 ) inherits ::profiles {
 
   $log_type = 'uitdatabank::search_api::access'

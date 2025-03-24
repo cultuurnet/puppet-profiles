@@ -99,6 +99,10 @@ describe 'profiles::uitdatabank::entry_api' do
               'servername' => 'jobs.example.com'
             ) }
 
+            it { is_expected.to contain_class('profiles::uitdatabank::entry_api::logging').with(
+              'servername' => 'uitdatabank.example.com'
+            ) }
+
             it { is_expected.to contain_package('prince').that_requires('Apt::Source[publiq-tools]') }
             it { is_expected.to contain_mysql_database('uitdatabank').that_comes_before('Profiles::Mysql::App_user[entry_api@uitdatabank]') }
             it { is_expected.to contain_mysql_database('uitdatabank').that_requires('Class[profiles::mysql::server]') }
@@ -215,6 +219,10 @@ describe 'profiles::uitdatabank::entry_api' do
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://myuitpas.example.com').with(
             'destination' => 'https://foo.example.com/uitpas/'
+          ) }
+
+          it { is_expected.to contain_class('profiles::uitdatabank::entry_api::logging').with(
+            'servername' => 'foo.example.com'
           ) }
 
           context "with fact mysqld_version => 8.0.33" do

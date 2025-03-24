@@ -1,19 +1,35 @@
 class profiles::uitdatabank::entry_api::logging (
-  String $basedir = '/var/www/udb3-backend'
+  String $servername
 ) inherits ::profiles {
 
-  realize Group['www-data']
-  realize User['www-data']
+  $log_type = 'uitdatabank::entry_api::access'
 
-  include profiles::logrotate
+  include ::profiles::filebeat
 
-  logrotate::rule { 'uitdatabank-entry-api':
-    path         => "${basedir}/log/*.log",
-    rotate       => 10,
-    create_owner => 'www-data',
-    create_group => 'www-data',
-    postrotate   => 'systemctl restart uitdatabank-*',
-    require      => [Group['www-data'], User['www-data']],
-    *            => $profiles::logrotate::default_rule_attributes
+  filebeat::input { "${servername}_${log_type}":
+    paths    => ["/var/log/apache2/${servername}_80_access.log"],
+    doc_type => 'json',
+    encoding => 'utf-8',
+    json     => {
+                  keys_under_root => true,
+                  add_error_key   => true
+                },
+    fields   => {
+                  log_type    => $log_type,
+                  environment => $environment
+                },
+    require  => Class['profiles::filebeat']
   }
+
+  @@profiles::logstash::filter_fragment { "${servername}_${log_type}":
+    log_type => $log_type,
+    filter   => file('profiles/uitdatabank/entry_api/logstash_filter_access.conf'),
+    tag      => $environment
+  }
+
+  # TODO: Add this to the logstash server
+  #
+  # if $settings::storeconfigs {
+  #   Profiles::Logstash::Filter_fragment <<| |>>
+  # }
 }

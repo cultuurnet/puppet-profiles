@@ -166,7 +166,7 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           'basedir' => '/var/www/udb3-backend'
         ) }
 
-        it { is_expected.to contain_class('profiles::uitdatabank::entry_api::logging').with(
+        it { is_expected.to contain_class('profiles::uitdatabank::entry_api::logrotate').with(
           'basedir' => '/var/www/udb3-backend'
         ) }
 
