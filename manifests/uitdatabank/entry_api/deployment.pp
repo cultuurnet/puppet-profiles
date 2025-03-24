@@ -155,7 +155,7 @@ class profiles::uitdatabank::entry_api::deployment (
     subscribe => Service['uitdatabank-entry-api']
   }
 
-  class { 'profiles::uitdatabank::entry_api::logging':
+  class { 'profiles::uitdatabank::entry_api::logrotate':
     basedir => $basedir
   }
 
