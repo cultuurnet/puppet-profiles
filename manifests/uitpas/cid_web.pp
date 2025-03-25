@@ -1,9 +1,7 @@
 class profiles::uitpas::cid_web (
   String                        $servername,
   Variant[String,Array[String]] $serveraliases   = [],
-  Boolean                       $deployment      = true,
-  Stdlib::IP::Address::V4       $service_address = '127.0.0.1',
-  Integer                       $service_port    = 4000,
+  Boolean                       $deployment      = true
 ) inherits ::profiles {
 
   $basedir = '/var/www/uitpas-cid-web'
@@ -11,7 +9,6 @@ class profiles::uitpas::cid_web (
   realize Group['www-data']
   realize User['www-data']
 
-  include ::profiles::nodejs
   include ::profiles::apache
 
   file { $basedir:
@@ -30,9 +27,8 @@ class profiles::uitpas::cid_web (
     }
   }
 
-  profiles::apache::vhost::reverse_proxy { "http://${servername}":
-    aliases     => $serveraliases,
-    destination => "http://${service_address}:${service_port}/"
+  profiles::apache::vhost::basic { "http://${servername}":
+    documentroot  => $basedir,
+    serveraliases => $serveraliases
   }
-
 }
