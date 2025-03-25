@@ -31,7 +31,7 @@ class profiles::uitpas::cid_web::deployment (
 
   file { 'uitpas-cid-web-config':
     ensure  => 'file',
-    path    => "${basedir}/public/config/config.json",
+    path    => "${basedir}/config.json",
     owner   => 'www-data',
     group   => 'www-data',
     source  => $config_source,
