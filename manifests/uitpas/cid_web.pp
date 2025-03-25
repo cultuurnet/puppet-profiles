@@ -19,12 +19,7 @@ class profiles::uitpas::cid_web (
   }
 
   if $deployment {
-    class { 'profiles::uitpas::cid_web::deployment':
-      service_address => $service_address,
-      service_port    => $service_port,
-      require         => Class['profiles::nodejs'],
-      before          => Profiles::Apache::Vhost::Reverse_proxy["http://${servername}"]
-    }
+    include profiles::uitpas::cid_web::deployment
   }
 
   profiles::apache::vhost::basic { "http://${servername}":
