@@ -1,5 +1,6 @@
 class profiles::uitpas::cid_web::deployment (
   String                     $config_source,
+  String                     $config_source_legacy,
   String                     $version         = 'latest',
   String                     $repository      = 'uitpas-cid-web',
   Enum['running', 'stopped'] $service_status  = 'running',
@@ -18,9 +19,19 @@ class profiles::uitpas::cid_web::deployment (
     require => Apt::Source[$repository]
   }
 
-  file { 'uitpas-cid-web-config':
+  file { 'uitpas-cid-web-config-legacy':
     ensure  => 'file',
     path    => "${basedir}/.env",
+    owner   => 'www-data',
+    group   => 'www-data',
+    source  => $config_source_legacy,
+    require => Package['uitpas-cid-web'],
+    notify  => Service['uitpas-cid-web']
+  }
+
+  file { 'uitpas-cid-web-config':
+    ensure  => 'file',
+    path    => "${basedir}/public/config/config.json",
     owner   => 'www-data',
     group   => 'www-data',
     source  => $config_source,
@@ -33,7 +44,7 @@ class profiles::uitpas::cid_web::deployment (
     path    => '/etc/default/uitpas-cid-web',
     owner   => 'root',
     group   => 'root',
-    content => "",
+    content => "HOST=${service_address}\nPORT=${service_port}",
     require => Package['uitpas-cid-web'],
     notify  => Service['uitpas-cid-web']
   }
