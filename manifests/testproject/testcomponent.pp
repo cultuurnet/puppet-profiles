@@ -25,13 +25,13 @@ class profiles::testproject::testcomponent (
     require => Class['apache']
   }
 
-  class profiles::apache::vhost::php_fpm { 'testproject_1':
+  profiles::apache::vhost::php_fpm { 'testproject_1':
     'basedir'              => '/var/www/',
     'public_web_directory' => 'testproject_1',
     require                => File['testproject_1_webdir']
   }
 
-  class profiles::apache::vhost::php_fpm { 'testproject_2':
+  profiles::apache::vhost::php_fpm { 'testproject_2':
     'basedir'              => '/var/www/',
     'public_web_directory' => 'testproject_2',
     require                => File['testproject_2_webdir']
