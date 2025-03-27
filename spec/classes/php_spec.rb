@@ -68,7 +68,6 @@ describe 'profiles::php' do
               'fpm_service_enable'           => true,
               'fpm_pools'                    => { 'www' => {
                                                              'catch_workers_output'      => 'no',
-                                                             'listen'                    => '/run/php/php-fpm.sock',
                                                              'listen_backlog'            => -1,
                                                              'pm'                        => 'dynamic',
                                                              'pm_max_children'           => 50,
@@ -80,6 +79,8 @@ describe 'profiles::php' do
                                                            }
                                                 },
               'fpm_global_pool_settings'     => {
+                                                  'user'         => 'www-data',
+                                                  'group'        => 'www-data',
                                                   'listen_owner' => 'www-data',
                                                   'listen_group' => 'www-data',
                                                   'listen'       => '127.0.0.1:9000'
@@ -283,7 +284,6 @@ describe 'profiles::php' do
               'fpm_service_enable'           => false,
               'fpm_pools'                    => { 'www' => {
                                                              'catch_workers_output'      => 'no',
-                                                             'listen'                    => '/run/php/php-fpm.sock',
                                                              'listen_backlog'            => -1,
                                                              'pm'                        => 'dynamic',
                                                              'pm_max_children'           => 100,
@@ -295,9 +295,11 @@ describe 'profiles::php' do
                                                            }
                                                 },
               'fpm_global_pool_settings'     => {
+                                                  'user'         => 'www-data',
+                                                  'group'        => 'www-data',
                                                   'listen_owner' => 'www-data',
                                                   'listen_group' => 'www-data',
-                                                  'listen'       => '/run/php/php8.2-fpm.sock'
+                                                  'listen'       => '/run/php/php-fpm.sock'
                                                 },
               'reload_fpm_on_config_changes' => false
             ) }
