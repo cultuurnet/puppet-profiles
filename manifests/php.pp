@@ -19,7 +19,7 @@ class profiles::php (
 
   $default_fpm_settings = {
                             'catch_workers_output'      => 'no',
-                            'listen'                    => '127.0.0.1:9000',
+                            'listen'                    => '/run/php/php-fpm.sock',
                             'listen_backlog'            => -1,
                             'pm'                        => 'dynamic',
                             'pm_max_children'           => 50,
