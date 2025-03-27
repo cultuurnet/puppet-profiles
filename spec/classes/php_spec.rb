@@ -25,6 +25,7 @@ describe 'profiles::php' do
               'fpm_socket_type'          => 'tcp',
               'fpm_service_status'       => 'running',
               'fpm_restart_on_change'    => false,
+              'fpm_settings'             => {},
               'newrelic'                 => false,
               'newrelic_app_name'        => 'aaa.example.com',
               'newrelic_license_key'     => 'my_license_key'
@@ -65,7 +66,19 @@ describe 'profiles::php' do
                                                 },
               'fpm_service_ensure'           => 'running',
               'fpm_service_enable'           => true,
-              'fpm_pools'                    => { 'www' => {} },
+              'fpm_pools'                    => { 'www' => {
+                                                             'catch_workers_output'      => 'no',
+                                                             'listen'                    => '127.0.0.1:9000',
+                                                             'listen_backlog'            => -1,
+                                                             'pm'                        => 'dynamic',
+                                                             'pm_max_children'           => 50,
+                                                             'pm_max_requests'           => 0,
+                                                             'pm_max_spare_servers'      => 35,
+                                                             'pm_min_spare_servers'      => 5,
+                                                             'pm_start_servers'          => 5,
+                                                             'request_terminate_timeout' => 0
+                                                           }
+                                                },
               'fpm_global_pool_settings'     => {
                                                   'listen_owner' => 'www-data',
                                                   'listen_group' => 'www-data',
@@ -120,6 +133,7 @@ describe 'profiles::php' do
               'fpm'                      => true,
               'fpm_socket_type'          => 'unix',
               'fpm_service_status'       => 'running',
+              'fpm_settings'             => {},
               'newrelic'                 => false,
               'newrelic_app_name'        => 'aaa.example.com',
               'newrelic_license_key'     => nil
@@ -206,13 +220,17 @@ describe 'profiles::php' do
       context 'on node bbb.example.com' do
         let(:node) { 'bbb.example.com' }
 
-        context 'with version => 8.2, composer_default_version => 1, newrelic => true, fpm_socket_type => unix, fpm_restart_on_change => true and fpm_service_status => stopped' do
+        context 'with version => 8.2, composer_default_version => 1, newrelic => true, fpm_socket_type => unix, fpm_restart_on_change => true, fpm_settings => { pm_max_children => 100, pm_max_requests => 5000 } and fpm_service_status => stopped' do
           let(:params) { {
             'version'                  => '8.2',
             'composer_default_version' => 1,
             'fpm_socket_type'          => 'unix',
             'fpm_service_status'       => 'stopped',
             'fpm_restart_on_change'    => true,
+            'fpm_settings'             => {
+                                            'pm_max_children' => 100,
+                                            'pm_max_requests' => 5000
+                                          },
             'newrelic'                 => true
           } }
 
@@ -263,7 +281,19 @@ describe 'profiles::php' do
               'fpm'                          => true,
               'fpm_service_ensure'           => 'stopped',
               'fpm_service_enable'           => false,
-              'fpm_pools'                    => { 'www' => {} },
+              'fpm_pools'                    => { 'www' => {
+                                                             'catch_workers_output'      => 'no',
+                                                             'listen'                    => '127.0.0.1:9000',
+                                                             'listen_backlog'            => -1,
+                                                             'pm'                        => 'dynamic',
+                                                             'pm_max_children'           => 100,
+                                                             'pm_max_requests'           => 5000,
+                                                             'pm_max_spare_servers'      => 35,
+                                                             'pm_min_spare_servers'      => 5,
+                                                             'pm_start_servers'          => 5,
+                                                             'request_terminate_timeout' => 0
+                                                           }
+                                                },
               'fpm_global_pool_settings'     => {
                                                   'listen_owner' => 'www-data',
                                                   'listen_group' => 'www-data',

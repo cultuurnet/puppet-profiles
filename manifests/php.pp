@@ -7,30 +7,44 @@ class profiles::php (
   Enum['unix', 'tcp']        $fpm_socket_type          = 'unix',
   Enum['running', 'stopped'] $fpm_service_status       = 'running',
   Boolean                    $fpm_restart_on_change    = false,
+  Hash                       $fpm_settings             = {},
   Boolean                    $newrelic                 = false,
   String                     $newrelic_app_name        = $facts['networking']['fqdn'],
   Optional[String]           $newrelic_license_key     = lookup('data::newrelic::license_key', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
-  $default_settings   = {
-                          'openssl/openssl.cafile' => '/etc/ssl/certs/ca-certificates.crt'
-                        }
+  $default_settings     = {
+                            'openssl/openssl.cafile' => '/etc/ssl/certs/ca-certificates.crt'
+                          }
 
-  $default_extensions = {
-                          'apcu'     => {},
-                          'bcmath'   => {},
-                          'curl'     => {},
-                          'gd'       => {},
-                          'intl'     => {},
-                          'mbstring' => {},
-                          'mysql'    => {},
-                          'opcache'  => { 'zend' => true },
-                          'readline' => {},
-                          'redis'    => {},
-                          'tidy'     => {},
-                          'xml'      => {},
-                          'zip'      => {}
-                        }
+  $default_fpm_settings = {
+                            'catch_workers_output'      => 'no',
+                            'listen'                    => '127.0.0.1:9000',
+                            'listen_backlog'            => -1,
+                            'pm'                        => 'dynamic',
+                            'pm_max_children'           => 50,
+                            'pm_max_requests'           => 0,
+                            'pm_max_spare_servers'      => 35,
+                            'pm_min_spare_servers'      => 5,
+                            'pm_start_servers'          => 5,
+                            'request_terminate_timeout' => 0,
+                          }
+
+  $default_extensions   = {
+                            'apcu'     => {},
+                            'bcmath'   => {},
+                            'curl'     => {},
+                            'gd'       => {},
+                            'intl'     => {},
+                            'mbstring' => {},
+                            'mysql'    => {},
+                            'opcache'  => { 'zend' => true },
+                            'readline' => {},
+                            'redis'    => {},
+                            'tidy'     => {},
+                            'xml'      => {},
+                            'zip'      => {}
+                          }
 
   $version_dependent_default_extensions = $version ? {
     '7.4'   => { 'json' => {} },
@@ -44,7 +58,7 @@ class profiles::php (
                                                           'running' => true,
                                                           'stopped' => false
                                                         },
-                        fpm_pools                    => { 'www' => {} }, # https://github.com/voxpupuli/puppet-php/issues/564
+                        fpm_pools                    => { 'www' => $default_fpm_settings + $fpm_settings },
                         fpm_global_pool_settings     => {
                                                           listen_owner => 'www-data',
                                                           listen_group => 'www-data',
