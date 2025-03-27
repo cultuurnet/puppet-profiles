@@ -12,7 +12,7 @@ class profiles::testproject::testcomponent (
 
   include profiles::php
 
-  class profiles::newrelic::php {
+  class { 'profiles::newrelic::php':
     app_name    => 'testproject',
     license_key => lookup('data::newrelic::license_key')
   }
