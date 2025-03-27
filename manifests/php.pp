@@ -19,7 +19,6 @@ class profiles::php (
 
   $default_fpm_settings = {
                             'catch_workers_output'      => 'no',
-                            'listen'                    => '/run/php/php-fpm.sock',
                             'listen_backlog'            => -1,
                             'pm'                        => 'dynamic',
                             'pm_max_children'           => 50,
@@ -60,10 +59,12 @@ class profiles::php (
                                                         },
                         fpm_pools                    => { 'www' => $default_fpm_settings + $fpm_settings },
                         fpm_global_pool_settings     => {
+                                                          user         => 'www-data',
+                                                          group        => 'www-data',
                                                           listen_owner => 'www-data',
                                                           listen_group => 'www-data',
                                                           listen       => $fpm_socket_type ? {
-                                                                            'unix' => "/run/php/php${version}-fpm.sock",
+                                                                            'unix' => '/run/php/php-fpm.sock',
                                                                             'tcp'  => '127.0.0.1:9000'
                                                                           }
                                                         },
