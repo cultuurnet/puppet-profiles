@@ -68,7 +68,7 @@ describe 'profiles::php' do
               'fpm_service_enable'           => true,
               'fpm_pools'                    => { 'www' => {
                                                              'catch_workers_output'      => 'no',
-                                                             'listen'                    => '127.0.0.1:9000',
+                                                             'listen'                    => '/run/php/php7.4-fpm.sock',
                                                              'listen_backlog'            => -1,
                                                              'pm'                        => 'dynamic',
                                                              'pm_max_children'           => 50,
@@ -283,7 +283,7 @@ describe 'profiles::php' do
               'fpm_service_enable'           => false,
               'fpm_pools'                    => { 'www' => {
                                                              'catch_workers_output'      => 'no',
-                                                             'listen'                    => '127.0.0.1:9000',
+                                                             'listen'                    => '/run/php/php7.4-fpm.sock',
                                                              'listen_backlog'            => -1,
                                                              'pm'                        => 'dynamic',
                                                              'pm_max_children'           => 100,
