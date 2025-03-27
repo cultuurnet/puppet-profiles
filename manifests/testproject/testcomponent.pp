@@ -13,8 +13,27 @@ class profiles::testproject::testcomponent (
   include profiles::php
   include profiles::newrelic::php
 
-  class profiles::apache::vhost::php_fpm { 'testproject':
+  file { 'testproject_1_webdir':
+    ensure  => 'directory',
+    path    => '/var/www/testproject_1',
+    require => Class['apache']
+  }
+
+  file { 'testproject_2_webdir':
+    ensure  => 'directory',
+    path    => '/var/www/testproject_2',
+    require => Class['apache']
+  }
+
+  class profiles::apache::vhost::php_fpm { 'testproject_1':
     'basedir'              => '/var/www/',
-    'public_web_directory' => 'html'
+    'public_web_directory' => 'testproject_1',
+    require                => File['testproject_1_webdir']
+  }
+
+  class profiles::apache::vhost::php_fpm { 'testproject_2':
+    'basedir'              => '/var/www/',
+    'public_web_directory' => 'testproject_2',
+    require                => File['testproject_2_webdir']
   }
 }
