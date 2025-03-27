@@ -11,7 +11,11 @@ class profiles::testproject::testcomponent (
   }
 
   include profiles::php
-  include profiles::newrelic::php
+
+  class profiles::newrelic::php {
+    app_name    => 'testproject',
+    license_key => lookup('data::newrelic::license_key')
+  }
 
   file { 'testproject_1_webdir':
     ensure  => 'directory',
