@@ -14,7 +14,7 @@ class profiles::testproject::testcomponent (
 
   class { 'profiles::newrelic::php':
     app_name    => 'testproject',
-    license_key => lookup('data::newrelic::license_key')
+    license_key => 'eu01xx3dc2cab413942d94ef142a73e4FFFFNRAL' # <= temp, will be deleted
   }
 
   file { 'testproject_1_webdir':
