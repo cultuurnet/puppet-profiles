@@ -26,14 +26,14 @@ class profiles::testproject::testcomponent (
   }
 
   profiles::apache::vhost::php_fpm { 'testproject_1':
-    'basedir'              => '/var/www/',
-    'public_web_directory' => 'testproject_1',
-    require                => File['testproject_1_webdir']
+    basedir              => '/var/www/',
+    public_web_directory => 'testproject_1',
+    require              => File['testproject_1_webdir']
   }
 
   profiles::apache::vhost::php_fpm { 'testproject_2':
-    'basedir'              => '/var/www/',
-    'public_web_directory' => 'testproject_2',
-    require                => File['testproject_2_webdir']
+    basedir              => '/var/www/',
+    public_web_directory => 'testproject_2',
+    require              => File['testproject_2_webdir']
   }
 }
