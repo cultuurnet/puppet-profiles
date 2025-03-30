@@ -106,7 +106,7 @@ class profiles::atlassian::confluence (
 
     $database_credential = {
       "mount"    => "puppet",
-      "path"     => "testing/atlassian/confluence",
+      "path"     => "${environment}/atlassian/confluence",
       "key"      => "mysql_password",
       "endpoint" => $vault_url
     }

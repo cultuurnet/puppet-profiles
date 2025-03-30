@@ -84,7 +84,7 @@ class profiles::atlassian::jira (
 
     $vault_credential = {
       "mount"    => "puppet",
-      "path"     => "testing/atlassian/jira",
+      "path"     => "${environment}/atlassian/jira",
       "key"      => "mysql_password",
       "endpoint" => $vault_url
     }
