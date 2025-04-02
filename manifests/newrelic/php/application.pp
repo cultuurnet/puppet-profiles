@@ -17,7 +17,7 @@ define profiles::newrelic::php::application (
                  true  => 'file',
                  false => 'absent'
                },
-    path    => "${docroot}/.user.ini"
+    path    => "${docroot}/.user.ini",
     owner   => 'www-data',
     group   => 'www-data',
     content => template('profiles/newrelic/php/user.ini.erb'),
