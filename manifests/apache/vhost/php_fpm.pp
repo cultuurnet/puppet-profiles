@@ -87,8 +87,8 @@ define profiles::apache::vhost::php_fpm (
   }
 
   profiles::newrelic::php::application { $servername:
-    enable                => $newrelic_enabled,
-    docroot               => $basedir,
-    optional_config       => $newrelic_optional_config
+    enable          => $newrelic_enabled,
+    docroot         => $basedir,
+    optional_config => $newrelic_optional_config
   }
 }

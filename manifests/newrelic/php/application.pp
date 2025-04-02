@@ -1,6 +1,6 @@
 define profiles::newrelic::php::application (
-  Boolean        $enable                                 = false,
   String         $docroot,
+  Boolean        $enable                                 = false,
   Optional[Hash] $optional_config                        = {},
   Boolean        $application_logging_forwarding_enabled = false,
   Boolean        $transaction_tracer_enabled             = false,
@@ -8,9 +8,12 @@ define profiles::newrelic::php::application (
 ) {
 
   include ::profiles
-  include ::profiles::newrelic::php
 
   $appname = "${title}_${environment}"
+
+  if $enable {
+    include ::profiles::newrelic::php
+  }
 
   file { "${appname} newrelic php config":
     ensure  => $enable ? {

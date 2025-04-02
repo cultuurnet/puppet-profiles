@@ -1,7 +1,11 @@
 class profiles::newrelic::php (
-  String $app_name,
-  String $license_key
+  String           $app_name    = $facts['networking']['fqdn'],
+  Optional[String] $license_key = lookup('data::newrelic::license_key', Optional[String], 'first', undef)
 ) inherits ::profiles {
+
+  unless $license_key {
+    fail("Class[Profiles::Newrelic::Php] expects a value for parameter 'license_key'")
+  }
 
   realize Apt::Source['newrelic']
 

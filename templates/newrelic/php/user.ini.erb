@@ -4,7 +4,9 @@ newrelic.application_logging.forwarding.enabled = <%= @application_logging_forwa
 newrelic.transaction_tracer.enabled = <%= @transaction_tracer_enabled %>
 newrelic.distributed_tracing_enabled = <%= @distributed_tracing_enabled %>
 
-<% @optionalconfig.each do |key,value| -%>
+<%- if @optional_config -%>
+<% @optional_config.each do |key,value| -%>
 <%= key %>="<%= value %>"
 <% end -%>
+<%- end -%>
 
