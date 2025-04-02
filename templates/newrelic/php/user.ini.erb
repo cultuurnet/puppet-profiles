@@ -1,0 +1,10 @@
+newrelic.appname = "<%= @appname %>"
+
+newrelic.application_logging.forwarding.enabled = <%= @application_logging_forwarding_enabled %>
+newrelic.transaction_tracer.enabled = <%= @transaction_tracer_enabled %>
+newrelic.distributed_tracing_enabled = <%= @distributed_tracing_enabled %>
+
+<% @optionalconfig.each do |key,value| -%>
+<%= key %>="<%= value %>"
+<% end -%>
+
