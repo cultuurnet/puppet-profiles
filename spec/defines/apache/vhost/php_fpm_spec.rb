@@ -128,7 +128,7 @@ describe 'profiles::apache::vhost::php_fpm' do
             it { is_expected.to contain_profiles__newrelic__php__application('winston.example.com').with(
               'enable'          => false,
               'docroot'         => '/tmp/bla',
-              'optional_config' => { 'foo' => 'bar'e}
+              'optional_config' => { 'foo' => 'bar' }
             ) }
           end
         end
