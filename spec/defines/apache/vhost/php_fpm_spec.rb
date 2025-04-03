@@ -17,14 +17,15 @@ describe 'profiles::apache::vhost::php_fpm' do
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://winston.example.com').with(
-              'basedir'               => '/var/www/foo',
-              'public_web_directory'  => 'public',
-              'aliases'               => [],
-              'access_log_format'     => 'extended_json',
-              'allow_encoded_slashes' => 'off',
-              'socket_type'           => 'unix',
-              'certificate'           => nil,
-              'rewrites'              => []
+              'basedir'                  => '/var/www/foo',
+              'public_web_directory'     => 'public',
+              'aliases'                  => [],
+              'access_log_format'        => 'extended_json',
+              'allow_encoded_slashes'    => 'off',
+              'socket_type'              => 'unix',
+              'certificate'              => nil,
+              'rewrites'                 => [],
+              'newrelic_optional_config' => {}
             ) }
 
             it { is_expected.to contain_firewall('300 accept HTTP traffic') }
@@ -64,21 +65,28 @@ describe 'profiles::apache::vhost::php_fpm' do
                                          }],
               'rewrites'              => []
             ) }
+
+            it { is_expected.to contain_profiles__newrelic__php__application('winston.example.com').with(
+              'enable'          => false,
+              'docroot'         => '/var/www/foo',
+              'optional_config' => {}
+            ) }
           end
 
-          context "with basedir => /tmp/bla, public_web_directory => web, aliases => [smith.example.com, foo.example.com], allow_encoded_slashes => nodecode, access_log_format => combined_json, rewrites => { comment => Capture apiKey from URL parameters, rewrite_cond => %{QUERY_STRING} (?:^|&)apiKey=([^&]+), rewrite_rule => ^ - [E=API_KEY:%1] } and socket_type => tcp" do
+          context "with basedir => /tmp/bla, public_web_directory => web, aliases => [smith.example.com, foo.example.com], allow_encoded_slashes => nodecode, access_log_format => combined_json, rewrites => { comment => Capture apiKey from URL parameters, rewrite_cond => %{QUERY_STRING} (?:^|&)apiKey=([^&]+), rewrite_rule => ^ - [E=API_KEY:%1] }, socket_type => tcp and newrelic_optional_config => { foo => bar }" do
             let(:params) { {
-              'basedir'               => '/tmp/bla',
-              'public_web_directory'  => 'web',
-              'aliases'               => ['smith.example.com', 'foo.example.com'],
-              'allow_encoded_slashes' => 'nodecode',
-              'access_log_format'     => 'combined_json',
-              'socket_type'           => 'tcp',
-              'rewrites'              => {
-                                           'comment'      => 'Capture apiKey from URL parameters',
-                                           'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
-                                           'rewrite_rule' => '^ - [E=API_KEY:%1]'
-                                         }
+              'basedir'                  => '/tmp/bla',
+              'public_web_directory'     => 'web',
+              'aliases'                  => ['smith.example.com', 'foo.example.com'],
+              'allow_encoded_slashes'    => 'nodecode',
+              'access_log_format'        => 'combined_json',
+              'socket_type'              => 'tcp',
+              'rewrites'                 => {
+                                              'comment'      => 'Capture apiKey from URL parameters',
+                                              'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
+                                              'rewrite_rule' => '^ - [E=API_KEY:%1]'
+                                            },
+              'newrelic_optional_config' => { 'foo' => 'bar' }
             } }
 
             it { is_expected.to contain_apache__vhost('winston.example.com_80').with(
@@ -115,6 +123,12 @@ describe 'profiles::apache::vhost::php_fpm' do
                                            'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
                                            'rewrite_rule' => '^ - [E=API_KEY:%1]'
                                          }]
+            ) }
+
+            it { is_expected.to contain_profiles__newrelic__php__application('winston.example.com').with(
+              'enable'          => false,
+              'docroot'         => '/tmp/bla',
+              'optional_config' => { 'foo' => 'bar' }
             ) }
           end
         end

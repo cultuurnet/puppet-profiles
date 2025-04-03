@@ -1,12 +1,13 @@
 define profiles::apache::vhost::php_fpm (
   String                         $basedir,
-  String                         $public_web_directory  = 'public',
-  Variant[String, Array[String]] $aliases               = [],
-  Enum['on', 'off', 'nodecode']  $allow_encoded_slashes = 'off',
-  String                         $access_log_format     = 'extended_json',
-  Enum['unix', 'tcp']            $socket_type           = lookup('profiles::php::fpm_socket_type', Enum['unix', 'tcp'], 'first', 'unix'),
-  Optional[String]               $certificate           = undef,
-  Variant[Hash, Array[Hash]]     $rewrites              = [],
+  String                         $public_web_directory     = 'public',
+  Optional[Hash]                 $newrelic_optional_config = {},
+  Variant[String, Array[String]] $aliases                  = [],
+  Enum['on', 'off', 'nodecode']  $allow_encoded_slashes    = 'off',
+  String                         $access_log_format        = 'extended_json',
+  Enum['unix', 'tcp']            $socket_type              = lookup('profiles::php::fpm_socket_type', Enum['unix', 'tcp'], 'first', 'unix'),
+  Optional[String]               $certificate              = undef,
+  Variant[Hash, Array[Hash]]     $rewrites                 = [],
 ) {
 
   include ::profiles
@@ -20,8 +21,9 @@ define profiles::apache::vhost::php_fpm (
     fail("Defined resource type Profiles::Apache::Vhost::Php_Fpm[${title}] expects the title to be a valid HTTP(S) URL")
   }
 
-  $transport  = split($title, ':')[0]
-  $servername = split($title, '/')[-1]
+  $transport        = split($title, ':')[0]
+  $servername       = split($title, '/')[-1]
+  $newrelic_enabled = lookup('profiles::php::newrelic', Boolean, 'first', false)
 
   if $transport == 'https' {
     unless $certificate {
@@ -82,5 +84,11 @@ define profiles::apache::vhost::php_fpm (
                                }
                              ],
     rewrites              => [$rewrites].flatten
+  }
+
+  profiles::newrelic::php::application { $servername:
+    enable          => $newrelic_enabled,
+    docroot         => $basedir,
+    optional_config => $newrelic_optional_config
   }
 }
