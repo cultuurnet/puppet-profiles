@@ -82,7 +82,7 @@ class profiles::uit::cms (
   if $deployment {
     include profiles::uit::cms::deployment
 
-    Class['profiles::php'] -> Class['profiles::uit::cms::deployment']
+    Class['profiles::php'] ~> Class['profiles::uit::cms::deployment']
     Class['profiles::redis'] -> Class['profiles::uit::cms::deployment']
     Class['profiles::mysql::server'] -> Class['profiles::uit::cms::deployment']
     Mysql_database['uit_cms'] -> Class['profiles::uit::cms::deployment']

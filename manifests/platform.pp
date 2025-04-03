@@ -26,6 +26,8 @@ class profiles::platform (
   }
 
   if $deployment {
-    include profiles::platform::deployment
+    class { 'profiles::platform::deployment':
+      subscribe => Class['profiles::php']
+    }
   }
 }

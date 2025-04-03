@@ -42,7 +42,7 @@ describe 'profiles::uitdatabank::jwt_provider_uitidv1' do
 
           it { is_expected.to contain_class('profiles::uitdatabank::jwt_provider_uitidv1::deployment') }
 
-          it { is_expected.to contain_class('profiles::uitdatabank::jwt_provider_uitidv1::deployment').that_requires('Class[profiles::php]') }
+          it { is_expected.to contain_class('profiles::uitdatabank::jwt_provider_uitidv1::deployment').that_subscribes_to('Class[profiles::php]') }
         end
 
         context 'without hieradata' do

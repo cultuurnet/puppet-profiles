@@ -17,6 +17,7 @@ class profiles::museumpas::website (
   include apache::mod::rewrite
   include apache::vhosts
   include profiles::firewall::rules
+  include profiles::php
 
   realize Package['imagemagick']
 
@@ -122,7 +123,7 @@ class profiles::museumpas::website (
   if $deployment {
     include profiles::museumpas::website::deployment
 
-    Class['profiles::php'] -> Class['profiles::museumpas::website::deployment']
+    Class['profiles::php'] ~> Class['profiles::museumpas::website::deployment']
     Class['profiles::museumpas::website::deployment'] -> Apache::Vhost["${servername}_80"]
   }
 }

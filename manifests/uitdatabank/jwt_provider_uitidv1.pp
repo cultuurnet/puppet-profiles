@@ -11,7 +11,7 @@ class profiles::uitdatabank::jwt_provider_uitidv1 (
 
   if $deployment {
     class { 'profiles::uitdatabank::jwt_provider_uitidv1::deployment':
-      require => Class['profiles::php']
+      subscribe => Class['profiles::php']
     }
   }
 

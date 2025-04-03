@@ -56,8 +56,8 @@ describe 'profiles::uitdatabank::search_api' do
 
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').that_requires('Class[profiles::uitdatabank::geojson_data::deployment]') }
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').that_requires('Class[profiles::elasticsearch]') }
-          it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').that_requires('Class[profiles::php]') }
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').that_requires('Class[profiles::redis]') }
+          it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').that_subscribes_to('Class[profiles::php]') }
         end
 
         context 'without hieradata' do

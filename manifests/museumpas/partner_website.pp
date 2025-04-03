@@ -16,6 +16,7 @@ class profiles::museumpas::partner_website (
   include apache::mod::rewrite
   include apache::vhosts
   include profiles::firewall::rules
+  include profiles::php
 
   if $database_host == '127.0.0.1' {
     $database_host_remote    = false
@@ -61,7 +62,7 @@ class profiles::museumpas::partner_website (
   if $deployment {
     include profiles::museumpas::partner_website::deployment
 
-    Class['profiles::php'] -> Class['profiles::museumpas::partner_website::deployment']
+    Class['profiles::php'] ~> Class['profiles::museumpas::partner_website::deployment']
     Class['profiles::museumpas::partner_website::deployment'] -> Apache::Vhost["${servername}_80"]
   }
 }
