@@ -21,6 +21,7 @@ class profiles::uitdatabank::entry_api (
   realize Package['prince']
 
   include profiles::redis
+  include profiles::php
 
   if $database_host == '127.0.0.1' {
     $database_host_remote    = false
@@ -73,6 +74,7 @@ class profiles::uitdatabank::entry_api (
 
       Profiles::Mysql::App_user["${database_user}@${database_name}"] -> Class['profiles::uitdatabank::entry_api::deployment']
       Class['profiles::redis'] -> Class['profiles::uitdatabank::entry_api::deployment']
+      Class['profiles::php'] ~> Class['profiles::uitdatabank::entry_api::deployment']
     }
   }
 

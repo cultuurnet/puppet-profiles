@@ -16,7 +16,8 @@ class profiles::uitdatabank::search_api (
     include profiles::uitdatabank::geojson_data::deployment
 
     class { 'profiles::uitdatabank::search_api::deployment':
-      require => [Class['profiles::redis'], Class['profiles::elasticsearch'], Class['profiles::php'], Class['profiles::uitdatabank::geojson_data::deployment']]
+      require   => [Class['profiles::redis'], Class['profiles::elasticsearch'], Class['profiles::uitdatabank::geojson_data::deployment']],
+      subscribe => Class['profiles::php']
     }
 
     if $data_migration {

@@ -49,6 +49,7 @@ describe 'profiles::platform' do
 
             it { is_expected.to contain_file('/var/www/platform-api').that_requires('Group[www-data]') }
             it { is_expected.to contain_file('/var/www/platform-api').that_requires('User[www-data]') }
+            it { is_expected.to contain_class('profiles::platform::deployment').that_subscribes_to('Class[profiles::php]') }
           end
         end
 
