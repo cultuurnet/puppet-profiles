@@ -68,7 +68,7 @@ describe 'profiles::apache::vhost::php_fpm' do
 
             it { is_expected.to contain_profiles__newrelic__php__application('winston.example.com').with(
               'enable'          => false,
-              'docroot'         => '/var/www/foo',
+              'docroot'         => '/var/www/foo/public',
               'optional_config' => {}
             ) }
           end
@@ -127,7 +127,7 @@ describe 'profiles::apache::vhost::php_fpm' do
 
             it { is_expected.to contain_profiles__newrelic__php__application('winston.example.com').with(
               'enable'          => false,
-              'docroot'         => '/tmp/bla',
+              'docroot'         => '/tmp/bla/web',
               'optional_config' => { 'foo' => 'bar' }
             ) }
           end
