@@ -35,7 +35,7 @@ describe 'profiles::uitpas::balie' do
             'aliases'     => []
           ) }
 
-          it { is_expected.to contain_class('profiles::uitpas::balie::deployment').that_requires('Class[profiles::nodejs]') }
+          it { is_expected.to contain_class('profiles::uitpas::balie::deployment').that_subscribes_to('Class[profiles::nodejs]') }
         end
 
         context "without hieradata" do

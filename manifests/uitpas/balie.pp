@@ -16,10 +16,9 @@ class profiles::uitpas::balie (
   if $deployment {
     class { 'profiles::uitpas::balie::deployment':
       service_address => $service_address,
-      service_port    => $service_port
+      service_port    => $service_port,
+      subscribe       => Class['profiles::nodejs']
     }
-
-    Class['profiles::nodejs'] -> Class['profiles::uitpas::balie::deployment']
   }
 
   # include ::profiles::uitpas::balie::monitoring
