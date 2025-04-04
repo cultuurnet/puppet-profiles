@@ -26,7 +26,7 @@ class profiles::mailpit (
   file { 'mailpit-service-defaults':
     ensure  => 'file',
     path    => '/etc/default/mailpit',
-    content => "SMTP_ADDRESS=${smtp_address}\nSMTP_PORT=${smtp_port}\nHTTP_ADDRESS=${http_address}\nHTTP_PORT=${http_port}",
+    content => "SMTP_ADDRESS=${smtp_address}\nSMTP_PORT=${smtp_port}\nHTTP_ADDRESS=${http_address}\nHTTP_PORT=${http_port}\nENVIRONMENT=${environment}",
     notify  => Service['mailpit']
   }
 
