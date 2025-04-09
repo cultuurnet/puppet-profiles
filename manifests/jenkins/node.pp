@@ -53,6 +53,12 @@ class profiles::jenkins::node(
     }
   }
 
+  profiles::puppet::puppetdb::cli { 'jenkins': }
+
+  @@profiles::vault::trusted_certificate { $trusted['certname']:
+    policies => ['jenkins_certificate']
+  }
+
   file { $data_dir:
     ensure => 'directory',
     owner  => 'jenkins',

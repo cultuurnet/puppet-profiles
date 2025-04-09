@@ -31,4 +31,10 @@ class profiles::vault::policies (
     policies_directory => $policies_directory,
     require            => File['vault_policies']
   }
+
+  profiles::vault::policy { 'jenkins_certificate':
+    policy             => 'path "puppet/*" { capabilities = ["read"] }',
+    policies_directory => $policies_directory,
+    require            => File['vault_policies']
+  }
 }
