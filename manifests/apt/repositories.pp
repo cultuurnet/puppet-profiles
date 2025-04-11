@@ -293,6 +293,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'uitpas-groepspas':
+    location => "https://apt.publiq.be/uitpas-groepspas-${environment}",
+    release  => $codename,
+    repos    => 'main'
+  }
+
   @apt::source { 'uitdatabank-angular-app':
     location => "https://apt.publiq.be/uitdatabank-angular-app-${environment}",
     release  => $codename,
