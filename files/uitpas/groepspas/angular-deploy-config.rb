@@ -1,30 +1,30 @@
 #!/usr/bin/env ruby
 
-require 'angular_config'
+require 'json'
 
 APPDIR = File.expand_path(ARGV[0])
 
-def merge_config
-  package = `dpkg -S #{APPDIR}/index.html`.split(":")[0]
-  original_scripts_name = `dpkg -L #{package}`.split("\n").grep(/scripts\/scripts\..*\.js$/)[0]
-
-  config_hashed_keys = AngularConfig::Config.load("#{APPDIR}/config.json").hash_keys
-  scripts = AngularConfig::Source.load(original_scripts_name)
-
-  md5_short = scripts.resolve(config_hashed_keys).md5[0..7]
-
-  AngularConfig::Source.save(scripts.content, "#{APPDIR}/scripts/scripts.#{md5_short}.js")
-
-  fix_index(md5_short)
+def app_files
+  Dir.glob("#{APPDIR}/**/*").select { |fn| File.file?(fn) } - Dir.glob("#{APPDIR}/**/*.ico") - [ "#{APPDIR}/config.json" ]
 end
 
-def fix_index(md5)
-  index = File.read("#{APPDIR}/index.html")
+def merge_config
+  app_files.each do |file|
+    data = File.read(file)
 
-  index.gsub!(/scripts\/scripts\.[0-9a-f]{8}\.js/, "scripts/scripts.#{md5}.js")
+    config = JSON.parse(File.read("#{APPDIR}/config.json"))
 
-  File.open("#{APPDIR}/index.html", "w") do |f|
-    f.write(index)
+    config.each do |key, value|
+      if value.is_a?(String)
+        data.gsub!(key, value)
+      else
+        data.gsub!("\"#{key}\"", value.to_json)
+      end
+    end
+
+    File.open(file, "w") do |f|
+      f.write(data.chomp)
+    end
   end
 end
 
