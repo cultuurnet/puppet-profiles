@@ -30,7 +30,7 @@ describe 'profiles::uitpas::groepspas::deployment' do
 
         it { is_expected.to contain_file('uitpas-groepspas-config').with(
           'ensure' => 'file',
-          'path'   => '/var/www/uitpas-groepspas/config/config.json',
+          'path'   => '/var/www/uitpas-groepspas/config.json',
           'source' => '/mytestconfig',
           'owner'  => 'www-data',
           'group'  => 'www-data'
@@ -98,7 +98,7 @@ describe 'profiles::uitpas::groepspas::deployment' do
 
           it { is_expected.to contain_file('uitpas-groepspas-config').with(
             'ensure' => 'file',
-            'path'   => '/var/www/uitpas-groepspas/config/config.json',
+            'path'   => '/var/www/uitpas-groepspas/config.json',
             'source' => '/foo.json',
             'owner'  => 'www-data',
             'group'  => 'www-data'

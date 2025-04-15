@@ -23,7 +23,7 @@ class profiles::uitpas::groepspas::deployment (
 
   file { 'uitpas-groepspas-config':
     ensure  => 'file',
-    path    => "${basedir}/config/config.json",
+    path    => "${basedir}/config.json",
     source  => $config_source,
     owner   => 'www-data',
     group   => 'www-data',
