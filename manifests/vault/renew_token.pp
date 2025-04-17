@@ -1,5 +1,5 @@
 define profiles::vault::renew_token (
-  String $key
+  String $key,
   String $ensure = 'present'
 ) {
 
