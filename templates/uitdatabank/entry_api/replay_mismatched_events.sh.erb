@@ -27,7 +27,7 @@ NUMBER_OF_EVENTS=$(echo ${UUIDS_TO_REPLAY} | /usr/bin/wc -w)
 # loop over uuids
 echo "Starting replay of ${NUMBER_OF_EVENTS} mismatched events from logfile ${LOGFILE} at $(date):"
 
-for UUID in ${UUIDS_TO_REPLAY}; do
+for UUID in ${UUIDS_TO_REPLAY};
 do
   ${BASEDIR}/bin/udb3.php replay --force --cdbid ${UUID}
   /bin/sleep 4
