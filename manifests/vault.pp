@@ -13,6 +13,7 @@ class profiles::vault (
   Boolean                    $backup_lvm            = false,
   Optional[String]           $backup_volume_group   = undef,
   Optional[String]           $backup_volume_size    = undef,
+  Array                      $renewable_tokens      = [],
   Integer                    $backup_retention_days = 7
 ) inherits ::profiles {
 
@@ -121,6 +122,12 @@ class profiles::vault (
         lease_ttl_seconds => $lease_ttl_seconds,
         require           => Class['profiles::vault::policies']
       }
+    }
+  }
+
+  $renewable_tokens.each |$token| {
+    profiles::vault::renew_token { "${token['path']}": 
+      key => $token['key']
     }
   }
 }
