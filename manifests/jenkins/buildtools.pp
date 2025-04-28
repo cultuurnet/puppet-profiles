@@ -8,6 +8,7 @@ class profiles::jenkins::buildtools inherits ::profiles {
   realize Package['kubectl']
   realize Package['argocd']
   realize Package['mysql-client']
+  realize Package['phantomjs']
 
   include profiles::ruby
 }
