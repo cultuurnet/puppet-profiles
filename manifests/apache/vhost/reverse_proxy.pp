@@ -8,6 +8,7 @@ define profiles::apache::vhost::reverse_proxy (
   Hash                           $proxy_params          = {},
   Variant[String, Array[String]] $proxy_keywords        = [],
   Variant[String, Array[String]] $aliases               = [],
+  Array[String]                  $additional_headers    = [],
   String                         $access_log_format     = 'extended_json'
 ) {
 
@@ -109,7 +110,7 @@ define profiles::apache::vhost::reverse_proxy (
     auth_oidc             => $auth_openid_connect,
     oidc_settings         => $openid_connect_settings,
     setenvif              => $profiles::apache::defaults::setenvif,
-    request_headers       => $profiles::apache::defaults::request_headers + [
+    request_headers       => $profiles::apache::defaults::request_headers + $additional_headers + [
                                "setifempty X-Forwarded-Port \"${port}\"",
                                "setifempty X-Forwarded-Proto \"${transport}\""
                              ],
