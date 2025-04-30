@@ -7,6 +7,7 @@ define profiles::apache::vhost::php_fpm (
   String                         $access_log_format        = 'extended_json',
   Enum['unix', 'tcp']            $socket_type              = lookup('profiles::php::fpm_socket_type', Enum['unix', 'tcp'], 'first', 'unix'),
   Optional[String]               $certificate              = undef,
+  Variant[String, Array[String]] $headers                  = [],
   Variant[Hash, Array[Hash]]     $rewrites                 = [],
   Boolean                        $ssl_proxyengine          = false
 ) {
@@ -69,6 +70,7 @@ define profiles::apache::vhost::php_fpm (
                                "setifempty X-Forwarded-Port \"${port}\"",
                                "setifempty X-Forwarded-Proto \"${transport}\""
                              ],
+    headers               => [$headers].flatten,
     directories           => [
                                {
                                  'path'            => '\.php$',
