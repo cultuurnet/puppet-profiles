@@ -25,6 +25,7 @@ profiles::uit::mail_subscriptions::deployment::config_source: '/path/to/config/s
 profiles::uit::recommender_frontend::deployment::config_source: '/path/to/config/source'
 
 profiles::uitpas::balie_frontend::deployment::config_source: '/path/to/config/source'
+profiles::uitpas::balie_api::deployment::config_source: '/path/to/config/source'
 
 profiles::uitpas::balie::deployment::config_source: '/path/to/config/source'
 
