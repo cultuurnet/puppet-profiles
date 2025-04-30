@@ -8,6 +8,7 @@ define profiles::apache::vhost::php_fpm (
   Enum['unix', 'tcp']            $socket_type              = lookup('profiles::php::fpm_socket_type', Enum['unix', 'tcp'], 'first', 'unix'),
   Optional[String]               $certificate              = undef,
   Variant[String, Array[String]] $headers                  = [],
+  Variant[Hash, Array[Hash]]     $directories              = [],
   Variant[Hash, Array[Hash]]     $rewrites                 = [],
   Boolean                        $ssl_proxyengine          = false
 ) {
@@ -80,12 +81,8 @@ define profiles::apache::vhost::php_fpm (
                                                         'tcp'  => 'SetHandler "proxy:fcgi://127.0.0.1:9000"'
                                                       }
                                },
-                               {
-                                 'path'           => $basedir,
-                                 'options'        => ['Indexes','FollowSymLinks','MultiViews'],
-                                 'allow_override' => 'All'
-                               }
-                             ],
+                               { 'path' => $basedir } + $profiles::apache::defaults::directories
+                             ] + [$directories].flatten,
     rewrites              => [$rewrites].flatten,
     ssl_proxyengine       => $ssl_proxyengine
   }

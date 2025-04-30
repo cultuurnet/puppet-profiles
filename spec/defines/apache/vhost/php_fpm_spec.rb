@@ -24,6 +24,7 @@ describe 'profiles::apache::vhost::php_fpm' do
               'allow_encoded_slashes'    => 'off',
               'socket_type'              => 'unix',
               'certificate'              => nil,
+              'directories'              => [],
               'headers'                  => [],
               'rewrites'                 => [],
               'ssl_proxyengine'          => false,
@@ -77,7 +78,7 @@ describe 'profiles::apache::vhost::php_fpm' do
             ) }
           end
 
-          context "with basedir => /tmp/bla, public_web_directory => web, aliases => [smith.example.com, foo.example.com], allow_encoded_slashes => nodecode, access_log_format => combined_json, rewrites => { comment => Capture apiKey from URL parameters, rewrite_cond => %{QUERY_STRING} (?:^|&)apiKey=([^&]+), rewrite_rule => ^ - [E=API_KEY:%1] }, socket_type => tcp, headers => 'set X-My-Header \"foo\"', ssl_proxyengine => true and newrelic_optional_config => { foo => bar }" do
+          context "with basedir => /tmp/bla, public_web_directory => web, aliases => [smith.example.com, foo.example.com], allow_encoded_slashes => nodecode, access_log_format => combined_json, directories => { path => /var/www/bar/files, provider => files, deny => from all }, rewrites => { comment => Capture apiKey from URL parameters, rewrite_cond => %{QUERY_STRING} (?:^|&)apiKey=([^&]+), rewrite_rule => ^ - [E=API_KEY:%1] }, socket_type => tcp, headers => 'set X-My-Header \"foo\"', ssl_proxyengine => true and newrelic_optional_config => { foo => bar }" do
             let(:params) { {
               'basedir'                  => '/tmp/bla',
               'public_web_directory'     => 'web',
@@ -85,6 +86,11 @@ describe 'profiles::apache::vhost::php_fpm' do
               'allow_encoded_slashes'    => 'nodecode',
               'access_log_format'        => 'combined_json',
               'socket_type'              => 'tcp',
+              'directories'              => {
+                                              'path'     => '/var/www/bar/files',
+                                              'provider' => 'files',
+                                              'deny'     => 'from all'
+                                            },
               'rewrites'                 => {
                                               'comment'      => 'Capture apiKey from URL parameters',
                                               'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
@@ -124,6 +130,10 @@ describe 'profiles::apache::vhost::php_fpm' do
                                            'path'           => '/tmp/bla',
                                            'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
                                            'allow_override' => 'All'
+                                         }, {
+                                           'path'     => '/var/www/bar/files',
+                                           'provider' => 'files',
+                                           'deny'     => 'from all'
                                          }],
               'rewrites'              => [{
                                            'comment'      => 'Capture apiKey from URL parameters',
@@ -144,14 +154,18 @@ describe 'profiles::apache::vhost::php_fpm' do
         context "with hieradata" do
           let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-          context "with basedir => /var/www/bar, headers => [set X-My-Header1 \"bar\", set X-My-Header2 \"baz\"] and aliases => mysite.example.com" do
+          context "with basedir => /var/www/bar, headers => [set X-My-Header1 \"bar\", set X-My-Header2 \"baz\"], directories => [{ path => /path/to/directory, handler => value }, { path => /path/to/other/directory, handler => othervalue }] and aliases => mysite.example.com" do
             let(:params) { {
-              'basedir' => '/var/www/bar',
-              'headers' => [
-                             'set X-My-Header1 \"bar\"',
-                             'set X-My-Header2 \"baz\"'
-                           ],
-              'aliases' => 'mysite.example.com'
+              'basedir'     => '/var/www/bar',
+              'headers'     => [
+                                 'set X-My-Header1 \"bar\"',
+                                 'set X-My-Header2 \"baz\"'
+                               ],
+              'directories' => [
+                                 { 'path' => '/path/to/directory', 'handler' => 'value' },
+                                 { 'path' => '/path/to/other/directory', 'handler' => 'othervalue' }
+                               ],
+              'aliases'     => 'mysite.example.com'
             } }
 
             it { is_expected.to contain_apache__vhost('winston.example.com_80').with(
@@ -186,6 +200,13 @@ describe 'profiles::apache::vhost::php_fpm' do
                                            'path'           => '/var/www/bar',
                                            'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
                                            'allow_override' => 'All'
+                                         }, {
+                                           'path'    => '/path/to/directory',
+                                           'handler' => 'value'
+                                         },
+                                         {
+                                           'path'    => '/path/to/other/directory',
+                                           'handler' => 'othervalue'
                                          }],
               'rewrites'              => [],
               'ssl_proxyengine'       => false
