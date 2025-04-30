@@ -25,6 +25,7 @@ describe 'profiles::apache::vhost::php_fpm' do
               'socket_type'              => 'unix',
               'certificate'              => nil,
               'rewrites'                 => [],
+              'ssl_proxyengine'          => false,
               'newrelic_optional_config' => {}
             ) }
 
@@ -63,7 +64,8 @@ describe 'profiles::apache::vhost::php_fpm' do
                                            'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
                                            'allow_override' => 'All'
                                          }],
-              'rewrites'              => []
+              'rewrites'              => [],
+              'ssl_proxyengine'       => false
             ) }
 
             it { is_expected.to contain_profiles__newrelic__php__application('winston.example.com').with(
@@ -73,7 +75,7 @@ describe 'profiles::apache::vhost::php_fpm' do
             ) }
           end
 
-          context "with basedir => /tmp/bla, public_web_directory => web, aliases => [smith.example.com, foo.example.com], allow_encoded_slashes => nodecode, access_log_format => combined_json, rewrites => { comment => Capture apiKey from URL parameters, rewrite_cond => %{QUERY_STRING} (?:^|&)apiKey=([^&]+), rewrite_rule => ^ - [E=API_KEY:%1] }, socket_type => tcp and newrelic_optional_config => { foo => bar }" do
+          context "with basedir => /tmp/bla, public_web_directory => web, aliases => [smith.example.com, foo.example.com], allow_encoded_slashes => nodecode, access_log_format => combined_json, rewrites => { comment => Capture apiKey from URL parameters, rewrite_cond => %{QUERY_STRING} (?:^|&)apiKey=([^&]+), rewrite_rule => ^ - [E=API_KEY:%1] }, socket_type => tcp, ssl_proxyengine => true and newrelic_optional_config => { foo => bar }" do
             let(:params) { {
               'basedir'                  => '/tmp/bla',
               'public_web_directory'     => 'web',
@@ -86,6 +88,7 @@ describe 'profiles::apache::vhost::php_fpm' do
                                               'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
                                               'rewrite_rule' => '^ - [E=API_KEY:%1]'
                                             },
+              'ssl_proxyengine'          => true,
               'newrelic_optional_config' => { 'foo' => 'bar' }
             } }
 
@@ -122,7 +125,8 @@ describe 'profiles::apache::vhost::php_fpm' do
                                            'comment'      => 'Capture apiKey from URL parameters',
                                            'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
                                            'rewrite_rule' => '^ - [E=API_KEY:%1]'
-                                         }]
+                                         }],
+              'ssl_proxyengine'       => true
             ) }
 
             it { is_expected.to contain_profiles__newrelic__php__application('winston.example.com').with(
@@ -171,7 +175,8 @@ describe 'profiles::apache::vhost::php_fpm' do
                                            'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
                                            'allow_override' => 'All'
                                          }],
-              'rewrites'              => []
+              'rewrites'              => [],
+              'ssl_proxyengine'       => false
             ) }
           end
         end

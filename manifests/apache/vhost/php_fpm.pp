@@ -8,6 +8,7 @@ define profiles::apache::vhost::php_fpm (
   Enum['unix', 'tcp']            $socket_type              = lookup('profiles::php::fpm_socket_type', Enum['unix', 'tcp'], 'first', 'unix'),
   Optional[String]               $certificate              = undef,
   Variant[Hash, Array[Hash]]     $rewrites                 = [],
+  Boolean                        $ssl_proxyengine          = false
 ) {
 
   include ::profiles
@@ -83,7 +84,8 @@ define profiles::apache::vhost::php_fpm (
                                  'allow_override' => 'All'
                                }
                              ],
-    rewrites              => [$rewrites].flatten
+    rewrites              => [$rewrites].flatten,
+    ssl_proxyengine       => $ssl_proxyengine
   }
 
   profiles::newrelic::php::application { $servername:
