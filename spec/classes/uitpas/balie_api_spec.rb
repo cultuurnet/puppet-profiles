@@ -25,6 +25,7 @@ describe 'profiles::uitpas::balie_api' do
 
           it { is_expected.to contain_class('profiles::uitpas::balie_api::deployment') }
 
+          it { is_expected.to contain_class('profiles::php') }
           it { is_expected.to contain_class('apache::mod::proxy') }
           it { is_expected.to contain_class('apache::mod::proxy_http') }
 

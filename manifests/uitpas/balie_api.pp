@@ -7,6 +7,7 @@ class profiles::uitpas::balie_api (
 
   $basedir = '/var/www/uitpas-balie-api'
 
+  include profiles::php
   include profiles::apache
   include ::apache::mod::proxy_http
 
