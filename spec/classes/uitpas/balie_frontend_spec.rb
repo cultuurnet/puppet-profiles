@@ -17,6 +17,10 @@ describe 'profiles::uitpas::balie_frontend' do
             'deployment' => true
           ) }
 
+          it { is_expected.to contain_class('profiles::apache') }
+
+          it { is_expected.to contain_apache__mod('access_compat') }
+
           it { is_expected.to contain_class('profiles::uitpas::balie_frontend::deployment') }
         end
 
@@ -33,6 +37,10 @@ describe 'profiles::uitpas::balie_frontend' do
         } }
 
         it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to contain_class('profiles::apache') }
+
+        it { is_expected.to contain_apache__mod('access_compat') }
 
         it { is_expected.to_not contain_class('profiles::uitpas::balie_frontend::deployment') }
       end
