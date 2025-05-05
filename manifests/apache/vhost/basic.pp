@@ -19,11 +19,7 @@ define profiles::apache::vhost::basic (
   $transport  = split($title, ':')[0]
   $servername = split($title, '/')[-1]
 
-  $default_directories = [{
-                           'path'           => $documentroot,
-                           'options'        => ['Indexes','FollowSymLinks','MultiViews'],
-                           'allow_override' => 'All'
-                         }]
+  $default_directories = [{ 'path' => $documentroot } + $profiles::apache::defaults::directories]
 
   if $transport == 'https' {
     unless $certificate {
