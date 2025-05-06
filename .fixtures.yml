@@ -79,8 +79,8 @@ fixtures:
       repo: 'puppet/alternatives'
       ref: '3.0.0'
     gnupg:
-      repo: 'golja/gnupg'
-      ref: '1.2.3'
+      repo: 'h0tw1r3/gnupg'
+      ref: '1.5.2'
     java_ks:
       repo: 'puppetlabs/java_ks'
       ref: '2.2.0'
