@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 group :development, :test do
   gem 'scanf', :require => false
   gem 'json', :require => false
+  gem 'net-ftp', :require => false
   gem 'guard', :require => false
   gem 'guard-rspec', :require => false
   gem 'metadata-json-lint', :require => false
