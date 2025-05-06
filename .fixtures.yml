@@ -50,7 +50,7 @@ fixtures:
       ref: '10.1.0'
     apache:
       repo: 'puppetlabs/apache'
-      ref: '6.5.1'
+      ref: '9.1.3'
     nodejs:
       repo: 'puppet/nodejs'
       ref: '9.1.0'
