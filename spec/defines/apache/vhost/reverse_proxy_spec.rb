@@ -53,7 +53,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                            ],
                 'access_log_format'     => 'extended_json',
                 'auth_oidc'             => false,
-                'oidc_settings'         => nil,
+                'oidc_settings'         => {},
                 'directories'           => [],
                 'setenvif'              => [
                                              'X-Forwarded-Proto "https" HTTPS=on',
@@ -61,7 +61,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                            ],
                 'allow_encoded_slashes' => 'off',
                 'proxy_preserve_host'   => false,
-                'rewrites'              => nil,
+                'rewrites'              => [],
                 'proxy_pass'            => {
                                              'path'          => '/',
                                              'url'           => 'http://davinci.example.com/',
@@ -120,11 +120,11 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                            ],
                 'allow_encoded_slashes' => 'off',
                 'proxy_preserve_host'   => false,
-                'rewrites'              => [ {
+                'rewrites'              => [{
                                              'comment'      => 'Proxy Websocket support',
                                              'rewrite_cond' => ['%{HTTP:Upgrade} =websocket [NC]'],
                                              'rewrite_rule' => '^/(.*) ws://davinci.example.com/$1 [P,L]'
-                                           } ],
+                                           }],
                 'proxy_pass'            => {
                                              'path'          => '/',
                                              'url'           => 'http://davinci.example.com/',
@@ -202,12 +202,12 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                 'allow_encoded_slashes' => 'nodecode',
                 'auth_oidc'             => false,
                 'directories'           => [],
-                'oidc_settings'         => nil,
-                'rewrites'              => [ {
+                'oidc_settings'         => {},
+                'rewrites'              => [{
                                              'comment'      => 'Proxy Websocket support',
                                              'rewrite_cond' => ['%{HTTP:Upgrade} =websocket [NC]'],
                                              'rewrite_rule' => '^/(.*) wss://buonarotti.example.com/$1 [P,L]'
-                                           } ],
+                                           }],
                 'proxy_pass'            => {
                                              'path'          => '/',
                                              'url'           => 'https://buonarotti.example.com/',
@@ -292,7 +292,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                            ],
                 'allow_encoded_slashes' => 'off',
                 'proxy_preserve_host'   => false,
-                'rewrites'              => nil,
+                'rewrites'              => [],
                 'proxy_pass'            => {
                                              'path'          => '/',
                                              'url'           => 'https://buonarotti.example.com/',

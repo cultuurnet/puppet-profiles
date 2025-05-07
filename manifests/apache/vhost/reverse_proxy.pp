@@ -64,13 +64,13 @@ define profiles::apache::vhost::reverse_proxy (
 
     $websockets_destination = regsubst($destination,'^http(.*)/?$','ws\\1')
 
-    $rewrites = [ {
-                    'comment'      => 'Proxy Websocket support',
-                    'rewrite_cond' => [ '%{HTTP:Upgrade} =websocket [NC]'],
-                    'rewrite_rule' => "^/(.*) ${websockets_destination}\$1 [P,L]"
-                } ]
+    $rewrites = [{
+                  'comment'      => 'Proxy Websocket support',
+                  'rewrite_cond' => [ '%{HTTP:Upgrade} =websocket [NC]'],
+                  'rewrite_rule' => "^/(.*) ${websockets_destination}\$1 [P,L]"
+                }]
   } else {
-    $rewrites = undef
+    $rewrites = []
   }
 
   if $auth_openid_connect {
@@ -92,7 +92,7 @@ define profiles::apache::vhost::reverse_proxy (
     $no_proxy_uris              = ['/redirect_uri']
   } else {
     $openid_connect_directories = []
-    $openid_connect_settings    = undef
+    $openid_connect_settings    = {}
     $no_proxy_uris              = []
   }
 

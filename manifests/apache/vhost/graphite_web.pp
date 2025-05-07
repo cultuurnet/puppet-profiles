@@ -61,13 +61,13 @@ define profiles::apache::vhost::graphite_web (
 
     $websockets_destination = regsubst($destination,'^http(.*)/?$','ws\\1')
 
-    $rewrites = [ {
-                    'comment'      => 'Proxy Websocket support',
-                    'rewrite_cond' => [ '%{HTTP:Upgrade} =websocket [NC]'],
-                    'rewrite_rule' => "^/(.*) ${websockets_destination}\$1 [P,L]"
-                } ]
+    $rewrites = [{
+                  'comment'      => 'Proxy Websocket support',
+                  'rewrite_cond' => [ '%{HTTP:Upgrade} =websocket [NC]'],
+                  'rewrite_rule' => "^/(.*) ${websockets_destination}\$1 [P,L]"
+                }]
   } else {
-    $rewrites = undef
+    $rewrites = []
   }
 
   if $auth_openid_connect {

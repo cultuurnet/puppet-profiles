@@ -52,10 +52,10 @@ describe 'profiles::apache' do
         it { is_expected.to contain_user('www-data').that_comes_before('Class[apache]') }
       end
 
-      context "with mpm_module => worker, mpm_module_config => { startservers => 8, maxclients => 256 }, http2 => true, limitreqfieldsize => 32766, service_status => stopped and metrics => false" do
+      context "with mpm_module => worker, mpm_module_config => { startservers => 8, maxrequestworkers => 256 }, http2 => true, limitreqfieldsize => 32766, service_status => stopped and metrics => false" do
         let(:params) { {
           'mpm_module'            => 'worker',
-          'mpm_module_config'     => { 'startservers' => 8, 'maxclients' => 256 },
+          'mpm_module_config'     => { 'startservers' => 8, 'maxrequestworkers' => 256 },
           'http2'                 => true,
           'limitreqfieldsize'     => 32766,
           'service_status'        => 'stopped',
@@ -82,8 +82,8 @@ describe 'profiles::apache' do
 
         it { is_expected.to contain_class('apache::mod::http2') }
         it { is_expected.to contain_class('apache::mod::worker').with(
-          'startservers' => 8,
-          'maxclients'   => 256
+          'startservers'      => 8,
+          'maxrequestworkers' => 256
         ) }
 
         it { is_expected.not_to contain_class('profiles::apache::metrics') }

@@ -50,7 +50,7 @@ fixtures:
       ref: '10.1.0'
     apache:
       repo: 'puppetlabs/apache'
-      ref: '6.5.1'
+      ref: '9.1.3'
     nodejs:
       repo: 'puppet/nodejs'
       ref: '9.1.0'
@@ -79,8 +79,8 @@ fixtures:
       repo: 'puppet/alternatives'
       ref: '3.0.0'
     gnupg:
-      repo: 'golja/gnupg'
-      ref: '1.2.3'
+      repo: 'h0tw1r3/gnupg'
+      ref: '1.5.2'
     java_ks:
       repo: 'puppetlabs/java_ks'
       ref: '2.2.0'

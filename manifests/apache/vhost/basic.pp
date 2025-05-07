@@ -63,7 +63,7 @@ define profiles::apache::vhost::basic (
                                   }
   } else {
     $openid_connect_directories = []
-    $openid_connect_settings    = undef
+    $openid_connect_settings    = {}
   }
 
   apache::vhost { "${servername}_${port}":
