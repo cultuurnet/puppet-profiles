@@ -92,7 +92,7 @@ define profiles::apache::vhost::reverse_proxy (
     $no_proxy_uris              = ['/redirect_uri']
   } else {
     $openid_connect_directories = []
-    $openid_connect_settings    = undef
+    $openid_connect_settings    = {}
     $no_proxy_uris              = []
   }
 

@@ -70,7 +70,7 @@ describe 'profiles::apache::vhost::basic' do
             'port'               => 80,
             'ssl'                => false,
             'auth_oidc'          => false,
-            'oidc_settings'      => nil,
+            'oidc_settings'      => {},
             'request_headers'    => [
                                       'unset Proxy early',
                                       'set X-Unique-Id %{UNIQUE_ID}e',
