@@ -239,12 +239,6 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
-  @apt::source { 'uitpas-app':
-    location => "https://apt.publiq.be/uitpas-app-${environment}",
-    release  => $codename,
-    repos    => 'main'
-  }
-
   @apt::source { 'uitpas-website-api':
     location => "https://apt.publiq.be/uitpas-website-api-${environment}",
     release  => $codename,
@@ -283,12 +277,6 @@ class profiles::apt::repositories {
 
   @apt::source { 'uitpas-cid-web':
     location => "https://apt.publiq.be/uitpas-cid-web-${environment}",
-    release  => $codename,
-    repos    => 'main'
-  }
-
-  @apt::source { 'uitpas-groepspas-frontend':
-    location => "https://apt.publiq.be/uitpas-groepspas-frontend-${environment}",
     release  => $codename,
     repos    => 'main'
   }
