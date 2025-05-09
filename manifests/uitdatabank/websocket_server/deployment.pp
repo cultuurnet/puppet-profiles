@@ -9,7 +9,7 @@ class profiles::uitdatabank::websocket_server::deployment (
 ) inherits ::profiles {
 
   $basedir = '/var/www/udb3-websocket-server'
-  $secrets = lookup('vault:uitdatabank/udb3-websocket-server')
+  $secrets = lookup('vault:uitdatabank/udb3-websocket-server', undef, undef, {})
 
   realize Apt::Source[$repository]
   realize Group['www-data']
