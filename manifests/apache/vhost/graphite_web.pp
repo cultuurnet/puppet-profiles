@@ -73,12 +73,12 @@ define profiles::apache::vhost::graphite_web (
   if $auth_openid_connect {
     include apache::mod::authn_core
 
-    $directories             = {
+    $directories             = [{
                                  'path'      => '/',
                                  'provider'  => 'location',
                                  'auth_type' => 'openid-connect',
                                  'require'   => 'valid-user'
-                               }
+                               }]
     $openid_connect_settings = {
                                  'ProviderMetadataURL' => lookup('data::openid::provider_metadata_url', Optional[String], 'first', undef),
                                  'ClientID'            => lookup('data::openid::client_id', Optional[String], 'first', undef),
@@ -88,8 +88,8 @@ define profiles::apache::vhost::graphite_web (
                                }
     $no_proxy_uris           = ['/redirect_uri','/static']
   } else {
-    $directories             = undef
-    $openid_connect_settings = undef
+    $directories             = []
+    $openid_connect_settings = {}
     $no_proxy_uris           = ['/static']
   }
 
