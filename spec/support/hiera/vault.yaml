@@ -1,7 +1,0 @@
----
-:backends:
-  - yaml
-:yaml:
-  :datadir: spec/support/hiera/data
-:hierarchy:
-  - vault
