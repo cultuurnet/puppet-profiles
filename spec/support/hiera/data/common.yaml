@@ -39,7 +39,7 @@ profiles::uitpas::cid_web::deployment::config_source: '/path/to/config/source'
 profiles::platform::deployment::config_source: '/path/to/config/source'
 profiles::platform::deployment::admin_users_source: '/path/to/config/source'
 
-profiles::uitdatabank::websocket_server::deployment::config_source: '/path/to/config/source'
+profiles::uitdatabank::websocket_server::deployment::config_source: 'appconfig/uitdatabank/udb3-websocket-server/config.json'
 
 profiles::uitdatabank::articlelinker::deployment::config_source: '/path/to/config/source'
 
