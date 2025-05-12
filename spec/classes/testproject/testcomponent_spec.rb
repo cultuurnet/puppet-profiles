@@ -5,8 +5,8 @@ describe 'profiles::testproject::testcomponent' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context 'with vault hieradata' do
-        let(:hiera_config) { 'spec/support/hiera/vault.yaml' }
+      context 'with hieradata' do
+        let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
         context 'with config_source' do
           let(:params) { {
