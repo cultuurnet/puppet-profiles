@@ -293,12 +293,6 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
-  @apt::source { 'uitdatabank-newsletter-api':
-    location => "https://apt.publiq.be/uitdatabank-newsletter-api-${environment}",
-    release  => $codename,
-    repos    => 'main'
-  }
-
   @apt::source { 'uitdatabank-search-api':
     location => "https://apt.publiq.be/uitdatabank-search-api-${environment}",
     release  => $codename,

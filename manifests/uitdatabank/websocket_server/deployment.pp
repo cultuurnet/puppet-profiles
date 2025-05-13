@@ -9,6 +9,7 @@ class profiles::uitdatabank::websocket_server::deployment (
 ) inherits ::profiles {
 
   $basedir = '/var/www/udb3-websocket-server'
+  $secrets = lookup('vault:uitdatabank/udb3-websocket-server')
 
   realize Apt::Source[$repository]
   realize Group['www-data']
@@ -25,7 +26,7 @@ class profiles::uitdatabank::websocket_server::deployment (
     path    => "${basedir}/config.json",
     owner   => 'www-data',
     group   => 'www-data',
-    source  => $config_source,
+    content => template($config_source),
     require => [Package['uitdatabank-websocket-server'], Group['www-data'], User['www-data']],
     notify  => Service['uitdatabank-websocket-server']
   }
