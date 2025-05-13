@@ -86,7 +86,6 @@ class profiles::uitpas::api::cron (
   }
 
   cron { 'uitpas trigger price message':
-    ensure  => 'absent',
     command => "/usr/bin/curl '${base_url}/uitid/rest/bootstrap/uitpas/trigger-event-price-messages?max=100' >> ${cron_logdir}/trigger-event-price-message.log 2>&1",
     hour    => '*',
     minute  => '*',
