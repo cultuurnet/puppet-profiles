@@ -1,6 +1,6 @@
 class profiles::media::rewrite (
   String                        $servername,
-  String                        $forwardingUrl,
+  String                        $forwardingurl,
   Variant[String,Array[String]] $serveraliases   = [],
   Boolean                       $deployment      = true
 ) inherits ::profiles {
@@ -100,7 +100,7 @@ class profiles::media::rewrite (
       },
       {
         'comment'      => 'Create forwarding rule to image service',
-        'rewrite_rule' => "^/(.*)$ ${forwardingUrl}/$1?auto=compress&auto=format&%{ENV:WIDTH}%{ENV:HEIGHT}%{ENV:CROP}%{ENV:RECT}%{ENV:FORMAT}%{ENV:FLIP}%{ENV:ROTATE}%{ENV:PAD}%{ENV:FIT}%{ENV:BGCOLOR} [R=301,L]"
+        'rewrite_rule' => "^/(.*)$ ${forwardingurl}/$1?auto=compress&auto=format&%{ENV:WIDTH}%{ENV:HEIGHT}%{ENV:CROP}%{ENV:RECT}%{ENV:FORMAT}%{ENV:FLIP}%{ENV:ROTATE}%{ENV:PAD}%{ENV:FIT}%{ENV:BGCOLOR} [R=301,L]"
       }
     ]
 
