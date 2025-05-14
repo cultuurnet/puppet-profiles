@@ -8,6 +8,7 @@ class profiles::uitdatabank::jwt_provider_uitidv1::deployment (
 ) inherits ::profiles {
 
   $basedir                 = '/var/www/jwt-provider-uitidv1'
+  $secrets                 = lookup('vault:uitdatabank/udb3-jwtprovider')
   $file_default_attributes = {
                                owner   => 'www-data',
                                group   => 'www-data',
@@ -26,10 +27,10 @@ class profiles::uitdatabank::jwt_provider_uitidv1::deployment (
   }
 
   file { 'uitdatabank-jwt-provider-uitidv1-config':
-    ensure => 'file',
-    path   => "${basedir}/config.yml",
-    source => $config_source,
-    *      => $file_default_attributes
+    ensure  => 'file',
+    path    => "${basedir}/config.yml",
+    content => template($config_source),
+    *       => $file_default_attributes
   }
 
   file { 'uitdatabank-jwt-provider-uitidv1-private-key':
