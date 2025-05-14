@@ -3,6 +3,7 @@ class profiles::uit::cms::deployment (
   String           $drush_config_source,
   String           $version             = 'latest',
   String           $repository          = 'uit-cms',
+  Optional[String] $robots_source       = undef,
   Optional[String] $puppetdb_url        = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
@@ -37,6 +38,17 @@ class profiles::uit::cms::deployment (
     group   => 'www-data',
     require => [Group['www-data'], User['www-data'], Package['uit-cms']],
     notify  => Service['uit-cms']
+  }
+
+  if $robots_source {
+    file { 'uit-cms-robots.txt':
+      ensure  => 'file',
+      path    => "${basedir}/web/robots.txt",
+      source  => $robots_source,
+      owner   => 'www-data',
+      group   => 'www-data',
+      require => Package['uit-cms'],
+    }
   }
 
   exec { 'uit-cms-drush-deploy':
