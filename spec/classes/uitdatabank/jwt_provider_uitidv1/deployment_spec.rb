@@ -8,19 +8,19 @@ describe 'profiles::uitdatabank::jwt_provider_uitidv1::deployment' do
       context "with hieradata" do
         let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-        context "with config_source => appconfig/uitdatabank/udb3-jwtprovider/config.yml, private_key_source => /tmp/private.pem and public_key_source => /tmp/public.pem" do
+        context "with config_source => appconfig/uitdatabank/udb3-jwtprovider/config.yml, private_key_source => appconfig/uitdatabank/keys/private.pem and public_key_source => appconfig/uitdatabank/keys/public.pem" do
           let(:params) { {
             'config_source'      => 'appconfig/uitdatabank/udb3-jwtprovider/config.yml',
-            'private_key_source' => '/tmp/private.pem',
-            'public_key_source'  => '/tmp/public.pem'
+            'private_key_source' => 'appconfig/uitdatabank/keys/private.pem',
+            'public_key_source'  => 'appconfig/uitdatabank/keys/public.pem'
           } }
 
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_class('profiles::uitdatabank::jwt_provider_uitidv1::deployment').with(
             'config_source'      => 'appconfig/uitdatabank/udb3-jwtprovider/config.yml',
-            'private_key_source' => '/tmp/private.pem',
-            'public_key_source'  => '/tmp/public.pem',
+            'private_key_source' => 'appconfig/uitdatabank/keys/private.pem',
+            'public_key_source'  => 'appconfig/uitdatabank/keys/public.pem',
             'version'            => 'latest',
             'repository'         => 'uitdatabank-jwt-provider-uitidv1',
             'puppetdb_url'       => 'http://localhost:8081'
@@ -42,19 +42,19 @@ describe 'profiles::uitdatabank::jwt_provider_uitidv1::deployment' do
           ) }
 
           it { is_expected.to contain_file('uitdatabank-jwt-provider-uitidv1-private-key').with(
-            'ensure' => 'file',
-            'owner'  => 'www-data',
-            'group'  => 'www-data',
-            'path'   => '/var/www/jwt-provider-uitidv1/private.pem',
-            'source' => '/tmp/private.pem'
+            'ensure'  => 'file',
+            'owner'   => 'www-data',
+            'group'   => 'www-data',
+            'path'    => '/var/www/jwt-provider-uitidv1/private.pem',
+            'content' => "uitdatabank private key\n"
           ) }
 
           it { is_expected.to contain_file('uitdatabank-jwt-provider-uitidv1-public-key').with(
-            'ensure' => 'file',
-            'owner'  => 'www-data',
-            'group'  => 'www-data',
-            'path'   => '/var/www/jwt-provider-uitidv1/public.pem',
-            'source' => '/tmp/public.pem'
+            'ensure'  => 'file',
+            'owner'   => 'www-data',
+            'group'   => 'www-data',
+            'path'    => '/var/www/jwt-provider-uitidv1/public.pem',
+            'content' => "uitdatabank public key\n"
           ) }
 
           it { is_expected.to contain_profiles__php__fpm_service_alias('uitdatabank-jwt-provider-uitidv1') }
@@ -87,11 +87,11 @@ describe 'profiles::uitdatabank::jwt_provider_uitidv1::deployment' do
           it { is_expected.to contain_service('uitdatabank-jwt-provider-uitidv1').that_requires('Profiles::Php::Fpm_service_alias[uitdatabank-jwt-provider-uitidv1]') }
         end
 
-        context "with config_source => appconfig/uitdatabank/udb3-jwtprovider/config.yml, private_key_source => /tmp/my_private_key.pem, public_key_source => /tmp/my_public_key.pem, version => 1.2.3, repository => myrepo and puppetdb_url => http://puppetdb.example.com:8080" do
+        context "with config_source => appconfig/uitdatabank/udb3-jwtprovider/config.yml, private_key_source => appconfig/uitdatabank/keys/my_private_key.pem, public_key_source => appconfig/uitdatabank/keys/my_public_key.pem, version => 1.2.3, repository => myrepo and puppetdb_url => http://puppetdb.example.com:8080" do
           let(:params) { {
             'config_source'      => 'appconfig/uitdatabank/udb3-jwtprovider/config.yml',
-            'private_key_source' => '/tmp/my_private_key.pem',
-            'public_key_source'  => '/tmp/my_public_key.pem',
+            'private_key_source' => 'appconfig/uitdatabank/keys/my_private_key.pem',
+            'public_key_source'  => 'appconfig/uitdatabank/keys/my_public_key.pem',
             'version'            => '1.2.3',
             'repository'         => 'myrepo',
             'puppetdb_url'       => 'http://puppetdb.example.com:8080'
@@ -109,11 +109,11 @@ describe 'profiles::uitdatabank::jwt_provider_uitidv1::deployment' do
             ) }
 
             it { is_expected.to contain_file('uitdatabank-jwt-provider-uitidv1-private-key').with(
-              'source' => '/tmp/my_private_key.pem'
+              'content' => "my_private_key\n"
             ) }
 
             it { is_expected.to contain_file('uitdatabank-jwt-provider-uitidv1-public-key').with(
-              'source' => '/tmp/my_public_key.pem'
+              'content' => "my_public_key\n"
             ) }
 
             it { is_expected.to contain_package('uitdatabank-jwt-provider-uitidv1').that_requires('Apt::Source[myrepo]') }
