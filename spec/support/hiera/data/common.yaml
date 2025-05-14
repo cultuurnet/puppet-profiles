@@ -67,7 +67,7 @@ profiles::uitdatabank::search_api::deployment::themes_source: '/path/to/config/s
 profiles::uitdatabank::search_api::deployment::types_source: '/path/to/config/source'
 profiles::uitdatabank::search_api::deployment::pubkey_keycloak_source: '/path/to/config/key'
 
-profiles::uitdatabank::jwt_provider_uitidv1::deployment::config_source: '/path/to/config/source'
+profiles::uitdatabank::jwt_provider_uitidv1::deployment::config_source: 'appconfig/uitdatabank/udb3-jwtprovider/config.yml'
 profiles::uitdatabank::jwt_provider_uitidv1::deployment::private_key_source: '/path/to/privkey/source'
 profiles::uitdatabank::jwt_provider_uitidv1::deployment::public_key_source: '/path/to/pubkey/source'
 
