@@ -1,10 +1,10 @@
  class profiles::media_rewrite (
-  Hash            $mediaUrls = {}
+  Hash            $mediaurls = {}
  ) inherits ::profiles 
  {
 
 
-  $mediaUrls.each |$name, $attributes| {
+  $mediaurls.each |$name, $attributes| {
      profiles::media::rewrite { $name:
       * => $attributes
     }
