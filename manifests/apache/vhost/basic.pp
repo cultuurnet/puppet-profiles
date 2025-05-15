@@ -4,6 +4,7 @@ define profiles::apache::vhost::basic (
   String                         $access_log_format   = 'extended_json',
   Optional[String]               $certificate         = undef,
   Variant[Hash, Array[Hash]]     $directories         = [],
+  Variant[Hash, Array[Hash]]     $rewrites            = [],
   Boolean                        $auth_openid_connect = false
 ) {
 
@@ -83,6 +84,7 @@ define profiles::apache::vhost::basic (
                           ],
     access_log_format  => $access_log_format,
     access_log_env_var => '!nolog',
+    rewrites           => [$rewrites].flatten,
     setenvif           => $profiles::apache::defaults::setenvif,
     directories        => $openid_connect_directories + $default_directories + [$directories].flatten
   }
