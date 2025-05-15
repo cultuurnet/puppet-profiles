@@ -49,6 +49,8 @@ describe 'profiles::uitdatabank::jwt_provider_uitidv1' do
           let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
 
           it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }
+          it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'private_key_source'/) }
+          it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'public_key_source'/) }
         end
       end
 
