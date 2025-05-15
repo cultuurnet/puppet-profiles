@@ -5,15 +5,15 @@ describe 'profiles::uitdatabank::jwt_provider_uitidv1::deployment' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with hieradata" do
-        let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+      context "with config_source => appconfig/uitdatabank/udb3-jwtprovider/config.yml, private_key_source => appconfig/uitdatabank/keys/private.pem and public_key_source => appconfig/uitdatabank/keys/public.pem" do
+        let(:params) { {
+          'config_source'      => 'appconfig/uitdatabank/udb3-jwtprovider/config.yml',
+          'private_key_source' => 'appconfig/uitdatabank/keys/private.pem',
+          'public_key_source'  => 'appconfig/uitdatabank/keys/public.pem'
+        } }
 
-        context "with config_source => appconfig/uitdatabank/udb3-jwtprovider/config.yml, private_key_source => appconfig/uitdatabank/keys/private.pem and public_key_source => appconfig/uitdatabank/keys/public.pem" do
-          let(:params) { {
-            'config_source'      => 'appconfig/uitdatabank/udb3-jwtprovider/config.yml',
-            'private_key_source' => 'appconfig/uitdatabank/keys/private.pem',
-            'public_key_source'  => 'appconfig/uitdatabank/keys/public.pem'
-          } }
+        context "with hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
           it { is_expected.to compile.with_all_deps }
 
@@ -87,15 +87,27 @@ describe 'profiles::uitdatabank::jwt_provider_uitidv1::deployment' do
           it { is_expected.to contain_service('uitdatabank-jwt-provider-uitidv1').that_requires('Profiles::Php::Fpm_service_alias[uitdatabank-jwt-provider-uitidv1]') }
         end
 
-        context "with config_source => appconfig/uitdatabank/udb3-jwtprovider/config.yml, private_key_source => appconfig/uitdatabank/keys/my_private_key.pem, public_key_source => appconfig/uitdatabank/keys/my_public_key.pem, version => 1.2.3, repository => myrepo and puppetdb_url => http://puppetdb.example.com:8080" do
-          let(:params) { {
-            'config_source'      => 'appconfig/uitdatabank/udb3-jwtprovider/config.yml',
-            'private_key_source' => 'appconfig/uitdatabank/keys/my_private_key.pem',
-            'public_key_source'  => 'appconfig/uitdatabank/keys/my_public_key.pem',
-            'version'            => '1.2.3',
-            'repository'         => 'myrepo',
-            'puppetdb_url'       => 'http://puppetdb.example.com:8080'
-          } }
+        context "without hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
+
+          it { is_expected.to contain_profiles__deployment__versions('profiles::uitdatabank::jwt_provider_uitidv1::deployment').with(
+            'puppetdb_url' => nil
+          ) }
+        end
+      end
+
+      context "with config_source => appconfig/uitdatabank/udb3-jwtprovider/config.yml, private_key_source => appconfig/uitdatabank/keys/my_private_key.pem, public_key_source => appconfig/uitdatabank/keys/my_public_key.pem, version => 1.2.3, repository => myrepo and puppetdb_url => http://puppetdb.example.com:8080" do
+        let(:params) { {
+          'config_source'      => 'appconfig/uitdatabank/udb3-jwtprovider/config.yml',
+          'private_key_source' => 'appconfig/uitdatabank/keys/my_private_key.pem',
+          'public_key_source'  => 'appconfig/uitdatabank/keys/my_public_key.pem',
+          'version'            => '1.2.3',
+          'repository'         => 'myrepo',
+          'puppetdb_url'       => 'http://puppetdb.example.com:8080'
+        } }
+
+        context "with hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
           context 'with repository myrepo defined' do
             let(:pre_condition) { [
