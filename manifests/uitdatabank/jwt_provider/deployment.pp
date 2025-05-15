@@ -6,6 +6,7 @@ class profiles::uitdatabank::jwt_provider::deployment (
 ) inherits ::profiles {
 
   $basedir = '/var/www/jwt-provider'
+  $secrets = lookup('vault:uitdatabank/udb3-jwtprovider')
 
   realize Group['www-data']
   realize User['www-data']
@@ -20,7 +21,7 @@ class profiles::uitdatabank::jwt_provider::deployment (
   file { 'uitdatabank-jwt-provider-config':
     ensure  => 'file',
     path    => "${basedir}/config.yml",
-    source  => $config_source,
+    content => template($config_source),
     owner   => 'www-data',
     group   => 'www-data',
     require => [Group['www-data'], User['www-data'], Package['uitdatabank-jwt-provider']],

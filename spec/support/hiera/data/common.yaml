@@ -71,7 +71,7 @@ profiles::uitdatabank::jwt_provider_uitidv1::deployment::config_source: 'appconf
 profiles::uitdatabank::jwt_provider_uitidv1::deployment::private_key_source: 'appconfig/uitdatabank/keys/private.pem'
 profiles::uitdatabank::jwt_provider_uitidv1::deployment::public_key_source: 'appconfig/uitdatabank/keys/public.pem'
 
-profiles::uitdatabank::jwt_provider::deployment::config_source: '/path/to/config/source'
+profiles::uitdatabank::jwt_provider::deployment::config_source: 'appconfig/uitdatabank/udb3-jwtprovider/config.yml'
 
 profiles::uitid::frontend::deployment::config_source: '/path/to/config/source'
 profiles::uitid::frontend_api::deployment::config_source: '/path/to/config/source'
