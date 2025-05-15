@@ -1,12 +1,12 @@
-class profiles::media::rewrite (
-  String                        $servername,
+define profiles::media::rewrite (
   String                        $forwardingurl,
-  Variant[String,Array[String]] $serveraliases   = [],
-  Boolean                       $deployment      = true
-) inherits ::profiles {
+  Variant[String,Array[String]] $serveraliases   = []
+)  {
+  include ::profiles
 
   $basedir = '/var/www'
 
+  $servername = $title
   realize Group['www-data']
   realize User['www-data']
 
