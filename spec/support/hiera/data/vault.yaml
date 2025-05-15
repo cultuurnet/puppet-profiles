@@ -5,3 +5,4 @@ vault:testproject/testcomponent:
 
 vault:uitdatabank/udb3-websocket-server: {}
 vault:uitdatabank/udb3-jwtprovider: {}
+vault:uitdatabank/uit-articlelinker: {}

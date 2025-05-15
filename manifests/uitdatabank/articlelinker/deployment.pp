@@ -9,6 +9,7 @@ class profiles::uitdatabank::articlelinker::deployment (
 ) inherits ::profiles {
 
   $basedir = '/var/www/uit-articlelinker'
+  $secrets = lookup('vault:uitdatabank/uit-articlelinker')
 
   realize Apt::Source[$repository]
 
@@ -23,7 +24,7 @@ class profiles::uitdatabank::articlelinker::deployment (
     path    => "${basedir}/config.json",
     owner   => 'www-data',
     group   => 'www-data',
-    source  => $config_source,
+    content => template($config_source),
     require => Package['uitdatabank-articlelinker'],
     notify  => Service['uitdatabank-articlelinker']
   }
