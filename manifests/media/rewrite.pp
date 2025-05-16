@@ -1,26 +1,19 @@
 define profiles::media::rewrite (
-  String                        $forwardingurl,
-  Variant[String,Array[String]] $serveraliases   = []
+  String                         $forwardingurl,
+  Variant[String, Array[String]] $serveraliases = []
 )  {
+
   include ::profiles
-
-  $basedir = '/var/www'
-
-  $servername = $title
-  realize Group['www-data']
-  realize User['www-data']
-
   include ::profiles::apache
 
-  file { $basedir:
-    ensure  => 'directory',
-    owner   => 'www-data',
-    group   => 'www-data',
-    require => [Group['www-data'], User['www-data'], Class['profiles::apache']]
-  }
+  $servername = $title
+
+  realize Group['www-data']
+  realize User['www-data']
+  realize File['/var/www']
 
   profiles::apache::vhost::basic { "http://${servername}":
-    documentroot  => $basedir,
+    documentroot  => '/var/www',
     serveraliases => $serveraliases,
     rewrites => [
       {
@@ -103,6 +96,5 @@ define profiles::media::rewrite (
         'rewrite_rule' => "^/(.*)$ ${forwardingurl}/$1?auto=compress&auto=format&%{ENV:WIDTH}%{ENV:HEIGHT}%{ENV:CROP}%{ENV:RECT}%{ENV:FORMAT}%{ENV:FLIP}%{ENV:ROTATE}%{ENV:PAD}%{ENV:FIT}%{ENV:BGCOLOR} [R=301,L]"
       }
     ]
-
   }
 }
