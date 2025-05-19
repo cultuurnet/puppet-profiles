@@ -19,7 +19,7 @@ define profiles::media::rewrite (
       {
         'comment'      => 'Remove Dalicloud specific part of request path',
         'rewrite_cond' => '%{REQUEST_URI} ^/fis/(?:rest/|)download/ce126667652776f0e9e55160f12f5478(/.*)$',
-        'rewrite_rule' => '^- [E=IMGIX_REQUEST_URI:%1]'
+        'rewrite_rule' => '^ - [E=IMGIX_REQUEST_URI:%1]'
       },
       {
         'comment'      => 'Pass all other request paths unaltered to Imgix',
