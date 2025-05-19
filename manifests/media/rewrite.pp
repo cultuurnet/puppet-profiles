@@ -17,6 +17,16 @@ define profiles::media::rewrite (
     serveraliases => $serveraliases,
     rewrites => [
       {
+        'comment'      => 'Remove Dalicloud specific part of request path',
+        'rewrite_cond' => '%{REQUEST_URI} ^/fis/(?:rest/|)download/ce126667652776f0e9e55160f12f5478(/.*)$',
+        'rewrite_rule' => '^ - [E=IMGIX_REQUEST_URI:%1]'
+      },
+      {
+        'comment'      => 'Pass all other request paths unaltered to Imgix',
+        'rewrite_cond' => '%{REQUEST_URI} !^/fis/(?:rest/|)download/ce126667652776f0e9e55160f12f5478/.*$',
+        'rewrite_rule' => '^ - [E=IMGIX_REQUEST_URI:%{REQUEST_URI}]'
+      },
+      {
         'comment'      => 'Transform parameter width',
         'rewrite_cond' => '%{QUERY_STRING} (?:^|&)width=([^&]+)',
         'rewrite_rule' => '^ - [E=WIDTH:w=%1&,E=CROP:fit=fill&,E=BGCOLOR:bg=FFFFFF&]'
@@ -93,7 +103,7 @@ define profiles::media::rewrite (
       },
       {
         'comment'      => 'Create forwarding rule to image service',
-        'rewrite_rule' => "^/(.*)$ ${forwardingurl}/\$1?auto=compress&auto=format&%{ENV:WIDTH}%{ENV:HEIGHT}%{ENV:CROP}%{ENV:RECT}%{ENV:FORMAT}%{ENV:FLIP}%{ENV:ROTATE}%{ENV:PAD}%{ENV:FIT}%{ENV:BGCOLOR} [R=301,L]"
+        'rewrite_rule' => "^/(.*)$ ${forwardingurl}%{ENV:IMGIX_REQUEST_URI}?auto=compress&auto=format&%{ENV:WIDTH}%{ENV:HEIGHT}%{ENV:CROP}%{ENV:RECT}%{ENV:FORMAT}%{ENV:FLIP}%{ENV:ROTATE}%{ENV:PAD}%{ENV:FIT}%{ENV:BGCOLOR} [R=301,L]"
       }
     ]
   }
