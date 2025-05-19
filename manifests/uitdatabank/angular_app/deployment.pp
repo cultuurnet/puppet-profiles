@@ -6,6 +6,7 @@ class profiles::uitdatabank::angular_app::deployment (
 ) inherits ::profiles {
 
   $basedir = '/var/www/udb3-angular-app'
+  $secrets = lookup('vault:uitdatabank/udb3-angular-app')
 
   realize Group['www-data']
   realize User['www-data']
@@ -24,7 +25,7 @@ class profiles::uitdatabank::angular_app::deployment (
   file { 'uitdatabank-angular-app-config':
     ensure  => 'file',
     path    => "${basedir}/config.json",
-    source  => $config_source,
+    content => template($config_source),
     owner   => 'www-data',
     group   => 'www-data',
     require => [Package['uitdatabank-angular-app'], Group['www-data'], User['www-data']]

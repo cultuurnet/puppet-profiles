@@ -43,7 +43,7 @@ profiles::uitdatabank::websocket_server::deployment::config_source: 'appconfig/u
 
 profiles::uitdatabank::articlelinker::deployment::config_source: 'appconfig/uitdatabank/uit-articlelinker/config.json'
 
-profiles::uitdatabank::angular_app::deployment::config_source: '/path/to/config/source'
+profiles::uitdatabank::angular_app::deployment::config_source: 'appconfig/uitdatabank/udb3-angular-app/config.json'
 
 profiles::uitdatabank::frontend::deployment::config_source: '/path/to/config/source'
 
