@@ -7,3 +7,4 @@ vault:uitdatabank/udb3-websocket-server: {}
 vault:uitdatabank/udb3-jwtprovider: {}
 vault:uitdatabank/uit-articlelinker: {}
 vault:uitdatabank/udb3-angular-app: {}
+vault:uitdatabank/udb3-frontend: {}

@@ -45,7 +45,7 @@ profiles::uitdatabank::articlelinker::deployment::config_source: 'appconfig/uitd
 
 profiles::uitdatabank::angular_app::deployment::config_source: 'appconfig/uitdatabank/udb3-angular-app/config.json'
 
-profiles::uitdatabank::frontend::deployment::config_source: '/path/to/config/source'
+profiles::uitdatabank::frontend::deployment::config_source: 'appconfig/uitdatabank/udb3-frontend/env'
 
 profiles::uitdatabank::entry_api::deployment::config_source: '/path/to/config/source'
 profiles::uitdatabank::entry_api::deployment::admin_permissions_source: '/path/to/admin/permissions/source'
