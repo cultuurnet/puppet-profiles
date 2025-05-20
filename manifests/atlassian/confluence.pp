@@ -99,6 +99,10 @@ class profiles::atlassian::confluence (
     $vault_token = lookup('vault:atlassian/vault_token')
     $vault_url   = lookup('data::vault::url')
 
+    @@profiles::vault::renew_token { "profiles::atlassian::confluence ${environment}":
+      token_value => $vault_token['token']
+    }
+
     systemd::dropin_file { 'override.conf':
       unit    => 'confluence.service',
       content => "[Service]\nEnvironment=\"SECRET_STORE_VAULT_TOKEN=${vault_token['token']}\""
