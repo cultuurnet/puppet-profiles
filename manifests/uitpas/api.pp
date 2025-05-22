@@ -8,6 +8,7 @@ class profiles::uitpas::api (
   Optional[String]               $maximum_heap_size    = undef,
   Boolean                        $jmx                  = true,
   Boolean                        $newrelic             = false,
+  Boolean                        $watchdog_enabled     = false,
   Optional[String]               $newrelic_license_key = lookup('data::newrelic::license_key', Optional[String], 'first', undef),
   Integer                        $portbase             = 4800,
   Enum['running', 'stopped']     $service_status       = 'running',
@@ -218,6 +219,11 @@ class profiles::uitpas::api (
     require => Package['mysql-connector-j'],
     before  => Profiles::Glassfish::Domain['uitpas']
   }
+
+  if $watchdog_enabled {
+    include ::profiles::uitpas::api::watchdog
+  }
+
 
   # include ::profiles::uitpas::api::monitoring
   # include ::profiles::uitpas::api::metrics
