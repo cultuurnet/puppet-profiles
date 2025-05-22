@@ -25,6 +25,7 @@ describe 'profiles::apache::vhost::php_fpm' do
               'socket_type'              => 'unix',
               'certificate'              => nil,
               'directories'              => [],
+              'request_headers'          => [],
               'headers'                  => [],
               'rewrites'                 => [],
               'ssl_proxyengine'          => false,
@@ -78,7 +79,7 @@ describe 'profiles::apache::vhost::php_fpm' do
             ) }
           end
 
-          context "with basedir => /tmp/bla, public_web_directory => web, aliases => [smith.example.com, foo.example.com], allow_encoded_slashes => nodecode, access_log_format => combined_json, directories => { path => /var/www/bar/files, provider => files, deny => from all }, rewrites => { comment => Capture apiKey from URL parameters, rewrite_cond => %{QUERY_STRING} (?:^|&)apiKey=([^&]+), rewrite_rule => ^ - [E=API_KEY:%1] }, socket_type => tcp, headers => 'set X-My-Header \"foo\"', ssl_proxyengine => true and newrelic_optional_config => { foo => bar }" do
+          context "with basedir => /tmp/bla, public_web_directory => web, aliases => [smith.example.com, foo.example.com], allow_encoded_slashes => nodecode, access_log_format => combined_json, directories => { path => /var/www/bar/files, provider => files, deny => from all }, rewrites => { comment => Capture apiKey from URL parameters, rewrite_cond => %{QUERY_STRING} (?:^|&)apiKey=([^&]+), rewrite_rule => ^ - [E=API_KEY:%1] }, socket_type => tcp, request_headers => 'set X-My-First-Request-Header \"foo\"', headers => 'set X-My-Header \"foo\"', ssl_proxyengine => true and newrelic_optional_config => { foo => bar }" do
             let(:params) { {
               'basedir'                  => '/tmp/bla',
               'public_web_directory'     => 'web',
@@ -96,6 +97,7 @@ describe 'profiles::apache::vhost::php_fpm' do
                                               'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
                                               'rewrite_rule' => '^ - [E=API_KEY:%1]'
                                             },
+              'request_headers'          => 'set X-My-First-Request-Header "foo"',
               'headers'                  => 'set X-My-Header "foo"',
               'ssl_proxyengine'          => true,
               'newrelic_optional_config' => { 'foo' => 'bar' }
@@ -114,6 +116,7 @@ describe 'profiles::apache::vhost::php_fpm' do
               'request_headers'       => [
                                            'unset Proxy early',
                                            'set X-Unique-Id %{UNIQUE_ID}e',
+                                           'set X-My-First-Request-Header "foo"',
                                            'setifempty X-Forwarded-Port "80"',
                                            'setifempty X-Forwarded-Proto "http"'
                                          ],
@@ -154,18 +157,22 @@ describe 'profiles::apache::vhost::php_fpm' do
         context "with hieradata" do
           let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-          context "with basedir => /var/www/bar, headers => [set X-My-Header1 \"bar\", set X-My-Header2 \"baz\"], directories => [{ path => /path/to/directory, handler => value }, { path => /path/to/other/directory, handler => othervalue }] and aliases => mysite.example.com" do
+          context "with basedir => /var/www/bar, request_headers => [set X-My-First-Request-Header \"foo\", set X-My-Second-Request-Header \"bar\"], headers => [set X-My-Header1 \"bar\", set X-My-Header2 \"baz\"], directories => [{ path => /path/to/directory, handler => value }, { path => /path/to/other/directory, handler => othervalue }] and aliases => mysite.example.com" do
             let(:params) { {
-              'basedir'     => '/var/www/bar',
-              'headers'     => [
-                                 'set X-My-Header1 \"bar\"',
-                                 'set X-My-Header2 \"baz\"'
-                               ],
-              'directories' => [
-                                 { 'path' => '/path/to/directory', 'handler' => 'value' },
-                                 { 'path' => '/path/to/other/directory', 'handler' => 'othervalue' }
-                               ],
-              'aliases'     => 'mysite.example.com'
+              'basedir'         => '/var/www/bar',
+              'request_headers' => [
+                                     'set X-My-First-Request-Header "foo"',
+                                     'set X-My-Second-Request-Header "bar"'
+                                   ],
+              'headers'         => [
+                                     'set X-My-Header1 \"bar\"',
+                                     'set X-My-Header2 \"baz\"'
+                                   ],
+              'directories'     => [
+                                     { 'path' => '/path/to/directory', 'handler' => 'value' },
+                                     { 'path' => '/path/to/other/directory', 'handler' => 'othervalue' }
+                                   ],
+              'aliases'         => 'mysite.example.com'
             } }
 
             it { is_expected.to contain_apache__vhost('winston.example.com_80').with(
@@ -181,6 +188,8 @@ describe 'profiles::apache::vhost::php_fpm' do
               'request_headers'       => [
                                            'unset Proxy early',
                                            'set X-Unique-Id %{UNIQUE_ID}e',
+                                           'set X-My-First-Request-Header "foo"',
+                                           'set X-My-Second-Request-Header "bar"',
                                            'setifempty X-Forwarded-Port "80"',
                                            'setifempty X-Forwarded-Proto "http"'
                                          ],
