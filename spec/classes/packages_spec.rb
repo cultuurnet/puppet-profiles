@@ -129,6 +129,10 @@ describe 'profiles::packages' do
           'ensure' => 'present'
         ) }
 
+        it { is_expected.to contain_package('debhelper').with(
+          'ensure' => 'present'
+        ) }
+
         it { is_expected.to contain_package('composer1').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('composer2').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('drush').that_requires('Apt::Source[publiq-tools]') }
