@@ -7,6 +7,7 @@ define profiles::apache::vhost::php_fpm (
   String                         $access_log_format        = 'extended_json',
   Enum['unix', 'tcp']            $socket_type              = lookup('profiles::php::fpm_socket_type', Enum['unix', 'tcp'], 'first', 'unix'),
   Optional[String]               $certificate              = undef,
+  Variant[String, Array[String]] $request_headers          = [],
   Variant[String, Array[String]] $headers                  = [],
   Variant[Hash, Array[Hash]]     $directories              = [],
   Variant[Hash, Array[Hash]]     $rewrites                 = [],
@@ -67,7 +68,7 @@ define profiles::apache::vhost::php_fpm (
     access_log_env_var    => '!nolog',
     allow_encoded_slashes => $allow_encoded_slashes,
     setenvif              => $profiles::apache::defaults::setenvif,
-    request_headers       => $profiles::apache::defaults::request_headers + [
+    request_headers       => $profiles::apache::defaults::request_headers + [$request_headers].flatten + [
                                "setifempty X-Forwarded-Port \"${port}\"",
                                "setifempty X-Forwarded-Proto \"${transport}\""
                              ],
