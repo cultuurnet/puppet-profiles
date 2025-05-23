@@ -9,6 +9,7 @@ class profiles::uitdatabank::frontend::deployment (
 ) inherits ::profiles {
 
   $basedir = '/var/www/udb3-frontend'
+  $secrets = lookup('vault:uitdatabank/udb3-frontend')
 
   realize Apt::Source[$repository]
 
@@ -23,7 +24,7 @@ class profiles::uitdatabank::frontend::deployment (
     path    => "${basedir}/.env",
     owner   => 'www-data',
     group   => 'www-data',
-    source  => $config_source,
+    content => template($config_source),
     require => Package['uitdatabank-frontend'],
     notify  => Service['uitdatabank-frontend']
   }
