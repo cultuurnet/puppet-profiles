@@ -6,6 +6,7 @@ class profiles::jenkins::buildtools inherits ::profiles {
   realize Package['jq']
   realize Package['build-essential']
   realize Package['debhelper']
+  realize Package['golang']
   realize Package['kubectl']
   realize Package['argocd']
   realize Package['mysql-client']
