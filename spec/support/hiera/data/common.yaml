@@ -65,7 +65,7 @@ profiles::uitdatabank::search_api::deployment::features_source: 'appconfig/uitda
 profiles::uitdatabank::search_api::deployment::facilities_source: 'appconfig/uitdatabank/udb3-search-service/facet_mapping_facilities.yml'
 profiles::uitdatabank::search_api::deployment::themes_source: 'appconfig/uitdatabank/udb3-search-service/facet_mapping_themes.yml'
 profiles::uitdatabank::search_api::deployment::types_source: 'appconfig/uitdatabank/udb3-search-service/facet_mapping_types.yml'
-profiles::uitdatabank::search_api::deployment::pubkey_keycloak_source: 'appconfig/uitdatabank/keys/public-keycloak.pem'
+profiles::uitdatabank::search_api::deployment::pubkey_keycloak_source: 'appconfig/uitdatabank/keys/pubkey-keycloak.pem'
 profiles::uitdatabank::search_api::deployment::region_mapping_source: 'appconfig/uitdatabank/udb3-search-service/mapping_region.json'
 profiles::uitdatabank::search_api::deployment::default_queries_source: 'appconfig/uitdatabank/udb3-search-service/default_queries.php'
 
