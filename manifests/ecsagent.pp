@@ -9,8 +9,7 @@ class profiles::ecsagent (
     ensure  => 'present',
     require => Apt::Source['publiq-tools']
   }
-
-  realize Package['amazon-ecs-init']
+  include profiles::docker
   file { '/etc/ecs':
     ensure => 'directory',
     owner  => 'root',
@@ -31,7 +30,13 @@ class profiles::ecsagent (
   service { 'ecs':
     ensure    => 'running',
     enable    => true,
-    require   => Package['amazon-ecs-init'],
+    require   => [Package['amazon-ecs-init'],Class['profiles::docker']],
+    subscribe => File['/etc/ecs/ecs.config']
+  }
+  service { 'amazon-ecs-volume-plugin':
+    ensure    => 'running',
+    enable    => true,
+    require   => [Package['amazon-ecs-init'],Class['profiles::docker']],
     subscribe => File['/etc/ecs/ecs.config']
   }
 }
