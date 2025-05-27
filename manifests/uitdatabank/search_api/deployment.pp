@@ -7,12 +7,13 @@ class profiles::uitdatabank::search_api::deployment (
   String           $pubkey_keycloak_source,
   String           $version                = 'latest',
   String           $repository             = 'uitdatabank-search-api',
-  String           $region_mapping_source  = 'puppet:///modules/profiles/uitdatabank/search_api/mapping_region.json',
+  String           $region_mapping_source  = 'profiles/uitdatabank/search_api/mapping_region.json',
   Optional[String] $default_queries_source = undef,
   Optional[String] $puppetdb_url           = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $basedir                 = '/var/www/udb3-search-service'
+  $secrets                 = lookup('vault:uitdatabank/udb3-search-service')
   $file_default_attributes = {
                                owner   => 'www-data',
                                group   => 'www-data',
@@ -31,17 +32,17 @@ class profiles::uitdatabank::search_api::deployment (
   }
 
   file { 'uitdatabank-search-api-config':
-    ensure => 'file',
-    path   => "${basedir}/config.yml",
-    source => $config_source,
-    *      => $file_default_attributes
+    ensure  => 'file',
+    path    => "${basedir}/config.yml",
+    content => template($config_source),
+    *       => $file_default_attributes
   }
 
   file { 'uitdatabank-search-api-features':
-    ensure => 'file',
-    path   => "${basedir}/features.yml",
-    source => $features_source,
-    *      => $file_default_attributes
+    ensure  => 'file',
+    path    => "${basedir}/features.yml",
+    content => template($features_source),
+    *       => $file_default_attributes
   }
 
   file { 'uitdatabank-search-api-facet-mapping-regions':
@@ -59,25 +60,25 @@ class profiles::uitdatabank::search_api::deployment (
   }
 
   file { 'uitdatabank-search-api-pubkey-keycloak':
-    ensure => 'file',
-    path   => "${basedir}/public-keycloak.pem",
-    source => $pubkey_keycloak_source,
-    *      => $file_default_attributes
+    ensure  => 'file',
+    path    => "${basedir}/public-keycloak.pem",
+    content => template($pubkey_keycloak_source),
+    *       => $file_default_attributes
   }
 
   file { 'uitdatabank-search-api-region-mapping':
-    ensure => 'file',
-    path   => "${basedir}/src/ElasticSearch/Operations/json/mapping_region.json",
-    source => $region_mapping_source,
-    *      => $file_default_attributes
+    ensure  => 'file',
+    path    => "${basedir}/src/ElasticSearch/Operations/json/mapping_region.json",
+    content => template($region_mapping_source),
+    *       => $file_default_attributes
   }
 
   if $default_queries_source {
     file { 'uitdatabank-search-api-default-queries':
-      ensure => 'file',
-      path   => "${basedir}/default_queries.php",
-      source => $default_queries_source,
-      *      => $file_default_attributes
+      ensure  => 'file',
+      path    => "${basedir}/default_queries.php",
+      content => template($default_queries_source),
+      *       => $file_default_attributes
     }
   }
 
