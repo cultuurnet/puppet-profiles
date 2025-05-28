@@ -159,7 +159,8 @@ class profiles::packages inherits ::profiles {
   }
 
   @package { 'golang':
-    ensure  => 'present'
+    ensure  => 'present',
+    require => Apt::Source['publiq-tools']
   }
 
   # Realize a list of 'default' packages on all nodes

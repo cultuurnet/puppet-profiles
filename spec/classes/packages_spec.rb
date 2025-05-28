@@ -142,6 +142,7 @@ describe 'profiles::packages' do
         it { is_expected.to contain_package('drush').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('ca-certificates-publiq').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('gcsfuse').that_requires('Apt::Source[publiq-tools]') }
+        it { is_expected.to contain_package('golang').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('liquibase').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('mysql-connector-j').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('yarn').that_requires('Apt::Source[publiq-tools]') }
