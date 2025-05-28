@@ -8,3 +8,4 @@ vault:uitdatabank/udb3-jwtprovider: {}
 vault:uitdatabank/uit-articlelinker: {}
 vault:uitdatabank/udb3-angular-app: {}
 vault:uitdatabank/udb3-frontend: {}
+vault:uitdatabank/udb3-search-service: {}

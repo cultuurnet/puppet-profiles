@@ -22,20 +22,20 @@ define profiles::uitdatabank::term_mapping (
   realize User['www-data']
 
   file { "${title} facilities":
-    path   => "${basedir}/${facilities_mapping_filename}",
-    source => $facilities_source,
-    *      => $file_default_attributes
+    path    => "${basedir}/${facilities_mapping_filename}",
+    content => template($facilities_source),
+    *       => $file_default_attributes
   }
 
   file { "${title} themes":
-    path   => "${basedir}/${themes_mapping_filename}",
-    source => $themes_source,
-    *      => $file_default_attributes
+    path    => "${basedir}/${themes_mapping_filename}",
+    content => template($themes_source),
+    *       => $file_default_attributes
   }
 
   file { "${title} types":
-    path   => "${basedir}/${types_mapping_filename}",
-    source => $types_source,
-    *      => $file_default_attributes
+    path    => "${basedir}/${types_mapping_filename}",
+    content => template($types_source),
+    *       => $file_default_attributes
   }
 }
