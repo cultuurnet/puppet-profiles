@@ -90,6 +90,14 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             'content' => ''
           ) }
 
+          it { is_expected.to contain_file('uitdatabank-search-api-pubkey-keycloak').with(
+            'ensure'  => 'file',
+            'owner'   => 'www-data',
+            'group'   => 'www-data',
+            'path'    => '/var/www/udb3-search-service/public-keycloak.pem',
+            'content' => "uitdatabank keycloak public key\n"
+          ) }
+
           it { is_expected.to contain_profiles__uitdatabank__term_mapping('uitdatabank-search-api').with(
             'basedir'           => '/var/www/udb3-search-service',
             'facilities_source' => 'appconfig/uitdatabank/udb3-search-service/facet_mapping_facilities.yml',
@@ -226,6 +234,14 @@ describe 'profiles::uitdatabank::search_api::deployment' do
               'owner'   => 'www-data',
               'group'   => 'www-data',
               'path'    => '/var/www/udb3-search-service/default_queries.php',
+              'content' => ''
+            ) }
+
+            it { is_expected.to contain_file('uitdatabank-search-api-pubkey-keycloak').with(
+              'ensure'  => 'file',
+              'owner'   => 'www-data',
+              'group'   => 'www-data',
+              'path'    => '/var/www/udb3-search-service/public-keycloak.pem',
               'content' => ''
             ) }
 
