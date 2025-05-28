@@ -11,7 +11,7 @@ describe 'profiles::apache::logging' do
 
       it { is_expected.to contain_logrotate__rule('apache2').with(
         'path'          => '/var/log/apache2/*.log',
-        'rotate'        => 30,
+        'rotate'        => 21,
         'rotate_every'  => 'day',
         'create'        => true,
         'create_mode'   => '0640',
