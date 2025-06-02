@@ -37,6 +37,10 @@ describe 'profiles::uitpas::balie_api::deployment' do
 
         it { is_expected.to contain_profiles__php__fpm_service_alias('uitpas-balie-api') }
 
+        it { is_expected.to contain_class('profiles::uitpas::balie_api::logrotate').with(
+          'basedir' => '/var/www/uitpas-balie-api'
+        ) }
+
         it { is_expected.to contain_service('uitpas-balie-api').with(
           'hasstatus'  => true,
           'hasrestart' => true,

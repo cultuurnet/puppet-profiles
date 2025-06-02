@@ -36,6 +36,10 @@ class profiles::uitpas::balie_api::deployment (
     require    => Profiles::Php::Fpm_service_alias['uitpas-balie-api']
   }
 
+  class { 'profiles::uitpas::balie_api::logrotate':
+    basedir => $basedir
+  }
+
   profiles::deployment::versions { $title:
     puppetdb_url => $puppetdb_url
   }
