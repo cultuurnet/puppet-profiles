@@ -37,13 +37,13 @@ class profiles::sling (
     mode    => '0755',
     content => template('profiles/sling/parquet_dump.sh.erb'),
   }
-  cron { 'sling_parquet_dump':
-    ensure  => 'present',
-    command => '/root/.sling/parquet_dump.sh',
-    description => 'Sling parquet dump',
-    hour    => 3,
-    minute  => 0,
-    require => File['/root/.sling/parquet_dump.sh'],
-  }
+  # cron { 'sling_parquet_dump':
+  #   ensure  => 'present',
+  #   command => '/root/.sling/parquet_dump.sh',
+  #   description => 'Sling parquet dump',
+  #   hour    => 3,
+  #   minute  => 0,
+  #   require => File['/root/.sling/parquet_dump.sh'],
+  # }
 
 }
