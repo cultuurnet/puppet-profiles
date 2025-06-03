@@ -20,7 +20,7 @@ class profiles::sling (
     profiles::mysql::app_user { "sling@${database_name}":
       password => $app_user_password,
       readonly => true,
-      remote   => true,
+      remote   => false,
       require  => Mysql_database[$database_name],
     }
   }
