@@ -17,7 +17,6 @@ class profiles::sling (
     password => $app_user_password,
     readonly => true,
     remote   => false,
-    require  => Mysql_database[$database_name],
   }
   # Ensure the sling /root/.sling directory exists
   file { '/root/.sling':
