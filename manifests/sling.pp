@@ -13,11 +13,39 @@ class profiles::sling (
     ensure  => $version,
     require => Apt::Source['publiq-tools'],
   }
-
-  profiles::mysql::app_user { "sling@${database_name}":
+    profiles::mysql::app_user { "sling@${database_name}":
     password => $app_user_password,
     readonly => true,
     remote   => false,
     require  => Mysql_database[$database_name],
   }
+  # Ensure the sling /root/.sling directory exists
+  file { '/root/.sling':
+    ensure => 'directory',
+  }
+  file { '/root/parquetdumps':
+    ensure => 'directory',
+  }
+
+  file { '/root/.sling/env.yaml':
+    ensure  => 'file',
+    content => template('sling/sling.env.erb'),
+    require => Package['sling'],
+  }
+
+  file { '/root/.sling/parquet_dump.sh':
+    ensure  => 'file',
+    mode    => '0755',
+    content => template('sling/parquet_dump.sh.erb'),
+    require => Package['sling'],
+  }
+  cron { 'sling_parquet_dump':
+    ensure  => 'present',
+    command => '/root/.sling/parquet_dump.sh',
+    description => 'Sling parquet dump',
+    hour    => 3,
+    minute  => 0,
+    require => File['/root/.sling/parquet_dump.sh'],
+  }
+
 }
