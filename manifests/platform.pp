@@ -35,8 +35,7 @@ class profiles::platform (
   if $sling_enabled {
     class { 'profiles::sling':
       version                 => 'latest',
-      database_name           => 'platform',
-      require                 => Class['profiles::mysql::server'],
-    }
+      database_name           => 'platform'
+     }
   }
 }
