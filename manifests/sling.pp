@@ -29,15 +29,13 @@ class profiles::sling (
 
   file { '/root/.sling/env.yaml':
     ensure  => 'file',
-    content => template('sling/sling.env.erb'),
-    require => Package['sling'],
+    content => template('profiles/sling/sling.env.erb'),
   }
 
   file { '/root/.sling/parquet_dump.sh':
     ensure  => 'file',
     mode    => '0755',
-    content => template('sling/parquet_dump.sh.erb'),
-    require => Package['sling'],
+    content => template('profiles/sling/parquet_dump.sh.erb'),
   }
   cron { 'sling_parquet_dump':
     ensure  => 'present',
