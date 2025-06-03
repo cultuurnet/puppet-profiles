@@ -2,6 +2,7 @@ class profiles::platform (
   String                        $servername,
   Variant[String,Array[String]] $serveraliases = [],
   Boolean                       $deployment    = true
+  Boolean                       $sling_enabled = true
 ) inherits ::profiles {
 
   $basedir = '/var/www/platform-api'
@@ -19,6 +20,7 @@ class profiles::platform (
     require => [Group['www-data'], User['www-data']]
   }
 
+
   profiles::apache::vhost::php_fpm { "http://${servername}":
     basedir              => $basedir,
     public_web_directory => 'public',
@@ -29,5 +31,12 @@ class profiles::platform (
     class { 'profiles::platform::deployment':
       subscribe => Class['profiles::php']
     }
+  }
+  if $sling_enabled {
+    include ::profiles::sling (
+      version                 => 'latest',
+      database_name           => 'platform',
+      require                 => Class['profiles::mysql::server'],
+    )
   }
 }
