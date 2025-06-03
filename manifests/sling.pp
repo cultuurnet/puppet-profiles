@@ -1,6 +1,6 @@
 class profiles::sling (
   String $version           = 'latest',
-  Optional[Boolean] $deploy               = false,
+  Optional[Boolean] $deploy = false,
 
 ) inherits ::profiles {
 
