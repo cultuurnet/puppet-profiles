@@ -1,7 +1,7 @@
 class profiles::platform (
   String                        $servername,
   Variant[String,Array[String]] $serveraliases = [],
-  Boolean                       $deployment    = true
+  Boolean                       $deployment    = true,
   Boolean                       $sling_enabled = true
 ) inherits ::profiles {
 
