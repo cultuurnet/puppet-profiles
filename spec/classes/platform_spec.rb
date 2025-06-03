@@ -23,6 +23,7 @@ describe 'profiles::platform' do
             it { is_expected.to contain_class('profiles::platform').with(
               'servername'    => 'platform.example.com',
               'serveraliases' => [],
+              'sling_enabled' => true,
               'deployment'    => true
             ) }
 
