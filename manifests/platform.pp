@@ -33,10 +33,10 @@ class profiles::platform (
     }
   }
   if $sling_enabled {
-    include ::profiles::sling (
+    class { 'profiles::sling':
       version                 => 'latest',
       database_name           => 'platform',
       require                 => Class['profiles::mysql::server'],
-    )
+    }
   }
 }
