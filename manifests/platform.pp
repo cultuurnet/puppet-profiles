@@ -1,6 +1,6 @@
 class profiles::platform (
   String                        $servername,
-  Boolean                       $sling_enabled = true,
+  Boolean                       $sling_enabled = false,
   String                        $database_password,
   Variant[String,Array[String]] $serveraliases = [],
   Boolean                       $deployment    = true
