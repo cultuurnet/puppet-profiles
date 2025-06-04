@@ -5,16 +5,16 @@ describe 'profiles::uitdatabank::search_api::elasticdump_to_gcs' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with project => bla and bucket_name => foo" do
+      context "with project_id => bla and bucket_name => foo" do
         let(:params) { {
-          'project'     => 'bla',
+          'project_id'  => 'bla',
           'bucket_name' => 'foo'
         } }
 
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::uitdatabank::search_api::elasticdump_to_gcs').with(
-          'project'                => 'bla',
+          'project_id'             => 'bla',
           'bucket_name'            => 'foo',
           'bucket_dumplocation'    => '',
           'credentials_source'     => nil,
@@ -24,7 +24,7 @@ describe 'profiles::uitdatabank::search_api::elasticdump_to_gcs' do
         ) }
 
         it { is_expected.to contain_profiles__google__gcloud('root').with(
-          'project'            => 'bla',
+          'project_id'         => 'bla',
           'credentials_source' => nil
         ) }
 
@@ -49,9 +49,9 @@ describe 'profiles::uitdatabank::search_api::elasticdump_to_gcs' do
         it { is_expected.to contain_cron('elasticdump_to_gcs').that_requires('File[elasticdump_to_gcs]') }
       end
 
-      context "with project => foobar, bucket_name => bar, credentials_source => /tmp/secret, dump_schedule => true, bucket_dumplocation => dir1/dir2, dump_hour => 12 and local_timezone => Europe/Paris" do
+      context "with project_id => foobar, bucket_name => bar, credentials_source => /tmp/secret, dump_schedule => true, bucket_dumplocation => dir1/dir2, dump_hour => 12 and local_timezone => Europe/Paris" do
         let(:params) { {
-          'project'             => 'foobar',
+          'project_id'          => 'foobar',
           'bucket_name'         => 'bar',
           'credentials_source'  => '/tmp/secret',
           'dump_schedule'       => true,
@@ -61,7 +61,7 @@ describe 'profiles::uitdatabank::search_api::elasticdump_to_gcs' do
         } }
 
         it { is_expected.to contain_profiles__google__gcloud('root').with(
-          'project'            => 'foobar',
+          'project_id'         => 'foobar',
           'credentials_source' => '/tmp/secret'
         ) }
 
@@ -87,7 +87,7 @@ describe 'profiles::uitdatabank::search_api::elasticdump_to_gcs' do
         let(:params) { {} }
 
         it { is_expected.to contain_class('profiles::uitdatabank::search_api::elasticdump_to_gcs').with(
-          'project'             => nil,
+          'project_id'          => nil,
           'bucket_name'         => nil,
           'bucket_dumplocation' => '',
           'credentials_source'  => nil,
@@ -97,7 +97,7 @@ describe 'profiles::uitdatabank::search_api::elasticdump_to_gcs' do
         ) }
 
         it { is_expected.to contain_profiles__google__gcloud('root').with(
-          'project'            => nil,
+          'project_id'         => nil,
           'credentials_source' => nil
         ) }
 

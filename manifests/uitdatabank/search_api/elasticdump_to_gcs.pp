@@ -1,5 +1,5 @@
 class profiles::uitdatabank::search_api::elasticdump_to_gcs (
-  Optional[String] $project             = undef,
+  Optional[String] $project_id          = undef,
   Optional[String] $bucket_name         = undef,
   String           $bucket_dumplocation = '',
   Optional[String] $credentials_source  = undef,
@@ -10,7 +10,7 @@ class profiles::uitdatabank::search_api::elasticdump_to_gcs (
 
   profiles::google::gcloud { 'root':
     credentials_source => $credentials_source,
-    project            => $project
+    project            => $project_id
   }
 
   if $bucket_name {
