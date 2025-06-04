@@ -1,8 +1,9 @@
 class profiles::platform (
   String                        $servername,
+  Boolean                       $sling_enabled = false,
   String                        $database_password,
-  Variant[String,Array[String]] $serveraliases     = [],
-  Boolean                       $deployment        = true
+  Variant[String,Array[String]] $serveraliases = [],
+  Boolean                       $deployment    = true
 ) inherits ::profiles {
 
   $basedir       = '/var/www/platform-api'
@@ -46,5 +47,11 @@ class profiles::platform (
       require   => Profiles::Mysql::App_user["${database_user}@${database_name}"],
       subscribe => Class['profiles::php']
     }
+  }
+  if $sling_enabled {
+    class { 'profiles::sling':
+      version                 => 'latest',
+      database_name           => 'platform'
+     }
   }
 }
