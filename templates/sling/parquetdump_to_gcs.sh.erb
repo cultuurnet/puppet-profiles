@@ -3,11 +3,11 @@
 for dbasetable in $(mysql -h 127.0.0.1 -u sling -p<%= @app_user_password %> <%= @database_name %> --batch --skip-column-names -e 'show tables;')
 do
   echo "Dumping table $dbasetable from database <%= @database_name %> to Parquet file"
-  /usr/local/bin/sling run --src-conn MYSQL_URL --src-stream <%= @database_name %>.$dbasetable --tgt-object file:///root/parquetdumps/<%= @database_name %>_$dbasetable.parquet
+  /usr/local/bin/sling run --src-conn MYSQL_URL --src-stream <%= @database_name %>.$dbasetable --tgt-object file:///data/parquetdumps/<%= @database_name %>_$dbasetable.parquet
 done
 
 # now upload the files to gcp via gcloud
-for file in /root/parquetdumps/*.parquet
+for file in /data/parquetdumps/*.parquet
 do
   #extract the tablename from the file name (<%= @database_name %>_$dbasetable.parquet)
   tablename=$(basename "$file" .parquet | sed 's/<%= @database_name %>_//')
@@ -18,4 +18,4 @@ do
 done
 
 # clean up the local files
-rm -f /root/parquetdumps/*.parquet
+rm -f /data/parquetdumps/*.parquet

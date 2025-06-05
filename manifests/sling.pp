@@ -41,7 +41,7 @@ class profiles::sling (
   file { '/root/.sling':
     ensure => 'directory',
   }
-  file { '/root/parquetdumps':
+  file { '/data/parquetdumps':
     ensure => 'directory',
   }
 
@@ -49,6 +49,7 @@ class profiles::sling (
     ensure  => 'file',
     content => template('profiles/sling/sling.env.erb'),
   }
+
   if $bucket_name {
     file { 'parquetdump_to_gcs':
       ensure  => 'file',
