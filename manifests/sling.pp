@@ -25,7 +25,7 @@ class profiles::sling (
   }
 
   if $project_id {
-    $secrets = lookup('vault:publiqplatform/etl')
+    $secrets = lookup('vault:platform/etl')
 
     profiles::google::gcloud { 'root':
       credentials => {
