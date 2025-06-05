@@ -2,6 +2,7 @@
 # This script dumps all tables from the 'platform' database into Parquet files.
 for dbasetable in $(mysql -h 127.0.0.1 -u sling -p<%= @app_user_password %> <%= @database_name %> --batch --skip-column-names -e 'show tables;')
 do
+  echo "Dumping table $dbasetable from database <%= @database_name %> to Parquet file"
   /usr/local/bin/sling run --src-conn MYSQL_URL --src-stream <%= @database_name %>.$dbasetable --tgt-object file:///root/parquetdumps/<%= @database_name %>_$dbasetable.parquet
 done
 
