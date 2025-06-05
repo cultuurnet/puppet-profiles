@@ -93,15 +93,15 @@ class profiles::uitdatabank::entry_api::deployment (
   }
 
   file { 'uitdatabank-entry-api-pubkey-uitidv1':
-    path   => "${basedir}/public.pem",
-    source => $pubkey_uitidv1_source,
-    *      => $file_default_attributes
+    path    => "${basedir}/public.pem",
+    content => template($pubkey_uitidv1_source),
+    *       => $file_default_attributes
   }
 
   file { 'uitdatabank-entry-api-pubkey-keycloak':
-    path   => "${basedir}/public-keycloak.pem",
-    source => $pubkey_keycloak_source,
-    *      => $file_default_attributes
+    path    => "${basedir}/public-keycloak.pem",
+    content => template($pubkey_keycloak_source),
+    *       => $file_default_attributes
   }
 
   profiles::uitdatabank::terms { 'uitdatabank-entry-api':

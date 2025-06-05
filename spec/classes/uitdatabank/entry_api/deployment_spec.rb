@@ -5,7 +5,7 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context 'with config_source => /foo.json, admin_permissions_source => /tmp/admin_permissions_source, client_permissions_source => /tmp/client_permissions_source, movie_fetcher_config_source => /tmp/movie_fetcher_config_source, completeness_source => /tmp/completeness_source, externalid_mapping_organizer_source => /tmp/externalid_organizer_source, externalid_mapping_place_source => /tmp/externalid_place_source, term_mapping_facilities_source => /tmp/facilities_source, term_mapping_themes_source => /tmp/themes_source and term_mapping_types_source => /tmp/types_source, pubkey_uitidv1_source => /tmp/pub_uitidv1.pem and pubkey_keycloak_source => /tmp/pub_keycloak.pem' do
+      context 'with config_source => /foo.json, admin_permissions_source => /tmp/admin_permissions_source, client_permissions_source => /tmp/client_permissions_source, movie_fetcher_config_source => /tmp/movie_fetcher_config_source, completeness_source => /tmp/completeness_source, externalid_mapping_organizer_source => /tmp/externalid_organizer_source, externalid_mapping_place_source => /tmp/externalid_place_source, term_mapping_facilities_source => /tmp/facilities_source, term_mapping_themes_source => /tmp/themes_source and term_mapping_types_source => /tmp/types_source, pubkey_uitidv1_source => appconfig/uitdatabank/keys/public.pem and pubkey_keycloak_source => appconfig/uitdatabank/keys/pubkey-keycloak.pem' do
         let(:params) { {
           'config_source'                       => '/foo.json',
           'admin_permissions_source'            => '/tmp/admin_permissions_source',
@@ -17,8 +17,8 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           'term_mapping_facilities_source'      => '/tmp/facilities_source',
           'term_mapping_themes_source'          => '/tmp/themes_source',
           'term_mapping_types_source'           => '/tmp/types_source',
-          'pubkey_uitidv1_source'               => '/tmp/pub_uitidv1.pem',
-          'pubkey_keycloak_source'              => '/tmp/pub_keycloak.pem'
+          'pubkey_uitidv1_source'               => 'appconfig/uitdatabank/keys/public.pem',
+          'pubkey_keycloak_source'              => 'appconfig/uitdatabank/keys/pubkey-keycloak.pem'
         } }
 
         it { is_expected.to compile.with_all_deps }
@@ -34,8 +34,8 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           'term_mapping_facilities_source'      => '/tmp/facilities_source',
           'term_mapping_themes_source'          => '/tmp/themes_source',
           'term_mapping_types_source'           => '/tmp/types_source',
-          'pubkey_uitidv1_source'               => '/tmp/pub_uitidv1.pem',
-          'pubkey_keycloak_source'              => '/tmp/pub_keycloak.pem',
+          'pubkey_uitidv1_source'               => 'appconfig/uitdatabank/keys/public.pem',
+          'pubkey_keycloak_source'              => 'appconfig/uitdatabank/keys/pubkey-keycloak.pem',
           'version'                             => 'latest',
           'repository'                          => 'uitdatabank-entry-api',
           'bulk_label_offer_worker'             => 'present',
@@ -123,19 +123,19 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
         ) }
 
         it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').with(
-          'ensure' => 'file',
-          'path'   => '/var/www/udb3-backend/public.pem',
-          'owner'  => 'www-data',
-          'group'  => 'www-data',
-          'source' => '/tmp/pub_uitidv1.pem'
+          'ensure'  => 'file',
+          'path'    => '/var/www/udb3-backend/public.pem',
+          'owner'   => 'www-data',
+          'group'   => 'www-data',
+          'content' => "uitdatabank public key\n"
         ) }
 
         it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').with(
-          'ensure' => 'file',
-          'path'   => '/var/www/udb3-backend/public-keycloak.pem',
-          'owner'  => 'www-data',
-          'group'  => 'www-data',
-          'source' => '/tmp/pub_keycloak.pem'
+          'ensure'  => 'file',
+          'path'    => '/var/www/udb3-backend/public-keycloak.pem',
+          'owner'   => 'www-data',
+          'group'   => 'www-data',
+          'content' => "uitdatabank keycloak public key\n"
         ) }
 
         it { is_expected.to contain_profiles__php__fpm_service_alias('uitdatabank-entry-api') }
@@ -296,7 +296,7 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
         end
       end
 
-      context 'with config_source => /etc/bar.json, admin_permissions_source => /etc/admin_permissions_source, client_permissions_source => /etc/client_permissions_source, movie_fetcher_config_source => /etc/movie_fetcher_config_source, completeness_source => /etc/completeness_source, externalid_mapping_organizer_source => /etc/externalid_organizer_source, externalid_mapping_place_source => /etc/externalid_place_source, term_mapping_facilities_source => /etc/facilities_source, term_mapping_themes_source => /etc/themes_source, term_mapping_types_source => /etc/types_source, pubkey_uitidv1_source => /etc/pub_uitidv1.pem and pubkey_keycloak_source => /etc/pub_keycloak.pem' do
+      context 'with config_source => /etc/bar.json, admin_permissions_source => /etc/admin_permissions_source, client_permissions_source => /etc/client_permissions_source, movie_fetcher_config_source => /etc/movie_fetcher_config_source, completeness_source => /etc/completeness_source, externalid_mapping_organizer_source => /etc/externalid_organizer_source, externalid_mapping_place_source => /etc/externalid_place_source, term_mapping_facilities_source => /etc/facilities_source, term_mapping_themes_source => /etc/themes_source, term_mapping_types_source => /etc/types_source, pubkey_uitidv1_source => appconfig/uitdatabank/keys/my_public_key.pem and pubkey_keycloak_source => appconfig/uitdatabank/keys/mypubkey-keycloak.pem' do
         let(:params) { {
           'config_source'                       => '/etc/bar.json',
           'admin_permissions_source'            => '/etc/admin_permissions_source',
@@ -308,8 +308,8 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           'term_mapping_facilities_source'      => '/etc/facilities_source',
           'term_mapping_themes_source'          => '/etc/themes_source',
           'term_mapping_types_source'           => '/etc/types_source',
-          'pubkey_uitidv1_source'               => '/etc/pub_uitidv1.pem',
-          'pubkey_keycloak_source'              => '/etc/pub_keycloak.pem'
+          'pubkey_uitidv1_source'               => 'appconfig/uitdatabank/keys/my_public_key.pem',
+          'pubkey_keycloak_source'              => 'appconfig/uitdatabank/keys/mypubkey-keycloak.pem'
         } }
 
         it { is_expected.to contain_file('uitdatabank-entry-api-config').with(
@@ -341,13 +341,12 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
         ) }
 
         it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').with(
-          'source' => '/etc/pub_uitidv1.pem'
+          'content' => "my_public_key\n"
         ) }
 
         it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').with(
-          'source' => '/etc/pub_keycloak.pem'
+          'content' => ''
         ) }
-
       end
 
       context 'without parameters' do
