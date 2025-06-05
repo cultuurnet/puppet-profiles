@@ -61,7 +61,7 @@ class profiles::sling (
       ensure  => 'present',
       command => '/usr/local/bin/parquetdump_to_gcs',
       environment => ['SHELL=/bin/bash', "TZ=${local_timezone}", 'MAILTO=infra+cron@publiq.be'],
-      hour    => 3,
+      hour    => $cron_hour,
       minute  => 0,
       require => File['parquetdump_to_gcs'],
     }
