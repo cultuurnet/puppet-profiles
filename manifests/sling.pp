@@ -3,6 +3,7 @@ class profiles::sling (
   Optional[String] $database_name  = undef,
   Optional[String] $project_id     = undef,
   Optional[String] $bucket_name    = undef,
+  Boolean $dump_empty_tables       = true,
   Integer $cron_hour               = 2,
   String           $local_timezone = 'UTC'
 
