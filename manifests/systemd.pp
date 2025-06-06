@@ -3,7 +3,7 @@ class profiles::systemd (
 ) inherits profiles {
   class {
     'systemd': journald_settings => {
-      SystemMaxUse => $system_max_use,
+      'SystemMaxUse' => $system_max_use,
     }
   }
 }
