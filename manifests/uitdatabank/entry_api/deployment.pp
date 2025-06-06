@@ -93,24 +93,27 @@ class profiles::uitdatabank::entry_api::deployment (
   }
 
   file { 'uitdatabank-entry-api-pubkey-uitidv1':
-    path   => "${basedir}/public.pem",
-    source => $pubkey_uitidv1_source,
-    *      => $file_default_attributes
+    path    => "${basedir}/public.pem",
+    content => template($pubkey_uitidv1_source),
+    *       => $file_default_attributes
   }
 
   file { 'uitdatabank-entry-api-pubkey-keycloak':
-    path   => "${basedir}/public-keycloak.pem",
-    source => $pubkey_keycloak_source,
-    *      => $file_default_attributes
+    path    => "${basedir}/public-keycloak.pem",
+    content => template($pubkey_keycloak_source),
+    *       => $file_default_attributes
   }
 
-  profiles::uitdatabank::terms { 'uitdatabank-entry-api':
-    directory                 => $basedir,
-    facilities_mapping_source => $term_mapping_facilities_source,
-    themes_mapping_source     => $term_mapping_themes_source,
-    types_mapping_source      => $term_mapping_types_source,
-    require                   => Package['uitdatabank-entry-api'],
-    notify                    => Service['uitdatabank-entry-api']
+  profiles::uitdatabank::term_mapping { 'uitdatabank-entry-api':
+    basedir                     => $basedir,
+    facilities_source           => $term_mapping_facilities_source,
+    themes_source               => $term_mapping_themes_source,
+    types_source                => $term_mapping_types_source,
+    facilities_mapping_filename => 'config.term_mapping_facilities.php',
+    themes_mapping_filename     => 'config.term_mapping_themes.php',
+    types_mapping_filename      => 'config.term_mapping_types.php',
+    require                     => Package['uitdatabank-entry-api'],
+    notify                      => Service['uitdatabank-entry-api']
   }
 
   exec { 'uitdatabank-entry-api-db-migrate':
