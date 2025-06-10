@@ -250,6 +250,11 @@ class profiles::apt::repositories {
     release  => $codename,
     repos    => 'main'
   }
+  @apt::source { 'uitpas-segmentatie':
+    location => "https://apt.publiq.be/uitpas-segmentatie-${environment}",
+    release  => $codename,
+    repos    => 'main'
+  }
 
   @apt::source { 'uitpas-website-frontend':
     location => "https://apt.publiq.be/uitpas-website-frontend-${environment}",
