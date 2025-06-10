@@ -35,7 +35,6 @@ class profiles::uitpas::segmentatie::deployment (
     contextroot   => 'segmentation',
     precompilejsp => false,
     source        => '/opt/uitpas-segmentatie/uitpas-segmentatie.war',
-    envfile       => '/opt/uitpas-segmentatie/.env',
     require       => [User['glassfish'], File['/opt/uitpas-segmentatie/.env']],
   }
 }
