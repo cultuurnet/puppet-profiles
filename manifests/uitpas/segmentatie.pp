@@ -6,7 +6,6 @@ class profiles::uitpas::segmentatie (
   String $config_source,
   String $version                              = 'latest',
   String $repository                           = 'uitpas-segmentatie',
-  Integer $portbase                            = 4800,
   Boolean $deployment                          = true,
   Optional[String] $initial_heap_size          = undef,
   Optional[String] $maximum_heap_size          = undef,
