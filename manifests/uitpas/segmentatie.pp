@@ -1,8 +1,19 @@
 class profiles::uitpas::segmentatie (
-  String                        $servername,
-  Variant[String,Array[String]] $serveraliases   = [],
-  Boolean                       $deployment      = true,
-  String                         $database_host        = '127.0.0.1',
+  String $servername,
+  Variant[String,Array[String]] $serveraliases = [],
+  String $database_password,
+  String $database_host                        = '127.0.0.1',
+  String $config_source,
+  String $version                              = 'latest',
+  String $repository                           = 'uitpas-segmentatie',
+  Integer $portbase                            = 4800,
+  Boolean $deployment                          = true,
+  Optional[String] $initial_heap_size          = undef,
+  Optional[String] $maximum_heap_size          = undef,
+  Boolean $jmx                                 = true,
+  Integer $portbase                            = 4800,
+  Enum['running', 'stopped'] $service_status   = 'running',
+  Hash $settings                               = {}
 
 ) inherits profiles {
   $database_name              = 'uitpas_segmentatie'
