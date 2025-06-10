@@ -105,7 +105,7 @@ class profiles::uitpas::segmentatie (
         config_source => $config_source
       }
 
-      Class['profiles::glassfish'] -> Class['profiles::uitpas::api::deployment']
+      Class['profiles::glassfish'] -> Class['profiles::uitpas::segmentatie::deployment']
       Package['mysql-connector-j'] -> Class['profiles::uitpas::segmentatie::deployment']
       File['Domain uitpas-segmentatie mysql-connector-j'] -> Class['profiles::uitpas::segmentatie::deployment']
       Profiles::Mysql::App_user["${database_user}@${database_name}"] -> Class['profiles::uitpas::segmentatie::deployment']
