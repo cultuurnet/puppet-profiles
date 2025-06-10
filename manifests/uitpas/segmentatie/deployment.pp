@@ -2,6 +2,7 @@ class profiles::uitpas::segmentatie::deployment (
 
   String           $version           = 'latest',
   String           $repository        = 'uitpas-segmentatie',
+  String           $config_source ,
   Integer          $portbase          = 4800,
 ) inherits profiles {
   $secrets = lookup('vault:uitpas/segmentatie')
