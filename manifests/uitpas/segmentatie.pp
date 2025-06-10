@@ -102,8 +102,6 @@ class profiles::uitpas::segmentatie (
 
     if $deployment {
       class { 'profiles::uitpas::segmentatie::deployment':
-        database_password => $database_password,
-        database_host     => $database_host,
         portbase          => $portbase
       }
 

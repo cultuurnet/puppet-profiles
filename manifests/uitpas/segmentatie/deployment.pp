@@ -1,6 +1,5 @@
 class profiles::uitpas::segmentatie::deployment (
-   String           $database_password,
-  String           $database_host     = '127.0.0.1',
+
   String           $version           = 'latest',
   String           $repository        = 'uitpas-segmentatie',
   Integer          $portbase          = 4800,
