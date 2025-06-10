@@ -92,7 +92,7 @@ class profiles::uitpas::segmentatie (
       *            => $default_attributes,
     }
 
-    jdbcresource { 'jdbc/cultuurnet_marketing':
+    jdbcresource { 'jdbc/cultuurnet-marketing':
       ensure         => 'present',
       connectionpool => 'mysql_uitpas_segmentatie_j2eePool',
       require        => Jdbcconnectionpool['mysql_uitpas_segmentatie_j2eePool'],
