@@ -16,7 +16,7 @@ class profiles::uitpas::segmentatie::deployment (
   package { 'uitpas-segmentatie':
     ensure  => $version,
     require => Apt::Source[$repository],
-    notify  => [App['uitpas-segmentatie'], Profiles::Deployment::Versions[$title]],
+    notify  => [App['uitpas-segmentatie']],
   }
   file { '/opt/uitpas-segmentatie/.env':
     ensure  => 'file',
