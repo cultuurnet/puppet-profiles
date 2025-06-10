@@ -101,7 +101,8 @@ class profiles::uitpas::segmentatie (
 
     if $deployment {
       class { 'profiles::uitpas::segmentatie::deployment':
-        portbase          => $portbase
+        portbase          => $portbase,
+        config_source => $config_source
       }
 
       Class['profiles::glassfish'] -> Class['profiles::uitpas::api::deployment']
