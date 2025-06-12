@@ -29,8 +29,9 @@ class profiles::uitpas::segmentatie (
   include profiles::glassfish
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
-    destination => "http://127.0.0.1:${glassfish_domain_http_port}/",
-    aliases     => $serveraliases,
+    destination   => "http://127.0.0.1:${glassfish_domain_http_port}/",
+    aliases       => $serveraliases,
+    preserve_host => true,
   }
 
   $database_host_remote = true
@@ -119,6 +120,7 @@ class profiles::uitpas::segmentatie (
     notify  => Service['uitpas-segmentatie'],
     *       => $default_attributes,
   }
+
 
   set { 'server.thread-pools.thread-pool.http-thread-pool.max-thread-pool-size':
     ensure  => 'present',
