@@ -29,8 +29,9 @@ class profiles::uitpas::segmentatie (
   include profiles::glassfish
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
-    destination => "http://127.0.0.1:${glassfish_domain_http_port}/",
-    aliases     => $serveraliases,
+    destination   => "http://127.0.0.1:${glassfish_domain_http_port}/",
+    aliases       => $serveraliases,
+    preserve_host => true,
   }
 
   $database_host_remote = true
@@ -115,6 +116,22 @@ class profiles::uitpas::segmentatie (
   set { 'server.network-config.protocols.protocol.http-listener-1.http.scheme-mapping':
     ensure  => 'present',
     value   => 'X-Forwarded-Proto',
+    require => Profiles::Glassfish::Domain['uitpas-segmentatie'],
+    notify  => Service['uitpas-segmentatie'],
+    *       => $default_attributes,
+  }
+
+  set { 'server.network-config.protocols.protocol.http-listener-1.http.server-name-header':
+    ensure  => 'present',
+    value   => 'X-Forwarded-Host',
+    require => Profiles::Glassfish::Domain['uitpas-segmentatie'],
+    notify  => Service['uitpas-segmentatie'],
+    *       => $default_attributes,
+  }
+
+  set { 'server.network-config.protocols.protocol.http-listener-1.http.server-port-header':
+    ensure  => 'present',
+    value   => 'X-Forwarded-Port',
     require => Profiles::Glassfish::Domain['uitpas-segmentatie'],
     notify  => Service['uitpas-segmentatie'],
     *       => $default_attributes,
