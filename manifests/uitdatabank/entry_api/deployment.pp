@@ -57,15 +57,15 @@ class profiles::uitdatabank::entry_api::deployment (
   }
 
   file { 'uitdatabank-entry-api-admin-permissions':
-    path   => "${basedir}/config.allow_all.php",
-    source => $admin_permissions_source,
-    *      => $file_default_attributes
+    path    => "${basedir}/config.allow_all.php",
+    content => template($admin_permissions_source),
+    *       => $file_default_attributes
   }
 
   file { 'uitdatabank-entry-api-client-permissions':
-    path   => "${basedir}/config.client_permissions.php",
-    source => $client_permissions_source,
-    *      => $file_default_attributes
+    path    => "${basedir}/config.client_permissions.php",
+    content => template($client_permissions_source),
+    *       => $file_default_attributes
   }
 
   file { 'uitdatabank-entry-api-movie-fetcher-config':
@@ -75,21 +75,21 @@ class profiles::uitdatabank::entry_api::deployment (
   }
 
   file { 'uitdatabank-entry-api-completeness':
-    path   => "${basedir}/config.completeness.php",
-    source => $completeness_source,
-    *      => $file_default_attributes
+    path    => "${basedir}/config.completeness.php",
+    content => template($completeness_source),
+    *       => $file_default_attributes
   }
 
   file { 'uitdatabank-entry-api-externalid-mapping-organizer':
-    path   => "${basedir}/config.external_id_mapping_organizer.php",
-    source => $externalid_mapping_organizer_source,
-    *      => $file_default_attributes
+    path    => "${basedir}/config.external_id_mapping_organizer.php",
+    content => template($externalid_mapping_organizer_source),
+    *       => $file_default_attributes
   }
 
   file { 'uitdatabank-entry-api-externalid-mapping-place':
-    path   => "${basedir}/config.external_id_mapping_place.php",
-    source => $externalid_mapping_place_source,
-    *      => $file_default_attributes
+    path    => "${basedir}/config.external_id_mapping_place.php",
+    content => template($externalid_mapping_place_source),
+    *       => $file_default_attributes
   }
 
   file { 'uitdatabank-entry-api-pubkey-uitidv1':
