@@ -121,21 +121,6 @@ class profiles::uitpas::segmentatie (
     *       => $default_attributes,
   }
 
-  set { 'server.network-config.protocols.protocol.http-listener-1.http.server-name-header':
-    ensure  => 'present',
-    value   => 'X-Forwarded-Host',
-    require => Profiles::Glassfish::Domain['uitpas-segmentatie'],
-    notify  => Service['uitpas-segmentatie'],
-    *       => $default_attributes,
-  }
-
-  set { 'server.network-config.protocols.protocol.http-listener-1.http.server-port-header':
-    ensure  => 'present',
-    value   => 'X-Forwarded-Port',
-    require => Profiles::Glassfish::Domain['uitpas-segmentatie'],
-    notify  => Service['uitpas-segmentatie'],
-    *       => $default_attributes,
-  }
 
   set { 'server.thread-pools.thread-pool.http-thread-pool.max-thread-pool-size':
     ensure  => 'present',
