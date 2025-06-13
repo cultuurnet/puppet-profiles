@@ -1,5 +1,9 @@
 #!/bin/bash
 # This script dumps all tables from the 'platform' database into Parquet files.
+
+export SLING_ALLOW_EMPTY=<%= @dump_empty_tables %>
+export SLING_ALLOW_EMPTY_TABLES=<%= @dump_empty_tables %>
+
 for dbasetable in $(mysql -h 127.0.0.1 -u sling -p<%= @app_user_password %> <%= @database_name %> --batch --skip-column-names -e 'show tables;')
 do
   echo "Dumping table $dbasetable from database <%= @database_name %> to Parquet file"
