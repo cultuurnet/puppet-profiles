@@ -1,0 +1,1 @@
+UiTdatabank entry API configuration

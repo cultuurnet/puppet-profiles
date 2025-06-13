@@ -21,6 +21,7 @@ class profiles::uitdatabank::entry_api::deployment (
 ) inherits ::profiles {
 
   $basedir                 = '/var/www/udb3-backend'
+  $secrets                 = lookup('vault:uitdatabank/udb3-backend')
   $mount_target_dns_name   = lookup('terraform::efs::mount_target_dns_name', Optional[String], 'first', undef)
   $file_default_attributes = {
                                ensure  => 'file',
@@ -51,9 +52,9 @@ class profiles::uitdatabank::entry_api::deployment (
   }
 
   file { 'uitdatabank-entry-api-config':
-    path   => "${basedir}/config.php",
-    source => $config_source,
-    *      => $file_default_attributes
+    path    => "${basedir}/config.php",
+    content => template($config_source),
+    *       => $file_default_attributes
   }
 
   file { 'uitdatabank-entry-api-admin-permissions':
@@ -69,9 +70,9 @@ class profiles::uitdatabank::entry_api::deployment (
   }
 
   file { 'uitdatabank-entry-api-movie-fetcher-config':
-    path   => "${basedir}/config.kinepolis.php",
-    source => $movie_fetcher_config_source,
-    *      => $file_default_attributes
+    path    => "${basedir}/config.kinepolis.php",
+    content => template($movie_fetcher_config_source),
+    *       => $file_default_attributes
   }
 
   file { 'uitdatabank-entry-api-completeness':

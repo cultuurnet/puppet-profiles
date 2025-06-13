@@ -5,4 +5,5 @@
   :datadir: spec/support/hiera/data
 :hierarchy:
   - terraform_empty
+  - vault
   - common
