@@ -50,24 +50,28 @@ class profiles::php (
   }
 
   if $fpm {
-    $fpm_attributes = {
-                        fpm_service_ensure           => $fpm_service_status,
-                        fpm_service_enable           => $fpm_service_status ? {
-                                                          'running' => true,
-                                                          'stopped' => false
-                                                        },
-                        fpm_pools                    => { 'www' => $default_fpm_settings + $fpm_settings },
-                        fpm_global_pool_settings     => {
-                                                          user         => 'www-data',
-                                                          group        => 'www-data',
-                                                          listen_owner => 'www-data',
-                                                          listen_group => 'www-data',
-                                                          listen       => $fpm_socket_type ? {
-                                                                            'unix' => '/run/php/php-fpm.sock',
-                                                                            'tcp'  => '127.0.0.1:9000'
-                                                                          }
-                                                        },
-                        reload_fpm_on_config_changes => !$fpm_restart_on_change
+    $current_version = $facts['phpversion'] ? {
+                         /\d+.\d+.\d/ => regsubst($facts['phpversion'], '(\d+)\.(\d+)\..*', '\1.\2'),
+                         default      => undef
+                       }
+    $fpm_attributes  = {
+                         fpm_service_ensure           => $fpm_service_status,
+                         fpm_service_enable           => $fpm_service_status ? {
+                                                           'running' => true,
+                                                           'stopped' => false
+                                                         },
+                         fpm_pools                    => { 'www' => $default_fpm_settings + $fpm_settings },
+                         fpm_global_pool_settings     => {
+                                                           user         => 'www-data',
+                                                           group        => 'www-data',
+                                                           listen_owner => 'www-data',
+                                                           listen_group => 'www-data',
+                                                           listen       => $fpm_socket_type ? {
+                                                                             'unix' => '/run/php/php-fpm.sock',
+                                                                             'tcp'  => '127.0.0.1:9000'
+                                                                           }
+                                                         },
+                         reload_fpm_on_config_changes => !$fpm_restart_on_change
                       }
 
     file { 'php-fpm service':
@@ -79,6 +83,16 @@ class profiles::php (
 
     systemd::daemon_reload { 'php-fpm': }
 
+    if $current_version {
+      if !($current_version == $version) {
+        exec { 'stop_php_fpm_before_version_change':
+          command   => "systemctl stop php${current_version}-fpm",
+          path      => ['/usr/sbin', '/usr/bin'],
+          logoutput => 'on_failure',
+          before    => Class['php']
+        }
+      }
+    }
   } else {
     $fpm_attributes = {}
   }
