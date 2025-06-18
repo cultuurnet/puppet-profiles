@@ -13,7 +13,7 @@ class profiles::uitdatabank::rdf (
   $rewrites = [{
                 comment      => 'Only allow GET requests',
                 rewrite_cond => ['%{REQUEST_METHOD} !GET'],
-                rewrite_rule => '^ - [FL]'
+                rewrite_rule => '^ - [F,L]'
               }, {
                 comment      => 'Only allow requests to /(event|place|organizer)s?/<uuid> or /id/(event|place|organizer)/udb/<uuid>',
                 rewrite_cond => [
@@ -22,7 +22,7 @@ class profiles::uitdatabank::rdf (
                                   '%{REQUEST_URI} !^/id/(event|place|organizer)/udb/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$',
                                   '%{REQUEST_URI} !^/id/(event|place|organizer)/udb/[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$'
                                 ],
-                rewrite_rule => '^ - [FL]'
+                rewrite_rule => '^ - [F,L]'
               }, {
                 comment      => 'Reverse proxy /id/(event|place|organizer)/udb/<uuid> to backend',
                 rewrite_cond => [

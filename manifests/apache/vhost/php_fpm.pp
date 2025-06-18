@@ -14,20 +14,26 @@ define profiles::apache::vhost::php_fpm (
   Boolean                        $ssl_proxyengine          = false
 ) {
 
+  $transport        = split($title, ':')[0]
+  $servername       = split($title, '/')[-1]
+  $newrelic_enabled = lookup('profiles::php::newrelic', Boolean, 'first', false)
+  $proxy_http       = [$rewrites].flatten.reduce(false) |$proxy_flag_present, $rewrite| {
+                        $rewrite_flags = $rewrite['rewrite_rule'].split(' ')[2][1,-2].split(',')
+                        $proxy_flag    = 'P' in $rewrite_flags
+
+                        $proxy_flag_present or $proxy_flag
+                      }
+
+  unless $title =~ Stdlib::Httpurl {
+    fail("Defined resource type Profiles::Apache::Vhost::Php_Fpm[${title}] expects the title to be a valid HTTP(S) URL")
+  }
+
   include ::profiles
   include ::profiles::apache
   include ::profiles::firewall::rules
   include ::apache::mod::proxy
   include ::apache::mod::proxy_fcgi
   include ::apache::mod::rewrite
-
-  unless $title =~ Stdlib::Httpurl {
-    fail("Defined resource type Profiles::Apache::Vhost::Php_Fpm[${title}] expects the title to be a valid HTTP(S) URL")
-  }
-
-  $transport        = split($title, ':')[0]
-  $servername       = split($title, '/')[-1]
-  $newrelic_enabled = lookup('profiles::php::newrelic', Boolean, 'first', false)
 
   if $transport == 'https' {
     unless $certificate {
@@ -53,6 +59,14 @@ define profiles::apache::vhost::php_fpm (
     $ssl_key      = undef
 
     realize Firewall['300 accept HTTP traffic']
+  }
+
+  if $proxy_http {
+    include apache::mod::proxy_http
+  }
+
+  if $ssl_proxyengine {
+    include apache::mod::ssl
   }
 
   apache::vhost { "${servername}_${port}":

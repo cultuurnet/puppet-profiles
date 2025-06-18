@@ -38,6 +38,9 @@ describe 'profiles::apache::vhost::php_fpm' do
             it { is_expected.to contain_class('apache::mod::proxy_fcgi') }
             it { is_expected.to contain_class('apache::mod::rewrite') }
 
+            it { is_expected.not_to contain_class('apache::mod::ssl') }
+            it { is_expected.not_to contain_class('apache::mod::proxy_http') }
+
             it { is_expected.to contain_apache__vhost('winston.example.com_80').with(
               'servername'            => 'winston.example.com',
               'serveraliases'         => [],
@@ -102,6 +105,9 @@ describe 'profiles::apache::vhost::php_fpm' do
               'ssl_proxyengine'          => true,
               'newrelic_optional_config' => { 'foo' => 'bar' }
             } }
+
+            it { is_expected.to contain_class('apache::mod::ssl') }
+            it { is_expected.not_to contain_class('apache::mod::proxy_http') }
 
             it { is_expected.to contain_apache__vhost('winston.example.com_80').with(
               'servername'            => 'winston.example.com',
@@ -175,6 +181,8 @@ describe 'profiles::apache::vhost::php_fpm' do
               'aliases'         => 'mysite.example.com'
             } }
 
+            it { is_expected.not_to contain_class('apache::mod::proxy_http') }
+
             it { is_expected.to contain_apache__vhost('winston.example.com_80').with(
               'servername'            => 'winston.example.com',
               'serveraliases'         => ['mysite.example.com'],
@@ -238,7 +246,7 @@ describe 'profiles::apache::vhost::php_fpm' do
             it { expect { catalogue }.to raise_error(Puppet::Error, /expects a value for parameter certificate when using HTTPS/) }
           end
 
-          context "with basedir => /data/web, certificate => wildcard.example.com and rewrites => [{ comment => Capture apiKey from URL parameters, rewrite_cond => %{QUERY_STRING} (?:^|&)apiKey=([^&]+), rewrite_rule => ^ - [E=API_KEY:%1] }, comment => Capture clientId from URL parameters, rewrite_cond => %{QUERY_STRING} (?:^|&)clientId=([^&]+), rewrite_rule => ^ - [E=CLIENT_ID:%1] }]" do
+          context "with basedir => /data/web, certificate => wildcard.example.com and rewrites => [{ comment => Capture apiKey from URL parameters, rewrite_cond => %{QUERY_STRING} (?:^|&)apiKey=([^&]+), rewrite_rule => ^ - [E=API_KEY:%1] }, comment => Capture clientId from URL parameters, rewrite_cond => %{QUERY_STRING} (?:^|&)clientId=([^&]+), rewrite_rule => ^ - [E=CLIENT_ID:%1] }, comment => Proxy to foo.example.com, rewrite_rule => ^(.*)$ http://foo.example.com/$1 [P] }]" do
             let(:params) { {
               'basedir'     => '/data/web',
               'certificate' => 'wildcard.example.com',
@@ -250,12 +258,17 @@ describe 'profiles::apache::vhost::php_fpm' do
                                  'comment'      => 'Capture clientId from URL parameters',
                                  'rewrite_cond' => '%{QUERY_STRING} (?:^|&)clientId=([^&]+)',
                                  'rewrite_rule' => '^ - [E=CLIENT_ID:%1]'
+                               }, {
+                                 'comment'      => 'Proxy to foo.example.com',
+                                 'rewrite_rule' => '^(.*)$ http://foo.example.com/$1 [P]'
                                }]
             } }
 
             it { is_expected.to contain_firewall('300 accept HTTPS traffic') }
 
             it { is_expected.to contain_profiles__certificate('wildcard.example.com') }
+
+            it { is_expected.to contain_class('apache::mod::proxy_http') }
 
             it { is_expected.to contain_apache__vhost('goldstein.example.com_443').with(
               'servername'            => 'goldstein.example.com',
@@ -296,6 +309,9 @@ describe 'profiles::apache::vhost::php_fpm' do
                                            'comment'      => 'Capture clientId from URL parameters',
                                            'rewrite_cond' => '%{QUERY_STRING} (?:^|&)clientId=([^&]+)',
                                            'rewrite_rule' => '^ - [E=CLIENT_ID:%1]'
+                                         }, {
+                                           'comment'      => 'Proxy to foo.example.com',
+                                           'rewrite_rule' => '^(.*)$ http://foo.example.com/$1 [P]'
                                          }]
             ) }
           end
