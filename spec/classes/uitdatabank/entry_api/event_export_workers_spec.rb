@@ -86,7 +86,8 @@ describe 'profiles::uitdatabank::entry_api::event_export_workers' do
         ) }
 
         it { is_expected.to contain_service('uitdatabank-event-export-workers.target').with(
-          'ensure' => 'stopped'
+          'ensure' => 'stopped',
+          'enable' => 'false'
         ) }
 
         it { is_expected.to contain_file('uitdatabank_event_export_worker_count_external_fact').with(
