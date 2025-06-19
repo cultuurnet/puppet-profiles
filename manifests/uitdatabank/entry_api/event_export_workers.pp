@@ -34,7 +34,10 @@ class profiles::uitdatabank::entry_api::event_export_workers (
                     0       => 'stopped',
                     default => 'running'
                   },
-    enable     => true,
+    enable     => $count ? {
+                    0       => false,
+                    default => true
+                  },
     hasstatus  => true,
     hasrestart => false,
     require    => [Group['www-data'], User['www-data'], Systemd::Daemon_reload['uitdatabank-event-export-workers.target']]

@@ -44,9 +44,10 @@ describe 'profiles::uitdatabank::rdf' do
                                            'comment'      => 'Only allow requests to /(event|place|organizer)s?/<uuid> or /id/(event|place|organizer)/udb/<uuid>',
                                            'rewrite_cond' => [
                                                                '%{REQUEST_URI} !^/(event|place|organizer)s?/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$',
-                                                               '%{REQUEST_URI} !^/(event|place|organizer)s?/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$',
+                                                               '%{REQUEST_URI} !^/(event|place|organizer)s?/[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$',
                                                                '%{REQUEST_URI} !^/id/(event|place|organizer)/udb/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$',
-                                                               '%{REQUEST_URI} !^/id/(event|place|organizer)/udb/[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$'
+                                                               '%{REQUEST_URI} !^/id/(event|place|organizer)/udb/[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$',
+                                                               '%{REQUEST_URI} !^/index.php$'
                                                              ],
                                            'rewrite_rule' => '^ - [F,L]'
                                          }, {
@@ -91,9 +92,10 @@ describe 'profiles::uitdatabank::rdf' do
                                            'comment'      => 'Only allow requests to /(event|place|organizer)s?/<uuid> or /id/(event|place|organizer)/udb/<uuid>',
                                            'rewrite_cond' => [
                                                                '%{REQUEST_URI} !^/(event|place|organizer)s?/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$',
-                                                               '%{REQUEST_URI} !^/(event|place|organizer)s?/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$',
+                                                               '%{REQUEST_URI} !^/(event|place|organizer)s?/[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$',
                                                                '%{REQUEST_URI} !^/id/(event|place|organizer)/udb/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$',
-                                                               '%{REQUEST_URI} !^/id/(event|place|organizer)/udb/[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$'
+                                                               '%{REQUEST_URI} !^/id/(event|place|organizer)/udb/[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$',
+                                                               '%{REQUEST_URI} !^/index.php$'
                                                              ],
                                            'rewrite_rule' => '^ - [F,L]'
                                          }, {
