@@ -39,6 +39,8 @@ describe 'profiles::php' do
               'config_root' => '/etc/php/7.4'
             ) }
 
+            it { is_expected.not_to contain_exec('stop_php_fpm_before_version_change') }
+
             it { is_expected.to contain_class('php').with(
               'manage_repos'                 => false,
               'composer'                     => false,
@@ -120,6 +122,20 @@ describe 'profiles::php' do
             it { is_expected.to contain_class('php::globals').that_requires('Apt::Source[php]') }
             it { is_expected.to contain_class('php').that_requires('Class[php::globals]') }
             it { is_expected.to contain_file('php-fpm service').that_notifies('Systemd::Daemon_reload[php-fpm]') }
+
+            context 'with fact phpversion => 7.3.2' do
+              let(:facts) { super().merge(
+                { 'phpversion' => '7.3.2' }
+              ) }
+
+              it { is_expected.to contain_exec('stop_php_fpm_before_version_change').with(
+                'command'     => 'systemctl stop php7.3-fpm',
+                'path'        => ['/usr/sbin', '/usr/bin'],
+                'logoutput'   => 'on_failure'
+              ) }
+
+              it { is_expected.to contain_exec('stop_php_fpm_before_version_change').that_comes_before('Class[php]') }
+            end
           end
 
           context 'without hieradata' do
@@ -213,6 +229,14 @@ describe 'profiles::php' do
           it { is_expected.to contain_package('composer1').that_requires('Class[php]') }
           it { is_expected.to contain_package('composer2').that_requires('Class[php]') }
           it { is_expected.to contain_alternatives('composer').that_requires(['Package[composer1]', 'Package[composer2]']) }
+
+          context 'with fact phpversion => 7.4.33' do
+            let(:facts) { super().merge(
+              { 'phpversion' => '7.4.33' }
+            ) }
+
+            it { is_expected.not_to contain_exec('stop_php_fpm_before_version_change') }
+          end
         end
       end
 
@@ -318,6 +342,20 @@ describe 'profiles::php' do
               'app_name'    => 'bbb.example.com',
               'license_key' => 'my_license_key'
             ) }
+
+            context 'with fact phpversion => 7.4.33' do
+              let(:facts) { super().merge(
+                { 'phpversion' => '7.4.33' }
+              ) }
+
+              it { is_expected.to contain_exec('stop_php_fpm_before_version_change').with(
+                'command'     => 'systemctl stop php7.4-fpm',
+                'path'        => ['/usr/sbin', '/usr/bin'],
+                'logoutput'   => 'on_failure'
+              ) }
+
+              it { is_expected.to contain_exec('stop_php_fpm_before_version_change').that_comes_before('Class[php]') }
+            end
           end
 
           context 'without hieradata' do

@@ -10,6 +10,7 @@ class profiles::uitpas::segmentatie (
   Optional[String] $initial_heap_size          = undef,
   Optional[String] $maximum_heap_size          = undef,
   Boolean $jmx                                 = true,
+  Boolean $cron_enabled                        = true,
   Integer $portbase                            = 4800,
   Enum['running', 'stopped'] $service_status   = 'running',
   Hash $settings                               = {}
@@ -103,7 +104,8 @@ class profiles::uitpas::segmentatie (
     if $deployment {
       class { 'profiles::uitpas::segmentatie::deployment':
         portbase          => $portbase,
-        config_source => $config_source
+        config_source => $config_source,
+        cron_enabled    => $cron_enabled,
       }
 
       Class['profiles::glassfish'] -> Class['profiles::uitpas::segmentatie::deployment']

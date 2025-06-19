@@ -4,6 +4,7 @@ class profiles::uitpas::segmentatie::deployment (
   String           $repository        = 'uitpas-segmentatie',
   String           $config_source ,
   Integer          $portbase          = 4800,
+  Boolean          $cron_enabled      = true,
 ) inherits profiles {
   $secrets = lookup('vault:uitpas/segmentatie')
 
@@ -18,6 +19,17 @@ class profiles::uitpas::segmentatie::deployment (
     require => Apt::Source[$repository],
     notify  => [App['uitpas-segmentatie']],
   }
+  if $cron_enabled {
+    cron { 'uitpas-segmentatie-sync':
+      ensure  => 'present',
+      command => "/usr/bin/curl -X POST 'http://localhost:4880/segmentation/rest/sync",
+      user    => 'www-data',
+      hour    => 1,
+      minute  => 45,
+      require => Package['uitpas-segmentatie'],
+    }
+  }
+
   file { '/opt/uitpas-segmentatie/.env':
     ensure  => 'file',
     owner   => 'glassfish',
