@@ -3,7 +3,6 @@ class profiles::puppet::puppetserver::hiera (
   Hash                      $gpg_key               = {},
   Variant[Hash,Array[Hash]] $lookup_hierarchy      = [
                                                        { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
-                                                       { 'name' => 'Terraform per-role data', 'glob' => 'terraform/role-%%{}{::trusted.extensions.pp_role}/*.yaml' },
                                                        { 'name' => 'Common data', 'path' => 'common.yaml' }
                                                      ],
   Boolean                   $terraform_integration = false,
