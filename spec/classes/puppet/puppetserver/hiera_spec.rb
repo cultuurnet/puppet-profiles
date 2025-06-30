@@ -18,7 +18,6 @@ describe 'profiles::puppet::puppetserver::hiera' do
             'gpg_key'               => {},
             'lookup_hierarchy'      => [
                                          { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
-                                         { 'name' => 'Terraform per-role data', 'glob' => 'terraform/role-%%{}{::trusted.extensions.pp_role}/*.yaml' },
                                          { 'name' => 'Common data', 'path' => 'common.yaml' }
                                        ],
             'terraform_integration' => false,
@@ -61,7 +60,6 @@ describe 'profiles::puppet::puppetserver::hiera' do
             'hiera5_defaults'    => { 'datadir' => 'data', 'data_hash' => 'yaml_data' },
             'hierarchy'          => [
                                       { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
-                                      { 'name' => 'Terraform per-role data', 'glob' => 'terraform/role-%%{}{::trusted.extensions.pp_role}/*.yaml' },
                                       { 'name' => 'Common data', 'path' => 'common.yaml' }
                                     ]
           ) }
@@ -150,6 +148,7 @@ describe 'profiles::puppet::puppetserver::hiera' do
             'hiera5_defaults'    => { 'datadir' => 'data', 'data_hash' => 'yaml_data' },
             'hierarchy'          => [
                                       { 'name' => 'Terraform per-node data', 'glob' => 'terraform/%{::trusted.certname}/*.yaml' },
+                                      { 'name' => 'Terraform per-role data', 'glob' => 'terraform/role-%%{}{::trusted.extensions.pp_role}/*.yaml' },
                                       { 'name' => 'Terraform common data', 'path' => 'terraform/common.yaml' },
                                       { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml', 'lookup_key' => 'eyaml_lookup_key', 'options' => { 'gpg_gnupghome' => '/opt/puppetlabs/server/data/puppetserver/.gnupg' } },
                                       { 'name' => 'Common data', 'path' => 'common.yaml', 'lookup_key' => 'eyaml_lookup_key', 'options' => { 'gpg_gnupghome' => '/opt/puppetlabs/server/data/puppetserver/.gnupg' } }
