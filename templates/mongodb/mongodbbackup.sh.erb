@@ -1,0 +1,25 @@
+#!/bin/bash
+
+backup_directory=/data/backup/mongodb/current
+archive_directory=/data/backup/mongodb/archive
+retention=<%= @mtime %>
+
+date_suffix=$(/usr/bin/date +%Y.%m.%d.%H%M%S --date='now')
+
+echo "Removing previous backups"
+/usr/bin/rm -rf ${backup_directory}/*
+
+echo "Dumping mongodb to directory ${backup_directory}"
+/usr/bin/mongodump --archive=${backup_directory}/mongodb.${date_suffix}
+
+echo "Copying backups to archive"
+for path in ${backup_directory}/*
+do
+    [ -e "${path}" ] || continue
+
+    filename=${path##*/}
+    /usr/bin/nice -n 19 /bin/bzip2 --fast -c ${path} > ${archive_directory}/${filename}.bz2
+done
+
+echo "Cleaning up archive"
+/usr/bin/find ${archive_directory} -type f -mtime +${retention} -delete

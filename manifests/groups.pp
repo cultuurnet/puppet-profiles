@@ -55,6 +55,11 @@ class profiles::groups inherits ::profiles {
     gid    => '459'
   }
 
+  @group { 'mongodb':
+    ensure => 'present',
+    gid    => '460'
+  }
+
   @group { 'ubuntu':
     ensure => 'present',
     gid    => '1000'

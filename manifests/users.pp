@@ -101,6 +101,16 @@ class profiles::users inherits ::profiles {
     uid            => '459'
   }
 
+  @user { 'mongodb':
+    ensure         => 'present',
+    gid            => 'mongodb',
+    home           => '/var/lib/mongodb',
+    managehome     => false,
+    purge_ssh_keys => true,
+    shell          => '/bin/false',
+    uid            => '460'
+  }
+
   @user { 'ubuntu':
     ensure         => 'present',
     gid            => 'ubuntu',
