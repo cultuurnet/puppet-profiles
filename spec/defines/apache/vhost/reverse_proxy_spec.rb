@@ -34,7 +34,9 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                 'proxy_params'          => {},
                 'support_websockets'    => false,
                 'auth_openid_connect'   => false,
-                'access_log_format'     => 'extended_json'
+                'access_log_format'     => 'extended_json',
+                'additional_headers'    => [],
+                'headers'               => []
               ) }
 
               it { is_expected.to contain_apache__vhost('leonardo.example.com_80').with(
@@ -51,6 +53,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                              'setifempty X-Forwarded-Port "80"',
                                              'setifempty X-Forwarded-Proto "http"'
                                            ],
+                'headers'               => [],
                 'access_log_format'     => 'extended_json',
                 'auth_oidc'             => false,
                 'oidc_settings'         => {},
@@ -73,13 +76,14 @@ describe 'profiles::apache::vhost::reverse_proxy' do
               ) }
             end
 
-            context "with destination => http://davinci.example.com, proxy_params => { 'connectiontimeout' => 5 }, auth_openid_connect => true, access_log_format => combined_json and support_websockets => true" do
+            context "with destination => http://davinci.example.com, proxy_params => { 'connectiontimeout' => 5 }, auth_openid_connect => true, access_log_format => combined_json, headers => set Access-Control-Allow-Origin '*' and support_websockets => true" do
               let(:params) { {
                 'destination'         => 'http://davinci.example.com/',
                 'proxy_params'        => { 'connectiontimeout' => 5 },
                 'auth_openid_connect' => true,
                 'support_websockets'  => true,
-                'access_log_format'   => 'combined_json'
+                'access_log_format'   => 'combined_json',
+                'headers'             => 'set Access-Control-Allow-Origin "*"'
               } }
 
               it { is_expected.to contain_class('apache::mod::proxy_wstunnel') }
@@ -99,6 +103,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                              'setifempty X-Forwarded-Port "80"',
                                              'setifempty X-Forwarded-Proto "http"'
                                            ],
+                'headers'               => ['set Access-Control-Allow-Origin "*"'],
                 'access_log_format'     => 'combined_json',
                 'auth_oidc'             => true,
                 'directories'           => [{
@@ -160,7 +165,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
           context "with hieradata" do
             let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-            context "with certificate => 'foobar.example.com', destination => https://buonarotti.example.com/, preserve_host => true, allow_encoded_slashes => nodecode, proxy_keywords => ['interpolate', 'noquery'], support_websockets => true, proxy_params => {'timeout' => 300, 'ping' => 3} and aliases => ['mich.example.com', 'angelo.example.com']" do
+            context "with certificate => 'foobar.example.com', destination => https://buonarotti.example.com/, preserve_host => true, allow_encoded_slashes => nodecode, proxy_keywords => ['interpolate', 'noquery'], support_websockets => true, proxy_params => {'timeout' => 300, 'ping' => 3}, headers => ['set X-My-First-Header \'foo\'', 'set X-My-Second-Header \'bar\''] and aliases => ['mich.example.com', 'angelo.example.com']" do
               let(:params) { {
                 'certificate'           => 'foobar.example.com',
                 'destination'           => 'https://buonarotti.example.com/',
@@ -168,7 +173,11 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                 'allow_encoded_slashes' => 'nodecode',
                 'support_websockets'    => true,
                 'proxy_keywords'        => ['interpolate', 'noquery'],
-                'proxy_params'          => {'timeout' => 300, 'ping' => 3},
+                'proxy_params'          => { 'timeout' => 300, 'ping' => 3 },
+                'headers'               => [
+                                             'set X-My-First-Header "foo"',
+                                             'set X-My-Second-Header "bar"'
+                                           ],
                 'aliases'               => ['mich.example.com', 'angelo.example.com']
               } }
 
@@ -197,6 +206,10 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                              'set X-Unique-Id %{UNIQUE_ID}e',
                                              'setifempty X-Forwarded-Port "443"',
                                              'setifempty X-Forwarded-Proto "https"'
+                                           ],
+                'headers'               => [
+                                             'set X-My-First-Header "foo"',
+                                             'set X-My-Second-Header "bar"'
                                            ],
                 'proxy_preserve_host'   => true,
                 'allow_encoded_slashes' => 'nodecode',
@@ -290,6 +303,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                              'setifempty X-Forwarded-Port "80"',
                                              'setifempty X-Forwarded-Proto "http"'
                                            ],
+                'headers'               => [],
                 'allow_encoded_slashes' => 'off',
                 'proxy_preserve_host'   => false,
                 'rewrites'              => [],
