@@ -20,7 +20,7 @@ class profiles::puppet::puppetserver::hiera (
   $terraform_lookup_hierarchy = $terraform_integration ? {
                                   true  => [
                                              { 'name' => 'Terraform per-node data', 'glob' => 'terraform/%{::trusted.certname}/*.yaml' },
-                                             { 'name' => 'Terraform per-role data', 'glob' => 'terraform/role-%%{}{::trusted.extensions.pp_role}/*.yaml' },
+                                             { 'name' => 'Terraform per-role data', 'glob' => 'terraform/role-%{::trusted.extensions.pp_role}/*.yaml' },
                                              { 'name' => 'Terraform common data', 'path' => 'terraform/common.yaml' }
                                            ],
                                   false => []

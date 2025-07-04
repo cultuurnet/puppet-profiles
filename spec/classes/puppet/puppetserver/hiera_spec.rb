@@ -85,7 +85,7 @@ describe 'profiles::puppet::puppetserver::hiera' do
             'hiera5_defaults'    => { 'datadir' => 'data', 'data_hash' => 'yaml_data' },
             'hierarchy'          => [
                                       { 'name' => 'Terraform per-node data', 'glob' => 'terraform/%{::trusted.certname}/*.yaml' },
-                                      { 'name' => 'Terraform per-role data', 'glob' => 'terraform/role-%%{}{::trusted.extensions.pp_role}/*.yaml' },
+                                      { 'name' => 'Terraform per-role data', 'glob' => 'terraform/role-%{::trusted.extensions.pp_role}/*.yaml' },
                                       { 'name' => 'Terraform common data', 'path' => 'terraform/common.yaml' },
                                       { 'name' => 'Vault data', 'lookup_key' => 'hiera_vault', 'options' => { 'confine_to_keys' => ['^vault:.*'], 'strip_from_keys' => ['vault:'], 'address' => 'https://vault.example.com', 'ssl_verify' => true, 'ssl_ca_cert' => '/etc/puppetlabs/puppet/ssl/certs/ca.pem', 'authentication' => { 'method' => 'tls_certificate', 'config' => { 'certname' => 'myvault.example.com' } }, 'mounts' => { 'test' => ['baz', 'bla'] } } },
                                       { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml' },
@@ -148,7 +148,7 @@ describe 'profiles::puppet::puppetserver::hiera' do
             'hiera5_defaults'    => { 'datadir' => 'data', 'data_hash' => 'yaml_data' },
             'hierarchy'          => [
                                       { 'name' => 'Terraform per-node data', 'glob' => 'terraform/%{::trusted.certname}/*.yaml' },
-                                      { 'name' => 'Terraform per-role data', 'glob' => 'terraform/role-%%{}{::trusted.extensions.pp_role}/*.yaml' },
+                                      { 'name' => 'Terraform per-role data', 'glob' => 'terraform/role-%{::trusted.extensions.pp_role}/*.yaml' },
                                       { 'name' => 'Terraform common data', 'path' => 'terraform/common.yaml' },
                                       { 'name' => 'Per-node data', 'path' => 'nodes/%{::trusted.certname}.yaml', 'lookup_key' => 'eyaml_lookup_key', 'options' => { 'gpg_gnupghome' => '/opt/puppetlabs/server/data/puppetserver/.gnupg' } },
                                       { 'name' => 'Common data', 'path' => 'common.yaml', 'lookup_key' => 'eyaml_lookup_key', 'options' => { 'gpg_gnupghome' => '/opt/puppetlabs/server/data/puppetserver/.gnupg' } }
