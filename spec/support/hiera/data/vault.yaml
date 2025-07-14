@@ -14,3 +14,5 @@ vault:uitdatabank/udb3-search-service:
   gcloud_client_id: 'bar'
   gcloud_client_email: 'bar@example.com'
 vault:uitdatabank/udb3-backend: {}
+
+vault:projectaanvraag/api: {}
