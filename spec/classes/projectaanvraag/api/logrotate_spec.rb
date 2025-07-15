@@ -20,7 +20,7 @@ describe 'profiles::projectaanvraag::api::logrotate' do
         it { is_expected.to contain_class('profiles::logrotate') }
 
         it { is_expected.to contain_logrotate__rule('projectaanvraag-api').with(
-          'path'          => '/var/www/projectaanvraag-api/log/*.log',
+          'path'          => '/var/www/projectaanvraag-api/log/*/*.log',
           'rotate'        => 10,
           'create_owner'  => 'www-data',
           'create_group'  => 'www-data',
@@ -45,7 +45,7 @@ describe 'profiles::projectaanvraag::api::logrotate' do
         } }
 
         it { is_expected.to contain_logrotate__rule('projectaanvraag-api').with(
-          'path' => '/tmp/foo/log/*.log',
+          'path' => '/tmp/foo/log/*/*.log',
         ) }
       end
     end

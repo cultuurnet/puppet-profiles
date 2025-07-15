@@ -8,7 +8,7 @@ class profiles::projectaanvraag::api::logrotate (
   include profiles::logrotate
 
   logrotate::rule { 'projectaanvraag-api':
-    path         => "${basedir}/log/*.log",
+    path         => "${basedir}/log/*/*.log",
     rotate       => 10,
     create_owner => 'www-data',
     create_group => 'www-data',
