@@ -72,6 +72,12 @@ class profiles::firewall::rules inherits ::profiles {
     action => 'accept'
   }
 
+  @firewall { '400 accept mongodb traffic':
+    proto  => 'tcp',
+    dport  => '27017',
+    action => 'accept'
+  }
+
   @firewall { '500 accept carbon traffic':
     proto  => 'tcp',
     dport  => '2003',

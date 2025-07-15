@@ -11,9 +11,9 @@ class profiles::uitpas::cid_logs (
   realize User['logstash']
 
   profiles::apache::vhost::reverse_proxy { "http://${hostname}":
-    destination        => "http://${service_address}:${service_port}/",
-    aliases            => $aliases,
-    additional_headers => ['set Access-Control-Allow-Origin "*"']
+    destination => "http://${service_address}:${service_port}/",
+    aliases     => $aliases,
+    headers     => 'set Access-Control-Allow-Origin "*"'
   }
 
   file { 'gcs_credentials':

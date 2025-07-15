@@ -75,6 +75,12 @@ describe 'profiles::firewall::rules' do
           'dport' => '8200',
           'action' => 'accept'
         ) }
+
+        it { is_expected.to contain_firewall('400 accept mongodb traffic').with(
+          'proto' => 'tcp',
+          'dport' => '27017',
+          'action' => 'accept'
+        ) }
       end
     end
   end

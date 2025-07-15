@@ -97,6 +97,11 @@ describe 'profiles::groups' do
           'gid'    => '459'
         ) }
 
+        it { is_expected.to contain_group('mongodb').with(
+          'ensure' => 'present',
+          'gid'    => '460'
+        ) }
+
         it { is_expected.to contain_group('glassfish').with(
           'ensure' => 'present',
           'gid'    => '1005'

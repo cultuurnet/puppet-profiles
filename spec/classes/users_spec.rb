@@ -163,6 +163,16 @@ describe 'profiles::users' do
           'uid'            => '459'
         ) }
 
+        it { is_expected.to contain_user('mongodb').with(
+          'ensure'         => 'present',
+          'gid'            => 'mongodb',
+          'home'           => '/var/lib/mongodb',
+          'managehome'     => false,
+          'purge_ssh_keys' => true,
+          'shell'          => '/bin/false',
+          'uid'            => '460'
+        ) }
+
         it { is_expected.to contain_user('glassfish').with(
           'ensure'         => 'present',
           'gid'            => 'glassfish',

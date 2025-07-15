@@ -24,6 +24,15 @@ class profiles::uitpas::cid_web (
 
   profiles::apache::vhost::basic { "http://${servername}":
     documentroot  => $basedir,
-    serveraliases => $serveraliases
+    serveraliases => $serveraliases,
+    directories   => {
+                       path     => '/config.json',
+                       provider => 'files',
+                       headers  => [
+                                     'set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"',
+                                     'set Pragma "no-cache"',
+                                     'set Expires "Wed, 1 Jan 1970 00:00:00 GMT"'
+                                   ]
+                     }
   }
 }
