@@ -79,6 +79,10 @@ profiles::uitid::frontend::deployment::config_source: '/path/to/config/source'
 profiles::uitid::frontend_api::deployment::config_source: '/path/to/config/source'
 profiles::uitid::frontend_auth0::deployment::config_source: '/path/to/config/source'
 
+profiles::projectaanvraag::api::deployment::config_source: 'appconfig/projectaanvraag/api/config.yml'
+profiles::projectaanvraag::api::deployment::integration_types_source: 'appconfig/projectaanvraag/api/integration_types.yml'
+profiles::projectaanvraag::api::deployment::user_roles_source: 'appconfig/projectaanvraag/api/user_roles.yml'
+
 profiles::publiq::versions::service_address: '127.0.1.1'
 profiles::publiq::versions::service_port: 6000
 
