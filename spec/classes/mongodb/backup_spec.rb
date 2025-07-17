@@ -14,7 +14,7 @@ describe 'profiles::mongodb::backup' do
           'lvm'             => false,
           'volume_group'    => nil,
           'volume_size'     => nil,
-          'backup_schedule' => nil,
+          'backup_schedule' => 'daily',
           'retention_days'  => 7
         ) }
 
@@ -42,7 +42,12 @@ describe 'profiles::mongodb::backup' do
         ) }
 
         it { is_expected.to contain_cron('mongodb backup').with(
-          'ensure' => 'absent'
+          'ensure'      => 'present',
+          'command'     => "/usr/bin/test $(date +\\%0H) -eq 0 && /usr/local/sbin/mongodbbackup.sh",
+          'environment' => ['TZ=Europe/Brussels', 'MAILTO=infra+cron@publiq.be'],
+          'user'        => 'root',
+          'hour'        => '*',
+          'minute'      => '30'
         ) }
 
         it { is_expected.to contain_file('/data/backup/mongodb').that_requires('File[/data/backup]') }
