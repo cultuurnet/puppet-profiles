@@ -1,9 +1,9 @@
 class profiles::mongodb::backup (
-  Boolean                           $lvm             = false,
-  Optional[String]                  $volume_group    = undef,
-  Optional[String]                  $volume_size     = undef,
-  Optional[Enum['hourly', 'daily']] $backup_schedule = undef,
-  Integer                           $retention_days  = 7
+  Boolean                 $lvm             = false,
+  Optional[String]        $volume_group    = undef,
+  Optional[String]        $volume_size     = undef,
+  Enum['hourly', 'daily'] $backup_schedule = 'daily',
+  Integer                 $retention_days  = 7
 ) inherits ::profiles {
 
   $mtime       = $retention_days - 1
