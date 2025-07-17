@@ -1,0 +1,19 @@
+[Unit]
+Description=Projectaanvraag API AMQP consumer
+After=syslog.target network.target remote-fs.target nss-lookup.target
+
+[Service]
+User=www-data
+Group=www-data
+PermissionsStartOnly=true
+RuntimeDirectory=projectaanvraag-api
+RuntimeDirectoryMode=0755
+PIDFile=/run/projectaanvraag-api/projectaanvraag-api-amqp-consumer.pid
+WorkingDirectory=<%= @basedir %>
+ExecStart=bin/console projectaanvraag:consumer
+Restart=on-failure
+RestartSec=10s
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
