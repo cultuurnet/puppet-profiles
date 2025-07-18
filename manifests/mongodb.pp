@@ -1,15 +1,15 @@
 class profiles::mongodb (
-  String                            $version               = 'installed',
-  Stdlib::IP::Address::V4           $listen_address        = '127.0.0.1',
-  Enum['running', 'stopped']        $service_status        = 'running',
-  Boolean                           $lvm                   = false,
-  Optional[String]                  $volume_group          = undef,
-  Optional[String]                  $volume_size           = undef,
-  Boolean                           $backup_lvm            = false,
-  Optional[String]                  $backup_volume_group   = undef,
-  Optional[String]                  $backup_volume_size    = undef,
-  Optional[Enum['hourly', 'daily']] $backup_schedule       = undef,
-  Integer                           $backup_retention_days = 7
+  String                     $version               = 'installed',
+  Stdlib::IP::Address::V4    $listen_address        = '127.0.0.1',
+  Enum['running', 'stopped'] $service_status        = 'running',
+  Boolean                    $lvm                   = false,
+  Optional[String]           $volume_group          = undef,
+  Optional[String]           $volume_size           = undef,
+  Boolean                    $backup_lvm            = false,
+  Optional[String]           $backup_volume_group   = undef,
+  Optional[String]           $backup_volume_size    = undef,
+  Enum['hourly', 'daily']    $backup_schedule       = 'daily',
+  Integer                    $backup_retention_days = 7
 ) inherits ::profiles {
 
   $data_dir = '/var/lib/mongodb'
