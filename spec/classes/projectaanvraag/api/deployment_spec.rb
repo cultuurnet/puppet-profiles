@@ -24,6 +24,7 @@ describe 'profiles::projectaanvraag::api::deployment' do
             'version'                  => 'latest',
             'repository'               => 'projectaanvraag-api',
             'database_name'            => 'projectaanvraag',
+            'amqp_consumer'            => 'present',
             'puppetdb_url'             => 'http://localhost:8081'
           ) }
 
@@ -97,6 +98,11 @@ describe 'profiles::projectaanvraag::api::deployment' do
             'basedir' => '/var/www/projectaanvraag-api'
           ) }
 
+          it { is_expected.to contain_class('profiles::projectaanvraag::api::amqp_consumer').with(
+            'ensure'  => 'present',
+            'basedir' => '/var/www/projectaanvraag-api'
+          ) }
+
           it { is_expected.to contain_service('projectaanvraag-api').with(
             'hasstatus'  => true,
             'hasrestart' => true,
@@ -132,6 +138,7 @@ describe 'profiles::projectaanvraag::api::deployment' do
           it { is_expected.to contain_exec('projectaanvraag-api-db-migrate').that_requires('Exec[projectaanvraag-api-clear-metadata-cache]') }
           it { is_expected.to contain_exec('projectaanvraag-api-db-migrate').that_subscribes_to('Package[projectaanvraag-api]') }
           it { is_expected.to contain_service('projectaanvraag-api').that_requires('Profiles::Php::Fpm_service_alias[projectaanvraag-api]') }
+          it { is_expected.to contain_class('profiles::projectaanvraag::api::amqp_consumer').that_subscribes_to('Service[projectaanvraag-api]') }
         end
 
         context "without hieradata" do
@@ -143,7 +150,7 @@ describe 'profiles::projectaanvraag::api::deployment' do
         end
       end
 
-      context "with config_source => appconfig/projectaanvraag/api/myconfig.yml, integration_types_source => appconfig/projectaanvraag/api/my_integration_types.yml, appconfig/projectaanvraag/api/my_user_roles.yml, version => 1.2.3, repository => myrepo, database_name => mydb and puppetdb_url => http://puppetdb.example.com:8080" do
+      context "with config_source => appconfig/projectaanvraag/api/myconfig.yml, integration_types_source => appconfig/projectaanvraag/api/my_integration_types.yml, appconfig/projectaanvraag/api/my_user_roles.yml, version => 1.2.3, repository => myrepo, database_name => mydb, amqp_consumer => absent and puppetdb_url => http://puppetdb.example.com:8080" do
         let(:params) { {
           'config_source'            => 'appconfig/projectaanvraag/api/myconfig.yml',
           'integration_types_source' => 'appconfig/projectaanvraag/api/my_integration_types.yml',
@@ -151,6 +158,7 @@ describe 'profiles::projectaanvraag::api::deployment' do
           'version'                  => '1.2.3',
           'repository'               => 'myrepo',
           'database_name'            => 'mydb',
+          'amqp_consumer'            => 'absent',
           'puppetdb_url'             => 'http://puppetdb.example.com:8080'
         } }
 
@@ -188,11 +196,16 @@ describe 'profiles::projectaanvraag::api::deployment' do
               'onlyif'    => "test 0 -eq $(mysql --defaults-extra-file=/root/.my.cnf -s --skip-column-names -e 'select count(table_name) from information_schema.tables where table_schema = \"mydb\";')",
             ) }
 
-            it { is_expected.to contain_package('projectaanvraag-api').that_requires('Apt::Source[myrepo]') }
+            it { is_expected.to contain_class('profiles::projectaanvraag::api::amqp_consumer').with(
+              'ensure'  => 'absent',
+              'basedir' => '/var/www/projectaanvraag-api'
+            ) }
 
             it { is_expected.to contain_profiles__deployment__versions('profiles::projectaanvraag::api::deployment').with(
               'puppetdb_url' => 'http://puppetdb.example.com:8080'
             ) }
+
+            it { is_expected.to contain_package('projectaanvraag-api').that_requires('Apt::Source[myrepo]') }
           end
         end
       end

@@ -1,11 +1,12 @@
 class profiles::projectaanvraag::api::deployment (
-  String           $config_source,
-  String           $integration_types_source,
-  String           $user_roles_source,
-  String           $version                  = 'latest',
-  String           $repository               = 'projectaanvraag-api',
-  String           $database_name            = 'projectaanvraag',
-  Optional[String] $puppetdb_url             = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+  String                    $config_source,
+  String                    $integration_types_source,
+  String                    $user_roles_source,
+  String                    $version                  = 'latest',
+  String                    $repository               = 'projectaanvraag-api',
+  String                    $database_name            = 'projectaanvraag',
+  Enum['present', 'absent'] $amqp_consumer            = 'present',
+  Optional[String]          $puppetdb_url             = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $basedir                 = '/var/www/projectaanvraag-api'
@@ -88,6 +89,12 @@ class profiles::projectaanvraag::api::deployment (
     hasrestart => true,
     restart    => '/usr/bin/systemctl reload projectaanvraag-api',
     require    => Profiles::Php::Fpm_service_alias['projectaanvraag-api']
+  }
+
+  class { 'profiles::projectaanvraag::api::amqp_consumer':
+    ensure    => $amqp_consumer,
+    basedir   => $basedir,
+    subscribe => Service['projectaanvraag-api']
   }
 
   class { 'profiles::projectaanvraag::api::logrotate':

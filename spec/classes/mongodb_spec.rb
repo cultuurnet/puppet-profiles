@@ -20,7 +20,7 @@ describe 'profiles::mongodb' do
           'backup_lvm'            => false,
           'backup_volume_group'   => nil,
           'backup_volume_size'    => nil,
-          'backup_schedule'       => nil,
+          'backup_schedule'       => 'daily',
           'backup_retention_days' => 7
         ) }
 
@@ -55,7 +55,7 @@ describe 'profiles::mongodb' do
           'lvm'             => false,
           'volume_group'    => nil,
           'volume_size'     => nil,
-          'backup_schedule' => nil,
+          'backup_schedule' => 'daily',
           'retention_days'  => 7
         ) }
 
