@@ -1,14 +1,17 @@
 class profiles::projectaanvraag::api (
   String                         $database_password,
+  String                         $mongodb_password,
   String                         $servername,
   Variant[String, Array[String]] $serveraliases     = [],
   String                         $database_host     = '127.0.0.1',
   Boolean                        $deployment        = true
 ) inherits ::profiles {
 
-  $basedir       = '/var/www/projectaanvraag-api'
-  $database_name = 'projectaanvraag'
-  $database_user = 'projectaanvraag'
+  $basedir               = '/var/www/projectaanvraag-api'
+  $database_name         = 'projectaanvraag'
+  $database_user         = 'projectaanvraag'
+  $mongodb_database_name = 'widgets'
+  $mongodb_database_user = 'projectaanvraag'
 
   include profiles::redis
   include profiles::mongodb
@@ -57,6 +60,7 @@ class profiles::projectaanvraag::api (
       Class['profiles::redis'] -> Class['profiles::projectaanvraag::api::deployment']
       Class['profiles::mongodb'] -> Class['profiles::projectaanvraag::api::deployment']
       Class['profiles::php'] ~> Class['profiles::projectaanvraag::api::deployment']
+      Mongodb::Db[$mongodb_database_name] -> Class['profiles::projectaanvraag::api::deployment']
     }
   }
 
@@ -64,5 +68,11 @@ class profiles::projectaanvraag::api (
     basedir               => $basedir,
     public_web_directory  => 'web',
     aliases               => $serveraliases
+  }
+
+  mongodb::db { $mongodb_database_name:
+    user     => $mongodb_database_user,
+    password => $mongodb_password,
+    require  => Class['profiles::mongodb']
   }
 }
