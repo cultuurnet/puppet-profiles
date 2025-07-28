@@ -1,9 +1,10 @@
 class profiles::platform (
   String                        $servername,
-  Boolean                       $sling_enabled = false,
   String                        $database_password,
-  Variant[String,Array[String]] $serveraliases = [],
-  Boolean                       $deployment    = true
+  Variant[String,Array[String]] $serveraliases     = [],
+  Boolean                       $deployment        = true,
+  Boolean                       $catch_mail        = false,
+  Boolean                       $sling_enabled     = false
 ) inherits ::profiles {
 
   $basedir       = '/var/www/platform-api'
@@ -42,12 +43,22 @@ class profiles::platform (
     aliases              => $serveraliases
   }
 
+  if $catch_mail {
+    class { 'profiles::mailpit':
+      smtp_address => '127.0.0.1',
+      smtp_port    => 1025,
+      http_address => '127.0.0.1',
+      http_port    => 8025
+    }
+  }
+
   if $deployment {
     class { 'profiles::platform::deployment':
       require   => Profiles::Mysql::App_user["${database_user}@${database_name}"],
       subscribe => Class['profiles::php']
     }
   }
+
   if $sling_enabled {
     class { 'profiles::sling':
       version                 => 'latest',
