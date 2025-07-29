@@ -1,4 +1,4 @@
-class profiles::uit::mailing::deployment (
+class profiles::uitid::mailing::deployment (
 
   String           $version           = 'latest',
   String           $repository        = 'uitid-mailing',

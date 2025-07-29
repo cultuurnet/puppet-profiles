@@ -1,4 +1,4 @@
-class profiles::uit::mailing (
+class profiles::uitid::mailing (
   String $servername,
   Variant[String,Array[String]] $serveraliases = [],
   String $database_password,
@@ -74,7 +74,7 @@ class profiles::uit::mailing (
       require  => Mysql_database[$database_name],
     }
 
-    jdbcconnectionpool { 'mysql_uit_mailing_j2eePool':
+    jdbcconnectionpool { 'mysql_uitid_mailing_j2eePool':
       ensure       => 'present',
       resourcetype => 'javax.sql.DataSource',
       dsclassname  => 'com.mysql.cj.jdbc.MysqlDataSource',
@@ -96,23 +96,23 @@ class profiles::uit::mailing (
 
     jdbcresource { 'jdbc/mailing':
       ensure         => 'present',
-      connectionpool => 'mysql_uit_mailing_j2eePool',
-      require        => Jdbcconnectionpool['mysql_uit_mailing_j2eePool'],
+      connectionpool => 'mysql_uitid_mailing_j2eePool',
+      require        => Jdbcconnectionpool['mysql_uitid_mailing_j2eePool'],
       *              => $default_attributes,
     }
 
     if $deployment {
-      class { 'profiles::uit::mailing::deployment':
+      class { 'profiles::uitid::mailing::deployment':
         portbase          => $portbase,
         config_source => $config_source,
         cron_enabled    => $cron_enabled,
       }
 
-      Class['profiles::glassfish'] -> Class['profiles::uit::mailing::deployment']
-      Package['mysql-connector-j'] -> Class['profiles::uit::mailing::deployment']
-      File['Domain uitid-mailing mysql-connector-j'] -> Class['profiles::uit::mailing::deployment']
-      Profiles::Mysql::App_user["${database_user}@${database_name}"] -> Class['profiles::uit::mailing::deployment']
-      Class['profiles::uit::mailing::deployment'] ~> Service['uitid-mailing']
+      Class['profiles::glassfish'] -> Class['profiles::uitid::mailing::deployment']
+      Package['mysql-connector-j'] -> Class['profiles::uitid::mailing::deployment']
+      File['Domain uitid-mailing mysql-connector-j'] -> Class['profiles::uitid::mailing::deployment']
+      Profiles::Mysql::App_user["${database_user}@${database_name}"] -> Class['profiles::uitid::mailing::deployment']
+      Class['profiles::uitid::mailing::deployment'] ~> Service['uitid-mailing']
     }
   }
   set { 'server.network-config.protocols.protocol.http-listener-1.http.scheme-mapping':
