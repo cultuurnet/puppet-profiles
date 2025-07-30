@@ -6,8 +6,8 @@ class profiles::uitid::mailing::deployment (
   Integer          $portbase          = 4800,
 ) inherits profiles {
 
-  $database_name = 'uit_maling'
-  $database_user = 'uit_maling'
+  $database_name = 'uitid_mailing'
+  $database_user = 'uitid_mailing'
 
   realize Apt::Source[$repository]
   realize User['glassfish']
