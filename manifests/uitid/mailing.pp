@@ -10,7 +10,6 @@ class profiles::uitid::mailing (
   Optional[String] $initial_heap_size          = undef,
   Optional[String] $maximum_heap_size          = undef,
   Boolean $jmx                                 = true,
-  Boolean $cron_enabled                        = true,
   Integer $portbase                            = 4800,
   Enum['running', 'stopped'] $service_status   = 'running',
   Hash $settings                               = {}
