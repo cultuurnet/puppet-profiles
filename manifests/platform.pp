@@ -57,12 +57,12 @@ class profiles::platform (
       require   => Profiles::Mysql::App_user["${database_user}@${database_name}"],
       subscribe => Class['profiles::php']
     }
-  }
 
-  if $sling_enabled {
-    class { 'profiles::sling':
-      version                 => 'latest',
-      database_name           => 'platform'
-     }
+    if $sling_enabled {
+      class { 'profiles::platform::sling':
+        database_name => $database_name,
+        require       => Class['profiles::platform::deployment']
+      }
+    }
   }
 }

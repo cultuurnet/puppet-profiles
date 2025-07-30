@@ -56,6 +56,8 @@ describe 'profiles::platform' do
 
             it { is_expected.to contain_class('profiles::platform::deployment') }
 
+            it { is_expected.not_to contain_class('profiles::platform::sling') }
+
             it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://platform.example.com').with(
               'basedir'              => '/var/www/platform-api',
               'public_web_directory' => 'public',
@@ -98,6 +100,8 @@ describe 'profiles::platform' do
 
           it { is_expected.not_to contain_class('profiles::platform::deployment') }
 
+          it { is_expected.not_to contain_class('profiles::platform::sling') }
+
           it { is_expected.to contain_class('profiles::mailpit').with(
             'smtp_address' => '127.0.0.1',
             'smtp_port'    => 1025,
@@ -111,6 +115,27 @@ describe 'profiles::platform' do
             'aliases'              => ['foo.example.com', 'bar.example.com'],
             'socket_type'          => 'tcp'
           ) }
+        end
+      end
+
+      context 'with database_password => foo, servername => myplatform.example.com, catch_mail => false and sling_enabled => true' do
+        let(:params) { {
+          'database_password' => 'foo',
+          'servername'        => 'myplatform.example.com',
+          'catch_mail'        => false,
+          'sling_enabled'     => true
+        } }
+
+        context 'with hieradata' do
+          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
+          it { is_expected.to contain_class('profiles::platform::sling').with(
+            'database_name' => 'platform'
+          ) }
+
+          it { is_expected.not_to contain_class('profiles::mailpit') }
+
+          it { is_expected.to contain_class('profiles::platform::sling').that_requires('Class[profiles::platform::deployment]') }
         end
       end
 

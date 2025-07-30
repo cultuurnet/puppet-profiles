@@ -1,4 +1,4 @@
-class profiles::sling (
+class profiles::platform::sling (
   String $version                  = 'latest',
   Optional[String] $database_name  = undef,
   Optional[String] $project_id     = undef,
