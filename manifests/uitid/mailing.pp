@@ -103,8 +103,7 @@ class profiles::uitid::mailing (
     if $deployment {
       class { 'profiles::uitid::mailing::deployment':
         portbase          => $portbase,
-        config_source => $config_source,
-        cron_enabled    => $cron_enabled,
+        config_source => $config_source
       }
 
       Class['profiles::glassfish'] -> Class['profiles::uitid::mailing::deployment']
