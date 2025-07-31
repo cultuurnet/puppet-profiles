@@ -15,8 +15,8 @@ class profiles::uitid::mailing (
   Hash $settings                               = {}
 
 ) inherits profiles {
-  $database_name              = 'uitpas_segmentatie'
-  $database_user              = 'uitpas_segmentatie'
+  $database_name              = 'uitid_mailing'
+  $database_user              = 'uitid_mailing'
   $glassfish_domain_http_port = $portbase + 80
   $default_attributes         = {
     user         => 'glassfish',
