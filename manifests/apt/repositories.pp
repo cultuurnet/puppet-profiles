@@ -255,7 +255,11 @@ class profiles::apt::repositories {
     release  => $codename,
     repos    => 'main'
   }
-
+  @apt::source { 'uitid-mailing':
+    location => "https://apt.publiq.be/uitid-mailing-${environment}",
+    release  => $codename,
+    repos    => 'main'
+  }
   @apt::source { 'uitpas-website-frontend':
     location => "https://apt.publiq.be/uitpas-website-frontend-${environment}",
     release  => $codename,
