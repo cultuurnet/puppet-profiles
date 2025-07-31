@@ -12,7 +12,7 @@ class profiles::uitid::mailing::deployment (
   realize Apt::Source[$repository]
   realize User['glassfish']
 
-  package { 'uitid-mailing':
+  package { 'cultuurnet-mailing-app':
     ensure  => $version,
     require => Apt::Source[$repository],
     notify  => [App['uitid-mailing']],
@@ -24,7 +24,7 @@ class profiles::uitid::mailing::deployment (
     passwordfile  => '/home/glassfish/asadmin.pass',
     contextroot   => 'mailing',
     precompilejsp => false,
-    source        => '/opt/uitid-mailing/uitid-mailing.war',
+    source        => '/opt/cultuurnet-mailing-app/cultuurnet-mailing-app.war',
     require       => [User['glassfish']],
   }
 }
