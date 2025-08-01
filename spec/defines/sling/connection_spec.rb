@@ -46,6 +46,22 @@ describe 'profiles::sling::connection' do
           ) }
         end
 
+        context 'with type => gs and configuration => { bucket => mybucket, key_file => /my/keyfile }' do
+          let(:params) { {
+            'type'          => 'gs',
+            'configuration' => {
+                                 'bucket'   => 'mybucket',
+                                 'key_file' => '/my/keyfile'
+                               }
+          } }
+
+          it { is_expected.to contain_concat_fragment('foo').with(
+            'target'  => '/root/.sling/env.yaml',
+            'content' => "  foo:\n    type: gs\n    bucket: mybucket\n    key_file: /my/keyfile\n",
+            'order'   => 2
+          ) }
+        end
+
         context 'without parameters' do
           let(:params) { {} }
 

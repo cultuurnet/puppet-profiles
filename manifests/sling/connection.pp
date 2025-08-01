@@ -1,6 +1,6 @@
 define profiles::sling::connection (
-  String $type,
-  Hash   $configuration = {}
+  Enum['mysql', 'postgres', 'gs'] $type,
+  Hash                            $configuration = {}
 ) {
 
   include profiles
