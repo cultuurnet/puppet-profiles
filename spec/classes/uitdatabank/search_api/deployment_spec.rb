@@ -5,9 +5,10 @@ describe 'profiles::uitdatabank::search_api::deployment' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with config_source => appconfig/uitdatabank/udb3-search-service/config.yml, features_source => appconfig/uitdatabank/udb3-search-service/features.yml, facilities_source => appconfig/uitdatabank/udb3-search-service/facet_mapping_facilities.yml, themes_source => appconfig/uitdatabank/udb3-search-service/facet_mapping_themes.yml, types_source => appconfig/uitdatabank/udb3-search-service/facet_mapping_types.yml and pubkey_keycloak_source => appconfig/uitdatabank/keys/pubkey-keycloak.pem" do
+      context "with config_source => appconfig/uitdatabank/udb3-search-service/config.yml, config_source_php => appconfig/uitdatabank/udb3-search-service/config.php, features_source => appconfig/uitdatabank/udb3-search-service/features.yml, facilities_source => appconfig/uitdatabank/udb3-search-service/facet_mapping_facilities.yml, themes_source => appconfig/uitdatabank/udb3-search-service/facet_mapping_themes.yml, types_source => appconfig/uitdatabank/udb3-search-service/facet_mapping_types.yml and pubkey_keycloak_source => appconfig/uitdatabank/keys/pubkey-keycloak.pem" do
         let(:params) { {
           'config_source'          => 'appconfig/uitdatabank/udb3-search-service/config.yml',
+          'config_source_php'      => 'appconfig/uitdatabank/udb3-search-service/config.php',
           'features_source'        => 'appconfig/uitdatabank/udb3-search-service/features.yml',
           'facilities_source'      => 'appconfig/uitdatabank/udb3-search-service/facet_mapping_facilities.yml',
           'themes_source'          => 'appconfig/uitdatabank/udb3-search-service/facet_mapping_themes.yml',
@@ -22,6 +23,7 @@ describe 'profiles::uitdatabank::search_api::deployment' do
 
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').with(
             'config_source'          => 'appconfig/uitdatabank/udb3-search-service/config.yml',
+            'config_source_php'      => 'appconfig/uitdatabank/udb3-search-service/config.php',
             'features_source'        => 'appconfig/uitdatabank/udb3-search-service/features.yml',
             'facilities_source'      => 'appconfig/uitdatabank/udb3-search-service/facet_mapping_facilities.yml',
             'themes_source'          => 'appconfig/uitdatabank/udb3-search-service/facet_mapping_themes.yml',
@@ -177,9 +179,10 @@ describe 'profiles::uitdatabank::search_api::deployment' do
         end
       end
 
-      context "with config_source => appconfig/uitdatabank/udb3-search-service/myconfig.yml, features_source => appconfig/uitdatabank/udb3-search-service/myfeatures.yml, facilities_source => appconfig/uitdatabank/udb3-search-service/myfacilities.yml, themes_source => appconfig/uitdatabank/udb3-search-service/mythemes.yml, types_source => appconfig/uitdatabank/udb3-search-service/mytypes.yml, version => 1.2.3, repository => foo, pubkey_keycloak_source => appconfig/uitdatabank/keys/mypubkey-keycloak.pem, region_mapping_source => appconfig/uitdatabank/udb3-search-service/my_region_mapping.json and puppetdb_url => http://example.com:8000" do
+      context "with config_source => appconfig/uitdatabank/udb3-search-service/myconfig.yml, config_source => appconfig/uitdatabank/udb3-search-service/myconfig.php, features_source => appconfig/uitdatabank/udb3-search-service/myfeatures.yml, facilities_source => appconfig/uitdatabank/udb3-search-service/myfacilities.yml, themes_source => appconfig/uitdatabank/udb3-search-service/mythemes.yml, types_source => appconfig/uitdatabank/udb3-search-service/mytypes.yml, version => 1.2.3, repository => foo, pubkey_keycloak_source => appconfig/uitdatabank/keys/mypubkey-keycloak.pem, region_mapping_source => appconfig/uitdatabank/udb3-search-service/my_region_mapping.json and puppetdb_url => http://example.com:8000" do
         let(:params) { {
           'config_source'          => 'appconfig/uitdatabank/udb3-search-service/myconfig.yml',
+          'config_source_php'      => 'appconfig/uitdatabank/udb3-search-service/myconfig.php',
           'features_source'        => 'appconfig/uitdatabank/udb3-search-service/myfeatures.yml',
           'facilities_source'      => 'appconfig/uitdatabank/udb3-search-service/myfacilities.yml',
           'themes_source'          => 'appconfig/uitdatabank/udb3-search-service/mythemes.yml',
@@ -276,6 +279,7 @@ describe 'profiles::uitdatabank::search_api::deployment' do
         let(:params) { {} }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source_php'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'features_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'facilities_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'themes_source'/) }
