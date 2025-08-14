@@ -73,6 +73,7 @@ class profiles::projectaanvraag::api (
   mongodb::db { $mongodb_database_name:
     user     => $mongodb_database_user,
     password => $mongodb_password,
+    roles    => ['readWrite'],
     require  => Class['profiles::mongodb']
   }
 }

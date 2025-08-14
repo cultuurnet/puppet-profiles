@@ -46,7 +46,8 @@ describe 'profiles::projectaanvraag::api' do
 
             it { is_expected.to contain_mongodb__db('widgets').with(
               'user'     => 'projectaanvraag',
-              'password' => 'mysecret'
+              'password' => 'mysecret',
+              'roles'    => ['readWrite']
             ) }
 
             it { is_expected.to contain_mysql_database('projectaanvraag').with(
