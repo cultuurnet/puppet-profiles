@@ -8,10 +8,9 @@ describe 'profiles::projectaanvraag::api' do
       context 'with hieradata' do
         let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-        context 'with database_password => mypassword, mongodb_password => mysecret and servername => uitdatabank.example.com' do
+        context 'with database_password => mypassword and servername => uitdatabank.example.com' do
           let(:params) { {
             'database_password' => 'mypassword',
-            'mongodb_password'  => 'mysecret',
             'servername'        => 'projectaanvraag-api.example.com'
           } }
 
@@ -22,7 +21,6 @@ describe 'profiles::projectaanvraag::api' do
 
             it { is_expected.to contain_class('profiles::projectaanvraag::api').with(
               'database_password' => 'mypassword',
-              'mongodb_password'  => 'mysecret',
               'database_host'     => '127.0.0.1',
               'servername'        => 'projectaanvraag-api.example.com',
               'serveraliases'     => [],
@@ -46,7 +44,7 @@ describe 'profiles::projectaanvraag::api' do
 
             it { is_expected.to contain_mongodb__db('widgets').with(
               'user'     => 'projectaanvraag',
-              'password' => 'mysecret',
+              'password' => 'projectaanvraag'
               'roles'    => ['readWrite']
             ) }
 
@@ -71,10 +69,9 @@ describe 'profiles::projectaanvraag::api' do
           end
         end
 
-        context 'with database_password => secret, mongodb_password => foo, database_host => foo.example.com, servername => bar.example.com, serveraliases => baz.example.com and deployment => false' do
+        context 'with database_password => secret, database_host => foo.example.com, servername => bar.example.com, serveraliases => baz.example.com and deployment => false' do
           let(:params) { {
             'database_password' => 'secret',
-            'mongodb_password'  => 'foo',
             'database_host'     => 'foo.example.com',
             'servername'        => 'bar.example.com',
             'serveraliases'     => 'baz.example.com',
@@ -93,11 +90,6 @@ describe 'profiles::projectaanvraag::api' do
             'basedir'              => '/var/www/projectaanvraag-api',
             'public_web_directory' => 'web',
             'aliases'              => 'baz.example.com'
-          ) }
-
-          it { is_expected.to contain_mongodb__db('widgets').with(
-            'user'     => 'projectaanvraag',
-            'password' => 'foo'
           ) }
 
           context "with fact mysqld_version => 8.0.33" do
