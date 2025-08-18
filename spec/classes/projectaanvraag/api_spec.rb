@@ -42,10 +42,8 @@ describe 'profiles::projectaanvraag::api' do
               'aliases'              => []
             ) }
 
-            it { is_expected.to contain_mongodb__db('widgets').with(
-              'user'     => 'projectaanvraag',
-              'password' => 'projectaanvraag'
-              'roles'    => ['readWrite']
+            it { is_expected.to contain_mongodb_database('widgets').with(
+              'ensure' => 'present'
             ) }
 
             it { is_expected.to contain_mysql_database('projectaanvraag').with(
@@ -61,8 +59,8 @@ describe 'profiles::projectaanvraag::api' do
             it { is_expected.to contain_mysql_database('projectaanvraag').that_comes_before('Profiles::Mysql::App_user[projectaanvraag@projectaanvraag]') }
             it { is_expected.to contain_mysql_database('projectaanvraag').that_requires('Class[profiles::mysql::server]') }
             it { is_expected.to contain_profiles__mysql__app_user('projectaanvraag@projectaanvraag').that_comes_before('Class[profiles::projectaanvraag::api::deployment]') }
-            it { is_expected.to contain_mongodb__db('widgets').that_requires('Class[profiles::mongodb]') }
-            it { is_expected.to contain_mongodb__db('widgets').that_comes_before('Class[profiles::projectaanvraag::api::deployment]') }
+            it { is_expected.to contain_mongodb_database('widgets').that_requires('Class[profiles::mongodb]') }
+            it { is_expected.to contain_mongodb_database('widgets').that_comes_before('Class[profiles::projectaanvraag::api::deployment]') }
             it { is_expected.to contain_class('profiles::redis').that_comes_before('Class[profiles::projectaanvraag::api::deployment]') }
             it { is_expected.to contain_class('profiles::mongodb').that_comes_before('Class[profiles::projectaanvraag::api::deployment]') }
             it { is_expected.to contain_class('profiles::php').that_notifies('Class[profiles::projectaanvraag::api::deployment]') }
