@@ -1,5 +1,4 @@
 class profiles::platform::sling (
-  String $version                  = 'latest',
   Optional[String] $database_name  = undef,
   Optional[String] $project_id     = undef,
   Optional[String] $bucket_name    = undef,
@@ -8,17 +7,17 @@ class profiles::platform::sling (
   String           $local_timezone = 'UTC'
 
 ) inherits profiles {
+
+  include profiles::sling
+
   realize Apt::Source['publiq-tools']
+
 
   # Generate a random password if deploying
   if $database_name {
     $app_user_password = fqdn_rand_string(20, "${database_name}_sling_password")
   }
 
-  package { 'sling':
-    ensure  => $version,
-    require => Apt::Source['publiq-tools'],
-  }
   profiles::mysql::app_user { "sling@${database_name}":
     password => $app_user_password,
     readonly => true,
@@ -38,10 +37,8 @@ class profiles::platform::sling (
       },
     }
   }
-  # Ensure the sling /root/.sling directory exists
-  file { '/root/.sling':
-    ensure => 'directory',
-  }
+
+
   file { '/data/parquetdumps':
     ensure => 'directory',
   }
@@ -59,6 +56,7 @@ class profiles::platform::sling (
       content => template('profiles/sling/parquetdump_to_gcs.sh.erb'),
       require => Profiles::Google::Gcloud['root'],
     }
+
     cron { 'parquetdump_to_gcs':
       ensure  => 'present',
       command => '/usr/local/bin/parquetdump_to_gcs',
