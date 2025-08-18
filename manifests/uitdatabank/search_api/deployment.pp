@@ -1,5 +1,6 @@
 class profiles::uitdatabank::search_api::deployment (
   String           $config_source,
+  String           $config_source_php,
   String           $features_source,
   String           $facilities_source,
   String           $themes_source,
@@ -38,6 +39,13 @@ class profiles::uitdatabank::search_api::deployment (
     *       => $file_default_attributes
   }
 
+  file { 'uitdatabank-search-api-config-php':
+    ensure  => 'file',
+    path    => "${basedir}/config.php",
+    content => template($config_source_php),
+    *       => $file_default_attributes
+  }
+
   file { 'uitdatabank-search-api-features':
     ensure  => 'file',
     path    => "${basedir}/features.yml",
@@ -49,6 +57,13 @@ class profiles::uitdatabank::search_api::deployment (
     ensure  => 'file',
     path    => "${basedir}/facet_mapping_regions.yml",
     source  => '/var/www/geojson-data/output/facet_mapping_regions.yml',
+    *      => $file_default_attributes
+  }
+
+  file { 'uitdatabank-search-api-facet-mapping-regions-php':
+    ensure  => 'file',
+    path    => "${basedir}/facet_mapping_regions.php",
+    source  => '/var/www/geojson-data/output/facet_mapping_regions.php',
     *      => $file_default_attributes
   }
 

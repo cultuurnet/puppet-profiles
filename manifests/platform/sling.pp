@@ -10,6 +10,9 @@ class profiles::platform::sling (
 
   include profiles::sling
 
+  realize Apt::Source['publiq-tools']
+
+
   # Generate a random password if deploying
   if $database_name {
     $app_user_password = fqdn_rand_string(20, "${database_name}_sling_password")
@@ -34,6 +37,7 @@ class profiles::platform::sling (
       },
     }
   }
+
 
   file { '/data/parquetdumps':
     ensure => 'directory',
