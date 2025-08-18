@@ -1,0 +1,8 @@
+  <%= @title %>:
+    type: postgres
+    user: <%= @configuration['user'] %>
+    password: <%= @configuration['password'] %>
+    host: <%= @configuration['host'] || '127.0.0.1' %>
+    port: <%= @configuration['port'] || '5432' %>
+    database: <%= @configuration['database'] %>
+    sslmode: disable

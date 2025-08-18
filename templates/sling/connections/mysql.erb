@@ -1,0 +1,9 @@
+  <%= @title %>:
+    type: mysql
+    user: <%= @configuration['user'] %>
+    password: <%= @configuration['password'] %>
+    host: <%= @configuration['host'] || '127.0.0.1' %>
+    port: <%= @configuration['port'] || '3306' %>
+    database: <%= @configuration['database'] %>
+    tls: skip-verify
+    allow_fallback_to_plaintext: true
