@@ -7,9 +7,6 @@ class profiles::uitid::reverse_proxy (
 
 ) inherits profiles {
   include nginx
-  unless ($certificate) {
-    fail('No valid certificate provided')
-  }
   realize Profiles::Certificate[$certificate]
   realize Firewall['300 accept HTTPS traffic']
 }
