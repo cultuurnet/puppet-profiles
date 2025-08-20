@@ -16,3 +16,5 @@ vault:uitdatabank/udb3-search-service:
 vault:uitdatabank/udb3-backend: {}
 
 vault:projectaanvraag/api: {}
+
+vault:widgetbeheer/frontend: {}
