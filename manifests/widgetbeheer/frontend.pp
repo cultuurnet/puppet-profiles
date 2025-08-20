@@ -24,7 +24,15 @@ class profiles::widgetbeheer::frontend (
 
   profiles::apache::vhost::basic { "http://${servername}":
     documentroot  => $basedir,
-    serveraliases => $serveraliases
+    serveraliases => $serveraliases,
+    rewrites      => {
+                       comment      => 'Send all requests through index.html',
+                       rewrite_cond => [
+                                         '%{REQUEST_FILENAME} !-f',
+                                         '%{REQUEST_FILENAME} !-d'
+                                       ],
+                       rewrite_rule => '. /index.html [L]'
+                     }
   }
 
   # include ::profiles::widgetbeheer::frontend::monitoring
