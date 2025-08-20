@@ -84,6 +84,8 @@ profiles::projectaanvraag::api::deployment::config_source: 'appconfig/projectaan
 profiles::projectaanvraag::api::deployment::integration_types_source: 'appconfig/projectaanvraag/api/integration_types.yml'
 profiles::projectaanvraag::api::deployment::user_roles_source: 'appconfig/projectaanvraag/api/user_roles.yml'
 
+profiles::widgetbeheer::frontend::deployment::config_source: 'appconfig/widgetbeheer/frontend/config.json'
+
 profiles::publiq::versions::service_address: '127.0.1.1'
 profiles::publiq::versions::service_port: 6000
 
