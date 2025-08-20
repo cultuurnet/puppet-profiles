@@ -36,7 +36,15 @@ describe 'profiles::widgetbeheer::frontend' do
 
           it { is_expected.to contain_profiles__apache__vhost__basic('http://frontend.example.com').with(
             'serveraliases' => [],
-            'documentroot'  => '/var/www/widgetbeheer-frontend'
+            'documentroot'  => '/var/www/widgetbeheer-frontend',
+            'rewrites'      => {
+                                 'comment'      => 'Send all requests through index.html',
+                                 'rewrite_cond' => [
+                                                     '%{REQUEST_FILENAME} !-f',
+                                                     '%{REQUEST_FILENAME} !-d'
+                                                   ],
+                                 'rewrite_rule' => '. /index.html [L]'
+                               }
           ) }
 
           it { is_expected.to contain_file('/var/www/widgetbeheer-frontend').that_requires('Group[www-data]') }
@@ -63,7 +71,15 @@ describe 'profiles::widgetbeheer::frontend' do
 
           it { is_expected.to contain_profiles__apache__vhost__basic('http://widgets.example.com').with(
             'serveraliases' => ['foo.example.com', 'bar.example.com'],
-            'documentroot'  => '/var/www/widgetbeheer-frontend'
+            'documentroot'  => '/var/www/widgetbeheer-frontend',
+            'rewrites'      => {
+                                 'comment'      => 'Send all requests through index.html',
+                                 'rewrite_cond' => [
+                                                     '%{REQUEST_FILENAME} !-f',
+                                                     '%{REQUEST_FILENAME} !-d'
+                                                   ],
+                                 'rewrite_rule' => '. /index.html [L]'
+                               }
           ) }
 
           it { is_expected.to_not contain_class('profiles::uitdatabank::frontend::deployment') }
