@@ -16,10 +16,14 @@ describe 'profiles::apache::vhost::basic' do
             'documentroot'        => '/var/www/html',
             'access_log_format'   => 'extended_json',
             'directories'         => [],
-            'auth_openid_connect' => false
+            'auth_openid_connect' => false,
+            'ssl_proxyengine'     => false
           ) }
 
           it { is_expected.to contain_firewall('300 accept HTTP traffic') }
+
+          it { is_expected.not_to contain_class('apache::mod::proxy_http') }
+          it { is_expected.not_to contain_class('apache::mod::ssl') }
 
           it { is_expected.to contain_apache__vhost('www.example.com_80').with(
             'servername'         => 'www.example.com',
@@ -46,17 +50,18 @@ describe 'profiles::apache::vhost::basic' do
                                         'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
                                         'allow_override' => 'All'
                                       }
-                                    ]
+                                    ],
+            'ssl_proxyengine'    => false
           ) }
         end
 
-        context 'with serveraliases => [web.example.com, test.example.com], documentroot => /var/www/bar, access_log_format => extended and directories => { path => /var/www/bar/files, provider => files, deny => from all }' do
+        context 'with serveraliases => [web.example.com, test.example.com], documentroot => /var/www/bar, access_log_format => extended and directories => { path => secret_file.html, provider => files, deny => from all }' do
           let(:params) { {
             'serveraliases'       => ['web.example.com', 'test.example.com'],
             'documentroot'        => '/var/www/bar',
             'access_log_format'   => 'extended',
             'directories'         => {
-                                       'path'     => '/var/www/bar/files',
+                                       'path'     => 'secret_file.html',
                                        'provider' => 'files',
                                        'deny'     => 'from all'
                                      }
@@ -90,7 +95,7 @@ describe 'profiles::apache::vhost::basic' do
                                         'allow_override' => 'All'
                                       },
                                       {
-                                       'path'     => '/var/www/bar/files',
+                                       'path'     => 'secret_file.html',
                                        'provider' => 'files',
                                        'deny'     => 'from all'
                                       }
@@ -128,7 +133,7 @@ describe 'profiles::apache::vhost::basic' do
               it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter certificate when using HTTPS/) }
             end
 
-            context 'with serveraliases => foobar.example.com, certificate => wildcard.example.com, documentroot => /var/www/foobar, auth_openid_connect => true and directories => [ { path => /path/to/directory, handler => value }, { path => /path/to/other/directory, handler => othervalue } ]' do
+            context 'with serveraliases => foobar.example.com, certificate => wildcard.example.com, documentroot => /var/www/foobar, auth_openid_connect => true, directories => [ { path => /path/to/directory, handler => value }, { path => /path/to/other/directory, handler => othervalue } ], rewrites => { comment => Proxy to foo.example.com, rewrite_rule => ^(.*)$ https://foo.example.com/$1 [P] } and ssl_proxyengine => true' do
               let(:params) { {
                 'serveraliases'       => 'foobar.example.com',
                 'certificate'         => 'wildcard.example.com',
@@ -137,7 +142,12 @@ describe 'profiles::apache::vhost::basic' do
                 'directories'         => [
                                            { 'path' => '/path/to/directory', 'handler' => 'value' },
                                            { 'path' => '/path/to/other/directory', 'handler' => 'othervalue' }
-                                         ]
+                                         ],
+                'rewrites'            => {
+                                           'comment'      => 'Proxy to foo.example.com',
+                                           'rewrite_rule' => '^(.*)$ https://foo.example.com/$1 [P]'
+                                         },
+                'ssl_proxyengine'     => true
               } }
 
               it { is_expected.to contain_firewall('300 accept HTTPS traffic') }
@@ -145,6 +155,8 @@ describe 'profiles::apache::vhost::basic' do
               it { is_expected.to contain_profiles__certificate('wildcard.example.com') }
 
               it { is_expected.to contain_class('apache::mod::authn_core') }
+              it { is_expected.to contain_class('apache::mod::proxy_http') }
+              it { is_expected.to contain_class('apache::mod::ssl') }
 
               it { is_expected.to contain_apache__vhost('myvhost.example.com_443').with(
                 'servername'         => 'myvhost.example.com',
@@ -195,7 +207,12 @@ describe 'profiles::apache::vhost::basic' do
                                             'path'    => '/path/to/other/directory',
                                             'handler' => 'othervalue'
                                           }
-                                        ]
+                                        ],
+                'rewrites'           => [{
+                                          'comment'      => 'Proxy to foo.example.com',
+                                          'rewrite_rule' => '^(.*)$ https://foo.example.com/$1 [P]'
+                                        }],
+                'ssl_proxyengine'    => true
               ) }
             end
           end
