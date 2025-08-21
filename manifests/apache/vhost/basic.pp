@@ -5,7 +5,8 @@ define profiles::apache::vhost::basic (
   Optional[String]               $certificate         = undef,
   Variant[Hash, Array[Hash]]     $directories         = [],
   Variant[Hash, Array[Hash]]     $rewrites            = [],
-  Boolean                        $auth_openid_connect = false
+  Boolean                        $auth_openid_connect = false,
+  Boolean                        $ssl_proxyengine     = false
 ) {
 
   include ::profiles
@@ -19,6 +20,13 @@ define profiles::apache::vhost::basic (
 
   $transport  = split($title, ':')[0]
   $servername = split($title, '/')[-1]
+  $proxy_http = [$rewrites].flatten.reduce(false) |$proxy_flag_present, $rewrite| {
+                  $rewrite_flags = $rewrite['rewrite_rule'].split(' ')[2][1,-2].split(',')
+                  $proxy_flag    = 'P' in $rewrite_flags
+
+                  $proxy_flag_present or $proxy_flag
+                }
+
 
   $default_directories = [{ 'path' => $documentroot } + $profiles::apache::defaults::directories]
 
@@ -44,6 +52,14 @@ define profiles::apache::vhost::basic (
     $ssl_key  = undef
 
     realize Firewall['300 accept HTTP traffic']
+  }
+
+  if $proxy_http {
+    include apache::mod::proxy_http
+  }
+
+  if $ssl_proxyengine {
+    include apache::mod::ssl
   }
 
   if $auth_openid_connect {
@@ -86,6 +102,7 @@ define profiles::apache::vhost::basic (
     access_log_env_var => '!nolog',
     rewrites           => [$rewrites].flatten,
     setenvif           => $profiles::apache::defaults::setenvif,
-    directories        => $openid_connect_directories + $default_directories + [$directories].flatten
+    directories        => $openid_connect_directories + $default_directories + [$directories].flatten,
+    ssl_proxyengine    => $ssl_proxyengine
   }
 }

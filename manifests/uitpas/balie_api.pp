@@ -26,7 +26,7 @@ class profiles::uitpas::balie_api (
     headers              => 'set Cache-Control "no-cache,no-store" "env=legacy_app_path"',
     ssl_proxyengine      => $https_destination,
     directories          => {
-                              path     => '/app_v1/index.html',
+                              path     => 'index.html',
                               provider => 'files',
                               headers  => [
                                             'set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"',
