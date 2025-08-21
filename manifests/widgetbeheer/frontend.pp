@@ -28,8 +28,8 @@ class profiles::widgetbeheer::frontend (
     rewrites      => {
                        comment      => 'Send all requests through index.html',
                        rewrite_cond => [
-                                         '%{REQUEST_FILENAME} !-f',
-                                         '%{REQUEST_FILENAME} !-d'
+                                         "${basedir}%{REQUEST_FILENAME} !-f",
+                                         "${basedir}%{REQUEST_FILENAME} !-d"
                                        ],
                        rewrite_rule => '. /index.html [L]'
                      }

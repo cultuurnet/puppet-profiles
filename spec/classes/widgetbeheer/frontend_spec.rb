@@ -40,8 +40,8 @@ describe 'profiles::widgetbeheer::frontend' do
             'rewrites'      => {
                                  'comment'      => 'Send all requests through index.html',
                                  'rewrite_cond' => [
-                                                     '%{REQUEST_FILENAME} !-f',
-                                                     '%{REQUEST_FILENAME} !-d'
+                                                     '/var/www/widgetbeheer-frontend%{REQUEST_FILENAME} !-f',
+                                                     '/var/www/widgetbeheer-frontend%{REQUEST_FILENAME} !-d'
                                                    ],
                                  'rewrite_rule' => '. /index.html [L]'
                                }
@@ -75,8 +75,8 @@ describe 'profiles::widgetbeheer::frontend' do
             'rewrites'      => {
                                  'comment'      => 'Send all requests through index.html',
                                  'rewrite_cond' => [
-                                                     '%{REQUEST_FILENAME} !-f',
-                                                     '%{REQUEST_FILENAME} !-d'
+                                                     '/var/www/widgetbeheer-frontend%{REQUEST_FILENAME} !-f',
+                                                     '/var/www/widgetbeheer-frontend%{REQUEST_FILENAME} !-d'
                                                    ],
                                  'rewrite_rule' => '. /index.html [L]'
                                }
