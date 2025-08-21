@@ -44,7 +44,24 @@ describe 'profiles::widgetbeheer::frontend' do
                                                      '/var/www/widgetbeheer-frontend%{REQUEST_FILENAME} !-d'
                                                    ],
                                  'rewrite_rule' => '. /index.html [L]'
-                               }
+                               },
+            'directories'   => [{
+                                 'path'     => 'index.html',
+                                 'provider' => 'files',
+                                 'headers'  => [
+                                                 'set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"',
+                                                 'set Pragma "no-cache"',
+                                                 'set Expires "Wed, 1 Jan 1970 00:00:00 GMT"'
+                                               ]
+                                }, {
+                                 'path'     => 'config.json',
+                                 'provider' => 'files',
+                                 'headers'  => [
+                                                 'set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"',
+                                                 'set Pragma "no-cache"',
+                                                 'set Expires "Wed, 1 Jan 1970 00:00:00 GMT"'
+                                               ]
+                                }]
           ) }
 
           it { is_expected.to contain_file('/var/www/widgetbeheer-frontend').that_requires('Group[www-data]') }
@@ -79,7 +96,24 @@ describe 'profiles::widgetbeheer::frontend' do
                                                      '/var/www/widgetbeheer-frontend%{REQUEST_FILENAME} !-d'
                                                    ],
                                  'rewrite_rule' => '. /index.html [L]'
-                               }
+                               },
+            'directories'   => [{
+                                 'path'     => 'index.html',
+                                 'provider' => 'files',
+                                 'headers'  => [
+                                                 'set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"',
+                                                 'set Pragma "no-cache"',
+                                                 'set Expires "Wed, 1 Jan 1970 00:00:00 GMT"'
+                                               ]
+                                }, {
+                                 'path'     => 'config.json',
+                                 'provider' => 'files',
+                                 'headers'  => [
+                                                 'set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"',
+                                                 'set Pragma "no-cache"',
+                                                 'set Expires "Wed, 1 Jan 1970 00:00:00 GMT"'
+                                               ]
+                                }]
           ) }
 
           it { is_expected.to_not contain_class('profiles::uitdatabank::frontend::deployment') }

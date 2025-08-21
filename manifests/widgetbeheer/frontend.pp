@@ -32,7 +32,24 @@ class profiles::widgetbeheer::frontend (
                                          "${basedir}%{REQUEST_FILENAME} !-d"
                                        ],
                        rewrite_rule => '. /index.html [L]'
-                     }
+                     },
+    directories   => [{
+                       path     => 'index.html',
+                       provider => 'files',
+                       headers  => [
+                                     'set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"',
+                                     'set Pragma "no-cache"',
+                                     'set Expires "Wed, 1 Jan 1970 00:00:00 GMT"'
+                                   ]
+                     }, {
+                       path     => 'config.json',
+                       provider => 'files',
+                       headers  => [
+                                     'set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"',
+                                     'set Pragma "no-cache"',
+                                     'set Expires "Wed, 1 Jan 1970 00:00:00 GMT"'
+                                   ]
+                     }]
   }
 
   # include ::profiles::widgetbeheer::frontend::monitoring
