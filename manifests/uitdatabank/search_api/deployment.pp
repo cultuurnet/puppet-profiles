@@ -2,9 +2,6 @@ class profiles::uitdatabank::search_api::deployment (
   String           $config_source,
   String           $config_source_php,
   String           $features_source,
-  String           $facilities_source,
-  String           $themes_source,
-  String           $types_source,
   String           $pubkey_keycloak_source,
   String           $version                = 'latest',
   String           $repository             = 'uitdatabank-search-api',
@@ -95,14 +92,6 @@ class profiles::uitdatabank::search_api::deployment (
       content => template($default_queries_source),
       *       => $file_default_attributes
     }
-  }
-
-  profiles::uitdatabank::term_mapping { 'uitdatabank-search-api':
-    basedir           => $basedir,
-    facilities_source => $facilities_source,
-    themes_source     => $themes_source,
-    types_source      => $types_source,
-    notify            => [Service['uitdatabank-search-api'], Class['profiles::uitdatabank::search_api::listeners']]
   }
 
   class { 'profiles::uitdatabank::search_api::listeners':
