@@ -6,9 +6,6 @@ class profiles::uitdatabank::entry_api::deployment (
   String                    $completeness_source,
   String                    $externalid_mapping_organizer_source,
   String                    $externalid_mapping_place_source,
-  String                    $term_mapping_facilities_source,
-  String                    $term_mapping_themes_source,
-  String                    $term_mapping_types_source,
   String                    $pubkey_uitidv1_source,
   String                    $pubkey_keycloak_source,
   String                    $version                             = 'latest',
@@ -103,18 +100,6 @@ class profiles::uitdatabank::entry_api::deployment (
     path    => "${basedir}/public-keycloak.pem",
     content => template($pubkey_keycloak_source),
     *       => $file_default_attributes
-  }
-
-  profiles::uitdatabank::term_mapping { 'uitdatabank-entry-api':
-    basedir                     => $basedir,
-    facilities_source           => $term_mapping_facilities_source,
-    themes_source               => $term_mapping_themes_source,
-    types_source                => $term_mapping_types_source,
-    facilities_mapping_filename => 'config.term_mapping_facilities.php',
-    themes_mapping_filename     => 'config.term_mapping_themes.php',
-    types_mapping_filename      => 'config.term_mapping_types.php',
-    require                     => Package['uitdatabank-entry-api'],
-    notify                      => Service['uitdatabank-entry-api']
   }
 
   exec { 'uitdatabank-entry-api-db-migrate':
