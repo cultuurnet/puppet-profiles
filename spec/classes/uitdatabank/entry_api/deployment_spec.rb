@@ -5,7 +5,7 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context 'with config_source => appconfig/uitdatabank/udb3-backend/config.php, admin_permissions_source => appconfig/uitdatabank/udb3-backend/config.allow_all.php, client_permissions_source => appconfig/uitdatabank/udb3-backend/config.client_permissions.php, movie_fetcher_config_source => appconfig/uitdatabank/udb3-backend/config.kinepolis.php, completeness_source => appconfig/uitdatabank/udb3-backend/config.completeness.php, externalid_mapping_organizer_source => appconfig/uitdatabank/udb3-backend/config.external_id_mapping_organizer.php, externalid_mapping_place_source => appconfig/uitdatabank/udb3-backend/config.external_id_mapping_place.php, term_mapping_facilities_source => appconfig/uitdatabank/udb3-backend/config.term_mapping_facilities.php, term_mapping_themes_source => appconfig/uitdatabank/udb3-backend/config.term_mapping_themes.php, term_mapping_types_source => appconfig/uitdatabank/udb3-backend/config.term_mapping_types.php, pubkey_uitidv1_source => appconfig/uitdatabank/keys/public.pem and pubkey_keycloak_source => appconfig/uitdatabank/keys/pubkey-keycloak.pem' do
+      context 'with config_source => appconfig/uitdatabank/udb3-backend/config.php, admin_permissions_source => appconfig/uitdatabank/udb3-backend/config.allow_all.php, client_permissions_source => appconfig/uitdatabank/udb3-backend/config.client_permissions.php, movie_fetcher_config_source => appconfig/uitdatabank/udb3-backend/config.kinepolis.php, completeness_source => appconfig/uitdatabank/udb3-backend/config.completeness.php, externalid_mapping_organizer_source => appconfig/uitdatabank/udb3-backend/config.external_id_mapping_organizer.php, externalid_mapping_place_source => appconfig/uitdatabank/udb3-backend/config.external_id_mapping_place.php, pubkey_uitidv1_source => appconfig/uitdatabank/keys/public.pem and pubkey_keycloak_source => appconfig/uitdatabank/keys/pubkey-keycloak.pem' do
         let(:params) { {
           'config_source'                       => 'appconfig/uitdatabank/udb3-backend/config.php',
           'admin_permissions_source'            => 'appconfig/uitdatabank/udb3-backend/config.allow_all.php',
@@ -14,9 +14,6 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           'completeness_source'                 => 'appconfig/uitdatabank/udb3-backend/config.completeness.php',
           'externalid_mapping_organizer_source' => 'appconfig/uitdatabank/udb3-backend/config.external_id_mapping_organizer.php',
           'externalid_mapping_place_source'     => 'appconfig/uitdatabank/udb3-backend/config.external_id_mapping_place.php',
-          'term_mapping_facilities_source'      => 'appconfig/uitdatabank/udb3-backend/config.term_mapping_facilities.php',
-          'term_mapping_themes_source'          => 'appconfig/uitdatabank/udb3-backend/config.term_mapping_themes.php',
-          'term_mapping_types_source'           => 'appconfig/uitdatabank/udb3-backend/config.term_mapping_types.php',
           'pubkey_uitidv1_source'               => 'appconfig/uitdatabank/keys/public.pem',
           'pubkey_keycloak_source'              => 'appconfig/uitdatabank/keys/pubkey-keycloak.pem'
         } }
@@ -34,9 +31,6 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
             'completeness_source'                 => 'appconfig/uitdatabank/udb3-backend/config.completeness.php',
             'externalid_mapping_organizer_source' => 'appconfig/uitdatabank/udb3-backend/config.external_id_mapping_organizer.php',
             'externalid_mapping_place_source'     => 'appconfig/uitdatabank/udb3-backend/config.external_id_mapping_place.php',
-            'term_mapping_facilities_source'      => 'appconfig/uitdatabank/udb3-backend/config.term_mapping_facilities.php',
-            'term_mapping_themes_source'          => 'appconfig/uitdatabank/udb3-backend/config.term_mapping_themes.php',
-            'term_mapping_types_source'           => 'appconfig/uitdatabank/udb3-backend/config.term_mapping_types.php',
             'pubkey_uitidv1_source'               => 'appconfig/uitdatabank/keys/public.pem',
             'pubkey_keycloak_source'              => 'appconfig/uitdatabank/keys/pubkey-keycloak.pem',
             'version'                             => 'latest',
@@ -117,16 +111,6 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
              'cwd'         => '/var/www/udb3-backend',
              'path'        => ['/usr/local/bin', '/usr/bin', '/bin', '/var/www/udb3-backend'],
              'refreshonly' => true
-          ) }
-
-          it { is_expected.to contain_profiles__uitdatabank__term_mapping('uitdatabank-entry-api').with(
-            'basedir'                     => '/var/www/udb3-backend',
-            'facilities_source'           => 'appconfig/uitdatabank/udb3-backend/config.term_mapping_facilities.php',
-            'themes_source'               => 'appconfig/uitdatabank/udb3-backend/config.term_mapping_themes.php',
-            'types_source'                => 'appconfig/uitdatabank/udb3-backend/config.term_mapping_types.php',
-            'facilities_mapping_filename' => 'config.term_mapping_facilities.php',
-            'themes_mapping_filename'     => 'config.term_mapping_themes.php',
-            'types_mapping_filename'      => 'config.term_mapping_types.php'
           ) }
 
           it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').with(
@@ -222,8 +206,6 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').that_requires('Package[uitdatabank-entry-api]') }
           it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').that_notifies('Service[uitdatabank-entry-api]') }
           it { is_expected.to contain_exec('uitdatabank-entry-api-db-migrate').that_notifies('Service[uitdatabank-entry-api]') }
-          it { is_expected.to contain_profiles__uitdatabank__term_mapping('uitdatabank-entry-api').that_requires('Package[uitdatabank-entry-api]') }
-          it { is_expected.to contain_profiles__uitdatabank__term_mapping('uitdatabank-entry-api').that_notifies('Service[uitdatabank-entry-api]') }
           it { is_expected.to contain_profiles__php__fpm_service_alias('uitdatabank-entry-api').that_notifies('Service[uitdatabank-entry-api]') }
           it { is_expected.to contain_service('uitdatabank-entry-api').that_notifies('Class[profiles::uitdatabank::entry_api::amqp_listener_uitpas]') }
           it { is_expected.to contain_service('uitdatabank-entry-api').that_notifies('Class[profiles::uitdatabank::entry_api::bulk_label_offer_worker]') }
@@ -304,7 +286,7 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
         end
       end
 
-      context 'with config_source => appconfig/uitdatabank/udb3-backend/my.config.php, admin_permissions_source => appconfig/uitdatabank/udb3-backend/config.my.allow_all.php, client_permissions_source => appconfig/uitdatabank/udb3-backend/config.my.client_permissions.php, movie_fetcher_config_source => appconfig/uitdatabank/udb3-backend/config.my.kinepolis.php, completeness_source => appconfig/uitdatabank/udb3-backend/config.my.completeness.php, externalid_mapping_organizer_source => appconfig/uitdatabank/udb3-backend/config.my.external_id_mapping_organizer.php, externalid_mapping_place_source => appconfig/uitdatabank/udb3-backend/config.my.external_id_mapping_place.php, term_mapping_facilities_source => appconfig/uitdatabank/term_mapping/config.term_mapping_facilities.php, term_mapping_themes_source => appconfig/uitdatabank/term_mapping/config.term_mapping_themes.php, term_mapping_types_source => appconfig/uitdatabank/term_mapping/config.term_mapping_types.php, pubkey_uitidv1_source => appconfig/uitdatabank/keys/my_public_key.pem and pubkey_keycloak_source => appconfig/uitdatabank/keys/mypubkey-keycloak.pem' do
+      context 'with config_source => appconfig/uitdatabank/udb3-backend/my.config.php, admin_permissions_source => appconfig/uitdatabank/udb3-backend/config.my.allow_all.php, client_permissions_source => appconfig/uitdatabank/udb3-backend/config.my.client_permissions.php, movie_fetcher_config_source => appconfig/uitdatabank/udb3-backend/config.my.kinepolis.php, completeness_source => appconfig/uitdatabank/udb3-backend/config.my.completeness.php, externalid_mapping_organizer_source => appconfig/uitdatabank/udb3-backend/config.my.external_id_mapping_organizer.php, externalid_mapping_place_source => appconfig/uitdatabank/udb3-backend/config.my.external_id_mapping_place.php, pubkey_uitidv1_source => appconfig/uitdatabank/keys/my_public_key.pem and pubkey_keycloak_source => appconfig/uitdatabank/keys/mypubkey-keycloak.pem' do
         let(:params) { {
           'config_source'                       => 'appconfig/uitdatabank/udb3-backend/my.config.php',
           'admin_permissions_source'            => 'appconfig/uitdatabank/udb3-backend/config.my.allow_all.php',
@@ -313,9 +295,6 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           'completeness_source'                 => 'appconfig/uitdatabank/udb3-backend/config.my.completeness.php',
           'externalid_mapping_organizer_source' => 'appconfig/uitdatabank/udb3-backend/config.my.external_id_mapping_organizer.php',
           'externalid_mapping_place_source'     => 'appconfig/uitdatabank/udb3-backend/config.my.external_id_mapping_place.php',
-          'term_mapping_facilities_source'      => 'appconfig/uitdatabank/term_mapping/config.term_mapping_facilities.php',
-          'term_mapping_themes_source'          => 'appconfig/uitdatabank/term_mapping/config.term_mapping_themes.php',
-          'term_mapping_types_source'           => 'appconfig/uitdatabank/term_mapping/config.term_mapping_types.php',
           'pubkey_uitidv1_source'               => 'appconfig/uitdatabank/keys/my_public_key.pem',
           'pubkey_keycloak_source'              => 'appconfig/uitdatabank/keys/mypubkey-keycloak.pem'
         } }
@@ -371,9 +350,6 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'completeness_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'externalid_mapping_place_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'externalid_mapping_organizer_source'/) }
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'term_mapping_facilities_source'/) }
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'term_mapping_themes_source'/) }
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'term_mapping_types_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'pubkey_uitidv1_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'pubkey_keycloak_source'/) }
       end
