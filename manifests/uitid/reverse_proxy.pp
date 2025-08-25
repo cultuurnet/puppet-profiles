@@ -4,8 +4,6 @@ class profiles::uitid::reverse_proxy (
   String                        $config_source              = undef,
   String                        $originalhost_config_source = undef,
   String                        $ssl_config_source          = undef,
-  Variant[String,Array[String]] $serveraliases              = [],
-  Hash $settings                                            = {}
 
 ) inherits profiles {
   include nginx
