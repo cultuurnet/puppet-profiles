@@ -23,7 +23,7 @@ describe 'profiles::projectaanvraag::api::amqp_consumer' do
         ) }
 
         it { is_expected.to contain_systemd__unit_file('projectaanvraag-api-amqp-consumer.service').with_content(/WorkingDirectory=\/var\/www\/projectaanvraag-api/) }
-        it { is_expected.to contain_systemd__unit_file('projectaanvraag-api-amqp-consumer.service').with_content(/ExecStart=bin\/console projectaanvraag:consumer/) }
+        it { is_expected.to contain_systemd__unit_file('projectaanvraag-api-amqp-consumer.service').with_content(/ExecStart=\/usr\/bin\/php bin\/console projectaanvraag:consumer/) }
 
         it { is_expected.to contain_service('projectaanvraag-api-amqp-consumer').with(
           'ensure'    => 'running',
