@@ -43,7 +43,7 @@ class profiles::uitid::reverse_proxy (
   }
   file { 'nginx-config-link':
     ensure => link,
-    path   => "${basedir}sites-enabled/uitid-proxy.conf",
-    target => "${basedir}sites-available/uitid-proxy.conf",
+    path   => "${basedir}/sites-enabled/uitid-proxy.conf",
+    target => "${basedir}/sites-available/uitid-proxy.conf",
   }
 }
