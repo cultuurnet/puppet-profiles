@@ -11,15 +11,15 @@ class profiles::sling inherits ::profiles {
     ensure => 'directory'
   }
 
-  concat { '/root/.sling/env.yaml':
-    ensure  => 'present',
-    order   => 'numeric',
-    require => File['/root/.sling']
-  }
+  # concat { '/root/.sling/env.yaml':
+  #   ensure  => 'present',
+  #   order   => 'numeric',
+  #   require => File['/root/.sling']
+  # }
 
-  concat::fragment { 'sling_connections_header':
-    target  => '/root/.sling/env.yaml',
-    content => "connections:\n",
-    order   => 1
-  }
+  # concat::fragment { 'sling_connections_header':
+  #   target  => '/root/.sling/env.yaml',
+  #   content => "connections:\n",
+  #   order   => 1
+  # }
 }
