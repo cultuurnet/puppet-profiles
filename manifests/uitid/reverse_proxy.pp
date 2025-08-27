@@ -4,6 +4,7 @@ class profiles::uitid::reverse_proxy (
   String                        $config_source              = undef,
   String                        $originalhost_config_source = undef,
   String                        $ssl_config_source          = undef,
+  Boolean                       $gcloud_etl_sync_enabled    = true,
 
 ) inherits profiles {
   include nginx
@@ -12,6 +13,21 @@ class profiles::uitid::reverse_proxy (
 
   realize Profiles::Certificate[$certificate]
   realize Firewall['300 accept HTTPS traffic']
+  realize Firewall['300 accept HTTP traffic']
+
+  if $gcloud_etl_sync_enabled {
+    $secrets = lookup('vault:uitid/reverseproxy_etl')
+
+    profiles::google::gcloud { 'root':
+      credentials => {
+        project_id     => $secrets['gcloud_project_id'],
+        private_key_id => $secrets['gcloud_private_key_id'],
+        private_key    => $secrets['gcloud_private_key'],
+        client_id      => $secrets['gcloud_client_id'],
+        client_email   => $secrets['gcloud_client_email'],
+      },
+    }
+  }
 
   file { 'nginx-config':
     ensure => file,
