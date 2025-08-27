@@ -16,7 +16,7 @@ class profiles::uitid::reverse_proxy (
   realize Firewall['300 accept HTTP traffic']
 
   if $gcloud_etl_sync_enabled {
-    $secrets = lookup('vault:uitid/reverseproxy_etl')
+    $secrets = lookup('vault:uitid/reverseproxy')
 
     profiles::google::gcloud { 'root':
       credentials => {
