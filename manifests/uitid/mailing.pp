@@ -10,6 +10,8 @@ class profiles::uitid::mailing (
   Boolean $cron_enabled                        = true,
   Optional[String] $initial_heap_size          = undef,
   Optional[String] $maximum_heap_size          = undef,
+  String $mailing_render_cron_schedule,
+  String $mailing_status_cron_schedule,
   Boolean $jmx                                 = true,
   Integer $portbase                            = 4800,
   Enum['running', 'stopped'] $service_status   = 'running',
@@ -103,9 +105,11 @@ class profiles::uitid::mailing (
 
     if $deployment {
       class { 'profiles::uitid::mailing::deployment':
-        portbase          => $portbase,
-        cron_enabled      => $cron_enabled,
-        config_source     => $config_source
+        portbase                     => $portbase,
+        cron_enabled                 => $cron_enabled,
+        mailing_render_cron_schedule => $mailing_render_cron_schedule,
+        mailing_status_cron_schedule => $mailing_status_cron_schedule,
+        config_source                => $config_source
       }
 
       Class['profiles::glassfish'] -> Class['profiles::uitid::mailing::deployment']
