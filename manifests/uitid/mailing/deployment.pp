@@ -15,7 +15,7 @@ class profiles::uitid::mailing::deployment (
   package { 'cultuurnet-mailing-app':
     ensure  => $version,
     require => Apt::Source[$repository],
-    notify  => [App['uitid-mailing']],
+    notify  => [App['uitid-mailing']]
   }
   app { 'uitid-mailing':
     ensure        => 'present',
