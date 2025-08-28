@@ -37,26 +37,26 @@ class profiles::uitid::mailing::deployment (
       true  => 'present',
       false => 'absent'
     },    user => 'www-data',
-    minute     => $cron_expr_render[0],
-    hour       => $cron_expr_render[1],
-    monthday   => $cron_expr_render[2],
-    month      => $cron_expr_render[3],
-    weekday    => $cron_expr_render[4],
+    minute     => split($cron_expr_render[0], ','),
+    hour       => split($cron_expr_render[1], ','),
+    monthday   => split($cron_expr_render[2], ','),
+    month      => split($cron_expr_render[3], ','),
+    weekday    => split($cron_expr_render[4], ','),
     command    => "/usr/bin/curl http://127.0.0.1:${glassfish_domain_http_port}/mailing/rest/mailing/render",
   }
   $cron_expr_status = split($mailing_status_cron_schedule, ' ')
 
   cron { 'mailing_refreshstatus':
     ensure   => $cron_enabled ? {
-      true   => 'present',
-      false  => 'absent'
+      true  => 'present',
+      false => 'absent'
     },
     user     => 'www-data',
-    minute   => $cron_expr_status[0],
-    hour     => $cron_expr_status[1],
-    monthday => $cron_expr_status[2],
-    month    => $cron_expr_status[3],
-    weekday  => $cron_expr_status[4],
+    minute   => split($cron_expr_status[0], ','),
+    hour     => split($cron_expr_status[1], ','),
+    monthday => split($cron_expr_status[2], ','),
+    month    => split($cron_expr_status[3], ','),
+    weekday  => split($cron_expr_status[4], ','),
     command  => "/usr/bin/curl http://127.0.0.1:${glassfish_domain_http_port}/mailing/rest/mailing/refreshstatus",
   }
 }
