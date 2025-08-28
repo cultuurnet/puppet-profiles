@@ -64,11 +64,14 @@ class profiles::uitid::reverse_proxy (
   }
 
   cron { 'gsutil_rsync_nginx_logs':
-    ensure  => present,
+    ensure       => $gcloud_etl_sync_enabled ? {
+      true  => 'present',
+      false => 'absent'
+    },
     environment => ['MAILTO=infra+cron@publiq.be'],
-    command => '/usr/bin/gsutil rsync -x ".*error.*|.*log$|uitpas-prod.uitid.*|^access.log.*" /var/log/nginx/ gs://publiq-etl-prod/etl/rev_proxy_logs/raw/',
-    user    => 'root',
-    minute  => 45,
-    hour    => 7,
+    command    => '/usr/bin/gsutil rsync -x ".*error.*|.*log$|uitpas-prod.uitid.*|^access.log.*" /var/log/nginx/ gs://publiq-etl-prod/etl/rev_proxy_logs/raw/',
+    user       => 'root',
+    minute     => 45,
+    hour       => 7,
   }
 }
