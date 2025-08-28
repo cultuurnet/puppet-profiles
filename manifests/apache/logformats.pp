@@ -16,7 +16,6 @@ class profiles::apache::logformats inherits ::profiles {
   $extended_json  = @("EXTENDED_JSON"/L)
                     { \"remoteIP\": \"%{CLIENT_IP}e\", \
                     \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \
-                    \"host\": \"%{Host}i\", \
                     \"requestPath\": \"%U\", \
                     \"status\": \"%>s\", \
                     \"query\": \"%q\", \
@@ -31,7 +30,6 @@ class profiles::apache::logformats inherits ::profiles {
   $api_key_json   = @("API_KEY_JSON"/L)
                     { \"remoteIP\": \"%{CLIENT_IP}e\", \
                     \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \
-                    \"host\": \"%{Host}i\", \
                     \"requestPath\": \"%U\", \
                     \"status\": \"%>s\", \
                     \"query\": \"%q\", \
