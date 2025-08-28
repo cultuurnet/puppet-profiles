@@ -24,7 +24,7 @@ class profiles::uitpas::segmentatie::deployment (
   if $cron_enabled {
     cron { 'uitpas-segmentatie-sync':
       ensure  => 'present',
-      command => "/usr/bin/curl -X POST 'http://127.0.0.1:${glassfish_domain_http_port}/segmentation/rest/sync",
+      command => "/usr/bin/curl -X POST 'http://127.0.0.1:${glassfish_domain_http_port}/segmentation/rest/sync'",
       user    => 'www-data',
       hour    => 1,
       minute  => 45,
