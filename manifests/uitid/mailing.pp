@@ -7,6 +7,7 @@ class profiles::uitid::mailing (
   String $version                              = 'latest',
   String $repository                           = 'uitid-mailing',
   Boolean $deployment                          = true,
+  Boolean $cron_enabled                        = true,
   Optional[String] $initial_heap_size          = undef,
   Optional[String] $maximum_heap_size          = undef,
   Boolean $jmx                                 = true,
@@ -103,7 +104,8 @@ class profiles::uitid::mailing (
     if $deployment {
       class { 'profiles::uitid::mailing::deployment':
         portbase          => $portbase,
-        config_source => $config_source
+        cron_enabled      => $cron_enabled,
+        config_source     => $config_source
       }
 
       Class['profiles::glassfish'] -> Class['profiles::uitid::mailing::deployment']
@@ -120,7 +122,6 @@ class profiles::uitid::mailing (
     notify  => Service['uitid-mailing'],
     *       => $default_attributes,
   }
-
 
   set { 'server.thread-pools.thread-pool.http-thread-pool.max-thread-pool-size':
     ensure  => 'present',
