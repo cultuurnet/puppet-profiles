@@ -5,7 +5,6 @@ class profiles::uitpas::segmentatie::deployment (
   Integer          $portbase      = 4800,
   Boolean          $cron_enabled  = true
 ) inherits profiles {
-  $secrets                    = lookup('vault:uitpas/segmentatie')
   $glassfish_domain_http_port = $portbase + 80
   $database_name              = 'uitpas_segmentatie'
   $database_user              = 'uitpas_segmentatie'
