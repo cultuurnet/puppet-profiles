@@ -32,16 +32,6 @@ class profiles::uitpas::segmentatie::deployment (
     require => [Group['glassfish'], User['glassfish'], Package['uitpas-segmentatie']],
   }
 
-  file { '/opt/uitpas-segmentatie/.env':
-    ensure  => 'file',
-    owner   => 'glassfish',
-    group   => 'glassfish',
-    mode    => '0640',
-    content => template($config_source),
-    require => [Group['glassfish'], User['glassfish'], Package['uitpas-segmentatie']],
-    notify  => App['uitpas-segmentatie'],
-  }
-
   app { 'uitpas-segmentatie':
     ensure        => 'present',
     portbase      => String($portbase),
@@ -50,6 +40,6 @@ class profiles::uitpas::segmentatie::deployment (
     contextroot   => 'segmentation',
     precompilejsp => false,
     source        => '/opt/uitpas-segmentatie/uitpas-segmentatie.war',
-    require       => [Group['glassfish'], User['glassfish'], File['/opt/uitpas-segmentatie/.env']],
+    require       => [Group['glassfish'], User['glassfish']],
   }
 }
