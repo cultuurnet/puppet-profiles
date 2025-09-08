@@ -27,7 +27,8 @@ describe 'profiles::elasticsearch' do
           'backup_volume_group'   => nil,
           'backup_volume_size'    => nil,
           'backup_hour'           => 0,
-          'backup_retention_days' => 7
+          'backup_retention_days' => 7,
+          'jvm_options'           => []
         ) }
 
         it { is_expected.to contain_class('profiles::java') }
@@ -61,7 +62,8 @@ describe 'profiles::elasticsearch' do
           'datadir'           => '/var/lib/elasticsearch',
           'manage_datadir'    => false,
           'manage_logdir'     => true,
-          'init_defaults'     => { 'ES_JAVA_OPTS' => '"-Xms512m -Xmx512m"' }
+          'init_defaults'     => { 'ES_JAVA_OPTS' => '"-Xms512m -Xmx512m"' },
+          'jvm_options'       => ['-XX:+IgnoreUnrecognizedVMOptions']
         ) }
 
         it { is_expected.to contain_class('profiles::elasticsearch::backup').with(
