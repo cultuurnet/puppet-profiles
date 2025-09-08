@@ -1,22 +1,23 @@
 class profiles::elasticsearch (
-  Optional[String] $version                             = undef,
-  Integer          $major_version                       = if $version { Integer(split($version, /\./)[0]) } else { 5 },
-  Boolean          $secure_remote_access                = false,
-  Optional[String] $secure_remote_access_user           = undef,
-  Optional[String] $secure_remote_access_password       = undef,
-  Optional[String] $secure_remote_access_plugin_version = undef,
-  Boolean          $lvm                                 = false,
-  Optional[String] $volume_group                        = undef,
-  Optional[String] $volume_size                         = undef,
-  Optional[String] $log_volume_size                     = undef,
-  String           $initial_heap_size                   = '512m',
-  String           $maximum_heap_size                   = '512m',
-  Boolean          $backup                              = true,
-  Boolean          $backup_lvm                          = false,
-  Optional[String] $backup_volume_group                 = undef,
-  Optional[String] $backup_volume_size                  = undef,
-  Integer          $backup_hour                         = 0,
-  Integer          $backup_retention_days               = 7
+  Optional[String]               $version                             = undef,
+  Integer                        $major_version                       = if $version { Integer(split($version, /\./)[0]) } else { 5 },
+  Boolean                        $secure_remote_access                = false,
+  Optional[String]               $secure_remote_access_user           = undef,
+  Optional[String]               $secure_remote_access_password       = undef,
+  Optional[String]               $secure_remote_access_plugin_version = undef,
+  Boolean                        $lvm                                 = false,
+  Optional[String]               $volume_group                        = undef,
+  Optional[String]               $volume_size                         = undef,
+  Optional[String]               $log_volume_size                     = undef,
+  String                         $initial_heap_size                   = '512m',
+  String                         $maximum_heap_size                   = '512m',
+  Boolean                        $backup                              = true,
+  Boolean                        $backup_lvm                          = false,
+  Optional[String]               $backup_volume_group                 = undef,
+  Optional[String]               $backup_volume_size                  = undef,
+  Integer                        $backup_hour                         = 0,
+  Integer                        $backup_retention_days               = 7,
+  Variant[String, Array[String]] $jvm_options                         = []
 ) inherits ::profiles {
 
   if ($version and $major_version) {
@@ -186,6 +187,7 @@ class profiles::elasticsearch (
                            default => false
                          },
     config            => $es_config,
+    jvm_options       => ['-XX:+IgnoreUnrecognizedVMOptions'] + [$jvm_options].flatten,
     plugins           => $es_plugins,
     init_defaults     => {
                            'ES_JAVA_OPTS' => "\"-Xms${initial_heap_size} -Xmx${maximum_heap_size}\""
