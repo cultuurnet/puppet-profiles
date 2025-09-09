@@ -23,6 +23,7 @@ class profiles::uitid::mailing::deployment (
   }
   app { 'uitid-mailing':
     portbase      => String($portbase),
+    ensure        => 'present',
     user          => 'glassfish',
     passwordfile  => '/home/glassfish/asadmin.pass',
     contextroot   => 'mailing',
