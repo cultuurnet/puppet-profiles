@@ -27,7 +27,8 @@ describe 'profiles::elasticsearch' do
           'backup_volume_group'   => nil,
           'backup_volume_size'    => nil,
           'backup_hour'           => 0,
-          'backup_retention_days' => 7
+          'backup_retention_days' => 7,
+          'jvm_options'           => []
         ) }
 
         it { is_expected.to contain_class('profiles::java') }
@@ -61,7 +62,9 @@ describe 'profiles::elasticsearch' do
           'datadir'           => '/var/lib/elasticsearch',
           'manage_datadir'    => false,
           'manage_logdir'     => true,
-          'init_defaults'     => { 'ES_JAVA_OPTS' => '"-Xms512m -Xmx512m"' }
+          'init_defaults'     => { 'ES_JAVA_OPTS' => '"-Xms512m -Xmx512m"' },
+          'jvm_options'       => ['-XX:+IgnoreUnrecognizedVMOptions'],
+          'config'            => {}
         ) }
 
         it { is_expected.to contain_class('profiles::elasticsearch::backup').with(
@@ -90,7 +93,7 @@ describe 'profiles::elasticsearch' do
         it { is_expected.not_to contain_class('profiles::elasticsearch::backup') }
       end
 
-      context "with version => 8.2.1, lvm => true, volume_group => myvg, volume_size => 20G, log_volume_size => 5G, initial_heap_size => 768m, maximum_heap_size => 1024m, backup_lvm => true, backup_volume_group => mybackupvg, backup_volume_size => 10G, backup_hour => 10 and backup_retention_days =>5" do
+      context "with version => 8.2.1, lvm => true, volume_group => myvg, volume_size => 20G, log_volume_size => 5G, initial_heap_size => 768m, maximum_heap_size => 1024m, backup_lvm => true, backup_volume_group => mybackupvg, backup_volume_size => 10G, backup_hour => 10, backup_retention_days => 5 and jvm_options => -Xmixed" do
         let(:params) { {
           'version'               => '8.2.1',
           'lvm'                   => true,
@@ -103,7 +106,8 @@ describe 'profiles::elasticsearch' do
           'backup_volume_group'   => 'mybackupvg',
           'backup_volume_size'    => '10G',
           'backup_hour'           => 10,
-          'backup_retention_days' => 5
+          'backup_retention_days' => 5,
+          'jvm_options'           => '-Xmixed'
         } }
 
         context "with volume_groups myvg and mybackupvg present" do
@@ -163,7 +167,13 @@ describe 'profiles::elasticsearch' do
             'datadir'           => '/var/lib/elasticsearch',
             'manage_datadir'    => false,
             'manage_logdir'     => false,
-            'init_defaults'     => { 'ES_JAVA_OPTS' => '"-Xms768m -Xmx1024m"' }
+            'init_defaults'     => { 'ES_JAVA_OPTS' => '"-Xms768m -Xmx1024m"' },
+            'jvm_options'       => ['-XX:+IgnoreUnrecognizedVMOptions', '-Xmixed'],
+            'config'            => {
+                                     'xpack.security.enabled'               => false,
+                                     'xpack.security.transport.ssl.enabled' => false,
+                                     'xpack.security.http.ssl.enabled'      => false
+                                   }
           ) }
 
           it { is_expected.to contain_class('profiles::elasticsearch::backup').with(
@@ -194,7 +204,7 @@ describe 'profiles::elasticsearch' do
         end
       end
 
-      context "with version => 5.2.2, lvm => true, volume_group => mydatavg, volume_size => 10G, backup_lvm => true, backup_volume_group => esbackupvg, backup_volume_size => 5G, backup_hour => 1 and backup_retention_days => 10" do
+      context "with version => 5.2.2, lvm => true, volume_group => mydatavg, volume_size => 10G, backup_lvm => true, backup_volume_group => esbackupvg, backup_volume_size => 5G, backup_hour => 1, backup_retention_days => 10 and jvm_options => [-Xmixed, -Xverify]" do
         let(:params) { {
           'version'               => '5.2.2',
           'lvm'                   => true,
@@ -204,7 +214,8 @@ describe 'profiles::elasticsearch' do
           'backup_volume_group'   => 'esbackupvg',
           'backup_volume_size'    => '5G',
           'backup_hour'           => 1,
-          'backup_retention_days' => 10
+          'backup_retention_days' => 10,
+          'jvm_options'           => ['-Xmixed', '-Xverify']
         } }
 
         context "with volume_groups mydatavg and esbackupvg present" do
@@ -239,7 +250,8 @@ describe 'profiles::elasticsearch' do
             'datadir'           => '/var/lib/elasticsearch',
             'manage_datadir'    => false,
             'manage_logdir'     => true,
-            'init_defaults'     => { 'ES_JAVA_OPTS' => '"-Xms512m -Xmx512m"' }
+            'init_defaults'     => { 'ES_JAVA_OPTS' => '"-Xms512m -Xmx512m"' },
+            'jvm_options'       => ['-XX:+IgnoreUnrecognizedVMOptions', '-Xmixed', '-Xverify']
           ) }
 
           it { is_expected.to contain_class('profiles::elasticsearch::backup').with(
