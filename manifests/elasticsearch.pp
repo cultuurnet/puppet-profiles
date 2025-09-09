@@ -26,8 +26,18 @@ class profiles::elasticsearch (
     }
   }
 
+  if ($major_version >= 8) {
+    $xpack_config = {
+                      'xpack.security.enabled'               => false,
+                      'xpack.security.transport.ssl.enabled' => false,
+                      'xpack.security.http.ssl.enabled'      => false
+                    }
+  } else {
+    $xpack_config = {}
+  }
+
   $datadir = '/var/lib/elasticsearch'
-  $logdir = '/var/log/elasticsearch'
+  $logdir  = '/var/log/elasticsearch'
 
   contain ::profiles::java
 
@@ -127,7 +137,7 @@ class profiles::elasticsearch (
     realize Firewall['600 accept elasticsearch http traffic']
     realize Firewall['600 accept elasticsearch cluster traffic']
 
-    $es_config = {
+    $remote_access_config = {
       'network.host'                           => [ "${::ipaddress_eth0}", "127.0.0.1" ],
       'http.cors.enabled'                      => true,
       'http.cors.allow-origin'                 => "*",
@@ -162,14 +172,14 @@ class profiles::elasticsearch (
       ]
     }
 
-    $es_plugins = {
+    $remote_access_plugins = {
       'readonlyrest' => {
         'source' => "/opt/elasticsearch-readonlyrest/v${secure_remote_access_plugin_version}_es${version}.zip"
       }
     }
   } else {
-    $es_config  = undef
-    $es_plugins = undef
+    $remote_access_config  = {}
+    $remote_access_plugins = {}
   }
 
   class { '::elasticsearch':
@@ -186,9 +196,9 @@ class profiles::elasticsearch (
                            undef   => true,
                            default => false
                          },
-    config            => $es_config,
+    config            => $remote_access_config + $xpack_config,
     jvm_options       => ['-XX:+IgnoreUnrecognizedVMOptions'] + [$jvm_options].flatten,
-    plugins           => $es_plugins,
+    plugins           => $remote_access_plugins,
     init_defaults     => {
                            'ES_JAVA_OPTS' => "\"-Xms${initial_heap_size} -Xmx${maximum_heap_size}\""
                          },
