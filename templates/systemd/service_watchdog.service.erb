@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=notify
-ExecStart=/usr/local/bin/<%= @service %>-watchdog
+ExecStart=/usr/local/bin/<%= @title %>-watchdog
 Restart=always
 RestartSec=1
 WatchdogSec=<%= @timeout_seconds %>

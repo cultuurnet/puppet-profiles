@@ -70,6 +70,7 @@ describe 'profiles::systemd::service_watchdog' do
           it { is_expected.to contain_file('foo-watchdog').with_content(/test -f \/tmp\/watchdog_file_present/) }
 
           it { is_expected.to contain_systemd__unit_file('foo-watchdog.service').with_content(/Description=Watchdog service for bar/) }
+          it { is_expected.to contain_systemd__unit_file('foo-watchdog.service').with_content(/ExecStart=\/usr\/local\/bin\/foo-watchdog/) }
           it { is_expected.to contain_systemd__unit_file('foo-watchdog.service').with_content(/WatchdogSec=15/) }
 
           it { is_expected.to contain_systemd__dropin_file('foo_override.conf').with(
