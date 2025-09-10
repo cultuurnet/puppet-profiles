@@ -17,7 +17,8 @@ class profiles::elasticsearch (
   Optional[String]               $backup_volume_size                  = undef,
   Integer                        $backup_hour                         = 0,
   Integer                        $backup_retention_days               = 7,
-  Variant[String, Array[String]] $jvm_options                         = []
+  Variant[String, Array[String]] $jvm_options                         = [],
+  Integer                        $log_retention_days                  = 7
 ) inherits ::profiles {
 
   if ($version and $major_version) {
@@ -36,8 +37,9 @@ class profiles::elasticsearch (
     $xpack_config = {}
   }
 
-  $datadir = '/var/lib/elasticsearch'
-  $logdir  = '/var/log/elasticsearch'
+  $datadir       = '/var/lib/elasticsearch'
+  $logdir        = '/var/log/elasticsearch'
+  $log_retention = max(0, $log_retention_days - 1)
 
   contain ::profiles::java
 
@@ -214,6 +216,13 @@ class profiles::elasticsearch (
       retention_days => $backup_retention_days,
       require        => Class['::elasticsearch']
     }
+  }
+
+  cron { 'elasticsearch_log_retention':
+    environment => ['MAILTO=infra+cron@publiq.be'],
+    command     => "/usr/bin/find /var/log/elasticsearch -type f -name \"*.log\" -mtime +${log_retention} -exec rm {} \\;",
+    hour        => '0',
+    minute      => '0'
   }
 
   # include ::profiles::elasticsearch::logging
