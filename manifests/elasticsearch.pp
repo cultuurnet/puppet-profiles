@@ -220,7 +220,7 @@ class profiles::elasticsearch (
 
   cron { 'elasticsearch_log_retention':
     environment => ['MAILTO=infra+cron@publiq.be'],
-    command     => "/usr/bin/find /var/log/elasticsearch -type f -name \"*.log\" -mtime +${log_retention} -exec rm {} \;",
+    command     => "/usr/bin/find /var/log/elasticsearch -type f -name \"*.log\" -mtime +${log_retention} -exec rm {} \\;",
     hour        => '0',
     minute      => '0'
   }
