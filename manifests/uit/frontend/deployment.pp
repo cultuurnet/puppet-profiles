@@ -6,6 +6,7 @@ class profiles::uit::frontend::deployment (
   Enum['running', 'stopped'] $service_status       = 'running',
   Stdlib::IP::Address::V4    $service_address      = '127.0.0.1',
   Integer                    $service_port         = 3000,
+  Boolean                    $service_watchdog     = false,
   Optional[String]           $newrelic_license_key = undef,
   Optional[String]           $newrelic_app_name    = undef,
   Optional[String]           $puppetdb_url         = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
@@ -49,6 +50,14 @@ class profiles::uit::frontend::deployment (
                    'stopped' => false
                  },
     hasstatus => true
+  }
+
+  profiles::systemd::service_watchdog { 'uit-frontend':
+    ensure      => $service_watchdog ? {
+                     true  => 'present',
+                     false => 'absent'
+                   },
+    healthcheck => template('profiles/uit/frontend/deployment/service_healthcheck.erb')
   }
 
   profiles::deployment::versions { $title:
