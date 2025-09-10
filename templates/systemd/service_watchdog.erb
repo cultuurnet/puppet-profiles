@@ -1,0 +1,20 @@
+#!/bin/bash
+
+SERVICE=<%= @service %>
+HEALTHCHECK_INTERVAL_SECONDS=<%= @check_interval_seconds %>
+
+/usr/bin/systemd-notify --ready
+
+function service_healthcheck() {
+    /usr/bin/systemctl -q is-active ${SERVICE} || return 0
+
+    <%- @healthcheck.split("\n").each do |healthcheck_line| -%>
+    <%= healthcheck_line %>
+    <%- end -%>
+}
+
+while true
+do
+    service_healthcheck && /usr/bin/systemd-notify WATCHDOG=1
+    /usr/bin/sleep ${HEALTHCHECK_INTERVAL_SECONDS}
+done
