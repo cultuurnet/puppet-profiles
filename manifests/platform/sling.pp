@@ -17,7 +17,7 @@ class profiles::platform::sling (
   realize Apt::Source['publiq-tools']
 
   profiles::mysql::app_user { "${database_user}@${database_name}":
-    password => $app_user_password,
+    password => $database_password,
     readonly => true,
     remote   => false
   }
