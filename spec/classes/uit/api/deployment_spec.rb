@@ -13,15 +13,16 @@ describe 'profiles::uit::api::deployment' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::uit::api::deployment').with(
-          'config_source'        => '/foo',
-          'maximum_heap_size'    => 512,
-          'version'              => 'latest',
-          'repository'           => 'uit-api',
-          'service_status'       => 'running',
-          'service_port'         => 4000,
-          'newrelic_license_key' => nil,
-          'newrelic_app_name'    => nil,
-          'puppetdb_url'         => nil
+          'config_source'         => '/foo',
+          'maximum_heap_size'     => 512,
+          'version'               => 'latest',
+          'repository'            => 'uit-api',
+          'service_status'        => 'running',
+          'service_port'          => 4000,
+          'service_watchdog'      => false,
+          'newrelic_license_key'  => nil,
+          'newrelic_app_name'     => nil,
+          'puppetdb_url'          => nil
         ) }
 
         it { is_expected.to contain_apt__source('uit-api') }
@@ -127,6 +128,7 @@ describe 'profiles::uit::api::deployment' do
       'maximum_heap_size'    => 1024,
       'repository'           => 'uit-api-exotic',
       'service_status'       => 'stopped',
+      'service_watchdog'     => false,
       'service_port'         => 3456,
       'newrelic_license_key' => 'ping',
       'newrelic_app_name'    => 'pong',

@@ -4,7 +4,7 @@
 
 <% @config.each do |db_key, db| -%>
 USER="<%= db['terraform::rds::user'] %>"
-PASSWORD="<%= db['terraform::rds::password'] %>"
+PASSWORD='<%= db['terraform::rds::password'] %>'
 HOST="<%= db['terraform::rds::host'] %>"
 BACKUPDIR="<%= @backupdir %>"
 

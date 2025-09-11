@@ -1,0 +1,14 @@
+[Unit]
+Description=Watchdog service for <%= @service %>
+After=network.target
+
+[Service]
+Type=notify
+ExecStart=/usr/local/bin/<%= @title %>-watchdog
+Restart=always
+RestartSec=1
+WatchdogSec=<%= @timeout_seconds %>
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target

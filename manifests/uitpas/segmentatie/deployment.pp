@@ -5,8 +5,6 @@ class profiles::uitpas::segmentatie::deployment (
   Integer          $portbase      = 4800,
   Boolean          $cron_enabled  = true
 ) inherits profiles {
-
-  $secrets                    = lookup('vault:uitpas/segmentatie')
   $glassfish_domain_http_port = $portbase + 80
   $database_name              = 'uitpas_segmentatie'
   $database_user              = 'uitpas_segmentatie'
@@ -21,25 +19,16 @@ class profiles::uitpas::segmentatie::deployment (
     notify  => App['uitpas-segmentatie']
   }
 
-  if $cron_enabled {
-    cron { 'uitpas-segmentatie-sync':
-      ensure  => 'present',
-      command => "/usr/bin/curl -X POST 'http://127.0.0.1:${glassfish_domain_http_port}/segmentation/rest/sync",
-      user    => 'www-data',
-      hour    => 1,
-      minute  => 45,
-      require => [Group['glassfish'], User['glassfish'], Package['uitpas-segmentatie']],
-    }
-  }
-
-  file { '/opt/uitpas-segmentatie/.env':
-    ensure  => 'file',
-    owner   => 'glassfish',
-    group   => 'glassfish',
-    mode    => '0640',
-    content => template($config_source),
+  cron { 'uitpas-segmentatie-sync':
+    ensure    => $cron_enabled ? {
+      true  => 'present',
+      false => 'absent'
+    },
+    command  => "/usr/bin/curl -X POST 'http://127.0.0.1:${glassfish_domain_http_port}/segmentation/rest/sync'",
+    user    => 'www-data',
+    hour    => 1,
+    minute  => 45,
     require => [Group['glassfish'], User['glassfish'], Package['uitpas-segmentatie']],
-    notify  => App['uitpas-segmentatie']
   }
 
   app { 'uitpas-segmentatie':
@@ -50,6 +39,6 @@ class profiles::uitpas::segmentatie::deployment (
     contextroot   => 'segmentation',
     precompilejsp => false,
     source        => '/opt/uitpas-segmentatie/uitpas-segmentatie.war',
-    require       => [Group['glassfish'], User['glassfish'], File['/opt/uitpas-segmentatie/.env']],
+    require       => [Group['glassfish'], User['glassfish']],
   }
 }

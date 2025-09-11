@@ -54,9 +54,6 @@ profiles::uitdatabank::entry_api::deployment::movie_fetcher_config_source: 'appc
 profiles::uitdatabank::entry_api::deployment::completeness_source: 'appconfig/uitdatabank/udb3-backend/config.completeness.php'
 profiles::uitdatabank::entry_api::deployment::externalid_mapping_organizer_source: 'appconfig/uitdatabank/udb3-backend/config.external_id_mapping_organizer.php'
 profiles::uitdatabank::entry_api::deployment::externalid_mapping_place_source: 'appconfig/uitdatabank/udb3-backend/config.external_id_mapping_place.php'
-profiles::uitdatabank::entry_api::deployment::term_mapping_facilities_source: 'appconfig/uitdatabank/udb3-backend/config.term_mapping_facilities.php'
-profiles::uitdatabank::entry_api::deployment::term_mapping_themes_source: 'appconfig/uitdatabank/udb3-backend/config.term_mapping_themes.php'
-profiles::uitdatabank::entry_api::deployment::term_mapping_types_source: 'appconfig/uitdatabank/udb3-backend/config.term_mapping_types.php'
 profiles::uitdatabank::entry_api::deployment::pubkey_uitidv1_source: 'appconfig/uitdatabank/keys/public.pem'
 profiles::uitdatabank::entry_api::deployment::pubkey_keycloak_source: 'appconfig/uitdatabank/keys/pubkey-keycloak.pem'
 
@@ -83,6 +80,8 @@ profiles::uitid::frontend_auth0::deployment::config_source: '/path/to/config/sou
 profiles::projectaanvraag::api::deployment::config_source: 'appconfig/projectaanvraag/api/config.yml'
 profiles::projectaanvraag::api::deployment::integration_types_source: 'appconfig/projectaanvraag/api/integration_types.yml'
 profiles::projectaanvraag::api::deployment::user_roles_source: 'appconfig/projectaanvraag/api/user_roles.yml'
+
+profiles::widgetbeheer::frontend::deployment::config_source: 'appconfig/widgetbeheer/frontend/config.json'
 
 profiles::publiq::versions::service_address: '127.0.1.1'
 profiles::publiq::versions::service_port: 6000

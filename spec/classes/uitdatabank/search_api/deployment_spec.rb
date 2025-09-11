@@ -5,14 +5,11 @@ describe 'profiles::uitdatabank::search_api::deployment' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with config_source => appconfig/uitdatabank/udb3-search-service/config.yml, config_source_php => appconfig/uitdatabank/udb3-search-service/config.php, features_source => appconfig/uitdatabank/udb3-search-service/features.yml, facilities_source => appconfig/uitdatabank/udb3-search-service/facet_mapping_facilities.yml, themes_source => appconfig/uitdatabank/udb3-search-service/facet_mapping_themes.yml, types_source => appconfig/uitdatabank/udb3-search-service/facet_mapping_types.yml and pubkey_keycloak_source => appconfig/uitdatabank/keys/pubkey-keycloak.pem" do
+      context "with config_source => appconfig/uitdatabank/udb3-search-service/config.yml, config_source_php => appconfig/uitdatabank/udb3-search-service/config.php, features_source => appconfig/uitdatabank/udb3-search-service/features.yml and pubkey_keycloak_source => appconfig/uitdatabank/keys/pubkey-keycloak.pem" do
         let(:params) { {
           'config_source'          => 'appconfig/uitdatabank/udb3-search-service/config.yml',
           'config_source_php'      => 'appconfig/uitdatabank/udb3-search-service/config.php',
           'features_source'        => 'appconfig/uitdatabank/udb3-search-service/features.yml',
-          'facilities_source'      => 'appconfig/uitdatabank/udb3-search-service/facet_mapping_facilities.yml',
-          'themes_source'          => 'appconfig/uitdatabank/udb3-search-service/facet_mapping_themes.yml',
-          'types_source'           => 'appconfig/uitdatabank/udb3-search-service/facet_mapping_types.yml',
           'pubkey_keycloak_source' => 'appconfig/uitdatabank/keys/pubkey-keycloak.pem'
         } }
 
@@ -25,9 +22,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             'config_source'          => 'appconfig/uitdatabank/udb3-search-service/config.yml',
             'config_source_php'      => 'appconfig/uitdatabank/udb3-search-service/config.php',
             'features_source'        => 'appconfig/uitdatabank/udb3-search-service/features.yml',
-            'facilities_source'      => 'appconfig/uitdatabank/udb3-search-service/facet_mapping_facilities.yml',
-            'themes_source'          => 'appconfig/uitdatabank/udb3-search-service/facet_mapping_themes.yml',
-            'types_source'           => 'appconfig/uitdatabank/udb3-search-service/facet_mapping_types.yml',
             'version'                => 'latest',
             'repository'             => 'uitdatabank-search-api',
             'pubkey_keycloak_source' => 'appconfig/uitdatabank/keys/pubkey-keycloak.pem',
@@ -100,13 +94,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             'content' => "uitdatabank keycloak public key\n"
           ) }
 
-          it { is_expected.to contain_profiles__uitdatabank__term_mapping('uitdatabank-search-api').with(
-            'basedir'           => '/var/www/udb3-search-service',
-            'facilities_source' => 'appconfig/uitdatabank/udb3-search-service/facet_mapping_facilities.yml',
-            'themes_source'     => 'appconfig/uitdatabank/udb3-search-service/facet_mapping_themes.yml',
-            'types_source'      => 'appconfig/uitdatabank/udb3-search-service/facet_mapping_types.yml'
-          ) }
-
           it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').with(
             'command'     => '/var/www/udb3-search-service/bin/app.php udb3-core:reindex-permanent',
             'environment' => ['MAILTO=infra+cron@publiq.be'],
@@ -159,8 +146,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           it { is_expected.to contain_file('uitdatabank-search-api-default-queries').that_requires('Package[uitdatabank-search-api]') }
           it { is_expected.to contain_file('uitdatabank-search-api-default-queries').that_notifies('Service[uitdatabank-search-api]') }
           it { is_expected.to contain_file('uitdatabank-search-api-default-queries').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
-          it { is_expected.to contain_profiles__uitdatabank__term_mapping('uitdatabank-search-api').that_notifies('Service[uitdatabank-search-api]') }
-          it { is_expected.to contain_profiles__uitdatabank__term_mapping('uitdatabank-search-api').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
           it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').that_requires('Package[uitdatabank-search-api]') }
           it { is_expected.to contain_service('uitdatabank-search-api').that_requires('Profiles::Php::Fpm_service_alias[uitdatabank-search-api]') }
         end
@@ -179,14 +164,11 @@ describe 'profiles::uitdatabank::search_api::deployment' do
         end
       end
 
-      context "with config_source => appconfig/uitdatabank/udb3-search-service/myconfig.yml, config_source => appconfig/uitdatabank/udb3-search-service/myconfig.php, features_source => appconfig/uitdatabank/udb3-search-service/myfeatures.yml, facilities_source => appconfig/uitdatabank/udb3-search-service/myfacilities.yml, themes_source => appconfig/uitdatabank/udb3-search-service/mythemes.yml, types_source => appconfig/uitdatabank/udb3-search-service/mytypes.yml, version => 1.2.3, repository => foo, pubkey_keycloak_source => appconfig/uitdatabank/keys/mypubkey-keycloak.pem, region_mapping_source => appconfig/uitdatabank/udb3-search-service/my_region_mapping.json and puppetdb_url => http://example.com:8000" do
+      context "with config_source => appconfig/uitdatabank/udb3-search-service/myconfig.yml, config_source => appconfig/uitdatabank/udb3-search-service/myconfig.php, features_source => appconfig/uitdatabank/udb3-search-service/myfeatures.yml, version => 1.2.3, repository => foo, pubkey_keycloak_source => appconfig/uitdatabank/keys/mypubkey-keycloak.pem, region_mapping_source => appconfig/uitdatabank/udb3-search-service/my_region_mapping.json and puppetdb_url => http://example.com:8000" do
         let(:params) { {
           'config_source'          => 'appconfig/uitdatabank/udb3-search-service/myconfig.yml',
           'config_source_php'      => 'appconfig/uitdatabank/udb3-search-service/myconfig.php',
           'features_source'        => 'appconfig/uitdatabank/udb3-search-service/myfeatures.yml',
-          'facilities_source'      => 'appconfig/uitdatabank/udb3-search-service/myfacilities.yml',
-          'themes_source'          => 'appconfig/uitdatabank/udb3-search-service/mythemes.yml',
-          'types_source'           => 'appconfig/uitdatabank/udb3-search-service/mytypes.yml',
           'version'                => '1.2.3',
           'repository'             => 'foo',
           'pubkey_keycloak_source' => 'appconfig/uitdatabank/keys/mypubkey-keycloak.pem',
@@ -248,13 +230,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
               'content' => ''
             ) }
 
-            it { is_expected.to contain_profiles__uitdatabank__term_mapping('uitdatabank-search-api').with(
-              'basedir'           => '/var/www/udb3-search-service',
-              'facilities_source' => 'appconfig/uitdatabank/udb3-search-service/myfacilities.yml',
-              'themes_source'     => 'appconfig/uitdatabank/udb3-search-service/mythemes.yml',
-              'types_source'      => 'appconfig/uitdatabank/udb3-search-service/mytypes.yml'
-            ) }
-
             it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').with(
               'command'     => '/var/www/udb3-search-service/bin/app.php udb3-core:reindex-permanent',
               'environment' => ['MAILTO=infra+cron@publiq.be'],
@@ -281,9 +256,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source_php'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'features_source'/) }
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'facilities_source'/) }
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'themes_source'/) }
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'types_source'/) }
       end
     end
   end

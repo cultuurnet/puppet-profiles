@@ -36,7 +36,7 @@ describe 'profiles::uitpas::balie_api' do
             'ssl_proxyengine'      => false,
             'headers'              => 'set Cache-Control "no-cache,no-store" "env=legacy_app_path"',
             'directories'          => {
-                                        'path'     => '/app_v1/index.html',
+                                        'path'     => 'index.html',
                                         'provider' => 'files',
                                         'headers'  => [
                                                         'set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"',
@@ -93,7 +93,7 @@ describe 'profiles::uitpas::balie_api' do
             'ssl_proxyengine'      => true,
             'headers'              => 'set Cache-Control "no-cache,no-store" "env=legacy_app_path"',
             'directories'          => {
-                                        'path'     => '/app_v1/index.html',
+                                        'path'     => 'index.html',
                                         'provider' => 'files',
                                         'headers'  => [
                                                         'set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"',

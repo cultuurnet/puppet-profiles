@@ -1,12 +1,12 @@
 class profiles::uitpas::api::deployment (
   String           $database_password,
-  String           $database_host     = '127.0.0.1',
-  String           $version           = 'latest',
-  String           $repository        = 'uitpas-api',
-  Integer          $portbase          = 4800,
-  Optional[String] $puppetdb_url      = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
-) inherits ::profiles {
-
+  String           $database_host         = '127.0.0.1',
+  String           $version               = 'latest',
+  String           $repository            = 'uitpas-api',
+  Integer          $portbase              = 4800,
+  Boolean          $service_watchdog      = false,
+  Optional[String] $puppetdb_url          = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+) inherits profiles {
   $database_name = 'uitpas_api'
   $database_user = 'uitpas_api'
 
@@ -16,13 +16,13 @@ class profiles::uitpas::api::deployment (
   package { 'uitpas-api':
     ensure  => $version,
     require => Apt::Source[$repository],
-    notify  => [App['uitpas-api'], Profiles::Deployment::Versions[$title]]
+    notify  => [App['uitpas-api'], Profiles::Deployment::Versions[$title]],
   }
 
   package { 'uitpas-db-mgmt':
     ensure  => $version,
     require => Apt::Source[$repository],
-    notify  => Profiles::Deployment::Versions[$title]
+    notify  => Profiles::Deployment::Versions[$title],
   }
 
   exec { 'uitpas_database_management':
@@ -31,7 +31,7 @@ class profiles::uitpas::api::deployment (
     refreshonly => true,
     logoutput   => true,
     subscribe   => Package['uitpas-db-mgmt'],
-    before      => App['uitpas-api']
+    before      => App['uitpas-api'],
   }
 
   app { 'uitpas-api':
@@ -42,10 +42,22 @@ class profiles::uitpas::api::deployment (
     contextroot   => 'uitid',
     precompilejsp => false,
     source        => '/opt/uitpas-api/uitpas-api.war',
-    require       => User['glassfish']
+    require       => User['glassfish'],
   }
 
+  $http_port_base = $portbase + 80;
+  $https_port_base = $portbase + 81;
+
+  profiles::systemd::service_watchdog { 'uitpas':
+    ensure                 => $service_watchdog ? {
+      true  => 'present',
+      false => 'absent'
+    },
+    check_interval_seconds => 20,
+    timeout_seconds        => 160,
+    healthcheck            => template('profiles/uitpas/api/deployment/service_healthcheck.erb'),
+  }
   profiles::deployment::versions { $title:
-    puppetdb_url => $puppetdb_url
+    puppetdb_url => $puppetdb_url,
   }
 }

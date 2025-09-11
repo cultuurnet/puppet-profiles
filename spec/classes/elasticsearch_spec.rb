@@ -27,7 +27,9 @@ describe 'profiles::elasticsearch' do
           'backup_volume_group'   => nil,
           'backup_volume_size'    => nil,
           'backup_hour'           => 0,
-          'backup_retention_days' => 7
+          'backup_retention_days' => 7,
+          'jvm_options'           => [],
+          'log_retention_days'    => 7
         ) }
 
         it { is_expected.to contain_class('profiles::java') }
@@ -61,7 +63,9 @@ describe 'profiles::elasticsearch' do
           'datadir'           => '/var/lib/elasticsearch',
           'manage_datadir'    => false,
           'manage_logdir'     => true,
-          'init_defaults'     => { 'ES_JAVA_OPTS' => '"-Xms512m -Xmx512m"' }
+          'init_defaults'     => { 'ES_JAVA_OPTS' => '"-Xms512m -Xmx512m"' },
+          'jvm_options'       => ['-XX:+IgnoreUnrecognizedVMOptions'],
+          'config'            => {}
         ) }
 
         it { is_expected.to contain_class('profiles::elasticsearch::backup').with(
@@ -70,6 +74,13 @@ describe 'profiles::elasticsearch' do
           'volume_size'    => nil,
           'dump_hour'      => 0,
           'retention_days' => 7
+        ) }
+
+        it { is_expected.to contain_cron('elasticsearch_log_retention').with(
+          'environment' => ['MAILTO=infra+cron@publiq.be'],
+          'command'     => '/usr/bin/find /var/log/elasticsearch -type f -name "*.log" -mtime +6 -exec rm {} \;',
+          'hour'        => '0',
+          'minute'      => '0'
         ) }
 
         it { is_expected.to contain_class('elasticsearch').that_requires('Apt::Source[elastic-5.x]') }
@@ -90,7 +101,7 @@ describe 'profiles::elasticsearch' do
         it { is_expected.not_to contain_class('profiles::elasticsearch::backup') }
       end
 
-      context "with version => 8.2.1, lvm => true, volume_group => myvg, volume_size => 20G, log_volume_size => 5G, initial_heap_size => 768m, maximum_heap_size => 1024m, backup_lvm => true, backup_volume_group => mybackupvg, backup_volume_size => 10G, backup_hour => 10 and backup_retention_days =>5" do
+      context "with version => 8.2.1, lvm => true, volume_group => myvg, volume_size => 20G, log_volume_size => 5G, initial_heap_size => 768m, maximum_heap_size => 1024m, backup_lvm => true, backup_volume_group => mybackupvg, backup_volume_size => 10G, backup_hour => 10, backup_retention_days => 5, jvm_options => -Xmixed and log_retention_days => 14" do
         let(:params) { {
           'version'               => '8.2.1',
           'lvm'                   => true,
@@ -103,7 +114,9 @@ describe 'profiles::elasticsearch' do
           'backup_volume_group'   => 'mybackupvg',
           'backup_volume_size'    => '10G',
           'backup_hour'           => 10,
-          'backup_retention_days' => 5
+          'backup_retention_days' => 5,
+          'jvm_options'           => '-Xmixed',
+          'log_retention_days'    => 14
         } }
 
         context "with volume_groups myvg and mybackupvg present" do
@@ -163,7 +176,13 @@ describe 'profiles::elasticsearch' do
             'datadir'           => '/var/lib/elasticsearch',
             'manage_datadir'    => false,
             'manage_logdir'     => false,
-            'init_defaults'     => { 'ES_JAVA_OPTS' => '"-Xms768m -Xmx1024m"' }
+            'init_defaults'     => { 'ES_JAVA_OPTS' => '"-Xms768m -Xmx1024m"' },
+            'jvm_options'       => ['-XX:+IgnoreUnrecognizedVMOptions', '-Xmixed'],
+            'config'            => {
+                                     'xpack.security.enabled'               => false,
+                                     'xpack.security.transport.ssl.enabled' => false,
+                                     'xpack.security.http.ssl.enabled'      => false
+                                   }
           ) }
 
           it { is_expected.to contain_class('profiles::elasticsearch::backup').with(
@@ -172,6 +191,10 @@ describe 'profiles::elasticsearch' do
             'volume_size'    => '10G',
             'dump_hour'      => 10,
             'retention_days' => 5
+          ) }
+
+          it { is_expected.to contain_cron('elasticsearch_log_retention').with(
+            'command'     => '/usr/bin/find /var/log/elasticsearch -type f -name "*.log" -mtime +13 -exec rm {} \;',
           ) }
 
           it { is_expected.to contain_profiles__lvm__mount('elasticsearchdata').that_requires('Group[elasticsearch]') }
@@ -194,7 +217,7 @@ describe 'profiles::elasticsearch' do
         end
       end
 
-      context "with version => 5.2.2, lvm => true, volume_group => mydatavg, volume_size => 10G, backup_lvm => true, backup_volume_group => esbackupvg, backup_volume_size => 5G, backup_hour => 1 and backup_retention_days => 10" do
+      context "with version => 5.2.2, lvm => true, volume_group => mydatavg, volume_size => 10G, backup_lvm => true, backup_volume_group => esbackupvg, backup_volume_size => 5G, backup_hour => 1, backup_retention_days => 10, jvm_options => [-Xmixed, -Xverify] and log_retention_days => 0" do
         let(:params) { {
           'version'               => '5.2.2',
           'lvm'                   => true,
@@ -204,7 +227,9 @@ describe 'profiles::elasticsearch' do
           'backup_volume_group'   => 'esbackupvg',
           'backup_volume_size'    => '5G',
           'backup_hour'           => 1,
-          'backup_retention_days' => 10
+          'backup_retention_days' => 10,
+          'jvm_options'           => ['-Xmixed', '-Xverify'],
+          'log_retention_days'    => 0
         } }
 
         context "with volume_groups mydatavg and esbackupvg present" do
@@ -239,7 +264,8 @@ describe 'profiles::elasticsearch' do
             'datadir'           => '/var/lib/elasticsearch',
             'manage_datadir'    => false,
             'manage_logdir'     => true,
-            'init_defaults'     => { 'ES_JAVA_OPTS' => '"-Xms512m -Xmx512m"' }
+            'init_defaults'     => { 'ES_JAVA_OPTS' => '"-Xms512m -Xmx512m"' },
+            'jvm_options'       => ['-XX:+IgnoreUnrecognizedVMOptions', '-Xmixed', '-Xverify']
           ) }
 
           it { is_expected.to contain_class('profiles::elasticsearch::backup').with(
@@ -248,6 +274,10 @@ describe 'profiles::elasticsearch' do
             'volume_size'    => '5G',
             'dump_hour'      => 1,
             'retention_days' => 10
+          ) }
+
+          it { is_expected.to contain_cron('elasticsearch_log_retention').with(
+            'command'     => '/usr/bin/find /var/log/elasticsearch -type f -name "*.log" -mtime +0 -exec rm {} \;',
           ) }
 
           it { is_expected.to contain_class('elasticsearch').that_requires('Apt::Source[elastic-5.x]') }
