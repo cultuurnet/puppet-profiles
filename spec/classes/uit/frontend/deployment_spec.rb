@@ -61,7 +61,7 @@ describe 'profiles::uit::frontend::deployment' do
 
         it { is_expected.to contain_profiles__systemd__service_watchdog('uit-frontend').with(
           'ensure'      => 'absent',
-          'healthcheck' => "current_memory_mb=\$(( \$(/usr/bin/systemctl show -p MemoryCurrent --value uit-frontend) / (1024 * 1024) ))\nmaximum_memory_mb=\$(( 512 * 9 / 10 ))\n\n/usr/bin/test \${current_memory_mb} -lt \${maximum_memory_mb}\n"
+          'healthcheck' => "current_memory_mb=\$(( \$(/usr/bin/systemctl show -p MemoryCurrent --value \${SERVICE}) / (1024 * 1024) ))\nmaximum_memory_mb=\$(( 512 * 9 / 10 ))\n\n/usr/bin/test \${current_memory_mb} -lt \${maximum_memory_mb}\n"
         ) }
 
         it { is_expected.to contain_package('uit-frontend').that_notifies('Service[uit-frontend]') }
@@ -128,7 +128,7 @@ describe 'profiles::uit::frontend::deployment' do
 
           it { is_expected.to contain_profiles__systemd__service_watchdog('uit-frontend').with(
             'ensure'      => 'present',
-            'healthcheck' => "current_memory_mb=\$(( \$(/usr/bin/systemctl show -p MemoryCurrent --value uit-frontend) / (1024 * 1024) ))\nmaximum_memory_mb=\$(( 1024 * 9 / 10 ))\n\n/usr/bin/test \${current_memory_mb} -lt \${maximum_memory_mb}\n"
+            'healthcheck' => "current_memory_mb=\$(( \$(/usr/bin/systemctl show -p MemoryCurrent --value \${SERVICE}) / (1024 * 1024) ))\nmaximum_memory_mb=\$(( 1024 * 9 / 10 ))\n\n/usr/bin/test \${current_memory_mb} -lt \${maximum_memory_mb}\n"
           ) }
 
           it { is_expected.to contain_profiles__deployment__versions('profiles::uit::frontend::deployment').with(

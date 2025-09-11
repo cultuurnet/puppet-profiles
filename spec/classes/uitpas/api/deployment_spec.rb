@@ -17,6 +17,7 @@ describe 'profiles::uitpas::api::deployment' do
           'database_host'     => '127.0.0.1',
           'version'           => 'latest',
           'repository'        => 'uitpas-api',
+          'service_watchdog'  => false,
           'portbase'          => 4800,
           'puppetdb_url'      => nil
         ) }
@@ -49,6 +50,10 @@ describe 'profiles::uitpas::api::deployment' do
           'logoutput'   => true
         ) }
 
+        it { is_expected.to contain_profiles__systemd__service_watchdog('uitpas').with(
+          'ensure' => 'absent'
+        ) }
+
         it { is_expected.to contain_package('uitpas-api').that_requires('Apt::Source[uitpas-api]') }
         it { is_expected.to contain_package('uitpas-api').that_notifies('App[uitpas-api]') }
         it { is_expected.to contain_package('uitpas-api').that_notifies('Profiles::Deployment::Versions[profiles::uitpas::api::deployment]') }
@@ -75,13 +80,14 @@ describe 'profiles::uitpas::api::deployment' do
         end
       end
 
-      context "with database_password => mypass, database_host => mydb.example.com, version => 3.2.1, portbase => 14800 and repository => uitpas-api-alternative" do
+      context "with database_password => mypass, database_host => mydb.example.com, version => 3.2.1, portbase => 14800, repository => uitpas-api-alternative and service_watchdog => true" do
         let(:params) { {
           'database_password' => 'mypass',
           'database_host'     => 'mydb.example.com',
           'version'           => '3.2.1',
           'portbase'          => 14800,
-          'repository'        => 'uitpas-api-alternative'
+          'repository'        => 'uitpas-api-alternative',
+          'service_watchdog'  => true
         } }
 
         context "with repository uitpas-api-alternative defined" do
@@ -112,6 +118,10 @@ describe 'profiles::uitpas::api::deployment' do
             'contextroot'   => 'uitid',
             'precompilejsp' => false,
             'source'        => '/opt/uitpas-api/uitpas-api.war'
+          ) }
+
+          it { is_expected.to contain_profiles__systemd__service_watchdog('uitpas').with(
+            'ensure' => 'present'
           ) }
 
           it { is_expected.to contain_package('uitpas-api').that_requires('Apt::Source[uitpas-api-alternative]') }

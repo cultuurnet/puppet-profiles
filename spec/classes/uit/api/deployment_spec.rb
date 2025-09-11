@@ -19,7 +19,6 @@ describe 'profiles::uit::api::deployment' do
           'repository'            => 'uit-api',
           'service_status'        => 'running',
           'service_port'          => 4000,
-          'service_watchdog'      => false,
           'newrelic_license_key'  => nil,
           'newrelic_app_name'     => nil,
           'puppetdb_url'          => nil
@@ -128,7 +127,6 @@ describe 'profiles::uit::api::deployment' do
       'maximum_heap_size'    => 1024,
       'repository'           => 'uit-api-exotic',
       'service_status'       => 'stopped',
-      'service_watchdog'     => false,
       'service_port'         => 3456,
       'newrelic_license_key' => 'ping',
       'newrelic_app_name'    => 'pong',
