@@ -1,0 +1,12 @@
+  <%= @title %>:
+    type: s3
+    bucket: <%= @configuration['bucket'] %>
+    <%- if @configuration['access_key_id'] -%>
+    access_key_id: <%= @configuration['access_key_id'] %>
+    <%- end -%>
+    <%- if @configuration['secret_access_key'] -%>
+    secret_access_key: <%= @configuration['secret_access_key'] %>
+    <%- end -%>
+    <%- if @configuration['region'] -%>
+    region: <%= @configuration['region'] %>
+    <%- end -%>

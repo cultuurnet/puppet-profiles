@@ -62,6 +62,39 @@ describe 'profiles::sling::connection' do
           ) }
         end
 
+        context 'with type => s3 and configuration => { bucket => mybucket }' do
+          let(:params) { {
+            'type'          => 's3',
+            'configuration' => {
+                                 'bucket'   => 'mybucket'
+                               }
+          } }
+
+          it { is_expected.to contain_concat_fragment('foo').with(
+            'target'  => '/root/.sling/env.yaml',
+            'content' => "  foo:\n    type: s3\n    bucket: mybucket\n",
+            'order'   => 2
+          ) }
+        end
+
+        context 'with type => s3 and configuration => { bucket => bar, access_key_id => abc123, secret_access_key => def456, region => us-east1 }' do
+          let(:params) { {
+            'type'          => 's3',
+            'configuration' => {
+                                 'bucket'            => 'bar',
+                                 'access_key_id'     => 'abc123',
+                                 'secret_access_key' => 'def456',
+                                 'region'            => 'us-east1'
+                               }
+          } }
+
+          it { is_expected.to contain_concat_fragment('foo').with(
+            'target'  => '/root/.sling/env.yaml',
+            'content' => "  foo:\n    type: s3\n    bucket: bar\n    access_key_id: abc123\n    secret_access_key: def456\n    region: us-east1\n",
+            'order'   => 2
+          ) }
+        end
+
         context 'without parameters' do
           let(:params) { {} }
 
