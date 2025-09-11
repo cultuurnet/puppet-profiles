@@ -1,11 +1,13 @@
 class profiles::uitpas::api::deployment (
   String           $database_password,
-  String           $database_host     = '127.0.0.1',
-  String           $version           = 'latest',
-  String           $repository        = 'uitpas-api',
-  Integer          $portbase          = 4800,
-  Boolean          $service_watchdog  = false,
-  Optional[String] $puppetdb_url      = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+  String           $database_host         = '127.0.0.1',
+  String           $version               = 'latest',
+  String           $repository            = 'uitpas-api',
+  Integer          $portbase              = 4800,
+  Boolean          $service_watchdog      = false,
+  String           $health_url            = 'https://localhost:4881/uitid/rest/uitpas/health',
+  String           $cardsystem_health_url = 'https://localhost:4881/uitid/rest/cardsystem/login',
+  Optional[String] $puppetdb_url          = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits profiles {
   $database_name = 'uitpas_api'
   $database_user = 'uitpas_api'
@@ -50,8 +52,8 @@ class profiles::uitpas::api::deployment (
       true  => 'present',
       false => 'absent'
     },
-    check_interval_seconds => 10,
-    timeout_seconds        => 60,
+    check_interval_seconds => 20,
+    timeout_seconds        => 120,
     healthcheck            => template('profiles/uitpas/api/deployment/service_healthcheck.erb'),
   }
   profiles::deployment::versions { $title:
