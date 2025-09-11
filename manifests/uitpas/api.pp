@@ -11,7 +11,6 @@ class profiles::uitpas::api (
   Optional[String]               $newrelic_license_key = lookup('data::newrelic::license_key', Optional[String], 'first', undef),
   Integer                        $portbase             = 4800,
   Enum['running', 'stopped']     $service_status       = 'running',
-  Boolean                        $service_watchdog     = false,
   Hash                           $settings             = {}
 ) inherits profiles {
   $database_name              = 'uitpas_api'
@@ -130,8 +129,7 @@ class profiles::uitpas::api (
       class { 'profiles::uitpas::api::deployment':
         database_password => $database_password,
         database_host     => $database_host,
-        portbase          => $portbase,
-        service_watchdog  => $service_watchdog
+        portbase          => $portbase
       }
 
       class { 'profiles::uitpas::api::cron':
