@@ -11,25 +11,25 @@ class profiles::uitpas::api (
   Optional[String]               $newrelic_license_key = lookup('data::newrelic::license_key', Optional[String], 'first', undef),
   Integer                        $portbase             = 4800,
   Enum['running', 'stopped']     $service_status       = 'running',
+  Boolean                        $service_watchdog     = false,
   Hash                           $settings             = {}
-) inherits ::profiles {
-
+) inherits profiles {
   $database_name              = 'uitpas_api'
   $database_user              = 'uitpas_api'
   $glassfish_domain_http_port = $portbase + 80
   $default_attributes         = {
-                                  user         => 'glassfish',
-                                  passwordfile => '/home/glassfish/asadmin.pass',
-                                  portbase     => String($portbase)
-                                }
+    user         => 'glassfish',
+    passwordfile => '/home/glassfish/asadmin.pass',
+    portbase     => String($portbase),
+  }
 
-  include ::profiles::apache
-  include ::profiles::java
-  include ::profiles::glassfish
+  include profiles::apache
+  include profiles::java
+  include profiles::glassfish
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
     destination => "http://127.0.0.1:${glassfish_domain_http_port}/uitid/rest/",
-    aliases     => $serveraliases
+    aliases     => $serveraliases,
   }
 
   if $database_host == '127.0.0.1' {
@@ -70,33 +70,33 @@ class profiles::uitpas::api (
     newrelic_license_key => $newrelic_license_key,
     service_status       => $service_status,
     require              => Class['profiles::glassfish'],
-    notify               => Service['uitpas']
+    notify               => Service['uitpas'],
   }
 
   if $database_host_available {
     mysql_database { $database_name:
       charset => 'utf8mb4',
-      collate => 'utf8mb4_unicode_ci'
+      collate => 'utf8mb4_unicode_ci',
     }
 
     profiles::mysql::app_user { "${database_user}@${database_name}":
       password => $database_password,
       remote   => $database_host_remote,
-      require  => Mysql_database[$database_name]
+      require  => Mysql_database[$database_name],
     }
 
     profiles::mysql::app_user { "etl@${database_name}":
       password => lookup('data::mysql::etl::password', Optional[String], 'first', undef),
       readonly => true,
       remote   => $database_host_remote,
-      require  => Mysql_database[$database_name]
+      require  => Mysql_database[$database_name],
     }
 
     profiles::mysql::app_user { "2ndline_ro@${database_name}":
       password => lookup('data::mysql::2ndline_ro::password', Optional[String], 'first', undef),
       readonly => true,
       remote   => $database_host_remote,
-      require  => Mysql_database[$database_name]
+      require  => Mysql_database[$database_name],
     }
 
     jdbcconnectionpool { 'mysql_uitpas_api_j2eePool':
@@ -104,38 +104,39 @@ class profiles::uitpas::api (
       resourcetype => 'javax.sql.DataSource',
       dsclassname  => 'com.mysql.cj.jdbc.MysqlDataSource',
       properties   => {
-                        'serverName'        => $database_host,
-                        'portNumber'        => '3306',
-                        'databaseName'      => $database_name,
-                        'User'              => $database_user,
-                        'Password'          => $database_password,
-                        'URL'               => "jdbc:mysql://${database_host}:3306/${database_name}",
-                        'driverClass'       => 'com.mysql.cj.jdbc.Driver',
-                        'characterEncoding' => 'UTF-8',
-                        'useUnicode'        => true,
-                        'useSSL'            => false
-                      },
+        'serverName'        => $database_host,
+        'portNumber'        => '3306',
+        'databaseName'      => $database_name,
+        'User'              => $database_user,
+        'Password'          => $database_password,
+        'URL'               => "jdbc:mysql://${database_host}:3306/${database_name}",
+        'driverClass'       => 'com.mysql.cj.jdbc.Driver',
+        'characterEncoding' => 'UTF-8',
+        'useUnicode'        => true,
+        'useSSL'            => false,
+      },
       require      => [Profiles::Glassfish::Domain['uitpas'], Profiles::Mysql::App_user["${database_user}@${database_name}"]],
-      *            => $default_attributes
+      *            => $default_attributes,
     }
 
     jdbcresource { 'jdbc/cultuurnet_uitpas':
       ensure         => 'present',
       connectionpool => 'mysql_uitpas_api_j2eePool',
       require        => Jdbcconnectionpool['mysql_uitpas_api_j2eePool'],
-      *              => $default_attributes
+      *              => $default_attributes,
     }
 
     if $deployment {
       class { 'profiles::uitpas::api::deployment':
         database_password => $database_password,
         database_host     => $database_host,
-        portbase          => $portbase
+        portbase          => $portbase,
+        service_watchdog  => $service_watchdog
       }
 
       class { 'profiles::uitpas::api::cron':
         portbase => $portbase,
-        require  => Class['profiles::uitpas::api::deployment']
+        require  => Class['profiles::uitpas::api::deployment'],
       }
 
       Class['profiles::glassfish'] -> Class['profiles::uitpas::api::deployment']
@@ -148,27 +149,27 @@ class profiles::uitpas::api (
   }
 
   set { 'server.network-config.protocols.protocol.http-listener-1.http.scheme-mapping':
-    ensure       => 'present',
-    value        => 'X-Forwarded-Proto',
-    require      => Profiles::Glassfish::Domain['uitpas'],
-    notify       => Service['uitpas'],
-    *            => $default_attributes
+    ensure  => 'present',
+    value   => 'X-Forwarded-Proto',
+    require => Profiles::Glassfish::Domain['uitpas'],
+    notify  => Service['uitpas'],
+    *       => $default_attributes,
   }
 
   set { 'server.thread-pools.thread-pool.http-thread-pool.max-thread-pool-size':
-    ensure       => 'present',
-    value        => '32',
-    require      => Profiles::Glassfish::Domain['uitpas'],
-    notify       => Service['uitpas'],
-    *            => $default_attributes
+    ensure  => 'present',
+    value   => '32',
+    require => Profiles::Glassfish::Domain['uitpas'],
+    notify  => Service['uitpas'],
+    *       => $default_attributes,
   }
 
   jvmoption { 'Clear domain uitpas default truststore':
-    ensure => 'absent',
-    option => '-Djavax.net.ssl.trustStore=\$\{com.sun.aas.instanceRoot\}/config/cacerts.jks',
+    ensure  => 'absent',
+    option  => '-Djavax.net.ssl.trustStore=\$\{com.sun.aas.instanceRoot\}/config/cacerts.jks',
     require => Profiles::Glassfish::Domain['uitpas'],
-    notify => Service['uitpas'],
-    *      => $default_attributes
+    notify  => Service['uitpas'],
+    *       => $default_attributes,
   }
 
   jvmoption { 'Domain uitpas truststore':
@@ -176,7 +177,7 @@ class profiles::uitpas::api (
     option  => '-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts',
     require => Profiles::Glassfish::Domain['uitpas'],
     notify  => Service['uitpas'],
-    *       => $default_attributes
+    *       => $default_attributes,
   }
 
   jvmoption { 'Domain uitpas timezone':
@@ -184,7 +185,7 @@ class profiles::uitpas::api (
     option  => '-Duser.timezone=CET',
     require => Profiles::Glassfish::Domain['uitpas'],
     notify  => Service['uitpas'],
-    *       => $default_attributes
+    *       => $default_attributes,
   }
 
   $settings.each |$name, $value| {
@@ -193,22 +194,22 @@ class profiles::uitpas::api (
       value   => $value,
       require => Profiles::Glassfish::Domain['uitpas'],
       notify  => Service['uitpas'],
-      *       => $default_attributes
+      *       => $default_attributes,
     }
   }
 
   profiles::glassfish::domain::service_alias { 'uitpas':
-    require => Profiles::Glassfish::Domain['uitpas']
+    require => Profiles::Glassfish::Domain['uitpas'],
   }
 
   service { 'uitpas':
     ensure    => $service_status,
     hasstatus => true,
     enable    => $service_status ? {
-                   'running' => true,
-                   'stopped' => false
-                 },
-    require   => Profiles::Glassfish::Domain::Service_alias['uitpas']
+      'running' => true,
+      'stopped' => false
+    },
+    require   => Profiles::Glassfish::Domain::Service_alias['uitpas'],
   }
 
   file { 'Domain uitpas mysql-connector-j':
@@ -216,7 +217,7 @@ class profiles::uitpas::api (
     path    => '/opt/payara/glassfish/lib/mysql-connector-j.jar',
     source  => '/usr/share/java/mysql-connector-j.jar',
     require => Package['mysql-connector-j'],
-    before  => Profiles::Glassfish::Domain['uitpas']
+    before  => Profiles::Glassfish::Domain['uitpas'],
   }
 
   # include ::profiles::uitpas::api::monitoring

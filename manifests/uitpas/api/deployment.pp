@@ -4,6 +4,7 @@ class profiles::uitpas::api::deployment (
   String           $version           = 'latest',
   String           $repository        = 'uitpas-api',
   Integer          $portbase          = 4800,
+  Boolean          $service_watchdog  = false,
   Optional[String] $puppetdb_url      = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
@@ -45,6 +46,13 @@ class profiles::uitpas::api::deployment (
     require       => User['glassfish']
   }
 
+  profiles::systemd::service_watchdog { 'uitpas':
+    ensure      => $service_watchdog ? {
+                     true  => 'present',
+                     false => 'absent'
+                   },
+    healthcheck => template('profiles/uitpas/api/deployment/service_healthcheck.erb')
+  }
   profiles::deployment::versions { $title:
     puppetdb_url => $puppetdb_url
   }
