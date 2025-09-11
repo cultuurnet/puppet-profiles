@@ -5,8 +5,6 @@ class profiles::uitpas::api::deployment (
   String           $repository            = 'uitpas-api',
   Integer          $portbase              = 4800,
   Boolean          $service_watchdog      = false,
-  String           $health_url            = 'https://localhost:4881/uitid/rest/uitpas/health',
-  String           $cardsystem_health_url = 'https://localhost:4881/uitid/rest/cardsystem/login',
   Optional[String] $puppetdb_url          = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits profiles {
   $database_name = 'uitpas_api'
@@ -46,6 +44,8 @@ class profiles::uitpas::api::deployment (
     source        => '/opt/uitpas-api/uitpas-api.war',
     require       => User['glassfish'],
   }
+
+  $http_port_base = $portbase + 80;
 
   profiles::systemd::service_watchdog { 'uitpas':
     ensure                 => $service_watchdog ? {

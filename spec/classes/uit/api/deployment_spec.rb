@@ -20,8 +20,6 @@ describe 'profiles::uit::api::deployment' do
           'service_status'        => 'running',
           'service_port'          => 4000,
           'service_watchdog'      => false,
-          'health_url'            => "https://localhost:4881/uitid/rest/uitpas/health",
-          'cardsystem_health_url' => "https://localhost:4881/uitid/rest/cardsystem/login",
           'newrelic_license_key'  => nil,
           'newrelic_app_name'     => nil,
           'puppetdb_url'          => nil
@@ -131,8 +129,6 @@ describe 'profiles::uit::api::deployment' do
       'repository'           => 'uit-api-exotic',
       'service_status'       => 'stopped',
       'service_watchdog'     => false,
-      'health_url'           => "https://localhost:4881/uitid/rest/uitpas/health",
-      'cardsystem_health_url'=> "https://localhost:4881/uitid/rest/cardsystem/login",
       'service_port'         => 3456,
       'newrelic_license_key' => 'ping',
       'newrelic_app_name'    => 'pong',
