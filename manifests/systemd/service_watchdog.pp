@@ -1,13 +1,16 @@
 define profiles::systemd::service_watchdog (
-  Enum['present', 'absent'] $ensure          = 'present',
-  String                    $service         = $title,
-  Integer                   $timeout_seconds = 10,
-  String                    $healthcheck     = '/usr/bin/true'
+  Enum['present', 'absent'] $ensure                 = 'present',
+  String                    $service                = $title,
+  Integer                   $timeout_seconds        = 10,
+  Integer                   $check_interval_seconds = floor($timeout_seconds / 4),
+  String                    $healthcheck            = '/usr/bin/true'
 ) {
 
   include ::profiles
 
-  $check_interval_seconds = floor($timeout_seconds / 2)
+  if ($check_interval_seconds >= $timeout_seconds) {
+    fail("Defined resource Profiles::Systemd::Service_watchdog[${title}]: 'check_interval_seconds' should be smaller than 'timeout_seconds'")
+  }
 
   file { "${title}-watchdog":
     ensure  => $ensure ? {
