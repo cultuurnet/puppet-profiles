@@ -6,8 +6,7 @@ class profiles::uitpas::api::deployment (
   Integer          $portbase          = 4800,
   Boolean          $service_watchdog  = false,
   Optional[String] $puppetdb_url      = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
-) inherits ::profiles {
-
+) inherits profiles {
   $database_name = 'uitpas_api'
   $database_user = 'uitpas_api'
 
@@ -17,13 +16,13 @@ class profiles::uitpas::api::deployment (
   package { 'uitpas-api':
     ensure  => $version,
     require => Apt::Source[$repository],
-    notify  => [App['uitpas-api'], Profiles::Deployment::Versions[$title]]
+    notify  => [App['uitpas-api'], Profiles::Deployment::Versions[$title]],
   }
 
   package { 'uitpas-db-mgmt':
     ensure  => $version,
     require => Apt::Source[$repository],
-    notify  => Profiles::Deployment::Versions[$title]
+    notify  => Profiles::Deployment::Versions[$title],
   }
 
   exec { 'uitpas_database_management':
@@ -32,7 +31,7 @@ class profiles::uitpas::api::deployment (
     refreshonly => true,
     logoutput   => true,
     subscribe   => Package['uitpas-db-mgmt'],
-    before      => App['uitpas-api']
+    before      => App['uitpas-api'],
   }
 
   app { 'uitpas-api':
@@ -43,17 +42,19 @@ class profiles::uitpas::api::deployment (
     contextroot   => 'uitid',
     precompilejsp => false,
     source        => '/opt/uitpas-api/uitpas-api.war',
-    require       => User['glassfish']
+    require       => User['glassfish'],
   }
 
   profiles::systemd::service_watchdog { 'uitpas':
-    ensure      => $service_watchdog ? {
-                     true  => 'present',
-                     false => 'absent'
-                   },
-    healthcheck => template('profiles/uitpas/api/deployment/service_healthcheck.erb')
+    ensure                 => $service_watchdog ? {
+      true  => 'present',
+      false => 'absent'
+    },
+    check_interval_seconds => 10,
+    timeout_seconds        => 60,
+    healthcheck            => template('profiles/uitpas/api/deployment/service_healthcheck.erb'),
   }
   profiles::deployment::versions { $title:
-    puppetdb_url => $puppetdb_url
+    puppetdb_url => $puppetdb_url,
   }
 }
