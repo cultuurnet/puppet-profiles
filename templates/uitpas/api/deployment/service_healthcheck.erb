@@ -1,6 +1,8 @@
 
 
-HEALTH_URL="http://localhost:<%= @http_port_base %>/uitid/rest/uitpas/health"
-CARDSYSTEM_HEALTH_URL="http://localhost:<%= @http_port_base %>/uitid/rest/cardsystem/login"
-/usr/bin/test $(curl -s -o /dev/null $HEALTH_URL -w "%{http_code}") -eq 200  || return 1
-/usr/bin/test $(curl -s -o /dev/null $CARDSYSTEM_HEALTH_URL -w "%{http_code}") -eq 200
+HEALTH_URL="https://localhost:<%= @https_port_base %>/uitid/rest/uitpas/health"
+CARDSYSTEM_HEALTH_URL="https://localhost:<%= @https_port_base %>/uitid/rest/cardsystem/login"
+/usr/bin/test $(curl -s -k -o /dev/null $HEALTH_URL -w "%{http_code}") -eq 200  || return 1
+/usr/bin/test $(curl -s -k -o /dev/null $CARDSYSTEM_HEALTH_URL -w "%{http_code}") -eq 200
+
+

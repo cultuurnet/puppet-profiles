@@ -46,6 +46,7 @@ class profiles::uitpas::api::deployment (
   }
 
   $http_port_base = $portbase + 80;
+  $https_port_base = $portbase + 81;
 
   profiles::systemd::service_watchdog { 'uitpas':
     ensure                 => $service_watchdog ? {
