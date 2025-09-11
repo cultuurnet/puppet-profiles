@@ -1,4 +1,4 @@
-current_memory_mb=$(( $(/usr/bin/systemctl show -p MemoryCurrent --value uit-frontend) / (1024 * 1024) ))
+current_memory_mb=$(( $(/usr/bin/systemctl show -p MemoryCurrent --value ${SERVICE}) / (1024 * 1024) ))
 maximum_memory_mb=$(( <%= @maximum_heap_size %> * 9 / 10 ))
 
 /usr/bin/test ${current_memory_mb} -lt ${maximum_memory_mb}

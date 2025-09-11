@@ -26,7 +26,7 @@ describe 'profiles::systemd::service_watchdog' do
             'mode'   => '0755'
           ) }
 
-          it { is_expected.to contain_file('foo-watchdog').with_content(/CHECK_INTERVAL_SECONDS=5/) }
+          it { is_expected.to contain_file('foo-watchdog').with_content(/CHECK_INTERVAL_SECONDS=2/) }
           it { is_expected.to contain_file('foo-watchdog').with_content(/\/usr\/bin\/true/) }
 
           it { is_expected.to contain_systemd__unit_file('foo-watchdog.service').with(
@@ -66,7 +66,7 @@ describe 'profiles::systemd::service_watchdog' do
             'healthcheck'     => 'test -f /tmp/watchdog_file_present'
           } }
 
-          it { is_expected.to contain_file('foo-watchdog').with_content(/CHECK_INTERVAL_SECONDS=7/) }
+          it { is_expected.to contain_file('foo-watchdog').with_content(/CHECK_INTERVAL_SECONDS=3/) }
           it { is_expected.to contain_file('foo-watchdog').with_content(/test -f \/tmp\/watchdog_file_present/) }
 
           it { is_expected.to contain_systemd__unit_file('foo-watchdog.service').with_content(/Description=Watchdog service for bar/) }
@@ -119,13 +119,24 @@ describe 'profiles::systemd::service_watchdog' do
       context "on #{os}" do
         let(:facts) { facts }
 
-        context 'with healthcheck => "test -f /tmp/baz\ntest -f /tmp/snafu"' do
+        context 'with healthcheck => "test -f /tmp/baz\ntest -f /tmp/snafu" and check_interval_seconds => 5' do
           let(:params) { {
-            'healthcheck' => "test -f /tmp/baz\ntest -f /tmp/snafu"
+            'healthcheck'            => "test -f /tmp/baz\ntest -f /tmp/snafu",
+            'check_interval_seconds' => 5
           } }
 
+          it { is_expected.to contain_file('baz-watchdog').with_content(/CHECK_INTERVAL_SECONDS=5/) }
           it { is_expected.to contain_file('baz-watchdog').with_content(/test -f \/tmp\/baz/) }
           it { is_expected.to contain_file('baz-watchdog').with_content(/test -f \/tmp\/snafu/) }
+        end
+
+        context 'with timeout_seconds => 20 and check_interval_seconds => 30' do
+          let(:params) { {
+            'timeout_seconds'        => 20,
+            'check_interval_seconds' => 30
+          } }
+
+          it { expect { catalogue }.to raise_error(Puppet::ParseError, /'check_interval_seconds' should be smaller than 'timeout_seconds'/) }
         end
       end
     end
