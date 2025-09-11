@@ -54,7 +54,7 @@ class profiles::uitpas::api::deployment (
       false => 'absent'
     },
     check_interval_seconds => 20,
-    timeout_seconds        => 120,
+    timeout_seconds        => 160,
     healthcheck            => template('profiles/uitpas/api/deployment/service_healthcheck.erb'),
   }
   profiles::deployment::versions { $title:
