@@ -3,5 +3,5 @@
 HEALTH_URL            = "http://localhost:<%= @http_port_base %>/uitid/rest/uitpas/health"
 CARDSYSTEM_HEALTH_URL = "http://localhost:<%= @http_port_base %>/uitid/rest/cardsystem/login"
 
-  /usr/bin/curl -s -k --max-time 30 --fail-with-body "$HEALTH_URL"  || return 1
-  /usr/bin/curl -s -k --max-time 30 --fail-with-body "$CARDSYSTEM_HEALTH_URL" 
+  /usr/bin/curl -s --max-time 30 --fail-with-body "$HEALTH_URL"  || return 1
+  /usr/bin/curl -s --max-time 30 --fail-with-body "$CARDSYSTEM_HEALTH_URL" 
