@@ -6,6 +6,8 @@ class profiles::uitdatabank::entry_api (
   Optional[String]               $uitpas_servername                 = undef,
   String                         $database_host                     = '127.0.0.1',
   Boolean                        $deployment                        = true,
+  Optional[String]               $gcloud_project_id                 = undef,
+  Optional[String]               $gcloud_bucket                     = undef,
   Boolean                        $catch_mail                        = false,
   Boolean                        $schedule_process_duplicates       = false,
   Boolean                        $schedule_movie_fetcher            = false,
@@ -60,7 +62,10 @@ class profiles::uitdatabank::entry_api (
       include profiles::uitdatabank::entry_api::deployment
 
       class { 'profiles::uitdatabank::entry_api::data_integration':
+        database_host => $database_host,
         database_name => $database_name,
+        project_id    => $gcloud_project_id,
+        bucket        => $gcloud_bucket,
         require       => Class['profiles::uitdatabank::entry_api::deployment']
       }
 
