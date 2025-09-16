@@ -60,6 +60,7 @@ class profiles::uitdatabank::entry_api (
       include profiles::uitdatabank::entry_api::deployment
 
       class { 'profiles::uitdatabank::entry_api::data_integration':
+        database_host => $database_host,
         database_name => $database_name,
         require       => Class['profiles::uitdatabank::entry_api::deployment']
       }

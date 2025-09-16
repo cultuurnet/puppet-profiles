@@ -1,5 +1,8 @@
 class profiles::uitdatabank::entry_api::data_integration (
   String           $database_name,
+  String           $project_id,
+  String           $bucket,
+  String           $database_host             = '127.0.0.1',
   Optional[String] $popularity_score_password = undef,
   Optional[String] $similar_events_password   = undef,
   Optional[String] $event_labeling_password   = undef,
@@ -7,6 +10,50 @@ class profiles::uitdatabank::entry_api::data_integration (
   Optional[String] $jenkins_password          = undef,
   Optional[String] $developer_password        = undef
 ) inherits ::profiles {
+
+  $secrets                        = lookup('vault:uitdatabank/udb3-backend')
+  $ownership_search_password_seed = $facts['ec2_metadata'] ? {
+                                      undef   => "${database_name}_ownership_search",
+                                      default => join(["${database_name}_ownership_search", file($settings::hostprivkey)], "\n")
+                                    }
+  $ownership_search_password      = fqdn_rand_string(20, $ownership_search_password_seed)
+
+  profiles::mysql::app_user { "ownership_search@${database_name}":
+    tables   => ['ownership_search'],
+    password => $ownership_search_password,
+    readonly => true,
+    remote   => false
+  }
+
+  profiles::google::gcloud { 'root':
+    credentials => {
+                     project_id     => $project_id,
+                     private_key_id => $secrets['gcloud_private_key_id'],
+                     private_key    => $secrets['gcloud_private_key'],
+                     client_id      => $secrets['gcloud_client_id'],
+                     client_email   => $secrets['gcloud_client_email']
+                   }
+  }
+
+  profiles::sling::connection { $database_name:
+    type          => 'mysql',
+    configuration => {
+                        user     => 'ownership_search',
+                        password => $ownership_search_password,
+                        host     => $database_host,
+                        database => $database_name
+                     },
+    require       => Profiles::Mysql::App_user["ownership_search@${database_name}"]
+  }
+
+  profiles::sling::connection { 'ownership_search':
+    type          => 'gs',
+    configuration => {
+                        bucket  => $bucket,
+                        keyfile => '/etc/gcloud/credentials_root.json',
+                     },
+    require       => Profiles::Google::Gcloud['root']
+  }
 
   if $popularity_score_password {
     profiles::mysql::app_user { "popularity_score@${database_name}":

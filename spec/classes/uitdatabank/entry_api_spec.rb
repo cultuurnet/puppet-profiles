@@ -44,6 +44,7 @@ describe 'profiles::uitdatabank::entry_api' do
             it { is_expected.to contain_class('profiles::php') }
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api::deployment') }
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api::data_integration').with(
+              'database_host' => '127.0.0.1',
               'database_name' => 'uitdatabank'
             ) }
 
@@ -242,6 +243,7 @@ describe 'profiles::uitdatabank::entry_api' do
 
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api::deployment') }
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api::data_integration').with(
+              'database_host' => 'bar.example.com',
               'database_name' => 'uitdatabank'
             ) }
 
