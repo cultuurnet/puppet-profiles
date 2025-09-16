@@ -88,6 +88,15 @@ describe 'profiles::uitdatabank::entry_api::data_integration' do
             context 'with hieradata' do
               let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
+              it { is_expected.to contain_profiles__mysql__app_user('ownership_search@foobar').with(
+                'user'     => 'ownership_search',
+                'database' => 'foobar',
+                'tables'   => ['ownership_search'],
+                'readonly' => true,
+                'remote'   => true,
+                'password' => 'aasoosraoreb_eoosrps'
+              ) }
+
               it { is_expected.to contain_profiles__sling__connection('foobar').with(
                 'type'          => 'mysql',
                 'configuration' => {
@@ -143,7 +152,7 @@ describe 'profiles::uitdatabank::entry_api::data_integration' do
               'database' => 'mydb',
               'tables'   => ['ownership_search'],
               'readonly' => true,
-              'remote'   => false,
+              'remote'   => true,
               'password' => 'prwsserrhhcmcberarbh'
             ) }
 

@@ -22,7 +22,10 @@ class profiles::uitdatabank::entry_api::data_integration (
     tables   => ['ownership_search'],
     password => $ownership_search_password,
     readonly => true,
-    remote   => false
+    remote   => $database_host ? {
+                  '127.0.0.1' => false,
+                  default     => true
+                }
   }
 
   profiles::google::gcloud { 'root':
