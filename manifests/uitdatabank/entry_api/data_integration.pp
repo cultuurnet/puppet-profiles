@@ -49,8 +49,8 @@ class profiles::uitdatabank::entry_api::data_integration (
   profiles::sling::connection { 'ownership_search':
     type          => 'gs',
     configuration => {
-                        bucket  => $bucket,
-                        keyfile => '/etc/gcloud/credentials_root.json',
+                        bucket   => $bucket,
+                        key_file => '/etc/gcloud/credentials_root.json',
                      },
     require       => Profiles::Google::Gcloud['root']
   }

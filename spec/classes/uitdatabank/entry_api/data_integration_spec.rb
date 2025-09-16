@@ -68,8 +68,8 @@ describe 'profiles::uitdatabank::entry_api::data_integration' do
               it { is_expected.to contain_profiles__sling__connection('ownership_search').with(
                 'type'          => 'gs',
                 'configuration' => {
-                                     'bucket'  => 'bla',
-                                     'keyfile' => '/etc/gcloud/credentials_root.json'
+                                     'bucket'   => 'bla',
+                                     'key_file' => '/etc/gcloud/credentials_root.json'
                                    }
               ) }
 
@@ -170,8 +170,8 @@ describe 'profiles::uitdatabank::entry_api::data_integration' do
             it { is_expected.to contain_profiles__sling__connection('ownership_search').with(
               'type'          => 'gs',
               'configuration' => {
-                                   'bucket'  => 'testbucket',
-                                   'keyfile' => '/etc/gcloud/credentials_root.json'
+                                   'bucket'   => 'testbucket',
+                                   'key_file' => '/etc/gcloud/credentials_root.json'
                                  }
             ) }
 
