@@ -73,8 +73,25 @@ describe 'profiles::uitdatabank::entry_api::data_integration' do
                                    }
               ) }
 
+              it { is_expected.to contain_file('parquetdump_to_gcs').with(
+                'ensure' => 'file',
+                'path'   => '/usr/local/bin/parquetdump_to_gcs',
+                'mode'   => '0755'
+              ) }
+
+              it { is_expected.to contain_cron('parquetdump_to_gcs').with(
+                'ensure'      => 'present',
+                'command'     => '/usr/local/bin/parquetdump_to_gcs',
+                'environment' => ['SHELL=/bin/bash', 'MAILTO=infra+cron@publiq.be'],
+                'hour'        => 2,
+                'minute'      => 30
+              ) }
+
               it { is_expected.to contain_profiles__sling__connection('foobar').that_requires('Profiles::Mysql::App_user[ownership_search@foobar]') }
               it { is_expected.to contain_profiles__sling__connection('bla').that_requires('Profiles::Google::Gcloud[root]') }
+              it { is_expected.to contain_file('parquetdump_to_gcs').that_requires('Profiles::Sling::Connection[foobar]') }
+              it { is_expected.to contain_file('parquetdump_to_gcs').that_requires('Profiles::Sling::Connection[bla]') }
+              it { is_expected.to contain_cron('parquetdump_to_gcs').that_requires('File[parquetdump_to_gcs]') }
             end
           end
 

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+table_name=ownership_search
+date_yesterday=$(date -d "yesterday" +%Y-%m-%d)
+
+sling run --src-conn '<%= @database_name %>' --src-stream "<%= @database_name %>.${table_name}" --tgt-conn 'publiq-ingestion-acc' --tgt-object "gs://publiq-ingestion-acc/udb/${table_name}/v1/${date_yesterday}/${table_name}.parquet"

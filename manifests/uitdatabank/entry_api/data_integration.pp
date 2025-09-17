@@ -58,6 +58,23 @@ class profiles::uitdatabank::entry_api::data_integration (
     require       => Profiles::Google::Gcloud['root']
   }
 
+  file { 'parquetdump_to_gcs':
+    ensure  => 'file',
+    path    => '/usr/local/bin/parquetdump_to_gcs',
+    mode    => '0755',
+    content => template('profiles/uitdatabank/entry_api/parquetdump_to_gcs.sh.erb'),
+    require => [Profiles::Google::Gcloud['root'], Profiles::Sling::Connection[$database_name], Profiles::Sling::Connection[$bucket]]
+  }
+
+  cron { 'parquetdump_to_gcs':
+    ensure      => 'present',
+    command     => '/usr/local/bin/parquetdump_to_gcs',
+    environment => ['SHELL=/bin/bash', 'MAILTO=infra+cron@publiq.be'],
+    hour        => 2,
+    minute      => 30,
+    require     => File['parquetdump_to_gcs']
+  }
+
   if $popularity_score_password {
     profiles::mysql::app_user { "popularity_score@${database_name}":
       tables   => ['offer_popularity'],
