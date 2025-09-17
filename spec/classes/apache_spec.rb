@@ -97,6 +97,69 @@ describe 'profiles::apache' do
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /The HTTP\/2 protocol is not supported with MPM module prefork/) }
       end
+
+      context "with mpm_module => event and custom config" do
+        let(:params) { {
+          'mpm_module'        => 'event',
+          'mmp_module_config' => { 'startservers' => 4, 'maxrequestworkers' => 150 }
+        } }
+
+        it { is_expected.to contain_class('apache::mod::event') }
+        it { is_expected.not_to contain_class('apache::mod::prefork') }
+        it { is_expected.not_to contain_class('apache::mod::worker') }
+      end
+
+      context "with mpm_module => itk" do
+        let(:params) { {
+          'mpm_module' => 'itk'
+        } }
+
+        it { is_expected.to contain_class('apache::mod::itk') }
+        it { is_expected.not_to contain_class('apache::mod::prefork') }
+      end
+
+      context "with limitreqfieldsize => 16380" do
+        let(:params) { {
+          'limitreqfieldsize' => 16380
+        } }
+
+        it { is_expected.to contain_class('apache').with(
+          'limitreqfieldsize' => 16380
+        ) }
+      end
+
+      context "with service_status => stopped" do
+        let(:params) { {
+          'service_status' => 'stopped'
+        } }
+
+        it { is_expected.to contain_class('apache').with(
+          'service_ensure' => 'stopped',
+          'service_enable' => false
+        ) }
+      end
+
+      context "testing logformats inclusion" do
+        it { is_expected.to contain_class('profiles::apache::logformats') }
+      end
+
+      context "testing mime module configuration" do
+        it { is_expected.to contain_class('apache::mod::mime').with(
+          'mime_types_additional' => {
+            'AddType' => { 'image/webp' => '.webp' }
+          }
+        ) }
+      end
+
+      context "testing required apache modules" do
+        it { is_expected.to contain_class('apache::mod::deflate') }
+        it { is_expected.to contain_class('apache::mod::dir') }
+      end
+
+      context "testing group and user requirements" do
+        it { is_expected.to contain_group('www-data').that_comes_before('Class[apache]') }
+        it { is_expected.to contain_user('www-data').that_comes_before('Class[apache]') }
+      end
     end
   end
 end
