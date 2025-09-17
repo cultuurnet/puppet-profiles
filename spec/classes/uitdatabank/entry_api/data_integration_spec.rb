@@ -65,7 +65,7 @@ describe 'profiles::uitdatabank::entry_api::data_integration' do
                                    }
               ) }
 
-              it { is_expected.to contain_profiles__sling__connection('ownership_search').with(
+              it { is_expected.to contain_profiles__sling__connection('bla').with(
                 'type'          => 'gs',
                 'configuration' => {
                                      'bucket'   => 'bla',
@@ -74,7 +74,7 @@ describe 'profiles::uitdatabank::entry_api::data_integration' do
               ) }
 
               it { is_expected.to contain_profiles__sling__connection('foobar').that_requires('Profiles::Mysql::App_user[ownership_search@foobar]') }
-              it { is_expected.to contain_profiles__sling__connection('ownership_search').that_requires('Profiles::Google::Gcloud[root]') }
+              it { is_expected.to contain_profiles__sling__connection('bla').that_requires('Profiles::Google::Gcloud[root]') }
             end
           end
 
@@ -176,7 +176,7 @@ describe 'profiles::uitdatabank::entry_api::data_integration' do
                                  }
             ) }
 
-            it { is_expected.to contain_profiles__sling__connection('ownership_search').with(
+            it { is_expected.to contain_profiles__sling__connection('testbucket').with(
               'type'          => 'gs',
               'configuration' => {
                                    'bucket'   => 'testbucket',
@@ -219,7 +219,7 @@ describe 'profiles::uitdatabank::entry_api::data_integration' do
             it { is_expected.to have_profiles__mysql__app_user_resource_count(5) }
 
             it { is_expected.to contain_profiles__sling__connection('mydb').that_requires('Profiles::Mysql::App_user[ownership_search@mydb]') }
-            it { is_expected.to contain_profiles__sling__connection('ownership_search').that_requires('Profiles::Google::Gcloud[root]') }
+            it { is_expected.to contain_profiles__sling__connection('testbucket').that_requires('Profiles::Google::Gcloud[root]') }
           end
         end
       end

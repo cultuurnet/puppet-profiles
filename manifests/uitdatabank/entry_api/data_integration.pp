@@ -49,7 +49,7 @@ class profiles::uitdatabank::entry_api::data_integration (
     require       => Profiles::Mysql::App_user["ownership_search@${database_name}"]
   }
 
-  profiles::sling::connection { 'ownership_search':
+  profiles::sling::connection { $bucket:
     type          => 'gs',
     configuration => {
                         bucket   => $bucket,
