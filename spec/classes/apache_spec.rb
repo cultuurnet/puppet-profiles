@@ -101,7 +101,7 @@ describe 'profiles::apache' do
       context "with mpm_module => event and custom config" do
         let(:params) { {
           'mpm_module'        => 'event',
-          'mmp_module_config' => { 'startservers' => 4, 'maxrequestworkers' => 150 }
+          'mpm_module_config' => { 'startservers' => 4, 'maxrequestworkers' => 150 }
         } }
 
         it { is_expected.to contain_class('apache::mod::event') }
