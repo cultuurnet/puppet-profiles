@@ -3,4 +3,4 @@
 table_name=ownership_search
 date_yesterday=$(date -d "yesterday" +%Y-%m-%d)
 
-sling run --src-conn '<%= @database_name %>' --src-stream "<%= @database_name %>.${table_name}" --tgt-conn '<%= @bucket %>' --tgt-object "gs://<%= @bucket %>/udb/${table_name}/v1/${date_yesterday}/${table_name}.parquet"
+/usr/local/bin/sling run --src-conn '<%= @database_name %>' --src-stream "<%= @database_name %>.${table_name}" --tgt-conn '<%= @bucket %>' --tgt-object "gs://<%= @bucket %>/udb/${table_name}/v1/${date_yesterday}/${table_name}.parquet"
