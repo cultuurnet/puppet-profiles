@@ -30,6 +30,14 @@ describe 'profiles::sling' do
         'order'   => 1
       ) }
 
+      it { is_expected.to contain_shellvar('system DBUS_SESSION_BUS_ADDRESS').with(
+        'ensure'   => 'present',
+        'variable' => 'DBUS_SESSION_BUS_ADDRESS',
+        'target'   => '/etc/environment',
+        'value'    => '/dev/null',
+        )
+      }
+
       it { is_expected.to contain_apt__source('publiq-tools').that_comes_before('Package[sling]') }
       it { is_expected.to contain_concat('/root/.sling/env.yaml').that_requires('File[/root/.sling]') }
     end

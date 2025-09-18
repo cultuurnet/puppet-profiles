@@ -22,4 +22,11 @@ class profiles::sling inherits ::profiles {
     content => "connections:\n",
     order   => 1
   }
+
+  shellvar { 'system DBUS_SESSION_BUS_ADDRESS':
+    ensure   => 'present',
+    target   => '/etc/environment',
+    variable => 'DBUS_SESSION_BUS_ADDRESS',
+    value    => '/dev/null'
+  }
 }
