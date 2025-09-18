@@ -97,6 +97,7 @@ class profiles::uitpas::api (
     dynamic   => true,
     resources => File["${magda_soap_path}/magda-soap-cert.crt","${magda_soap_path}/magda-soap-key.pem"],
     require   => [File["${magda_soap_path}/magda-soap-cert.crt"], File["${magda_soap_path}/magda-soap-key.pem"]],
+    notify    => Service['uitpas'],
   }
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
