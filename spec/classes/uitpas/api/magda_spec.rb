@@ -91,7 +91,6 @@ describe 'profiles::uitpas::api::magda' do
           'basedir'  => '/opt/uitpas/magda/soap',
           'pkey'     => '/tmp/magda-soap-key.pem',
           'cert'     => '/tmp/magda-soap-cert.crt',
-          'in_pass'  => 'key_password',
           'out_pass' => 'cert_password'
         ) }
 
