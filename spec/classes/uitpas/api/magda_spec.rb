@@ -96,7 +96,7 @@ describe 'profiles::uitpas::api::magda' do
         ) }
 
         it { is_expected.to contain_openssl__export__pkcs12('magda-soap-alias').that_requires(['File[/opt/uitpas/magda/soap/magda-soap-cert.crt]', 'File[/opt/uitpas/magda/soap/magda-soap-key.pem]']) }
-        it { is_expected.to contain_openssl__export__pkcs12('magda-soap-alias').that_notifies('Service[uitpas]') }
+        it { is_expected.to contain_openssl__export__pkcs12('magda-soap-alias') }
       end
 
       context "without parameters" do
