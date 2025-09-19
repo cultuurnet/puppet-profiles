@@ -32,7 +32,7 @@ class profiles::uitpas::api::magda (
   }
   file { $magda_sftp_certpath:
     ensure  => 'file',
-    content => $secrets["magda-sftp-crt"],
+    content => regsubst($secrets["magda-sftp-crt"], '\\n', "\n", 'G'),
     owner   => 'glassfish',
     group   => 'glassfish',
     mode    => '0644',
@@ -40,7 +40,7 @@ class profiles::uitpas::api::magda (
   }
   file { $magda_sftp_keypath:
     ensure  => 'file',
-    content => $secrets["magda-sftp-key"],
+    content => regsubst($secrets["magda-sftp-key"], '\\n', "\n", 'G'),
     owner   => 'glassfish',
     group   => 'glassfish',
     mode    => '0600',
@@ -48,7 +48,7 @@ class profiles::uitpas::api::magda (
   }
   file { "${magda_soap_path}/magda-soap-cert.crt":
     ensure  => 'file',
-    content => $secrets["magda-soap-crt"],
+    content => regsubst($secrets["magda-soap-crt"], '\\n', "\n", 'G'),
     owner   => 'glassfish',
     group   => 'glassfish',
     mode    => '0644',
@@ -58,7 +58,7 @@ class profiles::uitpas::api::magda (
   }
   file { "${magda_soap_path}/magda-soap-key.pem":
     ensure  => 'file',
-    content => $secrets["magda-soap-key"],
+    content => regsubst($secrets["magda-soap-key"], '\\n', "\n", 'G'),
     owner   => 'glassfish',
     group   => 'glassfish',
     mode    => '0600',
