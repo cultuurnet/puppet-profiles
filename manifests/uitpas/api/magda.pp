@@ -32,7 +32,7 @@ class profiles::uitpas::api::magda (
   }
   file { $magda_sftp_certpath:
     ensure  => 'file',
-    content => regsubst($secrets["magda-sftp-crt"], '\\n', "\n", 'G'),
+    content => base64('decode', $secrets["magda-sftp-crt"]),
     owner   => 'glassfish',
     group   => 'glassfish',
     mode    => '0644',
@@ -40,7 +40,7 @@ class profiles::uitpas::api::magda (
   }
   file { $magda_sftp_keypath:
     ensure  => 'file',
-    content => regsubst($secrets["magda-sftp-key"], '\\n', "\n", 'G'),
+    content => base64('decode', $secrets["magda-sftp-key"]),
     owner   => 'glassfish',
     group   => 'glassfish',
     mode    => '0600',
@@ -48,17 +48,17 @@ class profiles::uitpas::api::magda (
   }
   file { "${magda_soap_path}/magda-soap-cert.crt":
     ensure  => 'file',
-    content => regsubst($secrets["magda-soap-crt"], '\\n', "\n", 'G'),
+    content => base64('decode', $secrets["magda-soap-crt"]),
     owner   => 'glassfish',
     group   => 'glassfish',
     mode    => '0644',
     require => File[$magda_soap_path],
-        notify  => Openssl::Export::Pkcs12[$magda_soap_alias],
+    notify  => Openssl::Export::Pkcs12[$magda_soap_alias],
 
   }
   file { "${magda_soap_path}/magda-soap-key.pem":
     ensure  => 'file',
-    content => regsubst($secrets["magda-soap-key"], '\\n', "\n", 'G'),
+    content => base64('decode', $secrets["magda-soap-key"]),
     owner   => 'glassfish',
     group   => 'glassfish',
     mode    => '0600',
