@@ -54,7 +54,14 @@ class profiles::uitpas::api::magda (
     mode    => '0644',
     require => File[$magda_soap_path],
     notify  => Openssl::Export::Pkcs12[$magda_soap_alias],
-
+  }
+  file { "${magda_soap_path}/${magda_soap_truststore}":
+    ensure => 'file',
+    source => '/etc/ssl/certs/java/cacerts',
+    owner  => 'glassfish',
+    group  => 'glassfish',
+    mode   => '0644',
+    require => File[$magda_soap_path],
   }
   file { "${magda_soap_path}/magda-soap-key.pem":
     ensure  => 'file',
