@@ -129,6 +129,9 @@ fixtures:
     mongodb:
       repo: 'puppet/mongodb'
       ref: '5.0.0'
+    puppet-openssl:
+      repo: 'puppet/openssl'
+      ref: '2.0.1'
   repositories:
     filebeat:
       repo: 'https://github.com/cultuurnet/puppet-filebeat.git'
