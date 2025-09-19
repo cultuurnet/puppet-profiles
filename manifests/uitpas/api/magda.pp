@@ -18,6 +18,7 @@ class profiles::uitpas::api::magda (
   $magda_soap_keystorepath = "${magda_soap_path}/${magda_soap_keystore}"
   $magda_soap_truststorepath  = "${magda_soap_path}/${magda_soap_truststore}"
 
+
   file { $magda_soap_path:
     ensure => 'directory',
     owner  => 'glassfish',
@@ -71,5 +72,9 @@ class profiles::uitpas::api::magda (
     cert     => "${magda_soap_path}/magda-soap-cert.crt",
     out_pass => $magda_soap_cert_password,
     require  => [File["${magda_soap_path}/magda-soap-cert.crt"], File["${magda_soap_path}/magda-soap-key.pem"]],
+  }
+  -> exec { "chown_${magda_soap_alias}":
+    command => "/bin/chown glassfish:glassfish ${magda_soap_keystorepath}",
+    onlyif  => "/usr/bin/test -f ${magda_soap_keystorepath}",
   }
 }
