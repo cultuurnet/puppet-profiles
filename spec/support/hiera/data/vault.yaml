@@ -28,3 +28,9 @@ vault:platform/etl:
   gcloud_private_key: 'my\nprivate\nkey'
   gcloud_client_id: 'bar'
   gcloud_client_email: 'bar@example.com'
+
+vault:uitpas/api:
+  magda-sftp-crt: 'test-sftp-certificate'
+  magda-sftp-key: 'test-sftp-private-key'
+  magda-soap-crt: 'test-soap-certificate'
+  magda-soap-key: 'test-soap-private-key'
