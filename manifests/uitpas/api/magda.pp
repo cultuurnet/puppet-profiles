@@ -47,13 +47,14 @@ class profiles::uitpas::api::magda (
     require => File[$magda_sftp_path],
   }
   file { "${magda_soap_path}/magda-soap-cert.crt":
-    ensure     => 'file',
-    content    => $secrets["magda-soap-crt"],
-    owner      => 'glassfish',
-    group      => 'glassfish',
-    mode       => '0644',
-    require    => File[$magda_soap_path],
-    notify => Openssl::Export::Pkcs12[$magda_soap_alias],
+    ensure  => 'file',
+    content => $secrets["magda-soap-crt"],
+    owner   => 'glassfish',
+    group   => 'glassfish',
+    mode    => '0644',
+    require => File[$magda_soap_path],
+        notify  => Openssl::Export::Pkcs12[$magda_soap_alias],
+
   }
   file { "${magda_soap_path}/magda-soap-key.pem":
     ensure  => 'file',
@@ -72,6 +73,5 @@ class profiles::uitpas::api::magda (
     in_pass  => $magda_soap_key_password,
     out_pass => $magda_soap_cert_password,
     require  => [File["${magda_soap_path}/magda-soap-cert.crt"], File["${magda_soap_path}/magda-soap-key.pem"]],
-    notify   => Service['uitpas'],
   }
 }

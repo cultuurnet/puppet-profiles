@@ -249,7 +249,7 @@ describe 'profiles::uitpas::api' do
             }
 
             it { is_expected.not_to contain_class('profiles::mysql::server') }
-            it { is_expected.to contain_class('profiles::uitpas::api::magda') }
+            it { is_expected.to contain_class('profiles::uitpas::api::magda').that_notifies('Service[uitpas]') }
             it { is_expected.to contain_class('profiles::mysql::remote_server').with(
               'host' => 'db.example.com'
             ) }

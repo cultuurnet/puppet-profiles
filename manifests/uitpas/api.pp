@@ -29,6 +29,8 @@ class profiles::uitpas::api (
 
   if ($magda_cert_generation) {
     include profiles::uitpas::api::magda
+
+    Class['profiles::uitpas::api::magda'] ~> Service['uitpas']
   }
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
