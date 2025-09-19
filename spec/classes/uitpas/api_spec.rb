@@ -20,23 +20,25 @@ describe 'profiles::uitpas::api' do
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to contain_class('profiles::uitpas::api').with(
-              'servername'           => 'uitpas.example.com',
-              'serveraliases'        => [],
-              'database_password'    => 'mypassword',
-              'database_host'        => '127.0.0.1',
-              'deployment'           => true,
-              'initial_heap_size'    => nil,
-              'maximum_heap_size'    => nil,
-              'jmx'                  => true,
-              'newrelic'             => false,
-              'newrelic_license_key' => 'my_license_key',
-              'portbase'             => 4800,
-              'service_status'       => 'running',
-              'settings'             => {}
+              'servername'                             =>'uitpas.example.com',
+              'serveraliases'                          =>[],
+              'database_password'                      =>'mypassword',
+              'database_host'                          =>'127.0.0.1',
+              'deployment'                             =>true,
+              'initial_heap_size'                      =>nil,
+              'maximum_heap_size'                      =>nil,
+              'jmx'                                    =>true,
+              'newrelic'                               =>false,
+              'magda_cert_generation'                  =>false,
+              'newrelic_license_key'                   =>'my_license_key',
+              'portbase'                               =>4800,
+              'service_status'                         =>'running',
+              'settings'                               =>{}
             ) }
 
             it { is_expected.to contain_group('glassfish') }
             it { is_expected.to contain_user('glassfish') }
+            it { is_expected.to not_contain_class('profiles::uitpas::api::magda') }
 
             it { is_expected.to contain_apt__source('publiq-tools') }
 
@@ -217,21 +219,23 @@ describe 'profiles::uitpas::api' do
             it { is_expected.to contain_class('profiles::uitpas::api::cron').that_requires('Class[profiles::uitpas::api::deployment]') }
           end
 
-          context "with servername => myserver.example.com, serveraliases => foobar.example.com, database_password => secret, database_host => db.example.com, initial_heap_size => 1024m, maximum_heap_size => 1536m, jmx => false, newrelic => true, portbase => 14800 and settings => { 'foo' => 'bar', 'baz' => 'test' }" do
+          context "with servername => myserver.example.com, magda_cert_generation => true, serveraliases => foobar.example.com, database_password => secret, database_host => db.example.com, initial_heap_size => 1024m, maximum_heap_size => 1536m, jmx => false, newrelic => true, portbase => 14800 and settings => { 'foo' => 'bar', 'baz' => 'test' }" do
             let(:params) { {
-              'servername'        => 'myserver.example.com',
-              'serveraliases'     => 'foobar.example.com',
-              'database_password' => 'secret',
-              'database_host'     => 'db.example.com',
-              'initial_heap_size' => '1024m',
-              'maximum_heap_size' => '1536m',
-              'jmx'               => false,
-              'newrelic'          => true,
-              'portbase'          => 14800,
-              'settings'          => { 'foo' => 'bar', 'baz' => 'test' }
+              'servername'            => 'myserver.example.com',
+              'serveraliases'         => 'foobar.example.com',
+              'database_password'     => 'secret',
+              'database_host'         => 'db.example.com',
+              'initial_heap_size'     => '1024m',
+              'magda_cert_generation' => true,
+              'maximum_heap_size'     => '1536m',
+              'jmx'                   => false,
+              'newrelic'              => true,
+              'portbase'              => 14800,
+              'settings'              => { 'foo' => 'bar', 'baz' => 'test' }
             } }
 
             it { is_expected.not_to contain_class('profiles::mysql::server') }
+            it { is_expected.to contain_class('profiles::uitpas::api::magda') }
             it { is_expected.to contain_class('profiles::mysql::remote_server').with(
               'host' => 'db.example.com'
             ) }
@@ -403,11 +407,12 @@ describe 'profiles::uitpas::api' do
 
           context "with servername => server.example.com, database_password => foo, newrelic => true, newrelic_license_key => bar and service_status => stopped" do
             let(:params) { {
-              'servername'           => 'server.example.com',
-              'database_password'    => 'foo',
-              'newrelic'             => true,
-              'newrelic_license_key' => 'bar',
-              'service_status'       => 'stopped'
+              'servername'            => 'server.example.com',
+              'database_password'     => 'foo',
+              'newrelic'              => true,
+              'magda_cert_generation' => false,
+              'newrelic_license_key'  => 'bar',
+              'service_status'        => 'stopped'
             } }
 
             it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://server.example.com').with(
