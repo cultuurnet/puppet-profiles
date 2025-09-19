@@ -234,6 +234,20 @@ describe 'profiles::uitpas::api' do
               'settings'              => { 'foo' => 'bar', 'baz' => 'test' }
             } }
 
+            let(:pre_condition) {
+              'class { "profiles::uitpas::api::magda":
+                magda_sftp_path           => "/opt/uitpas/magda/sftp",
+                magda_sftp_cert           => "magda-sftp.crt",
+                magda_sftp_key            => "magda-sftp.key",
+                magda_soap_path           => "/opt/uitpas/magda/soap",
+                magda_soap_keystore       => "magda-soap.p12",
+                magda_soap_truststore     => "magda-soap-truststore.jks",
+                magda_soap_cert_password  => "cert_password",
+                magda_soap_key_password   => "key_password",
+                magda_soap_alias          => "magda-soap-alias"
+              }'
+            }
+
             it { is_expected.not_to contain_class('profiles::mysql::server') }
             it { is_expected.to contain_class('profiles::uitpas::api::magda') }
             it { is_expected.to contain_class('profiles::mysql::remote_server').with(
