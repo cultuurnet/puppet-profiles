@@ -38,7 +38,7 @@ describe 'profiles::uitpas::api' do
 
             it { is_expected.to contain_group('glassfish') }
             it { is_expected.to contain_user('glassfish') }
-            it { is_expected.to not_contain_class('profiles::uitpas::api::magda') }
+            it { is_expected.not_to contain_class('profiles::uitpas::api::magda') }
 
             it { is_expected.to contain_apt__source('publiq-tools') }
 
