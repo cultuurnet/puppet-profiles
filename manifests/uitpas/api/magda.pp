@@ -70,7 +70,6 @@ class profiles::uitpas::api::magda (
     basedir  => $magda_soap_path,
     pkey     => '/tmp/magda-soap-key.pem',
     cert     => '/tmp/magda-soap-cert.crt',
-    in_pass  => $magda_soap_key_password,
     out_pass => $magda_soap_cert_password,
     require  => [File["${magda_soap_path}/magda-soap-cert.crt"], File["${magda_soap_path}/magda-soap-key.pem"]],
   }
