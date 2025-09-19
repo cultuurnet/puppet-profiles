@@ -89,8 +89,8 @@ describe 'profiles::uitpas::api::magda' do
         it { is_expected.to contain_openssl__export__pkcs12('magda-soap-alias').with(
           'ensure'   => 'present',
           'basedir'  => '/opt/uitpas/magda/soap',
-          'pkey'     => '/tmp/magda-soap-key.pem',
-          'cert'     => '/tmp/magda-soap-cert.crt',
+          'pkey'     => '/opt/uitpas/magda/soap/magda-soap-key.pem',
+          'cert'     => '/opt/uitpas/magda/soap/magda-soap-cert.crt',
           'out_pass' => 'cert_password'
         ) }
 
