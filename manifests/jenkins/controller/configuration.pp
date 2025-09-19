@@ -75,7 +75,10 @@ class profiles::jenkins::controller::configuration(
   }
 
   profiles::jenkins::plugin { 'job-dsl':
-    configuration => [$pipelines].flatten,
+    configuration => {
+                       'admin_password' => $admin_password,
+                       'pipelines'      => $pipelines
+                     },
     require       => [ Profiles::Jenkins::Plugin['git'], Profiles::Jenkins::Plugin['ssh-credentials']],
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
