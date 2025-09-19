@@ -185,6 +185,12 @@ describe 'profiles::jenkins::controller::configuration' do
               'configuration' => nil
             ) }
 
+            it { is_expected.to contain_profiles__jenkins__plugin('build-token-root').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => nil
+            ) }
+
             it { is_expected.to_not contain_file('jenkins users') }
 
             it { is_expected.to contain_profiles__puppet__puppetdb__cli('jenkins').with(
