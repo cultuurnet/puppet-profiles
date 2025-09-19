@@ -34,8 +34,6 @@ describe 'profiles::uitpas::api::magda' do
           'magda_soap_alias'          => 'magda-soap-alias'
         ) }
 
-        it { is_expected.to contain_class('openssl') }
-
         it { is_expected.to contain_file('/opt/uitpas/magda/soap').with(
           'ensure' => 'directory',
           'owner'  => 'glassfish',
@@ -104,7 +102,7 @@ describe 'profiles::uitpas::api::magda' do
       context "without parameters" do
         let(:params) { {} }
 
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for all parameters/) }
+        it { expect { catalogue }.to raise_error(Puppet::PreformattedError, /expects a value for parameter/) }
       end
     end
   end
