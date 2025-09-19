@@ -68,8 +68,8 @@ class profiles::uitpas::api::magda (
   openssl::export::pkcs12 { $magda_soap_alias:
     ensure   => 'present',
     basedir  => $magda_soap_path,
-    pkey     => '/tmp/magda-soap-key.pem',
-    cert     => '/tmp/magda-soap-cert.crt',
+    pkey     => "${magda_soap_path}/magda-soap-key.pem",
+    cert     => "${magda_soap_path}/magda-soap-cert.crt",
     out_pass => $magda_soap_cert_password,
     require  => [File["${magda_soap_path}/magda-soap-cert.crt"], File["${magda_soap_path}/magda-soap-key.pem"]],
   }
