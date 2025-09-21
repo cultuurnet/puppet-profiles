@@ -18,7 +18,7 @@ jobs: <%- if @configuration['pipelines'].empty? -%>[]
                       <%- end -%>)
         <%- end -%>
         <%- if pipeline['remote_trigger'].is_a? TrueClass -%>
-          authenticationToken('<%= scope.call_function('fqdn_rand_string', [32, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', pipeline['name'] + @configuration['admin_password'].to_s]) %>')
+          authenticationToken('<%= scope.call_function('fqdn_rand_string', [32, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', pipeline['name'] + @configuration['admin_password']]) %>')
         <%- end -%>
           properties {
             <%- if pipeline['git_url'] =~ /^git@github.com:/ -%>
