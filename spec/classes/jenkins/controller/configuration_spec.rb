@@ -163,7 +163,10 @@ describe 'profiles::jenkins::controller::configuration' do
             it { is_expected.to contain_profiles__jenkins__plugin('job-dsl').with(
               'ensure'        => 'present',
               'restart'       => false,
-              'configuration' => []
+              'configuration' => {
+                                   'admin_password' => 'passw0rd',
+                                   'pipelines'      => []
+                                 }
             ) }
 
             it { is_expected.to contain_profiles__jenkins__plugin('docker-workflow').with(
@@ -177,6 +180,12 @@ describe 'profiles::jenkins::controller::configuration' do
             ) }
 
             it { is_expected.to contain_profiles__jenkins__plugin('pipeline-stage-view').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => nil
+            ) }
+
+            it { is_expected.to contain_profiles__jenkins__plugin('build-token-root').with(
               'ensure'        => 'present',
               'restart'       => false,
               'configuration' => nil
@@ -271,7 +280,16 @@ describe 'profiles::jenkins::controller::configuration' do
           it { is_expected.to contain_profiles__jenkins__plugin('job-dsl').with(
             'ensure'        => 'present',
             'restart'       => false,
-            'configuration' => [{ 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'keep_builds' => 5}]
+            'configuration' => {
+                                 'admin_password' => 'letmein',
+                                 'pipelines'      => {
+                                                       'name' => 'myrepo',
+                                                       'git_url' => 'git@example.com:org/myrepo.git',
+                                                       'git_ref' => 'refs/heads/main',
+                                                       'credential_id' => 'mygitcred',
+                                                       'keep_builds' => 5
+                                                     }
+                               }
           ) }
 
           it { is_expected.to contain_profiles__jenkins__plugin('docker-workflow').with(
@@ -424,22 +442,22 @@ describe 'profiles::jenkins::controller::configuration' do
         it { is_expected.to contain_profiles__jenkins__plugin('job-dsl').with(
           'ensure'        => 'present',
           'restart'       => false,
-          'configuration' => [
-                               {
-                                 'name'          => 'baz',
-                                 'git_url'       => 'git@github.com:bar/baz.git',
-                                 'git_ref'       => 'refs/heads/develop',
-                                 'credential_id' => 'gitkey',
-                                 'keep_builds'   => 10
-                               },
-                               {
-                                 'name'          => 'repo',
-                                 'git_url'       => 'git@example.com:org/repo.git',
-                                 'git_ref'       => 'main',
-                                 'credential_id' => 'mygitcred',
-                                 'keep_builds'   => 2
-                               }
-                             ]
+          'configuration' => {
+                               'admin_password' => 'letmein',
+                               'pipelines'      => [{
+                                                     'name'          => 'baz',
+                                                     'git_url'       => 'git@github.com:bar/baz.git',
+                                                     'git_ref'       => 'refs/heads/develop',
+                                                     'credential_id' => 'gitkey',
+                                                     'keep_builds'   => 10
+                                                   }, {
+                                                     'name'          => 'repo',
+                                                     'git_url'       => 'git@example.com:org/repo.git',
+                                                     'git_ref'       => 'main',
+                                                     'credential_id' => 'mygitcred',
+                                                     'keep_builds'   => 2
+                                                   }]
+                              }
         ) }
 
         it { is_expected.to contain_profiles__jenkins__plugin('docker-workflow').with(

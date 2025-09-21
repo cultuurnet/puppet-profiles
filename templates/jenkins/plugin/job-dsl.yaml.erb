@@ -1,7 +1,7 @@
-<%- if ! @configuration.empty? -%>
 ---
-jobs:
-  <%- [@configuration].flatten.each do |pipeline| -%>
+jobs: <%- if @configuration['pipelines'].empty? -%>[]
+  <%- else -%>
+  <%- [@configuration['pipelines']].flatten.each do |pipeline| -%>
   - script: >
       pipelineJob('<%= pipeline['name'].strip.unicode_normalize(:nfd).gsub(/\p{Mn}/, '').downcase.gsub(' ', '-') %>') {
         <%- if pipeline['parameters'] -%>
@@ -17,6 +17,9 @@ jobs:
                         <%= line -%>
                       <%- end -%>)
         <%- end -%>
+        <%- if pipeline['remote_trigger'].is_a? TrueClass -%>
+          authenticationToken('<%= scope.call_function('fqdn_rand_string', [32, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', pipeline['name'] + @configuration['admin_password']]) %>')
+        <%- end -%>
           properties {
             <%- if pipeline['git_url'] =~ /^git@github.com:/ -%>
               githubProjectUrl('https://github.com/<%= pipeline['git_url'][/^.*:(.*).git$/, 1] %>')
@@ -24,7 +27,7 @@ jobs:
               disableConcurrentBuilds()
               pipelineTriggers {
                   triggers {
-                    <%- if pipeline['auto_build'] -%>
+                    <%- if pipeline['auto_build'].is_a? TrueClass -%>
                       githubPush()
                     <%- end -%>
                     <%- if pipeline['schedule'] -%>
