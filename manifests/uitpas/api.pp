@@ -9,6 +9,7 @@ class profiles::uitpas::api (
   Boolean                        $jmx                  = true,
   Boolean                        $newrelic             = false,
   Boolean                        $magda_cert_generation= false,
+  Boolean                        $fidus_cert_generation= false,
   Optional[String]               $newrelic_license_key = lookup('data::newrelic::license_key', Optional[String], 'first', undef),
   Integer                        $portbase             = 4800,
   Enum['running', 'stopped']     $service_status       = 'running',
@@ -31,6 +32,11 @@ class profiles::uitpas::api (
     include profiles::uitpas::api::magda
 
     Class['profiles::uitpas::api::magda'] ~> Service['uitpas']
+  }
+  if ($fidus_cert_generation) {
+    include profiles::uitpas::api::fidus
+
+    Class['profiles::uitpas::api::fidus'] ~> Service['uitpas']
   }
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
