@@ -34,3 +34,7 @@ vault:uitpas/api:
   magda-sftp-key: 'test-sftp-private-key'
   magda-soap-crt: 'test-soap-certificate'
   magda-soap-key: 'test-soap-private-key'
+  fidus-sftp-crt: 'test-sftp-certificate'
+  fidus-sftp-key: 'test-sftp-private-key'
+  fidus-soap-crt: 'test-soap-certificate'
+  fidus-soap-key: 'test-soap-private-key'
