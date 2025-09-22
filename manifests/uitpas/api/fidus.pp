@@ -11,7 +11,7 @@ class profiles::uitpas::api::fidus (
 
   $secrets = lookup('vault:uitpas/api')
 
-  $fidus_keystorepath = "${fidus_soap_path}/${fidus_soap_keystore}"
+  $fidus_soap_keystorepath = "${fidus_soap_path}/${fidus_soap_keystore}"
   $fidus_sftp_keypath  = "${fidus_sftp_path}/${fidus_sftp_key}"
 
   file { $fidus_sftp_path:
@@ -34,12 +34,7 @@ class profiles::uitpas::api::fidus (
     group  => 'glassfish',
     mode   => '0755',
   }
-  file { $fidus_soap_truststorepath:
-    ensure => 'directory',
-    owner  => 'glassfish',
-    group  => 'glassfish',
-    mode   => '0755',
-  }
+
   file { $fidus_soap_keystorepath:
     ensure  => 'file',
     content => base64('decode', $secrets["fidus-soap-keystore"]),
