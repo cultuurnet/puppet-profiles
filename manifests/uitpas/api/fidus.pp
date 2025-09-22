@@ -12,6 +12,7 @@ class profiles::uitpas::api::fidus (
   $secrets = lookup('vault:uitpas/api')
 
   $fidus_keystorepath = "${fidus_soap_path}/${fidus_soap_keystore}"
+  $fidus_sftp_keypath  = "${fidus_sftp_path}/${fidus_sftp_key}"
 
   file { $fidus_sftp_path:
     ensure => 'directory',
