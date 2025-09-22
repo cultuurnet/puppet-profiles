@@ -24,7 +24,7 @@ jobs:<%- if @configuration['pipelines'].empty? -%> []
             <%- if pipeline['git_url'] =~ /^git@github.com:/ -%>
               githubProjectUrl('https://github.com/<%= pipeline['git_url'][/^.*:(.*).git$/, 1] %>')
             <%- end -%>
-              disableConcurrentBuilds()
+              disableConcurrentBuilds { abortPrevious(true) }
               pipelineTriggers {
                   triggers {
                     <%- if pipeline['auto_build'].is_a? TrueClass -%>
