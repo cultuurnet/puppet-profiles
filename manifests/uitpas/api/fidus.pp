@@ -41,7 +41,7 @@ class profiles::uitpas::api::fidus (
     owner   => 'glassfish',
     group   => 'glassfish',
     mode    => '0644',
-    require => File[$fidus_path],
+    require => File[$fidus_soap_path],
   }
   file { "${fidus_soap_path}/fidus-soap-cert.crt":
     ensure  => 'file',
