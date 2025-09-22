@@ -34,15 +34,6 @@ class profiles::uitpas::api::fidus (
     group  => 'glassfish',
     mode   => '0755',
   }
-
-  file { $fidus_soap_keystorepath:
-    ensure  => 'file',
-    content => base64('decode', $secrets["fidus-soap-keystore"]),
-    owner   => 'glassfish',
-    group   => 'glassfish',
-    mode    => '0644',
-    require => File[$fidus_soap_path],
-  }
   file { "${fidus_soap_path}/fidus-soap-cert.crt":
     ensure  => 'file',
     content => base64('decode', $secrets["fidus-soap-crt"]),
