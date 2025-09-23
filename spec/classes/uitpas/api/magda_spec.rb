@@ -92,11 +92,9 @@ describe 'profiles::uitpas::api::magda' do
           'pkey'     => '/opt/uitpas/magda/soap/magda-soap-key.pem',
           'cert'     => '/opt/uitpas/magda/soap/magda-soap-cert.crt',
           'out_pass' => 'cert_password'
-          'notify'   => Exec["chown_magda-soap-alias"],
-        ) }
+        ).that_notifies('Exec[chown_magda-soap-alias]') }
 
         it { is_expected.to contain_openssl__export__pkcs12('magda-soap-alias').that_requires(['File[/opt/uitpas/magda/soap/magda-soap-cert.crt]', 'File[/opt/uitpas/magda/soap/magda-soap-key.pem]']) }
-        it { is_expected.to contain_openssl__export__pkcs12('magda-soap-alias') }
       end
 
       context "without parameters" do

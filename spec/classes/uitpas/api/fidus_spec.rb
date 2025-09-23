@@ -79,7 +79,7 @@ describe 'profiles::uitpas::api::fidus' do
           'pkey'     => '/opt/uitpas/fidus/soap/fidus-soap-key.pem',
           'cert'     => '/opt/uitpas/fidus/soap/fidus-soap-cert.crt',
           'out_pass' => 'cert_password'
-        ) }
+        ).that_notifies('Exec[chown_fidus-soap-alias]') }
 
         it { is_expected.to contain_openssl__export__pkcs12('fidus-soap-alias').that_requires(['File[/opt/uitpas/fidus/soap/fidus-soap-cert.crt]', 'File[/opt/uitpas/fidus/soap/fidus-soap-key.pem]']) }
         it { is_expected.to contain_openssl__export__pkcs12('fidus-soap-alias') }
