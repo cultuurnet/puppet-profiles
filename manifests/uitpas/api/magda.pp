@@ -72,9 +72,11 @@ class profiles::uitpas::api::magda (
     cert     => "${magda_soap_path}/magda-soap-cert.crt",
     out_pass => $magda_soap_cert_password,
     require  => [File["${magda_soap_path}/magda-soap-cert.crt"], File["${magda_soap_path}/magda-soap-key.pem"]],
+    notify   => Exec["chown_${magda_soap_alias}"],
   }
-  -> exec { "chown_${magda_soap_alias}":
-    command => "/bin/chown glassfish:glassfish ${magda_soap_keystorepath}",
-    onlyif  => "/usr/bin/test -f ${magda_soap_keystorepath}",
+
+  exec { "chown_${magda_soap_alias}":
+    command     => "/bin/chown glassfish:glassfish ${magda_soap_keystorepath}",
+    refreshonly => true,
   }
 }

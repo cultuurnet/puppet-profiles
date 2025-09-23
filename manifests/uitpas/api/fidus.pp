@@ -59,9 +59,12 @@ class profiles::uitpas::api::fidus (
     cert     => "${fidus_soap_path}/fidus-soap-cert.crt",
     out_pass => $fidus_soap_cert_password,
     require  => [File["${fidus_soap_path}/fidus-soap-cert.crt"], File["${fidus_soap_path}/fidus-soap-key.pem"]],
+    notify   => Exec["chown_${fidus_soap_alias}"],
   }
-  -> exec { "chown_${fidus_soap_alias}":
+
+  exec { "chown_${fidus_soap_alias}":
     command => "/bin/chown glassfish:glassfish ${fidus_soap_keystorepath}",
     onlyif  => "/usr/bin/test -f ${fidus_soap_keystorepath}",
+    refreshonly => true,
   }
 }
