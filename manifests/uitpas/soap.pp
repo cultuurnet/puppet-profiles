@@ -8,12 +8,10 @@ class profiles::uitpas::soap (
   include profiles::java
   realize Apt::Source[$repository]
 
-  if ($deployment_enabled) {
     package { 'uitpas-soap':
       ensure  => $version,
       require => Apt::Source[$repository],
       notify  => Service['uitpas-soap'],
-    }
   }
 
   file { '/etc/systemd/system/uitpas-soap.service':

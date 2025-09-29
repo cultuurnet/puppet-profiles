@@ -26,24 +26,35 @@ describe 'profiles::uitpas::soap' do
               'ensure' => 'latest'
             ) }
 
+            it { is_expected.to contain_file('/etc/systemd/system/uitpas-soap.service').with(
+              'content' => /User=glassfish/
+            ) }
+
+            it { is_expected.to contain_exec('uitpas-soap-systemd-reload').with(
+              'command'     => '/bin/systemctl daemon-reload',
+              'refreshonly' => true
+            ) }
+
             it { is_expected.to contain_service('uitpas-soap').with(
               'ensure'     => 'running',
               'enable'     => true,
               'hasstatus'  => true,
-              'hasrestart' => true,
-              'start'      => '/usr/bin/java -jar /opt/uitpas-soap/uitpas-soap.jar'
+              'hasrestart' => true
             ) }
 
             it { is_expected.to contain_package('uitpas-soap').that_requires('Apt::Source[uitpas-soap]') }
             it { is_expected.to contain_package('uitpas-soap').that_notifies('Service[uitpas-soap]') }
             it { is_expected.to contain_service('uitpas-soap').that_requires('Class[profiles::java]') }
             it { is_expected.to contain_service('uitpas-soap').that_requires('Package[uitpas-soap]') }
+            it { is_expected.to contain_service('uitpas-soap').that_requires('File[/etc/systemd/system/uitpas-soap.service]') }
+            it { is_expected.to contain_file('/etc/systemd/system/uitpas-soap.service').that_notifies('Exec[uitpas-soap-systemd-reload]') }
+            it { is_expected.to contain_file('/etc/systemd/system/uitpas-soap.service').that_notifies('Service[uitpas-soap]') }
           end
 
-          context "with deployment_enabled => false, repository => my-repo and version => 1.2.3" do
+          context "with deployment_enabled => false, repository => uitpas-soap and version => 1.2.3" do
             let(:params) { {
               'deployment_enabled' => false,
-              'repository'         => 'my-repo',
+              'repository'         => 'uitpas-soap',
               'version'            => '1.2.3'
             } }
 
@@ -51,30 +62,29 @@ describe 'profiles::uitpas::soap' do
 
             it { is_expected.to contain_class('profiles::uitpas::soap').with(
               'deployment_enabled' => false,
-              'repository'         => 'my-repo',
+              'repository'         => 'uitpas-soap',
               'version'            => '1.2.3'
             ) }
 
             it { is_expected.to contain_class('profiles::java') }
 
-            it { is_expected.not_to contain_package('uitpas-soap') }
+            it { is_expected.to contain_package('uitpas-soap') }
 
             it { is_expected.to contain_service('uitpas-soap').with(
               'ensure'     => 'stopped',
               'enable'     => false,
               'hasstatus'  => true,
-              'hasrestart' => true,
-              'start'      => '/usr/bin/java -jar /opt/uitpas-soap/uitpas-soap.jar'
+              'hasrestart' => true
             ) }
 
             it { is_expected.to contain_service('uitpas-soap').that_requires('Class[profiles::java]') }
             it { is_expected.to contain_service('uitpas-soap').that_requires('Package[uitpas-soap]') }
           end
 
-          context "with deployment_enabled => true, repository => custom-repo and version => 2.0.0" do
+          context "with deployment_enabled => true, repository => uitpas-soap and version => 2.0.0" do
             let(:params) { {
               'deployment_enabled' => true,
-              'repository'         => 'custom-repo',
+              'repository'         => 'uitpas-soap',
               'version'            => '2.0.0'
             } }
 
@@ -82,7 +92,7 @@ describe 'profiles::uitpas::soap' do
 
             it { is_expected.to contain_class('profiles::uitpas::soap').with(
               'deployment_enabled' => true,
-              'repository'         => 'custom-repo',
+              'repository'         => 'uitpas-soap',
               'version'            => '2.0.0'
             ) }
 
@@ -95,7 +105,7 @@ describe 'profiles::uitpas::soap' do
               'enable' => true
             ) }
 
-            it { is_expected.to contain_package('uitpas-soap').that_requires('Apt::Source[custom-repo]') }
+            it { is_expected.to contain_package('uitpas-soap').that_requires('Apt::Source[uitpas-soap]') }
           end
         end
       end
@@ -116,7 +126,7 @@ describe 'profiles::uitpas::soap' do
               'enable' => false
             ) }
 
-            it { is_expected.not_to contain_package('uitpas-soap') }
+            it { is_expected.to contain_package('uitpas-soap') }
           end
         end
       end
