@@ -16,6 +16,16 @@ class profiles::uitpas::soap (
     }
   }
 
+  file { '/etc/systemd/system/uitpas-soap.service':
+    content => template('profiles/uitpas/soap/soap.service.erb'),
+    notify  => [Exec['uitpas-soap-systemd-reload'], Service['uitpas-soap']],
+  }
+
+  exec { 'uitpas-soap-systemd-reload':
+    command     => '/bin/systemctl daemon-reload',
+    refreshonly => true,
+  }
+
   service { 'uitpas-soap':
     ensure     => $deployment_enabled ? {
       true  => 'running',
@@ -24,7 +34,6 @@ class profiles::uitpas::soap (
     enable     => $deployment_enabled,
     hasstatus  => true,
     hasrestart => true,
-    start      => '/usr/bin/java -jar /opt/uitpas-soap/uitpas-soap.jar',
-    require    => [Class['profiles::java'], Package['uitpas-soap']],
+    require    => [Class['profiles::java'], Package['uitpas-soap'], File['/etc/systemd/system/uitpas-soap.service']],
   }
 }
