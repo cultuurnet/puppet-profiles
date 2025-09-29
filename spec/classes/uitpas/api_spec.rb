@@ -31,6 +31,7 @@ describe 'profiles::uitpas::api' do
               'newrelic'                               =>false,
               'magda_cert_generation'                  =>false,
               'fidus_cert_generation'                  =>false,
+              'enable_govdata_soap'                    =>false,
               'newrelic_license_key'                   =>'my_license_key',
               'portbase'                               =>4800,
               'service_status'                         =>'running',
@@ -39,8 +40,9 @@ describe 'profiles::uitpas::api' do
 
             it { is_expected.to contain_group('glassfish') }
             it { is_expected.to contain_user('glassfish') }
-            it { is_expected.not_to contain_class('profiles::uitpas::api::magda') }
-            it { is_expected.not_to contain_class('profiles::uitpas::api::fidus') }
+            it { is_expected.not_to contain_class('profiles::uitpas::soap::magda') }
+            it { is_expected.not_to contain_class('profiles::uitpas::soap::fidus') }
+            it { is_expected.not_to contain_class('profiles::uitpas::soap') }
 
             it { is_expected.to contain_apt__source('publiq-tools') }
 
@@ -221,7 +223,7 @@ describe 'profiles::uitpas::api' do
             it { is_expected.to contain_class('profiles::uitpas::api::cron').that_requires('Class[profiles::uitpas::api::deployment]') }
           end
 
-          context "with servername => myserver.example.com, magda_cert_generation => true, fidus_cert_generation => true, serveraliases => foobar.example.com, database_password => secret, database_host => db.example.com, initial_heap_size => 1024m, maximum_heap_size => 1536m, jmx => false, newrelic => true, portbase => 14800 and settings => { 'foo' => 'bar', 'baz' => 'test' }" do
+          context "with servername => myserver.example.com, magda_cert_generation => true, fidus_cert_generation => true, enable_govdata_soap => true, serveraliases => foobar.example.com, database_password => secret, database_host => db.example.com, initial_heap_size => 1024m, maximum_heap_size => 1536m, jmx => false, newrelic => true, portbase => 14800 and settings => { 'foo' => 'bar', 'baz' => 'test' }" do
             let(:params) { {
               'servername'            => 'myserver.example.com',
               'serveraliases'         => 'foobar.example.com',
@@ -230,6 +232,7 @@ describe 'profiles::uitpas::api' do
               'initial_heap_size'     => '1024m',
               'magda_cert_generation' => true,
               'fidus_cert_generation' => true,
+              'enable_govdata_soap'   => true,
               'maximum_heap_size'     => '1536m',
               'jmx'                   => false,
               'newrelic'              => true,
@@ -238,7 +241,7 @@ describe 'profiles::uitpas::api' do
             } }
 
             let(:pre_condition) {
-              'class { "profiles::uitpas::api::magda":
+              'class { "profiles::uitpas::soap::magda":
               magda_sftp_path           => "/opt/uitpas/magda/sftp",
               magda_sftp_cert           => "magda-sftp.crt",
               magda_sftp_key            => "magda-sftp.key",
@@ -249,7 +252,7 @@ describe 'profiles::uitpas::api' do
               magda_soap_key_password   => "key_password",
               magda_soap_alias          => "magda-soap-alias"
               }
-              class { "profiles::uitpas::api::fidus":
+              class { "profiles::uitpas::soap::fidus":
               fidus_sftp_path           => "/opt/uitpas/fidus/sftp",
               fidus_sftp_key            => "fidus-sftp.key",
               fidus_soap_path           => "/opt/uitpas/fidus/soap",
@@ -261,8 +264,9 @@ describe 'profiles::uitpas::api' do
             }
 
             it { is_expected.not_to contain_class('profiles::mysql::server') }
-            it { is_expected.to contain_class('profiles::uitpas::api::magda').that_notifies('Service[uitpas]') }
-            it { is_expected.to contain_class('profiles::uitpas::api::fidus').that_notifies('Service[uitpas]') }
+            it { is_expected.to contain_class('profiles::uitpas::soap::magda').that_notifies('Service[uitpas]') }
+            it { is_expected.to contain_class('profiles::uitpas::soap::fidus').that_notifies('Service[uitpas]') }
+            it { is_expected.to contain_class('profiles::uitpas::soap') }
             it { is_expected.to contain_class('profiles::mysql::remote_server').with(
               'host' => 'db.example.com'
             ) }

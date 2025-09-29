@@ -1,4 +1,4 @@
-describe 'profiles::uitpas::api::magda' do
+describe 'profiles::uitpas::soap::magda' do
   include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
@@ -22,7 +22,7 @@ describe 'profiles::uitpas::api::magda' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_class('profiles::uitpas::api::magda').with(
+        it { is_expected.to contain_class('profiles::uitpas::soap::magda').with(
           'magda_sftp_path'           => '/opt/uitpas/magda/sftp',
           'magda_sftp_cert'           => 'magda-sftp.crt',
           'magda_sftp_key'            => 'magda-sftp.key',

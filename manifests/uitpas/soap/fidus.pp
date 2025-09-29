@@ -1,4 +1,4 @@
-class profiles::uitpas::api::fidus (
+class profiles::uitpas::soap::fidus (
   String                         $fidus_sftp_path,
   String                         $fidus_sftp_key,
   String                         $fidus_soap_path,
