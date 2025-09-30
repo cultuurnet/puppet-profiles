@@ -20,7 +20,6 @@ class profiles::uitpas::soap::deployment (
     ensure     => 'running',
     enable     => true,
     hasstatus  => true,
-    hasrestart => true,
     require    => [Class['profiles::java'], Package['uitpas-soap']],
   }
 }
