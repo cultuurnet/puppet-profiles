@@ -1,6 +1,6 @@
 class profiles::uitpas::soap::deployment (
   String $repository             = 'uitpas-soap',
-  String $version                = 'latest'
+  String $version                = 'latest',
   Hash $env_settings             = {},
 
 ) inherits profiles {
