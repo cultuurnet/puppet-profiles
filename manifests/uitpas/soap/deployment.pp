@@ -3,8 +3,7 @@ class profiles::uitpas::soap::deployment (
   String $version                = 'latest'
 
 ) inherits profiles {
-
-    realize Apt::Source[$repository]
+  realize Apt::Source[$repository]
 
   package { 'uitpas-soap':
     ensure  => $version,
@@ -12,14 +11,10 @@ class profiles::uitpas::soap::deployment (
     notify  => Service['uitpas-soap'],
   }
 
-  file { '/etc/systemd/system/uitpas-soap.service':
+  systemd::unit_file { 'uitpas-soap.service':
+    ensure  => 'running',
+    enable  => true,
     content => template('profiles/uitpas/soap/soap.service.erb'),
-    notify  => [Exec['uitpas-soap-systemd-reload'], Service['uitpas-soap']],
-  }
-
-  exec { 'uitpas-soap-systemd-reload':
-    command     => '/bin/systemctl daemon-reload',
-    refreshonly => true,
   }
 
   service { 'uitpas-soap':
@@ -27,6 +22,6 @@ class profiles::uitpas::soap::deployment (
     enable     => true,
     hasstatus  => true,
     hasrestart => true,
-    require    => [Class['profiles::java'], Package['uitpas-soap'], File['/etc/systemd/system/uitpas-soap.service']],
+    require    => [Class['profiles::java'], Package['uitpas-soap']],
   }
 }
