@@ -1,0 +1,16 @@
+[Unit]
+Description=UiTPAS SOAP Service
+After=network.target
+
+[Service]
+Type=simple
+User=glassfish
+Group=glassfish
+WorkingDirectory=/opt/uitpas-soap
+ExecStart=/usr/bin/java -jar /opt/uitpas-soap/uitpas-soap.jar /opt/uitpas-soap/env.properties
+ExecStop=/bin/kill -TERM $MAINPID
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

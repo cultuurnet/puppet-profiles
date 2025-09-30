@@ -1,4 +1,4 @@
-describe 'profiles::uitpas::api::fidus' do
+describe 'profiles::uitpas::soap::fidus' do
   include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
@@ -20,7 +20,7 @@ describe 'profiles::uitpas::api::fidus' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_class('profiles::uitpas::api::fidus').with(
+        it { is_expected.to contain_class('profiles::uitpas::soap::fidus').with(
           'fidus_sftp_path'           => '/opt/uitpas/fidus/sftp',
           'fidus_sftp_key'            => 'fidus-sftp.key',
           'fidus_soap_path'           => '/opt/uitpas/fidus/soap',

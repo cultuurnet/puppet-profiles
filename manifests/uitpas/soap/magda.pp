@@ -1,4 +1,4 @@
-class profiles::uitpas::api::magda (
+class profiles::uitpas::soap::magda (
   String                         $magda_sftp_path,
   String                         $magda_sftp_cert,
   String                         $magda_sftp_key,

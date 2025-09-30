@@ -5,3 +5,5 @@ vendor
 .ruby-version
 *.swp
 manifests/.vscode/
+
+.editorconfig
