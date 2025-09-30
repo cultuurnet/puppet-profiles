@@ -1,11 +1,29 @@
 class profiles::uitpas::soap (
 
-  Boolean $deployment_enabled = true,
-  String $repository = 'uitpas-soap',
-  String $version = 'latest'
+  Boolean $deployment    = true,
+  String $repository             = 'uitpas-soap',
+  String $version                = 'latest'
+  Boolean $magda_cert_generation = false,
+  Boolean $fidus_cert_generation = false,
+  Boolean $enable_govdata_soap   = false,
 
 ) inherits profiles {
   include profiles::java
+
+
+    if ($magda_cert_generation) {
+    include profiles::uitpas::soap::magda
+
+    Class['profiles::uitpas::soap::magda'] ~> Service['uitpas-soap ']
+  }
+  if ($fidus_cert_generation) {
+    include profiles::uitpas::soap::fidus
+
+    Class['profiles::uitpas::soap::fidus'] ~> Service['uitpas-soap']
+  }
+
+
+
   realize Apt::Source[$repository]
 
     package { 'uitpas-soap':

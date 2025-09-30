@@ -8,9 +8,6 @@ class profiles::uitpas::api (
   Optional[String]               $maximum_heap_size    = undef,
   Boolean                        $jmx                  = true,
   Boolean                        $newrelic             = false,
-  Boolean                        $magda_cert_generation= false,
-  Boolean                        $fidus_cert_generation= false,
-  Boolean                        $enable_govdata_soap  = false,
   Optional[String]               $newrelic_license_key = lookup('data::newrelic::license_key', Optional[String], 'first', undef),
   Integer                        $portbase             = 4800,
   Enum['running', 'stopped']     $service_status       = 'running',
@@ -29,19 +26,6 @@ class profiles::uitpas::api (
   include profiles::java
   include profiles::glassfish
 
-  if ($magda_cert_generation) {
-    include profiles::uitpas::soap::magda
-
-    Class['profiles::uitpas::soap::magda'] ~> Service['uitpas']
-  }
-  if ($fidus_cert_generation) {
-    include profiles::uitpas::soap::fidus
-
-    Class['profiles::uitpas::soap::fidus'] ~> Service['uitpas']
-  }
-  if ($enable_govdata_soap) {
-    include profiles::uitpas::soap
-  }
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
     destination => "http://127.0.0.1:${glassfish_domain_http_port}/uitid/rest/",
