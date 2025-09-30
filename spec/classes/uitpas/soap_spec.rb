@@ -15,97 +15,45 @@ describe 'profiles::uitpas::soap' do
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to contain_class('profiles::uitpas::soap').with(
-              'deployment_enabled' => true,
-              'repository'         => 'uitpas-soap',
-              'version'            => 'latest'
+              'deployment'             => true,
+              'magda_cert_generation'  => false,
+              'fidus_cert_generation'  => false
             ) }
 
             it { is_expected.to contain_class('profiles::java') }
 
-            it { is_expected.to contain_package('uitpas-soap').with(
-              'ensure' => 'latest'
-            ) }
+            it { is_expected.to contain_class('profiles::uitpas::soap::deployment') }
 
-            it { is_expected.to contain_file('/etc/systemd/system/uitpas-soap.service').with(
-              'content' => /User=glassfish/
-            ) }
-
-            it { is_expected.to contain_exec('uitpas-soap-systemd-reload').with(
-              'command'     => '/bin/systemctl daemon-reload',
-              'refreshonly' => true
-            ) }
-
-            it { is_expected.to contain_service('uitpas-soap').with(
-              'ensure'     => 'running',
-              'enable'     => true,
-              'hasstatus'  => true,
-              'hasrestart' => true
-            ) }
-
-            it { is_expected.to contain_package('uitpas-soap').that_requires('Apt::Source[uitpas-soap]') }
-            it { is_expected.to contain_package('uitpas-soap').that_notifies('Service[uitpas-soap]') }
-            it { is_expected.to contain_service('uitpas-soap').that_requires('Class[profiles::java]') }
-            it { is_expected.to contain_service('uitpas-soap').that_requires('Package[uitpas-soap]') }
-            it { is_expected.to contain_service('uitpas-soap').that_requires('File[/etc/systemd/system/uitpas-soap.service]') }
-            it { is_expected.to contain_file('/etc/systemd/system/uitpas-soap.service').that_notifies('Exec[uitpas-soap-systemd-reload]') }
-            it { is_expected.to contain_file('/etc/systemd/system/uitpas-soap.service').that_notifies('Service[uitpas-soap]') }
           end
 
-          context "with deployment_enabled => false, repository => uitpas-soap and version => 1.2.3" do
+          context "with deployment => false" do
             let(:params) { {
-              'deployment_enabled' => false,
-              'repository'         => 'uitpas-soap',
-              'version'            => '1.2.3'
+              'deployment' => false
             } }
 
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to contain_class('profiles::uitpas::soap').with(
-              'deployment_enabled' => false,
-              'repository'         => 'uitpas-soap',
-              'version'            => '1.2.3'
+              'deployment' => false
             ) }
 
             it { is_expected.to contain_class('profiles::java') }
 
-            it { is_expected.to contain_package('uitpas-soap') }
-
-            it { is_expected.to contain_service('uitpas-soap').with(
-              'ensure'     => 'stopped',
-              'enable'     => false,
-              'hasstatus'  => true,
-              'hasrestart' => true
-            ) }
-
-            it { is_expected.to contain_service('uitpas-soap').that_requires('Class[profiles::java]') }
-            it { is_expected.to contain_service('uitpas-soap').that_requires('Package[uitpas-soap]') }
+            it { is_expected.not_to contain_class('profiles::uitpas::soap::deployment') }
           end
 
-          context "with deployment_enabled => true, repository => uitpas-soap and version => 2.0.0" do
+          context "with deployment => true" do
             let(:params) { {
-              'deployment_enabled' => true,
-              'repository'         => 'uitpas-soap',
-              'version'            => '2.0.0'
+              'deployment' => true
             } }
 
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to contain_class('profiles::uitpas::soap').with(
-              'deployment_enabled' => true,
-              'repository'         => 'uitpas-soap',
-              'version'            => '2.0.0'
+              'deployment' => true
             ) }
 
-            it { is_expected.to contain_package('uitpas-soap').with(
-              'ensure' => '2.0.0'
-            ) }
-
-            it { is_expected.to contain_service('uitpas-soap').with(
-              'ensure' => 'running',
-              'enable' => true
-            ) }
-
-            it { is_expected.to contain_package('uitpas-soap').that_requires('Apt::Source[uitpas-soap]') }
+            it { is_expected.to contain_class('profiles::uitpas::soap::deployment') }
           end
         end
       end
@@ -116,17 +64,52 @@ describe 'profiles::uitpas::soap' do
         context 'with hieradata' do
           let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-          context "with deployment_enabled => false" do
+          context "with deployment => false" do
             let(:params) { {
-              'deployment_enabled' => false
+              'deployment' => false
             } }
 
-            it { is_expected.to contain_service('uitpas-soap').with(
-              'ensure' => 'stopped',
-              'enable' => false
-            ) }
+            it { is_expected.not_to contain_class('profiles::uitpas::soap::deployment') }
+          end
 
-            it { is_expected.to contain_package('uitpas-soap') }
+          context "with magda_cert_generation => true and deployment => true" do
+            let(:params) { {
+              'magda_cert_generation' => true,
+              'deployment' => true
+            } }
+
+            it { is_expected.to contain_class('profiles::uitpas::soap::magda') }
+            it { is_expected.to contain_class('profiles::uitpas::soap::deployment') }
+          end
+
+          context "with magda_cert_generation => true and deployment => false" do
+            let(:params) { {
+              'magda_cert_generation' => true,
+              'deployment' => false
+            } }
+
+            it { is_expected.to contain_class('profiles::uitpas::soap::magda') }
+            it { is_expected.not_to contain_class('profiles::uitpas::soap::deployment') }
+          end
+
+          context "with fidus_cert_generation => true and deployment => true" do
+            let(:params) { {
+              'fidus_cert_generation' => true,
+              'deployment' => true
+            } }
+
+            it { is_expected.to contain_class('profiles::uitpas::soap::fidus') }
+            it { is_expected.to contain_class('profiles::uitpas::soap::deployment') }
+          end
+
+          context "with fidus_cert_generation => true and deployment => false" do
+            let(:params) { {
+              'fidus_cert_generation' => true,
+              'deployment' => false
+            } }
+
+            it { is_expected.to contain_class('profiles::uitpas::soap::fidus') }
+            it { is_expected.not_to contain_class('profiles::uitpas::soap::deployment') }
           end
         end
       end
