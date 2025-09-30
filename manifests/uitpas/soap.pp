@@ -31,6 +31,7 @@ class profiles::uitpas::soap (
       owner   => 'glassfish',
       group   => 'glassfish',
       mode    => '0644',
+      require => Class['profiles::uitpas::soap::deployment'],
     }
   }
 }
