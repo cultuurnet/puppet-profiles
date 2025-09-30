@@ -19,7 +19,6 @@ describe 'profiles::uitpas::soap' do
               'magda_cert_generation'  => false,
               'fidus_cert_generation'  => false,
               'env_settings'           => {},
-              'repository'             => 'uitpas-soap'
             ) }
 
             it { is_expected.to contain_class('profiles::java') }
@@ -49,6 +48,8 @@ describe 'profiles::uitpas::soap' do
             it { is_expected.to contain_class('profiles::java') }
 
             it { is_expected.not_to contain_class('profiles::uitpas::soap::deployment') }
+
+            it { is_expected.not_to contain_file('/opt/uitpas-soap/env.properties') }
           end
 
           context "with deployment => true" do
@@ -173,8 +174,9 @@ describe 'profiles::uitpas::soap' do
             it { is_expected.not_to contain_class('profiles::uitpas::soap::deployment') }
           end
 
-          context "with env_settings" do
+          context "with env_settings and deployment enabled" do
             let(:params) { {
+              'deployment' => true,
               'env_settings' => {
                 'database.host' => 'localhost',
                 'database.port' => '5432',

@@ -4,7 +4,6 @@ class profiles::uitpas::soap (
   Boolean $magda_cert_generation = false,
   Boolean $fidus_cert_generation = false,
   Hash $env_settings             = {},
-  String $repository             = 'uitpas-soap',
 
 ) inherits profiles {
   include profiles::java
@@ -23,16 +22,15 @@ class profiles::uitpas::soap (
       Class['profiles::uitpas::soap::fidus'] ~> Class['profiles::uitpas::soap::deployment']
     }
   }
-  file { '/opt/uitpas-soap/env.properties':
-    ensure   => 'file',
-    content  => template('profiles/uitpas/soap/env.properties.erb', { 'settings' => $env_settings }),
-    owner    => 'glassfish',
-    group    => 'glassfish',
-    mode     => '0644',
-  }
-  realize Apt::Source[$repository]
 
   if ($deployment) {
     include profiles::uitpas::soap::deployment
+    file { '/opt/uitpas-soap/env.properties':
+      ensure  => 'file',
+      content => template('profiles/uitpas/soap/env.properties.erb'),
+      owner   => 'glassfish',
+      group   => 'glassfish',
+      mode    => '0644',
+    }
   }
 }

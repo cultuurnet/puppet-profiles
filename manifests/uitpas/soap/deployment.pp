@@ -3,6 +3,9 @@ class profiles::uitpas::soap::deployment (
   String $version                = 'latest'
 
 ) inherits profiles {
+
+    realize Apt::Source[$repository]
+
   package { 'uitpas-soap':
     ensure  => $version,
     require => Apt::Source[$repository],
