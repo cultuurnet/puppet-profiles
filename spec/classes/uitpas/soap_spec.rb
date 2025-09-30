@@ -17,12 +17,21 @@ describe 'profiles::uitpas::soap' do
             it { is_expected.to contain_class('profiles::uitpas::soap').with(
               'deployment'             => true,
               'magda_cert_generation'  => false,
-              'fidus_cert_generation'  => false
+              'fidus_cert_generation'  => false,
+              'env_settings'           => {},
+              'repository'             => 'uitpas-soap'
             ) }
 
             it { is_expected.to contain_class('profiles::java') }
 
             it { is_expected.to contain_class('profiles::uitpas::soap::deployment') }
+
+            it { is_expected.to contain_file('/opt/uitpas-soap/env.properties').with(
+              'ensure' => 'file',
+              'owner'  => 'glassfish',
+              'group'  => 'glassfish',
+              'mode'   => '0644'
+            ) }
 
           end
 
@@ -78,6 +87,21 @@ describe 'profiles::uitpas::soap' do
               'deployment' => true
             } }
 
+
+            let(:pre_condition) {
+              'class { "profiles::uitpas::soap::magda":
+              magda_sftp_path           => "/opt/uitpas/magda/sftp",
+              magda_sftp_cert           => "magda-sftp.crt",
+              magda_sftp_key            => "magda-sftp.key",
+              magda_soap_path           => "/opt/uitpas/magda/soap",
+              magda_soap_keystore       => "magda-soap.p12",
+              magda_soap_truststore     => "magda-soap-truststore.jks",
+              magda_soap_cert_password  => "cert_password",
+              magda_soap_key_password   => "key_password",
+              magda_soap_alias          => "magda-soap-alias"
+              }'
+            }
+
             it { is_expected.to contain_class('profiles::uitpas::soap::magda') }
             it { is_expected.to contain_class('profiles::uitpas::soap::deployment') }
           end
@@ -87,6 +111,20 @@ describe 'profiles::uitpas::soap' do
               'magda_cert_generation' => true,
               'deployment' => false
             } }
+              let(:pre_condition) {
+              'class { "profiles::uitpas::soap::magda":
+              magda_sftp_path           => "/opt/uitpas/magda/sftp",
+              magda_sftp_cert           => "magda-sftp.crt",
+              magda_sftp_key            => "magda-sftp.key",
+              magda_soap_path           => "/opt/uitpas/magda/soap",
+              magda_soap_keystore       => "magda-soap.p12",
+              magda_soap_truststore     => "magda-soap-truststore.jks",
+              magda_soap_cert_password  => "cert_password",
+              magda_soap_key_password   => "key_password",
+              magda_soap_alias          => "magda-soap-alias"
+              }'
+            }
+
 
             it { is_expected.to contain_class('profiles::uitpas::soap::magda') }
             it { is_expected.not_to contain_class('profiles::uitpas::soap::deployment') }
@@ -98,6 +136,18 @@ describe 'profiles::uitpas::soap' do
               'deployment' => true
             } }
 
+            let(:pre_condition) {
+              'class { "profiles::uitpas::soap::fidus":
+              fidus_sftp_path           => "/opt/uitpas/fidus/sftp",
+              fidus_sftp_key            => "fidus-sftp.key",
+              fidus_soap_path           => "/opt/uitpas/fidus/soap",
+              fidus_soap_keystore       => "fidus-soap.p12",
+              fidus_soap_cert_password  => "cert_password",
+              fidus_soap_key_password   => "key_password",
+              fidus_soap_alias          => "fidus-soap-alias"
+              }'
+            }
+
             it { is_expected.to contain_class('profiles::uitpas::soap::fidus') }
             it { is_expected.to contain_class('profiles::uitpas::soap::deployment') }
           end
@@ -108,8 +158,41 @@ describe 'profiles::uitpas::soap' do
               'deployment' => false
             } }
 
+                  let(:pre_condition) {
+              'class { "profiles::uitpas::soap::fidus":
+              fidus_sftp_path           => "/opt/uitpas/fidus/sftp",
+              fidus_sftp_key            => "fidus-sftp.key",
+              fidus_soap_path           => "/opt/uitpas/fidus/soap",
+              fidus_soap_keystore       => "fidus-soap.p12",
+              fidus_soap_cert_password  => "cert_password",
+              fidus_soap_key_password   => "key_password",
+              fidus_soap_alias          => "fidus-soap-alias"
+              }'
+            }
             it { is_expected.to contain_class('profiles::uitpas::soap::fidus') }
             it { is_expected.not_to contain_class('profiles::uitpas::soap::deployment') }
+          end
+
+          context "with env_settings" do
+            let(:params) { {
+              'env_settings' => {
+                'database.host' => 'localhost',
+                'database.port' => '5432',
+                'app.debug' => 'true'
+              }
+            } }
+
+            it { is_expected.to contain_file('/opt/uitpas-soap/env.properties').with_content(
+              /database\.host=localhost/
+            ) }
+
+            it { is_expected.to contain_file('/opt/uitpas-soap/env.properties').with_content(
+              /database\.port=5432/
+            ) }
+
+            it { is_expected.to contain_file('/opt/uitpas-soap/env.properties').with_content(
+              /app\.debug=true/
+            ) }
           end
         end
       end
