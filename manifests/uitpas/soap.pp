@@ -25,13 +25,5 @@ class profiles::uitpas::soap (
 
   if ($deployment) {
     include profiles::uitpas::soap::deployment
-    file { '/opt/uitpas-soap/env.properties':
-      ensure  => 'file',
-      content => template('profiles/uitpas/soap/env.properties.erb'),
-      owner   => 'glassfish',
-      group   => 'glassfish',
-      mode    => '0644',
-      require => Class['profiles::uitpas::soap::deployment'],
-    }
   }
 }
