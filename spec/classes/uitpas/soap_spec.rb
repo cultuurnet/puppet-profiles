@@ -18,19 +18,13 @@ describe 'profiles::uitpas::soap' do
               'deployment'             => true,
               'magda_cert_generation'  => false,
               'fidus_cert_generation'  => false,
-              'env_settings'           => {},
             ) }
 
             it { is_expected.to contain_class('profiles::java') }
 
             it { is_expected.to contain_class('profiles::uitpas::soap::deployment') }
 
-            it { is_expected.to contain_file('/opt/uitpas-soap/env.properties').with(
-              'ensure' => 'file',
-              'owner'  => 'glassfish',
-              'group'  => 'glassfish',
-              'mode'   => '0644'
-            ) }
+          
 
           end
 
@@ -49,7 +43,6 @@ describe 'profiles::uitpas::soap' do
 
             it { is_expected.not_to contain_class('profiles::uitpas::soap::deployment') }
 
-            it { is_expected.not_to contain_file('/opt/uitpas-soap/env.properties') }
           end
 
           context "with deployment => true" do
@@ -174,28 +167,6 @@ describe 'profiles::uitpas::soap' do
             it { is_expected.not_to contain_class('profiles::uitpas::soap::deployment') }
           end
 
-          context "with env_settings and deployment enabled" do
-            let(:params) { {
-              'deployment' => true,
-              'env_settings' => {
-                'database.host' => 'localhost',
-                'database.port' => '5432',
-                'app.debug' => 'true'
-              }
-            } }
-
-            it { is_expected.to contain_file('/opt/uitpas-soap/env.properties').with_content(
-              /database\.host=localhost/
-            ) }
-
-            it { is_expected.to contain_file('/opt/uitpas-soap/env.properties').with_content(
-              /database\.port=5432/
-            ) }
-
-            it { is_expected.to contain_file('/opt/uitpas-soap/env.properties').with_content(
-              /app\.debug=true/
-            ) }
-          end
         end
       end
     end
