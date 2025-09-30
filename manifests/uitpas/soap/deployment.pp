@@ -12,9 +12,8 @@ class profiles::uitpas::soap::deployment (
   }
 
   systemd::unit_file { 'uitpas-soap.service':
-    ensure  => 'running',
-    enable  => true,
-    content => template('profiles/uitpas/soap/soap.service.erb'),
+    ensure  => 'file',
+    content => template('profiles/uitpas/soap/soap.service.erb')
   }
 
   service { 'uitpas-soap':
