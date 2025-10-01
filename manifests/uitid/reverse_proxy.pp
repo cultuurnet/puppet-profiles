@@ -39,6 +39,10 @@ class profiles::uitid::reverse_proxy (
     notify => Service['nginx'],
   }
 
+  logrotate::rule { 'nginx':
+    ensure => 'absent',
+  }
+
   logrotate::rule { 'nginx-logs':
     path          => ['/var/log/nginx/*.log'],
     rotate        => 31,
