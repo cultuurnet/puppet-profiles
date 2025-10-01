@@ -39,6 +39,30 @@ class profiles::uitid::reverse_proxy (
     notify => Service['nginx'],
   }
 
+  logrotate::rule { 'nginx-logs':
+    path          => ['/var/log/nginx/*.log'],
+    rotate        => 31,
+    compress      => true,
+    delaycompress => true,
+    missingok     => true,
+    notifempty    => true,
+    create        => true,
+    create_mode   => '0640',
+    create_owner  => 'www-data',
+    create_group  => 'adm',
+    sharedscripts => true,
+    dateext       => true,
+    dateformat    => '-%Y%m%d',
+    prerotate     => [
+      'if [ -d /etc/logrotate.d/httpd-prerotate ]; then',
+      '  run-parts /etc/logrotate.d/httpd-prerotate;',
+      'fi'
+    ],
+    postrotate    => [
+      'invoke-rc.d nginx rotate >/dev/null 2>&1'
+    ],
+  }
+
   file { 'ssl-uitpas':
     ensure => file,
     path   => "${basedir}/conf.d/ssl_uitpas.conf",
