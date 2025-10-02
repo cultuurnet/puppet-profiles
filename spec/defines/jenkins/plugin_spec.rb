@@ -368,17 +368,18 @@ describe 'profiles::jenkins::plugin' do
             it { is_expected.to contain_file('job-dsl configuration').with_content("---\njobs: []\n") }
           end
 
-          context "with configuration => { admin_password => secret, pipelines => { 'name' => 'Myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'auto_build' => true, 'keep_builds' => 5 }}" do
+          context "with configuration => { admin_password => secret, pipelines => { 'name' => 'Myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'auto_build' => true, 'keep_builds' => 5, 'abort_previous' => false }}" do
             let(:params) { {
               'configuration' => {
                                    'admin_password' => 'secret',
                                    'pipelines'      => {
-                                                         'name'          => 'Myrepo',
-                                                         'git_url'       => 'git@example.com:org/myrepo.git',
-                                                         'git_ref'       => 'refs/heads/main',
-                                                         'credential_id' => 'mygitcred',
-                                                         'auto_build'    => true,
-                                                         'keep_builds'   => 5
+                                                         'name'           => 'Myrepo',
+                                                         'git_url'        => 'git@example.com:org/myrepo.git',
+                                                         'git_ref'        => 'refs/heads/main',
+                                                         'credential_id'  => 'mygitcred',
+                                                         'auto_build'     => true,
+                                                         'keep_builds'    => 5,
+                                                         'abort_previous' => false
                                                        }
                                  }
             } }
@@ -400,6 +401,36 @@ describe 'profiles::jenkins::plugin' do
             it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*credentials\('mygitcred'\)$/) }
             it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*githubPush\(\)$/) }
             it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*numToKeepStr\('5'\)$/) }
+            it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^\s*parameters {\n\s*}$/) }
+            it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*disableConcurrentBuilds { abortPrevious\(false\) }$/) }
+          end
+
+          context "with configuration => { admin_password => mypass, pipelines => { 'name' => 'testrepo', 'git_url' => 'git@example.com:org/testrepo.git', 'git_ref' => 'refs/heads/master', 'credential_id' => 'mygitcred', 'auto_build' => false, 'keep_builds' => 7, 'abort_previous' => true }}" do
+            let(:params) { {
+              'configuration' => {
+                                   'admin_password' => 'mypass',
+                                   'pipelines'      => {
+                                                         'name'           => 'testrepo',
+                                                         'git_url'        => 'git@example.com:org/testrepo.git',
+                                                         'git_ref'        => 'refs/heads/master',
+                                                         'credential_id'  => 'mygitcred',
+                                                         'auto_build'     => false,
+                                                         'keep_builds'    => 7,
+                                                         'abort_previous' => true
+                                                       }
+                                 }
+            } }
+
+            it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*pipelineJob\('testrepo'\)/) }
+            it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*displayName\('testrepo'\)/) }
+            it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^\s*authenticationToken\(.*$/) }
+            it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*url\('git@example.com:org\/testrepo.git'\)$/) }
+            it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*scriptPath\('Jenkinsfile'\)$/) }
+            it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^\s*githubProjectUrl/) }
+            it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*branch\('refs\/heads\/master'\)$/) }
+            it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*credentials\('mygitcred'\)$/) }
+            it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^\s*githubPush\(\)$/) }
+            it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*numToKeepStr\('7'\)$/) }
             it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^\s*parameters {\n\s*}$/) }
             it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*disableConcurrentBuilds { abortPrevious\(true\) }$/) }
           end
@@ -453,6 +484,7 @@ describe 'profiles::jenkins::plugin' do
             it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*branch\('refs\/heads\/develop'\)$/) }
             it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*credentials\('gitkey'\)$/) }
             it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*numToKeepStr\('10'\)$/) }
+            it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*disableConcurrentBuilds { abortPrevious\(true\) }$/) }
             it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*parameters {\n\s*booleanParam {\n\s*name\('Flag'\)\n\s*defaultValue\(true\)\n\s*description\('Boolean flag'\)\n\s*}\n\s*}$/) }
 
             it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*pipelineJob\('repo-foo'\)/) }
