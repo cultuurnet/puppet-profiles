@@ -49,7 +49,6 @@ class profiles::uitid::reverse_proxy (
     compress      => true,
     delaycompress => true,
     missingok     => true,
-    notifempty    => true,
     create        => true,
     create_mode   => '0640',
     create_owner  => 'www-data',
