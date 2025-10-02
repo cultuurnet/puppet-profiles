@@ -55,7 +55,6 @@ class profiles::uitid::reverse_proxy (
     create_group  => 'adm',
     sharedscripts => true,
     dateext       => true,
-    dateformat    => '-%Y%m%d.gz',
     prerotate     => [
       'if [ -d /etc/logrotate.d/httpd-prerotate ]; then',
       '  run-parts /etc/logrotate.d/httpd-prerotate;',
