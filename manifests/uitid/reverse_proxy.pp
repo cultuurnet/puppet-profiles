@@ -47,7 +47,7 @@ class profiles::uitid::reverse_proxy (
     path          => ['/var/log/nginx/*.log'],
     rotate        => 31,
     compress      => true,
-    delaycompress => true,
+    delaycompress => false,
     missingok     => true,
     create        => true,
     create_mode   => '0640',
