@@ -23,62 +23,68 @@ describe 'profiles::firewall::rules' do
         ) }
 
         it { is_expected.to contain_firewall('300 accept HTTP traffic').with(
-          'proto' => 'tcp',
-          'dport' => '80',
+          'proto'  => 'tcp',
+          'dport'  => '80',
           'action' => 'accept'
         ) }
 
         it { is_expected.to contain_firewall('300 accept HTTPS traffic').with(
-          'proto' => 'tcp',
-          'dport' => '443',
+          'proto'  => 'tcp',
+          'dport'  => '443',
           'action' => 'accept'
         ) }
 
         it { is_expected.to contain_firewall('300 accept SMTP traffic').with(
-          'proto' => 'tcp',
-          'dport' => '25',
+          'proto'  => 'tcp',
+          'dport'  => '25',
           'action' => 'accept'
         ) }
 
         it { is_expected.to contain_firewall('300 accept puppetserver HTTPS traffic').with(
-          'proto' => 'tcp',
-          'dport' => '8140',
+          'proto'  => 'tcp',
+          'dport'  => '8140',
           'action' => 'accept'
         ) }
 
         it { is_expected.to contain_firewall('300 accept puppetdb HTTPS traffic').with(
-          'proto' => 'tcp',
-          'dport' => '8081',
+          'proto'  => 'tcp',
+          'dport'  => '8081',
           'action' => 'accept'
         ) }
 
         it { is_expected.to contain_firewall('400 accept redis traffic').with(
-          'proto' => 'tcp',
-          'dport' => '6379',
+          'proto'  => 'tcp',
+          'dport'  => '6379',
           'action' => 'accept'
         ) }
 
         it { is_expected.to contain_firewall('400 accept meilisearch traffic').with(
-          'proto' => 'tcp',
-          'dport' => '7700',
+          'proto'  => 'tcp',
+          'dport'  => '7700',
           'action' => 'accept'
         ) }
 
         it { is_expected.to contain_firewall('400 accept mysql traffic').with(
-          'proto' => 'tcp',
-          'dport' => '3306',
+          'proto'  => 'tcp',
+          'dport'  => '3306',
           'action' => 'accept'
         ) }
 
         it { is_expected.to contain_firewall('400 accept vault traffic').with(
-          'proto' => 'tcp',
-          'dport' => '8200',
+          'proto'  => 'tcp',
+          'dport'  => '8200',
           'action' => 'accept'
         ) }
 
         it { is_expected.to contain_firewall('400 accept mongodb traffic').with(
-          'proto' => 'tcp',
-          'dport' => '27017',
+          'proto'  => 'tcp',
+          'dport'  => '27017',
+          'action' => 'accept'
+        ) }
+
+        it { is_expected.to contain_firewall('400 accept mailpit SMTP traffic').with(
+          'proto'  => 'tcp',
+          'dport'  => '1025',
           'action' => 'accept'
         ) }
       end
