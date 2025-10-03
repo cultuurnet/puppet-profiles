@@ -7,9 +7,15 @@ class profiles::mailpit (
   $smtp_port = 1025
   $http_port = 8025
 
+  include profiles::firewall::rules
+
   realize Group['mailpit']
   realize User['mailpit']
   realize Apt::Source['publiq-tools']
+
+  if !($smtp_address == '127.0.0.1') {
+    realize Firewall['400 accept mailpit SMTP traffic']
+  }
 
   package { 'mailpit':
     ensure  => 'installed',

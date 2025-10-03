@@ -15,12 +15,14 @@ describe 'profiles::mailpit' do
 
           it { is_expected.to contain_class('profiles::mailpit').with(
             'smtp_address' => '127.0.0.1',
-            'http_address' => '127.0.0.1',
+            'http_address' => '127.0.0.1'
           ) }
 
           it { is_expected.to contain_group('mailpit') }
           it { is_expected.to contain_user('mailpit') }
           it { is_expected.to contain_apt__source('publiq-tools') }
+
+          it { is_expected.not_to contain_firewall('400 accept mailpit SMTP traffic') }
 
           it { is_expected.to contain_package('mailpit').with(
             'ensure' => 'installed'
@@ -65,6 +67,7 @@ describe 'profiles::mailpit' do
         context 'in the testing environment' do
           let(:environment) { 'testing' }
 
+          it { is_expected.to contain_firewall('400 accept mailpit SMTP traffic') }
           it { is_expected.to contain_file('mailpit-service-defaults').with_content(/^SMTP_ADDRESS=0\.0\.0\.0\nSMTP_PORT=1025\nHTTP_ADDRESS=127\.0\.1\.1\nHTTP_PORT=8025\nENVIRONMENT=testing$/) }
         end
       end
