@@ -102,12 +102,7 @@ describe 'profiles::platform' do
 
           it { is_expected.not_to contain_class('profiles::platform::sling') }
 
-          it { is_expected.to contain_class('profiles::mailpit').with(
-            'smtp_address' => '127.0.0.1',
-            'smtp_port'    => 1025,
-            'http_address' => '127.0.0.1',
-            'http_port'    => 8025
-          ) }
+          it { is_expected.to contain_class('profiles::mailpit') }
 
           it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://myplatform.example.com').with(
             'basedir'              => '/var/www/platform-api',

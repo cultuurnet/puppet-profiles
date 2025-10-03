@@ -1,14 +1,21 @@
 class profiles::mailpit (
   Stdlib::IP::Address::V4 $smtp_address = '127.0.0.1',
-  Integer                 $smtp_port    = 1025,
-  Stdlib::IP::Address::V4 $http_address = '127.0.0.1',
-  Integer                 $http_port    = 8025,
+  Stdlib::IP::Address::V4 $http_address = '127.0.0.1'
 
 ) inherits ::profiles {
+
+  $smtp_port = 1025
+  $http_port = 8025
+
+  include profiles::firewall::rules
 
   realize Group['mailpit']
   realize User['mailpit']
   realize Apt::Source['publiq-tools']
+
+  if !($smtp_address == '127.0.0.1') {
+    realize Firewall['400 accept mailpit SMTP traffic']
+  }
 
   package { 'mailpit':
     ensure  => 'installed',

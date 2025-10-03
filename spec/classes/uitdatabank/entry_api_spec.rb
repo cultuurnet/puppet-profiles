@@ -255,12 +255,7 @@ describe 'profiles::uitdatabank::entry_api' do
               'bucket'        => 'test123'
             ) }
 
-            it { is_expected.to contain_class('profiles::mailpit').with(
-              'smtp_address' => '127.0.0.1',
-              'smtp_port'    => 1025,
-              'http_address' => '127.0.0.1',
-              'http_port'    => 8025
-            ) }
+            it { is_expected.to contain_class('profiles::mailpit') }
 
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api::cron').with(
               'basedir'                           => '/var/www/udb3-backend',

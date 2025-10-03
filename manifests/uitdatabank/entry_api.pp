@@ -88,12 +88,7 @@ class profiles::uitdatabank::entry_api (
   }
 
   if $catch_mail {
-    class { 'profiles::mailpit':
-      smtp_address => '127.0.0.1',
-      smtp_port    => 1025,
-      http_address => '127.0.0.1',
-      http_port    => 8025
-    }
+    include profiles::mailpit
   }
 
   profiles::apache::vhost::php_fpm { "http://${servername}":
