@@ -49,6 +49,7 @@ class profiles::uitid::reverse_proxy (
     compress      => true,
     delaycompress => false,
     missingok     => true,
+    rotate_every  => 'day',
     create        => true,
     create_mode   => '0640',
     create_owner  => 'www-data',
