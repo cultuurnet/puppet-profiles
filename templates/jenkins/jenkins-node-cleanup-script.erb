@@ -1,0 +1,4 @@
+#!/bin/bash
+
+hostname=$(hostname)
+curl -s -o- --noproxy '*' -X DELETE -H 'Accept: pson' <%= @puppetserver_url %>/puppet-ca/v1/certificate_status/$1 --cacert /var/lib/jenkins/.puppetlabs/puppet/ssl/certs/ca.pem --key /var/lib/jenkins/.puppetlabs/puppet/ssl/private_keys/${hostname}.machines.publiq.be.pem --cert /var/lib/jenkins/.puppetlabs/puppet/ssl/certs/${hostname}.machines.publiq.be.pem
