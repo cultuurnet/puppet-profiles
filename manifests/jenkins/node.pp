@@ -15,6 +15,7 @@ class profiles::jenkins::node(
   include ::profiles::jenkins::buildtools
   include ::profiles::jenkins::buildtools::playwright
 
+
   $data_dir                = '/var/lib/jenkins-swarm-client'
   $default_labels          = [
                                $facts['os']['name'],
@@ -103,6 +104,13 @@ class profiles::jenkins::node(
     content => template('profiles/jenkins/jenkins-swarm-client_service-defaults.erb'),
     require => Package['jenkins-swarm-client'],
     notify  => Service['jenkins-swarm-client']
+  }
+  $puppetserver_url= lookup("data::puppet::puppetserver::url")
+  file { 'jenkins-node-cleanup-script':
+    ensure  => 'file',
+    path    => '/usr/local/bin/node-cleanup.sh',
+    mode    => '0644',
+    content => template('profiles/jenkins/jenkins-node-cleanup-script.erb'),
   }
 
   service { 'jenkins-swarm-client':
