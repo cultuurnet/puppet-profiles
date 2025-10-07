@@ -86,6 +86,16 @@ describe 'profiles::puppet::puppetserver' do
             'sort_order'           => 200
           ) }
 
+          it { is_expected.to contain_puppet_authorization__rule('puppetserver allow jenkins CA deletion').with(
+            'ensure'               => 'present',
+            'path'                 => '/etc/puppetlabs/puppetserver/conf.d/auth.conf',
+            'match_request_path'   => '/puppet-ca/v1/certificate_status',
+            'match_request_type'   => 'path',
+            'match_request_method' => 'delete',
+            'allow'                => [],
+            'sort_order'           => 200
+          ) }
+
           it { is_expected.to contain_hocon_setting('puppetserver ca allow-subject-alt-names').with(
             'ensure'  => 'present',
             'path'    => '/etc/puppetlabs/puppetserver/conf.d/ca.conf',
