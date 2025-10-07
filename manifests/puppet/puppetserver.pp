@@ -74,7 +74,7 @@ class profiles::puppet::puppetserver (
     notify               => Class['profiles::puppet::puppetserver::service'],
   }
 if $settings::storeconfigs {
-  $jenkins_agentnodes_query = 'inventory[certname] { resources { type = "Class" and title = "Roles::jenkins::Agent" } }'
+  $jenkins_agentnodes_query = 'inventory[certname] { resources { type = "Class" and title = "Roles::Jenkins::Agent" } }'
   $jenkins_agentnodes = puppetdb_query($jenkins_agentnodes_query).map |$value| { $value["certname"] }
 } else {
   $jenkins_agentnodes = []
