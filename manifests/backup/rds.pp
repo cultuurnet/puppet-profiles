@@ -1,10 +1,30 @@
 class profiles::backup::rds (
-  String $backupdir                   = '/data/rdsbackups',
+  String $backupdir                            = '/data/rdsbackups',
+  Boolean                        $lvm          = false,
+  Optional[String]               $volume_group = undef,
+  Optional[String]               $volume_size  = undef
 ) inherits profiles {
-  file { $backupdir:
-    ensure => 'directory',
-    owner  => 'ubuntu',
-    group  => 'ubuntu',
+
+
+   if $lvm {
+    unless ($volume_group and $volume_size) {
+      fail("with LVM enabled, expects a value for both 'volume_group' and 'volume_size'")
+    }
+
+    profiles::lvm::mount { 'mysql_rds_backups':
+      volume_group => $volume_group,
+      size         => $volume_size,
+      mountpoint   => $backupdir,
+      fs_type      => 'ext4',
+      owner        => 'ubuntu',
+      group        => 'ubuntu'
+    }
+  } else {
+    file { $backupdir:
+      ensure  => 'directory',
+      owner   => 'ubuntu',
+      group   => 'ubuntu'
+    }
   }
 
   $config = lookup('rds_hiera_configs', { merge => 'hash' })
