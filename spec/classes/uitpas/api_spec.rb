@@ -75,12 +75,6 @@ describe 'profiles::uitpas::api' do
               'readonly' => true
             ) }
 
-            it { is_expected.to contain_profiles__mysql__app_user('2ndline_ro@uitpas_api').with(
-              'password' => 'my_2ndline_ro_password',
-              'remote'   => false,
-              'readonly' => true
-            ) }
-
             it { is_expected.to contain_jdbcconnectionpool('mysql_uitpas_api_j2eePool').with(
               'ensure'              => 'present',
               'user'                => 'glassfish',
@@ -192,7 +186,6 @@ describe 'profiles::uitpas::api' do
             it { is_expected.to contain_profiles__mysql__app_user('uitpas_api@uitpas_api').that_requires('Mysql_database[uitpas_api]') }
             it { is_expected.to contain_profiles__mysql__app_user('uitpas_api@uitpas_api').that_comes_before('Class[profiles::uitpas::api::deployment]') }
             it { is_expected.to contain_profiles__mysql__app_user('etl@uitpas_api').that_requires('Mysql_database[uitpas_api]') }
-            it { is_expected.to contain_profiles__mysql__app_user('2ndline_ro@uitpas_api').that_requires('Mysql_database[uitpas_api]') }
             it { is_expected.to contain_jdbcconnectionpool('mysql_uitpas_api_j2eePool').that_requires('Profiles::Glassfish::Domain[uitpas]') }
             it { is_expected.to contain_jdbcconnectionpool('mysql_uitpas_api_j2eePool').that_requires('Profiles::Mysql::App_user[uitpas_api@uitpas_api]') }
             it { is_expected.to contain_jdbcconnectionpool('mysql_uitpas_api_j2eePool').that_notifies('Service[uitpas]') }
@@ -308,12 +301,6 @@ describe 'profiles::uitpas::api' do
 
               it { is_expected.to contain_profiles__mysql__app_user('etl@uitpas_api').with(
                 'password' => 'my_etl_password',
-                'remote'   => true,
-                'readonly' => true
-              ) }
-
-              it { is_expected.to contain_profiles__mysql__app_user('2ndline_ro@uitpas_api').with(
-                'password' => 'my_2ndline_ro_password',
                 'remote'   => true,
                 'readonly' => true
               ) }
