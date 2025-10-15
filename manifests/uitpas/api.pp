@@ -92,38 +92,33 @@ class profiles::uitpas::api (
       require  => Mysql_database[$database_name],
     }
 
-    profiles::mysql::app_user { "2ndline_ro@${database_name}":
-      password => lookup('data::mysql::2ndline_ro::password', Optional[String], 'first', undef),
-      readonly => true,
-      remote   => $database_host_remote,
-      require  => Mysql_database[$database_name],
-    }
-
     jdbcconnectionpool { 'mysql_uitpas_api_j2eePool':
       ensure       => 'present',
       resourcetype => 'javax.sql.DataSource',
       dsclassname  => 'com.mysql.cj.jdbc.MysqlDataSource',
       properties   => {
-        'serverName'        => $database_host,
-        'portNumber'        => '3306',
-        'databaseName'      => $database_name,
-        'User'              => $database_user,
-        'Password'          => $database_password,
-        'URL'               => "jdbc:mysql://${database_host}:3306/${database_name}",
-        'driverClass'       => 'com.mysql.cj.jdbc.Driver',
-        'characterEncoding' => 'UTF-8',
-        'useUnicode'        => true,
-        'useSSL'            => false,
-      },
+                        'serverName'        => $database_host,
+                        'portNumber'        => '3306',
+                        'databaseName'      => $database_name,
+                        'User'              => $database_user,
+                        'Password'          => $database_password,
+                        'URL'               => "jdbc:mysql://${database_host}:3306/${database_name}",
+                        'driverClass'       => 'com.mysql.cj.jdbc.Driver',
+                        'characterEncoding' => 'UTF-8',
+                        'useUnicode'        => true,
+                        'useSSL'            => false
+                      },
       require      => [Profiles::Glassfish::Domain['uitpas'], Profiles::Mysql::App_user["${database_user}@${database_name}"]],
-      *            => $default_attributes,
+      notify       => Service['uitpas'],
+      *            => $default_attributes
     }
 
     jdbcresource { 'jdbc/cultuurnet_uitpas':
       ensure         => 'present',
       connectionpool => 'mysql_uitpas_api_j2eePool',
       require        => Jdbcconnectionpool['mysql_uitpas_api_j2eePool'],
-      *              => $default_attributes,
+      notify         => Service['uitpas'],
+      *              => $default_attributes
     }
 
     if $deployment {
