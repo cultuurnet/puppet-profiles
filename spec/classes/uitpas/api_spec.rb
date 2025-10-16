@@ -99,7 +99,7 @@ describe 'profiles::uitpas::api' do
             
             it { is_expected.to contain_cron('gsutil_rsync_nginx_logs').with(
               'ensure'       => 'present',
-              'command'     => '/usr/bin/gsutil rsync -x ".*error.*|.*log$|uitpas-prod.uitid.*|^access.log.*" /var/log/nginx/ gs://publiq-etl-prod/etl/rev_proxy_logs/raw/',
+              'command'     => '/usr/bin/gsutil rsync -x ".*error.*|.*log$|uitpas-prod.uitid.*|^access.log.*" /var/log/apache2/ gs://publiq-etl-prod/etl/rev_proxy_logs/raw/',
               'user'        => 'root',
               'hour'        => '7',
               'minute'      => '45'

@@ -232,7 +232,7 @@ class profiles::uitpas::api (
       false => 'absent'
     },
     environment => ['MAILTO=infra+cron@publiq.be'],
-    command    => '/usr/bin/gsutil rsync -x ".*error.*|.*log$|uitpas-prod.uitid.*|^access.log.*" /var/log/nginx/ gs://publiq-etl-prod/etl/rev_proxy_logs/raw/',
+    command    => '/usr/bin/gsutil rsync -x ".*error.*|.*log$|uitpas-prod.uitid.*|^access.log.*" /var/log/apache2/ gs://publiq-etl-prod/etl/rev_proxy_logs/raw/',
     user       => 'root',
     minute     => 45,
     hour       => 7,

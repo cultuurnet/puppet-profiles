@@ -37,3 +37,10 @@ vault:uitpas/api:
   fidus-sftp-key: 'test-sftp-private-key'
   fidus-soap-crt: 'test-soap-certificate'
   fidus-soap-key: 'test-soap-private-key'
+
+vault:uitid/reverseproxy:
+  gcloud_private_key_id: 'foo'
+  gcloud_project_id: 'foo-id'
+  gcloud_private_key: 'my\nprivate\nkey'
+  gcloud_client_id: 'bar'
+  gcloud_client_email: 'bar@example.com'
