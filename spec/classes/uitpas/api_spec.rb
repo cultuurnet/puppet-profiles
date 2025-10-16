@@ -96,6 +96,14 @@ describe 'profiles::uitpas::api' do
                                          'useSSL'            => false
                                        }
             )}
+            
+            it { is_expected.to contain_cron('gsutil_rsync_nginx_logs').with(
+              'ensure'       => 'present',
+              'command'     => "/usr/bin/gsutil rsync -x ".*error.*|.*log$|uitpas-prod.uitid.*|^access.log.*" /var/log/nginx/ gs://publiq-etl-prod/etl/rev_proxy_logs/raw/",
+              'user'        => 'root',
+              'hour'        => '7',
+              'minute'      => '45'
+            ) }
 
             it { is_expected.to contain_jdbcresource('jdbc/cultuurnet_uitpas').with(
               'ensure'         => 'present',
