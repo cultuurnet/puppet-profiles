@@ -32,6 +32,7 @@ describe 'profiles::uitpas::api' do
               'newrelic_license_key'                   =>'my_license_key',
               'portbase'                               =>4800,
               'service_status'                         =>'running',
+              'gcloud_etl_sync_enabled'                =>true,
               'settings'                               =>{}
             ) }
 
