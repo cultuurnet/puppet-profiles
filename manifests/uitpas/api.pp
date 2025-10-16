@@ -1,17 +1,18 @@
 class profiles::uitpas::api (
   String                         $servername,
   String                         $database_password,
-  Variant[String, Array[String]] $serveraliases        = [],
-  String                         $database_host        = '127.0.0.1',
-  Boolean                        $deployment           = true,
-  Optional[String]               $initial_heap_size    = undef,
-  Optional[String]               $maximum_heap_size    = undef,
-  Boolean                        $jmx                  = true,
-  Boolean                        $newrelic             = false,
-  Optional[String]               $newrelic_license_key = lookup('data::newrelic::license_key', Optional[String], 'first', undef),
-  Integer                        $portbase             = 4800,
-  Enum['running', 'stopped']     $service_status       = 'running',
-  Hash                           $settings             = {}
+  Variant[String, Array[String]] $serveraliases           = [],
+  String                         $database_host           = '127.0.0.1',
+  Boolean                        $deployment              = true,
+  Optional[String]               $initial_heap_size       = undef,
+  Optional[String]               $maximum_heap_size       = undef,
+  Boolean                        $jmx                     = true,
+  Boolean                        $newrelic                = false,
+  Optional[String]               $newrelic_license_key    = lookup('data::newrelic::license_key', Optional[String], 'first', undef),
+  Integer                        $portbase                = 4800,
+  Enum['running', 'stopped']     $service_status          = 'running',
+  Boolean                        $gcloud_etl_sync_enabled = true,
+  Hash                           $settings                = {}
 ) inherits profiles {
   $database_name              = 'uitpas_api'
   $database_user              = 'uitpas_api'
@@ -25,7 +26,19 @@ class profiles::uitpas::api (
   include profiles::apache
   include profiles::java
   include profiles::glassfish
+  if $gcloud_etl_sync_enabled {
+    $secrets = lookup('vault:uitid/reverseproxy')
 
+    profiles::google::gcloud { 'root':
+      credentials => {
+        project_id     => $secrets['gcloud_project_id'],
+        private_key_id => $secrets['gcloud_private_key_id'],
+        private_key    => $secrets['gcloud_private_key'],
+        client_id      => $secrets['gcloud_client_id'],
+        client_email   => $secrets['gcloud_client_email'],
+      },
+    }
+  }
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
     destination => "http://127.0.0.1:${glassfish_domain_http_port}/uitid/rest/",
@@ -212,6 +225,17 @@ class profiles::uitpas::api (
     source  => '/usr/share/java/mysql-connector-j.jar',
     require => Package['mysql-connector-j'],
     before  => Profiles::Glassfish::Domain['uitpas'],
+  }
+  cron { 'gsutil_rsync_nginx_logs':
+    ensure       => $gcloud_etl_sync_enabled ? {
+      true  => 'present',
+      false => 'absent'
+    },
+    environment => ['MAILTO=infra+cron@publiq.be'],
+    command    => '/usr/bin/gsutil rsync -x ".*error.*|.*log$|uitpas-prod.uitid.*|^access.log.*" /var/log/apache2/ gs://publiq-etl-prod/etl/rev_proxy_logs/raw/',
+    user       => 'root',
+    minute     => 45,
+    hour       => 7,
   }
 
   # include ::profiles::uitpas::api::monitoring
