@@ -3,6 +3,8 @@ class profiles::uitdatabank::data (
   Boolean $mysql = true
 ) inherits ::profiles {
 
+  realize Package['amqp-tools']
+
   if $redis {
     include profiles::redis
   }

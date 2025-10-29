@@ -10,6 +10,8 @@ describe 'profiles::uitdatabank::data' do
 
         it { is_expected.to compile.with_all_deps }
 
+        it { is_expected.to contain_package('amqp-tools') }
+
         it { is_expected.to contain_class('profiles::uitdatabank::data').with(
           'redis' => true,
           'mysql' => true
