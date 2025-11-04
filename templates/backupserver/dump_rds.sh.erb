@@ -15,7 +15,7 @@ DATABASES=$(mysql --host="$HOST" --user="$USER" --password="$PASSWORD" -N -e "SH
 if [ -z "$DATABASES" ]; then
   echo "No databases to dump for <%= db_key %>."
 else
-  mysqldump --host="$HOST" --user="$USER" --password="$PASSWORD" --databases $DATABASES | gzip > "$BACKUPDIR/<%= db_key %>-$(date +%F).sql.gz"
+  mysqldump --host="$HOST" --user="$USER" --password="$PASSWORD" --databases $DATABASES --set-gtid-purged=OFF --no-tablespaces --skip-triggers --routines --events --single-transaction | gzip > "$BACKUPDIR/<%= db_key %>-$(date +%F).sql.gz"
   if [ $? -eq 0 ]; then
     echo "Backup for <%= db_key %> completed successfully."
   else
