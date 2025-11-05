@@ -2,7 +2,7 @@ class profiles::postfix (
   Boolean                        $tls               = true,
   Enum['ipv4', 'ipv6', 'all']    $inet_protocols    = 'ipv4',
   String                         $listen_addresses  = 'all',
-  Optional[String]               $relayhost         = undef,
+  Variant[Boolean, String]       $relayhost         = false,
   Boolean                        $aliases           = false,
   Variant[String, Array[String]] $aliases_domains   = [],
   Variant[String, Array[String]] $extra_allowed_ips = [],
@@ -13,10 +13,19 @@ class profiles::postfix (
 
   $config_directory = '/etc/postfix'
   $mynetworks_file  = "${config_directory}/mynetworks"
+  $relay_host       = $relayhost ? {
+                        false      => $relayhost,
+                        /^\[.*\]$/ => $relayhost,
+                        default    => "[${relayhost}]"
+                      }
 
-  if !($relayhost) {
-    $relay_host  = false
+
+  if $relayhost {
+    $my_networks = false
+  } else {
     $my_networks = "${config_directory}/mynetworks"
+
+    realize Package['mailutils']
 
     @@concat::fragment { "postfix_mynetworks_127.0.0.1":
       target  => $mynetworks_file,
@@ -46,13 +55,6 @@ class profiles::postfix (
     }
 
     realize Firewall['300 accept SMTP traffic']
-
-  } else {
-    $relay_host  = $relayhost ? {
-                     /^\[.*\]$/ => $relayhost,
-                     default    => "[${relayhost}]"
-                   }
-    $my_networks = false
   }
 
   @@concat::fragment { "postfix_mynetworks_${facts['networking']['ip']}":
@@ -86,7 +88,7 @@ class profiles::postfix (
         daemon_directory      => '/usr/lib/postfix/sbin',
         inet_protocols        => $inet_protocols,
         inet_interfaces       => $listen_addresses,
-        virtual_alias_maps    => [ "hash:${config_directory}/virtual"],
+        virtual_alias_maps    => ["hash:${config_directory}/virtual"],
         virtual_alias_domains => [$aliases_domains].flatten,
         relayhost             => $relay_host,
         mynetworks            => $my_networks,
@@ -117,10 +119,10 @@ class profiles::postfix (
         smtp_use_tls            => 'yes',
         smtp_tls_security_level => 'may',
         extra_main_parameters   => {
-          'smtp_tls_loglevel'   => '1',
-          'smtpd_recipient_restrictions' => 'permit_mynetworks,reject_unauth_destination',
-          'smtpd_relay_restrictions'     => 'permit_mynetworks,reject_unauth_destination'
-        }
+                                     'smtp_tls_loglevel'            => '1',
+                                     'smtpd_recipient_restrictions' => 'permit_mynetworks,reject_unauth_destination',
+                                     'smtpd_relay_restrictions'     => 'permit_mynetworks,reject_unauth_destination'
+                                   }
       }
     } else {
       class { '::postfix::server':

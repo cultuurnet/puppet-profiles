@@ -21,12 +21,14 @@ describe 'profiles::postfix' do
            'tls'               => true,
            'inet_protocols'    => 'ipv4',
            'listen_addresses'  => 'all',
-           'relayhost'         => nil,
+           'relayhost'         => false,
            'aliases'           => false,
            'aliases_domains'   => [],
            'extra_allowed_ips' => [],
            'aliases_source'    => 'puppet:///modules/profiles/postfix/virtual'
           ) }
+
+          it { is_expected.to contain_package('mailutils') }
 
           it { is_expected.to contain_class('postfix::server').with(
             'daemon_directory'        => '/usr/lib/postfix/sbin',
@@ -42,7 +44,6 @@ describe 'profiles::postfix' do
                                            'smtp_tls_loglevel'            => '1',
                                            'smtpd_recipient_restrictions' => 'permit_mynetworks,reject_unauth_destination',
                                            'smtpd_relay_restrictions'     => 'permit_mynetworks,reject_unauth_destination'
-
                                          }
           ) }
 
@@ -67,8 +68,8 @@ describe 'profiles::postfix' do
           it { is_expected.to contain_concat('/etc/postfix/mynetworks') }
 
           it { is_expected.to contain_firewall('300 accept SMTP traffic').with(
-            'proto' => 'tcp',
-            'dport' => '25',
+            'proto'  => 'tcp',
+            'dport'  => '25',
             'action' => 'accept'
           ) }
 
@@ -120,6 +121,8 @@ describe 'profiles::postfix' do
         context "with relayhost => [mailhost.example.com]" do
           let(:params) { { 'relayhost' => '[mailhost.example.com]' } }
 
+          it { is_expected.not_to contain_package('mailutils') }
+
           it { is_expected.to contain_class('postfix::server').with(
             'daemon_directory'        => '/usr/lib/postfix/sbin',
             'inet_protocols'          => 'ipv4',
@@ -134,7 +137,6 @@ describe 'profiles::postfix' do
                                            'smtp_tls_loglevel'            => '1',
                                            'smtpd_recipient_restrictions' => 'permit_mynetworks,reject_unauth_destination',
                                            'smtpd_relay_restrictions'     => 'permit_mynetworks,reject_unauth_destination'
-
                                          }
           ) }
 
@@ -171,7 +173,6 @@ describe 'profiles::postfix' do
                                            'smtp_tls_loglevel'            => '1',
                                            'smtpd_recipient_restrictions' => 'permit_mynetworks,reject_unauth_destination',
                                            'smtpd_relay_restrictions'     => 'permit_mynetworks,reject_unauth_destination'
-
                                          }
           ) }
         end
@@ -186,8 +187,8 @@ describe 'profiles::postfix' do
 
         context "with inet_protocols => all and relayhost => [mailhost.example.com]" do
           let(:params) { {
-            'inet_protocols'   => 'all',
-            'relayhost'        => '[mailhost.example.com]'
+            'inet_protocols' => 'all',
+            'relayhost'      => '[mailhost.example.com]'
           } }
 
           it { is_expected.to contain_class('postfix::server').with(
@@ -215,11 +216,13 @@ describe 'profiles::postfix' do
           it { is_expected.not_to contain_concat('/etc/postfix/mynetworks') }
         end
 
-        context "with aliases and extra_allowed_ips => ['8.7.6.5', '9.10.11.12']" do
+        context "with aliases => true and extra_allowed_ips => ['8.7.6.5', '9.10.11.12']" do
           let(:params) { {
             'aliases'           => true,
             'extra_allowed_ips' => ['8.7.6.5', '9.10.11.12']
           } }
+
+          it { is_expected.to contain_package('mailutils') }
 
           it { is_expected.to contain_class('postfix::server').with(
             'daemon_directory'      => '/usr/lib/postfix/sbin',
@@ -230,13 +233,13 @@ describe 'profiles::postfix' do
             'mynetworks'            => '/etc/postfix/mynetworks',
             'message_size_limit'    => '0',
             'mailbox_size_limit'    => '0',
-            'virtual_alias_maps'    => [ 'hash:/etc/postfix/virtual'],
+            'virtual_alias_maps'    => ['hash:/etc/postfix/virtual'],
             'virtual_alias_domains' => [],
-            'extra_main_parameters'   => {
-              'smtp_tls_loglevel' => '1',
-              'smtpd_recipient_restrictions' => 'permit_mynetworks,reject_unauth_destination',
-              'smtpd_relay_restrictions'     => 'permit_mynetworks,reject_unauth_destination'
-            }
+            'extra_main_parameters' => {
+                                         'smtp_tls_loglevel'            => '1',
+                                         'smtpd_recipient_restrictions' => 'permit_mynetworks,reject_unauth_destination',
+                                         'smtpd_relay_restrictions'     => 'permit_mynetworks,reject_unauth_destination'
+                                       }
           ) }
 
           it { is_expected.to contain_postfix__dbfile('virtual').with(
@@ -268,8 +271,8 @@ describe 'profiles::postfix' do
           it { is_expected.to contain_concat('/etc/postfix/mynetworks') }
 
           it { is_expected.to contain_firewall('300 accept SMTP traffic').with(
-            'proto' => 'tcp',
-            'dport' => '25',
+            'proto'  => 'tcp',
+            'dport'  => '25',
             'action' => 'accept'
           ) }
 
@@ -307,8 +310,8 @@ describe 'profiles::postfix' do
             ) }
 
             it { is_expected.to contain_firewall('300 accept SMTP traffic').with(
-              'proto' => 'tcp',
-              'dport' => '25',
+              'proto'  => 'tcp',
+              'dport'  => '25',
               'action' => 'accept'
             ) }
           end
@@ -344,11 +347,11 @@ describe 'profiles::postfix' do
             'mailbox_size_limit'    => '0',
             'virtual_alias_maps'    => ['hash:/etc/postfix/virtual'],
             'virtual_alias_domains' => ['baz.com'],
-            'extra_main_parameters'   => {
-              'smtp_tls_loglevel' => '1',
-              'smtpd_recipient_restrictions' => 'permit_mynetworks,reject_unauth_destination',
-              'smtpd_relay_restrictions'     => 'permit_mynetworks,reject_unauth_destination'
-            }
+            'extra_main_parameters' => {
+                                         'smtp_tls_loglevel'            => '1',
+                                         'smtpd_recipient_restrictions' => 'permit_mynetworks,reject_unauth_destination',
+                                         'smtpd_relay_restrictions'     => 'permit_mynetworks,reject_unauth_destination'
+                                       }
           ) }
 
           it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_1.2.3.4').with(
