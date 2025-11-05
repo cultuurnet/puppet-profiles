@@ -163,6 +163,10 @@ class profiles::packages inherits ::profiles {
     require => Apt::Source['publiq-tools']
   }
 
+  @package { 'mailutils':
+    ensure  => 'present'
+  }
+
   # Realize a list of 'default' packages on all nodes
   realize Package['jq']
   realize Package['yq']
