@@ -33,15 +33,27 @@ describe 'profiles::uitdatabank::search_api' do
             'public_web_directory' => 'web',
             'aliases'              => [],
             'access_log_format'    => 'api_key_json',
-            'rewrites'             => [ {
-                                          'comment'      => 'Capture apiKey from URL parameters',
-                                          'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
-                                          'rewrite_rule' => '^ - [E=API_KEY:%1]'
-                                        }, {
-                                          'comment'      => 'Capture apiKey from X-Api-Key header',
-                                          'rewrite_cond' => '%{HTTP:X-Api-Key} ^.+',
-                                          'rewrite_rule' => '^ - [E=API_KEY:%{HTTP:X-Api-Key}]'
-                                      } ]
+            'rewrites'             => [{
+                                        'comment'      => 'Capture apiKey from URL parameters',
+                                        'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
+                                        'rewrite_rule' => '^ - [E=API_KEY:%1]'
+                                      }, {
+                                        'comment'      => 'Capture apiKey from X-Api-Key header',
+                                        'rewrite_cond' => '%{HTTP:X-Api-Key} ^.+',
+                                        'rewrite_rule' => '^ - [E=API_KEY:%{HTTP:X-Api-Key}]'
+                                      }, {
+                                        'comment'      => 'Capture clientId from URL parameters',
+                                        'rewrite_cond' => '%{QUERY_STRING} (?:^|&)clientId=([^&]+)',
+                                        'rewrite_rule' => '^ - [E=CLIENT_ID:%1]'
+                                      }, {
+                                        'comment'      => 'Capture clientId from X-Client-Id header',
+                                        'rewrite_cond' => '%{HTTP:X-Client-Id} ^.+',
+                                        'rewrite_rule' => '^ - [E=CLIENT_ID:%{HTTP:X-Client-Id}]'
+                                      }, {
+                                        'comment'      => 'Capture JWT token from Authorization header',
+                                        'rewrite_cond' => '%{HTTP:Authorization} "^Bearer (.+)"',
+                                        'rewrite_rule' => '^ - [E=JWT_TOKEN:%1]'
+                                      }]
           ) }
 
           it { is_expected.to contain_class('profiles::uitdatabank::geojson_data::deployment') }
@@ -85,15 +97,27 @@ describe 'profiles::uitdatabank::search_api' do
             'public_web_directory' => 'web',
             'aliases'              => ['alias1.example.com', 'alias2.example.com'],
             'access_log_format'    => 'api_key_json',
-            'rewrites'             => [ {
-                                          'comment'      => 'Capture apiKey from URL parameters',
-                                          'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
-                                          'rewrite_rule' => '^ - [E=API_KEY:%1]'
-                                        }, {
-                                          'comment'      => 'Capture apiKey from X-Api-Key header',
-                                          'rewrite_cond' => '%{HTTP:X-Api-Key} ^.+',
-                                          'rewrite_rule' => '^ - [E=API_KEY:%{HTTP:X-Api-Key}]'
-                                      } ]
+            'rewrites'             => [{
+                                        'comment'      => 'Capture apiKey from URL parameters',
+                                        'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
+                                        'rewrite_rule' => '^ - [E=API_KEY:%1]'
+                                      }, {
+                                        'comment'      => 'Capture apiKey from X-Api-Key header',
+                                        'rewrite_cond' => '%{HTTP:X-Api-Key} ^.+',
+                                        'rewrite_rule' => '^ - [E=API_KEY:%{HTTP:X-Api-Key}]'
+                                      }, {
+                                        'comment'      => 'Capture clientId from URL parameters',
+                                        'rewrite_cond' => '%{QUERY_STRING} (?:^|&)clientId=([^&]+)',
+                                        'rewrite_rule' => '^ - [E=CLIENT_ID:%1]'
+                                      }, {
+                                        'comment'      => 'Capture clientId from X-Client-Id header',
+                                        'rewrite_cond' => '%{HTTP:X-Client-Id} ^.+',
+                                        'rewrite_rule' => '^ - [E=CLIENT_ID:%{HTTP:X-Client-Id}]'
+                                      }, {
+                                        'comment'      => 'Capture JWT token from Authorization header',
+                                        'rewrite_cond' => '%{HTTP:Authorization} "^Bearer (.+)"',
+                                        'rewrite_rule' => '^ - [E=JWT_TOKEN:%1]'
+                                      }]
           ) }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://es.example.com').with(
