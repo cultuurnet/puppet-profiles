@@ -1,4 +1,6 @@
-class profiles::sling inherits ::profiles {
+class profiles::sling (
+  Hash $connections = {}
+) inherits ::profiles {
 
   realize Apt::Source['publiq-tools']
 
@@ -21,6 +23,12 @@ class profiles::sling inherits ::profiles {
     target  => '/root/.sling/env.yaml',
     content => "connections:\n",
     order   => 1
+  }
+
+  $connections.each |String $connection, Hash $properties| {
+    profiles::sling::connection { $connection:
+      * => $properties
+    }
   }
 
   shellvar { 'system DBUS_SESSION_BUS_ADDRESS':
