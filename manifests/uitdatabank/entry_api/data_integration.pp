@@ -1,7 +1,5 @@
 class profiles::uitdatabank::entry_api::data_integration (
   String           $database_name,
-  String           $project_id,
-  String           $bucket,
   String           $database_host             = '127.0.0.1',
   Optional[String] $popularity_score_password = undef,
   Optional[String] $similar_events_password   = undef,
@@ -11,12 +9,13 @@ class profiles::uitdatabank::entry_api::data_integration (
   Optional[String] $developer_password        = undef
 ) inherits ::profiles {
 
-  $secrets                        = lookup('vault:uitdatabank/udb3-backend')
   $ownership_search_password_seed = $facts['ec2_metadata'] ? {
                                       undef   => "${database_name}_ownership_search",
                                       default => join(["${database_name}_ownership_search", file($settings::hostprivkey)], "\n")
                                     }
   $ownership_search_password      = fqdn_rand_string(20, $ownership_search_password_seed)
+
+  include profiles::data_integration
 
   profiles::mysql::app_user { "ownership_search@${database_name}":
     tables   => ['ownership_search'],
@@ -26,16 +25,6 @@ class profiles::uitdatabank::entry_api::data_integration (
                   '127.0.0.1' => false,
                   default     => true
                 }
-  }
-
-  profiles::google::gcloud { 'root':
-    credentials => {
-                     project_id     => $project_id,
-                     private_key_id => $secrets['gcloud_private_key_id'],
-                     private_key    => $secrets['gcloud_private_key'],
-                     client_id      => $secrets['gcloud_client_id'],
-                     client_email   => $secrets['gcloud_client_email']
-                   }
   }
 
   profiles::sling::connection { $database_name:
@@ -49,21 +38,12 @@ class profiles::uitdatabank::entry_api::data_integration (
     require       => Profiles::Mysql::App_user["ownership_search@${database_name}"]
   }
 
-  profiles::sling::connection { $bucket:
-    type          => 'gs',
-    configuration => {
-                        bucket   => $bucket,
-                        key_file => '/etc/gcloud/credentials_root.json',
-                     },
-    require       => Profiles::Google::Gcloud['root']
-  }
-
   file { 'parquetdump_to_gcs':
     ensure  => 'file',
     path    => '/usr/local/bin/parquetdump_to_gcs',
     mode    => '0755',
     content => template('profiles/uitdatabank/entry_api/parquetdump_to_gcs.sh.erb'),
-    require => [Profiles::Google::Gcloud['root'], Profiles::Sling::Connection[$database_name], Profiles::Sling::Connection[$bucket]]
+    require => [Class['profiles::data_integration'], Profiles::Sling::Connection[$database_name]]
   }
 
   cron { 'parquetdump_to_gcs':
