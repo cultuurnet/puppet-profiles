@@ -12,8 +12,7 @@ describe 'profiles::google::gcloud' do
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_profiles__google__gcloud('root').with(
-            'credentials' => {},
-            'login'       => true
+            'credentials' => {}
           ) }
 
           it { is_expected.to contain_apt__source('publiq-tools') }
@@ -61,7 +60,7 @@ describe 'profiles::google::gcloud' do
       context "with title jenkins" do
         let(:title) { 'jenkins' }
 
-        context "with credentials => { project_id => baz, private_key_id => id, private_key => 1234, client_id => quux and client_email => quux@example.com } and login => false" do
+        context "with credentials => { project_id => baz, private_key_id => id, private_key => 1234, client_id => quux and client_email => quux@example.com }" do
           let(:params) { {
             'credentials' => {
                                'project_id'     => 'baz',
@@ -69,8 +68,7 @@ describe 'profiles::google::gcloud' do
                                'private_key'    => '1234',
                                'client_id'      => 'quux',
                                'client_email'   => 'quux@example.com'
-                             },
-            'login'       => false
+                             }
           } }
 
           it { is_expected.to compile.with_all_deps }
@@ -83,7 +81,14 @@ describe 'profiles::google::gcloud' do
             'client_email'   => 'quux@example.com'
           ) }
 
-          it { is_expected.not_to contain_exec('gcloud auth login for jenkins') }
+          it { is_expected.to contain_exec('gcloud auth login for jenkins').with(
+            'command'     => '/usr/bin/gcloud auth login --cred-file=/etc/gcloud/credentials_jenkins.json --project=baz',
+            'refreshonly' => true,
+            'user'        => 'jenkins'
+          ) }
+
+          it { is_expected.to contain_exec('gcloud auth login for jenkins').that_subscribes_to('Package[google-cloud-cli]') }
+          it { is_expected.to contain_exec('gcloud auth login for jenkins').that_subscribes_to('Profiles::Google::Gcloud::Credentials[jenkins]') }
         end
       end
     end
