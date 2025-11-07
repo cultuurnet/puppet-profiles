@@ -1,5 +1,6 @@
 define profiles::google::gcloud (
-  Hash $credentials
+  Hash    $credentials = {},
+  Boolean $login       = true
 ) {
 
   include ::profiles
@@ -7,12 +8,14 @@ define profiles::google::gcloud (
   realize Apt::Source['publiq-tools']
   realize Package['google-cloud-cli']
 
-  profiles::google::gcloud::credentials { $title:
-    * => $credentials
+  unless $credentials.empty {
+    profiles::google::gcloud::credentials { $title:
+      * => $credentials
+    }
   }
 
-  if $credentials['project_id'] {
-    exec { "gcloud auth login for user ${title}":
+  if ($login and $credentials['project_id']) {
+    exec { "gcloud auth login for ${title}":
       command     => "/usr/bin/gcloud auth login --cred-file=/etc/gcloud/credentials_${title}.json --project=${credentials['project_id']}",
       user        => $title,
       refreshonly => true,
