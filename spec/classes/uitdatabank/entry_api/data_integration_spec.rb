@@ -8,11 +8,9 @@ describe 'profiles::uitdatabank::entry_api::data_integration' do
       context 'on node node1.example.com' do
         let(:node) { 'node1.example.com' }
 
-        context 'with database_name => foobar, project_id => myproject and bucket => bla' do
+        context 'with database_name => foobar' do
           let(:params) { {
-            'database_name' => 'foobar',
-            'project_id'    => 'myproject',
-            'bucket'        => 'bla'
+            'database_name' => 'foobar'
           } }
 
           context 'without extra parameters' do
@@ -25,14 +23,14 @@ describe 'profiles::uitdatabank::entry_api::data_integration' do
 
               it { is_expected.to contain_class('profiles::uitdatabank::entry_api::data_integration').with(
                 'database_name'             => 'foobar',
-                'project_id'                => 'myproject',
-                'bucket'                    => 'bla',
                 'database_host'             => '127.0.0.1',
                 'popularity_score_password' => nil,
                 'similarities_password'     => nil,
                 'event_labeling_password'   => nil,
                 'duplicate_places_password' => nil
               ) }
+
+              it { is_expected.to contain_class('profiles::data_integration') }
 
               it { is_expected.to have_profiles__mysql__app_user_resource_count(1) }
 
@@ -45,16 +43,6 @@ describe 'profiles::uitdatabank::entry_api::data_integration' do
                 'password' => 'aasoosraoreb_eoosrps'
               ) }
 
-              it { is_expected.to contain_profiles__google__gcloud('root').with(
-                'credentials' => {
-                                   'project_id'     => 'myproject',
-                                   'private_key_id' => 'foo',
-                                   'private_key'    => 'my\nprivate\nkey',
-                                   'client_id'      => 'bar',
-                                   'client_email'   => 'bar@example.com'
-                                 }
-              ) }
-
               it { is_expected.to contain_profiles__sling__connection('foobar').with(
                 'type'          => 'mysql',
                 'configuration' => {
@@ -62,14 +50,6 @@ describe 'profiles::uitdatabank::entry_api::data_integration' do
                                      'password' => 'aasoosraoreb_eoosrps',
                                      'host'     => '127.0.0.1',
                                      'database' => 'foobar'
-                                   }
-              ) }
-
-              it { is_expected.to contain_profiles__sling__connection('bla').with(
-                'type'          => 'gs',
-                'configuration' => {
-                                     'bucket'   => 'bla',
-                                     'key_file' => '/etc/gcloud/credentials_root.json'
                                    }
               ) }
 
@@ -88,9 +68,7 @@ describe 'profiles::uitdatabank::entry_api::data_integration' do
               ) }
 
               it { is_expected.to contain_profiles__sling__connection('foobar').that_requires('Profiles::Mysql::App_user[ownership_search@foobar]') }
-              it { is_expected.to contain_profiles__sling__connection('bla').that_requires('Profiles::Google::Gcloud[root]') }
               it { is_expected.to contain_file('parquetdump_to_gcs').that_requires('Profiles::Sling::Connection[foobar]') }
-              it { is_expected.to contain_file('parquetdump_to_gcs').that_requires('Profiles::Sling::Connection[bla]') }
               it { is_expected.to contain_cron('parquetdump_to_gcs').that_requires('File[parquetdump_to_gcs]') }
             end
           end
@@ -149,11 +127,9 @@ describe 'profiles::uitdatabank::entry_api::data_integration' do
       context 'on node node2.example.com' do
         let(:node) { 'node2.example.com' }
 
-        context 'with database_name => mydb, project_id => testproject, bucket => testbucket, database_host => db.example.com, popularity_score_password => baz, similar_events_password => secret, event_labeling_password => test and duplicate_places_password => l33t' do
+        context 'with database_name => mydb, database_host => db.example.com, popularity_score_password => baz, similar_events_password => secret, event_labeling_password => test and duplicate_places_password => l33t' do
           let(:params) { {
             'database_name'             => 'mydb',
-            'project_id'                => 'testproject',
-            'bucket'                    => 'testbucket',
             'database_host'             => 'db.example.com',
             'popularity_score_password' => 'baz',
             'similar_events_password'   => 'secret',
@@ -164,6 +140,8 @@ describe 'profiles::uitdatabank::entry_api::data_integration' do
           context 'with hieradata' do
             let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
+            it { is_expected.to contain_class('profiles::data_integration') }
+
             it { is_expected.to contain_profiles__mysql__app_user('ownership_search@mydb').with(
               'user'     => 'ownership_search',
               'database' => 'mydb',
@@ -173,16 +151,6 @@ describe 'profiles::uitdatabank::entry_api::data_integration' do
               'password' => 'prwsserrhhcmcberarbh'
             ) }
 
-            it { is_expected.to contain_profiles__google__gcloud('root').with(
-              'credentials' => {
-                                 'project_id'     => 'testproject',
-                                 'private_key_id' => 'foo',
-                                 'private_key'    => 'my\nprivate\nkey',
-                                 'client_id'      => 'bar',
-                                 'client_email'   => 'bar@example.com'
-                               }
-            ) }
-
             it { is_expected.to contain_profiles__sling__connection('mydb').with(
               'type'          => 'mysql',
               'configuration' => {
@@ -190,14 +158,6 @@ describe 'profiles::uitdatabank::entry_api::data_integration' do
                                    'password' => 'prwsserrhhcmcberarbh',
                                    'host'     => 'db.example.com',
                                    'database' => 'mydb'
-                                 }
-            ) }
-
-            it { is_expected.to contain_profiles__sling__connection('testbucket').with(
-              'type'          => 'gs',
-              'configuration' => {
-                                   'bucket'   => 'testbucket',
-                                   'key_file' => '/etc/gcloud/credentials_root.json'
                                  }
             ) }
 
@@ -236,7 +196,6 @@ describe 'profiles::uitdatabank::entry_api::data_integration' do
             it { is_expected.to have_profiles__mysql__app_user_resource_count(5) }
 
             it { is_expected.to contain_profiles__sling__connection('mydb').that_requires('Profiles::Mysql::App_user[ownership_search@mydb]') }
-            it { is_expected.to contain_profiles__sling__connection('testbucket').that_requires('Profiles::Google::Gcloud[root]') }
           end
         end
       end
@@ -245,8 +204,6 @@ describe 'profiles::uitdatabank::entry_api::data_integration' do
         let(:params) { {} }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'database_name'/) }
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'project_id'/) }
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'bucket'/) }
       end
     end
   end

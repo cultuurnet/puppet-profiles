@@ -8,13 +8,11 @@ describe 'profiles::uitdatabank::entry_api' do
       context 'with hieradata' do
         let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-        context 'with database_password => mypassword, servername => uitdatabank.example.com, job_interface_servername => jobs.example.com, gcloud_project_id => abc123 and gcloud_bucket => mybucket' do
+        context 'with database_password => mypassword, servername => uitdatabank.example.com and job_interface_servername => jobs.example.com' do
           let(:params) { {
             'database_password'        => 'mypassword',
             'servername'               => 'uitdatabank.example.com',
-            'job_interface_servername' => 'jobs.example.com',
-            'gcloud_project_id'        => 'abc123',
-            'gcloud_bucket'            => 'mybucket'
+            'job_interface_servername' => 'jobs.example.com'
           } }
 
           context "with class profiles::mysql::server present" do
@@ -47,9 +45,7 @@ describe 'profiles::uitdatabank::entry_api' do
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api::deployment') }
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api::data_integration').with(
               'database_host' => '127.0.0.1',
-              'database_name' => 'uitdatabank',
-              'project_id'    => 'abc123',
-              'bucket'        => 'mybucket'
+              'database_name' => 'uitdatabank'
             ) }
 
             it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://uitdatabank.example.com').with(
@@ -170,15 +166,13 @@ describe 'profiles::uitdatabank::entry_api' do
           end
         end
 
-        context 'with database_password => mypassword, database_host => bar.example.com, servername => foo.example.com, serveraliases => [alias1.example.com, alias2.example.com], job_interface_servername => baz.example.com, gcloud_project_id => def456, gcloud_bucket => test123, uitpas_servername => myuitpas.example.com, catch_mail => true, schedule_process_duplicates => true, schedule_movie_fetcher => true, schedule_add_trailers => true and schedule_replay_mismatched_events => true' do
+        context 'with database_password => mypassword, database_host => bar.example.com, servername => foo.example.com, serveraliases => [alias1.example.com, alias2.example.com], job_interface_servername => baz.example.com, uitpas_servername => myuitpas.example.com, catch_mail => true, schedule_process_duplicates => true, schedule_movie_fetcher => true, schedule_add_trailers => true and schedule_replay_mismatched_events => true' do
           let(:params) { {
             'database_password'                 => 'mypassword',
             'database_host'                     => 'bar.example.com',
             'servername'                        => 'foo.example.com',
             'serveraliases'                     => ['alias1.example.com', 'alias2.example.com'],
             'job_interface_servername'          => 'baz.example.com',
-            'gcloud_project_id'                 => 'def456',
-            'gcloud_bucket'                     => 'test123',
             'uitpas_servername'                 => 'myuitpas.example.com',
             'catch_mail'                        => true,
             'schedule_process_duplicates'       => true,
@@ -250,9 +244,7 @@ describe 'profiles::uitdatabank::entry_api' do
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api::deployment') }
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api::data_integration').with(
               'database_host' => 'bar.example.com',
-              'database_name' => 'uitdatabank',
-              'project_id'    => 'def456',
-              'bucket'        => 'test123'
+              'database_name' => 'uitdatabank'
             ) }
 
             it { is_expected.to contain_class('profiles::mailpit') }
