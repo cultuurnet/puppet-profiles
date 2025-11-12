@@ -31,6 +31,15 @@ describe 'profiles::uitid::api::cron' do
           'monthday' => '*',
           'month'    => '*'
         ) }
+
+        it { is_expected.to contain_cron('Clear expired UiTiD eventlog entries').with(
+          'command'  => "/usr/bin/curl --fail --silent --output /dev/null 'http://127.0.0.1:4880/uitid/rest/eventlog/clearexpired'",
+          'hour'     => 3,
+          'minute'   => 0,
+          'weekday'  => '*',
+          'monthday' => '*',
+          'month'    => '*'
+        ) }
       end
 
       context "with portbase => 14800" do
@@ -51,6 +60,15 @@ describe 'profiles::uitid::api::cron' do
           'command'  => "/usr/bin/curl --fail --silent --output /dev/null 'http://127.0.0.1:14880/uitid/rest/bootstrap/clearJpaCache'",
           'hour'     => [4, 16],
           'minute'   => 20,
+          'weekday'  => '*',
+          'monthday' => '*',
+          'month'    => '*'
+        ) }
+
+        it { is_expected.to contain_cron('Clear expired UiTiD eventlog entries').with(
+          'command'  => "/usr/bin/curl --fail --silent --output /dev/null 'http://127.0.0.1:14880/uitid/rest/eventlog/clearexpired'",
+          'hour'     => 3,
+          'minute'   => 0,
           'weekday'  => '*',
           'monthday' => '*',
           'month'    => '*'

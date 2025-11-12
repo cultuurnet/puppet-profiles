@@ -22,4 +22,13 @@ class profiles::uitid::api::cron (
     monthday => '*',
     month    => '*'
   }
+
+  cron { 'Clear expired UiTiD eventlog entries':
+    command  => "/usr/bin/curl --fail --silent --output /dev/null '${base_url}/uitid/rest/eventlog/clearexpired'",
+    hour     => 3,
+    minute   => 0,
+    weekday  => '*',
+    monthday => '*',
+    month    => '*'
+  }
 }
