@@ -1,9 +1,11 @@
 class profiles::uitpas::segmentatie::deployment (
   String           $config_source,
-  String           $version       = 'latest',
-  String           $repository    = 'uitpas-segmentatie',
-  Integer          $portbase      = 4800,
-  Boolean          $cron_enabled  = true
+  String           $version          = 'latest',
+  String           $repository       = 'uitpas-segmentatie',
+  Integer          $portbase         = 4800,
+  Boolean          $cron_enabled     = true,
+  Boolean          $service_watchdog = false
+
 ) inherits profiles {
   $glassfish_domain_http_port = $portbase + 80
   $database_name              = 'uitpas_segmentatie'
@@ -40,5 +42,14 @@ class profiles::uitpas::segmentatie::deployment (
     precompilejsp => false,
     source        => '/opt/uitpas-segmentatie/uitpas-segmentatie.war',
     require       => [Group['glassfish'], User['glassfish']],
+  }
+  profiles::systemd::service_watchdog { 'uitpas-segmentatie':
+    ensure                 => $service_watchdog ? {
+      true  => 'present',
+      false => 'absent'
+    },
+    check_interval_seconds => 20,
+    timeout_seconds        => 30,
+    healthcheck            => template('profiles/uitpas/segmentatie/deployment/service_healthcheck.erb'),
   }
 }

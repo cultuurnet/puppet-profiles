@@ -103,9 +103,9 @@ class profiles::uitpas::segmentatie (
 
     if $deployment {
       class { 'profiles::uitpas::segmentatie::deployment':
-        portbase          => $portbase,
+        portbase      => $portbase,
         config_source => $config_source,
-        cron_enabled    => $cron_enabled,
+        cron_enabled  => $cron_enabled,
       }
 
       Class['profiles::glassfish'] -> Class['profiles::uitpas::segmentatie::deployment']
