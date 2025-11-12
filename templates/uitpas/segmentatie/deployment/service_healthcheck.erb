@@ -1,0 +1,5 @@
+
+
+SEGMENTATION_HEALTH_URL="http://localhost:<%= @glassfish_domain_http_port %>/segmentation/"
+/usr/bin/test $(/usr/bin/curl -s  -o /dev/null $SEGMENTATION_HEALTH_URL -w "%{http_code}") -eq 200
+
