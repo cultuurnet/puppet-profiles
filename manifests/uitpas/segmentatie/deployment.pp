@@ -3,8 +3,8 @@ class profiles::uitpas::segmentatie::deployment (
   String           $version          = 'latest',
   String           $repository       = 'uitpas-segmentatie',
   Integer          $portbase         = 4800,
-  Boolean          $cron_enabled     = true
-  Boolean          $service_watchdog = false,
+  Boolean          $cron_enabled     = true,
+  Boolean          $service_watchdog = false
 
 ) inherits profiles {
   $glassfish_domain_http_port = $portbase + 80
