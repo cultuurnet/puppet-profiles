@@ -4,7 +4,7 @@ class profiles::platform (
   Variant[String,Array[String]] $serveraliases     = [],
   Boolean                       $deployment        = true,
   Boolean                       $catch_mail        = false,
-  Boolean                       $sling_enabled     = false
+  Boolean                       $data_integration  = false
 ) inherits ::profiles {
 
   $basedir       = '/var/www/platform-api'
@@ -53,8 +53,8 @@ class profiles::platform (
       subscribe => Class['profiles::php']
     }
 
-    if $sling_enabled {
-      class { 'profiles::platform::sling':
+    if $data_integration {
+      class { 'profiles::platform::data_integration':
         database_name => $database_name,
         require       => Class['profiles::platform::deployment']
       }

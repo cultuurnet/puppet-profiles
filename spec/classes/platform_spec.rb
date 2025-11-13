@@ -22,11 +22,11 @@ describe 'profiles::platform' do
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to contain_class('profiles::platform').with(
-              'servername'    => 'platform.example.com',
-              'serveraliases' => [],
-              'sling_enabled' => false,
-              'catch_mail'    => false,
-              'deployment'    => true
+              'servername'       => 'platform.example.com',
+              'serveraliases'    => [],
+              'data_integration' => false,
+              'catch_mail'       => false,
+              'deployment'       => true
             ) }
 
             it { is_expected.to contain_group('www-data') }
@@ -56,7 +56,7 @@ describe 'profiles::platform' do
 
             it { is_expected.to contain_class('profiles::platform::deployment') }
 
-            it { is_expected.not_to contain_class('profiles::platform::sling') }
+            it { is_expected.not_to contain_class('profiles::platform::data_integration') }
 
             it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://platform.example.com').with(
               'basedir'              => '/var/www/platform-api',
@@ -100,7 +100,7 @@ describe 'profiles::platform' do
 
           it { is_expected.not_to contain_class('profiles::platform::deployment') }
 
-          it { is_expected.not_to contain_class('profiles::platform::sling') }
+          it { is_expected.not_to contain_class('profiles::platform::data_integration') }
 
           it { is_expected.to contain_class('profiles::mailpit') }
 
@@ -113,24 +113,24 @@ describe 'profiles::platform' do
         end
       end
 
-      context 'with database_password => foo, servername => myplatform.example.com, catch_mail => false and sling_enabled => true' do
+      context 'with database_password => foo, servername => myplatform.example.com, catch_mail => false and data_integration => true' do
         let(:params) { {
           'database_password' => 'foo',
           'servername'        => 'myplatform.example.com',
           'catch_mail'        => false,
-          'sling_enabled'     => true
+          'data_integration'  => true
         } }
 
         context 'with hieradata' do
           let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-          it { is_expected.to contain_class('profiles::platform::sling').with(
+          it { is_expected.to contain_class('profiles::platform::data_integration').with(
             'database_name' => 'platform'
           ) }
 
           it { is_expected.not_to contain_class('profiles::mailpit') }
 
-          it { is_expected.to contain_class('profiles::platform::sling').that_requires('Class[profiles::platform::deployment]') }
+          it { is_expected.to contain_class('profiles::platform::data_integration').that_requires('Class[profiles::platform::deployment]') }
         end
       end
 
