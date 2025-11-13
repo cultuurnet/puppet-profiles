@@ -1,4 +1,0 @@
-{
-  "my_first_secret": "<%= @secrets['my_first_secret'] %>",
-  "my_second_secret": "<%= @secrets['my_second_secret'] %>"
-}
