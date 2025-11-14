@@ -9,5 +9,5 @@ SLING_ALLOW_EMPTY=<%= @dump_empty_tables %>
 
 for database_table in $(mysql -h 127.0.0.1 -u sling -p${database_password} ${database_name} --batch --skip-column-names -e 'show tables;')
 do
-    /usr/local/bin/sling run --src-conn ${database_name} --src-stream ${database_name}.${database_table} --tgt-conn 'publiq-ingestion' --tgt-object platform/${table_name}/v${data_contract_version}/${date_yesterday}/${table_name}.parquet"
+    /usr/local/bin/sling run --src-conn "${database_name}" --src-stream "${database_name}.${database_table}" --tgt-conn 'publiq-ingestion' --tgt-object "platform/${database_table}/v${data_contract_version}/${date_yesterday}/${database_table}.parquet"
 done
