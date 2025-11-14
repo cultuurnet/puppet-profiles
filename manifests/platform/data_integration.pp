@@ -1,23 +1,23 @@
-class profiles::platform::sling (
+class profiles::platform::data_integration (
   String  $database_name,
-  String  $project_id,
-  String  $bucket_name,
   Boolean $dump_empty_tables = true,
   Integer $cron_hour         = 2,
-  String  $local_timezone    = 'UTC'
+  String  $timezone          = 'UTC'
 
 ) inherits profiles {
 
-  include profiles::sling
+  $database_user          = 'sling'
+  $database_password_seed = $facts['ec2_metadata'] ? {
+                              undef   => "${database_name}_sling_password",
+                              default => join(["${database_name}_sling_password", file($settings::hostprivkey)], "\n")
+                            }
+  $database_password      = fqdn_rand_string(20, $database_password_seed)
 
-  $database_user     = 'sling'
-  $database_password = fqdn_rand_string(20, "${database_name}_sling_password")
-  $secrets           = lookup('vault:platform/etl')
-
-  realize Apt::Source['publiq-tools']
+  include profiles::data_integration
 
   profiles::mysql::app_user { "${database_user}@${database_name}":
     password => $database_password,
+    tables   => '*',
     readonly => true,
     remote   => false
   }
@@ -27,37 +27,24 @@ class profiles::platform::sling (
     configuration => {
                         user     => $database_user,
                         password => $database_password,
+			host     => '127.0.0.1',
                         database => $database_name
                      },
     require       => Profiles::Mysql::App_user["${database_user}@${database_name}"]
-  }
-
-  profiles::google::gcloud { 'root':
-    credentials => {
-      project_id     => $project_id,
-      private_key_id => $secrets['gcloud_private_key_id'],
-      private_key    => $secrets['gcloud_private_key'],
-      client_id      => $secrets['gcloud_client_id'],
-      client_email   => $secrets['gcloud_client_email']
-    }
-  }
-
-  file { '/data/parquetdumps':
-    ensure => 'directory'
   }
 
   file { 'parquetdump_to_gcs':
     ensure  => 'file',
     path    => '/usr/local/bin/parquetdump_to_gcs',
     mode    => '0755',
-    content => template('profiles/sling/parquetdump_to_gcs.sh.erb'),
-    require => Profiles::Google::Gcloud['root']
+    content => template('profiles/platform/parquetdump_to_gcs.sh.erb'),
+    require => [Profiles::Sling::Connection[$database_name], Class['profiles::data_integration']]
   }
 
   cron { 'parquetdump_to_gcs':
     ensure      => 'present',
     command     => '/usr/local/bin/parquetdump_to_gcs',
-    environment => ['SHELL=/bin/bash', "TZ=${local_timezone}", 'MAILTO=infra+cron@publiq.be'],
+    environment => ['SHELL=/bin/bash', "TZ=${timezone}", 'MAILTO=infra+cron@publiq.be'],
     hour        => $cron_hour,
     minute      => 0,
     require     => File['parquetdump_to_gcs']
