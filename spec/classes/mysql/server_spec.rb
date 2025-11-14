@@ -78,7 +78,7 @@ describe 'profiles::mysql::server' do
         ) }
 
         it { is_expected.to contain_class('profiles::mysql::server::backup').with(
-          'password'       => '6oUtalmOuraT8IcBhCMq',
+          'password'       => 'gYE3KVWy41KDisMlRmw0',
           'lvm'            => false,
           'volume_group'   => nil,
           'volume_size'    => nil,
@@ -207,7 +207,7 @@ describe 'profiles::mysql::server' do
             it { is_expected.to contain_class('profiles::mysql::server::monitoring') }
 
             it { is_expected.to contain_class('profiles::mysql::server::backup').with(
-              'password'       => 'WyT9DYvR7jMg62EmF3kJ',
+              'password'       => 'G8DjnI5BhTwQgcoWpdUt',
               'lvm'            => true,
               'volume_group'   => 'backupvg',
               'volume_size'    => '10G',
@@ -259,7 +259,7 @@ describe 'profiles::mysql::server' do
               ) }
 
               it { is_expected.to contain_class('profiles::mysql::server::backup').with(
-                'password'     => 'cUNSGcrB5ebQLnO902Y6',
+                'password'     => 'MExCqM1lfOLAvXyjacIg',
                 'lvm'          => true,
                 'volume_group' => 'backupvg',
                 'volume_size'  => '10G'
@@ -272,7 +272,7 @@ describe 'profiles::mysql::server' do
               }
 
               it { is_expected.to contain_class('profiles::mysql::server::backup').with(
-                'password'     => 'MlTwrxl3cgW1uK4RNd5f',
+                'password'     => 'wVD617VdMQGb4ueBxNfP',
                 'lvm'          => true,
                 'volume_group' => 'backupvg',
                 'volume_size'  => '10G'
@@ -329,7 +329,7 @@ describe 'profiles::mysql::server' do
           ) }
 
           it { is_expected.to contain_class('profiles::mysql::server::backup').with(
-            'password'     => 'Mt152RgDxtVQoAPmoXoH',
+            'password'     => 'w3bfcBQn73FAYkzWYHYr',
             'lvm'          => true,
             'volume_group' => 'mybackupvg',
             'volume_size'  => '8G'

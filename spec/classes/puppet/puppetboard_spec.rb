@@ -43,7 +43,7 @@ describe 'profiles::puppet::puppetboard' do
             'user'                => 'www-data',
             'manage_group'        => false,
             'manage_user'         => false,
-            'secret_key'          => 'a3Tl84mHAFP1DoOvMDESaXyXcUsC2cPu',
+            'secret_key'          => 'KdDVieWrkpzbnYy5wnoCKH8HME2mcMz4',
             'puppetdb_host'       => '127.0.0.1',
             'puppetdb_port'       => 8081,
             'puppetdb_ssl_verify' => '/var/www/puppetboard/ssl/ca.pem',

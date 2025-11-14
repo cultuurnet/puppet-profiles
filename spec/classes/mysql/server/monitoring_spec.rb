@@ -14,7 +14,7 @@ describe 'profiles::mysql::server::monitoring' do
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_profiles__mysql__app_user('newrelic@*').with(
-            'password' => 'J2wbKbelARuOkQZ0KJku',
+            'password' => 'tc6LuLOVkB4yUAJautU4',
             'remote'   => true,
             'readonly' => true
           ) }
@@ -24,7 +24,7 @@ describe 'profiles::mysql::server::monitoring' do
                                  'HOSTNAME'          => 'bar.example.com',
                                  'PORT'              => 3306,
                                  'USERNAME'          => 'newrelic',
-                                 'PASSWORD'          => 'J2wbKbelARuOkQZ0KJku',
+                                 'PASSWORD'          => 'tc6LuLOVkB4yUAJautU4',
                                  'METRICS'           => true,
                                  'INVENTORY'         => true,
                                  'REMOTE_MONITORING' => true

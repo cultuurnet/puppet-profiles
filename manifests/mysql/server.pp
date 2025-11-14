@@ -145,7 +145,7 @@ class profiles::mysql::server (
   }
 
   class { 'profiles::mysql::server::backup':
-    password       => fqdn_rand_string(20, undef, $root_password),
+    password       => fqdn_rand_string(20, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', $root_password),
     lvm            => $backup_lvm,
     volume_group   => $backup_volume_group,
     volume_size    => $backup_volume_size,

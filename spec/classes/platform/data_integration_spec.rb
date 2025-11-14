@@ -35,14 +35,14 @@ describe 'profiles::platform::data_integration' do
               'tables'   => '*',
               'readonly' => true,
               'remote'   => false,
-              'password' => 'offalslnissigiwrosoo'
+              'password' => 'vJfJpAzTHXt3NeFXaupK'
             ) }
 
             it { is_expected.to contain_profiles__sling__connection('foobar').with(
               'type'          => 'mysql',
               'configuration' => {
                                    'user'     => 'sling',
-                                   'password' => 'offalslnissigiwrosoo',
+                                   'password' => 'vJfJpAzTHXt3NeFXaupK',
                                    'host'     => '127.0.0.1',
                                    'database' => 'foobar'
                                  }
@@ -55,7 +55,7 @@ describe 'profiles::platform::data_integration' do
             ) }
 
             it { is_expected.to contain_file('parquetdump_to_gcs').with_content(/^database_name=foobar$/) }
-            it { is_expected.to contain_file('parquetdump_to_gcs').with_content(/^database_password=offalslnissigiwrosoo$/) }
+            it { is_expected.to contain_file('parquetdump_to_gcs').with_content(/^database_password=vJfJpAzTHXt3NeFXaupK$/) }
             it { is_expected.to contain_file('parquetdump_to_gcs').with_content(/^SLING_ALLOW_EMPTY=true$/) }
 
             it { is_expected.to contain_cron('parquetdump_to_gcs').with(
@@ -93,21 +93,21 @@ describe 'profiles::platform::data_integration' do
             'tables'   => '*',
             'readonly' => true,
             'remote'   => false,
-            'password' => 'wsbmo_pdp_lsr_lpdprw'
+            'password' => 'JlCofI8ujmlsHtfQjlNf'
           ) }
 
           it { is_expected.to contain_profiles__sling__connection('mydb').with(
             'type'          => 'mysql',
             'configuration' => {
                                  'user'     => 'sling',
-                                 'password' => 'wsbmo_pdp_lsr_lpdprw',
+                                 'password' => 'JlCofI8ujmlsHtfQjlNf',
                                  'host'     => '127.0.0.1',
                                  'database' => 'mydb'
                                }
           ) }
 
           it { is_expected.to contain_file('parquetdump_to_gcs').with_content(/^database_name=mydb$/) }
-          it { is_expected.to contain_file('parquetdump_to_gcs').with_content(/^database_password=wsbmo_pdp_lsr_lpdprw$/) }
+          it { is_expected.to contain_file('parquetdump_to_gcs').with_content(/^database_password=JlCofI8ujmlsHtfQjlNf$/) }
           it { is_expected.to contain_file('parquetdump_to_gcs').with_content(/^SLING_ALLOW_EMPTY=false$/) }
 
           it { is_expected.to contain_cron('parquetdump_to_gcs').with(
