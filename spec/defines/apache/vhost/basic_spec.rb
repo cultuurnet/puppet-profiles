@@ -185,7 +185,7 @@ describe 'profiles::apache::vhost::basic' do
                                           'ClientID'            => 'abc123',
                                           'ClientSecret'        => 'def456',
                                           'RedirectURI'         => 'https://myvhost.example.com/redirect_uri',
-                                          'CryptoPassphrase'    => 'eFRxI8X8h4zOZ9Die6UEoqkbbzKJ4xvP'
+                                          'CryptoPassphrase'    => 'OpB7siHiRe9yJjnSOgEoY0ULL9ute75z'
                                         },
                 'directories'        => [
                                           {

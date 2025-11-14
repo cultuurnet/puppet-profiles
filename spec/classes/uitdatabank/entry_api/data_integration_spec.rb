@@ -40,14 +40,14 @@ describe 'profiles::uitdatabank::entry_api::data_integration' do
                 'tables'   => ['ownership_search'],
                 'readonly' => true,
                 'remote'   => false,
-                'password' => 'aasoosraoreb_eoosrps'
+                'password' => '8bZs9RqRT2k22qa13HDI'
               ) }
 
               it { is_expected.to contain_profiles__sling__connection('foobar').with(
                 'type'          => 'mysql',
                 'configuration' => {
                                      'user'     => 'ownership_search',
-                                     'password' => 'aasoosraoreb_eoosrps',
+                                     'password' => '8bZs9RqRT2k22qa13HDI',
                                      'host'     => '127.0.0.1',
                                      'database' => 'foobar'
                                    }
@@ -89,14 +89,14 @@ describe 'profiles::uitdatabank::entry_api::data_integration' do
                 'tables'   => ['ownership_search'],
                 'readonly' => true,
                 'remote'   => true,
-                'password' => 'aasoosraoreb_eoosrps'
+                'password' => '8bZs9RqRT2k22qa13HDI'
               ) }
 
               it { is_expected.to contain_profiles__sling__connection('foobar').with(
                 'type'          => 'mysql',
                 'configuration' => {
                                      'user'     => 'ownership_search',
-                                     'password' => 'aasoosraoreb_eoosrps',
+                                     'password' => '8bZs9RqRT2k22qa13HDI',
                                      'host'     => 'foo.example.com',
                                      'database' => 'foobar'
                                    }
@@ -148,14 +148,14 @@ describe 'profiles::uitdatabank::entry_api::data_integration' do
               'tables'   => ['ownership_search'],
               'readonly' => true,
               'remote'   => true,
-              'password' => 'prwsserrhhcmcberarbh'
+              'password' => 'BzVHekhi7SGdyRaQEDZY'
             ) }
 
             it { is_expected.to contain_profiles__sling__connection('mydb').with(
               'type'          => 'mysql',
               'configuration' => {
                                    'user'     => 'ownership_search',
-                                   'password' => 'prwsserrhhcmcberarbh',
+                                   'password' => 'BzVHekhi7SGdyRaQEDZY',
                                    'host'     => 'db.example.com',
                                    'database' => 'mydb'
                                  }

@@ -13,7 +13,7 @@ class profiles::uitdatabank::entry_api::data_integration (
                                       undef   => "${database_name}_ownership_search",
                                       default => join(["${database_name}_ownership_search", file($settings::hostprivkey)], "\n")
                                     }
-  $ownership_search_password      = fqdn_rand_string(20, $ownership_search_password_seed)
+  $ownership_search_password      = fqdn_rand_string(20, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', $ownership_search_password_seed)
 
   include profiles::data_integration
 

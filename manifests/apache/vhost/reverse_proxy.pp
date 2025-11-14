@@ -88,7 +88,7 @@ define profiles::apache::vhost::reverse_proxy (
                                     'ClientID'            => lookup('data::openid::client_id', Optional[String], 'first', undef),
                                     'ClientSecret'        => lookup('data::openid::client_secret', Optional[String], 'first', undef),
                                     'RedirectURI'         => "https://${servername}/redirect_uri",
-                                    'CryptoPassphrase'    => fqdn_rand_string(32)
+                                    'CryptoPassphrase'    => fqdn_rand_string(32, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
                                   }
     $no_proxy_uris              = ['/redirect_uri']
   } else {

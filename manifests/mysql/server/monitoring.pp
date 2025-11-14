@@ -1,7 +1,7 @@
 class profiles::mysql::server::monitoring inherits ::profiles {
 
   $database_user     = 'newrelic'
-  $database_password = fqdn_rand_string(20, undef, $database_user)
+  $database_password = fqdn_rand_string(20, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', $database_user)
 
   profiles::mysql::app_user { "${database_user}@*":
     password => $database_password,

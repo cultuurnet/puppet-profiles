@@ -117,7 +117,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                              'ClientID'            => 'abc123',
                                              'ClientSecret'        => 'def456',
                                              'RedirectURI'         => 'https://leonardo.example.com/redirect_uri',
-                                             'CryptoPassphrase'    => 'a3Tl84mHAFP1DoOvMDESaXyXcUsC2cPu'
+                                             'CryptoPassphrase'    => 'KdDVieWrkpzbnYy5wnoCKH8HME2mcMz4'
                                            },
                 'setenvif'              => [
                                              'X-Forwarded-Proto "https" HTTPS=on',
@@ -293,7 +293,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                              'ClientID'            => 'abc123',
                                              'ClientSecret'        => 'def456',
                                              'RedirectURI'         => 'https://raphael.example.com/redirect_uri',
-                                             'CryptoPassphrase'    => 'eFRxI8X8h4zOZ9Die6UEoqkbbzKJ4xvP'
+                                             'CryptoPassphrase'    => 'OpB7siHiRe9yJjnSOgEoY0ULL9ute75z'
                                            },
                 'ssl'                   => false,
                 'ssl_proxyengine'       => true,

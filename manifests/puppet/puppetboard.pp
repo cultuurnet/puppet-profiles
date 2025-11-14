@@ -28,7 +28,7 @@ class profiles::puppet::puppetboard (
     user                => 'www-data',
     manage_group        => false,
     manage_user         => false,
-    secret_key          => fqdn_rand_string(32),
+    secret_key          => fqdn_rand_string(32, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'),
     puppetdb_host       => '127.0.0.1',
     puppetdb_port       => 8081,
     puppetdb_ssl_verify => "${basedir}/ssl/ca.pem",
