@@ -56,7 +56,7 @@ describe 'profiles::platform::data_integration' do
 
             it { is_expected.to contain_file('parquetdump_to_gcs').with_content(/^database_name=foobar$/) }
             it { is_expected.to contain_file('parquetdump_to_gcs').with_content(/^database_password=vJfJpAzTHXt3NeFXaupK$/) }
-            it { is_expected.to contain_file('parquetdump_to_gcs').with_content(/^SLING_ALLOW_EMPTY=true$/) }
+            it { is_expected.to contain_file('parquetdump_to_gcs').with_content(/^dump_empty_tables=true$/) }
 
             it { is_expected.to contain_cron('parquetdump_to_gcs').with(
               'ensure'      => 'present',
@@ -108,7 +108,7 @@ describe 'profiles::platform::data_integration' do
 
           it { is_expected.to contain_file('parquetdump_to_gcs').with_content(/^database_name=mydb$/) }
           it { is_expected.to contain_file('parquetdump_to_gcs').with_content(/^database_password=JlCofI8ujmlsHtfQjlNf$/) }
-          it { is_expected.to contain_file('parquetdump_to_gcs').with_content(/^SLING_ALLOW_EMPTY=false$/) }
+          it { is_expected.to contain_file('parquetdump_to_gcs').with_content(/^dump_empty_tables=false$/) }
 
           it { is_expected.to contain_cron('parquetdump_to_gcs').with(
             'ensure'      => 'present',
