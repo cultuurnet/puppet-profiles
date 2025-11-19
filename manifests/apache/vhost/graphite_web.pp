@@ -80,11 +80,13 @@ define profiles::apache::vhost::graphite_web (
                                  'require'   => 'valid-user'
                                }]
     $openid_connect_settings = {
-                                 'ProviderMetadataURL' => lookup('data::openid::provider_metadata_url', Optional[String], 'first', undef),
-                                 'ClientID'            => lookup('data::openid::client_id', Optional[String], 'first', undef),
-                                 'ClientSecret'        => lookup('data::openid::client_secret', Optional[String], 'first', undef),
-                                 'RedirectURI'         => "https://${servername}/redirect_uri",
-                                 'CryptoPassphrase'    => fqdn_rand_string(32, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
+                                 'ProviderMetadataURL'      => lookup('data::openid::provider_metadata_url', Optional[String], 'first', undef),
+                                 'ClientID'                 => lookup('data::openid::client_id', Optional[String], 'first', undef),
+                                 'ClientSecret'             => lookup('data::openid::client_secret', Optional[String], 'first', undef),
+                                 'RedirectURI'              => "https://${servername}/redirect_uri",
+                                 'CryptoPassphrase'         => fqdn_rand_string(32, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'),
+                                 'SessionInactivityTimeout' => 43200,
+                                 'SessionMaxDuration'       => 43200
                                }
     $no_proxy_uris           = ['/redirect_uri','/static']
   } else {
