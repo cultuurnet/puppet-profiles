@@ -163,6 +163,11 @@ describe 'profiles::uitid::api' do
               'portbase' => 4800
             ) }
 
+            it { is_expected.to contain_class('profiles::uitid::api::data_integration').with(
+              'database_name' => 'uitid_api',
+              'database_host' => '127.0.0.1'
+            ) }
+
             it { is_expected.to contain_package('mysql-connector-j').that_requires('Apt::Source[publiq-tools]') }
             it { is_expected.to contain_package('mysql-connector-j').that_comes_before('Class[profiles::uitid::api::deployment]') }
             it { is_expected.to contain_class('profiles::mysql::server').that_comes_before('Mysql_database[uitid_api]') }
@@ -193,22 +198,21 @@ describe 'profiles::uitid::api' do
             it { is_expected.to contain_file('Domain uitid mysql-connector-j').that_comes_before('Class[profiles::uitid::api::deployment]') }
             it { is_expected.to contain_class('profiles::uitid::api::deployment').that_requires('Class[profiles::glassfish]') }
             it { is_expected.to contain_class('profiles::uitid::api::deployment').that_notifies('Service[uitid]') }
+            it { is_expected.to contain_class('profiles::uitid::api::data_integration').that_requires('Class[profiles::uitid::api::deployment]') }
             it { is_expected.to contain_class('profiles::uitid::api::cron').that_requires('Class[profiles::uitid::api::deployment]') }
           end
 
           context "with database_password => secret, database_host => db.example.com, initial_heap_size => 1024m, maximum_heap_size => 1536m, jmx => false, newrelic => true, portbase => 14800 and settings => { 'foo' => 'bar', 'baz' => 'test' }" do
             let(:params) { {
-              'database_password'     => 'secret',
-              'database_host'         => 'db.example.com',
-              'initial_heap_size'     => '1024m',
-
-              'maximum_heap_size'     => '1536m',
-              'jmx'                   => false,
-              'newrelic'              => true,
-              'portbase'              => 14800,
-              'settings'              => { 'foo' => 'bar', 'baz' => 'test' }
+              'database_password' => 'secret',
+              'database_host'     => 'db.example.com',
+              'initial_heap_size' => '1024m',
+              'maximum_heap_size' => '1536m',
+              'jmx'               => false,
+              'newrelic'          => true,
+              'portbase'          => 14800,
+              'settings'          => { 'foo' => 'bar', 'baz' => 'test' }
             } }
-
 
             it { is_expected.not_to contain_class('profiles::mysql::server') }
 
@@ -314,6 +318,11 @@ describe 'profiles::uitid::api' do
                 'portbase'          => 14800
               ) }
 
+              it { is_expected.to contain_class('profiles::uitid::api::data_integration').with(
+                'database_name' => 'uitid_api',
+                'database_host' => 'db.example.com'
+              ) }
+
               it { is_expected.to contain_class('profiles::uitid::api::cron').with(
                 'portbase' => 14800
               ) }
@@ -342,6 +351,7 @@ describe 'profiles::uitid::api' do
             let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
             it { is_expected.not_to contain_class('profiles::uitid::api::deployment') }
+            it { is_expected.not_to contain_class('profiles::uitid::api::data_integration') }
             it { is_expected.not_to contain_class('profiles::uitid::api::cron') }
           end
         end
