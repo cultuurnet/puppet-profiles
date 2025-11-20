@@ -1,4 +1,4 @@
-class profiles::uitpas::test_app::deployment (
+class profiles::test_app::deployment (
   String           $version       = 'latest',
   String           $repository    = 'test-app',
   Optional[String] $puppetdb_url  = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
