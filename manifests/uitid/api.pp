@@ -114,7 +114,13 @@ class profiles::uitid::api (
 
     if $deployment {
       class { 'profiles::uitid::api::deployment':
-        portbase          => $portbase
+        portbase => $portbase
+      }
+
+      class { 'profiles::uitid::api::data_integration':
+        database_host => $database_host,
+        database_name => $database_name,
+        require       => Class['profiles::uitid::api::deployment']
       }
 
       class { 'profiles::uitid::api::cron':
