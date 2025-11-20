@@ -22,7 +22,7 @@ class profiles::test_app (
   # Create index.html from template
   file { "${basedir}/index.html":
     ensure  => 'file',
-    content => template('templates/test_app/index.html.erb'),
+    content => template('profiles/test_app/index.html.erb'),
     owner   => 'www-data',
     group   => 'www-data',
     require => File[$basedir]
