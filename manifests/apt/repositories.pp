@@ -427,9 +427,4 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
-  @apt::source { 'test-app':
-    location => "https://apt.publiq.be/test-app-${environment}",
-    release  => $codename,
-    repos    => 'main'
-  }
 }
