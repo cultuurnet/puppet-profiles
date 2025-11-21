@@ -12,12 +12,13 @@ describe 'profiles::apache::vhost::basic' do
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_profiles__apache__vhost__basic('http://www.example.com').with(
-            'serveraliases'       => [],
-            'documentroot'        => '/var/www/html',
-            'access_log_format'   => 'extended_json',
-            'directories'         => [],
-            'auth_openid_connect' => false,
-            'ssl_proxyengine'     => false
+            'serveraliases'        => [],
+            'documentroot'         => '/var/www/html',
+            'virtual_documentroot' => nil,
+            'access_log_format'    => 'extended_json',
+            'directories'          => [],
+            'auth_openid_connect'  => false,
+            'ssl_proxyengine'      => false
           ) }
 
           it { is_expected.to contain_firewall('300 accept HTTP traffic') }
@@ -30,6 +31,7 @@ describe 'profiles::apache::vhost::basic' do
             'serveraliases'      => [],
             'docroot'            => '/var/www/html',
             'manage_docroot'     => false,
+            'virtual_docroot'    => false,
             'port'               => 80,
             'ssl'                => false,
             'request_headers'    => [
@@ -71,6 +73,7 @@ describe 'profiles::apache::vhost::basic' do
             'servername'         => 'www.example.com',
             'serveraliases'      => ['web.example.com', 'test.example.com'],
             'docroot'            => '/var/www/bar',
+            'virtual_docroot'    => false,
             'manage_docroot'     => false,
             'port'               => 80,
             'ssl'                => false,
@@ -133,21 +136,22 @@ describe 'profiles::apache::vhost::basic' do
               it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter certificate when using HTTPS/) }
             end
 
-            context 'with serveraliases => foobar.example.com, certificate => wildcard.example.com, documentroot => /var/www/foobar, auth_openid_connect => true, directories => [ { path => /path/to/directory, handler => value }, { path => /path/to/other/directory, handler => othervalue } ], rewrites => { comment => Proxy to foo.example.com, rewrite_rule => ^(.*)$ https://foo.example.com/$1 [P] } and ssl_proxyengine => true' do
+            context 'with serveraliases => *.example.com, certificate => wildcard.example.com, documentroot => /var/www/foobar, auth_openid_connect => true, directories => [ { path => /path/to/directory, handler => value }, { path => /path/to/other/directory, handler => othervalue } ], rewrites => { comment => Proxy to foo.example.com, rewrite_rule => ^(.*)$ https://foo.example.com/$1 [P] } and ssl_proxyengine => true' do
               let(:params) { {
-                'serveraliases'       => 'foobar.example.com',
-                'certificate'         => 'wildcard.example.com',
-                'documentroot'        => '/var/www/foobar',
-                'auth_openid_connect' => true,
-                'directories'         => [
-                                           { 'path' => '/path/to/directory', 'handler' => 'value' },
-                                           { 'path' => '/path/to/other/directory', 'handler' => 'othervalue' }
-                                         ],
-                'rewrites'            => {
-                                           'comment'      => 'Proxy to foo.example.com',
-                                           'rewrite_rule' => '^(.*)$ https://foo.example.com/$1 [P]'
-                                         },
-                'ssl_proxyengine'     => true
+                'serveraliases'        => '*.example.com',
+                'certificate'          => 'wildcard.example.com',
+                'documentroot'         => '/var/www/foobar',
+                'virtual_documentroot' => '/var/www/foobar/%1',
+                'auth_openid_connect'  => true,
+                'directories'          => [
+                                            { 'path' => '/path/to/directory', 'handler' => 'value' },
+                                            { 'path' => '/path/to/other/directory', 'handler' => 'othervalue' }
+                                          ],
+                'rewrites'             => {
+                                            'comment'      => 'Proxy to foo.example.com',
+                                            'rewrite_rule' => '^(.*)$ https://foo.example.com/$1 [P]'
+                                          },
+                'ssl_proxyengine'      => true
               } }
 
               it { is_expected.to contain_firewall('300 accept HTTPS traffic') }
@@ -160,8 +164,9 @@ describe 'profiles::apache::vhost::basic' do
 
               it { is_expected.to contain_apache__vhost('myvhost.example.com_443').with(
                 'servername'         => 'myvhost.example.com',
-                'serveraliases'      => 'foobar.example.com',
+                'serveraliases'      => '*.example.com',
                 'docroot'            => '/var/www/foobar',
+                'virtual_docroot'    => '/var/www/foobar/%1',
                 'manage_docroot'     => false,
                 'port'               => 443,
                 'ssl'                => true,
