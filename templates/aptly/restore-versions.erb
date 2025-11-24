@@ -6,7 +6,7 @@ set -euo pipefail
 ###########################################
 DRYRUN=false   # set to true to simulate actions without executing destructive commands
 GPG_KEY="publiq Infrastructure"
-GPG_PASSPHRASE="<%= @GPG_PASSPHRASE %>"    # replace with actual passphrase or read from secure store
+GPG_PASSPHRASE="<%= @gpg_passphrase %>"    # replace with actual passphrase or read from secure store
 COMPONENT="main"
 DISTRO="focal"
 S3_BASE="s3:apt.publiq.be"
