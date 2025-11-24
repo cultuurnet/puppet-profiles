@@ -7,9 +7,10 @@ describe 'profiles::aptly' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with api_hostname => aptly.example.com and certificate => wildcard.example.com" do
+      context "with api_hostname => aptly.example.com and certificate => wildcard.example.com and gpg_passphrase => secret" do
         let(:params) { {
           'api_hostname' => 'aptly.example.com',
+          'gpg_passphrase' => 'secret'
         } }
 
         it { is_expected.to compile.with_all_deps }
@@ -19,6 +20,7 @@ describe 'profiles::aptly' do
           'certificate'       => nil,
           'signing_keys'      => {},
           'trusted_keys'      => {},
+          'gpg_passphrase'    => 'secret',
           'version'           => 'latest',
           'api_bind'          => '127.0.0.1',
           'api_port'          => 8081,
@@ -91,12 +93,15 @@ describe 'profiles::aptly' do
         it { is_expected.to contain_cron('aptly db cleanup daily').that_requires('User[aptly]') }
 
         it { is_expected.not_to contain_file('aptly trustedkeys.gpg') }
+        it { is_expected.to contain_file('version restore script') }
+
       end
 
-      context "with api_hostname => foobar.example.com and certificate => foobar.example.com" do
+      context "with api_hostname => foobar.example.com and certificate => foobar.example.com and gpg_passphrase => secret" do
         let(:params) { {
           'api_hostname' => 'foobar.example.com',
-          'certificate'  => 'foobar.example.com'
+          'certificate'  => 'foobar.example.com',
+          'gpg_passphrase' => 'secret'
         } }
 
         context "with signing_keys => { 'test' => { 'id' => '1234ABCD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\nmysigningkey\n-----END PGP PRIVATE KEY BLOCK-----' }}, trusted_keys => { 'Ubuntu archive' => { 'key_id' => '00001234', 'key_server' => 'hkp://keyserver.ubuntu.com' }}, version => 1.2.3, api_bind => 1.2.3.4, api_port => 8080, repositories => { 'foo' => {'archive' => false}, 'bar' => {'archive' => true}} and mirrors => {'mirror' => {'location => 'http://mirror.example.com', distribution => 'unstable', components => ['main', 'contrib'], keys => 'Ubuntu archive', architectures => 'amd64'}}, lvm => true, volume_group => myvg and volume_size => 10G" do
