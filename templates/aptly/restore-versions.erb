@@ -1,0 +1,222 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+###########################################
+# Config
+###########################################
+DRYRUN=false   # set to true to simulate actions without executing destructive commands
+GPG_KEY="publiq Infrastructure"
+GPG_PASSPHRASE="<%= @GPG_PASSPHRASE %>"    # replace with actual passphrase or read from secure store
+COMPONENT="main"
+DISTRO="focal"
+S3_BASE="s3:apt.publiq.be"
+
+###########################################
+# Helpers
+###########################################
+die() { echo "ERROR: $*" >&2; exit 1; }
+
+run() {
+    if [[ "$DRYRUN" == true ]]; then
+        # Print safely quoted command to stderr (portable)
+        printf '[DRYRUN] %q' "$1" >&2
+        shift
+        for arg in "$@"; do
+            printf ' %q' "$arg" >&2
+        done
+        printf '\n' >&2
+    else
+        "$@"
+    fi
+}
+
+check_binary() {
+    command -v "$1" >/dev/null 2>&1 || die "required binary '$1' not found"
+}
+
+###########################################
+# Preconditions
+###########################################
+check_binary aptly
+check_binary jq
+check_binary whiptail
+
+###########################################
+# Step 1 — List main repos (skip -archive)
+###########################################
+mapfile -t REPO_ARRAY < <(
+    aptly repo list -json | jq -r '.[] | select(.Name | test("-archive") | not) | .Name'
+)
+
+[[ ${#REPO_ARRAY[@]} -gt 0 ]] || die "No main repos found"
+
+MENU_ITEMS=()
+for i in "${!REPO_ARRAY[@]}"; do
+    idx=$((i+1))
+    MENU_ITEMS+=("$idx" "${REPO_ARRAY[i]}")
+done
+
+###########################################
+# Step 2 — Select package (repo)
+###########################################
+SELECTED_INDEX=$(whiptail \
+    --title "Select Repository" \
+    --menu "Choose a repository to activate a version for:" \
+    25 80 15 \
+    "${MENU_ITEMS[@]}" \
+    2>&1 >/dev/tty) || { echo "Canceled."; exit 1; }
+
+PKG="${REPO_ARRAY[$((SELECTED_INDEX-1))]}"
+ARCHIVE_REPO="${PKG}-archive"
+ACTIVE_REPO="${PKG}"
+
+echo "Selected package: $PKG"
+echo "Archive repo:     $ARCHIVE_REPO"
+echo "Active repo:      $ACTIVE_REPO"
+
+###########################################
+# Step 3 — List packages in archive repo
+###########################################
+if ! aptly repo show -json -with-packages "$ARCHIVE_REPO" >/dev/null 2>&1; then
+    die "Archive repo '$ARCHIVE_REPO' does not exist or cannot be read"
+fi
+
+mapfile -t PACKAGE_ARRAY < <(
+    aptly repo show -json -with-packages "$ARCHIVE_REPO" | jq -r '.Packages[]'
+)
+
+[[ ${#PACKAGE_ARRAY[@]} -gt 0 ]] || die "No packages found in $ARCHIVE_REPO"
+
+PKG_MENU=()
+for i in "${!PACKAGE_ARRAY[@]}"; do
+    idx=$((i+1))
+    PKG_MENU+=("$idx" "${PACKAGE_ARRAY[i]}")
+done
+
+###########################################
+# Step 4 — Select version from archive
+###########################################
+CHOICE=$(whiptail \
+    --title "Select Version" \
+    --menu "Select version from ${ARCHIVE_REPO} to restore into ${ACTIVE_REPO}:" \
+    25 120 18 \
+    "${PKG_MENU[@]}" \
+    2>&1 >/dev/tty) || { echo "Canceled."; exit 1; }
+
+SELECTED_PACKAGE="${PACKAGE_ARRAY[$((CHOICE-1))]}"
+
+echo ""
+echo "Selected package file:"
+echo "  $SELECTED_PACKAGE"
+echo ""
+
+###########################################
+# Step 5 — Move previous latest package to archive (swap)
+###########################################
+mapfile -t ACTIVE_PACKAGES < <(
+    aptly repo show -json -with-packages "$ACTIVE_REPO" | jq -r '.Packages[]'
+)
+
+if [[ ${#ACTIVE_PACKAGES[@]} -gt 0 ]]; then
+    # Assuming only one “latest” package is in main repo
+    PREVIOUS_PACKAGE="${ACTIVE_PACKAGES[0]}"
+    echo "Moving previous active package ${PREVIOUS_PACKAGE} → ${ARCHIVE_REPO}"
+    run aptly repo move "$ACTIVE_REPO" "$ARCHIVE_REPO" "$PREVIOUS_PACKAGE"
+else
+    echo "No previous package found in ${ACTIVE_REPO}, skipping move to archive"
+fi
+
+###########################################
+# Step 6 — Move selected version from archive -> active
+###########################################
+echo "Moving selected package ${SELECTED_PACKAGE} → ${ACTIVE_REPO}"
+run aptly repo move "$ARCHIVE_REPO" "$ACTIVE_REPO" "$SELECTED_PACKAGE"
+
+###########################################
+# Step 7 — Create snapshot
+###########################################
+SNAPSHOT_NAME="${ACTIVE_REPO}-$(date +%Y.%m.%d.%H%M%S)"
+echo "Creating snapshot: $SNAPSHOT_NAME"
+run aptly snapshot create "$SNAPSHOT_NAME" from repo "$ACTIVE_REPO"
+
+
+###########################################
+# Step 8 — Select environment
+###########################################
+ENV_CHOICE=$(whiptail --title "Select Environment" --menu "Target environment:" \
+20 60 12 \
+1 "development" \
+2 "acceptance" \
+3 "testing" \
+4 "production" \
+2>&1 >/dev/tty) || { echo "Canceled."; exit 1; }
+
+case "$ENV_CHOICE" in
+    1) environment="development";;
+    2) environment="acceptance";;
+    3) environment="testing";;
+    4) environment="production";;
+    *) die "Invalid environment selection";;
+esac
+
+###########################################
+# Step 9 — Publish snapshot
+###########################################
+PUBLISH_TARGET="${S3_BASE}:${ACTIVE_REPO}-${environment}"
+echo ""
+echo "Publishing snapshot ${SNAPSHOT_NAME} → ${PUBLISH_TARGET}"
+run aptly publish switch \
+    -gpg-key="$GPG_KEY" \
+    -passphrase="$GPG_PASSPHRASE" \
+    -batch \
+    -component="$COMPONENT" \
+    "$DISTRO" \
+    "$PUBLISH_TARGET" \
+    "$SNAPSHOT_NAME"
+
+###########################################
+# Step 9 — Publish snapshot
+###########################################
+PUBLISH_TARGET="${S3_BASE}:${PKG}-${environment}"
+echo ""
+echo "Publishing snapshot ${SNAPSHOT_NAME} → ${PUBLISH_TARGET}"
+run aptly publish switch \
+    -gpg-key="$GPG_KEY" \
+    -passphrase="$GPG_PASSPHRASE" \
+    -batch \
+    -component="$COMPONENT" \
+    "$DISTRO" \
+    "$PUBLISH_TARGET" \
+    "$SNAPSHOT_NAME"
+
+###########################################
+# Step 10 — Drop old snapshots (keep latest only, if not published)
+###########################################
+echo ""
+echo "Dropping old snapshots for ${ACTIVE_REPO} (keeping ${SNAPSHOT_NAME})"
+
+# Get all snapshots for this repo
+mapfile -t SNAP_ARRAY < <(
+    aptly snapshot list -json | jq -r ".[] | select(.Name | startswith(\"${ACTIVE_REPO}-\")) | .Name" | sort
+)
+
+# Get all snapshots currently published
+mapfile -t PUBLISHED_SNAP_ARRAY < <(
+    aptly publish list -json | jq -r '.[].Sources[].Name'
+)
+
+for snap in "${SNAP_ARRAY[@]}"; do
+    # Skip latest snapshot
+    [[ "$snap" == "$SNAPSHOT_NAME" ]] && continue
+    # Skip if snapshot is published anywhere
+    if printf '%s\n' "${PUBLISHED_SNAP_ARRAY[@]}" | grep -qx "$snap"; then
+        echo "Skipping $snap (still published)"
+        continue
+    fi
+    run aptly snapshot drop "$snap"
+done
+
+
+echo ""
+echo "Done. Snapshot ${SNAPSHOT_NAME} published to ${environment}."
+[[ "$DRYRUN" == true ]] && echo "Note: DRYRUN=true — no destructive commands were executed."
