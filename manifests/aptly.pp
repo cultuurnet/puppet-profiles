@@ -4,6 +4,7 @@ class profiles::aptly (
   Hash                           $signing_keys      = {},
   Hash                           $trusted_keys      = {},
   String                         $version           = 'latest',
+  String                         $gpg_passphrase    = undef,
   Stdlib::IP::Address::V4        $api_bind          = '127.0.0.1',
   Stdlib::Port::Unprivileged     $api_port          = 8081,
   Hash                           $publish_endpoints = {},
@@ -93,9 +94,19 @@ class profiles::aptly (
     }
   }
 
+
+  file { 'version restore script':
+    path        => '/home/aptly/restore-versions',
+    ensure      => 'file',
+    owner       => 'aptly',
+    group       => 'aptly',
+    mode        => '0775',
+    content     => template('profiles/aptly/restore-versions.erb'),
+    require     => Class['aptly']
+  }
   cron { 'aptly db cleanup daily':
     command     => '/usr/bin/aptly db cleanup',
-    environment => [ 'MAILTO=infra+cron@publiq.be'],
+    environment => ['MAILTO=infra+cron@publiq.be'],
     user        => 'aptly',
     hour        => '4',
     minute      => '0',
