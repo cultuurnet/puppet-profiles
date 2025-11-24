@@ -164,7 +164,7 @@ describe 'profiles::apache::vhost::basic' do
 
               it { is_expected.to contain_apache__vhost('myvhost.example.com_443').with(
                 'servername'         => 'myvhost.example.com',
-                'serveraliases'      => '*.example.com',
+                'serveraliases'      => ['*.example.com'],
                 'docroot'            => '/var/www/foobar',
                 'virtual_docroot'    => '/var/www/foobar/%1',
                 'manage_docroot'     => false,

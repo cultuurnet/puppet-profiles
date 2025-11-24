@@ -86,7 +86,7 @@ define profiles::apache::vhost::basic (
 
   apache::vhost { "${servername}_${port}":
     servername         => $servername,
-    serveraliases      => $serveraliases,
+    serveraliases      => [$serveraliases].flatten,
     port               => $port,
     ssl                => $https,
     ssl_cert           => $ssl_cert,
