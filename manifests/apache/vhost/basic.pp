@@ -1,12 +1,13 @@
 define profiles::apache::vhost::basic (
-  Variant[String, Array[String]] $serveraliases       = [],
-  String                         $documentroot        = '/var/www/html',
-  String                         $access_log_format   = 'extended_json',
-  Optional[String]               $certificate         = undef,
-  Variant[Hash, Array[Hash]]     $directories         = [],
-  Variant[Hash, Array[Hash]]     $rewrites            = [],
-  Boolean                        $auth_openid_connect = false,
-  Boolean                        $ssl_proxyengine     = false
+  Variant[String, Array[String]] $serveraliases        = [],
+  String                         $documentroot         = '/var/www/html',
+  Optional[String]               $virtual_documentroot = undef,
+  String                         $access_log_format    = 'extended_json',
+  Optional[String]               $certificate          = undef,
+  Variant[Hash, Array[Hash]]     $directories          = [],
+  Variant[Hash, Array[Hash]]     $rewrites             = [],
+  Boolean                        $auth_openid_connect  = false,
+  Boolean                        $ssl_proxyengine      = false
 ) {
 
   include ::profiles
@@ -85,12 +86,16 @@ define profiles::apache::vhost::basic (
 
   apache::vhost { "${servername}_${port}":
     servername         => $servername,
-    serveraliases      => $serveraliases,
+    serveraliases      => [$serveraliases].flatten,
     port               => $port,
     ssl                => $https,
     ssl_cert           => $ssl_cert,
     ssl_key            => $ssl_key,
     docroot            => $documentroot,
+    virtual_docroot    => $virtual_documentroot ? {
+                            undef   => false,
+                            default => $virtual_documentroot
+                          },
     manage_docroot     => false,
     auth_oidc          => $auth_openid_connect,
     oidc_settings      => $openid_connect_settings,
