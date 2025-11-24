@@ -126,4 +126,9 @@ class profiles::museumpas::website (
     Class['profiles::php'] ~> Class['profiles::museumpas::website::deployment']
     Class['profiles::museumpas::website::deployment'] -> Apache::Vhost["${servername}_80"]
   }
+
+  class { 'profiles::museumpas::website::logging':
+    servername => $servername,
+    log_type   => 'apache_mpm_website'
+  }
 }
