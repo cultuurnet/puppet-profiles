@@ -9,6 +9,7 @@ class profiles::museumpas::partner_website::deployment (
 ) inherits ::profiles {
 
   $basedir                 = '/var/www/museumpas-partner'
+  $secrets = lookup('vault:museumpas/partner-website')
 
   realize User['www-data']
   realize Group['www-data']
@@ -24,7 +25,7 @@ class profiles::museumpas::partner_website::deployment (
   file { 'museumpas-partner-website-config':
     ensure  => 'file',
     path    => "${basedir}/.env",
-    source  => $config_source,
+    content  => template($config_source),
     owner   => 'www-data',
     group   => 'www-data',
     require => Package['museumpas-partner-website'],
