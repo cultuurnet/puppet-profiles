@@ -1,9 +1,9 @@
 class profiles::museumpas::partner_website::deployment (
   String                     $config_source,
-  String                     $maintenance_source,
   String                     $repository         = 'museumpas-partner-website',
   String                     $version            = 'latest',
   Optional[String]           $robots_source      = undef,
+  Optional[String]           $maintenance_source = undef,
   Boolean                    $run_scheduler_cron = true,
   Optional[String]           $puppetdb_url       = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
@@ -32,21 +32,23 @@ class profiles::museumpas::partner_website::deployment (
     notify  => Service['museumpas-partner-website']
   }
 
-  file { 'museumpas-partner-maintenance-pages':
-    ensure  => 'directory',
-    path    => "${basedir}/web/maintenance",
-    recurse => true,
-    source  => $maintenance_source,
-    owner   => 'www-data',
-    group   => 'www-data',
-    require => Package['museumpas-partner-website'],
+  if $maintenance_source {
+    file { 'museumpas-partner-maintenance-pages':
+      ensure  => 'directory',
+      path    => "${basedir}/web/maintenance",
+      recurse => true,
+      content => template($maintenance_source),
+      owner   => 'www-data',
+      group   => 'www-data',
+      require => Package['museumpas-partner-website'],
+    }
   }
 
   if $robots_source {
     file { 'museumpas-partner-robots.txt':
       ensure  => 'file',
       path    => "${basedir}/web/robots.txt",
-      source  => $robots_source,
+      content => template($robots_source),
       owner   => 'www-data',
       group   => 'www-data',
       require => Package['museumpas-partner-website'],
