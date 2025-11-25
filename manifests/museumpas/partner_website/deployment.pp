@@ -36,11 +36,18 @@ class profiles::museumpas::partner_website::deployment (
     file { 'museumpas-partner-maintenance-pages':
       ensure  => 'directory',
       path    => "${basedir}/web/maintenance",
-      recurse => true,
+      owner   => 'www-data',
+      group   => 'www-data',
+      require => Package['museumpas-partner-website']
+    }
+
+    file { 'museumpas-partner-maintenance-page':
+      ensure  => 'file',
+      path    => "${basedir}/web/maintenance/maintenance.html",
       content => template($maintenance_source),
       owner   => 'www-data',
       group   => 'www-data',
-      require => Package['museumpas-partner-website'],
+      require => File['museumpas-partner-maintenance-pages']
     }
   }
 
