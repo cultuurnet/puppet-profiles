@@ -9,6 +9,7 @@ class profiles::museumpas::website::deployment (
 ) inherits ::profiles {
 
   $basedir                 = '/var/www/museumpas'
+  $secrets = lookup('vault:museumpas/website')
   $mount_target_dns_name   = lookup('terraform::efs::mount_target_dns_name', Optional[String], 'first', undef)
   $exec_default_attributes = {
                                cwd         => $basedir,
@@ -44,7 +45,7 @@ class profiles::museumpas::website::deployment (
   file { 'museumpas-website-config':
     ensure  => 'file',
     path    => "${basedir}/.env",
-    source  => $config_source,
+    content => template($config_source),
     owner   => 'www-data',
     group   => 'www-data',
     require => Package['museumpas-website'],
