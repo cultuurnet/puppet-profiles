@@ -46,3 +46,5 @@ vault:uitid/reverseproxy:
   gcloud_client_email: 'bar@example.com'
 
 vault:platform: {}
+
+vault:uitid/frontend: {}
