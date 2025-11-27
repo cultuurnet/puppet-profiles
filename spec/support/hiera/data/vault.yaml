@@ -44,3 +44,5 @@ vault:uitid/reverseproxy:
   gcloud_private_key: 'my\nprivate\nkey'
   gcloud_client_id: 'bar'
   gcloud_client_email: 'bar@example.com'
+
+vault:platform: {}
