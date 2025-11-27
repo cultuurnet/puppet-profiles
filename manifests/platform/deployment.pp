@@ -8,6 +8,7 @@ class profiles::platform::deployment (
 ) inherits ::profiles {
 
   $basedir                 = '/var/www/platform-api'
+  $secrets = lookup('vault:platform')
   $exec_default_attributes = {
                                cwd         => $basedir,
                                path        => ['/usr/local/bin', '/usr/bin', '/bin'],
@@ -33,7 +34,7 @@ class profiles::platform::deployment (
     path    => "${basedir}/.env",
     owner   => 'www-data',
     group   => 'www-data',
-    source  => $config_source,
+    content  => template($config_source),
     require => [Package['platform-api'], Group['www-data'], User['www-data']],
     notify  => [Service['platform-api'], Service['platform-api-horizon']]
   }
@@ -43,7 +44,7 @@ class profiles::platform::deployment (
     path    => "${basedir}/nova_users.php",
     owner   => 'www-data',
     group   => 'www-data',
-    source  => $admin_users_source,
+    content  => template($admin_users_source),
     require => [Package['platform-api'], Group['www-data'], User['www-data']],
     notify  => [Service['platform-api'], Service['platform-api-horizon']]
   }
