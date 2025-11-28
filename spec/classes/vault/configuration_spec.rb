@@ -39,6 +39,15 @@ describe 'profiles::vault::configuration' do
           'group'  => 'vault'
         ) }
 
+        it { is_expected.to contain_file('vault_delete_secret').with(
+          'ensure' => 'file',
+          'path'   => '/usr/local/bin/vault-delete-secret',
+          'owner'  => 'root',
+          'group'  => 'root',
+          'mode'   => '0755',
+          'source' => 'puppet:///modules/profiles/vault/vault-delete-secret'
+        ) }
+
         it { is_expected.to contain_file('vault configuration').with_content(/^\s*address\s+=\s+"127\.0\.0\.1:8200"$/) }
         it { is_expected.to contain_file('vault configuration').with_content(/^\s*tls_cert_file\s+=\s+"\/opt\/vault\/tls\/tls\.crt"$/) }
         it { is_expected.to contain_file('vault configuration').with_content(/^\s*tls_key_file\s+=\s+"\/opt\/vault\/tls\/tls\.key"$/) }
