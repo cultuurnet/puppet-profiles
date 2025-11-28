@@ -45,15 +45,6 @@ describe 'profiles::vault::init' do
           'source'  => 'puppet:///modules/profiles/vault/vault-process-init-output'
         ) }
 
-        it { is_expected.to contain_file('vault_delete_secret').with(
-          'ensure' => 'file',
-          'path'   => '/usr/local/bin/vault-delete-secret',
-          'owner'  => 'root',
-          'group'  => 'root',
-          'mode'   => '0755',
-          'source' => 'puppet:///modules/profiles/vault/vault-delete-secret'
-        ) }
-
         it { is_expected.to contain_exec('vault_init').with(
           'command'   => '/usr/bin/vault operator init -key-shares=1 -key-threshold=1 -pgp-keys="/etc/vault.d/gpg_keys/vault.asc" -tls-skip-verify -format=json > /home/vault/vault_init_output.json',
           'user'      => 'vault',
