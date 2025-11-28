@@ -57,8 +57,8 @@ class profiles::vault::configuration (
   file { 'vault_delete_secret':
     ensure => 'file',
     path   => '/usr/local/bin/vault-delete-secret',
-    owner  => 'root',
-    group  => 'root',
+    owner  => 'vault',
+    group  => 'vault',
     mode   => '0755',
     source => 'puppet:///modules/profiles/vault/vault-delete-secret'
   }
