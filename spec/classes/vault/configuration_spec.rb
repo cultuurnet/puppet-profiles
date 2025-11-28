@@ -42,8 +42,8 @@ describe 'profiles::vault::configuration' do
         it { is_expected.to contain_file('vault_delete_secret').with(
           'ensure' => 'file',
           'path'   => '/usr/local/bin/vault-delete-secret',
-          'owner'  => 'vault',
-          'group'  => 'vault',
+          'owner'  => 'root',
+          'group'  => 'root',
           'mode'   => '0755',
           'source' => 'puppet:///modules/profiles/vault/vault-delete-secret'
         ) }
