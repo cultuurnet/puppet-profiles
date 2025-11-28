@@ -79,6 +79,15 @@ class profiles::vault::init (
     source  => 'puppet:///modules/profiles/vault/vault-process-init-output'
   }
 
+  file { 'vault_delete_secret':
+    ensure => 'file',
+    path   => '/usr/local/bin/vault-delete-secret',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+    source => 'puppet:///modules/profiles/vault/vault-delete-secret'
+  }
+
   exec { 'vault_init':
     command   => "/usr/bin/vault operator init -key-shares=${key_shares} -key-threshold=${key_threshold} -pgp-keys=\"${init_key_string}\" -tls-skip-verify -format=json > /home/vault/vault_init_output.json",
     user      => 'vault',
