@@ -53,4 +53,13 @@ class profiles::vault::configuration (
     content => template('profiles/vault/vault.hcl.erb'),
     require => [Group['vault'], User['vault'], File['vault log file']]
   }
+
+  file { 'vault_delete_secret':
+    ensure => 'file',
+    path   => '/usr/local/bin/vault-delete-secret',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+    source => 'puppet:///modules/profiles/vault/vault-delete-secret'
+  }
 }
