@@ -6,6 +6,7 @@ class profiles::uitpas::website::api::deployment (
 ) inherits ::profiles {
 
   $basedir = '/var/www/uitpas-website-api'
+  $secrets = lookup('vault:uitpas/website/api')
 
   realize Apt::Source[$repository]
   realize Group['www-data']
@@ -20,7 +21,7 @@ class profiles::uitpas::website::api::deployment (
   file { 'uitpas-website-api-config':
     ensure  => 'file',
     path    => "${basedir}/.env",
-    source  => $config_source,
+    content  => template($config_source),
     owner   => 'www-data',
     group   => 'www-data',
     require => Package['uitpas-website-api']

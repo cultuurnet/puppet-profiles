@@ -52,3 +52,5 @@ vault:uitid/frontend: {}
 vault:uitpas/balie-api: {}
 
 vault:uitpas/balie-frontend: {}
+vault:uitpas/website/frontend: {}
+vault:uitpas/website/api: {}
