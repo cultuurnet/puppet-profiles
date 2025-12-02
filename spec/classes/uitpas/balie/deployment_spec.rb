@@ -5,22 +5,23 @@ describe 'profiles::uitpas::balie::deployment' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with config_source => /foo" do
+      context "with config_source => appconfig/uitpas/balie/env" do
         let(:params) { {
-          'config_source' => '/foo'
+          'config_source' => 'appconfig/uitpas/balie/env'
         } }
+        let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::uitpas::balie::deployment').with(
-          'config_source'     => '/foo',
+          'config_source'     => 'appconfig/uitpas/balie/env',
           'maximum_heap_size' => 512,
           'version'           => 'latest',
           'repository'        => 'uitpas-balie',
           'service_status'    => 'running',
           'service_address'   => '127.0.0.1',
           'service_port'      => 4000,
-          'puppetdb_url'      => nil
+          'puppetdb_url'      => 'http://localhost:8081'
         ) }
 
         it { is_expected.to contain_apt__source('uitpas-balie') }
@@ -34,7 +35,6 @@ describe 'profiles::uitpas::balie::deployment' do
         it { is_expected.to contain_file('uitpas-balie-config').with(
           'ensure' => 'file',
           'path'   => '/var/www/uitpas-balie/.env',
-          'source' => '/foo',
           'owner'  => 'www-data',
           'group'  => 'www-data'
         ) }
@@ -81,9 +81,9 @@ describe 'profiles::uitpas::balie::deployment' do
         end
       end
 
-      context "with config_source => /bar, maximum_heap_size => 1024, service_address => 0.0.0.0, service_port => 3456, version => 1.2.3, repository => uit-frontend-exotic, service_status => stopped and puppetdb_url => http://example.com:8000" do
+      context "with config_source => profiles/bar_template, maximum_heap_size => 1024, service_address => 0.0.0.0, service_port => 3456, version => 1.2.3, repository => uit-frontend-exotic, service_status => stopped and puppetdb_url => http://example.com:8000" do
         let(:params) { {
-          'config_source'     => '/bar',
+          'config_source'     => 'profiles/bar_template',
           'version'           => '1.2.3',
           'maximum_heap_size' => 1024,
           'repository'        => 'uitpas-balie-exotic',
@@ -92,6 +92,7 @@ describe 'profiles::uitpas::balie::deployment' do
           'service_port'      => 3456,
           'puppetdb_url'      => 'http://example.com:8000'
         } }
+        let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
         context "with repository uitpas-balie-exotic defined" do
           let(:pre_condition) { '@apt::source { "uitpas-balie-exotic": location => "http://localhost", release => "focal", repos => "main" }' }
@@ -99,7 +100,7 @@ describe 'profiles::uitpas::balie::deployment' do
           it { is_expected.to contain_apt__source('uitpas-balie-exotic') }
 
           it { is_expected.to contain_file('uitpas-balie-config').with(
-            'source' => '/bar',
+            'path' => '/var/www/uitpas-balie/.env'
           ) }
 
           it { is_expected.to contain_file('uitpas-balie-service-defaults').with_content(/^NEXT_HOST=0.0.0.0$/) }
