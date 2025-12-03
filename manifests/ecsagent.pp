@@ -9,6 +9,7 @@ class profiles::ecsagent (
     ensure  => 'present',
     require => Apt::Source['publiq-tools']
   }
+  realize Firewall['600 accept docker ephemeral ports traffic']
   include profiles::docker
   file { '/etc/ecs':
     ensure => 'directory',
