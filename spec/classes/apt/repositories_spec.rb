@@ -68,7 +68,6 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'publiq-infrastructure-legacy', { :location => 'https://apt.publiq.be/publiq-infrastructure-legacy-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'publiq-appconfig', { :location => 'https://apt.publiq.be/publiq-appconfig-testing', :repos => 'main', :release => 'focal' }
 
-            include_examples 'apt repositories', 'museumpas-mspotm', { :location => 'https://apt.publiq.be/museumpas-mspotm-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'museumpas-website', { :location => 'https://apt.publiq.be/museumpas-website-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'museumpas-website-filament', { :location => 'https://apt.publiq.be/museumpas-website-filament-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'museumpas-partner-website', { :location => 'https://apt.publiq.be/museumpas-partner-website-testing', :repos => 'main', :release => 'focal' }
