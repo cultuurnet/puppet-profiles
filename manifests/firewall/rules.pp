@@ -103,7 +103,7 @@ class profiles::firewall::rules inherits ::profiles {
   }
   @firewall { '600 accept docker ephemeral ports traffic':
     proto  => 'tcp',
-    dport  => '32768:60999',
+    dport  => '32768-60999',
     action => 'accept'
   }
 }
