@@ -101,4 +101,9 @@ class profiles::firewall::rules inherits ::profiles {
     dport  => '9300',
     action => 'accept'
   }
+  @firewall { '600 accept docker ephemeral ports traffic':
+    proto  => 'tcp',
+    dport  => '32768:60999',
+    action => 'accept'
+  }
 }
