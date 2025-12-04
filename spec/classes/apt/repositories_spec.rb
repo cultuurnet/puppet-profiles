@@ -69,7 +69,6 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'publiq-appconfig', { :location => 'https://apt.publiq.be/publiq-appconfig-testing', :repos => 'main', :release => 'focal' }
 
             include_examples 'apt repositories', 'museumpas-website', { :location => 'https://apt.publiq.be/museumpas-website-testing', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'museumpas-website-filament', { :location => 'https://apt.publiq.be/museumpas-website-filament-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'museumpas-partner-website', { :location => 'https://apt.publiq.be/museumpas-partner-website-testing', :repos => 'main', :release => 'focal' }
 
             include_examples 'apt repositories', 'uitdatabank-angular-app', { :location => 'https://apt.publiq.be/uitdatabank-angular-app-testing', :repos => 'main', :release => 'focal' }
@@ -78,7 +77,6 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'uitdatabank-frontend', { :location => 'https://apt.publiq.be/uitdatabank-frontend-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uitdatabank-jwt-provider', { :location => 'https://apt.publiq.be/uitdatabank-jwt-provider-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uitdatabank-jwt-provider-uitidv1', { :location => 'https://apt.publiq.be/uitdatabank-jwt-provider-uitidv1-testing', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'uitdatabank-movie-api-fetcher', { :location => 'https://apt.publiq.be/uitdatabank-movie-api-fetcher-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uitdatabank-entry-api', { :location => 'https://apt.publiq.be/uitdatabank-entry-api-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uitdatabank-websocket-server', { :location => 'https://apt.publiq.be/uitdatabank-websocket-server-testing', :repos => 'main', :release => 'focal' }
 
@@ -86,14 +84,9 @@ describe 'profiles::apt::repositories' do
 
             include_examples 'apt repositories', 'widgetbeheer-frontend', { :location => 'https://apt.publiq.be/widgetbeheer-frontend-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'projectaanvraag-api', { :location => 'https://apt.publiq.be/projectaanvraag-api-testing', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'projectaanvraag-frontend', { :location => 'https://apt.publiq.be/projectaanvraag-frontend-testing', :repos => 'main', :release => 'focal' }
 
-            include_examples 'apt repositories', 'uitid-app', { :location => 'https://apt.publiq.be/uitid-app-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uitid-frontend', { :location => 'https://apt.publiq.be/uitid-frontend-testing', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'uitid-frontend-keycloak', { :location => 'https://apt.publiq.be/uitid-frontend-keycloak-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uitid-frontend-api', { :location => 'https://apt.publiq.be/uitid-frontend-api-testing', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'uitid-frontend-api-keycloak', { :location => 'https://apt.publiq.be/uitid-frontend-api-keycloak-testing', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'uitid-frontend-auth0', { :location => 'https://apt.publiq.be/uitid-frontend-auth0-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uitid-api', { :location => 'https://apt.publiq.be/uitid-api-testing', :repos => 'main', :release => 'focal' }
 
             include_examples 'apt repositories', 'uitpas-website-api', { :location => 'https://apt.publiq.be/uitpas-website-api-testing', :repos => 'main', :release => 'focal' }

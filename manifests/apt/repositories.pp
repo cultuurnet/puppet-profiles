@@ -179,12 +179,6 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
-  @apt::source { 'uitid-app':
-    location => "https://apt.publiq.be/uitid-app-${environment}",
-    release  => $codename,
-    repos    => 'main'
-  }
-
   @apt::source { 'uitid-frontend':
     location => "https://apt.publiq.be/uitid-frontend-${environment}",
     release  => $codename,
@@ -193,24 +187,6 @@ class profiles::apt::repositories {
 
   @apt::source { 'uitid-frontend-api':
     location => "https://apt.publiq.be/uitid-frontend-api-${environment}",
-    release  => $codename,
-    repos    => 'main'
-  }
-
-  @apt::source { 'uitid-frontend-auth0':
-    location => "https://apt.publiq.be/uitid-frontend-auth0-${environment}",
-    release  => $codename,
-    repos    => 'main'
-  }
-
-  @apt::source { 'uitid-frontend-keycloak':
-    location => "https://apt.publiq.be/uitid-frontend-keycloak-${environment}",
-    release  => $codename,
-    repos    => 'main'
-  }
-
-  @apt::source { 'uitid-frontend-api-keycloak':
-    location => "https://apt.publiq.be/uitid-frontend-api-keycloak-${environment}",
     release  => $codename,
     repos    => 'main'
   }
@@ -229,12 +205,6 @@ class profiles::apt::repositories {
 
   @apt::source { 'projectaanvraag-api':
     location => "https://apt.publiq.be/projectaanvraag-api-${environment}",
-    release  => $codename,
-    repos    => 'main'
-  }
-
-  @apt::source { 'projectaanvraag-frontend':
-    location => "https://apt.publiq.be/projectaanvraag-frontend-${environment}",
     release  => $codename,
     repos    => 'main'
   }
@@ -337,12 +307,6 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
-  @apt::source { 'uitdatabank-movie-api-fetcher':
-    location => "https://apt.publiq.be/uitdatabank-movie-api-fetcher-${environment}",
-    release  => $codename,
-    repos    => 'main'
-  }
-
   @apt::source { 'uitdatabank-entry-api':
     location => "https://apt.publiq.be/uitdatabank-entry-api-${environment}",
     release  => $codename,
@@ -399,12 +363,6 @@ class profiles::apt::repositories {
 
   @apt::source { 'museumpas-website':
     location => "https://apt.publiq.be/museumpas-website-${environment}",
-    release  => $codename,
-    repos    => 'main'
-  }
-
-  @apt::source { 'museumpas-website-filament':
-    location => "https://apt.publiq.be/museumpas-website-filament-${environment}",
     release  => $codename,
     repos    => 'main'
   }
