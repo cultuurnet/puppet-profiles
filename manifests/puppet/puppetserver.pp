@@ -73,23 +73,24 @@ class profiles::puppet::puppetserver (
     path                 => '/etc/puppetlabs/puppetserver/conf.d/auth.conf',
     notify               => Class['profiles::puppet::puppetserver::service'],
   }
-if $settings::storeconfigs {
-  $jenkins_agentnodes_query = 'inventory[certname] { resources { type = "Class" and title = "Roles::Jenkins::Agent" } }'
-  $jenkins_agentnodes = puppetdb_query($jenkins_agentnodes_query).map |$value| { $value["certname"] }
-} else {
-  $jenkins_agentnodes = []
-}
+
+  if $settings::storeconfigs {
+    $jenkins_agentnodes_query = 'inventory[certname] { resources { type = "Class" and title = "Roles::Jenkins::Agent" } }'
+    $jenkins_agentnodes = puppetdb_query($jenkins_agentnodes_query).map |$value| { $value["certname"] }
+  } else {
+    $jenkins_agentnodes = []
+  }
+
   puppet_authorization::rule { 'puppetserver allow jenkins CA deletion':
     ensure               => 'present',
     match_request_path   => '/puppet-ca/v1/certificate_status',
     match_request_type   => 'path',
     match_request_method => 'delete',
-    allow                => $jenkins_agentnodes,
+    allow                => sort($jenkins_agentnodes),
     sort_order           => 200,
     path                 => '/etc/puppetlabs/puppetserver/conf.d/auth.conf',
     notify               => Class['profiles::puppet::puppetserver::service'],
   }
-
 
   if $dns_alt_names {
     ini_setting { 'puppetserver dns_alt_names':
