@@ -33,7 +33,7 @@ describe 'profiles::uitid::api::data_integration' do
               it { is_expected.to contain_profiles__mysql__app_user('sling@barbaz').with(
                 'user'     => 'sling',
                 'database' => 'barbaz',
-                'tables'   => ['EVENTS_DBLOG'],
+                'tables'   => ['EVENTS_DBLOG', 'MAILINGSUBSCRIBER', 'MAILINGSUBSCRIPTION', 'DALISERVICECONSUMER'],
                 'readonly' => true,
                 'remote'   => false,
                 'password' => 'JUtWB3Gk5RJqErUePdGT'
@@ -54,6 +54,10 @@ describe 'profiles::uitid::api::data_integration' do
                 'path'   => '/usr/local/bin/parquetdump_to_gcs',
                 'mode'   => '0755'
               ) }
+
+
+              it { is_expected.to contain_file('parquetdump_to_gcs').with_content(/^database_name=barbaz$/) }
+              it { is_expected.to contain_file('parquetdump_to_gcs').with_content(/^source_table_names=\(EVENTS_DBLOG MAILINGSUBSCRIBER MAILINGSUBSCRIPTION DALISERVICECONSUMER\)$/) }
 
               it { is_expected.to contain_cron('parquetdump_to_gcs').with(
                 'ensure'      => 'present',
@@ -81,7 +85,7 @@ describe 'profiles::uitid::api::data_integration' do
               it { is_expected.to contain_profiles__mysql__app_user('sling@mydb').with(
                 'user'     => 'sling',
                 'database' => 'mydb',
-                'tables'   => ['EVENTS_DBLOG'],
+                'tables'   => ['EVENTS_DBLOG', 'MAILINGSUBSCRIBER', 'MAILINGSUBSCRIPTION', 'DALISERVICECONSUMER'],
                 'readonly' => true,
                 'remote'   => true,
                 'password' => 'BRQ4p5tKpAun8iCX5PRQ'
@@ -96,6 +100,8 @@ describe 'profiles::uitid::api::data_integration' do
                                      'database' => 'mydb'
                                    }
               ) }
+
+              it { is_expected.to contain_file('parquetdump_to_gcs').with_content(/^database_name=mydb$/) }
 
               it { is_expected.to contain_profiles__sling__connection('mydb').that_requires('Profiles::Mysql::App_user[sling@mydb]') }
             end
@@ -120,7 +126,7 @@ describe 'profiles::uitid::api::data_integration' do
             it { is_expected.to contain_profiles__mysql__app_user('sling@mydb').with(
               'user'     => 'sling',
               'database' => 'mydb',
-              'tables'   => ['EVENTS_DBLOG'],
+              'tables'   => ['EVENTS_DBLOG', 'MAILINGSUBSCRIBER', 'MAILINGSUBSCRIPTION', 'DALISERVICECONSUMER'],
               'readonly' => true,
               'remote'   => true,
               'password' => 'JlCofI8ujmlsHtfQjlNf'
