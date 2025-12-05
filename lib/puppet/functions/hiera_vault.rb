@@ -3,6 +3,7 @@
 # https://github.com/petems/petems-hiera_vault/blob/master/lib/puppet/functions/hiera_vault.rb
 
 require_relative 'hiera_vault/authentication.rb'
+require_relative 'hiera_vault/stringify_keys.rb'
 
 Puppet::Functions.create_function(:hiera_vault) do
   begin
@@ -117,21 +118,6 @@ Puppet::Functions.create_function(:hiera_vault) do
     return answer
   end
 
-  # Stringify key:values so user sees expected results and nested objects
-  def stringify_keys(value)
-    case value
-    when String
-      value
-    when Hash
-      result = {}
-      value.each_pair { |k, v| result[k.to_s] = stringify_keys v }
-      result
-    when Array
-      value.map { |v| stringify_keys v }
-    else
-      value
-    end
-  end
 
   def interpolate(context, paths)
     allowed_paths = []
