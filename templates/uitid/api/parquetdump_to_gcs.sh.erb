@@ -1,9 +1,13 @@
 #!/bin/bash
 
 database_name=<%= @database_name %>
-source_table_name=EVENTS_DBLOG
-target_table_name=eventslog
+source_table_names=(<%= @database_tables.join(' ') %>)
 date_yesterday=$(date -d "yesterday" +%Y-%m-%d)
 data_contract_version=1
 
-/usr/local/bin/sling run --src-conn "${database_name}" --src-stream "${database_name}.${source_table_name}" --tgt-conn 'publiq-ingestion' --tgt-object "uitid/${target_table_name}/v${data_contract_version}/${date_yesterday}/${target_table_name}.parquet"
+for source_table_name in ${source_table_names[*]}
+do
+    target_table_name=${source_table_name,,}
+
+    /usr/local/bin/sling run --src-conn "${database_name}" --src-stream "${database_name}.${source_table_name}" --tgt-conn 'publiq-ingestion' --tgt-object "uitid/${target_table_name}/v${data_contract_version}/${date_yesterday}/${target_table_name}.parquet" --tgt-options '{"column_casing": "lower"}'
+done

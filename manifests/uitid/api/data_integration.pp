@@ -8,11 +8,12 @@ class profiles::uitid::api::data_integration (
                               default => join(["${database_name}_sling_password", file($settings::hostprivkey)], "\n")
                             }
   $database_password      = fqdn_rand_string(20, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', $database_password_seed)
+  $database_tables        = ['EVENTS_DBLOG', 'MAILINGSUBSCRIBER', 'MAILINGSUBSCRIPTION', 'DALISERVICECONSUMER']
 
   include profiles::data_integration
 
   profiles::mysql::app_user { "sling@${database_name}":
-    tables   => ['EVENTS_DBLOG'],
+    tables   => $database_tables,
     password => $database_password,
     readonly => true,
     remote   => $database_host ? {
