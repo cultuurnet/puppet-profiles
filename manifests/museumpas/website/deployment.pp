@@ -9,7 +9,7 @@ class profiles::museumpas::website::deployment (
 ) inherits ::profiles {
 
   $basedir                 = '/var/www/museumpas'
-  $secrets = lookup('vault:museumpas/website')
+  $secrets                 = lookup('vault:museumpas/website')
   $mount_target_dns_name   = lookup('terraform::efs::mount_target_dns_name', Optional[String], 'first', undef)
   $exec_default_attributes = {
                                cwd         => $basedir,
@@ -121,6 +121,24 @@ class profiles::museumpas::website::deployment (
   exec { 'clear museumpas model cache':
     command => 'php artisan modelCache:clear',
     require => [File['museumpas-website-config'], Exec['run museumpas database migrations'], Exec['clear museumpas cache']],
+    *       => $exec_default_attributes
+  }
+
+  exec { 'clear museumpas route translation cache':
+    command => 'php artisan route:trans:clear',
+    require => [File['museumpas-website-config'], Exec['run museumpas database migrations'], Exec['clear museumpas model cache']],
+    *       => $exec_default_attributes
+  }
+
+  exec { 'museumpas optimize':
+    command => 'php artisan optimize',
+    require => [File['museumpas-website-config'], Exec['run museumpas database migrations'], Exec['clear museumpas route translation cache']],
+    *       => $exec_default_attributes
+  }
+
+  exec { 'build museumpas route translation cache':
+    command => 'php artisan route:trans:cache',
+    require => [File['museumpas-website-config'], Exec['run museumpas database migrations'], Exec['museumpas optimize']],
     *       => $exec_default_attributes
   }
 
