@@ -6,6 +6,7 @@ class profiles::uitpas::cid_web::deployment (
 ) inherits ::profiles {
 
   $basedir = '/var/www/uitpas-cid-web'
+  $secrets = lookup('vault:uitpas/cid-web')
 
   realize Apt::Source[$repository]
 
@@ -20,7 +21,7 @@ class profiles::uitpas::cid_web::deployment (
     path    => "${basedir}/config.json",
     owner   => 'www-data',
     group   => 'www-data',
-    source  => $config_source,
+    content  => template($config_source),
     require => Package['uitpas-cid-web']
   }
 

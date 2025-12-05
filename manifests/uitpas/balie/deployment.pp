@@ -26,7 +26,7 @@ class profiles::uitpas::balie::deployment (
     path    => "${basedir}/.env",
     owner   => 'www-data',
     group   => 'www-data',
-    source  => $config_source,
+    content  => template($config_source),
     require => [Package['uitpas-balie'], Group['www-data'], User['www-data']],
     notify  => Service['uitpas-balie']
   }

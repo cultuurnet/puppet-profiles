@@ -6,6 +6,7 @@ class profiles::uitpas::balie_frontend::deployment (
 ) inherits ::profiles {
 
   $basedir = '/var/www/uitpas-balie-api/web/app_v1'
+  $secrets = lookup('vault:uitpas/balie-frontend')
 
   realize Group['www-data']
   realize User['www-data']
@@ -24,7 +25,7 @@ class profiles::uitpas::balie_frontend::deployment (
   file { 'uitpas-balie-frontend-config':
     ensure  => 'file',
     path    => "${basedir}/config.json",
-    source  => $config_source,
+    content  => template($config_source),
     owner   => 'www-data',
     group   => 'www-data',
     require => [Package['uitpas-balie-frontend'], Group['www-data'], User['www-data']]

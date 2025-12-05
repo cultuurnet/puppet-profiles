@@ -5,18 +5,19 @@ describe 'profiles::uitpas::balie_frontend::deployment' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context 'with config_source => /mytestconfig' do
+      context 'with config_source => appconfig/uitpas/balie_frontend/config.json' do
         let(:params) { {
-          'config_source' => '/mytestconfig'
+          'config_source' => 'appconfig/uitpas/balie_frontend/config.json'
         } }
+        let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::uitpas::balie_frontend::deployment').with(
-          'config_source' => '/mytestconfig',
+          'config_source' => 'appconfig/uitpas/balie_frontend/config.json',
           'version'       => 'latest',
           'repository'    => 'uitpas-balie-frontend',
-          'puppetdb_url'  => nil
+          'puppetdb_url'  => 'http://localhost:8081'
         ) }
 
         it { is_expected.to contain_group('www-data') }
@@ -31,7 +32,7 @@ describe 'profiles::uitpas::balie_frontend::deployment' do
         it { is_expected.to contain_file('uitpas-balie-frontend-config').with(
           'ensure' => 'file',
           'path'   => '/var/www/uitpas-balie-api/web/app_v1/config.json',
-          'source' => '/mytestconfig',
+          'content' => "{\n  \"apiUrl\": \"https://balie-frontend.uitpas.be\",\n  \"environment\": \"production\"\n}\n",
           'owner'  => 'www-data',
           'group'  => 'www-data'
         ) }
@@ -78,13 +79,14 @@ describe 'profiles::uitpas::balie_frontend::deployment' do
         end
       end
 
-      context 'with config_source => /foo.json, version => 4.5.6, repository => myrepo and puppetdb_url => http://puppetdb.example.com' do
+      context 'with config_source => appconfig/uitpas/balie_frontend/config.json, version => 4.5.6, repository => myrepo and puppetdb_url => http://puppetdb.example.com' do
         let(:params) { {
-          'config_source' => '/foo.json',
+          'config_source' => 'appconfig/uitpas/balie_frontend/config.json',
           'version'       => '4.5.6',
           'repository'    => 'myrepo',
           'puppetdb_url'  => 'http://puppetdb.example.com'
         } }
+        let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
         context "with repository myrepo defined" do
           let(:pre_condition) { [
@@ -99,7 +101,7 @@ describe 'profiles::uitpas::balie_frontend::deployment' do
           it { is_expected.to contain_file('uitpas-balie-frontend-config').with(
             'ensure' => 'file',
             'path'   => '/var/www/uitpas-balie-api/web/app_v1/config.json',
-            'source' => '/foo.json',
+            'content' => "{\n  \"apiUrl\": \"https://balie-frontend.uitpas.be\",\n  \"environment\": \"production\"\n}\n",
             'owner'  => 'www-data',
             'group'  => 'www-data'
           ) }

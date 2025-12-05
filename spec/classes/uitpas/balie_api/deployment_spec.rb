@@ -5,18 +5,19 @@ describe 'profiles::uitpas::balie_api::deployment' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with config_source => /tmp/config.yml" do
+      context "with config_source => appconfig/uitpas/balie_api/config.yml" do
         let(:params) { {
-          'config_source' => '/tmp/config.yml'
+          'config_source' => 'appconfig/uitpas/balie_api/config.yml'
         } }
+        let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::uitpas::balie_api::deployment').with(
-          'config_source'      => '/tmp/config.yml',
+          'config_source'      => 'appconfig/uitpas/balie_api/config.yml',
           'version'            => 'latest',
           'repository'         => 'uitpas-balie-api',
-          'puppetdb_url'       => nil
+          'puppetdb_url'       => 'http://localhost:8081'
         ) }
 
         it { is_expected.to contain_apt__source('uitpas-balie-api') }
@@ -32,7 +33,7 @@ describe 'profiles::uitpas::balie_api::deployment' do
           'owner'  => 'www-data',
           'group'  => 'www-data',
           'path'   => '/var/www/uitpas-balie-api/config.yml',
-          'source' => '/tmp/config.yml'
+          'content' => "apiUrl: \"https://api.uitpas.be\"\nenvironment: \"production\"\n"
         ) }
 
         it { is_expected.to contain_profiles__php__fpm_service_alias('uitpas-balie-api') }
@@ -73,13 +74,14 @@ describe 'profiles::uitpas::balie_api::deployment' do
         end
       end
 
-      context "with config_source => /tmp/myconfig.yml, version => 1.2.3, repository => myrepo and puppetdb_url => http://puppetdb.example.com:8080" do
+      context "with config_source => appconfig/uitpas/balie_api/config.yml, version => 1.2.3, repository => myrepo and puppetdb_url => http://puppetdb.example.com:8080" do
         let(:params) { {
-          'config_source' => '/tmp/myconfig.yml',
+          'config_source' => 'appconfig/uitpas/balie_api/config.yml',
           'version'       => '1.2.3',
           'repository'    => 'myrepo',
           'puppetdb_url'  => 'http://puppetdb.example.com:8080'
         } }
+        let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
         context 'with repository myrepo defined' do
           let(:pre_condition) { [
@@ -93,7 +95,7 @@ describe 'profiles::uitpas::balie_api::deployment' do
           ) }
 
           it { is_expected.to contain_file('uitpas-balie-api-config').with(
-            'source' => '/tmp/myconfig.yml'
+            'content' => "apiUrl: \"https://api.uitpas.be\"\nenvironment: \"production\"\n"
           ) }
 
           it { is_expected.to contain_package('uitpas-balie-api').that_requires('Apt::Source[myrepo]') }

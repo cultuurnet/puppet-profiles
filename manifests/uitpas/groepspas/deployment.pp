@@ -24,7 +24,7 @@ class profiles::uitpas::groepspas::deployment (
   file { 'uitpas-groepspas-config':
     ensure  => 'file',
     path    => "${basedir}/config.json",
-    source  => $config_source,
+    content  => template($config_source),
     owner   => 'www-data',
     group   => 'www-data',
     require => [Package['uitpas-groepspas'], Group['www-data'], User['www-data']]
