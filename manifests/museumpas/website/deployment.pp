@@ -90,69 +90,69 @@ class profiles::museumpas::website::deployment (
 
   exec { 'put museumpas in maintenance mode':
     command => 'php artisan down',
-    require => [File['museumpas-website-config'], Exec['composer script post-autoload-dump']],
+    require => Exec['composer script post-autoload-dump'],
     *       => $exec_default_attributes
   }
 
   exec { 'run museumpas database migrations':
     command => 'php artisan migrate --force',
-    require => [File['museumpas-website-config'], Exec['put museumpas in maintenance mode']],
+    require => Exec['put museumpas in maintenance mode'],
     *       => $exec_default_attributes
   }
 
   exec { 'run museumpas database seeder':
     command => 'php artisan db:seed RoleAndPermissionSeeder --force',
-    require => [File['museumpas-website-config'], Exec['run museumpas database migrations']],
+    require => Exec['run museumpas database migrations'],
     *       => $exec_default_attributes
   }
 
   exec { 'clear museumpas optimize cache':
     command => 'php artisan optimize:clear',
-    require => [File['museumpas-website-config'], Exec['run museumpas database seeder']],
+    require => Exec['run museumpas database seeder'],
     *       => $exec_default_attributes
   }
 
   exec { 'clear museumpas cache':
     command => 'php artisan cache:clear',
-    require => [File['museumpas-website-config'], Exec['run museumpas database migrations'], Exec['clear museumpas optimize cache']],
+    require => [Exec['run museumpas database migrations'], Exec['clear museumpas optimize cache']],
     *       => $exec_default_attributes
   }
 
   exec { 'clear museumpas model cache':
     command => 'php artisan modelCache:clear',
-    require => [File['museumpas-website-config'], Exec['run museumpas database migrations'], Exec['clear museumpas cache']],
+    require => [Exec['run museumpas database migrations'], Exec['clear museumpas cache']],
     *       => $exec_default_attributes
   }
 
   exec { 'clear museumpas route translation cache':
     command => 'php artisan route:trans:clear',
-    require => [File['museumpas-website-config'], Exec['run museumpas database migrations'], Exec['clear museumpas model cache']],
+    require => [Exec['run museumpas database migrations'], Exec['clear museumpas model cache']],
     *       => $exec_default_attributes
   }
 
   exec { 'museumpas optimize':
     command => 'php artisan optimize',
-    require => [File['museumpas-website-config'], Exec['run museumpas database migrations'], Exec['clear museumpas route translation cache']],
+    require => [Exec['run museumpas database migrations'], Exec['clear museumpas route translation cache']],
     *       => $exec_default_attributes
   }
 
   exec { 'build museumpas route translation cache':
     command => 'php artisan route:trans:cache',
-    require => [File['museumpas-website-config'], Exec['run museumpas database migrations'], Exec['museumpas optimize']],
+    require => [Exec['run museumpas database migrations'], Exec['museumpas optimize']],
     *       => $exec_default_attributes
   }
 
   exec { 'create storage link':
     command => 'php artisan storage:link',
     unless  => "test -L ${basedir}/public/storage",
-    require => [File['museumpas-website-config'], Exec['run museumpas database migrations']],
+    require => Exec['run museumpas database migrations'],
     *       => $exec_default_attributes
   }
 
   exec { 'put museumpas in production mode':
     command => 'php artisan up',
     notify  => [Service['museumpas-website'], Service['museumpas-website-horizon']],
-    require => [File['museumpas-website-config'], Exec['create storage link'], Exec['clear museumpas model cache']],
+    require => [Exec['create storage link'], Exec['build museumpas route translation cache']],
     *       => $exec_default_attributes
   }
 
@@ -182,16 +182,13 @@ class profiles::museumpas::website::deployment (
 
   if $run_scheduler_cron {
     cron { 'museumpas-filament-scheduler':
-      command     => "cd ${basedir} && php artisan schedule:run > /dev/null 2>&1",
-      require     => [User['www-data'], Package['museumpas-website']],
-      user        => 'www-data'
+      command => "cd ${basedir} && php artisan schedule:run > /dev/null 2>&1",
+      require => [User['www-data'], Package['museumpas-website']],
+      user    => 'www-data'
     }
   }
 
   profiles::deployment::versions { $title:
     puppetdb_url => $puppetdb_url
   }
-
-  Class['profiles::php'] -> Class['profiles::museumpas::website']
 }
-
