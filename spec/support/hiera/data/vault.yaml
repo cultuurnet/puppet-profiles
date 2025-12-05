@@ -48,3 +48,6 @@ vault:uitid/reverseproxy:
 vault:platform: {}
 
 vault:uitid/frontend: {}
+
+vault:uitpas/website/frontend: {}
+vault:uitpas/website/api: {}

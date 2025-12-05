@@ -9,6 +9,7 @@ class profiles::uitpas::website::frontend::deployment (
 ) inherits ::profiles {
 
   $basedir = '/var/www/uitpas-website-frontend'
+  $secrets = lookup('vault:uitpas/website/frontend')
 
   realize Apt::Source[$repository]
   realize Group['www-data']
@@ -25,7 +26,7 @@ class profiles::uitpas::website::frontend::deployment (
     path    => "${basedir}/.env",
     owner   => 'www-data',
     group   => 'www-data',
-    source  => $config_source,
+    content  => template($config_source),
     require => Package['uitpas-website-frontend']
   }
 
