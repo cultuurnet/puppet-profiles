@@ -185,12 +185,6 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
-  @apt::source { 'uitid-frontend-api':
-    location => "https://apt.publiq.be/uitid-frontend-api-${environment}",
-    release  => $codename,
-    repos    => 'main'
-  }
-
   @apt::source { 'uitid-api':
     location => "https://apt.publiq.be/uitid-api-${environment}",
     release  => $codename,

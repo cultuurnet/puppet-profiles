@@ -86,7 +86,6 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'projectaanvraag-api', { :location => 'https://apt.publiq.be/projectaanvraag-api-testing', :repos => 'main', :release => 'focal' }
 
             include_examples 'apt repositories', 'uitid-frontend', { :location => 'https://apt.publiq.be/uitid-frontend-testing', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'uitid-frontend-api', { :location => 'https://apt.publiq.be/uitid-frontend-api-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uitid-api', { :location => 'https://apt.publiq.be/uitid-api-testing', :repos => 'main', :release => 'focal' }
 
             include_examples 'apt repositories', 'uitpas-website-api', { :location => 'https://apt.publiq.be/uitpas-website-api-testing', :repos => 'main', :release => 'focal' }
