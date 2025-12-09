@@ -48,3 +48,7 @@ vault:uitid/reverseproxy:
 vault:platform: {}
 
 vault:uitid/frontend: {}
+
+vault:uitpas/balie-api: {}
+
+vault:uitpas/balie-frontend: {}

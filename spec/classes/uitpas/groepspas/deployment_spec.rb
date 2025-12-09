@@ -5,15 +5,15 @@ describe 'profiles::uitpas::groepspas::deployment' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context 'with config_source => /mytestconfig' do
+      context 'with config_source => appconfig/uitpas/groepspas/config.json' do
         let(:params) { {
-          'config_source' => '/mytestconfig'
+          'config_source' => 'appconfig/uitpas/groepspas/config.json'
         } }
 
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::uitpas::groepspas::deployment').with(
-          'config_source' => '/mytestconfig',
+          'config_source' => 'appconfig/uitpas/groepspas/config.json',
           'version'       => 'latest',
           'repository'    => 'uitpas-groepspas',
           'puppetdb_url'  => nil
@@ -31,7 +31,7 @@ describe 'profiles::uitpas::groepspas::deployment' do
         it { is_expected.to contain_file('uitpas-groepspas-config').with(
           'ensure' => 'file',
           'path'   => '/var/www/uitpas-groepspas/config.json',
-          'source' => '/mytestconfig',
+          'content' => "{\n  \"apiUrl\": \"https://groepspas.uitpas.be\",\n  \"environment\": \"production\"\n}\n",
           'owner'  => 'www-data',
           'group'  => 'www-data'
         ) }
@@ -78,9 +78,9 @@ describe 'profiles::uitpas::groepspas::deployment' do
         end
       end
 
-      context 'with config_source => /foo.json, version => 4.5.6, repository => myrepo and puppetdb_url => http://puppetdb.example.com' do
+      context 'with config_source => appconfig/uitpas/groepspas/config.json, version => 4.5.6, repository => myrepo and puppetdb_url => http://puppetdb.example.com' do
         let(:params) { {
-          'config_source' => '/foo.json',
+          'config_source' => 'appconfig/uitpas/groepspas/config.json',
           'version'       => '4.5.6',
           'repository'    => 'myrepo',
           'puppetdb_url'  => 'http://puppetdb.example.com'
@@ -99,7 +99,7 @@ describe 'profiles::uitpas::groepspas::deployment' do
           it { is_expected.to contain_file('uitpas-groepspas-config').with(
             'ensure' => 'file',
             'path'   => '/var/www/uitpas-groepspas/config.json',
-            'source' => '/foo.json',
+            'content' => "{\n  \"apiUrl\": \"https://groepspas.uitpas.be\",\n  \"environment\": \"production\"\n}\n",
             'owner'  => 'www-data',
             'group'  => 'www-data'
           ) }

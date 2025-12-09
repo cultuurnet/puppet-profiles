@@ -24,12 +24,12 @@ profiles::uit::notifications::deployment::aws_secret_access_key: '4321dcba'
 profiles::uit::mail_subscriptions::deployment::config_source: '/path/to/config/source'
 profiles::uit::recommender_frontend::deployment::config_source: '/path/to/config/source'
 
-profiles::uitpas::balie_frontend::deployment::config_source: '/path/to/config/source'
-profiles::uitpas::balie_api::deployment::config_source: '/path/to/config/source'
+profiles::uitpas::balie_frontend::deployment::config_source: 'appconfig/uitpas/balie_frontend/config.json'
+profiles::uitpas::balie_api::deployment::config_source: 'appconfig/uitpas/balie_api/config.yml'
 
-profiles::uitpas::balie::deployment::config_source: '/path/to/config/source'
+profiles::uitpas::balie::deployment::config_source: 'appconfig/uitpas/balie/env'
 
-profiles::uitpas::groepspas::deployment::config_source: '/path/to/config/source'
+profiles::uitpas::groepspas::deployment::config_source: 'appconfig/uitpas/groepspas/config.json'
 
 profiles::uitpas::website::frontend::deployment::config_source: '/path/to/config/source'
 profiles::uitpas::website::api::deployment::config_source: '/path/to/config/source'
