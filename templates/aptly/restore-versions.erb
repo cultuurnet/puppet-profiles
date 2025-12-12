@@ -139,7 +139,6 @@ SNAPSHOT_NAME="${ACTIVE_REPO}-$(date +%Y.%m.%d.%H%M%S)"
 echo "Creating snapshot: $SNAPSHOT_NAME"
 run aptly snapshot create "$SNAPSHOT_NAME" from repo "$ACTIVE_REPO"
 
-
 ###########################################
 # Step 8 — Select environment
 ###########################################
@@ -159,25 +158,11 @@ case "$ENV_CHOICE" in
     *) die "Invalid environment selection";;
 esac
 
-###########################################
-# Step 9 — Publish snapshot
-###########################################
 PUBLISH_TARGET="${S3_BASE}:${ACTIVE_REPO}-${environment}"
-echo ""
-echo "Publishing snapshot ${SNAPSHOT_NAME} → ${PUBLISH_TARGET}"
-run aptly publish switch \
-    -gpg-key="$GPG_KEY" \
-    -passphrase="$GPG_PASSPHRASE" \
-    -batch \
-    -component="$COMPONENT" \
-    "$DISTRO" \
-    "$PUBLISH_TARGET" \
-    "$SNAPSHOT_NAME"
 
 ###########################################
 # Step 9 — Publish snapshot
 ###########################################
-PUBLISH_TARGET="${S3_BASE}:${PKG}-${environment}"
 echo ""
 echo "Publishing snapshot ${SNAPSHOT_NAME} → ${PUBLISH_TARGET}"
 run aptly publish switch \
@@ -215,7 +200,6 @@ for snap in "${SNAP_ARRAY[@]}"; do
     fi
     run aptly snapshot drop "$snap"
 done
-
 
 echo ""
 echo "Done. Snapshot ${SNAPSHOT_NAME} published to ${environment}."
