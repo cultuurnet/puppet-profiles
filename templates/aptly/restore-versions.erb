@@ -143,21 +143,15 @@ run aptly snapshot create "$SNAPSHOT_NAME" from repo "$ACTIVE_REPO"
 ###########################################
 # Step 8 — Select environment
 ###########################################
-ENV_CHOICE=$(whiptail --title "Select Environment" --menu "Target environment:" \
-20 60 12 \
-1 "development" \
-2 "acceptance" \
-3 "testing" \
-4 "production" \
-2>&1 >/dev/tty) || { echo "Canceled."; exit 1; }
-
-case "$ENV_CHOICE" in
-    1) environment="development";;
-    2) environment="acceptance";;
-    3) environment="testing";;
-    4) environment="production";;
-    *) die "Invalid environment selection";;
-esac
+environment=$(whiptail \
+    --title "Select environment" \
+    --radiolist "Target environment:" \
+    20 78 4 \
+    "development" "" ON \
+    "acceptance" "" OFF \
+    "testing" "" OFF \
+    "production" "" OFF \
+    2>&1 >/dev/tty) || { echo "Canceled."; exit 1; }
 
 PUBLISH_TARGET="${S3_BASE}:${ACTIVE_REPO}-${environment}"
 
