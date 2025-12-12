@@ -124,11 +124,11 @@ class profiles::museumpas::website::deployment (
     *       => $exec_default_attributes
   }
 
-  exec { 'clear museumpas route translation cache':
-    command => 'php artisan route:trans:clear',
-    require => [Exec['run museumpas database migrations'], Exec['clear museumpas model cache']],
-    *       => $exec_default_attributes
-  }
+#  exec { 'clear museumpas route translation cache':
+#    command => 'php artisan route:trans:clear',
+#    require => [Exec['run museumpas database migrations'], Exec['clear museumpas model cache']],
+#    *       => $exec_default_attributes
+#  }
 
   exec { 'museumpas optimize':
     command => 'php artisan optimize --except=route:cache',
@@ -136,17 +136,17 @@ class profiles::museumpas::website::deployment (
     *       => $exec_default_attributes
   }
 
-  exec { 'build museumpas route translation cache':
-    command => 'php artisan route:trans:cache',
-    require => [Exec['run museumpas database migrations'], Exec['museumpas optimize']],
-    *       => $exec_default_attributes
-  }
+#  exec { 'build museumpas route translation cache':
+#    command => 'php artisan route:trans:cache',
+#    require => [Exec['run museumpas database migrations'], Exec['museumpas optimize']],
+#    *       => $exec_default_attributes
+#  }
 
-  exec { 'build museumpas route cache':
-    command => 'php artisan route:cache',
-    require => [Exec['build museumpas route translation cache']],
-    *       => $exec_default_attributes
-  }
+#  exec { 'build museumpas route cache':
+#    command => 'php artisan route:cache',
+#    require => [Exec['build museumpas route translation cache']],
+#    *       => $exec_default_attributes
+#  }
 
   exec { 'create storage link':
     command => 'php artisan storage:link',
