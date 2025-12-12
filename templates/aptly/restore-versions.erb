@@ -44,8 +44,9 @@ check_binary whiptail
 ###########################################
 # Step 1 — List main repos (skip -archive)
 ###########################################
+# Only list repositories that have an archive
 mapfile -t REPO_ARRAY < <(
-    aptly repo list -json | jq -r '.[] | select(.Name | test("-archive") | not) | .Name'
+    aptly repo list -json | jq -r '.[] | select(.Name | test("-archive") ) | .Name | sub("-archive"; "")'
 )
 
 [[ ${#REPO_ARRAY[@]} -gt 0 ]] || die "No main repos found"
