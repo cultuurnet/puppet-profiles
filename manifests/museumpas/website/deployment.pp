@@ -144,7 +144,7 @@ class profiles::museumpas::website::deployment (
 
   exec { 'build museumpas route cache':
     command => 'php artisan route:cache',
-    require => [Exec['build museumpas route translation cache']
+    require => [Exec['build museumpas route translation cache']],
     *       => $exec_default_attributes
   }
 
