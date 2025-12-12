@@ -142,6 +142,12 @@ class profiles::museumpas::website::deployment (
     *       => $exec_default_attributes
   }
 
+  exec { 'build museumpas route cache':
+    command => 'php artisan route:cache',
+    require => [Exec['build museumpas route translation cache']],
+    *       => $exec_default_attributes
+  }
+
   exec { 'create storage link':
     command => 'php artisan storage:link',
     unless  => "test -L ${basedir}/public/storage",
