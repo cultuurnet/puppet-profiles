@@ -132,7 +132,8 @@ class profiles::museumpas::website::deployment (
 
   exec { 'museumpas optimize':
     command => 'php artisan optimize --except=route:cache',
-    require => [Exec['run museumpas database migrations'], Exec['clear museumpas route translation cache']],
+    # require => [Exec['run museumpas database migrations'], Exec['clear museumpas route translation cache']],
+    require => Exec['run museumpas database migrations'],
     *       => $exec_default_attributes
   }
 
