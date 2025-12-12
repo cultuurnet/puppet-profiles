@@ -133,7 +133,7 @@ class profiles::museumpas::website::deployment (
   exec { 'museumpas optimize':
     command => 'php artisan optimize --except=route:cache',
     # require => [Exec['run museumpas database migrations'], Exec['clear museumpas route translation cache']],
-    require => Exec['run museumpas database migrations'],
+    require => [Exec['run museumpas database migrations'], Exec['clear museumpas model cache']],
     *       => $exec_default_attributes
   }
 
@@ -159,7 +159,8 @@ class profiles::museumpas::website::deployment (
   exec { 'put museumpas in production mode':
     command => 'php artisan up',
     notify  => [Service['museumpas-website'], Service['museumpas-website-horizon']],
-    require => [Exec['create storage link'], Exec['build museumpas route translation cache']],
+    #  require => [Exec['create storage link'], Exec['build museumpas route translation cache']],
+    require => [Exec['create storage link'], Exec['museumpas optimize']],
     *       => $exec_default_attributes
   }
 
