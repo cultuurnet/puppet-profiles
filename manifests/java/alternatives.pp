@@ -1,5 +1,5 @@
 class profiles::java::alternatives (
-  Integer[8, 17]     $default_version,
+  Integer[8, 21]     $default_version,
   Enum['jre', 'jdk'] $distribution    = 'jre',
   Boolean            $headless        = true
 ) inherits ::profiles {
@@ -61,6 +61,18 @@ class profiles::java::alternatives (
           $jre_home  = $java_home
           $jre_commands_headless = ['java', 'jpackage', 'keytool', 'rmiregistry']
           $jdk_commands_headless = ['jar', 'jarsigner', 'javac', 'javadoc', 'javap', 'jcmd', 'jdb', 'jdeprscan', 'jdeps', 'jfr', 'jimage', 'jinfo', 'jlink', 'jmap', 'jmod', 'jps', 'jrunscript', 'jshell', 'jstack', 'jstat', 'jstatd', 'serialver', 'jhsdb']
+          if $headless {
+            $jre_commands = $jre_commands_headless
+            $jdk_commands = $jdk_commands_headless
+          } else {
+            $jre_commands = $jre_commands_headless
+            $jdk_commands = $jdk_commands_headless + ['jconsole']
+          }
+    }
+    21: {
+          $jre_home  = $java_home
+          $jre_commands_headless = ['java', 'jpackage', 'keytool', 'rmiregistry']
+          $jdk_commands_headless = ['jar', 'jarsigner', 'javac', 'javadoc', 'javap', 'jcmd', 'jdb', 'jdeprscan', 'jdeps', 'jfr', 'jimage', 'jinfo', 'jlink', 'jmap', 'jmod', 'jps', 'jrunscript', 'jshell', 'jstack', 'jstat', 'jstatd', 'jwebserver', 'serialver', 'jhsdb']
           if $headless {
             $jre_commands = $jre_commands_headless
             $jdk_commands = $jdk_commands_headless
