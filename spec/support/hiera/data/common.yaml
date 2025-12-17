@@ -31,8 +31,8 @@ profiles::uitpas::balie::deployment::config_source: 'appconfig/uitpas/balie/env'
 
 profiles::uitpas::groepspas::deployment::config_source: 'appconfig/uitpas/groepspas/config.json'
 
-profiles::uitpas::website::frontend::deployment::config_source: '/path/to/config/source'
-profiles::uitpas::website::api::deployment::config_source: '/path/to/config/source'
+profiles::uitpas::website::frontend::deployment::config_source: 'appconfig/uitpas/website/frontend/env'
+profiles::uitpas::website::api::deployment::config_source: 'appconfig/uitpas/website/api/env'
 
 profiles::uitpas::cid_web::deployment::config_source: '/path/to/config/source'
 
