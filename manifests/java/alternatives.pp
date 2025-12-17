@@ -1,10 +1,15 @@
 class profiles::java::alternatives (
-  Integer[8, 17]     $default_version,
+  Integer[8, 21]     $default_version,
   Enum['jre', 'jdk'] $distribution    = 'jre',
   Boolean            $headless        = true
 ) inherits ::profiles {
 
-  $java_home = "/usr/lib/jvm/java-${default_version}-openjdk-amd64"
+  $allowed_versions = [8, 11, 16, 17, 21]
+  $java_home        = "/usr/lib/jvm/java-${default_version}-openjdk-amd64"
+
+  unless $default_version in $allowed_versions {
+    fail("Default OpenJDK version ${default_version} is not installed")
+  }
 
   shellvar { 'JAVA_HOME':
     ensure => 'present',
@@ -61,6 +66,18 @@ class profiles::java::alternatives (
           $jre_home  = $java_home
           $jre_commands_headless = ['java', 'jpackage', 'keytool', 'rmiregistry']
           $jdk_commands_headless = ['jar', 'jarsigner', 'javac', 'javadoc', 'javap', 'jcmd', 'jdb', 'jdeprscan', 'jdeps', 'jfr', 'jimage', 'jinfo', 'jlink', 'jmap', 'jmod', 'jps', 'jrunscript', 'jshell', 'jstack', 'jstat', 'jstatd', 'serialver', 'jhsdb']
+          if $headless {
+            $jre_commands = $jre_commands_headless
+            $jdk_commands = $jdk_commands_headless
+          } else {
+            $jre_commands = $jre_commands_headless
+            $jdk_commands = $jdk_commands_headless + ['jconsole']
+          }
+    }
+    21: {
+          $jre_home  = $java_home
+          $jre_commands_headless = ['java', 'jpackage', 'keytool', 'rmiregistry']
+          $jdk_commands_headless = ['jar', 'jarsigner', 'javac', 'javadoc', 'javap', 'jcmd', 'jdb', 'jdeprscan', 'jdeps', 'jfr', 'jimage', 'jinfo', 'jlink', 'jmap', 'jmod', 'jps', 'jrunscript', 'jshell', 'jstack', 'jstat', 'jstatd', 'jwebserver', 'serialver', 'jhsdb']
           if $headless {
             $jre_commands = $jre_commands_headless
             $jdk_commands = $jdk_commands_headless
