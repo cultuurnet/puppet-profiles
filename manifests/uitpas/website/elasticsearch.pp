@@ -14,7 +14,7 @@ class profiles::uitpas::website::elasticsearch (
   file { 'uitpas-elasticsearch-balies-mapping':
     ensure  => 'file',
     path    => "${basedir}/mapping_balies.json",
-    source  => $balies_config_source,
+    content => $balies_config_source,
     require => File[$basedir]
   }
 
@@ -37,7 +37,7 @@ class profiles::uitpas::website::elasticsearch (
   file { 'uitpas-elasticsearch-promotions-mapping':
     ensure  => 'file',
     path    => "${basedir}/mapping_promotions.json",
-    source  => $promotions_config_source,
+    content => $promotions_config_source,
     require => File[$basedir]
   }
 
