@@ -1,8 +1,8 @@
 class profiles::java (
-  Variant[Integer[8, 17], Array[Integer[8, 17]]] $installed_versions = 8,
-  Optional[Integer[8, 17]]                       $default_version    = undef,
-  Enum['jre', 'jdk']                             $distribution       = 'jre',
-  Boolean                                        $headless           = true
+  Variant[Integer[8, 21], Array[Integer[8, 21]] $installed_versions = 8,
+  Optional[Integer[8, 21]]                      $default_version    = undef,
+  Enum['jre', 'jdk']                            $distribution       = 'jre',
+  Boolean                                       $headless           = true
 ) inherits ::profiles {
 
   if $headless {
