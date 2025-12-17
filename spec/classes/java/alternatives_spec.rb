@@ -438,6 +438,14 @@ describe 'profiles::java::alternatives' do
         end
       end
 
+      context "with default_version => 9" do
+        let(:params) { {
+          'default_version' => 9
+        } }
+
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /Default OpenJDK version 9 is not installed/) }
+      end
+
       context "without parameters" do
         let(:params) { {} }
 

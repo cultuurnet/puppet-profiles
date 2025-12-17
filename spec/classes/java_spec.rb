@@ -70,6 +70,24 @@ describe 'profiles::java' do
         it { is_expected.to contain_package('openjdk-8-jre').that_comes_before('Class[profiles::java::alternatives]') }
         it { is_expected.to contain_package('openjdk-11-jre').that_comes_before('Class[profiles::java::alternatives]') }
       end
+
+      context "with installed_versions => [13, 14] and default_version => 13" do
+        let(:params) { {
+          'installed_versions' => [13, 14],
+          'default_version'    => 13
+        } }
+
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /OpenJDK version 13 is not installable/) }
+      end
+
+      context "with installed_versions => [16, 17] and default_version => 13" do
+        let(:params) { {
+          'installed_versions' => [16, 17],
+          'default_version'    => 13
+        } }
+
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /Default OpenJDK version 13 is not installed/) }
+      end
     end
   end
 end

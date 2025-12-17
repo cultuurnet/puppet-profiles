@@ -4,7 +4,12 @@ class profiles::java::alternatives (
   Boolean            $headless        = true
 ) inherits ::profiles {
 
-  $java_home = "/usr/lib/jvm/java-${default_version}-openjdk-amd64"
+  $allowed_versions = [8, 11, 16, 17, 21]
+  $java_home        = "/usr/lib/jvm/java-${default_version}-openjdk-amd64"
+
+  unless $default_version in $allowed_versions {
+    fail("Default OpenJDK version ${default_version} is not installed")
+  }
 
   shellvar { 'JAVA_HOME':
     ensure => 'present',
