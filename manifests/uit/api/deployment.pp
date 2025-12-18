@@ -11,6 +11,7 @@ class profiles::uit::api::deployment (
 ) inherits ::profiles {
 
   $basedir = '/var/www/uit-api'
+  $secrets = lookup('vault:uit/api')
 
   realize Apt::Source[$repository]
   realize Group['www-data']
@@ -27,7 +28,7 @@ class profiles::uit::api::deployment (
     path    => "${basedir}/packages/graphql/.env",
     owner   => 'www-data',
     group   => 'www-data',
-    source  => $config_source,
+    content  => template($config_source),
     require => [Package['uit-api'], Group['www-data'], User['www-data']],
     # notify  => [Exec['uit-api-graphql-schema-update'], Service['uit-api']]
     notify  => Service['uit-api']
@@ -38,7 +39,7 @@ class profiles::uit::api::deployment (
     path    => "${basedir}/packages/db/.env",
     owner   => 'www-data',
     group   => 'www-data',
-    source  => $config_source,
+    content  => template($config_source),
     require => [Package['uit-api'], Group['www-data'], User['www-data']],
     notify  => [Exec['uit-api-db-schema-update'], Service['uit-api']]
   }

@@ -8,6 +8,7 @@ class profiles::uit::notifications::deployment (
 ) inherits ::profiles {
 
   $basedir = '/var/www/uit-notifications'
+  $secrets = lookup('vault:uit/notifications')
 
   realize Group['www-data']
   realize User['www-data']
@@ -27,7 +28,7 @@ class profiles::uit::notifications::deployment (
     path    => "${basedir}/packages/notifications/env.yml",
     owner   => 'www-data',
     group   => 'www-data',
-    source  => $config_source,
+    content  => template($config_source),
     require => [Group['www-data'], User['www-data'], Package['uit-notifications']]
   }
 

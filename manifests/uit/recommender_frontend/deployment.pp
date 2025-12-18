@@ -8,6 +8,7 @@ class profiles::uit::recommender_frontend::deployment (
 ) inherits ::profiles {
 
   $basedir = '/var/www/uit-recommender-frontend'
+  $secrets = lookup('vault:uit/recommender-frontend')
 
   realize Group['www-data']
   realize User['www-data']
@@ -24,7 +25,7 @@ class profiles::uit::recommender_frontend::deployment (
     path    => "${basedir}/.env",
     owner   => 'www-data',
     group   => 'www-data',
-    source  => $config_source,
+    content  => template($config_source),
     require => [Group['www-data'], User['www-data'], Package['uit-recommender-frontend']],
     notify  => Service['uit-recommender-frontend']
   }

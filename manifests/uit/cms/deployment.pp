@@ -8,6 +8,7 @@ class profiles::uit::cms::deployment (
 ) inherits ::profiles {
 
   $basedir = '/var/www/uit-cms'
+  $secrets = lookup('vault:uit/cms')
 
   realize Group['www-data']
   realize User['www-data']
@@ -25,7 +26,7 @@ class profiles::uit::cms::deployment (
     path    => "${basedir}/web/sites/default/settings.private.php",
     owner   => 'www-data',
     group   => 'www-data',
-    source  => $config_source,
+    content  => template($config_source),
     require => [Group['www-data'], User['www-data'], Package['uit-cms']],
     notify  => Service['uit-cms']
   }
@@ -33,7 +34,7 @@ class profiles::uit::cms::deployment (
   file { 'uit-cms-drush-config':
     ensure  => 'file',
     path    => "${basedir}/drush/drush.yml",
-    source  => $drush_config_source,
+    content  => template($drush_config_source),
     owner   => 'www-data',
     group   => 'www-data',
     require => [Group['www-data'], User['www-data'], Package['uit-cms']],
@@ -44,7 +45,7 @@ class profiles::uit::cms::deployment (
     file { 'uit-cms-robots.txt':
       ensure  => 'file',
       path    => "${basedir}/web/robots.txt",
-      source  => $robots_source,
+      content  => template($robots_source),
       owner   => 'www-data',
       group   => 'www-data',
       require => Package['uit-cms'],
