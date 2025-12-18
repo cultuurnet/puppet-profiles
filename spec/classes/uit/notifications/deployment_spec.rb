@@ -4,23 +4,25 @@ describe 'profiles::uit::notifications::deployment' do
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       let(:facts) { facts }
-
-      context 'with config_source => /foo' do
+      
+      context 'with config_source => appconfig/uit/notifications/env' do
+        let(:hiera_config) { 'spec/support/hiera/common.yaml' }
         let(:params) { {
-          'config_source'         => '/foo',
+          'config_source'         => 'appconfig/uit/notifications/env',
           'aws_access_key_id'     => 'secret_key_id',
           'aws_secret_access_key' => 'secret_access_key'
         } }
 
+
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::uit::notifications::deployment').with(
-          'config_source'         => '/foo',
+          'config_source'         => 'appconfig/uit/notifications/env',
           'aws_access_key_id'     => 'secret_key_id',
           'aws_secret_access_key' => 'secret_access_key',
           'version'               => 'latest',
           'repository'            => 'uit-notifications',
-          'puppetdb_url'          => nil
+          'puppetdb_url'          => 'http://localhost:8081'
         ) }
 
         it { is_expected.to contain_class('profiles::nodejs') }
@@ -36,7 +38,6 @@ describe 'profiles::uit::notifications::deployment' do
         it { is_expected.to contain_file('uit-notifications-config').with(
           'ensure' => 'file',
           'path'   => '/var/www/uit-notifications/packages/notifications/env.yml',
-          'source' => '/foo',
           'owner'  => 'www-data',
           'group'  => 'www-data'
         ) }
@@ -69,19 +70,12 @@ describe 'profiles::uit::notifications::deployment' do
             'puppetdb_url' => nil
           ) }
         end
-
-        context 'with hieradata' do
-          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
-
-          it { is_expected.to contain_profiles__deployment__versions('profiles::uit::notifications::deployment').with(
-            'puppetdb_url' => 'http://localhost:8081'
-          ) }
-        end
       end
 
-      context 'with config_source => /bar, aws_access_key_id => foo, aws_secret_access_key => bar, version => 1.2.3, repository => bla and puppetdb_url => http://example.com:8000' do
+      context 'with config_source => appconfig/uit/notifications/env, aws_access_key_id => foo, aws_secret_access_key => bar, version => 1.2.3, repository => bla and puppetdb_url => http://example.com:8000' do
+        let(:hiera_config) { 'spec/support/hiera/common.yaml' }
         let(:params) { {
-          'config_source'         => '/bar',
+          'config_source'         => 'appconfig/uit/notifications/env',
           'aws_access_key_id'     => 'foo',
           'aws_secret_access_key' => 'bar',
           'version'               => '1.2.3',
@@ -94,9 +88,7 @@ describe 'profiles::uit::notifications::deployment' do
 
           it { is_expected.to contain_apt__source('bla') }
 
-          it { is_expected.to contain_file('uit-notifications-config').with(
-            'source' => '/bar'
-          ) }
+          it { is_expected.to contain_file('uit-notifications-config').with_content(/key=value/) }
 
           it { is_expected.to contain_package('uit-notifications').with( 'ensure' => '1.2.3') }
 

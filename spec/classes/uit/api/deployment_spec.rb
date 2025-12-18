@@ -1,9 +1,9 @@
 describe 'profiles::uit::api::deployment' do
-  context "with config_source => /foo" do
+  context "with config_source => appconfig/uit/api/env" do
     let(:params) { {
-      'config_source' => '/foo'
+      'config_source' => 'appconfig/uit/api/env'
     } }
-
+    let(:hiera_config) { 'spec/support/hiera/common.yaml' }
     include_examples 'operating system support'
 
     on_supported_os.each do |os, facts|
@@ -13,7 +13,7 @@ describe 'profiles::uit::api::deployment' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::uit::api::deployment').with(
-          'config_source'         => '/foo',
+          'config_source'         => 'appconfig/uit/api/env',
           'maximum_heap_size'     => 512,
           'version'               => 'latest',
           'repository'            => 'uit-api',
@@ -21,7 +21,7 @@ describe 'profiles::uit::api::deployment' do
           'service_port'          => 4000,
           'newrelic_license_key'  => nil,
           'newrelic_app_name'     => nil,
-          'puppetdb_url'          => nil
+          'puppetdb_url'          => 'http://localhost:8081'
         ) }
 
         it { is_expected.to contain_apt__source('uit-api') }
@@ -30,21 +30,23 @@ describe 'profiles::uit::api::deployment' do
 
         it { is_expected.to contain_package('uit-api').with('ensure' => 'latest') }
 
-        it { is_expected.to contain_file('uit-api-config-graphql').with(
-          'ensure' => 'file',
-          'path'   => '/var/www/uit-api/packages/graphql/.env',
-          'source' => '/foo',
-          'owner'  => 'www-data',
-          'group'  => 'www-data'
-        ) }
+        it {
+          is_expected.to contain_file('uit-api-config-graphql').with(
+            'ensure' => 'file',
+            'path'   => '/var/www/uit-api/packages/graphql/.env',
+            'owner'  => 'www-data',
+            'group'  => 'www-data'
+          ).with_content(/key=value/)
+        }
 
-        it { is_expected.to contain_file('uit-api-config-db').with(
-          'ensure' => 'file',
-          'path'   => '/var/www/uit-api/packages/db/.env',
-          'source' => '/foo',
-          'owner'  => 'www-data',
-          'group'  => 'www-data'
-        ) }
+        it {
+          is_expected.to contain_file('uit-api-config-db').with(
+            'ensure' => 'file',
+            'path'   => '/var/www/uit-api/packages/db/.env',
+            'owner'  => 'www-data',
+            'group'  => 'www-data'
+          ).with_content(/key=value/)
+        }
 
         it { is_expected.to contain_file('uit-api-service-defaults').with(
           'ensure' => 'file',
@@ -122,7 +124,7 @@ describe 'profiles::uit::api::deployment' do
 
   context "with config_source => /bar, maximum_heap_size => 1024, service_port => 3456, version => 1.2.3, repository => uit-api-exotic, service_status => stopped, newrelic_license_key => ping, newrelic_app_name => pong and puppetdb_url => http://example.com:8000" do
     let(:params) { {
-      'config_source'        => '/bar',
+      'config_source'        => 'appconfig/uit/api/env',
       'version'              => '1.2.3',
       'maximum_heap_size'    => 1024,
       'repository'           => 'uit-api-exotic',
@@ -132,7 +134,7 @@ describe 'profiles::uit::api::deployment' do
       'newrelic_app_name'    => 'pong',
       'puppetdb_url'         => 'http://example.com:8000'
     } }
-
+    let(:hiera_config) { 'spec/support/hiera/common.yaml' }
     on_supported_os.each do |os, facts|
       context "on #{os}" do
         let(:facts) { facts }
@@ -142,13 +144,19 @@ describe 'profiles::uit::api::deployment' do
 
           it { is_expected.to contain_apt__source('uit-api-exotic') }
 
-          it { is_expected.to contain_file('uit-api-config-graphql').with(
-            'source' => '/bar'
-          ) }
+          it {
+            is_expected.to contain_file('uit-api-config-graphql').with(
+              'owner' => 'www-data',
+              'group' => 'www-data'
+            ).with_content(/key=value/)
+          }
 
-          it { is_expected.to contain_file('uit-api-config-db').with(
-            'source' => '/bar'
-          ) }
+          it {
+            is_expected.to contain_file('uit-api-config-db').with(
+              'owner' => 'www-data',
+              'group' => 'www-data'
+            ).with_content(/key=value/)
+          }
 
           it { is_expected.to contain_file('uit-api-service-defaults').with_content(/^PORT=3456$/) }
           it { is_expected.to contain_file('uit-api-service-defaults').with_content(/^NODE_OPTIONS=--max_old_space_size=1024$/) }
