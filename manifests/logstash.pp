@@ -8,20 +8,31 @@ class profiles::logstash (
   Enum['running', 'stopped'] $service_status  = 'running'
 ) inherits ::profiles {
 
+  $file_default_attributes = {
+                               ensure  => 'file',
+                               owner   => 'logstash',
+                               group   => 'logstash',
+                               mode    => '0640',
+                               require => Package['logstash'],
+                               notify  => Service['logstash']
+                             }
+
   include profiles::java
+  include profiles::firewall::rules
 
   realize Group['logstash']
   realize User['logstash']
 
   realize Apt::Source['elastic-8.x']
+  realize Firewall['400 accept logstash filebeat traffic']
 
   package { 'logstash':
     ensure  => $version,
-    require => [User['logstash'],Class['profiles::java'],Apt::Source['elastic-8.x']],
+    require => [Group['logstash'], User['logstash'], Class['profiles::java'], Apt::Source['elastic-8.x']],
     notify  => Service['logstash']
   }
 
-  $plugins.each |$plugin,$properties| {
+  $plugins.each |$plugin, $properties| {
     profiles::logstash::plugin { $plugin:
       notify  => Service['logstash'],
       *       => $properties
@@ -29,47 +40,32 @@ class profiles::logstash (
   }
 
   file { 'logstash_config_defaults':
-    ensure => 'file',
+    ensure  => 'file',
     path    => '/etc/default/logstash',
     owner   => 'root',
     group   => 'root',
     mode    => '0600',
     content => template('profiles/logstash/config_defaults.erb'),
-    require => [Package['logstash']],
+    require => Package['logstash'],
     notify  => Service['logstash']
   }
 
   file { 'logstash_input':
-    ensure  => 'file',
-    path    => '/etc/logstash/conf.d/input.conf',
-    owner   => 'logstash',
-    group   => 'logstash',
-    mode    => '0640',
-    source  => $input_source,
-    require => [Package['logstash']],
-    notify  => Service['logstash']
+    path   => '/etc/logstash/conf.d/input.conf',
+    source => $input_source,
+    *      => $file_default_attributes
   }
 
   file { 'logstash_filter':
-    ensure  => 'file',
-    path    => '/etc/logstash/conf.d/filter.conf',
-    owner   => 'logstash',
-    group   => 'logstash',
-    mode    => '0640',
-    source  => $filter_source,
-    require => [Package['logstash']],
-    notify  => Service['logstash']
+    path   => '/etc/logstash/conf.d/filter.conf',
+    source => $filter_source,
+    *      => $file_default_attributes
   }
 
   file { 'logstash_output':
-    ensure  => 'file',
-    path    => '/etc/logstash/conf.d/output.conf',
-    owner   => 'logstash',
-    group   => 'logstash',
-    mode    => '0640',
-    source  => $output_source,
-    require => [Package['logstash']],
-    notify  => Service['logstash']
+    path   => '/etc/logstash/conf.d/output.conf',
+    source => $output_source,
+    *      => $file_default_attributes
   }
 
   service { 'logstash':
@@ -81,4 +77,3 @@ class profiles::logstash (
                  }
   }
 }
-

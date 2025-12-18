@@ -25,10 +25,10 @@ class profiles::platform::data_integration (
   profiles::sling::connection { $database_name:
     type          => 'mysql',
     configuration => {
-                        user     => $database_user,
-                        password => $database_password,
-			host     => '127.0.0.1',
-                        database => $database_name
+                       user     => $database_user,
+                       password => $database_password,
+                       host     => '127.0.0.1',
+                       database => $database_name
                      },
     require       => Profiles::Mysql::App_user["${database_user}@${database_name}"]
   }

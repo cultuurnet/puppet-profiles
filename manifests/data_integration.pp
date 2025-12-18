@@ -7,9 +7,9 @@ class profiles::data_integration (
     connections => $sling_connections
   }
 
-  unless empty($gcloud_credentials) {
-    profiles::google::gcloud::credentials { 'sling':
-      * => $gcloud_credentials
+  $gcloud_credentials.each |String $name, Hash $properties| {
+    profiles::google::gcloud::credentials { $name:
+      * => $properties
     }
   }
 }

@@ -87,6 +87,12 @@ describe 'profiles::firewall::rules' do
           'dport'  => '1025',
           'action' => 'accept'
         ) }
+
+        it { is_expected.to contain_firewall('400 accept logstash filebeat traffic').with(
+          'proto'  => 'tcp',
+          'dport'  => '5000',
+          'action' => 'accept'
+        ) }
       end
     end
   end
