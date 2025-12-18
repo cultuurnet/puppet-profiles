@@ -111,6 +111,16 @@ class profiles::users inherits ::profiles {
     uid            => '460'
   }
 
+  @user { 'grafana':
+    ensure         => 'present',
+    gid            => 'grafana',
+    home           => '/usr/share/grafana',
+    managehome     => false,
+    purge_ssh_keys => true,
+    shell          => '/bin/false',
+    uid            => '461'
+  }
+
   @user { 'ubuntu':
     ensure         => 'present',
     gid            => 'ubuntu',

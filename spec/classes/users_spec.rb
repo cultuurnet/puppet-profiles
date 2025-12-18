@@ -173,6 +173,16 @@ describe 'profiles::users' do
           'uid'            => '460'
         ) }
 
+        it { is_expected.to contain_user('grafana').with(
+          'ensure'         => 'present',
+          'gid'            => 'grafana',
+          'home'           => '/usr/share/grafana',
+          'managehome'     => false,
+          'purge_ssh_keys' => true,
+          'shell'          => '/bin/false',
+          'uid'            => '461'
+        ) }
+
         it { is_expected.to contain_user('glassfish').with(
           'ensure'         => 'present',
           'gid'            => 'glassfish',
