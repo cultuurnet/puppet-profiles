@@ -210,8 +210,7 @@ class profiles::uit::frontend (
   }
 
   class { 'profiles::uit::frontend::logging':
-    servername => $servername,
-    log_type   => 'apache_uiv_frontend'
+    servername => $servername
   }
 
   # include ::profiles::uit::frontend::monitoring

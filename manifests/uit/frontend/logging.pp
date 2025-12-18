@@ -1,7 +1,8 @@
 class profiles::uit::frontend::logging (
-  String $servername,
-  String $log_type
+  String $servername
 ) inherits ::profiles {
+
+  $log_type = 'uit::frontend::access'
 
   include ::profiles::filebeat
 
@@ -20,14 +21,15 @@ class profiles::uit::frontend::logging (
     require  => Class['profiles::filebeat']
   }
 
-  if $settings::storeconfigs {
-    @@profiles::logstash::filter_fragment { "${servername}_${log_type}_${environment}":
-      log_type => $log_type,
-      filter   => file('profiles/uit/frontend/logstash_filter')
-    }
-
-    # TODO: Add this to the logstash server
-    #
-    # Profiles::Logstash::Filter_fragment <<| |>>
+  @@profiles::logstash::filter_fragment { "${servername}_${log_type}_${environment}":
+    log_type => $log_type,
+    filter   => file('profiles/uit/frontend/logstash_filter_access.conf'),
+    tag      => $environment
   }
+
+  # TODO: Add this to the logstash server
+  #
+  # if $settings::storeconfigs {
+  #   Profiles::Logstash::Filter_fragment <<| |>>
+  # }
 }
