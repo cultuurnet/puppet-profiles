@@ -107,6 +107,11 @@ describe 'profiles::groups' do
           'gid'    => '461'
         ) }
 
+        it { is_expected.to contain_group('kibana').with(
+          'ensure' => 'present',
+          'gid'    => '462'
+        ) }
+
         it { is_expected.to contain_group('glassfish').with(
           'ensure' => 'present',
           'gid'    => '1005'
