@@ -7,6 +7,7 @@ class profiles::uit::mail_subscriptions::deployment (
 ) inherits ::profiles {
 
   $basedir = '/var/www/uit-mail-subscriptions'
+  $secrets = lookup('vault:uit/mail-subscriptions')
 
   realize Apt::Source[$repository]
 
@@ -21,7 +22,7 @@ class profiles::uit::mail_subscriptions::deployment (
     path    => "${basedir}/packages/rabbitmq/.env",
     owner   => 'www-data',
     group   => 'www-data',
-    source  => $config_source,
+    content  => template($config_source),
     require => Package['uit-mail-subscriptions'],
     notify  => Service['uit-mail-subscriptions']
   }

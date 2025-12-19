@@ -5,20 +5,22 @@ describe 'profiles::uit::cms::deployment' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with config_source => /foo and drush_config_source => /bar" do
+      context "with config_source => appconfig/uit/cms/env and drush_config_source => appconfig/uit/cms/env" do
         let(:params) { {
-          'config_source'       => '/foo',
-          'drush_config_source' => '/bar'
+          'config_source'       => 'appconfig/uit/cms/env',
+          'drush_config_source' => 'appconfig/uit/cms/env'
         } }
+        let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::uit::cms::deployment').with(
-          'config_source'       => '/foo',
-          'drush_config_source' => '/bar',
+          'config_source'       => 'appconfig/uit/cms/env',
+          'drush_config_source' => 'appconfig/uit/cms/env',
           'version'             => 'latest',
           'repository'          => 'uit-cms',
-          'puppetdb_url'        => nil
+          'puppetdb_url'          => 'http://localhost:8081'
+
         )}
 
         it { is_expected.to contain_group('www-data') }
@@ -32,18 +34,16 @@ describe 'profiles::uit::cms::deployment' do
         it { is_expected.to contain_file('uit-cms-settings').with(
           'ensure' => 'file',
           'path'   => '/var/www/uit-cms/web/sites/default/settings.private.php',
-          'source' => '/foo',
           'owner'  => 'www-data',
           'group'  => 'www-data'
-        ) }
+        ).with_content(/key=value/) }
 
         it { is_expected.to contain_file('uit-cms-drush-config').with(
           'ensure' => 'file',
           'path'   => '/var/www/uit-cms/drush/drush.yml',
-          'source' => '/bar',
           'owner'  => 'www-data',
           'group'  => 'www-data'
-        ) }
+        ).with_content(/key=value/) }
 
         it { is_expected.to contain_exec('uit-cms-drush-deploy').with(
           'command'     => 'drush deploy -v -y',
@@ -114,14 +114,15 @@ describe 'profiles::uit::cms::deployment' do
         end
       end
 
-      context "with config_source => /baz, drush_config_source => /zzz, version => 1.2.3 and puppetdb_url => http://example.com:8000" do
+      context "with config_source => appconfig/uit/cms/env, drush_config_source => appconfig/uit/cms/env, version => 1.2.3 and puppetdb_url => http://example.com:8000" do
         let(:params) { {
-          'config_source'       => '/baz',
-          'drush_config_source' => '/zzz',
+          'config_source'       => 'appconfig/uit/cms/env',
+          'drush_config_source' => 'appconfig/uit/cms/env',
           'version'             => '1.2.3',
           'repository'          => 'uit-cms-branch',
           'puppetdb_url'        => 'http://example.com:8000'
         } }
+        let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
         context "with repository bla defined" do
           let(:pre_condition) { '@apt::source { "uit-cms-branch": location => "http://localhost", release => "focal", repos => "main" }' }
@@ -132,13 +133,9 @@ describe 'profiles::uit::cms::deployment' do
             'ensure' => '1.2.3'
           ) }
 
-          it { is_expected.to contain_file('uit-cms-settings').with(
-            'source' => '/baz'
-          ) }
+          it { is_expected.to contain_file('uit-cms-settings').with_content(/key=value/) }
 
-          it { is_expected.to contain_file('uit-cms-drush-config').with(
-            'source' => '/zzz'
-          ) }
+          it { is_expected.to contain_file('uit-cms-drush-config').with_content(/key=value/) }
 
           it { is_expected.to contain_profiles__deployment__versions('profiles::uit::cms::deployment').with(
             'puppetdb_url' => 'http://example.com:8000'

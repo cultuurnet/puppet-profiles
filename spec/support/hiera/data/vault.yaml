@@ -54,3 +54,10 @@ vault:uitpas/balie-api: {}
 vault:uitpas/balie-frontend: {}
 vault:uitpas/website/frontend: {}
 vault:uitpas/website/api: {}
+
+vault:uit/notifications: {}
+vault:uit/mail-subscriptions: {}
+vault:uit/recommender-frontend: {}
+vault:uit/api: {}
+vault:uit/cms: {}
+vault:uit/frontend: {}

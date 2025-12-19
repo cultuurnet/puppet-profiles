@@ -13,6 +13,7 @@ class profiles::uit::frontend::deployment (
 ) inherits ::profiles {
 
   $basedir = '/var/www/uit-frontend'
+  $secrets = lookup('vault:uit/frontend')
 
   realize Apt::Source[$repository]
   realize Group['www-data']
@@ -29,7 +30,7 @@ class profiles::uit::frontend::deployment (
     path    => "${basedir}/packages/app/.env",
     owner   => 'www-data',
     group   => 'www-data',
-    source  => $config_source,
+    content  => template($config_source),
     require => [Package['uit-frontend'], Group['www-data'], User['www-data']],
     notify  => Service['uit-frontend']
   }

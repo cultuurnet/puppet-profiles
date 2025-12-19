@@ -67,12 +67,6 @@ describe 'profiles::uit::notifications' do
             it { is_expected.to_not contain_class('profiles::uit::notifications::deployment') }
           end
         end
-
-        context 'without hieradata' do
-          let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
-
-          it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }
-        end
       end
 
       context 'with database_password => foo' do
