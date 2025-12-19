@@ -54,6 +54,10 @@ describe 'profiles::uit::frontend' do
               'service_port'    => 3000
             ) }
 
+            it { is_expected.to contain_class('profiles::uit::frontend::logging').with(
+              'servername' => 'foo.example.com'
+            ) }
+
             it { is_expected.to contain_apache__vhost('foo.example.com_80').with(
               'servername'         => 'foo.example.com',
               'serveraliases'      => [],
@@ -302,6 +306,10 @@ describe 'profiles::uit::frontend' do
           let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
           it { is_expected.to contain_apache__vhost('bar.example.com_80').with(
+            'servername' => 'bar.example.com'
+          ) }
+
+          it { is_expected.to contain_class('profiles::uit::frontend::logging').with(
             'servername' => 'bar.example.com'
           ) }
 
