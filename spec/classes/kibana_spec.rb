@@ -40,6 +40,7 @@ describe 'profiles::kibana' do
 
           it { is_expected.to contain_file('kibana config').with_content(/^server.host: 127.0.0.1$/) }
           it { is_expected.to contain_file('kibana config').with_content(/^server.port: 5601$/) }
+          it { is_expected.to contain_file('kibana config').with_content(/^server.publicBaseUrl: https:\/\/kibana\.example\.com$/) }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://kibana.example.com').with(
             'destination'         => 'http://127.0.0.1:5601/',
@@ -83,6 +84,7 @@ describe 'profiles::kibana' do
 
           it { is_expected.to contain_file('kibana config').with_content(/^server.host: 0.0.0.0$/) }
           it { is_expected.to contain_file('kibana config').with_content(/^server.port: 5602$/) }
+          it { is_expected.to contain_file('kibana config').with_content(/^server.publicBaseUrl: https:\/\/mykibana\.com$/) }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://mykibana.com').with(
             'destination'         => 'http://0.0.0.0:5602/',

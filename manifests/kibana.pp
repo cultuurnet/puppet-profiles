@@ -10,7 +10,8 @@ class profiles::kibana (
   include ::profiles::apache
 
   $kibana_default_config = { 'logging' => { 'appenders' => { 'file' => { 'type' => 'file', 'fileName' => '/var/log/kibana/kibana.log', 'layout' => { 'type' => 'json' } } }, 'root' => { 'appenders' => ['default', 'file'] } }, 'pid.file' => '/run/kibana/kibana.pid' }
-  $kibana_config         = { 'server.port' => $service_port, 'server.host' => "${service_address}" }
+  $kibana_config         = { 'server.port' => $service_port, 'server.host' => "${service_address}", 'server.publicBaseUrl' => "https://${servername}" }
+
 
   realize Group['kibana']
   realize User['kibana']
