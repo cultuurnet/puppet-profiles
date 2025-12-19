@@ -121,6 +121,16 @@ class profiles::users inherits ::profiles {
     uid            => '461'
   }
 
+  @user { 'kibana':
+    ensure         => 'present',
+    gid            => 'kibana',
+    home           => '/var/lib/kibana',
+    managehome     => false,
+    purge_ssh_keys => true,
+    shell          => '/bin/false',
+    uid            => '462'
+  }
+
   @user { 'ubuntu':
     ensure         => 'present',
     gid            => 'ubuntu',

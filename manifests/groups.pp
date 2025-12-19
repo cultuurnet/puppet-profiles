@@ -65,6 +65,11 @@ class profiles::groups inherits ::profiles {
     gid    => '461'
   }
 
+  @group { 'kibana':
+    ensure => 'present',
+    gid    => '462'
+  }
+
   @group { 'ubuntu':
     ensure => 'present',
     gid    => '1000'

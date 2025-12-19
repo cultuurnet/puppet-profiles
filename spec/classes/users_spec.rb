@@ -183,6 +183,16 @@ describe 'profiles::users' do
           'uid'            => '461'
         ) }
 
+        it { is_expected.to contain_user('kibana').with(
+          'ensure'         => 'present',
+          'gid'            => 'kibana',
+          'home'           => '/var/lib/kibana',
+          'managehome'     => false,
+          'purge_ssh_keys' => true,
+          'shell'          => '/bin/false',
+          'uid'            => '462'
+        ) }
+
         it { is_expected.to contain_user('glassfish').with(
           'ensure'         => 'present',
           'gid'            => 'glassfish',
