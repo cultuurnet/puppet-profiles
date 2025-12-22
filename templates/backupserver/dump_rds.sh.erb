@@ -1,26 +1,27 @@
 #!/bin/bash
 # Template: dump_rds.sh.pp
-# Dumps all RDS servers defined in the config hash, one after another.
+# Dumps all RDS servers defined in the config file, one after another.
 
-<% @config.each do |db_key, db| -%>
-USER="<%= db['terraform::rds::user'] %>"
-PASSWORD='<%= db['terraform::rds::password'] %>'
-HOST="<%= db['terraform::rds::host'] %>"
+set -euo pipefail
 BACKUPDIR="<%= @backupdir %>"
+CONFIG_FILE="${BACKUPDIR}/rds_servers.yml"
 
-echo "Dumping databases for <%= db_key %>..."
+yq e 'keys | .[]' "$CONFIG_FILE" | while read -r db_key; do
+  HOST=$(yq e ".${db_key}.host" "$CONFIG_FILE")
+  USER=$(yq e ".${db_key}.user" "$CONFIG_FILE")
+  PASSWORD=$(yq e ".${db_key}.password" "$CONFIG_FILE")
 
-DATABASES=$(mysql --host="$HOST" --user="$USER" --password="$PASSWORD" -N -e "SHOW DATABASES;" | grep -Ev '^(information_schema|performance_schema|mysql|sys)$')
+  echo "Dumping database ${db_key}..."
+  DATABASES=$(mysql --host="$HOST" --user="$USER" --password="$PASSWORD" -N -e "SHOW DATABASES;" | grep -Ev '^(information_schema|performance_schema|mysql|sys)$')
 
-if [ -z "$DATABASES" ]; then
-  echo "No databases to dump for <%= db_key %>."
-else
-  mysqldump --host="$HOST" --user="$USER" --password="$PASSWORD" --databases $DATABASES --set-gtid-purged=OFF --no-tablespaces --skip-triggers --routines --events --single-transaction | gzip > "$BACKUPDIR/<%= db_key %>-$(date +%F).sql.gz"
-  if [ $? -eq 0 ]; then
-    echo "Backup for <%= db_key %> completed successfully."
+  if [ -z "$DATABASES" ]; then
+    echo "No databases to dump for ${db_key}."
   else
-    echo "Backup for <%= db_key %> failed!" >&2
+    mysqldump --host="$HOST" --user="$USER" --password="$PASSWORD" --databases $DATABASES --set-gtid-purged=OFF --no-tablespaces --skip-triggers --routines --events --single-transaction | gzip > "$BACKUPDIR/${db_key}-$(date +%F).sql.gz"
+    if [ $? -eq 0 ]; then
+      echo "Backup for ${db_key} completed successfully."
+    else
+      echo "Backup for ${db_key} failed!" >&2
+    fi
   fi
-fi
-
-<% end -%>
+done
