@@ -94,16 +94,13 @@ class profiles::aptly (
     }
   }
 
-
   file { 'version restore script':
-    path        => '/home/aptly/restore-versions',
-    ensure      => 'file',
-    owner       => 'aptly',
-    group       => 'aptly',
-    mode        => '0775',
-    content     => template('profiles/aptly/restore-versions.erb'),
-    require     => Class['aptly']
+    path    => '/usr/local/sbin/restore-versions',
+    ensure  => 'file',
+    mode    => '0755',
+    content => template('profiles/aptly/restore-versions.erb')
   }
+
   cron { 'aptly db cleanup daily':
     command     => '/usr/bin/aptly db cleanup',
     environment => ['MAILTO=infra+cron@publiq.be'],
