@@ -84,16 +84,18 @@ describe 'profiles::uitpas::api' do
               'resourcetype'        => 'javax.sql.DataSource',
               'dsclassname'         => 'com.mysql.cj.jdbc.MysqlDataSource',
               'properties'          => {
-                                         'serverName'        => '127.0.0.1',
-                                         'portNumber'        => '3306',
-                                         'databaseName'      => 'uitpas_api',
-                                         'User'              => 'uitpas_api',
-                                         'Password'          => 'mypassword',
-                                         'URL'               => 'jdbc:mysql://127.0.0.1:3306/uitpas_api',
-                                         'driverClass'       => 'com.mysql.cj.jdbc.Driver',
-                                         'characterEncoding' => 'UTF-8',
-                                         'useUnicode'        => true,
-                                         'useSSL'            => false
+                                         'serverName'                   => '127.0.0.1',
+                                         'portNumber'                   => '3306',
+                                         'databaseName'                 => 'uitpas_api',
+                                         'User'                         => 'uitpas_api',
+                                         'Password'                     => 'mypassword',
+                                         'URL'                          => 'jdbc:mysql://127.0.0.1:3306/uitpas_api',
+                                         'driverClass'                  => 'com.mysql.cj.jdbc.Driver',
+                                         'characterEncoding'            => 'UTF-8',
+                                         'useUnicode'                   => true,
+                                         'useSSL'                       => false,
+                                         'connection-validation-method' => 'auto-commit',
+                                         'is-connection-validation-required' => true
                                        }
             )}
             
@@ -331,7 +333,9 @@ describe 'profiles::uitpas::api' do
                                            'driverClass'       => 'com.mysql.cj.jdbc.Driver',
                                            'characterEncoding' => 'UTF-8',
                                            'useUnicode'        => true,
-                                           'useSSL'            => false
+                                           'useSSL'            => false,
+                                           'connection-validation-method' => 'auto-commit',
+                                           'is-connection-validation-required' => true
                                          }
               )}
 
