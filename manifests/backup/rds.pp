@@ -34,43 +34,47 @@ class profiles::backup::rds (
   $terraform_rds_configs = lookup('rds_hiera_configs', { merge => 'hash' })
 
   # Normalize Terraform configs
-  $normalized_terraform = $terraform_rds_configs.map |$k, $v| {
-    [$k, {
-      'host'     => $v['terraform::rds::host'],
-      'user'     => $v['terraform::rds::user'],
-      'password' => $v['terraform::rds::password'],
-      'database' => $v['terraform::rds::database'],
-    }]
-  }.to_h
+    $normalized_terraform = $terraform_rds_configs.reduce({}) |$acc, $kv| {
+      $acc + {
+        $kv[0] => {
+          'host'     => $kv[1]['terraform::rds::host'],
+          'user'     => $kv[1]['terraform::rds::user'],
+          'password' => $kv[1]['terraform::rds::password'],
+          'database' => $kv[1]['terraform::rds::database'],
+        }
+      }
+    }
 
-  # Normalize extra (non-Terraform) configs
-  $normalized_extra = $extra_rds_configs.map |$k, $v| {
-    [$k, {
-      'host'     => $v['rds::host'],
-      'user'     => $v['rds::user'],
-      'password' => $v['rds::password'],
-      'database' => $v['rds::database'],
-    }]
-  }.to_h
+    
+
+    # Normalize extra (non-Terraform) configs
+    $normalized_extra = $extra_rds_configs.reduce({}) |$acc, $kv| {
+      $acc + {
+        $kv[0] => {
+          'host'     => $kv[1]['rds::host'],
+          'user'     => $kv[1]['rds::user'],
+          'password' => $kv[1]['rds::password'],
+          'database' => $kv[1]['rds::database'],
+      }
+      }
+    }
 
   # Merge both sources
   $all_rds_configs = deep_merge($normalized_terraform, $normalized_extra)
 
   # Write runtime YAML config
+  $rds_file_content = $all_rds_configs.reduce('') |$acc, $pair| {
+    $name = $pair[0]
+    $cfg  = $pair[1]
+    "${acc}${name}:\n  host: ${cfg['host']}\n  user: ${cfg['user']}\n  password: ${cfg['password']}\n  database: ${cfg['database']}\n"
+  }
+
   file { "${backupdir}/rds_servers.yml":
     ensure  => file,
     owner   => 'ubuntu',
     group   => 'ubuntu',
     mode    => '0600',
-    content => inline_epp(@("EPP"), { 'servers' => $all_rds_configs })
-<% @servers.each do |name, cfg| -%>
-<%= name %>:
-  host: <%= cfg['host'] %>
-  user: <%= cfg['user'] %>
-  password: <%= cfg['password'] %>
-  database: <%= cfg['database'] %>
-<% end -%>
-| EPP
+    content => $rds_file_content,
   }
 
   # Dump script
