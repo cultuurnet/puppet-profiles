@@ -1,0 +1,13 @@
+---
+rds_hiera_configs:
+  app1:
+    terraform::rds::host: 'db1.example'
+    terraform::rds::user: 'tuser1'
+    terraform::rds::password: 'tpwd1'
+    terraform::rds::database: 'tdb1'
+
+  app2:
+    terraform::rds::host: 'db2.example'
+    terraform::rds::user: 'tuser2'
+    terraform::rds::password: 'tpwd2'
+    terraform::rds::database: 'tdb2'
