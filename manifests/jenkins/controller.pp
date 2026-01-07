@@ -18,7 +18,6 @@ class profiles::jenkins::controller (
 
   include ::profiles::java
 
-
   $hostname   = split($url, '/')[2]
 
   if $lvm {
@@ -53,7 +52,9 @@ class profiles::jenkins::controller (
     notify  => Class['profiles::jenkins::controller::service']
   }
 
-  class { '::profiles::jenkins::controller::service': }
+  class { '::profiles::jenkins::controller::service':
+    subscribe => Class['profiles::java']
+  }
 
   class { '::profiles::jenkins::cli':
     version        => $version,

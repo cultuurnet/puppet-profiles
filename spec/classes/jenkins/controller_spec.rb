@@ -73,6 +73,7 @@ describe 'profiles::jenkins::controller' do
           it { is_expected.to contain_class('profiles::jenkins::controller::install').that_notifies('Class[profiles::jenkins::controller::service]') }
           it { is_expected.to contain_class('profiles::jenkins::controller::configuration').that_requires('Class[profiles::jenkins::controller::service]') }
           it { is_expected.to contain_class('profiles::jenkins::controller::configuration').that_requires('Class[profiles::jenkins::cli]') }
+          it { is_expected.to contain_class('profiles::jenkins::controller::service').that_subscribes_to('Class[profiles::java]') }
           it { is_expected.to contain_class('profiles::jenkins::cli').that_requires('Profiles::Apache::Vhost::Reverse_proxy[http://jenkins.example.com]') }
         end
 
