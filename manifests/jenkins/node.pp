@@ -1,4 +1,4 @@
-class profiles::jenkins::node(
+class profiles::jenkins::node (
   String                         $version        = 'latest',
   String                         $user           = 'admin',
   String                         $password       = lookup('profiles::jenkins::controller::admin_password', String, 'first', ''),
@@ -8,20 +8,19 @@ class profiles::jenkins::node(
   Optional[String]               $volume_size    = undef,
   Integer                        $executors      = 1,
   Variant[String, Array[String]] $labels         = []
-
 ) inherits ::profiles {
 
   include ::profiles::java
   include ::profiles::jenkins::buildtools
   include ::profiles::jenkins::buildtools::playwright
 
-
-  $data_dir                = '/var/lib/jenkins-swarm-client'
-  $default_labels          = [
-                               $facts['os']['name'],
-                               $facts['os']['release']['major'],
-                               $facts['os']['distro']['codename']
-                             ]
+  $puppetserver_url = lookup('data::puppet::puppetserver::url')
+  $data_dir         = '/var/lib/jenkins-swarm-client'
+  $default_labels   = [
+                        $facts['os']['name'],
+                        $facts['os']['release']['major'],
+                        $facts['os']['distro']['codename']
+                      ]
 
   realize Group['jenkins']
   realize User['jenkins']
@@ -105,7 +104,7 @@ class profiles::jenkins::node(
     require => Package['jenkins-swarm-client'],
     notify  => Service['jenkins-swarm-client']
   }
-  $puppetserver_url= lookup("data::puppet::puppetserver::url")
+
   file { 'jenkins-node-cleanup-script':
     ensure  => 'file',
     path    => '/usr/local/bin/node-cleanup.sh',
