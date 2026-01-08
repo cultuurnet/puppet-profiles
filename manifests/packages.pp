@@ -47,6 +47,9 @@ class profiles::packages inherits ::profiles {
   @package { 'yq':
     ensure => 'present'
   }
+  @package { 'maven':
+    ensure => 'present'
+  }
 
   @package { 'gcsfuse':
     ensure  => 'present',

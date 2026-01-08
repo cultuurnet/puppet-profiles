@@ -11,6 +11,7 @@ class profiles::jenkins::buildtools inherits ::profiles {
   realize Package['argocd']
   realize Package['mysql-client']
   realize Package['phantomjs']
+  realize Package['maven']
 
   include profiles::ruby
 }
