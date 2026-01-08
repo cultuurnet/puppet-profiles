@@ -18,6 +18,7 @@ describe 'profiles::jenkins::buildtools' do
       it { is_expected.to contain_package('argocd').with({ 'ensure' => 'present' }) }
       it { is_expected.to contain_package('mysql-client').with({ 'ensure' => 'present' }) }
       it { is_expected.to contain_package('phantomjs').with({ 'ensure' => 'present' }) }
+      it { is_expected.to contain_package('maven').with({ 'ensure' => 'present' }) }
 
       it { is_expected.to contain_class('profiles::ruby') }
     end
