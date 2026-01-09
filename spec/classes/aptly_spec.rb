@@ -79,6 +79,14 @@ describe 'profiles::aptly' do
           'active' => true
         ) }
 
+        it { is_expected.not_to contain_file('aptly trustedkeys.gpg') }
+
+        it { is_expected.to contain_file('version restore script').with(
+          'ensure' => 'file',
+          'path'   => '/usr/local/sbin/restore-versions',
+          'mode'   => '0755'
+        ) }
+
         it { is_expected.to contain_systemd__unit_file('aptly-api.service').with_content(/WorkingDirectory=\/var\/aptly/) }
         it { is_expected.to contain_systemd__unit_file('aptly-api.service').with_content(/ExecStart=\/usr\/bin\/aptly api serve -listen=127.0.0.1:8081 -no-lock/) }
 
@@ -91,10 +99,6 @@ describe 'profiles::aptly' do
 
         it { is_expected.to contain_cron('aptly db cleanup daily').that_requires('Class[aptly]') }
         it { is_expected.to contain_cron('aptly db cleanup daily').that_requires('User[aptly]') }
-
-        it { is_expected.not_to contain_file('aptly trustedkeys.gpg') }
-        it { is_expected.to contain_file('version restore script') }
-
       end
 
       context "with api_hostname => foobar.example.com and certificate => foobar.example.com and gpg_passphrase => secret" do
