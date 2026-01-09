@@ -1,18 +1,10 @@
 class profiles::collectd (
-  Boolean                                  $enable         = true,
-  Optional[Variant[String, Array[String]]] $graphite_hosts = undef
+  Boolean                        $enable         = true,
+  Variant[String, Array[String]] $graphite_hosts = []
 ) inherits ::profiles {
 
-  if $enable {
-    $service_enable = true
-    $service_ensure = 'running'
-  } else {
-    $service_enable = false
-    $service_ensure = 'stopped'
-  }
-
   collectd::typesdb { '/etc/collectd/types.db':
-    path   => '/etc/collectd/types.db'
+    path => '/etc/collectd/types.db'
   }
 
   class { '::collectd':
@@ -23,29 +15,31 @@ class profiles::collectd (
     purge_config      => true,
     recurse           => true,
     fqdnlookup        => false,
-    service_enable    => $service_enable,
-    service_ensure    => $service_ensure,
+    service_enable    => $enable,
+    service_ensure    => $enable ? {
+                           true  => 'running',
+                           false => 'stopped'
+                         },
     collectd_hostname => $facts['networking']['fqdn'],
-    typesdb           => [ '/usr/share/collectd/types.db', '/etc/collectd/types.db']
+    typesdb           => [
+                           '/usr/share/collectd/types.db',
+                           '/etc/collectd/types.db'
+                         ]
   }
 
   class { 'collectd::plugin::cpu': }
   class { 'collectd::plugin::df': fstypes => ['ext4'] }
   class { 'collectd::plugin::disk': }
-  class { 'collectd::plugin::interface': }
+  class { 'collectd::plugin::interface': interfaces => ['eth0', 'lo'] }
   class { 'collectd::plugin::load': }
   class { 'collectd::plugin::memory': }
   class { 'collectd::plugin::processes': }
   class { 'collectd::plugin::vmem': }
 
-  # if $graphite_host {
-  #   class { 'collectd::plugin::write_graphite':
-  #     carbons => { $graphite_host => { 'graphitehost' => $graphite_host } }
-  #   }
-  # }
-  if $graphite_hosts {
+  unless empty($graphite_hosts) {
     class { 'collectd::plugin::write_graphite':
-      carbons => [$graphite_hosts].flatten.reduce({}) |Hash $all_carbons, String $graphite_host| { $all_carbons + { $graphite_host => { 'graphitehost' => $graphite_host } } }
+      carbons => [$graphite_hosts].flatten.reduce({}) |Hash $all, String $host| {
+                   $all + { $host => { 'graphitehost' => $host } } }
     }
   }
 }
