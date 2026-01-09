@@ -15,7 +15,7 @@ describe 'profiles::collectd' do
 
           it { is_expected.to contain_class('profiles::collectd').with(
             'enable'         => true,
-            'graphite_hosts' => nil
+            'graphite_hosts' => []
           ) }
 
           it { is_expected.to contain_collectd__typesdb('/etc/collectd/types.db').with(
@@ -33,12 +33,11 @@ describe 'profiles::collectd' do
             'service_ensure'    => 'running',
             'service_enable'    => true,
             'collectd_hostname' => 'aaa.example.com',
-            'typesdb'           => [ '/usr/share/collectd/types.db', '/etc/collectd/types.db']
+            'typesdb'           => ['/usr/share/collectd/types.db', '/etc/collectd/types.db']
           ) }
 
           it { is_expected.to contain_class('collectd::plugin::cpu') }
           it { is_expected.to contain_class('collectd::plugin::disk') }
-          it { is_expected.to contain_class('collectd::plugin::interface') }
           it { is_expected.to contain_class('collectd::plugin::load') }
           it { is_expected.to contain_class('collectd::plugin::memory') }
           it { is_expected.to contain_class('collectd::plugin::processes') }
@@ -46,6 +45,10 @@ describe 'profiles::collectd' do
 
           it { is_expected.to contain_class('collectd::plugin::df').with(
             'fstypes' => ['ext4']
+          ) }
+
+          it { is_expected.to contain_class('collectd::plugin::interface').with(
+            'interfaces' => ['eth0', 'lo']
           ) }
 
           it { is_expected.not_to contain_class('collectd::plugin::write_graphite') }
@@ -56,7 +59,7 @@ describe 'profiles::collectd' do
 
 
           it { is_expected.to contain_class('collectd::plugin::write_graphite').with(
-            'carbons' => { 'graphite.example.com' => {'graphitehost' => 'graphite.example.com'} }
+            'carbons' => { 'graphite.example.com' => { 'graphitehost' => 'graphite.example.com' } }
           ) }
         end
       end
@@ -66,7 +69,7 @@ describe 'profiles::collectd' do
 
         context "with graphite_hosts => graphite1.example.com, graphite2.example.com and enable => false" do
           let(:params) { {
-            'enable'        => false,
+            'enable'         => false,
             'graphite_hosts' => ['graphite1.example.com', 'graphite2.example.com']
           } }
 
@@ -81,11 +84,11 @@ describe 'profiles::collectd' do
             'service_ensure'    => 'stopped',
             'service_enable'    => false,
             'collectd_hostname' => 'bbb.example.com',
-            'typesdb'           => [ '/usr/share/collectd/types.db', '/etc/collectd/types.db']
+            'typesdb'           => ['/usr/share/collectd/types.db', '/etc/collectd/types.db']
           ) }
 
           it { is_expected.to contain_class('collectd::plugin::write_graphite').with(
-            'carbons' => { 'graphite1.example.com' => {'graphitehost' => 'graphite1.example.com'}, 'graphite2.example.com' => {'graphitehost' => 'graphite2.example.com'} }
+            'carbons' => { 'graphite1.example.com' => { 'graphitehost' => 'graphite1.example.com' }, 'graphite2.example.com' => { 'graphitehost' => 'graphite2.example.com' } }
           ) }
         end
       end
