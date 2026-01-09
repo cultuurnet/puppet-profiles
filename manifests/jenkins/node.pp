@@ -7,14 +7,16 @@ class profiles::jenkins::node(
   Optional[String]               $volume_group   = undef,
   Optional[String]               $volume_size    = undef,
   Integer                        $executors      = 1,
-  Variant[String, Array[String]] $labels         = []
+  Variant[String, Array[String]] $labels         = [],
+  Boolean                        $container_mode = false
 
-) inherits ::profiles {
-
-  include ::profiles::java
-  include ::profiles::jenkins::buildtools
-  include ::profiles::jenkins::buildtools::playwright
-
+) inherits profiles {
+  # Only install tools if not in container mode
+  unless $container_mode {
+    include profiles::java
+    include profiles::jenkins::buildtools
+    include profiles::jenkins::buildtools::playwright
+  }
 
   $data_dir                = '/var/lib/jenkins-swarm-client'
   $default_labels          = [
