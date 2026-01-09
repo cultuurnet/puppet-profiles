@@ -77,4 +77,12 @@ class profiles::logstash (
                    'stopped' => false
                  }
   }
+
+  cron { 'remove-old-logstash-logs':
+    command     => "/usr/bin/find /var/log/logstash -type f -mtime +10 -name '*.log.gz' -delete",
+    environment => ['MAILTO=infra+cron@publiq.be'],
+    user        => 'root',
+    hour        => '2',
+    minute      => '0'
+  }
 }
