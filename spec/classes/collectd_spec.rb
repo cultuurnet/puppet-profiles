@@ -38,6 +38,7 @@ describe 'profiles::collectd' do
 
           it { is_expected.to contain_class('collectd::plugin::cpu') }
           it { is_expected.to contain_class('collectd::plugin::disk') }
+          it { is_expected.to contain_class('collectd::plugin::filter') }
           it { is_expected.to contain_class('collectd::plugin::load') }
           it { is_expected.to contain_class('collectd::plugin::memory') }
           it { is_expected.to contain_class('collectd::plugin::processes') }
@@ -49,6 +50,14 @@ describe 'profiles::collectd' do
 
           it { is_expected.to contain_class('collectd::plugin::interface').with(
             'interfaces' => ['eth0', 'lo']
+          ) }
+
+          it { is_expected.to contain_collectd__plugin__filter__chain('PreCache').with(
+            'target' => 'return'
+          ) }
+
+          it { is_expected.to contain_collectd__plugin__filter__chain('PostCache').with(
+            'target' => 'write'
           ) }
 
           it { is_expected.not_to contain_class('collectd::plugin::write_graphite') }

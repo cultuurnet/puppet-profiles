@@ -30,11 +30,20 @@ class profiles::collectd (
   class { 'collectd::plugin::cpu': }
   class { 'collectd::plugin::df': fstypes => ['ext4'] }
   class { 'collectd::plugin::disk': }
+  class { 'collectd::plugin::filter': }
   class { 'collectd::plugin::interface': interfaces => ['eth0', 'lo'] }
   class { 'collectd::plugin::load': }
   class { 'collectd::plugin::memory': }
   class { 'collectd::plugin::processes': }
   class { 'collectd::plugin::vmem': }
+
+  collectd::plugin::filter::chain { 'PreCache':
+    target => 'return'
+  }
+
+  collectd::plugin::filter::chain { 'PostCache':
+    target => 'write'
+  }
 
   unless empty($graphite_hosts) {
     class { 'collectd::plugin::write_graphite':
