@@ -38,6 +38,26 @@ describe 'profiles::docker' do
 
         it { is_expected.to_not contain_package('qemu-user-static') }
 
+        it { is_expected.to contain_collectd__plugin__filter__rule('ignore_docker_mounts').with(
+          'chain' => 'PostCache'
+        ) }
+
+        it { is_expected.to contain_collectd__plugin__filter__match('df_plugin_docker_mounts').with(
+          'chain'   => 'PostCache',
+          'rule'    => 'ignore_docker_mounts',
+          'plugin'  => 'regex',
+          'options' => {
+                         'Plugin'         => '^df$',
+                         'PluginInstance' => '^(data-docker-tmp|var-lib-docker-tmp|run-docker-runtime).*'
+                       }
+        ) }
+
+        it { is_expected.to contain_collectd__plugin__filter__target('ignore_docker_mounts').with(
+          'chain'   => 'PostCache',
+          'rule'    => 'ignore_docker_mounts',
+          'plugin'  => 'stop'
+        ) }
+
         it { is_expected.to contain_cron('docker system prune').with(
           'ensure' => 'absent'
         ) }

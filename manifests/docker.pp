@@ -56,6 +56,26 @@ class profiles::docker (
     require                     => Apt::Source['docker']
   }
 
+  collectd::plugin::filter::rule { 'ignore_docker_mounts':
+    chain => 'PostCache'
+  }
+
+  collectd::plugin::filter::match { 'df_plugin_docker_mounts':
+    chain   => 'PostCache',
+    rule    => 'ignore_docker_mounts',
+    plugin  => 'regex',
+    options => {
+                 'Plugin'         => '^df$',
+                 'PluginInstance' => '^(data-docker-tmp|var-lib-docker-tmp|run-docker-runtime).*'
+               }
+  }
+
+  collectd::plugin::filter::target { 'ignore_docker_mounts':
+    chain  => 'PostCache',
+    rule   => 'ignore_docker_mounts',
+    plugin => 'stop'
+  }
+
   cron { 'docker system prune':
     ensure      => $schedule_prune ? {
                      true  => 'present',
