@@ -214,6 +214,11 @@ class profiles::apt::repositories {
     release  => $codename,
     repos    => 'main'
   }
+  @apt::source { 'uitpas-api-payara7':
+    location => "https://apt.publiq.be/uitpas-api-payara7${environment}",
+    release  => $codename,
+    repos    => 'main'
+  }
   @apt::source { 'uitpas-soap':
     location => "https://apt.publiq.be/uitpas-soap-${environment}",
     release  => $codename,
