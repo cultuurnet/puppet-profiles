@@ -48,7 +48,7 @@ describe 'profiles::docker' do
           'plugin'  => 'regex',
           'options' => {
                          'Plugin'         => '^df$',
-                         'PluginInstance' => '^(data-docker-tmp|var-lib-docker-tmp|run-docker-runtime).*'
+                         'PluginInstance' => '^(data-docker-tmp|var-lib-docker-tmp|run-docker).*'
                        }
         ) }
 
