@@ -17,8 +17,9 @@ describe 'profiles::puppet::agent' do
         ) }
 
         it { is_expected.to contain_apt__source('puppet') }
+        it { is_expected.to contain_apt__source('openvox') }
 
-        it { is_expected.to contain_package('puppet-agent').with(
+        it { is_expected.to contain_package('openvox-agent').with(
           'ensure'    => 'installed'
         ) }
 
@@ -72,11 +73,12 @@ describe 'profiles::puppet::agent' do
           'value'   => 'store',
         ) }
 
-        it { is_expected.to contain_apt__source('puppet').that_comes_before('Package[puppet-agent]') }
-        it { is_expected.to contain_package('puppet-agent').that_requires('File[/etc/puppetlabs/facter/facts.d]') }
-        it { is_expected.to contain_package('puppet-agent').that_notifies('Service[puppet]') }
-        it { is_expected.to contain_file('puppet agent production environment hiera.yaml').that_requires('Package[puppet-agent]') }
-        it { is_expected.to contain_file('puppet agent production environment datadir').that_requires('Package[puppet-agent]') }
+        it { is_expected.to contain_apt__source('puppet') }
+        it { is_expected.to contain_apt__source('openvox').that_comes_before('Package[openvox-agent]') }
+        it { is_expected.to contain_package('openvox-agent').that_requires('File[/etc/puppetlabs/facter/facts.d]') }
+        it { is_expected.to contain_package('openvox-agent').that_notifies('Service[puppet]') }
+        it { is_expected.to contain_file('puppet agent production environment hiera.yaml').that_requires('Package[openvox-agent]') }
+        it { is_expected.to contain_file('puppet agent production environment datadir').that_requires('Package[openvox-agent]') }
         it { is_expected.to contain_ini_setting('agent certificate_revocation').that_notifies('Service[puppet]') }
         it { is_expected.to contain_ini_setting('agent usecacheonfailure').that_notifies('Service[puppet]') }
         it { is_expected.to contain_ini_setting('agent reports').that_notifies('Service[puppet]') }
@@ -92,7 +94,7 @@ describe 'profiles::puppet::agent' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_package('puppet-agent').with(
+        it { is_expected.to contain_package('openvox-agent').with(
           'ensure'    => '6.23.1'
         ) }
 
