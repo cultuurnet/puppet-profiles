@@ -44,7 +44,6 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'focal-updates', { :location => 'https://apt-mirror.publiq.be/focal-updates-amd64-testing', :repos => 'main', :release => 'focal-updates' }
             include_examples 'apt repositories', 'focal-security', { :location => 'https://apt-mirror.publiq.be/focal-security-amd64-testing', :repos => 'main', :release => 'focal-security' }
             include_examples 'apt repositories', 'focal-backports', { :location => 'https://apt-mirror.publiq.be/focal-backports-amd64-testing', :repos => 'main', :release => 'focal-backports' }
-            include_examples 'apt repositories', 'puppet', { :location => 'https://apt-mirror.publiq.be/puppet-focal-testing', :repos => 'puppet', :release => 'focal' }
             include_examples 'apt repositories', 'php', { :location => 'https://apt-mirror.publiq.be/php-focal-testing', :repos => 'main', :release => 'focal' }
 
             # Do we need to check for the architecture for these repositories?
@@ -60,6 +59,7 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'elastic-5.x', { :location => 'https://apt-mirror.publiq.be/elastic-5.x-testing', :repos => 'main', :release => 'stable' }
             include_examples 'apt repositories', 'elastic-8.x', { :location => 'https://apt-mirror.publiq.be/elastic-8.x-testing', :repos => 'main', :release => 'stable' }
             include_examples 'apt repositories', 'hashicorp', { :location => 'https://apt-mirror.publiq.be/hashicorp-focal-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'openvox', { :location => 'https://apt-mirror.publiq.be/openvox-focal-testing', :repos => 'main', :release => 'focal' }
 
             include_examples 'apt repositories', 'publiq-jenkins', { :location => 'https://apt.publiq.be/publiq-jenkins-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'publiq-prototypes', { :location => 'https://apt.publiq.be/publiq-prototypes-testing', :repos => 'main', :release => 'focal' }
@@ -102,6 +102,7 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'uit-frontend', { :location => 'https://apt.publiq.be/uit-frontend-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uit-api', { :location => 'https://apt.publiq.be/uit-api-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uit-cms', { :location => 'https://apt.publiq.be/uit-cms-testing', :repos => 'main', :release => 'focal' }
+
           end
 
           context 'in the acceptance environment' do
@@ -114,6 +115,10 @@ describe 'profiles::apt::repositories' do
 
             include_examples 'apt repositories', 'focal', { :location => 'https://apt-mirror.publiq.be/focal-amd64-acceptance', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'php', { :location => 'https://apt-mirror.publiq.be/php-focal-acceptance', :repos => 'main', :release => 'focal' }
+
+            it { is_expected.to contain_apt__source('puppet').with(
+              'ensure' => 'absent'
+            ) }
           end
         end
       end
