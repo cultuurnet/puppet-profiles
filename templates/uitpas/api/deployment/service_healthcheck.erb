@@ -2,6 +2,8 @@
 
 HEALTH_URL="http://localhost:<%= @http_port_base %>/uitid/rest/uitpas/health"
 CARDSYSTEM_HEALTH_URL="http://localhost:<%= @http_port_base %>/uitid/rest/cardsystem/login"
+# If Puppet is running, and possibily a deploy, we skip the health check to avoid false negatives
+[ -f /opt/puppetlabs/puppet/cache/state/agent_catalog_run.lock ] && return 0
 /usr/bin/test $(/usr/bin/curl -s  -o /dev/null $HEALTH_URL -w "%{http_code}") -eq 200  || return 1
 /usr/bin/test $(/usr/bin/curl -s  -o /dev/null $CARDSYSTEM_HEALTH_URL -w "%{http_code}") -eq 200
 
