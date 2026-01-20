@@ -19,6 +19,11 @@ class profiles::puppet::agent (
     notify  => Service['puppet']
   }
 
+  package { 'puppet-agent':
+    ensure  => 'purged',
+    require => Package['openvox-agent']
+  }
+
   file { 'puppet agent production environment hiera.yaml':
     ensure  => 'absent',
     path    => '/etc/puppetlabs/code/environments/production/hiera.yaml',
