@@ -129,14 +129,18 @@ class profiles::apt::repositories {
   }
 
   @apt::source { 'puppet':
-    location     => "https://apt-mirror.publiq.be/puppet-${codename}-${environment}",
-    release      => $codename,
-    architecture => $arch,
-    repos        => 'puppet'
+    ensure => 'absent'
   }
 
   @apt::source { 'hashicorp':
     location     => "https://apt-mirror.publiq.be/hashicorp-${codename}-${environment}",
+    release      => $codename,
+    architecture => $arch,
+    repos        => 'main'
+  }
+
+  @apt::source { 'openvox':
+    location     => "https://apt-mirror.publiq.be/openvox-${codename}-${environment}",
     release      => $codename,
     architecture => $arch,
     repos        => 'main'

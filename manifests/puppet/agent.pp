@@ -10,25 +10,31 @@ class profiles::puppet::agent (
                                     }
 
   realize Apt::Source['puppet']
+  realize Apt::Source['openvox']
   realize File['/etc/puppetlabs/facter/facts.d']
 
-  package { 'puppet-agent':
+  package { 'openvox-agent':
     ensure  => $version,
-    require => [Apt::Source['puppet'], File['/etc/puppetlabs/facter/facts.d']],
+    require => [Apt::Source['openvox'], File['/etc/puppetlabs/facter/facts.d']],
     notify  => Service['puppet']
+  }
+
+  package { 'puppet-agent':
+    ensure  => 'purged',
+    require => Package['openvox-agent']
   }
 
   file { 'puppet agent production environment hiera.yaml':
     ensure  => 'absent',
     path    => '/etc/puppetlabs/code/environments/production/hiera.yaml',
-    require => Package['puppet-agent']
+    require => Package['openvox-agent']
   }
 
   file { 'puppet agent production environment datadir':
     ensure  => 'absent',
     path    => '/etc/puppetlabs/code/environments/production/data',
     force   => true,
-    require => Package['puppet-agent']
+    require => Package['openvox-agent']
   }
 
   if $puppetserver {
