@@ -18,16 +18,17 @@ describe 'profiles::puppet::puppetserver::install' do
         it { is_expected.to contain_user('puppet') }
 
         it { is_expected.to contain_apt__source('puppet') }
+        it { is_expected.to contain_apt__source('openvox') }
 
         it { is_expected.to contain_class('profiles::java') }
-        it { is_expected.to contain_package('puppetserver').with(
+        it { is_expected.to contain_package('openvox-server').with(
           'ensure' => 'installed'
         ) }
 
-        it { is_expected.to contain_package('puppetserver').that_requires('Group[puppet]') }
-        it { is_expected.to contain_package('puppetserver').that_requires('User[puppet]') }
-        it { is_expected.to contain_package('puppetserver').that_requires('Apt::Source[puppet]') }
-        it { is_expected.to contain_package('puppetserver').that_requires('Class[profiles::java]') }
+        it { is_expected.to contain_package('openvox-server').that_requires('Group[puppet]') }
+        it { is_expected.to contain_package('openvox-server').that_requires('User[puppet]') }
+        it { is_expected.to contain_package('openvox-server').that_requires('Apt::Source[openvox]') }
+        it { is_expected.to contain_package('openvox-server').that_requires('Class[profiles::java]') }
       end
 
       context "with version => 1.2.3" do
@@ -37,7 +38,7 @@ describe 'profiles::puppet::puppetserver::install' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_package('puppetserver').with(
+        it { is_expected.to contain_package('openvox-server').with(
           'ensure' => '1.2.3'
         ) }
       end

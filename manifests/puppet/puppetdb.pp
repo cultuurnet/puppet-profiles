@@ -19,6 +19,7 @@ class profiles::puppet::puppetdb (
   realize Group['puppetdb']
   realize User['puppetdb']
   realize Apt::Source['puppet']
+  realize Apt::Source['openvox']
 
   realize Firewall['300 accept puppetdb HTTPS traffic']
 
@@ -43,10 +44,11 @@ class profiles::puppet::puppetdb (
   class { 'puppetdb::server':
     database_host           => '127.0.0.1',
     manage_firewall         => false,
+    puppetdb_package        => 'openvoxdb',
     puppetdb_service_status => $service_status,
     java_args               => $java_args,
     ssl_deploy_certs        => false,
     ssl_set_cert_paths      => true,
-    require                 => [Group['puppetdb'], User['puppetdb'], Apt::Source['puppet'], Class['profiles::java'], Class['puppetdb::globals'], Class['puppetdb::database::postgresql']]
+    require                 => [Group['puppetdb'], User['puppetdb'], Apt::Source['openvox'], Class['profiles::java'], Class['puppetdb::globals'], Class['puppetdb::database::postgresql']]
   }
 }

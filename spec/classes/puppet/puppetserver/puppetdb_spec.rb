@@ -15,7 +15,9 @@ describe 'profiles::puppet::puppetserver::puppetdb' do
           'version' => nil
         ) }
 
-        it { is_expected.to contain_package('puppetdb-termini').with(
+        it { is_expected.not_to contain_apt__source('openvoxdb') }
+
+        it { is_expected.to contain_package('openvoxdb-termini').with(
           'ensure' => 'absent'
         ) }
 
@@ -61,7 +63,7 @@ describe 'profiles::puppet::puppetserver::puppetdb' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_package('puppetdb-termini').with(
+        it { is_expected.to contain_package('openvoxdb-termini').with(
           'ensure' => 'installed'
         ) }
 
@@ -125,6 +127,7 @@ describe 'profiles::puppet::puppetserver::puppetdb' do
           'source'  => 'puppet:///modules/profiles/puppet/puppetserver/routes.yaml'
         ) }
 
+        it { is_expected.to contain_package('openvoxdb-termini').that_requires('Apt::Source[openvox]') }
         it { is_expected.to contain_file('puppetserver puppetdb.conf').that_requires('Group[puppet]') }
         it { is_expected.to contain_file('puppetserver puppetdb.conf').that_requires('User[puppet]') }
         it { is_expected.to contain_file('puppetserver routes.yaml').that_requires('Group[puppet]') }
@@ -139,7 +142,7 @@ describe 'profiles::puppet::puppetserver::puppetdb' do
           'version' => '7.2.1'
         } }
 
-        it { is_expected.to contain_package('puppetdb-termini').with(
+        it { is_expected.to contain_package('openvoxdb-termini').with(
           'ensure' => '7.2.1'
         ) }
 
