@@ -16,6 +16,16 @@ class profiles::puppet::puppetserver::puppetdb (
 
     realize Group['puppet']
     realize User['puppet']
+    realize Apt::Source['openvox']
+
+    package { 'openvoxdb-termini':
+      ensure  => $termini_version,
+      require => Apt::Source['openvox']
+    }
+
+    package { 'puppetdb-termini':
+      ensure => 'absent'
+    }
 
     file { 'puppetserver puppetdb.conf':
       ensure  => 'file',
@@ -54,9 +64,12 @@ class profiles::puppet::puppetserver::puppetdb (
       require => [Group['puppet'], User['puppet']]
     }
   } else {
-    $termini_version = 'absent'
     $reports         = 'absent'
     $storeconfigs    = 'absent'
+
+    package { 'openvoxdb-termini':
+      ensure => 'absent'
+    }
 
     file { 'puppetserver puppetdb.conf':
       ensure  => 'absent',
@@ -67,10 +80,6 @@ class profiles::puppet::puppetserver::puppetdb (
       ensure  => 'absent',
       path    => '/etc/puppetlabs/puppet/routes.yaml'
     }
-  }
-
-  package { 'puppetdb-termini':
-    ensure => $termini_version
   }
 
   ini_setting { 'puppetserver reports':

@@ -25,6 +25,7 @@ describe 'profiles::puppet::puppetdb' do
           it { is_expected.to contain_user('puppetdb') }
 
           it { is_expected.to contain_apt__source('puppet') }
+          it { is_expected.to contain_apt__source('openvox') }
           it { is_expected.to contain_firewall('300 accept puppetdb HTTPS traffic') }
 
           it { is_expected.to contain_class('profiles::java') }
@@ -45,6 +46,7 @@ describe 'profiles::puppet::puppetdb' do
 
           it { is_expected.to contain_class('puppetdb::server').with(
             'database_host'           => '127.0.0.1',
+            'puppetdb_package'        => 'openvoxdb',
             'puppetdb_service_status' => 'running',
             'manage_firewall'         => false,
             'java_args'               => {},
@@ -61,7 +63,7 @@ describe 'profiles::puppet::puppetdb' do
 
           it { is_expected.to contain_class('puppetdb::server').that_requires('Group[puppetdb]') }
           it { is_expected.to contain_class('puppetdb::server').that_requires('User[puppetdb]') }
-          it { is_expected.to contain_class('puppetdb::server').that_requires('Apt::Source[puppet]') }
+          it { is_expected.to contain_class('puppetdb::server').that_requires('Apt::Source[openvox]') }
 
           it { is_expected.to contain_class('puppetdb::server').that_requires('Class[puppetdb::globals]') }
           it { is_expected.to contain_class('puppetdb::server').that_requires('Class[profiles::java]') }
@@ -89,6 +91,7 @@ describe 'profiles::puppet::puppetdb' do
 
           it { is_expected.to contain_class('puppetdb::server').with(
             'database_host'           => '127.0.0.1',
+            'puppetdb_package'        => 'openvoxdb',
             'puppetdb_service_status' => 'stopped',
             'manage_firewall'         => false,
             'java_args'               => {
