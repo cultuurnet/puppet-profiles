@@ -20,8 +20,7 @@ class profiles::ssh(
   }
 
   sshd_config { 'PubkeyAcceptedKeyTypes':
-    ensure => 'present',
-    value  => '+rsa-sha2-256,rsa-sha2-512'
+    ensure => 'absent'
   }
 
   service { 'ssh':
