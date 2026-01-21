@@ -24,7 +24,7 @@ class profiles::puppet::puppetserver::puppetdb (
     }
 
     package { 'puppetdb-termini':
-      ensure => 'absent'
+      ensure => 'purged'
     }
 
     file { 'puppetserver puppetdb.conf':
