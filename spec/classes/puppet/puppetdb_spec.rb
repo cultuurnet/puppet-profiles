@@ -24,7 +24,6 @@ describe 'profiles::puppet::puppetdb' do
           it { is_expected.to contain_group('puppetdb') }
           it { is_expected.to contain_user('puppetdb') }
 
-          it { is_expected.to contain_apt__source('puppet') }
           it { is_expected.to contain_apt__source('openvox') }
           it { is_expected.to contain_firewall('300 accept puppetdb HTTPS traffic') }
 
