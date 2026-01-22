@@ -64,6 +64,7 @@ describe 'profiles::uitpas::website::frontend::deployment' do
 
           it { is_expected.to contain_package('uitpas-website-frontend').that_requires('Apt::Source[uitpas-website-frontend]') }
           it { is_expected.to contain_file('uitpas-website-frontend-config').that_requires('Group[www-data]') }
+          it { is_expected.to contain_file('uitpas-website-frontend-config').that_notifies('Service[uitpas-website-frontend]') }
           it { is_expected.to contain_file('uitpas-website-frontend-service-defaults') }
         end
       end

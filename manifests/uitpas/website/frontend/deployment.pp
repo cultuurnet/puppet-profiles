@@ -27,7 +27,8 @@ class profiles::uitpas::website::frontend::deployment (
     owner   => 'www-data',
     group   => 'www-data',
     content  => template($config_source),
-    require => Package['uitpas-website-frontend']
+    require => Package['uitpas-website-frontend'],
+    notify  => Service['uitpas-website-frontend']
   }
 
   file { 'uitpas-website-frontend-service-defaults':
@@ -47,8 +48,6 @@ class profiles::uitpas::website::frontend::deployment (
                  },
     hasstatus => true
   }
-
-  File['uitpas-website-frontend-config'] ~> File['uitpas-website-frontend-service-defaults'] ~> Service['uitpas-website-frontend']
 
   profiles::deployment::versions { $title:
     puppetdb_url => $puppetdb_url
