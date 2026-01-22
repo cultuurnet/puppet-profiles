@@ -9,7 +9,6 @@ class profiles::puppet::agent (
                                       notify => Service['puppet']
                                     }
 
-  realize Apt::Source['puppet']
   realize Apt::Source['openvox']
   realize File['/etc/puppetlabs/facter/facts.d']
 
@@ -17,11 +16,6 @@ class profiles::puppet::agent (
     ensure  => $version,
     require => [Apt::Source['openvox'], File['/etc/puppetlabs/facter/facts.d']],
     notify  => Service['puppet']
-  }
-
-  package { 'puppet-agent':
-    ensure  => 'purged',
-    require => Package['openvox-agent']
   }
 
   file { 'puppet agent production environment hiera.yaml':

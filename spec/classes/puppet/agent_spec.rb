@@ -16,7 +16,6 @@ describe 'profiles::puppet::agent' do
           'service_status' => 'stopped',
         ) }
 
-        it { is_expected.to contain_apt__source('puppet') }
         it { is_expected.to contain_apt__source('openvox') }
 
         it { is_expected.to contain_package('openvox-agent').with(
@@ -73,7 +72,6 @@ describe 'profiles::puppet::agent' do
           'value'   => 'store',
         ) }
 
-        it { is_expected.to contain_apt__source('puppet') }
         it { is_expected.to contain_apt__source('openvox').that_comes_before('Package[openvox-agent]') }
         it { is_expected.to contain_package('openvox-agent').that_requires('File[/etc/puppetlabs/facter/facts.d]') }
         it { is_expected.to contain_package('openvox-agent').that_notifies('Service[puppet]') }

@@ -17,7 +17,6 @@ describe 'profiles::puppet::puppetserver::install' do
         it { is_expected.to contain_group('puppet') }
         it { is_expected.to contain_user('puppet') }
 
-        it { is_expected.to contain_apt__source('puppet') }
         it { is_expected.to contain_apt__source('openvox') }
 
         it { is_expected.to contain_class('profiles::java') }

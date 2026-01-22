@@ -23,10 +23,6 @@ class profiles::puppet::puppetserver::puppetdb (
       require => Apt::Source['openvox']
     }
 
-    package { 'puppetdb-termini':
-      ensure => 'purged'
-    }
-
     file { 'puppetserver puppetdb.conf':
       ensure  => 'file',
       path    => '/etc/puppetlabs/puppet/puppetdb.conf',

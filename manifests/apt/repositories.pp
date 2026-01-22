@@ -128,10 +128,6 @@ class profiles::apt::repositories {
     repos        => 'main'
   }
 
-  @apt::source { 'puppet':
-    ensure => 'absent'
-  }
-
   @apt::source { 'hashicorp':
     location     => "https://apt-mirror.publiq.be/hashicorp-${codename}-${environment}",
     release      => $codename,
