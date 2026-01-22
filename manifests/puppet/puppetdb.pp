@@ -18,7 +18,6 @@ class profiles::puppet::puppetdb (
   realize User['postgres']
   realize Group['puppetdb']
   realize User['puppetdb']
-  realize Apt::Source['puppet']
   realize Apt::Source['openvox']
 
   realize Firewall['300 accept puppetdb HTTPS traffic']

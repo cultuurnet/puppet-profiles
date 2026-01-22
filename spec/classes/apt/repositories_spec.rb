@@ -115,10 +115,6 @@ describe 'profiles::apt::repositories' do
 
             include_examples 'apt repositories', 'focal', { :location => 'https://apt-mirror.publiq.be/focal-amd64-acceptance', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'php', { :location => 'https://apt-mirror.publiq.be/php-focal-acceptance', :repos => 'main', :release => 'focal' }
-
-            it { is_expected.to contain_apt__source('puppet').with(
-              'ensure' => 'absent'
-            ) }
           end
         end
       end
