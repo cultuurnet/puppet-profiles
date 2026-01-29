@@ -29,18 +29,21 @@ class profiles::ca_certificates (
 
   file { 'Puppet CA certificate':
     ensure  => $puppet_ca ? {
-                true  => 'file',
-                false => 'absent'
-              },
+                 true  => 'file',
+                 false => 'absent'
+               },
     path    => '/usr/local/share/ca-certificates/puppet/puppet-ca.crt',
-    source  => '/etc/puppetlabs/puppet/ssl/certs/ca.pem',
+    source  => $puppet_ca ? {
+                 true  => '/etc/puppetlabs/puppet/ssl/certs/ca.pem',
+                 false => undef
+               },
     require => File['Puppet CA certificate directory'],
     notify  => Exec['Update CA certificates']
   }
 
   exec { 'Update CA certificates':
     command     => 'update-ca-certificates',
-    path        => [ '/usr/local/bin', '/usr/bin', '/usr/sbin', '/bin'],
+    path        => ['/usr/local/bin', '/usr/bin', '/usr/sbin', '/bin'],
     refreshonly => true
   }
 }

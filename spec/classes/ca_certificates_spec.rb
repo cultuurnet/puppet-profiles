@@ -66,12 +66,13 @@ describe 'profiles::ca_certificates' do
 
         it { is_expected.to contain_file('Puppet CA certificate').with(
           'ensure' => 'absent',
-          'path'   => '/usr/local/share/ca-certificates/puppet/puppet-ca.crt'
+          'path'   => '/usr/local/share/ca-certificates/puppet/puppet-ca.crt',
+          'source' => nil
         ) }
 
         it { is_expected.to contain_exec('Update CA certificates').with(
           'command'     => 'update-ca-certificates',
-          'path'        => [ '/usr/local/bin', '/usr/bin', '/usr/sbin', '/bin'],
+          'path'        => ['/usr/local/bin', '/usr/bin', '/usr/sbin', '/bin'],
           'refreshonly' => true
         ) }
 
