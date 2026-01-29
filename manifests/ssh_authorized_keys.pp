@@ -1,5 +1,5 @@
 class profiles::ssh_authorized_keys(
-  Hash $keys             = {},
+  Hash             $keys = {},
   Optional[String] $user = undef
 ) inherits ::profiles {
 
