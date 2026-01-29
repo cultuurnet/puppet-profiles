@@ -1,6 +1,17 @@
 class profiles::ssh_authorized_keys(
-  Hash $keys = {}
+  Hash $keys             = {},
+  Optional[String] $user = undef
 ) inherits ::profiles {
+
+  if $user {
+    $admin_user = $user
+  } else {
+    if $facts['ec2_metadata'] {
+      $admin_user = 'ubuntu'
+    } else {
+      $admin_user = 'vagrant'
+    }
+  }
 
   $keys.each | $key, $attributes| {
    [$attributes['keys']].flatten.each | $index, $key_attributes | {
@@ -12,7 +23,7 @@ class profiles::ssh_authorized_keys(
       }
 
       @ssh_authorized_key { $key_title:
-        user => 'ubuntu',
+        user => $admin_user,
         type => $key_attributes['type'],
         key  => $key_attributes['key'],
         tag  => $attributes['tags']
