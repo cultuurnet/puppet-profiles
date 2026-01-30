@@ -1,6 +1,6 @@
 define profiles::glassfish::domain::heap (
   Optional[String] $initial_size = undef,
-  Optional[String] $maximum_size = undef,
+  Optional[String] $maximum_size = '512m',
   Integer          $portbase     = 4800
 ) {
 
@@ -45,49 +45,29 @@ define profiles::glassfish::domain::heap (
     }
   }
 
-  if $maximum_size {
-    jvmoption { "Domain ${title} maximum heap jvmoption":
-      ensure => 'present',
-      option => "-Xmx${maximum_size}",
-      before => File["Domain ${title} heap external facts"],
-      *      => $jvmoption_default_attributes
-    }
+  jvmoption { "Domain ${title} maximum heap jvmoption":
+    ensure => 'present',
+    option => "-Xmx${maximum_size}",
+    before => File["Domain ${title} heap external facts"],
+    *      => $jvmoption_default_attributes
+  }
 
-    if fact("glassfish.$title.heap.maximum_size") {
-      if !($maximum_size == $facts['glassfish'][$title]['heap']['maximum_size']) {
-        jvmoption { "Domain ${title} previous maximum heap jvmoption removal":
-          ensure => 'absent',
-          option => "-Xmx${facts['glassfish'][$title]['heap']['maximum_size']}",
-          before => [Jvmoption["Domain ${title} maximum heap jvmoption"], File["Domain ${title} heap external facts"]],
-          *      => $jvmoption_default_attributes
-        }
-      }
-    } else {
-      if !($maximum_size == $default_maximum_size) {
-        jvmoption { "Domain ${title} previous maximum heap jvmoption removal":
-          ensure => 'absent',
-          option => "-Xmx${default_maximum_size}",
-          before => [Jvmoption["Domain ${title} maximum heap jvmoption"], File["Domain ${title} heap external facts"]],
-          *      => $jvmoption_default_attributes
-        }
-      }
-    }
-  } else {
-    jvmoption { "Domain ${title} maximum heap jvmoption":
-      ensure => 'present',
+  if !($maximum_size == $default_maximum_size) {
+    jvmoption { "Domain ${title} default maximum heap jvmoption removal":
+      ensure => 'absent',
       option => "-Xmx${default_maximum_size}",
-      before => File["Domain ${title} heap external facts"],
+      before => [Jvmoption["Domain ${title} maximum heap jvmoption"], File["Domain ${title} heap external facts"]],
       *      => $jvmoption_default_attributes
     }
+  }
 
-    if fact("glassfish.$title.heap.maximum_size") {
-      if !($default_maximum_size == $facts['glassfish'][$title]['heap']['maximum_size']) {
-        jvmoption { "Domain ${title} previous maximum heap jvmoption removal":
-          ensure => 'absent',
-          option => "-Xmx${facts['glassfish'][$title]['heap']['maximum_size']}",
-          before => [Jvmoption["Domain ${title} maximum heap jvmoption"], File["Domain ${title} heap external facts"]],
-          *      => $jvmoption_default_attributes
-        }
+  if fact("glassfish.$title.heap.maximum_size") {
+    if !($maximum_size == $facts['glassfish'][$title]['heap']['maximum_size']) {
+      jvmoption { "Domain ${title} previous maximum heap jvmoption removal":
+        ensure => 'absent',
+        option => "-Xmx${facts['glassfish'][$title]['heap']['maximum_size']}",
+        before => [Jvmoption["Domain ${title} maximum heap jvmoption"], File["Domain ${title} heap external facts"]],
+        *      => $jvmoption_default_attributes
       }
     }
   }
