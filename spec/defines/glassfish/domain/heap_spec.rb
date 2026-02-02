@@ -918,9 +918,9 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('/etc/puppetlabs/facter/facts.d') }
 
             it { is_expected.to contain_profiles__glassfish__domain__heap('baz-api').with(
-              'initial'  => nil,
-              'maximum'  => nil,
-              'portbase' => 4800
+              'initial_size' => nil,
+              'maximum_size' => '512m',
+              'portbase'     => 4800
             ) }
 
             it { is_expected.not_to contain_jvmoption('Domain baz-api previous initial heap jvmoption removal') }
