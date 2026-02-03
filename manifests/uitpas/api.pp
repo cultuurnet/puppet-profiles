@@ -144,11 +144,11 @@ class profiles::uitpas::api (
         portbase          => $portbase
       }
 
-      if $cron_enabled {
-        class { 'profiles::uitpas::api::cron':
-          portbase => $portbase,
-          require  => Class['profiles::uitpas::api::deployment'],
-        }
+      class { 'profiles::uitpas::api::cron':
+          portbase     => $portbase,
+          cron_enabled => $cron_enabled,
+          require      => Class['profiles::uitpas::api::deployment'],
+      }
       }
 
       Class['profiles::glassfish'] -> Class['profiles::uitpas::api::deployment']

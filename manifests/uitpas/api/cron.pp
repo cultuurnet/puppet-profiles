@@ -1,5 +1,6 @@
 class profiles::uitpas::api::cron (
-  Integer $portbase = 4800
+  Integer $portbase = 4800,
+  Boolean $cron_enabled = true
 ) inherits ::profiles {
 
   $http_port               = String($portbase + 80)
@@ -29,7 +30,11 @@ class profiles::uitpas::api::cron (
     *             => $profiles::logrotate::default_rule_attributes
   }
 
-  cron {'uitpas enduser clearcheckincodes':
+  cron { 'uitpas enduser clearcheckincodes':
+    ensure  => $cron_enabled ? {
+      true    => 'present',
+      default => 'absent',
+    },
     command => "/usr/bin/curl '${base_url}/uitid/rest/uitpas/enduser/clearcheckincodes' >> ${cron_logdir}/clearcheckincodes.log 2>&1",
     hour    => '3',
     minute  => '5',
@@ -37,13 +42,21 @@ class profiles::uitpas::api::cron (
   }
 
   cron { 'uitpas milestone batch activity':
-    command => "/usr/bin/curl '${base_url}/uitid/rest/uitpas/milestone/batch/activity' >> ${cron_logdir}/activity.log 2>&1",
+  ensure  => $cron_enabled ? {
+    true    => 'present',
+    default => 'absent',
+  },
+  command => "/usr/bin/curl '${base_url}/uitid/rest/uitpas/milestone/batch/activity' >> ${cron_logdir}/activity.log 2>&1",
     hour    => '1',
     minute  => '2',
     *       => $cron_default_attributes
   }
 
   cron { 'uitpas milestone batch points':
+    ensure  => $cron_enabled ? {
+    true    => 'present',
+    default => 'absent',
+   },
     command => "/usr/bin/curl '${base_url}/uitid/rest/uitpas/milestone/batch/points' >> ${cron_logdir}/points.log 2>&1",
     hour    => '2',
     minute  => '2',
@@ -51,6 +64,10 @@ class profiles::uitpas::api::cron (
   }
 
   cron { 'uitpas milestone batch birthday':
+    ensure  => $cron_enabled ? {
+    true    => 'present',
+    default => 'absent',
+    },
     command => "/usr/bin/curl '${base_url}/uitid/rest/uitpas/milestone/batch/birthday' >> ${cron_logdir}/birthday.log 2>&1",
     hour    => '4',
     minute  => '2',
@@ -58,6 +75,10 @@ class profiles::uitpas::api::cron (
   }
 
   cron { 'uitpas passholder indexpointspromotions':
+    ensure  => $cron_enabled ? {
+    true    => 'present',
+    default => 'absent',
+    },
     command => "/usr/bin/curl '${base_url}/uitid/rest/uitpas/passholder/indexpointspromotions?unindexedOnly=true' >> ${cron_logdir}/indexpointspromotions.log 2>&1",
     hour    => '*',
     minute  => '34',
@@ -65,6 +86,10 @@ class profiles::uitpas::api::cron (
   }
 
   cron { 'uitpas autorenew triggerupload':
+    ensure  => $cron_enabled ? {
+      true    => 'present',
+      default => 'absent',
+    },
     command => "/usr/bin/curl '${base_url}/uitid/rest/uitpas/autorenew/triggerupload' >> ${cron_logdir}/triggerupload.log 2>&1",
     hour    => '*',
     minute  => '*/10',
@@ -72,6 +97,10 @@ class profiles::uitpas::api::cron (
   }
 
   cron { 'uitpas autorenew triggerdownload':
+    ensure  => $cron_enabled ? {
+      true    => 'present',
+      default => 'absent',
+    },
     command => "/usr/bin/curl '${base_url}/uitid/rest/uitpas/autorenew/triggerdownload' >> ${cron_logdir}/triggerdownload.log 2>&1",
     hour    => '*',
     minute  => '*/10',
@@ -79,6 +108,10 @@ class profiles::uitpas::api::cron (
   }
 
   cron { 'uitpas autorenew triggerprocess':
+    ensure  => $cron_enabled ? {
+      true    => 'present',
+      default => 'absent',
+    },
     command => "/usr/bin/curl '${base_url}/uitid/rest/uitpas/autorenew/triggerprocess' >> ${cron_logdir}/triggerprocess.log 2>&1",
     hour    => '*',
     minute  => '*/10',
@@ -86,6 +119,10 @@ class profiles::uitpas::api::cron (
   }
 
   cron { 'uitpas trigger price message':
+    ensure  => $cron_enabled ? {
+      true    => 'present',
+      default => 'absent',
+    },
     command => "/usr/bin/curl '${base_url}/uitid/rest/bootstrap/uitpas/trigger-event-price-messages?max=100' >> ${cron_logdir}/trigger-event-price-message.log 2>&1",
     hour    => '*',
     minute  => '*',
@@ -93,6 +130,10 @@ class profiles::uitpas::api::cron (
   }
 
   cron { 'uitpas balie indexbalies':
+    ensure  => $cron_enabled ? {
+      true    => 'present',
+      default => 'absent',
+    },
     command => "/usr/bin/curl '${base_url}/uitid/rest/uitpas/balie/indexbalies' >> ${cron_logdir}/indexbalies.log 2>&1",
     hour    => '5',
     minute  => '14',
@@ -100,6 +141,10 @@ class profiles::uitpas::api::cron (
   }
 
   cron { 'uitpas clear jpa cache':
+      ensure  => $cron_enabled ? {
+    true    => 'present',
+    default => 'absent',
+   },
     command => "/usr/bin/curl -q -s '${base_url}/uitid/rest/bootstrap/uitpas/clearJpaCache' > /dev/null",
     hour    => '*/6',
     minute  => '30',
@@ -107,7 +152,10 @@ class profiles::uitpas::api::cron (
   }
 
   cron { 'uitpas clear cache':
-    command => "/usr/bin/curl -q -s '${base_url}/uitid/rest/bootstrap/uitpas/clearcaches' > /dev/null",
+    ensure  => $cron_enabled ? {
+    true    => 'present',
+    default => 'absent',
+    },
     hour    => '6',
     minute  => '15',
     *       => $cron_default_attributes
