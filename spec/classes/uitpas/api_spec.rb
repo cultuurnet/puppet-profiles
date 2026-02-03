@@ -24,6 +24,7 @@ describe 'profiles::uitpas::api' do
               'serveraliases'                          =>[],
               'database_password'                      =>'mypassword',
               'database_host'                          =>'127.0.0.1',
+              'cron_enabled'                           =>true,
               'deployment'                             =>true,
               'initial_heap_size'                      =>nil,
               'maximum_heap_size'                      =>nil,
