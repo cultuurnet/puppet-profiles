@@ -1,6 +1,6 @@
 define profiles::glassfish::domain::heap (
   Optional[String] $initial_size = undef,
-  Optional[String] $maximum_size = '512m',
+  String           $maximum_size = '512m',
   Integer          $portbase     = 4800
 ) {
 

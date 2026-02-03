@@ -18,7 +18,7 @@ describe 'profiles::glassfish::domain' do
               'ensure'            => 'present',
               'service_status'    => 'running',
               'initial_heap_size' => nil,
-              'maximum_heap_size' => nil,
+              'maximum_heap_size' => '512m',
               'jmx'               => true,
               'newrelic'          => false,
               'newrelic_app_name' => 'foobar-api-production',
@@ -43,7 +43,7 @@ describe 'profiles::glassfish::domain' do
 
             it { is_expected.to contain_profiles__glassfish__domain__heap('foobar-api').with(
               'initial_size' => nil,
-              'maximum_size' => nil,
+              'maximum_size' => '512m',
               'portbase'     => 4800
             ) }
 
@@ -100,7 +100,7 @@ describe 'profiles::glassfish::domain' do
               'ensure'            => 'present',
               'service_status'    => 'running',
               'initial_heap_size' => nil,
-              'maximum_heap_size' => nil,
+              'maximum_heap_size' => '512m',
               'jmx'               => true,
               'newrelic'          => false,
               'newrelic_app_name' => 'foobar-api-testing',

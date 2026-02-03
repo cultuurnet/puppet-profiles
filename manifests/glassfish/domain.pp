@@ -2,7 +2,7 @@ define profiles::glassfish::domain (
   Enum['present', 'absent']  $ensure               = 'present',
   Enum['running', 'stopped'] $service_status       = 'running',
   Optional[String]           $initial_heap_size    = undef,
-  Optional[String]           $maximum_heap_size    = undef,
+  String                     $maximum_heap_size    = '512m',
   Boolean                    $jmx                  = true,
   Boolean                    $newrelic             = false,
   Optional[String]           $newrelic_license_key = undef,
