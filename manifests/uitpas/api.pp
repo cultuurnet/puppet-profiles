@@ -149,7 +149,6 @@ class profiles::uitpas::api (
           cron_enabled => $cron_enabled,
           require      => Class['profiles::uitpas::api::deployment'],
       }
-      }
 
       Class['profiles::glassfish'] -> Class['profiles::uitpas::api::deployment']
       Package['liquibase'] -> Class['profiles::uitpas::api::deployment']
