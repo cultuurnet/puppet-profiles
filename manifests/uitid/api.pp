@@ -3,7 +3,7 @@ class profiles::uitid::api (
   String                         $database_host        = '127.0.0.1',
   Boolean                        $deployment           = true,
   Optional[String]               $initial_heap_size    = undef,
-  Optional[String]               $maximum_heap_size    = undef,
+  String                         $maximum_heap_size    = '512m',
   Boolean                        $jmx                  = true,
   Boolean                        $newrelic             = false,
   Optional[String]               $newrelic_license_key = lookup('data::newrelic::license_key', Optional[String], 'first', undef),
@@ -132,6 +132,7 @@ class profiles::uitid::api (
       Package['mysql-connector-j'] -> Class['profiles::uitid::api::deployment']
       File['Domain uitid mysql-connector-j'] -> Class['profiles::uitid::api::deployment']
       Profiles::Mysql::App_user["${database_user}@${database_name}"] -> Class['profiles::uitid::api::deployment']
+      Profiles::Glassfish::Domain['uitid'] -> Class['profiles::uitid::api::deployment']
       Class['profiles::uitid::api::deployment'] ~> Service['uitid']
     }
   }
