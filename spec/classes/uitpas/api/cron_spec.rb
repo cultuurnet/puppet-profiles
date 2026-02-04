@@ -125,7 +125,7 @@ describe 'profiles::uitpas::api::cron' do
         it { is_expected.to contain_cron('uitpas clear cache').that_requires('User[glassfish]') }
       end
 
-      context "with portbase => 14800" do
+      context "with portbase => 14800 and cron_enabled=> true" do
         let(:params) { {
           'portbase' => 14800,
           'cron_enabled' => true
