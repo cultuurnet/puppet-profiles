@@ -128,6 +128,7 @@ describe 'profiles::uitpas::api::cron' do
       context "with portbase => 14800" do
         let(:params) { {
           'portbase' => 14800,
+          'cron_enabled' => true
         } }
 
         it { is_expected.to contain_cron('uitpas enduser clearcheckincodes').with(
