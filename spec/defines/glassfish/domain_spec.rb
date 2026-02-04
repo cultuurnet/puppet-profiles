@@ -199,7 +199,7 @@ describe 'profiles::glassfish::domain' do
 
           it { is_expected.to contain_profiles__glassfish__domain__heap('baz-api').with(
             'initial_size' => nil,
-            'maximum_size' => nil,
+            'maximum_size' => '512m',
             'portbase'     => 4800
           ) }
 
