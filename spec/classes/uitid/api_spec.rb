@@ -25,7 +25,7 @@ describe 'profiles::uitid::api' do
               'database_host'        => '127.0.0.1',
               'deployment'           => true,
               'initial_heap_size'    => nil,
-              'maximum_heap_size'    => nil,
+              'maximum_heap_size'    => '512m',
               'jmx'                  => true,
               'newrelic'             => false,
               'newrelic_license_key' => 'my_license_key',
@@ -133,7 +133,7 @@ describe 'profiles::uitid::api' do
             it { is_expected.to contain_profiles__glassfish__domain('uitid').with(
               'portbase'             => '4800',
               'initial_heap_size'    => nil,
-              'maximum_heap_size'    => nil,
+              'maximum_heap_size'    => '512m',
               'jmx'                  => true,
               'newrelic'             => false,
               'newrelic_license_key' => 'my_license_key',
@@ -191,6 +191,7 @@ describe 'profiles::uitid::api' do
             it { is_expected.to contain_jvmoption('Domain uitid timezone').that_notifies('Service[uitid]') }
             it { is_expected.to contain_profiles__glassfish__domain('uitid').that_requires('Class[profiles::glassfish]') }
             it { is_expected.to contain_profiles__glassfish__domain('uitid').that_notifies('Service[uitid]') }
+            it { is_expected.to contain_profiles__glassfish__domain('uitid').that_comes_before('Class[profiles::uitid::api::deployment]') }
             it { is_expected.to contain_profiles__glassfish__domain__service_alias('uitid').that_requires('Profiles::Glassfish::Domain[uitid]') }
             it { is_expected.to contain_profiles__glassfish__domain__service_alias('uitid').that_comes_before('Service[uitid]') }
             it { is_expected.to contain_file('Domain uitid mysql-connector-j').that_requires('Package[mysql-connector-j]') }
@@ -379,7 +380,7 @@ describe 'profiles::uitid::api' do
 
             it { is_expected.to contain_profiles__glassfish__domain('uitid').with(
               'initial_heap_size'    => nil,
-              'maximum_heap_size'    => nil,
+              'maximum_heap_size'    => '512m',
               'jmx'                  => true,
               'newrelic'             => true,
               'newrelic_app_name'    => 'uitid-api-testing',

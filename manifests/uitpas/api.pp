@@ -6,7 +6,7 @@ class profiles::uitpas::api (
   Boolean                        $deployment              = true,
   Boolean                        $cron_enabled            = true,
   Optional[String]               $initial_heap_size       = undef,
-  Optional[String]               $maximum_heap_size       = undef,
+  Optional[String]               $maximum_heap_size       = '512m',
   Boolean                        $jmx                     = true,
   Boolean                        $newrelic                = false,
   Optional[String]               $newrelic_license_key    = lookup('data::newrelic::license_key', Optional[String], 'first', undef),
@@ -155,6 +155,7 @@ class profiles::uitpas::api (
       Package['mysql-connector-j'] -> Class['profiles::uitpas::api::deployment']
       File['Domain uitpas mysql-connector-j'] -> Class['profiles::uitpas::api::deployment']
       Profiles::Mysql::App_user["${database_user}@${database_name}"] -> Class['profiles::uitpas::api::deployment']
+      Profiles::Glassfish::Domain['uitpas'] -> Class['profiles::uitpas::api::deployment']
       Class['profiles::uitpas::api::deployment'] ~> Service['uitpas']
     }
   }

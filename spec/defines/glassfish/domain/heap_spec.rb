@@ -10,11 +10,20 @@ describe 'profiles::glassfish::domain::heap' do
         #
         # No facts (initial run)
         # (x) No parameters (initial run)
+        #     => Jvm option to set maximum size to 512m
         # (x) Parameter maximum_size (initial run)
         #       - Parameter maximum_size == default (512m)
+        #         => Jvm option to set maximum size to 512m
         #       - Parameter maximum_size <> default (512m)
+        #         => Jvm option to remove maximum size of 512m
+        #         => Jvm option to set maximum size to specified size
         # (x) Parameter initial_size (initial run)
+        #     => Jvm option to set initial size to specified size
+        #     => Jvm option to set maximum size to 512m
         # (x) Parameters maximum_size & initial_size, no facts (initial run)
+        #     => Jvm option to set initial size to specified size
+        #     => Jvm option to remove maximum size of 512m
+        #     => Jvm option to set maximum size to specified size
         #
         # Initial fact
         # (x) No parameters (subsequent runs)
@@ -68,13 +77,14 @@ describe 'profiles::glassfish::domain::heap' do
 
             it { is_expected.to contain_profiles__glassfish__domain__heap('foobar-api').with(
               'initial_size' => nil,
-              'maximum_size' => nil,
+              'maximum_size' => '512m',
               'portbase'     => 4800
             ) }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
             it { is_expected.not_to contain_jvmoption('Domain foobar-api initial heap jvmoption') }
 
+            it { is_expected.not_to contain_jvmoption('Domain foobar-api default maximum heap jvmoption removal') }
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
@@ -90,6 +100,7 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum_size: '512m'$/) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').that_requires('File[/etc/puppetlabs/facter/facts.d]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with maximum_size => 512m' do
@@ -100,6 +111,7 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
             it { is_expected.not_to contain_jvmoption('Domain foobar-api initial heap jvmoption') }
 
+            it { is_expected.not_to contain_jvmoption('Domain foobar-api default maximum heap jvmoption removal') }
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
@@ -108,6 +120,7 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum_size: '512m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with maximum_size => 1024m' do
@@ -118,7 +131,7 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous initial heap jvmoption removal') }
             it { is_expected.not_to contain_jvmoption('Domain foobar-api initial heap jvmoption') }
 
-            it { is_expected.to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal').with(
+            it { is_expected.to contain_jvmoption('Domain foobar-api default maximum heap jvmoption removal').with(
               'ensure' => 'absent',
               'option' => '-Xmx512m'
             ) }
@@ -129,6 +142,7 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum_size: '1024m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_requires('Jvmoption[Domain foobar-api default maximum heap jvmoption removal]') }
           end
 
           context 'with initial_size => 256m' do
@@ -143,6 +157,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xms256m'
             ) }
 
+            it { is_expected.not_to contain_jvmoption('Domain foobar-api default maximum heap jvmoption removal') }
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
@@ -151,6 +166,8 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial_size: '256m'\n      maximum_size: '512m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with initial_size => 256m and maximum_size => 512m' do
@@ -166,6 +183,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xms256m'
             ) }
 
+            it { is_expected.not_to contain_jvmoption('Domain foobar-api default maximum heap jvmoption removal') }
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
@@ -174,6 +192,8 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial_size: '256m'\n      maximum_size: '512m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with initial_size => 256m and maximum_size => 768m' do
@@ -189,7 +209,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xms256m'
             ) }
 
-            it { is_expected.to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal').with(
+            it { is_expected.to contain_jvmoption('Domain foobar-api default maximum heap jvmoption removal').with(
               'ensure' => 'absent',
               'option' => '-Xmx512m'
             ) }
@@ -200,6 +220,9 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial_size: '256m'\n      maximum_size: '768m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_requires('Jvmoption[Domain foobar-api default maximum heap jvmoption removal]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
         end
 
@@ -217,6 +240,7 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api initial heap jvmoption') }
+            it { is_expected.not_to contain_jvmoption('Domain foobar-api default maximum heap jvmoption removal') }
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
@@ -225,6 +249,7 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum_size: '512m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with initial_size => 384m' do
@@ -238,6 +263,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xms384m'
             ) }
 
+            it { is_expected.not_to contain_jvmoption('Domain foobar-api default maximum heap jvmoption removal') }
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
@@ -246,6 +272,8 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial_size: '384m'\n      maximum_size: '512m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with initial_size => 256m' do
@@ -263,6 +291,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xms256m'
             ) }
 
+            it { is_expected.not_to contain_jvmoption('Domain foobar-api default maximum heap jvmoption removal') }
             it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
@@ -271,6 +300,9 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial_size: '256m'\n      maximum_size: '512m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_requires('Jvmoption[Domain foobar-api previous initial heap jvmoption removal]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with maximum_size => 1024m' do
@@ -285,7 +317,7 @@ describe 'profiles::glassfish::domain::heap' do
 
             it { is_expected.not_to contain_jvmoption('Domain foobar-api initial heap jvmoption') }
 
-            it { is_expected.to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal').with(
+            it { is_expected.to contain_jvmoption('Domain foobar-api default maximum heap jvmoption removal').with(
               'ensure' => 'absent',
               'option' => '-Xmx512m'
             ) }
@@ -296,6 +328,8 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum_size: '1024m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_requires('Jvmoption[Domain foobar-api default maximum heap jvmoption removal]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with initial_size => 384m and maximum_size => 1024m' do
@@ -310,7 +344,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xms384m'
             ) }
 
-            it { is_expected.to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal').with(
+            it { is_expected.to contain_jvmoption('Domain foobar-api default maximum heap jvmoption removal').with(
               'ensure' => 'absent',
               'option' => '-Xmx512m'
             ) }
@@ -321,6 +355,9 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial_size: '384m'\n      maximum_size: '1024m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_requires('Jvmoption[Domain foobar-api default maximum heap jvmoption removal]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with initial_size => 512m and maximum_size => 1024m' do
@@ -339,7 +376,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xms512m'
             ) }
 
-            it { is_expected.to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal').with(
+            it { is_expected.to contain_jvmoption('Domain foobar-api default maximum heap jvmoption removal').with(
               'ensure' => 'absent',
               'option' => '-Xmx512m'
             ) }
@@ -350,6 +387,10 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial_size: '512m'\n      maximum_size: '1024m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_requires('Jvmoption[Domain foobar-api previous initial heap jvmoption removal]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_requires('Jvmoption[Domain foobar-api default maximum heap jvmoption removal]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with initial_size => 512m and maximum_size => 512m' do
@@ -368,7 +409,7 @@ describe 'profiles::glassfish::domain::heap' do
               'option' => '-Xms512m'
             ) }
 
-            it { is_expected.not_to contain_jvmoption('Domain foobar-api previous maximum heap jvmoption removal') }
+            it { is_expected.not_to contain_jvmoption('Domain foobar-api default maximum heap jvmoption removal') }
 
             it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').with(
               'ensure' => 'present',
@@ -376,6 +417,9 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial_size: '512m'\n      maximum_size: '512m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_requires('Jvmoption[Domain foobar-api previous initial heap jvmoption removal]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
         end
 
@@ -401,6 +445,8 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum_size: '512m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_requires('Jvmoption[Domain foobar-api previous maximum heap jvmoption removal]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with initial_size => 256m' do
@@ -426,6 +472,9 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial_size: '256m'\n      maximum_size: '512m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_requires('Jvmoption[Domain foobar-api previous maximum heap jvmoption removal]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with maximum_size => 1024m' do
@@ -444,6 +493,7 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum_size: '1024m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with maximum_size => 1536m' do
@@ -465,6 +515,8 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum_size: '1536m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_requires('Jvmoption[Domain foobar-api previous maximum heap jvmoption removal]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with initial_size => 400m and maximum_size => 1024m' do
@@ -487,6 +539,8 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial_size: '400m'\n      maximum_size: '1024m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with initial_size => 400m and maximum_size => 1536m' do
@@ -512,6 +566,9 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial_size: '400m'\n      maximum_size: '1536m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_requires('Jvmoption[Domain foobar-api previous maximum heap jvmoption removal]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
         end
 
@@ -539,6 +596,8 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum_size: '512m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_requires('Jvmoption[Domain foobar-api previous maximum heap jvmoption removal]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with initial_size => 400m' do
@@ -567,6 +626,10 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial_size: '400m'\n      maximum_size: '512m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_requires('Jvmoption[Domain foobar-api previous initial heap jvmoption removal]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_requires('Jvmoption[Domain foobar-api previous maximum heap jvmoption removal]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with initial_size => 256m' do
@@ -592,6 +655,9 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial_size: '256m'\n      maximum_size: '512m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_requires('Jvmoption[Domain foobar-api previous maximum heap jvmoption removal]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with maximum_size => 1024m' do
@@ -617,6 +683,8 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum_size: '1024m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_requires('Jvmoption[Domain foobar-api previous maximum heap jvmoption removal]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with maximum_size => 768m' do
@@ -639,6 +707,7 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum_size: '768m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with initial_size => 256m and maximum_size => 768m' do
@@ -662,6 +731,8 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial_size: '256m'\n      maximum_size: '768m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with initial_size => 512m and maximum_size => 768m' do
@@ -688,6 +759,9 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial_size: '512m'\n      maximum_size: '768m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_requires('Jvmoption[Domain foobar-api previous initial heap jvmoption removal]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with initial_size => 256m and maximum_size => 1024m' do
@@ -714,6 +788,9 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial_size: '256m'\n      maximum_size: '1024m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_requires('Jvmoption[Domain foobar-api previous maximum heap jvmoption removal]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with initial_size => 512m and maximum_size => 1024m' do
@@ -743,6 +820,10 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial_size: '512m'\n      maximum_size: '1024m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_requires('Jvmoption[Domain foobar-api previous initial heap jvmoption removal]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_requires('Jvmoption[Domain foobar-api previous maximum heap jvmoption removal]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
         end
 
@@ -766,6 +847,7 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      maximum_size: '512m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with initial_size => 400m' do
@@ -791,6 +873,9 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial_size: '400m'\n      maximum_size: '512m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_requires('Jvmoption[Domain foobar-api previous initial heap jvmoption removal]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
 
           context 'with initial_size => 256m' do
@@ -813,6 +898,8 @@ describe 'profiles::glassfish::domain::heap' do
             ) }
 
             it { is_expected.to contain_file('Domain foobar-api heap external facts').with_content(/^---\nglassfish:\n  foobar-api:\n    heap:\n      initial_size: '256m'\n      maximum_size: '512m'$/) }
+            it { is_expected.to contain_jvmoption('Domain foobar-api initial heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
+            it { is_expected.to contain_jvmoption('Domain foobar-api maximum heap jvmoption').that_comes_before('File[Domain foobar-api heap external facts]') }
           end
         end
       end
@@ -831,9 +918,9 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('/etc/puppetlabs/facter/facts.d') }
 
             it { is_expected.to contain_profiles__glassfish__domain__heap('baz-api').with(
-              'initial'  => nil,
-              'maximum'  => nil,
-              'portbase' => 4800
+              'initial_size' => nil,
+              'maximum_size' => '512m',
+              'portbase'     => 4800
             ) }
 
             it { is_expected.not_to contain_jvmoption('Domain baz-api previous initial heap jvmoption removal') }
@@ -854,6 +941,7 @@ describe 'profiles::glassfish::domain::heap' do
             it { is_expected.to contain_file('Domain baz-api heap external facts').with_content(/^---\nglassfish:\n  baz-api:\n    heap:\n      maximum_size: '512m'$/) }
 
             it { is_expected.to contain_file('Domain baz-api heap external facts').that_requires('File[/etc/puppetlabs/facter/facts.d]') }
+            it { is_expected.to contain_jvmoption('Domain baz-api maximum heap jvmoption').that_comes_before('File[Domain baz-api heap external facts]') }
           end
         end
       end
