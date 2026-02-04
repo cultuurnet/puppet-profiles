@@ -20,20 +20,20 @@ describe 'profiles::uitpas::api' do
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to contain_class('profiles::uitpas::api').with(
-              'servername'                             =>'uitpas.example.com',
-              'serveraliases'                          =>[],
-              'database_password'                      =>'mypassword',
-              'database_host'                          =>'127.0.0.1',
-              'deployment'                             =>true,
-              'initial_heap_size'                      =>nil,
-              'maximum_heap_size'                      =>nil,
-              'jmx'                                    =>true,
-              'newrelic'                               =>false,
-              'newrelic_license_key'                   =>'my_license_key',
-              'portbase'                               =>4800,
-              'service_status'                         =>'running',
-              'gcloud_etl_sync_enabled'                =>true,
-              'settings'                               =>{}
+              'servername'              => 'uitpas.example.com',
+              'serveraliases'           => [],
+              'database_password'       => 'mypassword',
+              'database_host'           => '127.0.0.1',
+              'deployment'              => true,
+              'initial_heap_size'       => nil,
+              'maximum_heap_size'       => '512m',
+              'jmx'                     => true,
+              'newrelic'                => false,
+              'newrelic_license_key'    => 'my_license_key',
+              'portbase'                => 4800,
+              'service_status'          => 'running',
+              'gcloud_etl_sync_enabled' => true,
+              'settings'                => {}
             ) }
 
             it { is_expected.to contain_group('glassfish') }
@@ -77,34 +77,34 @@ describe 'profiles::uitpas::api' do
             ) }
 
             it { is_expected.to contain_jdbcconnectionpool('mysql_uitpas_api_j2eePool').with(
-              'ensure'              => 'present',
-              'user'                => 'glassfish',
-              'passwordfile'        => '/home/glassfish/asadmin.pass',
-              'portbase'            => '4800',
-              'resourcetype'        => 'javax.sql.DataSource',
-              'dsclassname'         => 'com.mysql.cj.jdbc.MysqlDataSource',
-              'properties'          => {
-                                         'serverName'                   => '127.0.0.1',
-                                         'portNumber'                   => '3306',
-                                         'databaseName'                 => 'uitpas_api',
-                                         'User'                         => 'uitpas_api',
-                                         'Password'                     => 'mypassword',
-                                         'URL'                          => 'jdbc:mysql://127.0.0.1:3306/uitpas_api',
-                                         'driverClass'                  => 'com.mysql.cj.jdbc.Driver',
-                                         'characterEncoding'            => 'UTF-8',
-                                         'useUnicode'                   => true,
-                                         'useSSL'                       => false,
-                                         'connection-validation-method' => 'auto-commit',
-                                         'is-connection-validation-required' => true
-                                       }
-            )}
-            
-            it { is_expected.to contain_cron('gsutil_rsync_nginx_logs').with(
               'ensure'       => 'present',
-              'command'     => '/usr/bin/gsutil rsync -x ".*error.*|.*log$|uitpas-prod.uitid.*|^access.log.*" /var/log/apache2/ gs://publiq-etl-prod/etl/rev_proxy_logs/raw/',
-              'user'        => 'root',
-              'hour'        => '7',
-              'minute'      => '45'
+              'user'         => 'glassfish',
+              'passwordfile' => '/home/glassfish/asadmin.pass',
+              'portbase'     => '4800',
+              'resourcetype' => 'javax.sql.DataSource',
+              'dsclassname'  => 'com.mysql.cj.jdbc.MysqlDataSource',
+              'properties'   => {
+                                  'serverName'                        => '127.0.0.1',
+                                  'portNumber'                        => '3306',
+                                  'databaseName'                      => 'uitpas_api',
+                                  'User'                              => 'uitpas_api',
+                                  'Password'                          => 'mypassword',
+                                  'URL'                               => 'jdbc:mysql://127.0.0.1:3306/uitpas_api',
+                                  'driverClass'                       => 'com.mysql.cj.jdbc.Driver',
+                                  'characterEncoding'                 => 'UTF-8',
+                                  'useUnicode'                        => true,
+                                  'useSSL'                            => false,
+                                  'connection-validation-method'      => 'auto-commit',
+                                  'is-connection-validation-required' => true
+                                }
+            )}
+
+            it { is_expected.to contain_cron('gsutil_rsync_nginx_logs').with(
+              'ensure'  => 'present',
+              'command' => '/usr/bin/gsutil rsync -x ".*error.*|.*log$|uitpas-prod.uitid.*|^access.log.*" /var/log/apache2/ gs://publiq-etl-prod/etl/rev_proxy_logs/raw/',
+              'user'    => 'root',
+              'hour'    => '7',
+              'minute'  => '45'
             ) }
 
             it { is_expected.to contain_jdbcresource('jdbc/cultuurnet_uitpas').with(
@@ -158,7 +158,7 @@ describe 'profiles::uitpas::api' do
             it { is_expected.to contain_profiles__glassfish__domain('uitpas').with(
               'portbase'             => '4800',
               'initial_heap_size'    => nil,
-              'maximum_heap_size'    => nil,
+              'maximum_heap_size'    => '512m',
               'jmx'                  => true,
               'newrelic'             => false,
               'newrelic_license_key' => 'my_license_key',
@@ -220,23 +220,23 @@ describe 'profiles::uitpas::api' do
             it { is_expected.to contain_file('Domain uitpas mysql-connector-j').that_comes_before('Profiles::Glassfish::Domain[uitpas]') }
             it { is_expected.to contain_file('Domain uitpas mysql-connector-j').that_comes_before('Class[profiles::uitpas::api::deployment]') }
             it { is_expected.to contain_class('profiles::uitpas::api::deployment').that_requires('Class[profiles::glassfish]') }
+            it { is_expected.to contain_class('profiles::uitpas::api::deployment').that_requires('Profiles::Glassfish::Domain[uitpas]') }
             it { is_expected.to contain_class('profiles::uitpas::api::deployment').that_notifies('Service[uitpas]') }
             it { is_expected.to contain_class('profiles::uitpas::api::cron').that_requires('Class[profiles::uitpas::api::deployment]') }
           end
 
           context "with servername => myserver.example.com, serveraliases => foobar.example.com, database_password => secret, database_host => db.example.com, initial_heap_size => 1024m, maximum_heap_size => 1536m, jmx => false, newrelic => true, portbase => 14800 and settings => { 'foo' => 'bar', 'baz' => 'test' }" do
             let(:params) { {
-              'servername'            => 'myserver.example.com',
-              'serveraliases'         => 'foobar.example.com',
-              'database_password'     => 'secret',
-              'database_host'         => 'db.example.com',
-              'initial_heap_size'     => '1024m',
-
-              'maximum_heap_size'     => '1536m',
-              'jmx'                   => false,
-              'newrelic'              => true,
-              'portbase'              => 14800,
-              'settings'              => { 'foo' => 'bar', 'baz' => 'test' }
+              'servername'        => 'myserver.example.com',
+              'serveraliases'     => 'foobar.example.com',
+              'database_password' => 'secret',
+              'database_host'     => 'db.example.com',
+              'initial_heap_size' => '1024m',
+              'maximum_heap_size' => '1536m',
+              'jmx'               => false,
+              'newrelic'          => true,
+              'portbase'          => 14800,
+              'settings'          => { 'foo' => 'bar', 'baz' => 'test' }
             } }
 
 
@@ -268,19 +268,19 @@ describe 'profiles::uitpas::api' do
             ) }
 
             it { is_expected.to contain_systemproperty('foo').with(
-              'ensure'         => 'present',
-              'value'          => 'bar',
-              'portbase'       => '14800',
-              'user'           => 'glassfish',
-              'passwordfile'   => '/home/glassfish/asadmin.pass',
+              'ensure'       => 'present',
+              'value'        => 'bar',
+              'portbase'     => '14800',
+              'user'         => 'glassfish',
+              'passwordfile' => '/home/glassfish/asadmin.pass',
             ) }
 
             it { is_expected.to contain_systemproperty('baz').with(
-              'ensure'         => 'present',
-              'value'          => 'test',
-              'portbase'       => '14800',
-              'user'           => 'glassfish',
-              'passwordfile'   => '/home/glassfish/asadmin.pass',
+              'ensure'       => 'present',
+              'value'        => 'test',
+              'portbase'     => '14800',
+              'user'         => 'glassfish',
+              'passwordfile' => '/home/glassfish/asadmin.pass',
             ) }
 
             it { is_expected.to contain_profiles__glassfish__domain('uitpas').with(
@@ -423,7 +423,7 @@ describe 'profiles::uitpas::api' do
 
             it { is_expected.to contain_profiles__glassfish__domain('uitpas').with(
               'initial_heap_size'    => nil,
-              'maximum_heap_size'    => nil,
+              'maximum_heap_size'    => '512m',
               'jmx'                  => true,
               'newrelic'             => true,
               'newrelic_app_name'    => 'uitpas-api-testing',
