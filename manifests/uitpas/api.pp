@@ -4,6 +4,7 @@ class profiles::uitpas::api (
   Variant[String, Array[String]] $serveraliases           = [],
   String                         $database_host           = '127.0.0.1',
   Boolean                        $deployment              = true,
+  Boolean                        $cron_enabled            = true,
   Optional[String]               $initial_heap_size       = undef,
   Optional[String]               $maximum_heap_size       = '512m',
   Boolean                        $jmx                     = true,
@@ -144,8 +145,9 @@ class profiles::uitpas::api (
       }
 
       class { 'profiles::uitpas::api::cron':
-        portbase => $portbase,
-        require  => Class['profiles::uitpas::api::deployment'],
+          portbase     => $portbase,
+          cron_enabled => $cron_enabled,
+          require      => Class['profiles::uitpas::api::deployment'],
       }
 
       Class['profiles::glassfish'] -> Class['profiles::uitpas::api::deployment']
