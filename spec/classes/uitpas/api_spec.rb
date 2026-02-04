@@ -20,21 +20,21 @@ describe 'profiles::uitpas::api' do
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to contain_class('profiles::uitpas::api').with(
-              'servername'                             =>'uitpas.example.com',
-              'serveraliases'                          =>[],
-              'database_password'                      =>'mypassword',
-              'database_host'                          =>'127.0.0.1',
-              'cron_enabled'                           =>true,
-              'deployment'                             =>true,
-              'initial_heap_size'                      =>nil,
-              'maximum_heap_size'                      =>nil,
-              'jmx'                                    =>true,
-              'newrelic'                               =>false,
-              'newrelic_license_key'                   =>'my_license_key',
-              'portbase'                               =>4800,
-              'service_status'                         =>'running',
-              'gcloud_etl_sync_enabled'                =>true,
-              'settings'                               =>{}
+              'servername'              => 'uitpas.example.com',
+              'serveraliases'           => [],
+              'database_password'       => 'mypassword',
+              'database_host'           => '127.0.0.1',
+              'cron_enabled'            => true,
+              'deployment'              => true,
+              'initial_heap_size'       => nil,
+              'maximum_heap_size'       => '512m',
+              'jmx'                     => true,
+              'newrelic'                => false,
+              'newrelic_license_key'    => 'my_license_key',
+              'portbase'                => 4800,
+              'service_status'          => 'running',
+              'gcloud_etl_sync_enabled' => true,
+              'settings'                => {}
             ) }
 
             it { is_expected.to contain_group('glassfish') }
