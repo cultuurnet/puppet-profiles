@@ -1,13 +1,16 @@
 class profiles::uitpas::api::cron (
   Integer $portbase = 4800,
-  Boolean $cron_enabled = true
+  Boolean $cron_enabled = true,
+  String  $local_timezone = 'Europe/Brussels'
 ) inherits profiles {
   $http_port               = String($portbase + 80)
   $base_url                = "http://127.0.0.1:${http_port}"
   $cron_logdir             = '/var/log/uitpas-cron'
+
   $cron_default_attributes = {
     user    => 'glassfish',
     require => User['glassfish'],
+    environment => ['SHELL=/bin/bash', "TZ=${local_timezone}", 'MAILTO=infra+cron@publiq.be']
   }
 
   include profiles::logrotate
