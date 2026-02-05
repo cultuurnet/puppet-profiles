@@ -7,15 +7,16 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
 
       context 'with config_source => appconfig/uitdatabank/udb3-backend/config.php, admin_permissions_source => appconfig/uitdatabank/udb3-backend/config.allow_all.php, client_permissions_source => appconfig/uitdatabank/udb3-backend/config.client_permissions.php, movie_fetcher_config_source => appconfig/uitdatabank/udb3-backend/config.kinepolis.php, completeness_source => appconfig/uitdatabank/udb3-backend/config.completeness.php, externalid_mapping_organizer_source => appconfig/uitdatabank/udb3-backend/config.external_id_mapping_organizer.php, externalid_mapping_place_source => appconfig/uitdatabank/udb3-backend/config.external_id_mapping_place.php, pubkey_uitidv1_source => appconfig/uitdatabank/keys/public.pem and pubkey_keycloak_source => appconfig/uitdatabank/keys/pubkey-keycloak.pem' do
         let(:params) { {
-          'config_source'                       => 'appconfig/uitdatabank/udb3-backend/config.php',
-          'admin_permissions_source'            => 'appconfig/uitdatabank/udb3-backend/config.allow_all.php',
-          'client_permissions_source'           => 'appconfig/uitdatabank/udb3-backend/config.client_permissions.php',
-          'movie_fetcher_config_source'         => 'appconfig/uitdatabank/udb3-backend/config.kinepolis.php',
-          'completeness_source'                 => 'appconfig/uitdatabank/udb3-backend/config.completeness.php',
-          'externalid_mapping_organizer_source' => 'appconfig/uitdatabank/udb3-backend/config.external_id_mapping_organizer.php',
-          'externalid_mapping_place_source'     => 'appconfig/uitdatabank/udb3-backend/config.external_id_mapping_place.php',
-          'pubkey_uitidv1_source'               => 'appconfig/uitdatabank/keys/public.pem',
-          'pubkey_keycloak_source'              => 'appconfig/uitdatabank/keys/pubkey-keycloak.pem'
+          'config_source'                         => 'appconfig/uitdatabank/udb3-backend/config.php',
+          'admin_permissions_source'              => 'appconfig/uitdatabank/udb3-backend/config.allow_all.php',
+          'client_permissions_source'             => 'appconfig/uitdatabank/udb3-backend/config.client_permissions.php',
+          'api_keys_matched_to_client_ids_source' => 'appconfig/uitdatabank/udb3-backend/config.client_permissions.php',
+          'movie_fetcher_config_source'           => 'appconfig/uitdatabank/udb3-backend/config.kinepolis.php',
+          'completeness_source'                   => 'appconfig/uitdatabank/udb3-backend/config.completeness.php',
+          'externalid_mapping_organizer_source'   => 'appconfig/uitdatabank/udb3-backend/config.external_id_mapping_organizer.php',
+          'externalid_mapping_place_source'       => 'appconfig/uitdatabank/udb3-backend/config.external_id_mapping_place.php',
+          'pubkey_uitidv1_source'                 => 'appconfig/uitdatabank/keys/public.pem',
+          'pubkey_keycloak_source'                => 'appconfig/uitdatabank/keys/pubkey-keycloak.pem'
         } }
 
         context 'with hieradata' do

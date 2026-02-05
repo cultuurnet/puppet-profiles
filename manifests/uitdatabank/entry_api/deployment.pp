@@ -2,6 +2,7 @@ class profiles::uitdatabank::entry_api::deployment (
   String                    $config_source,
   String                    $admin_permissions_source,
   String                    $client_permissions_source,
+  String                    $api_keys_matched_to_client_ids_source,
   String                    $movie_fetcher_config_source,
   String                    $completeness_source,
   String                    $externalid_mapping_organizer_source,
@@ -63,6 +64,12 @@ class profiles::uitdatabank::entry_api::deployment (
   file { 'uitdatabank-entry-api-client-permissions':
     path    => "${basedir}/config.client_permissions.php",
     content => template($client_permissions_source),
+    *       => $file_default_attributes
+  }
+
+  file { 'uitdatabank-entry-api-api-keys-matched-to-client-ids':
+    path    => "${basedir}/config.api_keys_matched_to_client_ids.php",
+    content => template($api_keys_matched_to_client_ids_source),
     *       => $file_default_attributes
   }
 
