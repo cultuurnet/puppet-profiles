@@ -2,27 +2,26 @@ class profiles::uitdatabank::entry_api::deployment (
   String                    $config_source,
   String                    $admin_permissions_source,
   String                    $client_permissions_source,
-  String                    $api_keys_matched_to_client_ids_source,
   String                    $movie_fetcher_config_source,
   String                    $completeness_source,
   String                    $externalid_mapping_organizer_source,
   String                    $externalid_mapping_place_source,
   String                    $pubkey_uitidv1_source,
   String                    $pubkey_keycloak_source,
-  String                    $version                             = 'latest',
-  String                    $repository                          = 'uitdatabank-entry-api',
-  Enum['present', 'absent'] $amqp_listener_uitpas                = 'present',
-  Enum['present', 'absent'] $bulk_label_offer_worker             = 'present',
-  Enum['present', 'absent'] $mail_worker                         = 'present',
-  Integer[0]                $event_export_worker_count           = 1,
-  Optional[String]          $puppetdb_url                        = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+  String                    $version                               = 'latest',
+  String                    $repository                            = 'uitdatabank-entry-api',
+  Optional[String]          $api_keys_matched_to_client_ids_source = undef,
+  Enum['present', 'absent'] $amqp_listener_uitpas                  = 'present',
+  Enum['present', 'absent'] $bulk_label_offer_worker               = 'present',
+  Enum['present', 'absent'] $mail_worker                           = 'present',
+  Integer[0]                $event_export_worker_count             = 1,
+  Optional[String]          $puppetdb_url                          = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $basedir                 = '/var/www/udb3-backend'
   $secrets                 = lookup('vault:uitdatabank/udb3-backend')
   $mount_target_dns_name   = lookup('terraform::efs::mount_target_dns_name', Optional[String], 'first', undef)
   $file_default_attributes = {
-                               ensure  => 'file',
                                owner   => 'www-data',
                                group   => 'www-data',
                                require => [Group['www-data'], User['www-data'], Package['uitdatabank-entry-api']],
@@ -50,60 +49,76 @@ class profiles::uitdatabank::entry_api::deployment (
   }
 
   file { 'uitdatabank-entry-api-config':
+    ensure  => 'file',
     path    => "${basedir}/config.php",
     content => template($config_source),
     *       => $file_default_attributes
   }
 
   file { 'uitdatabank-entry-api-admin-permissions':
+    ensure  => 'file',
     path    => "${basedir}/config.allow_all.php",
     content => template($admin_permissions_source),
     *       => $file_default_attributes
   }
 
   file { 'uitdatabank-entry-api-client-permissions':
+    ensure  => 'file',
     path    => "${basedir}/config.client_permissions.php",
     content => template($client_permissions_source),
     *       => $file_default_attributes
   }
 
   file { 'uitdatabank-entry-api-api-keys-matched-to-client-ids':
+    ensure  => $api_keys_matched_to_client_ids_source ? {
+                 undef   => 'absent',
+                 default => 'file'
+               },
     path    => "${basedir}/config.api_keys_matched_to_client_ids.php",
-    content => template($api_keys_matched_to_client_ids_source),
+    content => $api_keys_matched_to_client_ids_source ? {
+                 undef   => undef,
+                 default => template($api_keys_matched_to_client_ids_source),
+               },
     *       => $file_default_attributes
   }
 
   file { 'uitdatabank-entry-api-movie-fetcher-config':
+    ensure  => 'file',
     path    => "${basedir}/config.kinepolis.php",
     content => template($movie_fetcher_config_source),
     *       => $file_default_attributes
   }
 
   file { 'uitdatabank-entry-api-completeness':
+    ensure  => 'file',
     path    => "${basedir}/config.completeness.php",
     content => template($completeness_source),
     *       => $file_default_attributes
   }
 
   file { 'uitdatabank-entry-api-externalid-mapping-organizer':
+    ensure  => 'file',
     path    => "${basedir}/config.external_id_mapping_organizer.php",
     content => template($externalid_mapping_organizer_source),
     *       => $file_default_attributes
   }
 
   file { 'uitdatabank-entry-api-externalid-mapping-place':
+    ensure  => 'file',
     path    => "${basedir}/config.external_id_mapping_place.php",
     content => template($externalid_mapping_place_source),
     *       => $file_default_attributes
   }
 
   file { 'uitdatabank-entry-api-pubkey-uitidv1':
+    ensure  => 'file',
     path    => "${basedir}/public.pem",
     content => template($pubkey_uitidv1_source),
     *       => $file_default_attributes
   }
 
   file { 'uitdatabank-entry-api-pubkey-keycloak':
+    ensure  => 'file',
     path    => "${basedir}/public-keycloak.pem",
     content => template($pubkey_keycloak_source),
     *       => $file_default_attributes

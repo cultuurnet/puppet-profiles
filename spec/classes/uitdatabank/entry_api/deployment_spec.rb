@@ -305,7 +305,7 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           'config_source'                                          => 'appconfig/uitdatabank/udb3-backend/my.config.php',
           'admin_permissions_source'                               => 'appconfig/uitdatabank/udb3-backend/config.my.allow_all.php',
           'client_permissions_source'                              => 'appconfig/uitdatabank/udb3-backend/config.my.client_permissions.php',
-          'api_keys_matched_to_client_ids_source_source'           => 'appconfig/uitdatabank/udb3-backend/config.my.api_keys_matched_to_client_ids_source.php',
+          'api_keys_matched_to_client_ids_source'                  => 'appconfig/uitdatabank/udb3-backend/config.my.api_keys_matched_to_client_ids.php',
           'movie_fetcher_config_source'                            => 'appconfig/uitdatabank/udb3-backend/config.my.kinepolis.php',
           'completeness_source'                                    => 'appconfig/uitdatabank/udb3-backend/config.my.completeness.php',
           'externalid_mapping_organizer_source'                    => 'appconfig/uitdatabank/udb3-backend/config.my.external_id_mapping_organizer.php',
@@ -365,7 +365,6 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'admin_permissions_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'client_permissions_source'/) }
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'api_keys_matched_to_client_ids_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'movie_fetcher_config_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'completeness_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'externalid_mapping_place_source'/) }
