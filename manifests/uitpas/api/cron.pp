@@ -10,7 +10,7 @@ class profiles::uitpas::api::cron (
   $cron_default_attributes = {
     user    => 'glassfish',
     require => User['glassfish'],
-    environment => ['SHELL=/bin/bash', "TZ=${local_timezone}", 'MAILTO=infra+cron@publiq.be']
+    environment => ['SHELL=/bin/bash', "TZ=${local_timezone}"]
   }
 
   include profiles::logrotate
