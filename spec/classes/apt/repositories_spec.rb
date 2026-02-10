@@ -76,7 +76,6 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'uitdatabank-geojson-data', { :location => 'https://apt.publiq.be/uitdatabank-geojson-data-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uitdatabank-frontend', { :location => 'https://apt.publiq.be/uitdatabank-frontend-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uitdatabank-jwt-provider', { :location => 'https://apt.publiq.be/uitdatabank-jwt-provider-testing', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'uitdatabank-jwt-provider-uitidv1', { :location => 'https://apt.publiq.be/uitdatabank-jwt-provider-uitidv1-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uitdatabank-entry-api', { :location => 'https://apt.publiq.be/uitdatabank-entry-api-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uitdatabank-websocket-server', { :location => 'https://apt.publiq.be/uitdatabank-websocket-server-testing', :repos => 'main', :release => 'focal' }
 

@@ -300,12 +300,6 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
-  @apt::source { 'uitdatabank-jwt-provider-uitidv1':
-    location => "https://apt.publiq.be/uitdatabank-jwt-provider-uitidv1-${environment}",
-    release  => $codename,
-    repos    => 'main'
-  }
-
   @apt::source { 'uitdatabank-entry-api':
     location => "https://apt.publiq.be/uitdatabank-entry-api-${environment}",
     release  => $codename,
