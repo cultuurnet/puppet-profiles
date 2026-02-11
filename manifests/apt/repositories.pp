@@ -360,6 +360,12 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
+  @apt::source { 'museumpas-website-2026':
+    location => "https://apt.publiq.be/museumpas-website-2026-${environment}",
+    release  => $codename,
+    repos    => 'main',
+  }
+
   @apt::source { 'museumpas-partner-website':
     location => "https://apt.publiq.be/museumpas-partner-website-${environment}",
     release  => $codename,
