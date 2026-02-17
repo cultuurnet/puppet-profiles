@@ -10,6 +10,7 @@ class profiles::atlassian::confluence (
   Optional[String]           $volume_size       = undef,
   Boolean                    $manage_homedir    = false,
   Array                      $serveraliases     = [],
+  Enum[17, 21]               $java_version      = 17,
   String                     $initial_heap_size = '1024m',
   String                     $maximum_heap_size = '1024m'
 ) inherits ::profiles {
@@ -81,18 +82,18 @@ class profiles::atlassian::confluence (
     manage_homedir          => $manage_homedir,
     tomcat_port             => 8090,
     manage_user             => false,
-    javahome                => '/usr/lib/jvm/java-17-openjdk-amd64',
-    jvm_type                => 'openjdk-17',
+    javahome                => "/usr/lib/jvm/java-${java_version}-openjdk-amd64",
+    jvm_type                => "openjdk-${java_version}",
     mysql_connector         => false,
     jvm_xms                 => $initial_heap_size,
     jvm_xmx                 => $maximum_heap_size,
     java_opts               => $java_opts,
     manage_service          => true,
     tomcat_proxy            => {
-                              proxyName  => $servername,
-                              proxyPort  => '443',
-                              scheme     => 'https'
-                            }
+                                 proxyName => $servername,
+                                 proxyPort => '443',
+                                 scheme    => 'https'
+                               }
   }
 
   if $vault_enabled {
@@ -141,12 +142,12 @@ class profiles::atlassian::confluence (
     ensure  => 'link',
     path    => "/opt/confluence/atlassian-confluence-${version}/confluence/WEB-INF/lib/mysql-connector-j.jar",
     source  => '/usr/share/java/mysql-connector-j.jar',
-    require => [Package['mysql-connector-j'],Class['confluence']]
+    require => [Package['mysql-connector-j'], Class['confluence']]
   }
 
   cron { 'remove-old-confluence-backups':
     command     => "/usr/bin/find /home/confluence/backups -mtime +1 -name '*.zip' -delete",
-    environment => [ 'MAILTO=infra+cron@publiq.be' ],
+    environment => ['MAILTO=infra+cron@publiq.be'],
     user        => 'root',
     hour        => '3',
     minute      => '40'
