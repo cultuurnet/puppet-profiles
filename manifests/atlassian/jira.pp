@@ -11,6 +11,7 @@ class profiles::atlassian::jira (
   Optional[String]           $volume_size       = undef,
   Boolean                    $manage_homedir    = false,
   Array                      $serveraliases     = [],
+  Enum[17, 21]               $java_version      = 17,
   String                     $initial_heap_size = '1024m',
   String                     $maximum_heap_size = '1024m'
 ) inherits ::profiles {
@@ -21,17 +22,17 @@ class profiles::atlassian::jira (
   $dburl         = "jdbc:mysql://${database_host}:3306/${$database_name}?${dburl_params}"
 
   if $database_host == '127.0.0.1' {
-    $database_host_remote    = false
+    $database_host_remote = false
   } else {
-    $database_host_remote    = true
+    $database_host_remote = true
   }
 
   include ::profiles::java
   include ::profiles::apache
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
-    destination         => 'http://127.0.0.1:8080/',
-    aliases             => $serveraliases
+    destination => 'http://127.0.0.1:8080/',
+    aliases     => $serveraliases
   }
 
   realize Group['jira']
@@ -106,8 +107,8 @@ class profiles::atlassian::jira (
     homedir                => '/home/jira',
     tomcat_port            => 8080,
     manage_user            => false,
-    javahome               => '/usr/lib/jvm/java-17-openjdk-amd64',
-    jvm_type               => 'openjdk-17',
+    javahome               => "/usr/lib/jvm/java-${java_version}-openjdk-amd64",
+    jvm_type               => "openjdk-${java_version}",
     db                     => 'mysql',
     dbport                 => '3306',
     dbdriver               => 'com.mysql.cj.jdbc.Driver',
@@ -129,9 +130,9 @@ class profiles::atlassian::jira (
                                 'stopped' => false
                               },
     proxy                  => {
-                                proxyName  => $servername,
-                                proxyPort  => '443',
-                                scheme     => 'https'
+                                proxyName => $servername,
+                                proxyPort => '443',
+                                scheme    => 'https'
                               }
   }
 
@@ -139,12 +140,12 @@ class profiles::atlassian::jira (
     ensure  => 'link',
     path    => '/opt/jira/atlassian-jira-software-running/lib/mysql-connector-j.jar',
     source  => '/usr/share/java/mysql-connector-j.jar',
-    require => [Package['mysql-connector-j'],Class['jira']]
+    require => [Package['mysql-connector-j'], Class['jira']]
   }
 
   cron { 'remove-old-jira-exports':
     command     => "/usr/bin/find /home/jira/export -mtime +1 -name '*.zip' -delete",
-    environment => [ 'MAILTO=infra+cron@publiq.be' ],
+    environment => ['MAILTO=infra+cron@publiq.be'],
     user        => 'root',
     hour        => '3',
     minute      => '30'
