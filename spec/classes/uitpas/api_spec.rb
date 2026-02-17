@@ -159,6 +159,7 @@ describe 'profiles::uitpas::api' do
             ) }
             it { is_expected.to contain_log_level('Domain uitpas default log level').with(
               'ensure'       => 'present',
+              'name'         => '',
               'value'        => 'WARNING',
               'user'         => 'glassfish',
               'passwordfile' => '/home/glassfish/asadmin.pass',
@@ -166,12 +167,12 @@ describe 'profiles::uitpas::api' do
             ) }
             it { is_expected.to contain_log_level('Domain uitpas HttpUrlConnector log level').with(
               'ensure'       => 'present',
+              'name'         => 'org.glassfish.jersey.client.internal.HttpUrlConnector',
               'value'        => 'SEVERE',
               'user'         => 'glassfish',
               'passwordfile' => '/home/glassfish/asadmin.pass',
               'portbase'     => '4800'
             ) }
-
             it { is_expected.to contain_profiles__glassfish__domain('uitpas').with(
               'portbase'             => '4800',
               'initial_heap_size'    => nil,
