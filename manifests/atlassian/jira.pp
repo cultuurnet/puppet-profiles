@@ -11,7 +11,7 @@ class profiles::atlassian::jira (
   Optional[String]           $volume_size       = undef,
   Boolean                    $manage_homedir    = false,
   Array                      $serveraliases     = [],
-  Enum[17, 21]               $java_version      = 17,
+  Integer[17, 21]            $java_version      = 17,
   String                     $initial_heap_size = '1024m',
   String                     $maximum_heap_size = '1024m'
 ) inherits ::profiles {
