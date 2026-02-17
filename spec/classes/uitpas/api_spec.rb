@@ -20,21 +20,23 @@ describe 'profiles::uitpas::api' do
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to contain_class('profiles::uitpas::api').with(
-              'servername'              => 'uitpas.example.com',
-              'serveraliases'           => [],
-              'database_password'       => 'mypassword',
-              'database_host'           => '127.0.0.1',
-              'cron_enabled'            => true,
-              'deployment'              => true,
-              'initial_heap_size'       => nil,
-              'maximum_heap_size'       => '512m',
-              'jmx'                     => true,
-              'newrelic'                => false,
-              'newrelic_license_key'    => 'my_license_key',
-              'portbase'                => 4800,
-              'service_status'          => 'running',
-              'gcloud_etl_sync_enabled' => true,
-              'settings'                => {}
+              'servername'                   => 'uitpas.example.com',
+              'serveraliases'                => [],
+              'database_password'            => 'mypassword',
+              'database_host'                => '127.0.0.1',
+              'cron_enabled'                 => true,
+              'deployment'                   => true,
+              'initial_heap_size'            => nil,
+              'maximum_heap_size'            => '512m',
+              'jmx'                          => true,
+              'newrelic'                     => false,
+              'newrelic_license_key'         => 'my_license_key',
+              'portbase'                     => 4800,
+              'service_status'               => 'running',
+              'gcloud_etl_sync_enabled'      => true,
+              'default_log_level'            => 'WARNING',
+              'http_url_connector_log_level' => 'SEVERE',
+              'settings'                     => {}
             ) }
 
             it { is_expected.to contain_group('glassfish') }
@@ -155,7 +157,22 @@ describe 'profiles::uitpas::api' do
               'passwordfile' => '/home/glassfish/asadmin.pass',
               'portbase'     => '4800'
             ) }
-
+            it { is_expected.to contain_log_level('Domain uitpas default log level').with(
+              'ensure'       => 'present',
+              'name'         => '',
+              'value'        => 'WARNING',
+              'user'         => 'glassfish',
+              'passwordfile' => '/home/glassfish/asadmin.pass',
+              'portbase'     => '4800'
+            ) }
+            it { is_expected.to contain_log_level('Domain uitpas HttpUrlConnector log level').with(
+              'ensure'       => 'present',
+              'name'         => 'org.glassfish.jersey.client.internal.HttpUrlConnector',
+              'value'        => 'SEVERE',
+              'user'         => 'glassfish',
+              'passwordfile' => '/home/glassfish/asadmin.pass',
+              'portbase'     => '4800'
+            ) }
             it { is_expected.to contain_profiles__glassfish__domain('uitpas').with(
               'portbase'             => '4800',
               'initial_heap_size'    => nil,

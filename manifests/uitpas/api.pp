@@ -1,23 +1,26 @@
 class profiles::uitpas::api (
   String                         $servername,
   String                         $database_password,
-  Variant[String, Array[String]] $serveraliases           = [],
-  String                         $database_host           = '127.0.0.1',
-  Boolean                        $deployment              = true,
-  Boolean                        $cron_enabled            = true,
-  Optional[String]               $initial_heap_size       = undef,
-  Optional[String]               $maximum_heap_size       = '512m',
-  Boolean                        $jmx                     = true,
-  Boolean                        $newrelic                = false,
-  Optional[String]               $newrelic_license_key    = lookup('data::newrelic::license_key', Optional[String], 'first', undef),
-  Integer                        $portbase                = 4800,
-  Enum['running', 'stopped']     $service_status          = 'running',
-  Boolean                        $gcloud_etl_sync_enabled = true,
-  Hash                           $settings                = {}
+  Variant[String, Array[String]] $serveraliases                                                        = [],
+  String                         $database_host                                                        = '127.0.0.1',
+  Boolean                        $deployment                                                           = true,
+  Boolean                        $cron_enabled                                                         = true,
+  Optional[String]               $initial_heap_size                                                    = undef,
+  Optional[String]               $maximum_heap_size                                                    = '512m',
+  Boolean                        $jmx                                                                  = true,
+  Boolean                        $newrelic                                                             = false,
+  Optional[String]               $newrelic_license_key                                                 = lookup('data::newrelic::license_key', Optional[String], 'first', undef),
+  Integer                        $portbase                                                             = 4800,
+  Enum['running', 'stopped']     $service_status                                                       = 'running',
+  Boolean                        $gcloud_etl_sync_enabled                                              = true,
+  Enum['SEVERE', 'WARNING', 'INFO', 'CONFIG', 'FINE', 'FINER', 'FINEST'] $default_log_level            = 'WARNING',
+  Enum['SEVERE', 'WARNING', 'INFO', 'CONFIG', 'FINE', 'FINER', 'FINEST'] $http_url_connector_log_level = 'SEVERE',
+  Hash                           $settings                                                             = {}
 ) inherits profiles {
   $database_name              = 'uitpas_api'
   $database_user              = 'uitpas_api'
   $glassfish_domain_http_port = $portbase + 80
+
   $default_attributes         = {
     user         => 'glassfish',
     passwordfile => '/home/glassfish/asadmin.pass',
@@ -160,6 +163,7 @@ class profiles::uitpas::api (
     }
   }
 
+
   set { 'server.network-config.protocols.protocol.http-listener-1.http.scheme-mapping':
     ensure  => 'present',
     value   => 'X-Forwarded-Proto',
@@ -210,6 +214,23 @@ class profiles::uitpas::api (
     }
   }
 
+  log_level { 'Domain uitpas default log level':
+    ensure  => 'present',
+    name    => '',
+    value   => $default_log_level,
+    require => Profiles::Glassfish::Domain['uitpas'],
+    notify  => Service['uitpas'],
+    *       => $default_attributes,
+  }
+
+  log_level { 'Domain uitpas HttpUrlConnector log level':
+    ensure  => 'present',
+    name    => 'org.glassfish.jersey.client.internal.HttpUrlConnector',
+    value   => $http_url_connector_log_level,
+    require => Profiles::Glassfish::Domain['uitpas'],
+    notify  => Service['uitpas'],
+    *       => $default_attributes,
+  }
   profiles::glassfish::domain::service_alias { 'uitpas':
     require => Profiles::Glassfish::Domain['uitpas'],
   }
