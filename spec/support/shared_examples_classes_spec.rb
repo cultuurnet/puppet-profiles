@@ -1,6 +1,6 @@
 RSpec.shared_examples "operating system support" do
   context 'on an unsupported operating system' do
-    describe 'without any extra parameters on RedHat' do
+    context 'without any extra parameters on RedHat' do
       let(:facts) { {
         'os' => { 'name' => 'RedHat' }
       } }
@@ -10,12 +10,32 @@ RSpec.shared_examples "operating system support" do
   end
 
   context 'on an unsupported operating system release' do
-    describe 'without any extra parameters on Ubuntu 12.04' do
+    context 'without any extra parameters on Ubuntu 12.04' do
       let(:facts) { {
-        'os' => { 'name' => 'Ubuntu', 'release' => { 'major' => '12.04' } }
+        'os' => {
+                  'family' => 'Debian',
+                  'name' => 'Ubuntu',
+                  'release' => { 'major' => '12.04' }
+                }
       } }
 
       it { expect { catalogue }.to raise_error(Puppet::Error, /Ubuntu 12.04 not supported/) }
+    end
+  end
+
+  context 'on a supported operating system release' do
+    context 'without any extra parameters on Ubuntu 24.04' do
+      let(:facts) { {
+        'os' => {
+                  'family'       => 'Debian',
+                  'name'         => 'Ubuntu',
+                  'release'      => { 'major' => '24.04', 'full' => '24.04' },
+                  'distro'       => { 'codename' => 'noble' },
+                  'architecture' => 'amd64'
+                }
+      } }
+
+      it { is_expected.to compile.with_all_deps }
     end
   end
 end
