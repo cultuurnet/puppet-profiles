@@ -34,7 +34,7 @@ describe 'profiles::uitpas::api' do
               'portbase'                     => 4800,
               'service_status'               => 'running',
               'gcloud_etl_sync_enabled'      => true,
-              'default_log_level'            => 'WARNING',
+              'be_uitpas_log_level'          => 'INFO',
               'http_url_connector_log_level' => 'SEVERE',
               'settings'                     => {}
             ) }
@@ -157,10 +157,10 @@ describe 'profiles::uitpas::api' do
               'passwordfile' => '/home/glassfish/asadmin.pass',
               'portbase'     => '4800'
             ) }
-            it { is_expected.to contain_log_level('Domain uitpas default log level').with(
+            it { is_expected.to contain_log_level('Domain uitpas be.uitpas log level').with(
               'ensure'       => 'present',
-              'name'         => '',
-              'value'        => 'WARNING',
+              'name'         => 'be.uitpas',
+              'value'        => 'INFO',
               'user'         => 'glassfish',
               'passwordfile' => '/home/glassfish/asadmin.pass',
               'portbase'     => '4800'

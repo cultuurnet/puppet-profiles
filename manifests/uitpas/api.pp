@@ -13,7 +13,7 @@ class profiles::uitpas::api (
   Integer                        $portbase                                                             = 4800,
   Enum['running', 'stopped']     $service_status                                                       = 'running',
   Boolean                        $gcloud_etl_sync_enabled                                              = true,
-  Enum['SEVERE', 'WARNING', 'INFO', 'CONFIG', 'FINE', 'FINER', 'FINEST'] $default_log_level            = 'WARNING',
+  Enum['SEVERE', 'WARNING', 'INFO', 'CONFIG', 'FINE', 'FINER', 'FINEST'] $be_uitpas_log_level          = 'INFO',
   Enum['SEVERE', 'WARNING', 'INFO', 'CONFIG', 'FINE', 'FINER', 'FINEST'] $http_url_connector_log_level = 'SEVERE',
   Hash                           $settings                                                             = {}
 ) inherits profiles {
@@ -214,10 +214,10 @@ class profiles::uitpas::api (
     }
   }
 
-  log_level { 'Domain uitpas default log level':
+  log_level { 'Domain uitpas be.uitpas log level':
     ensure  => 'present',
-    name    => '',
-    value   => $default_log_level,
+    name    => 'be.uitpas',
+    value   => $be_uitpas_log_level,
     require => Profiles::Glassfish::Domain['uitpas'],
     notify  => Service['uitpas'],
     *       => $default_attributes,
