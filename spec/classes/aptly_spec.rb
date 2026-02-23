@@ -7,7 +7,7 @@ describe 'profiles::aptly' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with api_hostname => aptly.example.com and certificate => wildcard.example.com and gpg_passphrase => secret" do
+      context "with api_hostname => aptly.example.com and gpg_passphrase => secret" do
         let(:params) { {
           'api_hostname' => 'aptly.example.com',
           'gpg_passphrase' => 'secret'
@@ -101,10 +101,10 @@ describe 'profiles::aptly' do
         it { is_expected.to contain_cron('aptly db cleanup daily').that_requires('User[aptly]') }
       end
 
-      context "with api_hostname => foobar.example.com and certificate => foobar.example.com and gpg_passphrase => secret" do
+      context "with api_hostname => foobar.example.com, certificate => foobar.example.com and gpg_passphrase => secret" do
         let(:params) { {
-          'api_hostname' => 'foobar.example.com',
-          'certificate'  => 'foobar.example.com',
+          'api_hostname'   => 'foobar.example.com',
+          'certificate'    => 'foobar.example.com',
           'gpg_passphrase' => 'secret'
         } }
 

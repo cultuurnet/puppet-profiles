@@ -4,7 +4,7 @@ class profiles::aptly (
   Hash                           $signing_keys      = {},
   Hash                           $trusted_keys      = {},
   String                         $version           = 'latest',
-  String                         $gpg_passphrase    = undef,
+  Optional[String]               $gpg_passphrase    = undef,
   Stdlib::IP::Address::V4        $api_bind          = '127.0.0.1',
   Stdlib::Port::Unprivileged     $api_port          = 8081,
   Hash                           $publish_endpoints = {},
