@@ -56,11 +56,6 @@ class profiles::graphite (
      'retentions' => '10s:7d,600s:30d',
    },
    {
-     'name'       => 'icinga',
-     'pattern'    => '^icinga\.',
-     'retentions' => '60s:7d,600s:30d',
-   },
-   {
      'name'       => 'office',
      'pattern'    => '^office\.',
      'retentions' => '300s:180d,86400s:365d',
