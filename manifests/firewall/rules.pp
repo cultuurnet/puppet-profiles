@@ -6,12 +6,6 @@ class profiles::firewall::rules inherits ::profiles {
     action => 'accept'
   }
 
-  @firewall { '200 accept NRPE traffic':
-    proto  => 'tcp',
-    dport  => '5666',
-    action => 'accept'
-  }
-
   @firewall { '300 accept HTTP traffic':
     proto  => 'tcp',
     dport  => '80',
