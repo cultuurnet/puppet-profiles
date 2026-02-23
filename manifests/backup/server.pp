@@ -17,7 +17,7 @@ class profiles::backup::server (
 
   @@sshkey { 'backup':
     name => $hostname,
-    key  => $::sshrsakey,
+    key  => $facts['ssh']['rsa']['key'],
     type => 'rsa'
   }
 
