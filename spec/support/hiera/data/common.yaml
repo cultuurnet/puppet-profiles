@@ -15,7 +15,7 @@ profiles::jenkins::controller::admin_password: 'bar'
 profiles::jenkins::controller::url: 'https://foobar.com/'
 
 profiles::uit::frontend::deployment::config_source: 'appconfig/uit/frontend/env'
-profiles::uit::api::deployment::config_source: 'profiles/bar_template'
+profiles::uit::api::deployment::config_source: 'appconfig/uit/api/env'
 profiles::uit::cms::deployment::config_source: 'appconfig/uit/cms/env'
 profiles::uit::cms::deployment::drush_config_source: 'appconfig/uit/cms/env'
 profiles::uit::notifications::deployment::config_source: 'appconfig/uit/notifications/env'
