@@ -154,9 +154,6 @@ fixtures:
     aptly:
       repo: 'https://github.com/cultuurnet/puppet-aptly.git'
       ref: '2d5031b'
-    icinga2:
-      repo: 'https://github.com/cultuurnet/puppet-icinga2.git'
-      ref: '6815f51'
     mysql:
       repo: 'https://github.com/cultuurnet/puppetlabs-mysql.git'
       ref: '844aa07'
