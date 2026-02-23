@@ -130,9 +130,6 @@ fixtures:
     glassfish:
       repo: 'https://github.com/cultuurnet/fatmcgav-glassfish.git'
       ref: 'c9ec792'
-    resqueweb:
-      repo: 'https://github.com/cultuurnet/puppet-resqueweb.git'
-      ref: 'a64a185'
     aptly:
       repo: 'https://github.com/cultuurnet/puppet-aptly.git'
       ref: '2d5031b'
