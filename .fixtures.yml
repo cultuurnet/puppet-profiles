@@ -145,18 +145,9 @@ fixtures:
     glassfish:
       repo: 'https://github.com/cultuurnet/fatmcgav-glassfish.git'
       ref: 'c9ec792'
-    mailcatcher:
-      repo: 'https://github.com/cultuurnet/puppet-mailcatcher.git'
-      ref: '9752479'
-    resqueweb:
-      repo: 'https://github.com/cultuurnet/puppet-resqueweb.git'
-      ref: 'a64a185'
     aptly:
       repo: 'https://github.com/cultuurnet/puppet-aptly.git'
       ref: '2d5031b'
-    icinga2:
-      repo: 'https://github.com/cultuurnet/puppet-icinga2.git'
-      ref: '6815f51'
     mysql:
       repo: 'https://github.com/cultuurnet/puppetlabs-mysql.git'
       ref: '844aa07'

@@ -25,3 +25,8 @@ task :test => [
   :spec,
   :lint
 ]
+
+desc "Default task prints the available targets."
+task :default do
+  system("rake -T")
+end

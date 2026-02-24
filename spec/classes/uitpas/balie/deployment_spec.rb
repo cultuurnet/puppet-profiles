@@ -81,9 +81,9 @@ describe 'profiles::uitpas::balie::deployment' do
         end
       end
 
-      context "with config_source => profiles/bar_template, maximum_heap_size => 1024, service_address => 0.0.0.0, service_port => 3456, version => 1.2.3, repository => uit-frontend-exotic, service_status => stopped and puppetdb_url => http://example.com:8000" do
+      context "with config_source => appconfig/uitpas/balie/myenv, maximum_heap_size => 1024, service_address => 0.0.0.0, service_port => 3456, version => 1.2.3, repository => uit-frontend-exotic, service_status => stopped and puppetdb_url => http://example.com:8000" do
         let(:params) { {
-          'config_source'     => 'profiles/bar_template',
+          'config_source'     => 'appconfig/uitpas/balie/myenv',
           'version'           => '1.2.3',
           'maximum_heap_size' => 1024,
           'repository'        => 'uitpas-balie-exotic',
@@ -92,31 +92,34 @@ describe 'profiles::uitpas::balie::deployment' do
           'service_port'      => 3456,
           'puppetdb_url'      => 'http://example.com:8000'
         } }
-        let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-        context "with repository uitpas-balie-exotic defined" do
-          let(:pre_condition) { '@apt::source { "uitpas-balie-exotic": location => "http://localhost", release => "focal", repos => "main" }' }
+        context "with hieradata" do
+          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-          it { is_expected.to contain_apt__source('uitpas-balie-exotic') }
+          context "with repository uitpas-balie-exotic defined" do
+            let(:pre_condition) { '@apt::source { "uitpas-balie-exotic": location => "http://localhost", release => "focal", repos => "main" }' }
 
-          it { is_expected.to contain_file('uitpas-balie-config').with(
-            'path' => '/var/www/uitpas-balie/.env'
-          ) }
+            it { is_expected.to contain_apt__source('uitpas-balie-exotic') }
 
-          it { is_expected.to contain_file('uitpas-balie-service-defaults').with_content(/^NEXT_HOST=0.0.0.0$/) }
-          it { is_expected.to contain_file('uitpas-balie-service-defaults').with_content(/^NEXT_PORT=3456$/) }
-          it { is_expected.to contain_file('uitpas-balie-service-defaults').with_content(/^NODE_OPTIONS=--max_old_space_size=1024$/) }
+            it { is_expected.to contain_file('uitpas-balie-config').with(
+              'path' => '/var/www/uitpas-balie/.env'
+            ) }
 
-          it { is_expected.to contain_package('uitpas-balie').with( 'ensure' => '1.2.3') }
+            it { is_expected.to contain_file('uitpas-balie-service-defaults').with_content(/^NEXT_HOST=0.0.0.0$/) }
+            it { is_expected.to contain_file('uitpas-balie-service-defaults').with_content(/^NEXT_PORT=3456$/) }
+            it { is_expected.to contain_file('uitpas-balie-service-defaults').with_content(/^NODE_OPTIONS=--max_old_space_size=1024$/) }
 
-          it { is_expected.to contain_service('uitpas-balie').with(
-            'ensure'    => 'stopped',
-            'enable'    => false
-          ) }
+            it { is_expected.to contain_package('uitpas-balie').with( 'ensure' => '1.2.3') }
 
-          it { is_expected.to contain_profiles__deployment__versions('profiles::uitpas::balie::deployment').with(
-            'puppetdb_url' => 'http://example.com:8000'
-          ) }
+            it { is_expected.to contain_service('uitpas-balie').with(
+              'ensure'    => 'stopped',
+              'enable'    => false
+            ) }
+
+            it { is_expected.to contain_profiles__deployment__versions('profiles::uitpas::balie::deployment').with(
+              'puppetdb_url' => 'http://example.com:8000'
+            ) }
+          end
         end
       end
 
