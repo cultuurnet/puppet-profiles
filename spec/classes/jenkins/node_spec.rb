@@ -25,6 +25,7 @@ describe 'profiles::jenkins::node' do
               'password'       => 'doe',
               'version'        => 'latest',
               'controller_url' => 'https://jenkins.example.com/',
+              'bootstrap'      => false,
               'lvm'            => false,
               'volume_group'   => nil,
               'volume_size'    => nil,
@@ -35,7 +36,8 @@ describe 'profiles::jenkins::node' do
             it { is_expected.to contain_apt__source('publiq-jenkins') }
             it { is_expected.to contain_apt__source('publiq-jenkins') }
             it { is_expected.to contain_class('profiles::java') }
-            it { is_expected.to contain_class('profiles::jenkins::buildtools') }
+            it { is_expected.to contain_class('profiles::jenkins::buildtools::bootstrap') }
+            it { is_expected.to contain_class('profiles::jenkins::buildtools::homebuilt') }
             it { is_expected.to contain_class('profiles::jenkins::buildtools::playwright') }
             it { is_expected.to contain_group('jenkins') }
             it { is_expected.to contain_user('jenkins') }
@@ -123,11 +125,12 @@ describe 'profiles::jenkins::node' do
             it { is_expected.to contain_service('jenkins-swarm-client').that_subscribes_to('Class[profiles::java]') }
           end
 
-          context "with user => jane, password => roe, controller_url => 'http://localhost:5555/', lvm => true, volume_group => myvg, volume_size => 7G and executors => 4" do
+          context "with user => jane, password => roe, controller_url => 'http://localhost:5555/', bootstrap => true, lvm => true, volume_group => myvg, volume_size => 7G and executors => 4" do
             let(:params) { {
               'user'           => 'jane',
               'password'       => 'roe',
               'controller_url' => 'http://localhost:5555/',
+              'bootstrap'      => true,
               'lvm'            => true,
               'volume_group'   => 'myvg',
               'volume_size'    => '7G',
@@ -136,6 +139,10 @@ describe 'profiles::jenkins::node' do
 
             context "with volume_group myvg present" do
               let(:pre_condition) { 'volume_group { "myvg": ensure => "present" }' }
+
+              it { is_expected.to contain_class('profiles::jenkins::buildtools::bootstrap') }
+              it { is_expected.not_to contain_class('profiles::jenkins::buildtools::homebuilt') }
+              it { is_expected.not_to contain_class('profiles::jenkins::buildtools::playwright') }
 
               it { is_expected.to contain_profiles__lvm__mount('jenkinsdata').with(
                 'volume_group' => 'myvg',

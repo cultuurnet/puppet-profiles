@@ -3,6 +3,7 @@ class profiles::jenkins::node (
   String                         $user           = 'admin',
   String                         $password       = lookup('profiles::jenkins::controller::admin_password', String, 'first', ''),
   String                         $controller_url = lookup('profiles::jenkins::controller::url', String, 'first', 'http://localhost:8080/'),
+  Boolean                        $bootstrap      = false,
   Boolean                        $lvm            = false,
   Optional[String]               $volume_group   = undef,
   Optional[String]               $volume_size    = undef,
@@ -11,8 +12,12 @@ class profiles::jenkins::node (
 ) inherits ::profiles {
 
   include ::profiles::java
-  include ::profiles::jenkins::buildtools
-  include ::profiles::jenkins::buildtools::playwright
+  include ::profiles::jenkins::buildtools::bootstrap
+
+  unless $bootstrap {
+    include ::profiles::jenkins::buildtools::homebuilt
+    include ::profiles::jenkins::buildtools::playwright
+  }
 
   $puppetserver_url = lookup('data::puppet::puppetserver::url')
   $data_dir         = '/var/lib/jenkins-swarm-client'
