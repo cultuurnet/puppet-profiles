@@ -101,19 +101,17 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'uit-frontend', { :location => 'https://apt.publiq.be/uit-frontend-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uit-api', { :location => 'https://apt.publiq.be/uit-api-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uit-cms', { :location => 'https://apt.publiq.be/uit-cms-testing', :repos => 'main', :release => 'focal' }
-
           end
-
+        when '24.04'
           context 'in the acceptance environment' do
             let(:environment) { 'acceptance' }
 
-            # How do we test a different environment?
-            it { is_expected.to contain_apt__source('focal').with(
-              'location' => 'https://apt-mirror.publiq.be/focal-amd64-acceptance'
-            ) }
+            include_examples 'apt repositories', 'noble', { :location => 'https://apt-mirror.publiq.be/noble-amd64-testing', :repos => 'main', :release => 'noble' }
+            include_examples 'apt repositories', 'noble-updates', { :location => 'https://apt-mirror.publiq.be/noble-updates-amd64-testing', :repos => 'main', :release => 'noble-updates' }
+            include_examples 'apt repositories', 'noble-security', { :location => 'https://apt-mirror.publiq.be/noble-security-amd64-testing', :repos => 'main', :release => 'noble-security' }
+            include_examples 'apt repositories', 'noble-backports', { :location => 'https://apt-mirror.publiq.be/noble-backports-amd64-testing', :repos => 'main', :release => 'noble-backports' }
 
-            include_examples 'apt repositories', 'focal', { :location => 'https://apt-mirror.publiq.be/focal-amd64-acceptance', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'php', { :location => 'https://apt-mirror.publiq.be/php-focal-acceptance', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'php', { :location => 'https://apt-mirror.publiq.be/php-noble-acceptance', :repos => 'main', :release => 'noble' }
           end
         end
       end

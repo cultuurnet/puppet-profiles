@@ -17,32 +17,28 @@ class profiles::apt::repositories {
   }
 
   # Ubuntu OS repositories
-  case $facts['os']['release']['major'] {
-    '20.04': {
-      apt::source { 'focal':
-        location => "https://apt-mirror.publiq.be/focal-${arch}-${environment}",
-        release  => 'focal',
-        repos    => 'main'
-      }
+  apt::source { $codename:
+    location => "https://apt-mirror.publiq.be/${codename}-${arch}-${environment}",
+    release  => $codename,
+    repos    => 'main'
+  }
 
-      apt::source { 'focal-updates':
-        location => "https://apt-mirror.publiq.be/focal-updates-${arch}-${environment}",
-        release  => 'focal-updates',
-        repos    => 'main'
-      }
+  apt::source { "${codename}-updates":
+    location => "https://apt-mirror.publiq.be/${codename}-updates-${arch}-${environment}",
+    release  => "${codename}-updates",
+    repos    => 'main'
+  }
 
-      apt::source { 'focal-security':
-        location => "https://apt-mirror.publiq.be/focal-security-${arch}-${environment}",
-        release  => 'focal-security',
-        repos    => 'main'
-      }
+  apt::source { "${codename}-security":
+    location => "https://apt-mirror.publiq.be/${codename}-security-${arch}-${environment}",
+    release  => "${codename}-security",
+    repos    => 'main'
+  }
 
-      apt::source { 'focal-backports':
-        location => "https://apt-mirror.publiq.be/focal-backports-${arch}-${environment}",
-        release  => 'focal-backports',
-        repos    => 'main'
-      }
-    }
+  apt::source { "${codename}-backports":
+    location => "https://apt-mirror.publiq.be/${codename}-backports-${arch}-${environment}",
+    release  => "${codename}-backports",
+    repos    => 'main'
   }
 
   # Tool repositories
