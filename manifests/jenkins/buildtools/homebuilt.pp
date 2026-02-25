@@ -6,4 +6,5 @@ class profiles::jenkins::buildtools::homebuilt inherits ::profiles {
   realize Package['kubectl']
   realize Package['argocd']
   realize Package['maven']
+  realize Package['phantomjs']
 }
