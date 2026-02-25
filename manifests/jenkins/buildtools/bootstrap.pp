@@ -10,7 +10,6 @@ class profiles::jenkins::buildtools::bootstrap inherits ::profiles {
   realize Package['build-essential']
   realize Package['debhelper']
   realize Package['mysql-client']
-  realize Package['phantomjs']
 
   include profiles::ruby
 }

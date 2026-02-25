@@ -144,7 +144,8 @@ class profiles::packages inherits ::profiles {
   }
 
   @package { 'phantomjs':
-    ensure => 'present'
+    ensure => 'present',
+    require => Apt::Source['publiq-tools']
   }
 
   @package { 'rubygem-angular-config':

@@ -13,6 +13,7 @@ describe 'profiles::jenkins::buildtools::homebuilt' do
       it { is_expected.to contain_package('kubectl').with({ 'ensure' => 'present' }) }
       it { is_expected.to contain_package('argocd').with({ 'ensure' => 'present' }) }
       it { is_expected.to contain_package('maven').with({ 'ensure' => 'present' }) }
+      it { is_expected.to contain_package('phantomjs').with({ 'ensure' => 'present' }) }
     end
   end
 end
