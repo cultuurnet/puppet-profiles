@@ -144,6 +144,8 @@ describe 'profiles::jenkins::node' do
               it { is_expected.not_to contain_class('profiles::jenkins::buildtools::homebuilt') }
               it { is_expected.not_to contain_class('profiles::jenkins::buildtools::playwright') }
 
+              it { is_expected.not_to contain_profiles__puppet__puppetdb__cli('jenkins') }
+
               it { is_expected.to contain_profiles__lvm__mount('jenkinsdata').with(
                 'volume_group' => 'myvg',
                 'size'         => '7G',
