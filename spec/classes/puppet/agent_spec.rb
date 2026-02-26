@@ -26,7 +26,7 @@ describe 'profiles::puppet::agent' do
         it { is_expected.to contain_file('puppet agent service defaults').with(
           'ensure'  => 'file',
           'path'    => '/etc/default/puppet',
-          'content' => "PUPPET_EXTRA_OPTS=''"
+          'content' => "PUPPET_EXTRA_OPTS=''\n"
         ) }
 
         it { is_expected.to contain_file('puppet agent production environment hiera.yaml').with(
@@ -109,7 +109,7 @@ describe 'profiles::puppet::agent' do
         it { is_expected.to contain_file('puppet agent service defaults').with(
           'ensure'  => 'file',
           'path'    => '/etc/default/puppet',
-          'content' => "PUPPET_EXTRA_OPTS='--debug --noop'"
+          'content' => "PUPPET_EXTRA_OPTS='--debug --noop'\n"
         ) }
 
         it { is_expected.to contain_service('puppet').with(

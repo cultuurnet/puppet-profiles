@@ -22,7 +22,7 @@ class profiles::puppet::agent (
   file { 'puppet agent service defaults':
     ensure  => 'file',
     path    => '/etc/default/puppet',
-    content => "PUPPET_EXTRA_OPTS='${commandline_options}'",
+    content => "PUPPET_EXTRA_OPTS='${commandline_options}'\n",
     require => Package['openvox-agent'],
     notify  => Service['puppet']
   }
