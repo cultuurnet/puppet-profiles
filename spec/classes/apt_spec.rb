@@ -12,15 +12,22 @@ describe 'profiles::apt' do
         'stage'  => 'pre'
       ) }
 
+      it { is_expected.to contain_exec('disable apt news').with(
+        'command'   => 'pro config set apt_news=false',
+        'path'      => ['/usr/bin'],
+        'onlyif'    => 'test True = $(pro config show apt_news | cut -d " " -f 2)',
+        'logoutput' => 'on_failure'
+      ) }
+
       it { is_expected.to contain_cron('apt clean daily').with(
         'environment' => [ 'MAILTO=infra+cron@publiq.be'],
         'command'     => '/usr/bin/apt-get clean',
         'hour'        => '3',
         'minute'      => '0'
-        )
-      }
+      ) }
 
       it { is_expected.to contain_cron('apt clean daily').that_requires('Class[apt]') }
+      it { is_expected.to contain_exec('disable apt news').that_requires('Class[apt]') }
     end
   end
 end
