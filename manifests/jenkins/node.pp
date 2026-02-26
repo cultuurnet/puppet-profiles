@@ -17,6 +17,8 @@ class profiles::jenkins::node (
   unless $bootstrap {
     include ::profiles::jenkins::buildtools::homebuilt
     include ::profiles::jenkins::buildtools::playwright
+
+    profiles::puppet::puppetdb::cli { 'jenkins': }
   }
 
   $puppetserver_url = lookup('data::puppet::puppetserver::url')
@@ -57,8 +59,6 @@ class profiles::jenkins::node (
       notify  => Service['jenkins-swarm-client']
     }
   }
-
-  profiles::puppet::puppetdb::cli { 'jenkins': }
 
   @@profiles::vault::trusted_certificate { $trusted['certname']:
     policies => ['jenkins_certificate']
