@@ -1,7 +1,8 @@
 class profiles::puppet::agent (
-  String                     $version        = 'installed',
-  Optional[String]           $puppetserver   = undef,
-  Enum['running', 'stopped'] $service_status = 'stopped'
+  String                     $version             = 'installed',
+  Optional[String]           $puppetserver        = undef,
+  String                     $commandline_options = '',
+  Enum['running', 'stopped'] $service_status      = 'stopped'
 ) inherits ::profiles {
 
   $default_ini_setting_attributes = {
@@ -15,6 +16,14 @@ class profiles::puppet::agent (
   package { 'openvox-agent':
     ensure  => $version,
     require => [Apt::Source['openvox'], File['/etc/puppetlabs/facter/facts.d']],
+    notify  => Service['puppet']
+  }
+
+  file { 'puppet agent service defaults':
+    ensure  => 'file',
+    path    => '/etc/default/puppet',
+    content => "PUPPET_EXTRA_OPTS='${commandline_options}'",
+    require => Package['openvox-agent'],
     notify  => Service['puppet']
   }
 
