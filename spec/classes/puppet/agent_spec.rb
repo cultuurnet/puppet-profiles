@@ -11,15 +11,22 @@ describe 'profiles::puppet::agent' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::puppet::agent').with(
-          'version'        => 'installed',
-          'puppetserver'   => nil,
-          'service_status' => 'stopped',
+          'version'             => 'installed',
+          'puppetserver'        => nil,
+          'commandline_options' => '',
+          'service_status'      => 'stopped',
         ) }
 
         it { is_expected.to contain_apt__source('openvox') }
 
         it { is_expected.to contain_package('openvox-agent').with(
           'ensure'    => 'installed'
+        ) }
+
+        it { is_expected.to contain_file('puppet agent service defaults').with(
+          'ensure'  => 'file',
+          'path'    => '/etc/default/puppet',
+          'content' => "PUPPET_EXTRA_OPTS=''\n"
         ) }
 
         it { is_expected.to contain_file('puppet agent production environment hiera.yaml').with(
@@ -75,6 +82,8 @@ describe 'profiles::puppet::agent' do
         it { is_expected.to contain_apt__source('openvox').that_comes_before('Package[openvox-agent]') }
         it { is_expected.to contain_package('openvox-agent').that_requires('File[/etc/puppetlabs/facter/facts.d]') }
         it { is_expected.to contain_package('openvox-agent').that_notifies('Service[puppet]') }
+        it { is_expected.to contain_file('puppet agent service defaults').that_requires('Package[openvox-agent]') }
+        it { is_expected.to contain_file('puppet agent service defaults').that_notifies('Service[puppet]') }
         it { is_expected.to contain_file('puppet agent production environment hiera.yaml').that_requires('Package[openvox-agent]') }
         it { is_expected.to contain_file('puppet agent production environment datadir').that_requires('Package[openvox-agent]') }
         it { is_expected.to contain_ini_setting('agent certificate_revocation').that_notifies('Service[puppet]') }
@@ -83,17 +92,24 @@ describe 'profiles::puppet::agent' do
         it { is_expected.to contain_ini_setting('puppetserver').that_notifies('Service[puppet]') }
       end
 
-      context "with version => 6.23.1, puppetserver => puppet.example.com, service_status => running" do
+      context "with version => 6.23.1, puppetserver => puppet.example.com, commandline_options => --debug --noop and service_status => running" do
         let(:params) { {
-          'version'        => '6.23.1',
-          'puppetserver'   => 'puppet.example.com',
-          'service_status' => 'running'
+          'version'             => '6.23.1',
+          'puppetserver'        => 'puppet.example.com',
+          'commandline_options' => '--debug --noop',
+          'service_status'      => 'running'
         } }
 
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_package('openvox-agent').with(
           'ensure'    => '6.23.1'
+        ) }
+
+        it { is_expected.to contain_file('puppet agent service defaults').with(
+          'ensure'  => 'file',
+          'path'    => '/etc/default/puppet',
+          'content' => "PUPPET_EXTRA_OPTS='--debug --noop'\n"
         ) }
 
         it { is_expected.to contain_service('puppet').with(
