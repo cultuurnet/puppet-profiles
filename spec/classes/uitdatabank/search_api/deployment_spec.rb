@@ -5,11 +5,9 @@ describe 'profiles::uitdatabank::search_api::deployment' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with config_source => appconfig/uitdatabank/udb3-search-service/config.yml, config_source_php => appconfig/uitdatabank/udb3-search-service/config.php, features_source => appconfig/uitdatabank/udb3-search-service/features.yml and pubkey_keycloak_source => appconfig/uitdatabank/keys/pubkey-keycloak.pem" do
+      context "with config_source_php => appconfig/uitdatabank/udb3-search-service/config.php and pubkey_keycloak_source => appconfig/uitdatabank/keys/pubkey-keycloak.pem" do
         let(:params) { {
-          'config_source'          => 'appconfig/uitdatabank/udb3-search-service/config.yml',
           'config_source_php'      => 'appconfig/uitdatabank/udb3-search-service/config.php',
-          'features_source'        => 'appconfig/uitdatabank/udb3-search-service/features.yml',
           'pubkey_keycloak_source' => 'appconfig/uitdatabank/keys/pubkey-keycloak.pem'
         } }
 
@@ -19,16 +17,14 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').with(
-            'config_source'          => 'appconfig/uitdatabank/udb3-search-service/config.yml',
-            'config_source_php'      => 'appconfig/uitdatabank/udb3-search-service/config.php',
-            'features_source'        => 'appconfig/uitdatabank/udb3-search-service/features.yml',
-            'version'                => 'latest',
-            'repository'             => 'uitdatabank-search-api',
-            'pubkey_keycloak_source' => 'appconfig/uitdatabank/keys/pubkey-keycloak.pem',
-            'region_mapping_source'  => 'appconfig/uitdatabank/udb3-search-service/mapping_region.json',
-            'default_queries_source' => 'appconfig/uitdatabank/udb3-search-service/default_queries.php',
+            'config_source_php'                     => 'appconfig/uitdatabank/udb3-search-service/config.php',
+            'version'                               => 'latest',
+            'repository'                            => 'uitdatabank-search-api',
+            'pubkey_keycloak_source'                => 'appconfig/uitdatabank/keys/pubkey-keycloak.pem',
+            'region_mapping_source'                 => 'appconfig/uitdatabank/udb3-search-service/mapping_region.json',
+            'default_queries_source'                => 'appconfig/uitdatabank/udb3-search-service/default_queries.php',
             'api_keys_matched_to_client_ids_source' => nil,
-            'puppetdb_url'           => 'http://localhost:8081'
+            'puppetdb_url'                          => 'http://localhost:8081'
           ) }
 
           it { is_expected.to contain_apt__source('uitdatabank-search-api') }
@@ -39,20 +35,22 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             'ensure' => 'latest'
           ) }
 
-          it { is_expected.to contain_file('uitdatabank-search-api-config').with(
+          it { is_expected.to contain_file('uitdatabank-search-api-config-php').with(
             'ensure'  => 'file',
             'owner'   => 'www-data',
             'group'   => 'www-data',
-            'path'    => '/var/www/udb3-search-service/config.yml',
-            'content' => "key: value\n"
+            'path'    => '/var/www/udb3-search-service/config.php',
+            'content' => ''
+          ) }
+
+          it { is_expected.to contain_file('uitdatabank-search-api-config').with(
+            'ensure'  => 'absent',
+            'path'    => '/var/www/udb3-search-service/config.yml'
           ) }
 
           it { is_expected.to contain_file('uitdatabank-search-api-features').with(
-            'ensure'  => 'file',
-            'owner'   => 'www-data',
-            'group'   => 'www-data',
-            'path'    => '/var/www/udb3-search-service/features.yml',
-            'content' => "feature: true\n"
+            'ensure'  => 'absent',
+            'path'    => '/var/www/udb3-search-service/features.yml'
           ) }
 
           it { is_expected.to contain_file('uitdatabank-search-api-api-keys-matched-to-client-ids').with(
@@ -129,16 +127,11 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           it { is_expected.to contain_package('uitdatabank-search-api').that_requires('Apt::Source[uitdatabank-search-api]') }
           it { is_expected.to contain_package('uitdatabank-search-api').that_notifies('Service[uitdatabank-search-api]') }
           it { is_expected.to contain_package('uitdatabank-search-api').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-config').that_requires('Group[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-config').that_requires('User[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-config').that_requires('Package[uitdatabank-search-api]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-config').that_notifies('Service[uitdatabank-search-api]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-config').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-features').that_requires('Group[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-features').that_requires('User[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-features').that_requires('Package[uitdatabank-search-api]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-features').that_notifies('Service[uitdatabank-search-api]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-features').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
+          it { is_expected.to contain_file('uitdatabank-search-api-config-php').that_requires('Group[www-data]') }
+          it { is_expected.to contain_file('uitdatabank-search-api-config-php').that_requires('User[www-data]') }
+          it { is_expected.to contain_file('uitdatabank-search-api-config-php').that_requires('Package[uitdatabank-search-api]') }
+          it { is_expected.to contain_file('uitdatabank-search-api-config-php').that_notifies('Service[uitdatabank-search-api]') }
+          it { is_expected.to contain_file('uitdatabank-search-api-config-php').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
           it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_requires('Group[www-data]') }
           it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_requires('User[www-data]') }
           it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_requires('Package[uitdatabank-search-api]') }
@@ -167,8 +160,8 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
 
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').with(
-            'region_mapping_source'  => 'profiles/uitdatabank/search_api/mapping_region.json',
-            'default_queries_source' => nil,
+            'region_mapping_source'                 => 'profiles/uitdatabank/search_api/mapping_region.json',
+            'default_queries_source'                => nil,
             'api_keys_matched_to_client_ids_source' => nil,
           ) }
 
@@ -178,17 +171,15 @@ describe 'profiles::uitdatabank::search_api::deployment' do
         end
       end
 
-      context "with config_source => appconfig/uitdatabank/udb3-search-service/myconfig.yml, config_source => appconfig/uitdatabank/udb3-search-service/myconfig.php, features_source => appconfig/uitdatabank/udb3-search-service/myfeatures.yml, version => 1.2.3, repository => foo, pubkey_keycloak_source => appconfig/uitdatabank/keys/mypubkey-keycloak.pem, region_mapping_source => appconfig/uitdatabank/udb3-search-service/my_region_mapping.json, api_keys_matched_to_client_ids_source => appconfig/uitdatabank/udb3-search-service/api_keys.php, and puppetdb_url => http://example.com:8000" do
+      context "with config_source_php => appconfig/uitdatabank/udb3-search-service/myconfig.php, version => 1.2.3, repository => foo, pubkey_keycloak_source => appconfig/uitdatabank/keys/mypubkey-keycloak.pem, region_mapping_source => appconfig/uitdatabank/udb3-search-service/my_region_mapping.json, api_keys_matched_to_client_ids_source => appconfig/uitdatabank/udb3-search-service/api_keys.php, and puppetdb_url => http://example.com:8000" do
         let(:params) { {
-          'config_source'          => 'appconfig/uitdatabank/udb3-search-service/myconfig.yml',
-          'config_source_php'      => 'appconfig/uitdatabank/udb3-search-service/myconfig.php',
-          'features_source'        => 'appconfig/uitdatabank/udb3-search-service/myfeatures.yml',
-          'version'                => '1.2.3',
-          'repository'             => 'foo',
-          'pubkey_keycloak_source' => 'appconfig/uitdatabank/keys/mypubkey-keycloak.pem',
-          'region_mapping_source'  => 'appconfig/uitdatabank/udb3-search-service/my_region_mapping.json',
+          'config_source_php'                     => 'appconfig/uitdatabank/udb3-search-service/myconfig.php',
+          'version'                               => '1.2.3',
+          'repository'                            => 'foo',
+          'pubkey_keycloak_source'                => 'appconfig/uitdatabank/keys/mypubkey-keycloak.pem',
+          'region_mapping_source'                 => 'appconfig/uitdatabank/udb3-search-service/my_region_mapping.json',
           'api_keys_matched_to_client_ids_source' => 'appconfig/uitdatabank/udb3-search-service/api_keys.php',
-          'puppetdb_url'           => 'http://example.com:8000'
+          'puppetdb_url'                          => 'http://example.com:8000'
         } }
 
         context "with hieradata" do
@@ -205,20 +196,22 @@ describe 'profiles::uitdatabank::search_api::deployment' do
               'ensure' => '1.2.3'
             ) }
 
-            it { is_expected.to contain_file('uitdatabank-search-api-config').with(
+            it { is_expected.to contain_file('uitdatabank-search-api-config-php').with(
               'ensure'  => 'file',
               'owner'   => 'www-data',
               'group'   => 'www-data',
+              'path'    => '/var/www/udb3-search-service/config.php',
+              'content' => "<?php\n\nreturn [];\n"
+            ) }
+
+            it { is_expected.to contain_file('uitdatabank-search-api-config').with(
+              'ensure'  => 'absent',
               'path'    => '/var/www/udb3-search-service/config.yml',
-              'content' => ''
             ) }
 
             it { is_expected.to contain_file('uitdatabank-search-api-features').with(
-              'ensure'  => 'file',
-              'owner'   => 'www-data',
-              'group'   => 'www-data',
-              'path'    => '/var/www/udb3-search-service/features.yml',
-              'content' => ''
+              'ensure'  => 'absent',
+              'path'    => '/var/www/udb3-search-service/features.yml'
             ) }
 
             it { is_expected.to contain_file('uitdatabank-search-api-api-keys-matched-to-client-ids').with(
@@ -276,9 +269,7 @@ describe 'profiles::uitdatabank::search_api::deployment' do
       context 'without parameters' do
         let(:params) { {} }
 
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source_php'/) }
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'features_source'/) }
       end
     end
   end

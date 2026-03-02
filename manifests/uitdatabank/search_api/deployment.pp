@@ -1,7 +1,5 @@
 class profiles::uitdatabank::search_api::deployment (
-  String           $config_source,
   String           $config_source_php,
-  String           $features_source,
   String           $pubkey_keycloak_source,
   String           $version                               = 'latest',
   String           $repository                            = 'uitdatabank-search-api',
@@ -31,10 +29,9 @@ class profiles::uitdatabank::search_api::deployment (
   }
 
   file { 'uitdatabank-search-api-config':
-    ensure  => 'file',
-    path    => "${basedir}/config.yml",
-    content => template($config_source),
-    *       => $file_default_attributes
+    ensure => 'absent',
+    path   => "${basedir}/config.yml",
+    *      => $file_default_attributes
   }
 
   file { 'uitdatabank-search-api-config-php':
@@ -45,10 +42,8 @@ class profiles::uitdatabank::search_api::deployment (
   }
 
   file { 'uitdatabank-search-api-features':
-    ensure  => 'file',
-    path    => "${basedir}/features.yml",
-    content => template($features_source),
-    *       => $file_default_attributes
+    ensure => 'absent',
+    path   => "${basedir}/features.yml",
   }
 
   file { 'uitdatabank-search-api-facet-mapping-regions':
