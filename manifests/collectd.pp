@@ -30,12 +30,16 @@ class profiles::collectd (
   class { 'collectd::plugin::cpu': }
   class { 'collectd::plugin::df': fstypes => ['ext4'] }
   class { 'collectd::plugin::disk': }
-  class { 'collectd::plugin::filter': }
   class { 'collectd::plugin::interface': interfaces => ['eth0', 'lo'] }
   class { 'collectd::plugin::load': }
   class { 'collectd::plugin::memory': }
   class { 'collectd::plugin::processes': }
   class { 'collectd::plugin::vmem': }
+
+  class { 'collectd::plugin::filter':
+    precachechain => 'PreCache',
+    postcachechain => 'PostCache'
+  }
 
   collectd::plugin::filter::chain { 'PreCache':
     target => 'return'
