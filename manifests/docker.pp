@@ -31,7 +31,7 @@ class profiles::docker (
       fstype  => 'none',
       options => 'rw,bind',
       require => [Profiles::Lvm::Mount['dockerdata'], File[$data_dir]],
-      before  => Class['docker']
+      before  => Class['::docker']
     }
   }
 
@@ -46,11 +46,13 @@ class profiles::docker (
 
   file { $data_dir:
     ensure => 'directory',
-    before => Class['docker']
+    before => Class['::docker']
   }
 
   class { '::docker':
     use_upstream_package_source => false,
+    socket_override             => true,
+    socket_overrides_template   => 'profiles/docker/overrides.socket.conf.erb',
     docker_users                => [],
     extra_parameters            => [ "--experimental=${experimental}"],
     require                     => Apt::Source['docker']
@@ -86,6 +88,6 @@ class profiles::docker (
     hour        => '3',
     minute      => '30',
     weekday     => '0',
-    require     => Class['docker']
+    require     => Class['::docker']
   }
 }
