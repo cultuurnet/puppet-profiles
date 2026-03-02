@@ -75,7 +75,7 @@ describe 'profiles::uitdatabank::search_api' do
         context 'without hieradata' do
           let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
 
-          it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source_php'/) }
+          it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }
           it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'pubkey_keycloak_source'/) }
         end
       end
