@@ -27,6 +27,8 @@ describe 'profiles::docker' do
 
         it { is_expected.to contain_class('docker').with(
           'use_upstream_package_source' => false,
+          'socket_override'             => true,
+          'socket_overrides_template'   => 'profiles/docker/overrides.socket.conf.erb',
           'extra_parameters'            => [ '--experimental=false'],
           'docker_users'                => []
         ) }
@@ -103,6 +105,8 @@ describe 'profiles::docker' do
 
           it { is_expected.to contain_class('docker').with(
             'use_upstream_package_source' => false,
+            'socket_override'             => true,
+            'socket_overrides_template'   => 'profiles/docker/overrides.socket.conf.erb',
             'extra_parameters'            => [ '--experimental=true'],
             'docker_users'                => []
           ) }
