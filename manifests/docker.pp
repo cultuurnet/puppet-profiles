@@ -8,7 +8,6 @@ class profiles::docker (
 
   $data_dir = '/var/lib/docker'
 
-  realize Apt::Source['publiq-tools']
   realize Apt::Source['docker']
 
   if $lvm {
@@ -33,11 +32,6 @@ class profiles::docker (
       require => [Profiles::Lvm::Mount['dockerdata'], File[$data_dir]],
       before  => Class['::docker']
     }
-  }
-
-  package { 'docker-compose':
-    ensure  => 'present',
-    require => Apt::Source['publiq-tools']
   }
 
   if $experimental {
