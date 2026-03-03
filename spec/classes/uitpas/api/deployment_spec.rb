@@ -13,13 +13,15 @@ describe 'profiles::uitpas::api::deployment' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::uitpas::api::deployment').with(
-          'database_password' => 'secret',
-          'database_host'     => '127.0.0.1',
-          'version'           => 'latest',
-          'repository'        => 'uitpas-api',
-          'service_watchdog'  => false,
-          'portbase'          => 4800,
-          'puppetdb_url'      => nil
+          'database_password'            => 'secret',
+          'database_host'                => '127.0.0.1',
+          'version'                      => 'latest',
+          'repository'                   => 'uitpas-api',
+          'service_watchdog'             => false,
+          'portbase'                     => 4800,
+          'healthcheck_timeout_seconds'  => 160,
+          'healthcheck_interval_seconds' => 20,
+          'puppetdb_url'                 => nil
         ) }
 
         it { is_expected.to contain_apt__source('uitpas-api') }
@@ -80,14 +82,16 @@ describe 'profiles::uitpas::api::deployment' do
         end
       end
 
-      context "with database_password => mypass, database_host => mydb.example.com, version => 3.2.1, portbase => 14800, repository => uitpas-api-alternative and service_watchdog => true" do
+      context "with database_password => mypass, database_host => mydb.example.com, version => 3.2.1, portbase => 14800, repository => uitpas-api-alternative, healthcheck_timeout_seconds => 200, healthcheck_interval_seconds => 30 and service_watchdog => true" do
         let(:params) { {
           'database_password' => 'mypass',
           'database_host'     => 'mydb.example.com',
           'version'           => '3.2.1',
           'portbase'          => 14800,
           'repository'        => 'uitpas-api-alternative',
-          'service_watchdog'  => true
+          'service_watchdog'  => true,
+          'healthcheck_timeout_seconds'  => 200,
+          'healthcheck_interval_seconds' => 30
         } }
 
         context "with repository uitpas-api-alternative defined" do
