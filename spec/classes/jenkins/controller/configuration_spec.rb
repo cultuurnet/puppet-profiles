@@ -20,16 +20,15 @@ describe 'profiles::jenkins::controller::configuration' do
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to contain_class('profiles::jenkins::controller::configuration').with(
-              'url'                          => 'https://jenkins.foobar.com/',
-              'admin_password'               => 'passw0rd',
-              'docker_registry_url'          => nil,
-              'docker_registry_credentialid' => nil,
-              'credentials'                  => [],
-              'global_libraries'             => [],
-              'pipelines'                    => [],
-              'views'                        => [],
-              'users'                        => [],
-              'puppetdb_url'                 => 'http://localhost:8081'
+              'url'                 => 'https://jenkins.foobar.com/',
+              'admin_password'      => 'passw0rd',
+              'docker_registry_url' => nil,
+              'credentials'         => [],
+              'global_libraries'    => [],
+              'pipelines'           => [],
+              'views'               => [],
+              'users'               => [],
+              'puppetdb_url'        => 'http://localhost:8081'
             ) }
 
 
@@ -130,12 +129,6 @@ describe 'profiles::jenkins::controller::configuration' do
               'configuration' => nil
             ) }
 
-            it { is_expected.to contain_profiles__jenkins__plugin('amazon-ecr').with(
-              'ensure'        => 'present',
-              'restart'       => false,
-              'configuration' => nil
-            ) }
-
             it { is_expected.to contain_profiles__jenkins__plugin('plain-credentials').with(
               'ensure'        => 'present',
               'restart'       => false,
@@ -173,9 +166,8 @@ describe 'profiles::jenkins::controller::configuration' do
               'ensure'        => 'present',
               'restart'       => false,
               'configuration' => {
-                                   'docker_label'                 => 'docker',
-                                   'docker_registry_url'          => nil,
-                                   'docker_registry_credentialid' => nil
+                                   'docker_label'        => 'docker',
+                                   'docker_registry_url' => nil
                                  }
             ) }
 
@@ -209,7 +201,6 @@ describe 'profiles::jenkins::controller::configuration' do
             it { is_expected.to contain_profiles__jenkins__plugin('git').that_comes_before('Profiles::Jenkins::Plugin[job-dsl]') }
             it { is_expected.to contain_profiles__jenkins__plugin('ssh-credentials').that_comes_before('Profiles::Jenkins::Plugin[job-dsl]') }
             it { is_expected.to contain_profiles__jenkins__plugin('ssh-credentials').that_comes_before('Profiles::Jenkins::Plugin[pipeline-groovy-lib]') }
-            it { is_expected.to contain_profiles__jenkins__plugin('amazon-ecr').that_comes_before('Profiles::Jenkins::Plugin[docker-workflow]') }
             it { is_expected.to contain_profiles__jenkins__plugin('git').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
             it { is_expected.to contain_profiles__jenkins__plugin('git-client').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
             it { is_expected.to contain_profiles__jenkins__plugin('configuration-as-code').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
@@ -225,23 +216,22 @@ describe 'profiles::jenkins::controller::configuration' do
         end
       end
 
-      context "with url => https://builds.foobar.com/, admin_password => letmein, docker_registry_url => https://docker.registry.com/, docker_registry_credentialid => my_docker_cred, credentials => [{ id => 'foo', type => 'string', secret => 'bla'}, { id => 'awscred', type => 'aws', access_key => 'aws_key', secret_key => 'aws_secret'}, { id => 'userpass', type => 'username_password', username => 'foo', password => 'bar'}], global_libraries => { git_url => 'git@example.com:org/repo.git', git_ref => 'main', credential_id => 'mygitcred'}, pipelines => { 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'keep_builds' => 5}, users => {'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'} and puppetdb_url => 'https://foobar.com:4567'" do
+      context "with url => https://builds.foobar.com/, admin_password => letmein, docker_registry_url => https://docker.registry.com/, credentials => [{ id => 'foo', type => 'string', secret => 'bla'}, { id => 'awscred', type => 'aws', access_key => 'aws_key', secret_key => 'aws_secret'}, { id => 'userpass', type => 'username_password', username => 'foo', password => 'bar'}], global_libraries => { git_url => 'git@example.com:org/repo.git', git_ref => 'main', credential_id => 'mygitcred'}, pipelines => { 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'keep_builds' => 5}, users => {'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'} and puppetdb_url => 'https://foobar.com:4567'" do
         let(:params) { {
-          'url'                          => 'https://builds.foobar.com/',
-          'admin_password'               => 'letmein',
-          'docker_registry_url'          => 'https://docker.registry.com/',
-          'docker_registry_credentialid' => 'my_docker_cred',
-          'credentials'                  => [
-                                              { 'id' => 'foo', 'type' => 'string', 'secret' => 'bla'},
-                                              { 'id' => 'awscred', 'type' => 'aws', 'access_key' => 'aws_key', 'secret_key' => 'aws_secret'},
-                                              { 'id' => 'filecred', 'type' => 'file', 'filename' => 'my_file.txt', 'content' => 'filecontent'},
-                                              { 'id' => 'userpass', 'type' => 'username_password', 'username' => 'foo', 'password' => 'bar'}
-                                            ],
-          'global_libraries'             => { 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'},
-          'pipelines'                    => { 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'keep_builds' => 5},
-          'views'                        => [{ 'name' => 'foo', 'regex' => 'foo.*' }, { 'name' => 'bar', 'regex' => 'bar.*' }],
-          'users'                        => {'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'},
-          'puppetdb_url'                 => 'http://foobar.com:4567'
+          'url'                 => 'https://builds.foobar.com/',
+          'admin_password'      => 'letmein',
+          'docker_registry_url' => 'https://docker.registry.com/',
+          'credentials'         => [
+                                     { 'id' => 'foo', 'type' => 'string', 'secret' => 'bla' },
+                                     { 'id' => 'awscred', 'type' => 'aws', 'access_key' => 'aws_key', 'secret_key' => 'aws_secret' },
+                                     { 'id' => 'filecred', 'type' => 'file', 'filename' => 'my_file.txt', 'content' => 'filecontent' },
+                                     { 'id' => 'userpass', 'type' => 'username_password', 'username' => 'foo', 'password' => 'bar' }
+                                   ],
+          'global_libraries'    => { 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred' },
+          'pipelines'           => { 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'keep_builds' => 5 },
+          'views'               => [{ 'name' => 'foo', 'regex' => 'foo.*' }, { 'name' => 'bar', 'regex' => 'bar.*' }],
+          'users'               => { 'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com' },
+          'puppetdb_url'        => 'http://foobar.com:4567'
         } }
 
         context "in the testing environment" do
@@ -259,22 +249,22 @@ describe 'profiles::jenkins::controller::configuration' do
             'ensure'        => 'present',
             'restart'       => false,
             'configuration' => [
-                                 { 'id' => 'foo', 'type' => 'string', 'secret' => 'bla'},
-                                 { 'id' => 'filecred', 'type' => 'file', 'filename' => 'my_file.txt', 'content' => 'filecontent'},
-                                 { 'id' => 'userpass', 'type' => 'username_password', 'username' => 'foo', 'password' => 'bar'}
+                                 { 'id' => 'foo', 'type' => 'string', 'secret' => 'bla' },
+                                 { 'id' => 'filecred', 'type' => 'file', 'filename' => 'my_file.txt', 'content' => 'filecontent' },
+                                 { 'id' => 'userpass', 'type' => 'username_password', 'username' => 'foo', 'password' => 'bar' }
                                ]
           ) }
 
           it { is_expected.to contain_profiles__jenkins__plugin('aws-credentials').with(
             'ensure'        => 'present',
             'restart'       => false,
-            'configuration' => [{ 'id' => 'awscred', 'type' => 'aws', 'access_key' => 'aws_key', 'secret_key' => 'aws_secret'}]
+            'configuration' => [{ 'id' => 'awscred', 'type' => 'aws', 'access_key' => 'aws_key', 'secret_key' => 'aws_secret' }]
           ) }
 
           it { is_expected.to contain_profiles__jenkins__plugin('pipeline-groovy-lib').with(
             'ensure'        => 'present',
             'restart'       => false,
-            'configuration' => [{ 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}]
+            'configuration' => [{ 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred' }]
           ) }
 
           it { is_expected.to contain_profiles__jenkins__plugin('job-dsl').with(
@@ -296,9 +286,8 @@ describe 'profiles::jenkins::controller::configuration' do
             'ensure'        => 'present',
             'restart'       => false,
             'configuration' => {
-                                 'docker_label'                 => 'docker',
-                                 'docker_registry_url'          => 'https://docker.registry.com/',
-                                 'docker_registry_credentialid' => 'my_docker_cred'
+                                 'docker_label'        => 'docker',
+                                 'docker_registry_url' => 'https://docker.registry.com/'
                                }
           ) }
 
@@ -330,57 +319,56 @@ describe 'profiles::jenkins::controller::configuration' do
         end
       end
 
-      context "with url => https://builds.foobar.com/, admin_password => letmein, docker_registry_url => https://docker2.registry.com/, docker_registry_credentialid => my_docker_cred2, credentials => [{ id => 'token1', type => 'string', secret => 'secret1'}, { id => 'token2', type => 'string', secret => 'secret2'}, { id => 'key1', type => 'private_key', key => 'privkey1'}, { id => 'key2', type => 'private_key', key => 'privkey2'}, { id => 'awscred1', type => 'aws', access_key => 'aws_key1', secret_key => 'aws_secret1'}, { id => 'awscred2', type => 'aws', access_key => 'aws_key2', secret_key => 'aws_secret2'}, { 'id' => 'myfile1', 'type' => 'file', 'filename' => 'my_file1.txt', 'content' => 'spec testfile content 1'}, { 'id' => 'myfile2', 'type' => 'file', 'filename' => 'my_file2.txt', 'content' => 'spec testfile content 2'}], global_libraries => [{'git_url' => 'git@foo.com:bar/baz.git', 'git_ref' => 'develop', 'credential_id' => 'gitkey'}, {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}, { id => 'userpass1', type => 'username_password', username => 'foo1', password => 'bar1'}, { id => 'userpass2', type => 'username_password', username => 'foo2', password => 'bar2'}], pipelines => [{ 'name' => 'baz', 'git_url' => 'git@github.com:bar/baz.git', 'git_ref' => 'refs/heads/develop', 'credential_id' => 'gitkey', keep_builds => 10 }, { 'name' => 'repo', 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred', keep_builds => '2'}], views => [{ 'name' => 'myview', regex => 'myregex.*' }] and users => [{'id' => 'user1', 'name' => 'User One', 'password' => 'passw0rd1', 'email' => 'user1@example.com'}, {'id' => 'user2', 'name' => 'User Two', 'password' => 'passw0rd2', 'email' => 'user2@example.com'}]" do
+      context "with url => https://builds.foobar.com/, admin_password => letmein, docker_registry_url => https://docker2.registry.com/, credentials => [{ id => 'token1', type => 'string', secret => 'secret1'}, { id => 'token2', type => 'string', secret => 'secret2'}, { id => 'key1', type => 'private_key', key => 'privkey1'}, { id => 'key2', type => 'private_key', key => 'privkey2'}, { id => 'awscred1', type => 'aws', access_key => 'aws_key1', secret_key => 'aws_secret1'}, { id => 'awscred2', type => 'aws', access_key => 'aws_key2', secret_key => 'aws_secret2'}, { 'id' => 'myfile1', 'type' => 'file', 'filename' => 'my_file1.txt', 'content' => 'spec testfile content 1'}, { 'id' => 'myfile2', 'type' => 'file', 'filename' => 'my_file2.txt', 'content' => 'spec testfile content 2'}], global_libraries => [{'git_url' => 'git@foo.com:bar/baz.git', 'git_ref' => 'develop', 'credential_id' => 'gitkey'}, {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}, { id => 'userpass1', type => 'username_password', username => 'foo1', password => 'bar1'}, { id => 'userpass2', type => 'username_password', username => 'foo2', password => 'bar2'}], pipelines => [{ 'name' => 'baz', 'git_url' => 'git@github.com:bar/baz.git', 'git_ref' => 'refs/heads/develop', 'credential_id' => 'gitkey', keep_builds => 10 }, { 'name' => 'repo', 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred', keep_builds => '2'}], views => [{ 'name' => 'myview', regex => 'myregex.*' }] and users => [{'id' => 'user1', 'name' => 'User One', 'password' => 'passw0rd1', 'email' => 'user1@example.com'}, {'id' => 'user2', 'name' => 'User Two', 'password' => 'passw0rd2', 'email' => 'user2@example.com'}]" do
         let(:params) { {
-          'url'                          => 'https://builds.foobar.com/',
-          'admin_password'               => 'letmein',
-          'docker_registry_url'          => 'https://docker2.registry.com/',
-          'docker_registry_credentialid' => 'my_docker_cred2',
-          'credentials'                  => [
-                                              { 'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'},
-                                              { 'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'},
-                                              { 'id' => 'key1', 'type' => 'private_key', 'key' => 'privkey1'},
-                                              { 'id' => 'key2', 'type' => 'private_key', 'key' => 'privkey2'},
-                                              { 'id' => 'awscred1', 'type' => 'aws', 'access_key' => 'aws_key1', 'secret_key' => 'aws_secret1'},
-                                              { 'id' => 'awscred2', 'type' => 'aws', 'access_key' => 'aws_key2', 'secret_key' => 'aws_secret2'},
-                                              { 'id' => 'myfile1', 'type' => 'file', 'filename' => 'my_file1.txt', 'content' => 'spec testfile content 1'},
-                                              { 'id' => 'myfile2', 'type' => 'file', 'filename' => 'my_file2.txt', 'content' => 'spec testfile content 2'},
-                                              { 'id' => 'userpass1', 'type' => 'username_password', 'username' => 'foo1', 'password' => 'bar1'},
-                                              { 'id' => 'userpass2', 'type' => 'username_password', 'username' => 'foo2', 'password' => 'bar2'},
-                                            ],
-          'global_libraries'             => [
-                                              {
-                                                'git_url'       => 'git@foo.com:bar/baz.git',
-                                                'git_ref'       => 'develop',
-                                                'credential_id' => 'gitkey'
-                                              },
-                                              {
-                                                'git_url'       => 'git@example.com:org/repo.git',
-                                                'git_ref'       => 'main',
-                                                'credential_id' => 'mygitcred'
-                                              }
-                                            ],
-          'pipelines'                    => [
-                                              {
-                                                'name'          => 'baz',
-                                                'git_url'       => 'git@github.com:bar/baz.git',
-                                                'git_ref'       => 'refs/heads/develop',
-                                                'credential_id' => 'gitkey',
-                                                'keep_builds'   => 10
-                                              },
-                                              {
-                                                'name'          => 'repo',
-                                                'git_url'       => 'git@example.com:org/repo.git',
-                                                'git_ref'       => 'main',
-                                                'credential_id' => 'mygitcred',
-                                                'keep_builds'   => 2
-                                              }
-                                            ],
-          'views'                        => [{ 'name' => 'myview', 'regex' => 'myregex.*' }],
-          'users'                        => [
-                                              {'id' => 'user1', 'name' => 'User One', 'password' => 'passw0rd1', 'email' => 'user1@example.com'},
-                                              {'id' => 'user2', 'name' => 'User Two', 'password' => 'passw0rd2', 'email' => 'user2@example.com'}
-                                            ]
+          'url'                 => 'https://builds.foobar.com/',
+          'admin_password'      => 'letmein',
+          'docker_registry_url' => 'https://docker2.registry.com/',
+          'credentials'         => [
+                                     { 'id' => 'token1', 'type' => 'string', 'secret' => 'secret1' },
+                                     { 'id' => 'token2', 'type' => 'string', 'secret' => 'secret2' },
+                                     { 'id' => 'key1', 'type' => 'private_key', 'key' => 'privkey1' },
+                                     { 'id' => 'key2', 'type' => 'private_key', 'key' => 'privkey2' },
+                                     { 'id' => 'awscred1', 'type' => 'aws', 'access_key' => 'aws_key1', 'secret_key' => 'aws_secret1' },
+                                     { 'id' => 'awscred2', 'type' => 'aws', 'access_key' => 'aws_key2', 'secret_key' => 'aws_secret2' },
+                                     { 'id' => 'myfile1', 'type' => 'file', 'filename' => 'my_file1.txt', 'content' => 'spec testfile content 1' },
+                                     { 'id' => 'myfile2', 'type' => 'file', 'filename' => 'my_file2.txt', 'content' => 'spec testfile content 2' },
+                                     { 'id' => 'userpass1', 'type' => 'username_password', 'username' => 'foo1', 'password' => 'bar1' },
+                                     { 'id' => 'userpass2', 'type' => 'username_password', 'username' => 'foo2', 'password' => 'bar2' },
+                                   ],
+          'global_libraries'    => [
+                                     {
+                                       'git_url'       => 'git@foo.com:bar/baz.git',
+                                       'git_ref'       => 'develop',
+                                       'credential_id' => 'gitkey'
+                                     },
+                                     {
+                                       'git_url'       => 'git@example.com:org/repo.git',
+                                       'git_ref'       => 'main',
+                                       'credential_id' => 'mygitcred'
+                                     }
+                                   ],
+          'pipelines'           => [
+                                     {
+                                       'name'          => 'baz',
+                                       'git_url'       => 'git@github.com:bar/baz.git',
+                                       'git_ref'       => 'refs/heads/develop',
+                                       'credential_id' => 'gitkey',
+                                       'keep_builds'   => 10
+                                     },
+                                     {
+                                       'name'          => 'repo',
+                                       'git_url'       => 'git@example.com:org/repo.git',
+                                       'git_ref'       => 'main',
+                                       'credential_id' => 'mygitcred',
+                                       'keep_builds'   => 2
+                                     }
+                                   ],
+          'views'               => [{ 'name' => 'myview', 'regex' => 'myregex.*' }],
+          'users'               => [
+                                     { 'id' => 'user1', 'name' => 'User One', 'password' => 'passw0rd1', 'email' => 'user1@example.com' },
+                                     { 'id' => 'user2', 'name' => 'User Two', 'password' => 'passw0rd2', 'email' => 'user2@example.com' }
+                                   ]
         } }
 
         it { is_expected.to contain_profiles__jenkins__plugin('configuration-as-code').with(
@@ -395,12 +383,12 @@ describe 'profiles::jenkins::controller::configuration' do
           'ensure'        => 'present',
           'restart'       => false,
           'configuration' => [
-                               { 'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'},
-                               { 'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'},
-                               { 'id' => 'myfile1', 'type' => 'file', 'filename' => 'my_file1.txt', 'content' => 'spec testfile content 1'},
-                               { 'id' => 'myfile2', 'type' => 'file', 'filename' => 'my_file2.txt', 'content' => 'spec testfile content 2'},
-                               { 'id' => 'userpass1', 'type' => 'username_password', 'username' => 'foo1', 'password' => 'bar1'},
-                               { 'id' => 'userpass2', 'type' => 'username_password', 'username' => 'foo2', 'password' => 'bar2'}
+                               { 'id' => 'token1', 'type' => 'string', 'secret' => 'secret1' },
+                               { 'id' => 'token2', 'type' => 'string', 'secret' => 'secret2' },
+                               { 'id' => 'myfile1', 'type' => 'file', 'filename' => 'my_file1.txt', 'content' => 'spec testfile content 1' },
+                               { 'id' => 'myfile2', 'type' => 'file', 'filename' => 'my_file2.txt', 'content' => 'spec testfile content 2' },
+                               { 'id' => 'userpass1', 'type' => 'username_password', 'username' => 'foo1', 'password' => 'bar1' },
+                               { 'id' => 'userpass2', 'type' => 'username_password', 'username' => 'foo2', 'password' => 'bar2' }
                              ]
         ) }
 
@@ -408,8 +396,8 @@ describe 'profiles::jenkins::controller::configuration' do
           'ensure'        => 'present',
           'restart'       => false,
           'configuration' => [
-                               { 'id' => 'key1', 'type' => 'private_key', 'key' => 'privkey1'},
-                               { 'id' => 'key2', 'type' => 'private_key', 'key' => 'privkey2'}
+                               { 'id' => 'key1', 'type' => 'private_key', 'key' => 'privkey1' },
+                               { 'id' => 'key2', 'type' => 'private_key', 'key' => 'privkey2' }
                              ]
         ) }
 
@@ -417,8 +405,8 @@ describe 'profiles::jenkins::controller::configuration' do
           'ensure'        => 'present',
           'restart'       => false,
           'configuration' => [
-                               { 'id' => 'awscred1', 'type' => 'aws', 'access_key' => 'aws_key1', 'secret_key' => 'aws_secret1'},
-                               { 'id' => 'awscred2', 'type' => 'aws', 'access_key' => 'aws_key2', 'secret_key' => 'aws_secret2'}
+                               { 'id' => 'awscred1', 'type' => 'aws', 'access_key' => 'aws_key1', 'secret_key' => 'aws_secret1' },
+                               { 'id' => 'awscred2', 'type' => 'aws', 'access_key' => 'aws_key2', 'secret_key' => 'aws_secret2' }
                              ]
         ) }
 
@@ -464,9 +452,8 @@ describe 'profiles::jenkins::controller::configuration' do
           'ensure'        => 'present',
           'restart'       => false,
           'configuration' => {
-                               'docker_label'                 => 'docker',
-                               'docker_registry_url'          => 'https://docker2.registry.com/',
-                               'docker_registry_credentialid' => 'my_docker_cred2'
+                               'docker_label'        => 'docker',
+                               'docker_registry_url' => 'https://docker2.registry.com/'
                              }
         ) }
 

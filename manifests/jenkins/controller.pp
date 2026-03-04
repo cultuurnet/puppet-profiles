@@ -1,19 +1,18 @@
 class profiles::jenkins::controller (
   Stdlib::Httpurl           $url,
   String                    $admin_password,
-  String                    $version                      = 'latest',
-  Boolean                   $lvm                          = false,
-  Optional[String]          $volume_group                 = undef,
-  Optional[String]          $volume_size                  = undef,
-  Optional[String]          $certificate                  = undef,
-  Optional[Stdlib::Httpurl] $docker_registry_url          = undef,
-  Optional[String]          $docker_registry_credentialid = undef,
-  Variant[Array,Hash]       $credentials                  = [],
-  Variant[Array,Hash]       $global_libraries             = [],
-  Variant[Array,Hash]       $pipelines                    = [],
-  Variant[Array,Hash]       $views                        = [],
-  Variant[Array,Hash]       $users                        = [],
-  Optional[String]          $puppetdb_url                 = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+  String                    $version             = 'latest',
+  Boolean                   $lvm                 = false,
+  Optional[String]          $volume_group        = undef,
+  Optional[String]          $volume_size         = undef,
+  Optional[String]          $certificate         = undef,
+  Optional[Stdlib::Httpurl] $docker_registry_url = undef,
+  Variant[Array,Hash]       $credentials         = [],
+  Variant[Array,Hash]       $global_libraries    = [],
+  Variant[Array,Hash]       $pipelines           = [],
+  Variant[Array,Hash]       $views               = [],
+  Variant[Array,Hash]       $users               = [],
+  Optional[String]          $puppetdb_url        = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   include ::profiles::java
@@ -62,17 +61,16 @@ class profiles::jenkins::controller (
   }
 
   class { '::profiles::jenkins::controller::configuration':
-    url                          => $url,
-    admin_password               => $admin_password,
-    docker_registry_url          => $docker_registry_url,
-    docker_registry_credentialid => $docker_registry_credentialid,
-    credentials                  => $credentials,
-    global_libraries             => $global_libraries,
-    pipelines                    => $pipelines,
-    views                        => $views,
-    users                        => $users,
-    puppetdb_url                 => $puppetdb_url,
-    require                      => [ Class['profiles::jenkins::controller::service'], Class['profiles::jenkins::cli']]
+    url                 => $url,
+    admin_password      => $admin_password,
+    docker_registry_url => $docker_registry_url,
+    credentials         => $credentials,
+    global_libraries    => $global_libraries,
+    pipelines           => $pipelines,
+    views               => $views,
+    users               => $users,
+    puppetdb_url        => $puppetdb_url,
+    require             => [ Class['profiles::jenkins::controller::service'], Class['profiles::jenkins::cli']]
   }
 
   if $certificate {
