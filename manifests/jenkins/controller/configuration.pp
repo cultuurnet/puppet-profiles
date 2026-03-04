@@ -2,7 +2,6 @@ class profiles::jenkins::controller::configuration(
   Stdlib::Httpurl            $url,
   String                     $admin_password,
   Optional[Stdlib::Httpurl]  $docker_registry_url          = undef,
-  Optional[String]           $docker_registry_credentialid = undef,
   Variant[Hash, Array[Hash]] $credentials                  = [],
   Variant[Hash, Array[Hash]] $global_libraries             = [],
   Variant[Hash, Array[Hash]] $pipelines                    = [],
@@ -25,7 +24,6 @@ class profiles::jenkins::controller::configuration(
   profiles::jenkins::plugin { 'pipeline-utility-steps': }
   profiles::jenkins::plugin { 'ssh-steps': }
   profiles::jenkins::plugin { 'blueocean': }
-  profiles::jenkins::plugin { 'amazon-ecr': }
   profiles::jenkins::plugin { 'uno-choice': }
   profiles::jenkins::plugin { 'parameterized-scheduler': }
   profiles::jenkins::plugin { 'pipeline-stage-view': }
@@ -86,11 +84,9 @@ class profiles::jenkins::controller::configuration(
 
   profiles::jenkins::plugin { 'docker-workflow':
     configuration => {
-                       'docker_label'                 => 'docker',
-                       'docker_registry_url'          => $docker_registry_url,
-                       'docker_registry_credentialid' => $docker_registry_credentialid
+                       'docker_label'        => 'docker',
+                       'docker_registry_url' => $docker_registry_url
                      },
-    require       => Profiles::Jenkins::Plugin['amazon-ecr'],
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
 
