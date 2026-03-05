@@ -505,12 +505,11 @@ describe 'profiles::jenkins::plugin' do
       context "with title docker-workflow" do
         let(:title) { 'docker-workflow' }
 
-        context "with configuration => {'docker_label' => 'docker', 'docker_registry_url' => nil, 'docker_registry_credentialid' => nil }" do
+        context "with configuration => {'docker_label' => 'docker', 'docker_registry_url' => nil }" do
           let(:params) { {
             'configuration' => {
-                                 'docker_label'                 => 'docker',
-                                 'docker_registry_url'          => nil,
-                                 'docker_registry_credentialid' => nil
+                                 'docker_label'        => 'docker',
+                                 'docker_registry_url' => nil
                                }
           } }
 
@@ -524,32 +523,28 @@ describe 'profiles::jenkins::plugin' do
           it { is_expected.to contain_file('docker-workflow configuration').with_content(/^\s*dockerLabel: 'docker'$/) }
         end
 
-        context "with configuration => {'docker_label' => 'docker', 'docker_registry_url' => 'https://docker.registry.com/', 'docker_registry_credentialid' => 'my_docker_cred' }" do
+        context "with configuration => {'docker_label' => 'docker', 'docker_registry_url' => 'https://docker.registry.com/' }" do
           let(:params) { {
             'configuration' => {
-                                 'docker_label'                 => 'docker',
-                                 'docker_registry_url'          => 'https://docker.registry.com/',
-                                 'docker_registry_credentialid' => 'my_docker_cred'
+                                 'docker_label'        => 'docker',
+                                 'docker_registry_url' => 'https://docker.registry.com/'
                                }
           } }
 
           it { is_expected.to contain_file('docker-workflow configuration').with_content(/^\s*dockerLabel: 'docker'$/) }
           it { is_expected.to contain_file('docker-workflow configuration').with_content(/^\s*url: 'https:\/\/docker.registry.com\/'$/) }
-          it { is_expected.to contain_file('docker-workflow configuration').with_content(/^\s*credentialsId: 'my_docker_cred'$/) }
         end
 
-        context "with configuration => {'docker_label' => 'docker2', 'docker_registry_url' => 'https://docker2.registry.com/', 'docker_registry_credentialid' => 'my_docker_cred2' }" do
+        context "with configuration => {'docker_label' => 'docker2', 'docker_registry_url' => 'https://docker2.registry.com/' }" do
           let(:params) { {
             'configuration' => {
-                                 'docker_label'                 => 'docker2',
-                                 'docker_registry_url'          => 'https://docker2.registry.com/',
-                                 'docker_registry_credentialid' => 'my_docker_cred2'
+                                 'docker_label'        => 'docker2',
+                                 'docker_registry_url' => 'https://docker2.registry.com/'
                                }
           } }
 
           it { is_expected.to contain_file('docker-workflow configuration').with_content(/^\s*dockerLabel: 'docker2'$/) }
           it { is_expected.to contain_file('docker-workflow configuration').with_content(/^\s*url: 'https:\/\/docker2.registry.com\/'$/) }
-          it { is_expected.to contain_file('docker-workflow configuration').with_content(/^\s*credentialsId: 'my_docker_cred2'$/) }
         end
       end
 
