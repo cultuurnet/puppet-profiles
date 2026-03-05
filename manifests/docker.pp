@@ -1,9 +1,11 @@
 class profiles::docker (
-  Boolean          $experimental   = false,
-  Boolean          $schedule_prune = false,
-  Boolean          $lvm            = false,
-  Optional[String] $volume_group   = undef,
-  Optional[String] $volume_size    = undef
+  Boolean                        $experimental   = false,
+  Boolean                        $schedule_prune = false,
+  Boolean                        $lvm            = false,
+  Optional[String]               $volume_group   = undef,
+  Optional[String]               $volume_size    = undef,
+  Variant[String, Array[String]] $ecr_registries = [],
+  Variant[String, Array[String]] $ecr_users      = []
 ) inherits ::profiles {
 
   $data_dir = '/var/lib/docker'
@@ -50,6 +52,11 @@ class profiles::docker (
     docker_users                => [],
     extra_parameters            => [ "--experimental=${experimental}"],
     require                     => Apt::Source['docker']
+  }
+
+  class { profiles::docker::ecr_login:
+    registries => $ecr_registries,
+    users      => $ecr_users
   }
 
   collectd::plugin::filter::rule { 'ignore_docker_mounts':
