@@ -17,7 +17,9 @@ describe 'profiles::docker' do
           'schedule_prune' => false,
           'lvm'            => false,
           'volume_group'   => nil,
-          'volume_size'    => nil
+          'volume_size'    => nil,
+          'ecr_registries' => [],
+          'ecr_users'      => []
         ) }
 
         it { is_expected.to contain_file('/var/lib/docker').with(
@@ -34,6 +36,11 @@ describe 'profiles::docker' do
 
         it { is_expected.to_not contain_profiles__lvm__mount('dockerdata') }
         it { is_expected.to_not contain_mount('/var/lib/docker') }
+
+        it { is_expected.to contain_class('profiles::docker::ecr_login').with(
+          'registries' => [],
+          'users'      => []
+        ) }
 
         it { is_expected.to_not contain_package('qemu-user-static') }
 
@@ -65,13 +72,15 @@ describe 'profiles::docker' do
         it { is_expected.to contain_file('/var/lib/docker').that_comes_before('Class[docker]') }
       end
 
-      context "with experimental => true, lvm => true, volume_group => dockervg, volume_size => 5G and schedule_prune => true" do
+      context "with experimental => true, lvm => true, volume_group => dockervg, volume_size => 5G, ecr_registries => my.registry.com, ecr_users => ubuntu and schedule_prune => true" do
         let(:params) { {
           'experimental'   => true,
           'schedule_prune' => true,
           'lvm'            => true,
           'volume_group'   => 'dockervg',
-          'volume_size'    => '5G'
+          'volume_size'    => '5G',
+          'ecr_registries' => 'my.registry.com',
+          'ecr_users'      => 'ubuntu'
         } }
 
         context "with volume_group dockervg present" do
@@ -109,6 +118,11 @@ describe 'profiles::docker' do
 
           it { is_expected.to contain_package('qemu-user-static') }
 
+          it { is_expected.to contain_class('profiles::docker::ecr_login').with(
+            'registries' => 'my.registry.com',
+            'users'      => 'ubuntu'
+          ) }
+
           it { is_expected.to contain_cron('docker system prune').with(
             'ensure'      => 'present',
             'command'     => '/usr/bin/docker system prune -f -a --volumes',
@@ -125,11 +139,13 @@ describe 'profiles::docker' do
         end
       end
 
-      context "with lvm => true, volume_group => myvg and volume_size => 10G" do
+      context "with lvm => true, volume_group => myvg, volume_size => 10G, ecr_registries => [ registry1.com, registry2.com] and ecr_users => [jenkins, root]" do
         let(:params) { {
           'lvm'            => true,
           'volume_group'   => 'myvg',
-          'volume_size'    => '10G'
+          'volume_size'    => '10G',
+          'ecr_registries' => ['registry1.com', 'registry2.com'],
+          'ecr_users'      => ['jenkins', 'root']
         } }
 
         context "with volume_group myvg present" do
@@ -155,6 +171,11 @@ describe 'profiles::docker' do
 
           it { is_expected.to contain_file('/var/lib/docker').with(
             'ensure' => 'directory'
+          ) }
+
+          it { is_expected.to contain_class('profiles::docker::ecr_login').with(
+            'registries' => ['registry1.com', 'registry2.com'],
+            'users'      => ['jenkins', 'root']
           ) }
 
           it { is_expected.to contain_mount('/var/lib/docker').that_requires('Profiles::Lvm::Mount[dockerdata]') }
