@@ -2,29 +2,19 @@
   def stringify_keys(value)
     case value
     when String
-      if value.empty? || value.strip.empty?
-        raise ArgumentError, "Empty or blank string value found: '#{value}'"
-      end
+      raise ArgumentError, "Empty or blank string value found: '#{value}'" if value.strip.empty?
       value
     when Numeric, TrueClass, FalseClass
       value.to_s
     when Hash
-      if value.empty?
-        raise ArgumentError, "Empty hash found"
+      raise ArgumentError, "Empty hash found" if value.empty?
+      value.to_h do |k, v|
+        raise ArgumentError, "Nil value found for key '#{k}'" if v.nil?
+        [k.to_s, stringify_keys(v)]
       end
-      result = {}
-      value.each_pair do |k, v|
-        if v.nil?
-          raise ArgumentError, "Nil value found for key '#{k}'"
-        end
-        result[k.to_s] = stringify_keys v
-      end
-      result
     when Array
-      if value.empty?
-        raise ArgumentError, "Empty array found"
-      end
-      value.map { |v| stringify_keys v }
+      raise ArgumentError, "Empty array found" if value.empty?
+      value.map { |v| stringify_keys(v) }
     when NilClass
       raise ArgumentError, "Nil value found"
     else
