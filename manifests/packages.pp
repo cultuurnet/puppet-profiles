@@ -166,6 +166,10 @@ class profiles::packages inherits ::profiles {
     ensure  => 'present'
   }
 
+  @package { 'amazon-ecr-credential-helper':
+    ensure  => 'present'
+  }
+
   # Realize a list of 'default' packages on all nodes
   realize Package['jq']
   realize Package['yq']
