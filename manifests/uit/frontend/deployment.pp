@@ -7,8 +7,9 @@ class profiles::uit::frontend::deployment (
   Stdlib::IP::Address::V4    $service_address      = '127.0.0.1',
   Integer                    $service_port         = 3000,
   Boolean                    $service_watchdog     = false,
-  Optional[String]           $newrelic_license_key = undef,
-  Optional[String]           $newrelic_app_name    = undef,
+  Optional[String]           $newrelic_license_key = lookup('data::newrelic::license_key', Optional[String], 'first', undef),
+  Optional[String]           $newrelic_app_name    = "uit-frontend-${environment}",
+  Boolean                    $newrelic_tracing     = false,
   Optional[String]           $puppetdb_url         = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
