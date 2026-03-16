@@ -60,7 +60,7 @@ describe 'profiles::uit::frontend::deployment' do
             ) }
 
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^HOST=127.0.0.1$/) }
-            it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NUXT_PORT=3000$/) }
+            it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^PORT=3000$/) }
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NODE_OPTIONS=--max_old_space_size=512$/) }
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NUXT_TELEMETRY_DISABLED=1$/) }
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NEW_RELIC_LICENSE_KEY=my_license_key$/) }
@@ -127,7 +127,7 @@ describe 'profiles::uit::frontend::deployment' do
             it { is_expected.to contain_file('uit-frontend-config').with_content(/key=value/) }
 
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^HOST=0.0.0.0$/) }
-            it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NUXT_PORT=3456$/) }
+            it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^PORT=3456$/) }
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NODE_OPTIONS=--max_old_space_size=1024$/) }
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NEW_RELIC_LICENSE_KEY=foo$/) }
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NEW_RELIC_APP_NAME=bar$/) }
