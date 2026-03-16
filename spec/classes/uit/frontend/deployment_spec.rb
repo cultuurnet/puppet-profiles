@@ -38,8 +38,6 @@ describe 'profiles::uit::frontend::deployment' do
             it { is_expected.to contain_user('www-data') }
 
             it { is_expected.to contain_package('uit-frontend').with( 'ensure' => 'latest') }
-            it { is_expected.to contain_package('uit-frontend').that_notifies('Profiles::Deployment::Versions[profiles::uit::frontend::deployment]') }
-            it { is_expected.to contain_package('uit-frontend').that_requires('Apt::Source[uit-frontend]') }
 
             it { is_expected.to contain_file('uit-frontend-config').with(
               'ensure' => 'file',
@@ -49,8 +47,6 @@ describe 'profiles::uit::frontend::deployment' do
             ) }
 
             it { is_expected.to contain_file('uit-frontend-config').with_content(/key=value/) }
-
-            it { is_expected.to contain_file('uit-frontend-config').that_requires('Package[uit-frontend]') }
 
             it { is_expected.to contain_file('uit-frontend-service-defaults').with(
               'ensure' => 'file',
@@ -83,7 +79,10 @@ describe 'profiles::uit::frontend::deployment' do
               'puppetdb_url' => 'http://localhost:8081'
             ) }
 
+            it { is_expected.to contain_package('uit-frontend').that_requires('Apt::Source[uit-frontend]') }
             it { is_expected.to contain_package('uit-frontend').that_notifies('Service[uit-frontend]') }
+            it { is_expected.to contain_package('uit-frontend').that_notifies('Profiles::Deployment::Versions[profiles::uit::frontend::deployment]') }
+            it { is_expected.to contain_file('uit-frontend-config').that_requires('Package[uit-frontend]') }
             it { is_expected.to contain_file('uit-frontend-config').that_requires('Group[www-data]') }
             it { is_expected.to contain_file('uit-frontend-config').that_requires('User[www-data]') }
             it { is_expected.to contain_file('uit-frontend-config').that_notifies('Service[uit-frontend]') }
