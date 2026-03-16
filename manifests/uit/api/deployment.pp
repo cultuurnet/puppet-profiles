@@ -4,9 +4,11 @@ class profiles::uit::api::deployment (
   String                     $version              = 'latest',
   String                     $repository           = 'uit-api',
   Enum['running', 'stopped'] $service_status       = 'running',
+  String                     $service_address      = '127.0.0.1',
   Integer                    $service_port         = 4000,
-  Optional[String]           $newrelic_license_key = undef,
-  Optional[String]           $newrelic_app_name    = undef,
+  Optional[String]           $newrelic_license_key = lookup('data::newrelic::license_key', Optional[String], 'first', undef),
+  String                     $newrelic_app_name    = "uit-api-${environment}",
+  Boolean                    $newrelic_tracing     = false,
   Optional[String]           $puppetdb_url         = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
@@ -30,7 +32,6 @@ class profiles::uit::api::deployment (
     group   => 'www-data',
     content  => template($config_source),
     require => [Package['uit-api'], Group['www-data'], User['www-data']],
-    # notify  => [Exec['uit-api-graphql-schema-update'], Service['uit-api']]
     notify  => Service['uit-api']
   }
 
@@ -52,21 +53,6 @@ class profiles::uit::api::deployment (
     content => template('profiles/uit/api/deployment/uit-api.erb'),
     notify  => Service['uit-api']
   }
-
-  # 2024-05-16: temp disable, requested by Simon
-  # because of Graphql upgrade
-  #
-  # exec { 'uit-api-graphql-schema-update':
-  #   command     => 'yarn graphql typeorm migration:run',
-  #   cwd         => $basedir,
-  #   user        => 'www-data',
-  #   group       => 'www-data',
-  #   path        => [ '/usr/local/bin', '/usr/bin', '/bin', $basedir],
-  #   refreshonly => true,
-  #   require     => [Group['www-data'], User['www-data']],
-  #   subscribe   => [Package['uit-api'], File['uit-api-config-graphql']],
-  #   notify      => Service['uit-api']
-  # }
 
   exec { 'uit-api-db-schema-update':
     command     => 'yarn db typeorm migration:run',
