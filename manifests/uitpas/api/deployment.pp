@@ -7,6 +7,7 @@ class profiles::uitpas::api::deployment (
   Boolean          $service_watchdog             = false,
   Integer          $healthcheck_timeout_seconds  = 160,
   Integer          $healthcheck_interval_seconds = 20,
+  Integer          $healthcheck_initial_wait_seconds = 30,
   Optional[String] $puppetdb_url                 = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits profiles {
   $database_name = 'uitpas_api'
@@ -57,6 +58,7 @@ class profiles::uitpas::api::deployment (
     },
     check_interval_seconds => $healthcheck_interval_seconds,
     timeout_seconds        => $healthcheck_timeout_seconds,
+    initial_wait_seconds   => $healthcheck_initial_wait_seconds,
     healthcheck            => template('profiles/uitpas/api/deployment/service_healthcheck.erb'),
   }
   profiles::deployment::versions { $title:
