@@ -12,10 +12,11 @@ describe 'profiles::systemd::service_watchdog' do
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_profiles__systemd__service_watchdog('foo').with(
-            'ensure'          => 'present',
-            'service'         => 'foo',
-            'timeout_seconds' => 10,
-            'healthcheck'     => '/usr/bin/true'
+            'ensure'               => 'present',
+            'service'              => 'foo',
+            'timeout_seconds'      => 10,
+            'initial_wait_seconds' => 0,
+            'healthcheck'          => '/usr/bin/true'
           ) }
 
           it { is_expected.to contain_file('foo-watchdog').with(
@@ -59,14 +60,16 @@ describe 'profiles::systemd::service_watchdog' do
           it { is_expected.to contain_service('foo-watchdog').that_subscribes_to('File[foo-watchdog]') }
         end
 
-        context 'with service => bar, timeout_seconds => 15 and healthcheck => test -f /tmp/watchdog_file_present' do
+        context 'with service => bar, timeout_seconds => 15, initial_wait_seconds => 20 and healthcheck => test -f /tmp/watchdog_file_present' do
           let(:params) { {
             'service'         => 'bar',
             'timeout_seconds' => 15,
+            'initial_wait_seconds' => 20,
             'healthcheck'     => 'test -f /tmp/watchdog_file_present'
           } }
 
           it { is_expected.to contain_file('foo-watchdog').with_content(/CHECK_INTERVAL_SECONDS=3/) }
+          it { is_expected.to contain_file('foo-watchdog').with_content(/HEALTHCHECK_INITIAL_WAIT_SECONDS=20/) }
           it { is_expected.to contain_file('foo-watchdog').with_content(/test -f \/tmp\/watchdog_file_present/) }
 
           it { is_expected.to contain_systemd__unit_file('foo-watchdog.service').with_content(/Description=Watchdog service for bar/) }
@@ -130,9 +133,10 @@ describe 'profiles::systemd::service_watchdog' do
           it { is_expected.to contain_file('baz-watchdog').with_content(/test -f \/tmp\/snafu/) }
         end
 
-        context 'with timeout_seconds => 20 and check_interval_seconds => 30' do
+        context 'with timeout_seconds => 20, initial_wait_seconds => 30 and check_interval_seconds => 30' do
           let(:params) { {
             'timeout_seconds'        => 20,
+            'initial_wait_seconds'   => 30,
             'check_interval_seconds' => 30
           } }
 
