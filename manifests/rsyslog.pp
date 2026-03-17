@@ -96,7 +96,7 @@ class profiles::rsyslog {
                                      },
                        'emerg'    => {
                                        'type'     => 'omusrmsg',
-                                       'facility' => 'emerg.*',
+                                       'facility' => '*.emerg',
                                        'target'   => '99_default.conf',
                                        'priority' => 50,
                                        'config'   => {
