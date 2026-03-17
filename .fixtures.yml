@@ -132,6 +132,9 @@ fixtures:
     puppet-openssl:
       repo: 'puppet/openssl'
       ref: '2.0.1'
+    rsyslog:
+      repo: 'puppet/rsyslog'
+      ref: '7.3.0'
   repositories:
     filebeat:
       repo: 'https://github.com/cultuurnet/puppet-filebeat.git'
