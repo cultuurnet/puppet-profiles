@@ -15,7 +15,7 @@ describe 'profiles::systemd::service_watchdog' do
             'ensure'               => 'present',
             'service'              => 'foo',
             'timeout_seconds'      => 10,
-            'initial_wait_seconds' => 30,
+            'initial_wait_seconds' => 0,
             'healthcheck'          => '/usr/bin/true'
           ) }
 
