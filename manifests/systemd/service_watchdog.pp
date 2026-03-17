@@ -2,6 +2,7 @@ define profiles::systemd::service_watchdog (
   Enum['present', 'absent'] $ensure                 = 'present',
   String                    $service                = $title,
   Integer                   $timeout_seconds        = 10,
+  Integer                   $initial_wait_seconds   = 0,
   Integer                   $check_interval_seconds = floor($timeout_seconds / 4),
   String                    $healthcheck            = '/usr/bin/true'
 ) {

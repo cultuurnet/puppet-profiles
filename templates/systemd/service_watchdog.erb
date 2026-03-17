@@ -2,8 +2,14 @@
 
 SERVICE=<%= @service %>
 HEALTHCHECK_INTERVAL_SECONDS=<%= @check_interval_seconds %>
+HEALTHCHECK_INITIAL_WAIT_SECONDS=<%= @initial_wait_seconds %>
 
 /usr/bin/systemd-notify --ready
+
+for ((i=0; i<${HEALTHCHECK_INITIAL_WAIT_SECONDS}; i++)); do
+    /usr/bin/systemd-notify WATCHDOG=1
+    /usr/bin/sleep 1
+done
 
 function service_healthcheck() {
     /usr/bin/systemctl -q is-active ${SERVICE} || return 0
