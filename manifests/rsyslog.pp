@@ -1,6 +1,8 @@
-class profiles::rsyslog {
+class profiles::rsyslog inherits ::profiles {
 
-  include ::rsyslog
+  class { '::rsyslog':
+    target_file => '00_rsyslog.conf'
+  }
 
   class { 'rsyslog::config':
     modules       => {
