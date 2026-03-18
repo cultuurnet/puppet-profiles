@@ -210,7 +210,8 @@ class profiles::uit::frontend (
   }
 
   class { 'profiles::uit::frontend::logging':
-    servername => $servername
+    servername => $servername,
+    deployment => $deployment
   }
 
   # include ::profiles::uit::frontend::monitoring

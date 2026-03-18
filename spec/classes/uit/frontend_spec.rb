@@ -55,7 +55,8 @@ describe 'profiles::uit::frontend' do
             ) }
 
             it { is_expected.to contain_class('profiles::uit::frontend::logging').with(
-              'servername' => 'foo.example.com'
+              'servername' => 'foo.example.com',
+              'deployment' => true
             ) }
 
             it { is_expected.to contain_apache__vhost('foo.example.com_80').with(
@@ -288,6 +289,11 @@ describe 'profiles::uit::frontend' do
 
           it { is_expected.to contain_class('profiles::nodejs') }
           it { is_expected.to_not contain_class('profiles::uit::frontend::deployment') }
+
+          it { is_expected.to contain_class('profiles::uit::frontend::logging').with(
+            'servername' => 'foo.example.com',
+            'deployment' => false
+          ) }
         end
       end
     end
@@ -310,7 +316,8 @@ describe 'profiles::uit::frontend' do
           ) }
 
           it { is_expected.to contain_class('profiles::uit::frontend::logging').with(
-            'servername' => 'bar.example.com'
+            'servername' => 'bar.example.com',
+            'deployment' => true
           ) }
 
           it { is_expected.to contain_apache__vhost('bar.example.com_80').that_requires('Class[profiles::uit::frontend::deployment]') }
