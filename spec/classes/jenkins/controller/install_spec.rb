@@ -34,12 +34,12 @@ describe 'profiles::jenkins::controller::install' do
           'ensure'   => 'present',
           'variable' => 'JAVA_ARGS',
           'target'   => '/etc/default/jenkins',
-          'value'    => '-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Dcasc.jenkins.config=/var/lib/jenkins/casc_config'
+          'value'    => '-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Dcasc.jenkins.config=/var/lib/jenkins/casc_config -Dhudson.cli.CLIAction.ACCEPT_URL_FROM_REQUEST=true'
         ) }
 
         it { is_expected.to contain_systemd__dropin_file('override.conf').with(
           'unit'    => 'jenkins.service',
-          'content' => "[Service]\nEnvironment=\"JAVA_OPTS=-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Dcasc.jenkins.config=/var/lib/jenkins/casc_config\""
+          'content' => "[Service]\nEnvironment=\"JAVA_OPTS=-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Dcasc.jenkins.config=/var/lib/jenkins/casc_config -Dhudson.cli.CLIAction.ACCEPT_URL_FROM_REQUEST=true\""
         ) }
 
         it { is_expected.to contain_file('casc_config').that_requires('User[jenkins]') }
