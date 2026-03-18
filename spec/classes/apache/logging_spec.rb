@@ -10,14 +10,14 @@ describe 'profiles::apache::logging' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::logrotate') }
-        it { is_expected.to contain_class('profiles::apache::logging').with( 
 
-          'keep_logs_days' => 21,
+        it { is_expected.to contain_class('profiles::apache::logging').with(
+          'retention_days' => 21,
         ) }
 
         it { is_expected.to contain_logrotate__rule('apache2').with(
           'path'          => '/var/log/apache2/*.log',
-          'rotate'        => 21,
+          'rotate'        => 20,
           'rotate_every'  => 'day',
           'create'        => true,
           'create_mode'   => '0640',
@@ -29,14 +29,14 @@ describe 'profiles::apache::logging' do
           'postrotate'    => 'systemctl status apache2 > /dev/null 2>&1 && systemctl reload apache2 > /dev/null 2>&1'
         ) }
       end
-      context 'with keep_logs_days => 30' do
+      context 'with retention_days => 30' do
         let(:params) { {
-          'keep_logs_days' => 30
+          'retention_days' => 30
         } }
 
         it { is_expected.to contain_logrotate__rule('apache2').with(
           'path'          => '/var/log/apache2/*.log',
-          'rotate'        => 30,
+          'rotate'        => 29,
           'rotate_every'  => 'day',
           'create'        => true,
           'create_mode'   => '0640',
