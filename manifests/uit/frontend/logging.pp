@@ -1,5 +1,6 @@
 class profiles::uit::frontend::logging (
-  String $servername
+  String  $servername,
+  Boolean $deployment = true
 ) inherits ::profiles {
 
   $log_type = 'uit::frontend::access'
@@ -32,4 +33,11 @@ class profiles::uit::frontend::logging (
   # if $settings::storeconfigs {
   #   Profiles::Logstash::Filter_fragment <<| |>>
   # }
+
+  if $deployment {
+    profiles::rsyslog::tag_filter { 'uit-frontend':
+      syslogtag   => 'uit-frontend',
+      destination => '/var/log/uit-frontend.log'
+    }
+  }
 }
