@@ -57,6 +57,10 @@ class profiles::rsyslog inherits ::profiles {
                        'WorkDirectory' => {
                          'value' => '/var/spool/rsyslog',
                          'type'  => 'legacy'
+                       },
+                       'AddUnixListenSocket' => {
+                         'value' => '/var/spool/postfix/dev/log',
+                         'type'  => 'legacy'
                        }
                      },
     actions       => {
