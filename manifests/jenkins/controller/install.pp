@@ -3,7 +3,7 @@ class profiles::jenkins::controller::install (
 ) inherits ::profiles {
 
   $config_dir = '/var/lib/jenkins/casc_config'
-  $java_opts  = "-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Dcasc.jenkins.config=${config_dir}"
+  $java_opts  = "-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Dcasc.jenkins.config=${config_dir} -Dhudson.cli.CLIAction.ACCEPT_URL_FROM_REQUEST=true"
 
   realize Group['jenkins']
   realize User['jenkins']
