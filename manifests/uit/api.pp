@@ -82,10 +82,9 @@ class profiles::uit::api (
     aliases     => $serveraliases
   }
 
-  #class { 'profiles::uit::api::logging':
-  #  servername => $servername,
-  #  log_type   => ''
-  #}
+  class { 'profiles::uit::api::logging':
+    deployment => $deployment
+  }
 
   # include ::profiles::uit::api::monitoring
   # include ::profiles::uit::api::metrics
