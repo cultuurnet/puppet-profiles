@@ -62,7 +62,11 @@ describe 'profiles::uit::api' do
           it { is_expected.not_to contain_profiles__mysql__app_user('recommender@uit_api') }
 
           it { is_expected.to contain_class('profiles::uit::api::deployment').with(
-             'service_port' => 4000
+            'service_port' => 4000
+          ) }
+
+          it { is_expected.to contain_class('profiles::uit::api::logging').with(
+            'deployment' => true
           ) }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://foo.example.com').with(
@@ -98,6 +102,10 @@ describe 'profiles::uit::api' do
             it { is_expected.to contain_class('profiles::nodejs') }
             it { is_expected.to_not contain_class('profiles::uit::api::deployment') }
             it { is_expected.not_to contain_profiles__mysql__app_user('recommender@uit_api') }
+
+            it { is_expected.to contain_class('profiles::uit::api::logging').with(
+              'deployment' => false
+            ) }
           end
 
           context 'without hieradata' do
