@@ -24,9 +24,11 @@ class profiles::uit::mail_subscriptions (
     Class['profiles::nodejs'] -> Class['profiles::uit::mail_subscriptions::deployment']
   }
 
+  class { 'profiles::uit::mail_subscriptions::logging':
+    deployment => $deployment
+  }
+
   # include ::profiles::uit::mail_subscriptions::monitoring
   # include ::profiles::uit::mail_subscriptions::metrics
   # include ::profiles::uit::mail_subscriptions::backup
-  # include ::profiles::uit::mail_subscriptions::logging
-
 }

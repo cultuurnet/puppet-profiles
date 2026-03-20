@@ -26,6 +26,10 @@ describe 'profiles::uit::mail_subscriptions' do
           it { is_expected.to contain_class('profiles::nodejs') }
           it { is_expected.to contain_class('profiles::uit::mail_subscriptions::deployment') }
 
+          it { is_expected.to contain_class('profiles::uit::mail_subscriptions::logging').with(
+            'deployment' => true
+          ) }
+
           it { is_expected.to contain_class('profiles::uit::mail_subscriptions::deployment').that_requires('Group[www-data]') }
           it { is_expected.to contain_class('profiles::uit::mail_subscriptions::deployment').that_requires('User[www-data]') }
           it { is_expected.to contain_class('profiles::uit::mail_subscriptions::deployment').that_requires('Class[profiles::nodejs]') }
@@ -56,6 +60,10 @@ describe 'profiles::uit::mail_subscriptions' do
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to_not contain_class('profiles::uit::mail_subscriptions::deployment') }
+
+            it { is_expected.to contain_class('profiles::uit::mail_subscriptions::logging').with(
+              'deployment' => false
+            ) }
           end
         end
 
