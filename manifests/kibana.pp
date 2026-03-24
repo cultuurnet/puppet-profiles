@@ -1,7 +1,7 @@
 class profiles::kibana (
   String                         $servername,
   Variant[String, Array[String]] $serveraliases   = [],
-  String                         $version         = 'latest',
+  String                         $version         = 'present',
   Stdlib::IP::Address::V4        $service_address = '127.0.0.1',
   Stdlib::Port::Unprivileged     $service_port    = 5601,
   Enum['running', 'stopped']     $service_status  = 'running'

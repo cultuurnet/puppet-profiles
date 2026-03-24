@@ -18,7 +18,7 @@ describe 'profiles::kibana' do
           it { is_expected.to contain_class('profiles::kibana').with(
             'servername'      => 'kibana.example.com',
             'serveraliases'   => [],
-            'version'         => 'latest',
+            'version'         => 'present',
             'service_address' => '127.0.0.1',
             'service_port'    => 5601,
             'service_status'  => 'running'
@@ -30,7 +30,7 @@ describe 'profiles::kibana' do
           it { is_expected.to contain_apt__source('elastic-8.x') }
 
           it { is_expected.to contain_package('kibana').with(
-            'ensure' => 'latest'
+            'ensure' => 'present'
           ) }
 
           it { is_expected.to contain_file('kibana config').with(
