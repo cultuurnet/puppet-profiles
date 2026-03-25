@@ -1,6 +1,6 @@
 class profiles::terraform (
-  String $version           = 'latest',
-  String $terrafile_version = 'latest'
+  String $version,
+  String $terrafile_version
 ) inherits ::profiles {
 
   realize Apt::Source['hashicorp']
