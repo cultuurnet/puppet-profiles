@@ -1,4 +1,7 @@
-class profiles::packages inherits ::profiles {
+class profiles::packages (
+  Hash $versions = {}
+)
+inherits ::profiles {
 
   @package { 'composer':
     ensure => 'absent'
@@ -168,6 +171,11 @@ class profiles::packages inherits ::profiles {
 
   @package { 'amazon-ecr-credential-helper':
     ensure  => 'present'
+  }
+
+  @package { 'awscli':
+    ensure  => !!$versions['awscli'] ? { true => $versions['awscli'], default => 'present' },
+    require => Apt::Source['publiq-tools']
   }
 
   # Realize a list of 'default' packages on all nodes
