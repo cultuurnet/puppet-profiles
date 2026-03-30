@@ -145,6 +145,22 @@ describe 'profiles::packages' do
           'ensure' => 'present'
         ) }
 
+        context 'with hieradata' do
+          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
+          it { is_expected.to contain_package('awscli').with(
+            'ensure' => 'latest'
+          ) }
+        end
+
+        context 'without hieradata' do
+          let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
+
+          it { is_expected.to contain_package('awscli').with(
+            'ensure' => 'present'
+          ) }
+        end
+
         it { is_expected.to contain_package('composer1').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('composer2').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('drush').that_requires('Apt::Source[publiq-tools]') }
@@ -160,6 +176,7 @@ describe 'profiles::packages' do
         it { is_expected.to contain_package('google-cloud-cli').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('rubygem-angular-config').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('prince').that_requires('Apt::Source[publiq-tools]') }
+        it { is_expected.to contain_package('awscli').that_requires('Apt::Source[publiq-tools]') }
       end
 
       context "without package virtual resources realized" do
