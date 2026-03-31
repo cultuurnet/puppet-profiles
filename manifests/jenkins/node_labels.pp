@@ -7,7 +7,7 @@ define profiles::jenkins::node_labels (
   unless empty($content) {
     concat::fragment { "jenkins-swarm-client_node-labels_${title}":
       target  => 'jenkins-swarm-client_node-labels',
-      content => [$content].flatten.join("\n")
+      content => [$content].flatten.join("\n").downcase
     }
   }
 }
