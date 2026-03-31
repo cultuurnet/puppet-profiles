@@ -29,9 +29,9 @@ describe 'profiles::jenkins::node_labels' do
           ) }
         end
 
-        context "with content => [label1, label2]" do
+        context "with content => [label1, LABEL2]" do
           let(:params) { {
-            'content' => ['label1', 'label2']
+            'content' => ['label1', 'LABEL2']
           } }
 
           it { is_expected.to contain_concat_fragment('jenkins-swarm-client_node-labels_foobar').with(
