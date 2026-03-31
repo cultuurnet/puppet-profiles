@@ -5,25 +5,29 @@ describe 'profiles::aws_cli' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "without parameters" do
-        let(:params) { {} }
+      it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to compile.with_all_deps }
+      it { is_expected.to contain_apt__source('publiq-tools') }
 
-        it { is_expected.to contain_class('profiles::aws_cli').with(
-          'version'           => 'latest',
-        ) }
+      it { is_expected.to contain_class('profiles::aws_cli') }
 
-        it { is_expected.to contain_apt__source('publiq-tools') }
+      context 'with hieradata' do
+        let(:hiera_config) { 'spec/support/hiera/common.yaml'}
 
-        it { is_expected.to contain_package('aws-cli').with(
+        it { is_expected.to contain_package('awscli').with(
           'ensure' => 'latest'
         ) }
-
-    
-        it { is_expected.to contain_apt__source('publiq-tools').that_comes_before('Package[aws-cli]') }
       end
 
+      context 'without hieradata' do
+        let(:hiera_config) { 'spec/support/hiera/empty.yaml'}
+
+        it { is_expected.to contain_package('awscli').with(
+          'ensure' => 'present'
+        ) }
+      end
+
+      it { is_expected.to contain_apt__source('publiq-tools').that_comes_before('Package[awscli]') }
     end
   end
 end
