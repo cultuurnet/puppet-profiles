@@ -15,4 +15,8 @@ class profiles::terraform (
     ensure  => $terrafile_version,
     require => Apt::Source['publiq-tools']
   }
+
+  profiles::jenkins::node_labels { 'terraform':
+    content => 'terraform'
+  }
 }
