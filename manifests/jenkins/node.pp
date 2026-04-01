@@ -3,7 +3,6 @@ class profiles::jenkins::node (
   String                         $user           = 'admin',
   String                         $password       = lookup('profiles::jenkins::controller::admin_password', String, 'first', ''),
   String                         $controller_url = lookup('profiles::jenkins::controller::url', String, 'first', 'http://localhost:8080/'),
-  Boolean                        $bootstrap      = false,
   Boolean                        $lvm            = false,
   Optional[String]               $volume_group   = undef,
   Optional[String]               $volume_size    = undef,
@@ -11,28 +10,19 @@ class profiles::jenkins::node (
   Variant[String, Array[String]] $labels         = []
 ) inherits ::profiles {
 
-  include ::profiles::java
-  include ::profiles::jenkins::buildtools::bootstrap
-
-  unless $bootstrap {
-    include ::profiles::jenkins::buildtools::homebuilt
-    include ::profiles::jenkins::buildtools::playwright
-
-    profiles::puppet::puppetdb::cli { 'jenkins': }
-  }
-
-  $puppetserver_url = lookup('data::puppet::puppetserver::url')
-  $data_dir         = '/var/lib/jenkins-swarm-client'
-  $default_labels   = [
-                        $facts['os']['name'],
-                        $facts['os']['release']['major'],
-                        $facts['os']['distro']['codename']
-                      ]
+  $data_dir  = '/var/lib/jenkins-swarm-client'
+  $os_labels = [
+                 $facts['os']['name'],
+                 $facts['os']['release']['major'],
+                 $facts['os']['distro']['codename']
+               ]
 
   realize Group['jenkins']
   realize User['jenkins']
 
   realize Apt::Source['publiq-jenkins']
+
+  include ::profiles::java
 
   if $lvm {
     unless ($volume_group and $volume_size) {
@@ -58,10 +48,6 @@ class profiles::jenkins::node (
       before  => Package['jenkins-swarm-client'],
       notify  => Service['jenkins-swarm-client']
     }
-  }
-
-  @@profiles::vault::trusted_certificate { $trusted['certname']:
-    policies => ['jenkins_certificate']
   }
 
   file { $data_dir:
@@ -90,15 +76,22 @@ class profiles::jenkins::node (
     notify  => Service['jenkins-swarm-client']
   }
 
-  file { 'jenkins-swarm-client_node-labels':
-    ensure  => 'file',
-    path    => '/etc/jenkins-swarm-client/node-labels.conf',
-    owner   => 'jenkins',
-    group   => 'jenkins',
-    mode    => '0644',
-    content => [concat($default_labels, $labels)].flatten.join("\n").downcase,
-    require => Package['jenkins-swarm-client'],
-    notify  => Service['jenkins-swarm-client']
+  profiles::jenkins::node_labels { 'parameter':
+    content => $labels
+  }
+
+  profiles::jenkins::node_labels { 'os':
+    content => $os_labels
+  }
+
+  concat { 'jenkins-swarm-client_node-labels':
+    path           => '/etc/jenkins-swarm-client/node-labels.conf',
+    owner          => 'jenkins',
+    group          => 'jenkins',
+    mode           => '0644',
+    ensure_newline => true,
+    require        => [Group['jenkins'], User['jenkins'], Package['jenkins-swarm-client']],
+    notify         => Service['jenkins-swarm-client']
   }
 
   file { 'jenkins-swarm-client_service-defaults':
@@ -108,13 +101,6 @@ class profiles::jenkins::node (
     content => template('profiles/jenkins/jenkins-swarm-client_service-defaults.erb'),
     require => Package['jenkins-swarm-client'],
     notify  => Service['jenkins-swarm-client']
-  }
-
-  file { 'jenkins-node-cleanup-script':
-    ensure  => 'file',
-    path    => '/usr/local/bin/node-cleanup.sh',
-    mode    => '0644',
-    content => template('profiles/jenkins/jenkins-node-cleanup-script.erb'),
   }
 
   service { 'jenkins-swarm-client':
