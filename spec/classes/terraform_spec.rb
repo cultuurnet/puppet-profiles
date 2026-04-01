@@ -26,6 +26,10 @@ describe 'profiles::terraform' do
           'ensure' => 'latest'
         ) }
 
+        it { is_expected.to contain_profiles__jenkins__node_labels('terraform').with(
+          'content' => 'terraform'
+        ) }
+
         it { is_expected.to contain_apt__source('hashicorp').that_comes_before('Package[terraform]') }
         it { is_expected.to contain_apt__source('publiq-tools').that_comes_before('Package[terrafile]') }
       end
