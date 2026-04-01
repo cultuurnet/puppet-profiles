@@ -14,7 +14,7 @@ describe 'profiles::java' do
           'installed_versions' => 8,
           'distribution'       => 'jre',
           'headless'           => true,
-          'default_version'    => nil
+          'default_version'    => 8
         ) }
 
         it { is_expected.to contain_class('profiles::java::alternatives').with(
@@ -24,23 +24,42 @@ describe 'profiles::java' do
         ) }
 
         it { is_expected.to contain_package('openjdk-8-jre-headless') }
+        it { is_expected.to contain_profiles__jenkins__node_labels('openjdk-8').with(
+          'content' => 'java8'
+        ) }
+
         it { is_expected.to contain_package('openjdk-8-jre-headless').that_comes_before('Class[profiles::java::alternatives]') }
       end
 
-      context "with installed_versions => [8, 17], distribution => jdk and headless => false" do
+      context "with installed_versions => [17, 8], distribution => jdk and headless => false" do
         let(:params) { {
-          'installed_versions' => [8, 17],
+          'installed_versions' => [17, 8],
           'distribution'       => 'jdk',
           'headless'           => false
         } }
 
         it { is_expected.to compile.with_all_deps }
 
+        it { is_expected.to contain_class('profiles::java').with(
+          'installed_versions' => [17, 8],
+          'distribution'       => 'jdk',
+          'headless'           => false,
+          'default_version'    => 17
+        ) }
+
         it { is_expected.to contain_package('openjdk-8-jdk') }
         it { is_expected.to contain_package('openjdk-17-jdk') }
 
+        it { is_expected.to contain_profiles__jenkins__node_labels('openjdk-17').with(
+          'content' => 'java17'
+        ) }
+
+        it { is_expected.to contain_profiles__jenkins__node_labels('openjdk-8').with(
+          'content' => 'java8'
+        ) }
+
         it { is_expected.to contain_class('profiles::java::alternatives').with(
-          'default_version' => 8,
+          'default_version' => 17,
           'distribution'    => 'jdk',
           'headless'        => false
         ) }
@@ -60,6 +79,14 @@ describe 'profiles::java' do
 
         it { is_expected.to contain_package('openjdk-8-jre') }
         it { is_expected.to contain_package('openjdk-11-jre') }
+
+        it { is_expected.to contain_profiles__jenkins__node_labels('openjdk-8').with(
+          'content' => 'java8'
+        ) }
+
+        it { is_expected.to contain_profiles__jenkins__node_labels('openjdk-11').with(
+          'content' => 'java11'
+        ) }
 
         it { is_expected.to contain_class('profiles::java::alternatives').with(
           'default_version' => 11,
