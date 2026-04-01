@@ -2,7 +2,7 @@ class profiles::php (
   String                     $version                  = '7.4',
   Hash                       $extensions               = {},
   Hash                       $settings                 = {},
-  Optional[Integer[1, 2]]    $composer_default_version = undef,
+  Integer[1, 2]              $composer_default_version = 2,
   Boolean                    $fpm                      = true,
   Enum['unix', 'tcp']        $fpm_socket_type          = 'unix',
   Enum['running', 'stopped'] $fpm_service_status       = 'running',
@@ -49,6 +49,24 @@ class profiles::php (
     default => {}
   }
 
+  realize Apt::Source['php']
+  realize Apt::Source['publiq-tools']
+
+  realize Package['composer']
+  realize Package['composer1']
+  realize Package['composer2']
+  realize Package['git']
+
+  Package['composer'] -> Package['composer1']
+  Package['composer'] -> Package['composer2']
+  Class['::php'] -> Package['composer1']
+  Class['::php'] -> Package['composer2']
+
+  alternatives { 'composer':
+    path    => "/usr/bin/composer${composer_default_version}",
+    require => [Package['composer1'], Package['composer2']]
+  }
+
   if $fpm {
     $current_version = $facts['phpversion'] ? {
                          /\d+.\d+.\d/ => regsubst($facts['phpversion'], '(\d+)\.(\d+)\..*', '\1.\2'),
@@ -89,7 +107,7 @@ class profiles::php (
           command   => "systemctl stop php${current_version}-fpm",
           path      => ['/usr/sbin', '/usr/bin'],
           logoutput => 'on_failure',
-          before    => Class['php']
+          before    => Class['::php']
         }
       }
     }
@@ -97,13 +115,11 @@ class profiles::php (
     $fpm_attributes = {}
   }
 
-  realize Apt::Source['php']
-  realize Package['composer']
-
   class { ::php::globals:
     php_version => $version,
     config_root => "/etc/php/${version}",
-    before      => Class['php']
+    require     => Apt::Source['php'],
+    before      => Class['::php']
   }
 
   class { ::php:
@@ -117,25 +133,8 @@ class profiles::php (
     *            => $fpm_attributes
   }
 
-  Apt::Source['php'] -> Class['php::globals']
-  Class['php::globals'] -> Class['php']
-
-  if $composer_default_version {
-    realize Apt::Source['publiq-tools']
-
-    realize Package['composer1']
-    realize Package['composer2']
-    realize Package['git']
-
-    Package['composer'] -> Package['composer1']
-    Package['composer'] -> Package['composer2']
-    Class['php'] -> Package['composer1']
-    Class['php'] -> Package['composer2']
-
-    alternatives { 'composer':
-      path    => "/usr/bin/composer${composer_default_version}",
-      require => [Package['composer1'], Package['composer2']]
-    }
+  profiles::jenkins::node_labels { 'php':
+    content => "php${version}"
   }
 
   if $newrelic {

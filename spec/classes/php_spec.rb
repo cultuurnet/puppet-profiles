@@ -20,7 +20,7 @@ describe 'profiles::php' do
               'version'                  => '7.4',
               'extensions'               => {},
               'settings'                 => {},
-              'composer_default_version' => nil,
+              'composer_default_version' => 2,
               'fpm'                      => true,
               'fpm_socket_type'          => 'tcp',
               'fpm_service_status'       => 'running',
@@ -32,7 +32,7 @@ describe 'profiles::php' do
             ) }
 
             it { is_expected.to contain_apt__source('php') }
-            it { is_expected.not_to contain_apt__source('publiq-tools') }
+            it { is_expected.to contain_apt__source('publiq-tools') }
 
             it { is_expected.to contain_class('php::globals').with(
               'php_version' => '7.4',
@@ -89,6 +89,10 @@ describe 'profiles::php' do
               'reload_fpm_on_config_changes' => true
             ) }
 
+            it { is_expected.to contain_profiles__jenkins__node_labels('php').with(
+              'content' => 'php7.4'
+            )}
+
             it { is_expected.to contain_file('php-fpm service').with(
               'ensure' => 'link',
               'path'   => '/etc/systemd/system/php-fpm.service',
@@ -101,19 +105,19 @@ describe 'profiles::php' do
               'ensure' => 'absent'
             ) }
 
-            it { is_expected.not_to contain_package('composer1').with(
+            it { is_expected.to contain_package('composer1').with(
               'ensure' => 'present'
             ) }
 
-            it { is_expected.not_to contain_package('composer2').with(
+            it { is_expected.to contain_package('composer2').with(
               'ensure' => 'present'
             ) }
 
-            it { is_expected.not_to contain_alternatives('composer').with(
+            it { is_expected.to contain_alternatives('composer').with(
               'path' => '/usr/bin/composer2'
             ) }
 
-            it { is_expected.not_to contain_package('git').with(
+            it { is_expected.to contain_package('git').with(
               'ensure' => 'present'
             ) }
 
@@ -145,7 +149,7 @@ describe 'profiles::php' do
               'version'                  => '7.4',
               'extensions'               => {},
               'settings'                 => {},
-              'composer_default_version' => nil,
+              'composer_default_version' => 2,
               'fpm'                      => true,
               'fpm_socket_type'          => 'unix',
               'fpm_service_status'       => 'running',
@@ -157,7 +161,7 @@ describe 'profiles::php' do
           end
         end
 
-        context 'with version => 8.0, extensions => { mbstring => {}, mysql => { so_name => mysqlnd }, mongodb => {} }, settings => { PHP/upload_max_filesize => 22M, PHP/post_max_size => 24M }, fpm => false and composer_default_version => 2' do
+        context 'with version => 8.0, extensions => { mbstring => {}, mysql => { so_name => mysqlnd }, mongodb => {} }, settings => { PHP/upload_max_filesize => 22M, PHP/post_max_size => 24M }, fpm => false and composer_default_version => 1' do
           let(:params) { {
             'version'                  => '8.0',
             'extensions'               => {
@@ -170,7 +174,7 @@ describe 'profiles::php' do
                                             'PHP/post_max_size'       => '24M'
                                           },
             'fpm'                      => false,
-            'composer_default_version' => 2
+            'composer_default_version' => 1
           } }
 
           it { is_expected.to contain_class('php::globals').with(
@@ -206,6 +210,10 @@ describe 'profiles::php' do
             'fpm'                      => false
           ) }
 
+          it { is_expected.to contain_profiles__jenkins__node_labels('php').with(
+            'content' => 'php8.0'
+          )}
+
           it { is_expected.not_to contain_file('php-fpm service') }
 
           it { is_expected.not_to contain_systemd__daemon_reload('php-fpm') }
@@ -221,7 +229,7 @@ describe 'profiles::php' do
           ) }
 
           it { is_expected.to contain_alternatives('composer').with(
-            'path' => '/usr/bin/composer2'
+            'path' => '/usr/bin/composer1'
           ) }
 
           it { is_expected.not_to contain_class('profiles::newrelic::php') }
@@ -324,6 +332,10 @@ describe 'profiles::php' do
                                                 },
               'reload_fpm_on_config_changes' => false
             ) }
+
+            it { is_expected.to contain_profiles__jenkins__node_labels('php').with(
+              'content' => 'php8.2'
+            )}
 
             it { is_expected.to contain_class('php::globals').with(
               'php_version' => '8.2',
