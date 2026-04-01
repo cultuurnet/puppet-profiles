@@ -23,6 +23,10 @@ describe 'profiles::nodejs' do
           'nodejs_package_ensure' => 'present'
         ) }
 
+        it { is_expected.to contain_profiles__jenkins__node_labels('nodejs').with(
+          'content' => 'nodejs16'
+        )}
+
         it { is_expected.to contain_package('yarn').with(
           'ensure' => 'present'
         ) }
@@ -42,6 +46,10 @@ describe 'profiles::nodejs' do
           'nodejs_package_ensure' => 'present'
         ) }
 
+        it { is_expected.to contain_profiles__jenkins__node_labels('nodejs').with(
+          'content' => 'nodejs18'
+        )}
+
         it { is_expected.to contain_class('nodejs').that_requires('Apt::Source[nodejs-18]') }
       end
 
@@ -53,6 +61,10 @@ describe 'profiles::nodejs' do
         it { is_expected.to contain_class('nodejs').with(
           'nodejs_package_ensure' => '20.2.0-1nodesource1'
         ) }
+
+        it { is_expected.to contain_profiles__jenkins__node_labels('nodejs').with(
+          'content' => 'nodejs20'
+        )}
 
         it { is_expected.to contain_class('nodejs').that_requires('Apt::Source[nodejs-20]') }
       end
