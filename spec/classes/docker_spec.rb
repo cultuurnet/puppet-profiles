@@ -34,6 +34,10 @@ describe 'profiles::docker' do
           'docker_users'                => []
         ) }
 
+        it { is_expected.to contain_profiles__jenkins__node_labels('docker').with(
+          'content' => 'docker'
+        )}
+
         it { is_expected.to_not contain_profiles__lvm__mount('dockerdata') }
         it { is_expected.to_not contain_mount('/var/lib/docker') }
 

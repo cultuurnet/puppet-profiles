@@ -54,6 +54,10 @@ class profiles::docker (
     require                     => Apt::Source['docker']
   }
 
+  profiles::jenkins::node_labels { 'docker':
+    content => 'docker'
+  }
+
   class { profiles::docker::ecr_login:
     registries => $ecr_registries,
     users      => $ecr_users
