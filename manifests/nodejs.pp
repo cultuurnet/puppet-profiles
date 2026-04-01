@@ -20,4 +20,8 @@ class profiles::nodejs (
     require               => Apt::Source["nodejs-${major_version}"],
     before                => Package['yarn']
   }
+
+  profiles::jenkins::node_labels { 'nodejs':
+    content => "nodejs${major_version}"
+  }
 }
