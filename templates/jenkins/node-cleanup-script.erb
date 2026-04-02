@@ -1,0 +1,6 @@
+#!/bin/bash
+
+hostname=<%= @facts['networking']['fqdn'] %>
+puppetserver_url=<%= scope.call_function('lookup', ['data::puppet::puppetserver::url']) %>
+
+curl -s -o- --noproxy '*' -X DELETE -H 'Accept: pson' ${puppetserver_url}/puppet-ca/v1/certificate_status/$1 --cacert /var/lib/jenkins/.puppetlabs/puppet/ssl/certs/ca.pem --key /var/lib/jenkins/.puppetlabs/puppet/ssl/private_keys/${hostname}.pem --cert /var/lib/jenkins/.puppetlabs/puppet/ssl/certs/${hostname}.pem

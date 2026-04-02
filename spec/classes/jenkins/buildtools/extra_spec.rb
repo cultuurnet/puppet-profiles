@@ -1,4 +1,4 @@
-describe 'profiles::jenkins::buildtools::homebuilt' do
+describe 'profiles::jenkins::buildtools::extra' do
   include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
@@ -8,6 +8,8 @@ describe 'profiles::jenkins::buildtools::homebuilt' do
       it { is_expected.to compile.with_all_deps }
 
       it { is_expected.to contain_apt__source('publiq-tools') }
+
+      it { is_expected.to contain_package('mysql-client').with({ 'ensure' => 'present' }) }
 
       it { is_expected.to contain_package('golang').with({ 'ensure' => 'present' }) }
       it { is_expected.to contain_package('kubectl').with({ 'ensure' => 'present' }) }
