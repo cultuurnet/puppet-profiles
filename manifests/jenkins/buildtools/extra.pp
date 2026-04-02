@@ -1,6 +1,8 @@
-class profiles::jenkins::buildtools::homebuilt inherits ::profiles {
+class profiles::jenkins::buildtools::extra inherits ::profiles {
 
   realize Apt::Source['publiq-tools']
+
+  realize Package['mysql-client']
 
   realize Package['argocd']
   realize Package['awscli']
