@@ -5,6 +5,14 @@ class profiles::jenkins::agent (
   include profiles::jenkins::node
   include profiles::jenkins::buildtools::bootstrap
 
+  class { 'profiles::ruby':
+    with_dev => true
+  }
+
+  class { 'profiles::python':
+    with_dev => true
+  }
+
   unless $bootstrap {
 
     include profiles::jenkins::buildtools::extra
