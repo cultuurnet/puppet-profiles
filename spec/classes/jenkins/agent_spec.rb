@@ -39,6 +39,7 @@ describe 'profiles::jenkins::agent' do
 
             it { is_expected.to contain_file('node-cleanup-script').with_content(/^hostname=jenkins1\.example\.com/) }
             it { is_expected.to contain_file('node-cleanup-script').with_content(/^puppetserver_url=https:\/\/puppetserver\.example\.com:8140/) }
+            it { is_expected.to contain_file('node-cleanup-script').with_content(/^puppetdb_url=http:\/\/localhost:8081/) }
           end
         end
 
