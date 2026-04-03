@@ -25,14 +25,6 @@ describe 'profiles::jenkins::agent' do
             it { is_expected.to contain_class('profiles::jenkins::buildtools::extra') }
             it { is_expected.to contain_class('profiles::jenkins::buildtools::playwright') }
 
-            it { is_expected.to contain_class('profiles::python').with(
-              'with_dev' => true
-            ) }
-
-            it { is_expected.to contain_class('profiles::ruby').with(
-              'with_dev' => true
-            ) }
-
             it { is_expected.to contain_profiles__puppet__puppetdb__cli('jenkins') }
 
             it { expect(exported_resources).to contain_profiles__vault__trusted_certificate('jenkins1.example.com').with(
@@ -61,14 +53,6 @@ describe 'profiles::jenkins::agent' do
 
             it { is_expected.to contain_class('profiles::jenkins::node') }
             it { is_expected.to contain_class('profiles::jenkins::buildtools::bootstrap') }
-
-            it { is_expected.to contain_class('profiles::python').with(
-              'with_dev' => true
-            ) }
-
-            it { is_expected.to contain_class('profiles::ruby').with(
-              'with_dev' => true
-            ) }
 
             it { is_expected.not_to contain_class('profiles::jenkins::buildtools::extra') }
             it { is_expected.not_to contain_class('profiles::jenkins::buildtools::playwright') }

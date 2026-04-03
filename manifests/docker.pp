@@ -45,10 +45,6 @@ class profiles::docker (
     before => Class['::docker']
   }
 
-  class { 'profiles::firewall':
-    purge_unmanaged => false
-  }
-
   class { '::docker':
     use_upstream_package_source => false,
     socket_override             => true,

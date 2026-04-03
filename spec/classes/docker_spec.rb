@@ -12,10 +12,6 @@ describe 'profiles::docker' do
 
         it { is_expected.to contain_apt__source('docker') }
 
-        it { is_expected.to contain_class('profiles::firewall').with(
-          'purge_unmanaged' => false
-        ) }
-
         it { is_expected.to contain_class('profiles::docker').with(
           'experimental'   => false,
           'schedule_prune' => false,
