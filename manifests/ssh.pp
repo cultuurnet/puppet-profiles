@@ -35,10 +35,10 @@ class profiles::ssh(
   }
 
   if $settings::storeconfigs {
-    @@sshkey { $facts['networking']['hostname']:
-      type         => 'rsa',
+    @@sshkey { "${facts['networking']['hostname']}@ssh-rsa":
       key          => $facts['ssh']['rsa']['key'],
-      host_aliases => [ $facts['networking']['ip'], $facts['networking']['fqdn']]
+      host_aliases => [$facts['networking']['ip'], $facts['networking']['fqdn']],
+      provider     => 'parsed'
     }
 
     Sshkey <<| |>>
