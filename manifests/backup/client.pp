@@ -7,7 +7,7 @@ class profiles::backup::client (
   realize Apt::Source['publiq-tools']
 
   if $settings::storeconfigs {
-    Sshkey <<| title == 'backup' |>>
+    Sshkey <<| tag == 'backup' |>>
   }
 
   $borg_user      = 'borgbackup'

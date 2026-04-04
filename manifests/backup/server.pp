@@ -15,10 +15,10 @@ class profiles::backup::server (
 
   User <| title == 'ubuntu' |> { groups +> ['borgbackup'] }
 
-  @@sshkey { 'backup':
+  @@sshkey { 'backup@ssh-rsa':
     name => $hostname,
     key  => $facts['ssh']['rsa']['key'],
-    type => 'rsa'
+    tag  => 'backup'
   }
 
   ssh_authorized_key { 'backup':
