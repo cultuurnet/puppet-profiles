@@ -16,6 +16,7 @@ class profiles::backup::server (
   User <| title == 'ubuntu' |> { groups +> ['borgbackup'] }
 
   @@sshkey { 'backup@ssh-rsa':
+    type     => 'ssh-rsa',
     name     => $hostname,
     key      => $facts['ssh']['rsa']['key'],
     provider => 'parsed',
