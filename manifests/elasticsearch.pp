@@ -207,15 +207,14 @@ class profiles::elasticsearch (
     require           => [Apt::Source["elastic-${major_version}.x"], Class['::profiles::java']]
   }
 
-  if $backup {
-    class { 'profiles::elasticsearch::backup':
-      lvm            => $backup_lvm,
-      volume_group   => $backup_volume_group,
-      volume_size    => $backup_volume_size,
-      dump_hour      => $backup_hour,
-      retention_days => $backup_retention_days,
-      require        => Class['::elasticsearch']
-    }
+  class { 'profiles::elasticsearch::backup':
+    schedule       => $backup,
+    lvm            => $backup_lvm,
+    volume_group   => $backup_volume_group,
+    volume_size    => $backup_volume_size,
+    dump_hour      => $backup_hour,
+    retention_days => $backup_retention_days,
+    require        => Class['::elasticsearch']
   }
 
   cron { 'elasticsearch_log_retention':
