@@ -1,4 +1,5 @@
 class profiles::elasticsearch::backup (
+  Boolean          $schedule       = true,
   Boolean          $lvm            = false,
   Optional[String] $volume_group   = undef,
   Optional[String] $volume_size    = undef,
@@ -60,6 +61,10 @@ class profiles::elasticsearch::backup (
   }
 
   cron { 'elasticsearch-backup':
+    ensure      => $schedule ? {
+                     true  => 'present',
+                     false => 'absent'
+                   },
     command     => "/usr/bin/test $(date +\\%0H) -eq ${dump_hour} && /usr/local/sbin/elasticsearchbackup.sh",
     environment => ['TZ=Europe/Brussels', 'MAILTO=infra+cron@publiq.be'],
     user        => 'root',

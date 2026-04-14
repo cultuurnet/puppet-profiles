@@ -11,6 +11,7 @@ describe 'profiles::elasticsearch::backup' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::elasticsearch::backup').with(
+          'schedule'       => true,
           'lvm'            => false,
           'volume_group'   => nil,
           'volume_size'    => nil,
@@ -53,6 +54,7 @@ describe 'profiles::elasticsearch::backup' do
         it { is_expected.to contain_file('/usr/local/sbin/elasticsearchbackup.sh').with_content(/^retention=6$/) }
 
         it { is_expected.to contain_cron('elasticsearch-backup').with(
+          'ensure'      => 'present',
           'command'     => '/usr/bin/test $(date +\\%0H) -eq 0 && /usr/local/sbin/elasticsearchbackup.sh',
           'environment' => ['TZ=Europe/Brussels', 'MAILTO=infra+cron@publiq.be'],
           'user'        => 'root',
@@ -69,8 +71,9 @@ describe 'profiles::elasticsearch::backup' do
         it { is_expected.to contain_cron('elasticsearch-backup').that_requires('File[/usr/local/sbin/elasticsearchbackup.sh]') }
       end
 
-      context "with lvm => true, volume_group => backupvg, volume_size => 20G, dump_hour => 1 and retention_days => 10" do
+      context "with schedule => true, lvm => true, volume_group => backupvg, volume_size => 20G, dump_hour => 1 and retention_days => 10" do
         let(:params) { {
+          'schedule'       => true,
           'lvm'            => true,
           'volume_group'   => 'backupvg',
           'volume_size'    => '20G',
@@ -109,6 +112,7 @@ describe 'profiles::elasticsearch::backup' do
           it { is_expected.to contain_file('/usr/local/sbin/elasticsearchbackup.sh').with_content(/^retention=9$/) }
 
           it { is_expected.to contain_cron('elasticsearch-backup').with(
+            'ensure'      => 'present',
             'command'     => '/usr/bin/test $(date +\\%0H) -eq 1 && /usr/local/sbin/elasticsearchbackup.sh',
             'environment' => ['TZ=Europe/Brussels', 'MAILTO=infra+cron@publiq.be'],
             'user'        => 'root',
@@ -121,8 +125,9 @@ describe 'profiles::elasticsearch::backup' do
         end
       end
 
-      context "with lvm => true, volume_group => myvg and volume_size => 10G" do
+      context "with schedule => false, lvm => true, volume_group => myvg and volume_size => 10G" do
         let(:params) { {
+          'schedule'     => false,
           'lvm'          => true,
           'volume_group' => 'myvg',
           'volume_size'  => '10G'
@@ -140,6 +145,10 @@ describe 'profiles::elasticsearch::backup' do
             'size'         => '10G',
             'mountpoint'   => '/data/backup/elasticsearch',
             'fs_type'      => 'ext4'
+          ) }
+
+          it { is_expected.to contain_cron('elasticsearch-backup').with(
+            'ensure' => 'absent'
           ) }
         end
       end

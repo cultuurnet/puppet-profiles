@@ -69,6 +69,7 @@ describe 'profiles::elasticsearch' do
         ) }
 
         it { is_expected.to contain_class('profiles::elasticsearch::backup').with(
+          'schedule'       => true,
           'lvm'            => false,
           'volume_group'   => nil,
           'volume_size'    => nil,
@@ -98,7 +99,14 @@ describe 'profiles::elasticsearch' do
           'backup' => false
         } }
 
-        it { is_expected.not_to contain_class('profiles::elasticsearch::backup') }
+        it { is_expected.to contain_class('profiles::elasticsearch::backup').with(
+          'schedule'       => false,
+          'lvm'            => false,
+          'volume_group'   => nil,
+          'volume_size'    => nil,
+          'dump_hour'      => 0,
+          'retention_days' => 7
+        ) }
       end
 
       context "with version => 8.2.1, lvm => true, volume_group => myvg, volume_size => 20G, log_volume_size => 5G, initial_heap_size => 768m, maximum_heap_size => 1024m, backup_lvm => true, backup_volume_group => mybackupvg, backup_volume_size => 10G, backup_hour => 10, backup_retention_days => 5, jvm_options => -Xmixed and log_retention_days => 14" do
@@ -186,6 +194,7 @@ describe 'profiles::elasticsearch' do
           ) }
 
           it { is_expected.to contain_class('profiles::elasticsearch::backup').with(
+            'schedule'       => true,
             'lvm'            => true,
             'volume_group'   => 'mybackupvg',
             'volume_size'    => '10G',
@@ -269,6 +278,7 @@ describe 'profiles::elasticsearch' do
           ) }
 
           it { is_expected.to contain_class('profiles::elasticsearch::backup').with(
+            'schedule'       => true,
             'lvm'            => true,
             'volume_group'   => 'esbackupvg',
             'volume_size'    => '5G',
