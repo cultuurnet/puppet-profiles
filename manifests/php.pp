@@ -133,7 +133,7 @@ class profiles::php (
     *            => $fpm_attributes
   }
 
-  profiles::jenkins::node_labels { 'php':
+  @profiles::jenkins::node_labels { 'php':
     content => "php${version}"
   }
 

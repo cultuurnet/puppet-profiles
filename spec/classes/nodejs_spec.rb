@@ -23,9 +23,7 @@ describe 'profiles::nodejs' do
           'nodejs_package_ensure' => 'present'
         ) }
 
-        it { is_expected.to contain_profiles__jenkins__node_labels('nodejs').with(
-          'content' => 'nodejs16'
-        )}
+        it { is_expected.not_to contain_profiles__jenkins__node_labels('nodejs') }
 
         it { is_expected.to contain_package('yarn').with(
           'ensure' => 'present'
@@ -34,6 +32,14 @@ describe 'profiles::nodejs' do
         it { is_expected.to contain_class('nodejs').that_requires('Apt::Source[nodejs-16]') }
         it { is_expected.to contain_package('yarn').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('yarn').that_requires('Class[nodejs]') }
+
+        context 'with all virtual resources collected' do
+          let(:pre_condition) { 'Profiles::Jenkins::Node_labels <| |>' }
+
+          it { is_expected.to contain_profiles__jenkins__node_labels('nodejs').with(
+            'content' => 'nodejs16'
+          ) }
+        end
       end
 
       context "with major_version => 18" do
@@ -46,11 +52,17 @@ describe 'profiles::nodejs' do
           'nodejs_package_ensure' => 'present'
         ) }
 
-        it { is_expected.to contain_profiles__jenkins__node_labels('nodejs').with(
-          'content' => 'nodejs18'
-        )}
+        it { is_expected.not_to contain_profiles__jenkins__node_labels('nodejs') }
 
         it { is_expected.to contain_class('nodejs').that_requires('Apt::Source[nodejs-18]') }
+
+        context 'with all virtual resources collected' do
+          let(:pre_condition) { 'Profiles::Jenkins::Node_labels <| |>' }
+
+          it { is_expected.to contain_profiles__jenkins__node_labels('nodejs').with(
+            'content' => 'nodejs18'
+          ) }
+        end
       end
 
       context "with version => 20.2.0-1nodesource1" do
@@ -62,11 +74,17 @@ describe 'profiles::nodejs' do
           'nodejs_package_ensure' => '20.2.0-1nodesource1'
         ) }
 
-        it { is_expected.to contain_profiles__jenkins__node_labels('nodejs').with(
-          'content' => 'nodejs20'
-        )}
+        it { is_expected.not_to contain_profiles__jenkins__node_labels('nodejs') }
 
         it { is_expected.to contain_class('nodejs').that_requires('Apt::Source[nodejs-20]') }
+
+        context 'with all virtual resources collected' do
+          let(:pre_condition) { 'Profiles::Jenkins::Node_labels <| |>' }
+
+          it { is_expected.to contain_profiles__jenkins__node_labels('nodejs').with(
+            'content' => 'nodejs20'
+          ) }
+        end
       end
 
       context "with version => 18.2.0-1nodesource1 and major_version => 20" do
