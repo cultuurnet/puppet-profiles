@@ -113,6 +113,29 @@ describe 'profiles::jenkins::node' do
           it { is_expected.to contain_service('jenkins-swarm-client').that_requires('User[jenkins]') }
           it { is_expected.to contain_service('jenkins-swarm-client').that_requires('Group[jenkins]') }
           it { is_expected.to contain_service('jenkins-swarm-client').that_subscribes_to('Class[profiles::java]') }
+
+          context 'with virtual resource profiles::jenkins::node_labels { terraform } defined' do
+            let(:pre_condition) { '@profiles::jenkins::node_labels { "terraform": content => "terraform" }' }
+
+            it { is_expected.to contain_profiles__jenkins__node_labels('terraform').with(
+              'content' => 'terraform'
+            ) }
+          end
+
+          context 'with virtual resources profiles::jenkins::node_labels { docker } and profiles::jenkins::node_labels { php } defined' do
+            let(:pre_condition) { [
+              '@profiles::jenkins::node_labels { "docker": content => "docker" }',
+              '@profiles::jenkins::node_labels { "php": content => "php8.2" }'
+            ] }
+
+            it { is_expected.to contain_profiles__jenkins__node_labels('docker').with(
+              'content' => 'docker'
+            ) }
+
+            it { is_expected.to contain_profiles__jenkins__node_labels('php').with(
+              'content' => 'php8.2'
+            ) }
+          end
         end
 
         context "with user => jane, password => roe, controller_url => 'http://localhost:5555/', lvm => true, volume_group => myvg, volume_size => 7G and executors => 4" do
@@ -180,7 +203,7 @@ describe 'profiles::jenkins::node' do
               ) }
             end
 
-            context "with labels => [bar, baz, oomph]" do
+            context "with labels => [bar, BAZ, oomph]" do
               let(:params) {
                 super().merge({
                   'labels' => ['bar', 'BAZ', 'oomph']
