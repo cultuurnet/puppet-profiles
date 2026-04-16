@@ -34,9 +34,7 @@ describe 'profiles::docker' do
           'docker_users'                => []
         ) }
 
-        it { is_expected.to contain_profiles__jenkins__node_labels('docker').with(
-          'content' => 'docker'
-        )}
+        it { is_expected.not_to contain_profiles__jenkins__node_labels('docker') }
 
         it { is_expected.to_not contain_profiles__lvm__mount('dockerdata') }
         it { is_expected.to_not contain_mount('/var/lib/docker') }
@@ -74,6 +72,14 @@ describe 'profiles::docker' do
 
         it { is_expected.to contain_apt__source('docker').that_comes_before('Class[docker]') }
         it { is_expected.to contain_file('/var/lib/docker').that_comes_before('Class[docker]') }
+
+        context 'with all virtual resources collected' do
+          let(:pre_condition) { 'Profiles::Jenkins::Node_labels <| |>' }
+
+          it { is_expected.to contain_profiles__jenkins__node_labels('docker').with(
+            'content' => 'docker'
+          ) }
+        end
       end
 
       context "with experimental => true, lvm => true, volume_group => dockervg, volume_size => 5G, ecr_registries => my.registry.com, ecr_users => ubuntu and schedule_prune => true" do

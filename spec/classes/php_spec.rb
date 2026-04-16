@@ -89,9 +89,7 @@ describe 'profiles::php' do
               'reload_fpm_on_config_changes' => true
             ) }
 
-            it { is_expected.to contain_profiles__jenkins__node_labels('php').with(
-              'content' => 'php7.4'
-            )}
+            it { is_expected.not_to contain_profiles__jenkins__node_labels('php') }
 
             it { is_expected.to contain_file('php-fpm service').with(
               'ensure' => 'link',
@@ -126,6 +124,14 @@ describe 'profiles::php' do
             it { is_expected.to contain_class('php::globals').that_requires('Apt::Source[php]') }
             it { is_expected.to contain_class('php').that_requires('Class[php::globals]') }
             it { is_expected.to contain_file('php-fpm service').that_notifies('Systemd::Daemon_reload[php-fpm]') }
+
+            context 'with all virtual resources collected' do
+              let(:pre_condition) { 'Profiles::Jenkins::Node_labels <| |>' }
+
+              it { is_expected.to contain_profiles__jenkins__node_labels('php').with(
+                'content' => 'php7.4'
+              ) }
+            end
 
             context 'with fact phpversion => 7.3.2' do
               let(:facts) { super().merge(
@@ -210,9 +216,7 @@ describe 'profiles::php' do
             'fpm'                      => false
           ) }
 
-          it { is_expected.to contain_profiles__jenkins__node_labels('php').with(
-            'content' => 'php8.0'
-          )}
+          it { is_expected.not_to contain_profiles__jenkins__node_labels('php') }
 
           it { is_expected.not_to contain_file('php-fpm service') }
 
@@ -237,6 +241,14 @@ describe 'profiles::php' do
           it { is_expected.to contain_package('composer1').that_requires('Class[php]') }
           it { is_expected.to contain_package('composer2').that_requires('Class[php]') }
           it { is_expected.to contain_alternatives('composer').that_requires(['Package[composer1]', 'Package[composer2]']) }
+
+          context 'with all virtual resources collected' do
+            let(:pre_condition) { 'Profiles::Jenkins::Node_labels <| |>' }
+
+            it { is_expected.to contain_profiles__jenkins__node_labels('php').with(
+              'content' => 'php8.0'
+            ) }
+          end
 
           context 'with fact phpversion => 7.4.33' do
             let(:facts) { super().merge(
@@ -333,9 +345,7 @@ describe 'profiles::php' do
               'reload_fpm_on_config_changes' => false
             ) }
 
-            it { is_expected.to contain_profiles__jenkins__node_labels('php').with(
-              'content' => 'php8.2'
-            )}
+            it { is_expected.not_to contain_profiles__jenkins__node_labels('php') }
 
             it { is_expected.to contain_class('php::globals').with(
               'php_version' => '8.2',
@@ -354,6 +364,14 @@ describe 'profiles::php' do
               'app_name'    => 'bbb.example.com',
               'license_key' => 'my_license_key'
             ) }
+
+            context 'with all virtual resources collected' do
+              let(:pre_condition) { 'Profiles::Jenkins::Node_labels <| |>' }
+
+              it { is_expected.to contain_profiles__jenkins__node_labels('php').with(
+                'content' => 'php8.2'
+              ) }
+            end
 
             context 'with fact phpversion => 7.4.33' do
               let(:facts) { super().merge(

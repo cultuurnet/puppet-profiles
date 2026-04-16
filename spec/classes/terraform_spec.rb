@@ -26,12 +26,18 @@ describe 'profiles::terraform' do
           'ensure' => 'latest'
         ) }
 
-        it { is_expected.to contain_profiles__jenkins__node_labels('terraform').with(
-          'content' => 'terraform'
-        ) }
+        it { is_expected.not_to contain_profiles__jenkins__node_labels('terraform') }
 
         it { is_expected.to contain_apt__source('hashicorp').that_comes_before('Package[terraform]') }
         it { is_expected.to contain_apt__source('publiq-tools').that_comes_before('Package[terrafile]') }
+
+        context 'with all virtual resources collected' do
+          let(:pre_condition) { 'Profiles::Jenkins::Node_labels <| |>' }
+
+          it { is_expected.to contain_profiles__jenkins__node_labels('terraform').with(
+            'content' => 'terraform'
+          ) }
+        end
       end
 
       context "with version => 1.2.3 and terrafile_version => 4.5.6" do

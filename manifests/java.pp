@@ -20,7 +20,7 @@ class profiles::java (
         before  => Class['profiles::java::alternatives'],
       }
 
-      profiles::jenkins::node_labels { "openjdk-${version}":
+      @profiles::jenkins::node_labels { "openjdk-${version}":
         content => "java${version}"
       }
     } else {

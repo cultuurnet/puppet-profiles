@@ -21,7 +21,7 @@ class profiles::nodejs (
     before                => Package['yarn']
   }
 
-  profiles::jenkins::node_labels { 'nodejs':
+  @profiles::jenkins::node_labels { 'nodejs':
     content => "nodejs${major_version}"
   }
 }
