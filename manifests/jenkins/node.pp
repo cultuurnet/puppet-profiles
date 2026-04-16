@@ -84,6 +84,8 @@ class profiles::jenkins::node (
     content => $os_labels
   }
 
+  Profiles::Jenkins::Node_labels <| |>
+
   concat { 'jenkins-swarm-client_node-labels':
     path           => '/etc/jenkins-swarm-client/node-labels.conf',
     owner          => 'jenkins',
