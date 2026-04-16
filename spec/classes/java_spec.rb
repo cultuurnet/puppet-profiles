@@ -56,13 +56,9 @@ describe 'profiles::java' do
         it { is_expected.to contain_package('openjdk-8-jdk') }
         it { is_expected.to contain_package('openjdk-17-jdk') }
 
-        it { is_expected.not_to contain_profiles__jenkins__node_labels('openjdk-17').with(
-          'content' => 'java17'
-        ) }
+        it { is_expected.not_to contain_profiles__jenkins__node_labels('openjdk-17') }
 
-        it { is_expected.not_to contain_profiles__jenkins__node_labels('openjdk-8').with(
-          'content' => 'java8'
-        ) }
+        it { is_expected.not_to contain_profiles__jenkins__node_labels('openjdk-8') }
 
         it { is_expected.to contain_class('profiles::java::alternatives').with(
           'default_version' => 17,
