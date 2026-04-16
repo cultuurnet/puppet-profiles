@@ -3,7 +3,12 @@ class profiles::jenkins::controller::install (
 ) inherits ::profiles {
 
   $config_dir = '/var/lib/jenkins/casc_config'
-  $java_opts  = "-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Dcasc.jenkins.config=${config_dir} -Dhudson.cli.CLIAction.ACCEPT_URL_FROM_REQUEST=true"
+  $java_opts  = [
+                  '-Djava.awt.headless=true',
+                  '-Djenkins.install.runSetupWizard=false',
+                  "-Dcasc.jenkins.config=${config_dir}",
+                  '-Dhudson.cli.CLIAction.ACCEPT_URL_FROM_REQUEST=true'
+                ]
 
   realize Group['jenkins']
   realize User['jenkins']
@@ -27,12 +32,12 @@ class profiles::jenkins::controller::install (
     ensure   => 'present',
     variable => 'JAVA_ARGS',
     target   => '/etc/default/jenkins',
-    value    => $java_opts,
+    value    => $java_opts.join(' '),
     require  => File['casc_config']
   }
 
   systemd::dropin_file { 'override.conf':
     unit    => 'jenkins.service',
-    content => "[Service]\nEnvironment=\"JAVA_OPTS=${java_opts}\""
+    content => "[Service]\nEnvironment=\"JAVA_OPTS=${java_opts.join(' ')}\""
   }
 }
