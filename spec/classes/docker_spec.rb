@@ -28,8 +28,6 @@ describe 'profiles::docker' do
 
         it { is_expected.to contain_class('docker').with(
           'use_upstream_package_source' => false,
-          'socket_override'             => true,
-          'socket_overrides_template'   => 'profiles/docker/overrides.socket.conf.erb',
           'extra_parameters'            => [ '--experimental=false'],
           'docker_users'                => []
         ) }
@@ -72,6 +70,7 @@ describe 'profiles::docker' do
 
         it { is_expected.to contain_apt__source('docker').that_comes_before('Class[docker]') }
         it { is_expected.to contain_file('/var/lib/docker').that_comes_before('Class[docker]') }
+        it { is_expected.to contain_class('profiles::docker::ecr_login').that_requires('Class[docker]') }
 
         context 'with all virtual resources collected' do
           let(:pre_condition) { 'Profiles::Jenkins::Node_labels <| |>' }
@@ -120,8 +119,6 @@ describe 'profiles::docker' do
 
           it { is_expected.to contain_class('docker').with(
             'use_upstream_package_source' => false,
-            'socket_override'             => true,
-            'socket_overrides_template'   => 'profiles/docker/overrides.socket.conf.erb',
             'extra_parameters'            => [ '--experimental=true'],
             'docker_users'                => []
           ) }

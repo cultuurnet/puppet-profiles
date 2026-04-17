@@ -47,8 +47,6 @@ class profiles::docker (
 
   class { '::docker':
     use_upstream_package_source => false,
-    socket_override             => true,
-    socket_overrides_template   => 'profiles/docker/overrides.socket.conf.erb',
     docker_users                => [],
     extra_parameters            => [ "--experimental=${experimental}"],
     require                     => Apt::Source['docker']
@@ -58,9 +56,10 @@ class profiles::docker (
     content => 'docker'
   }
 
-  class { profiles::docker::ecr_login:
+  class { 'profiles::docker::ecr_login':
     registries => $ecr_registries,
-    users      => $ecr_users
+    users      => $ecr_users,
+    require    => Class['::docker']
   }
 
   collectd::plugin::filter::rule { 'ignore_docker_mounts':
