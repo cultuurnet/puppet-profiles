@@ -47,8 +47,6 @@ class profiles::docker (
 
   class { '::docker':
     use_upstream_package_source => false,
-    socket_override             => true,
-    socket_overrides_template   => 'profiles/docker/overrides.socket.conf.erb',
     docker_users                => [],
     extra_parameters            => [ "--experimental=${experimental}"],
     require                     => Apt::Source['docker']
