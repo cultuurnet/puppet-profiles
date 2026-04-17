@@ -70,6 +70,7 @@ describe 'profiles::docker' do
 
         it { is_expected.to contain_apt__source('docker').that_comes_before('Class[docker]') }
         it { is_expected.to contain_file('/var/lib/docker').that_comes_before('Class[docker]') }
+        it { is_expected.to contain_class('profiles::docker::ecr_login').that_requires('Class[docker]') }
 
         context 'with all virtual resources collected' do
           let(:pre_condition) { 'Profiles::Jenkins::Node_labels <| |>' }
