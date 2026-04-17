@@ -18,6 +18,23 @@ describe 'profiles::ruby' do
         it { is_expected.not_to contain_package('ri') }
         it { is_expected.not_to contain_package('ruby-dev') }
         it { is_expected.not_to contain_package('libffi-dev') }
+
+        it { is_expected.not_to contain_profiles__jenkins__node_labels('ruby') }
+
+        context 'with all virtual resources collected' do
+          let(:pre_condition) { 'Profiles::Jenkins::Node_labels <| |>' }
+
+          case facts[:os]['release']['major']
+          when '20.04'
+            it { is_expected.to contain_profiles__jenkins__node_labels('ruby').with(
+              'content' => 'ruby2.7'
+            ) }
+          when '24.04'
+            it { is_expected.to contain_profiles__jenkins__node_labels('ruby').with(
+              'content' => 'ruby3.2'
+            ) }
+          end
+        end
       end
 
       context 'with_dev => true' do
