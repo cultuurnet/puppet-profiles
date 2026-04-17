@@ -204,8 +204,9 @@ class profiles::uit::frontend (
   }
 
   $redirect_vhosts.each |$name, $attributes| {
-     profiles::uit::frontend::redirect_vhosts { $name:
-      * => $attributes
+    profiles::uit::frontend::redirect_vhost { $name:
+      redirect_url => "https://${servername}",
+      *            => $attributes
     }
   }
 
