@@ -56,9 +56,10 @@ class profiles::docker (
     content => 'docker'
   }
 
-  class { profiles::docker::ecr_login:
+  class { 'profiles::docker::ecr_login':
     registries => $ecr_registries,
-    users      => $ecr_users
+    users      => $ecr_users,
+    require    => Class['::docker']
   }
 
   collectd::plugin::filter::rule { 'ignore_docker_mounts':
