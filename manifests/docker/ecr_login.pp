@@ -3,9 +3,11 @@ class profiles::docker::ecr_login (
   Variant[String, Array[String]] $users      = []
 ) inherits ::profiles {
 
-  realize Package['amazon-ecr-credential-helper']
-
   $config_content = { "credHelpers" => [$registries].flatten.reduce({}) |Hash $all, String $registry| { $all + { $registry => 'ecr-login' } } }
+
+  package { 'amazon-ecr-credential-helper':
+    ensure => 'present'
+  }
 
   [$users].flatten.each |$user| {
     case $user {

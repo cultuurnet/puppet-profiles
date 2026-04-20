@@ -169,10 +169,6 @@ inherits ::profiles {
     ensure  => 'present'
   }
 
-  @package { 'amazon-ecr-credential-helper':
-    ensure  => 'present'
-  }
-
   @package { 'awscli':
     ensure  => !!$versions['awscli'] ? { true => $versions['awscli'], default => 'present' },
     require => Apt::Source['publiq-tools']
