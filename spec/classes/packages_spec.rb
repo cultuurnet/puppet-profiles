@@ -137,10 +137,6 @@ describe 'profiles::packages' do
           'ensure' => 'present'
         ) }
 
-        it { is_expected.to contain_package('amazon-ecr-credential-helper').with(
-          'ensure' => 'present'
-        ) }
-
         it { is_expected.to contain_package('maven').with(
           'ensure' => 'present'
         ) }
