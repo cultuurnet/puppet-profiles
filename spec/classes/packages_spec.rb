@@ -147,12 +147,20 @@ describe 'profiles::packages' do
           it { is_expected.to contain_package('awscli').with(
             'ensure' => 'latest'
           ) }
+
+          it { is_expected.to contain_package('terrafile').with(
+            'ensure' => 'latest'
+          ) }
         end
 
         context 'without hieradata' do
           let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
 
           it { is_expected.to contain_package('awscli').with(
+            'ensure' => 'present'
+          ) }
+
+          it { is_expected.to contain_package('terrafile').with(
             'ensure' => 'present'
           ) }
         end
@@ -173,6 +181,7 @@ describe 'profiles::packages' do
         it { is_expected.to contain_package('rubygem-angular-config').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('prince').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('awscli').that_requires('Apt::Source[publiq-tools]') }
+        it { is_expected.to contain_package('terrafile').that_requires('Apt::Source[publiq-tools]') }
       end
 
       context "without package virtual resources realized" do

@@ -20,12 +20,14 @@ describe 'profiles::jenkins::buildtools::extra' do
         let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
         it { is_expected.to contain_package('awscli').with({ 'ensure' => 'latest' }) }
+        it { is_expected.to contain_package('terrafile').with({ 'ensure' => 'latest' }) }
       end
 
       context 'without hieradata' do
         let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
 
         it { is_expected.to contain_package('awscli').with({ 'ensure' => 'present' }) }
+        it { is_expected.to contain_package('terrafile').with({ 'ensure' => 'present' }) }
       end
     end
   end
