@@ -13,6 +13,7 @@ data::mysql::2ndline_ro::password: 'my_2ndline_ro_password'
 
 profiles::packages::versions:
   awscli: 'latest'
+  terrafile: 'latest'
 
 profiles::jenkins::controller::admin_password: 'bar'
 profiles::jenkins::controller::url: 'https://foobar.com/'

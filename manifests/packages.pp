@@ -174,6 +174,11 @@ inherits ::profiles {
     require => Apt::Source['publiq-tools']
   }
 
+  @package { 'terrafile':
+    ensure  => !!$versions['terrafile'] ? { true => $versions['terrafile'], default => 'present' },
+    require => Apt::Source['publiq-tools']
+  }
+
   # Realize a list of 'default' packages on all nodes
   realize Package['jq']
   realize Package['yq']

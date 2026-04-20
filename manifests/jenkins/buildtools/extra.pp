@@ -6,6 +6,7 @@ class profiles::jenkins::buildtools::extra inherits ::profiles {
 
   realize Package['argocd']
   realize Package['awscli']
+  realize Package['terrafile']
   realize Package['golang']
   realize Package['kubectl']
   realize Package['maven']
