@@ -11,25 +11,18 @@ describe 'profiles::terraform' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::terraform').with(
-          'version'           => 'latest',
-          'terrafile_version' => 'latest'
+          'version' => 'latest'
         ) }
 
-        it { is_expected.to contain_apt__source('publiq-tools') }
         it { is_expected.to contain_apt__source('hashicorp') }
 
         it { is_expected.to contain_package('terraform').with(
           'ensure' => 'latest'
         ) }
 
-        it { is_expected.to contain_package('terrafile').with(
-          'ensure' => 'latest'
-        ) }
-
         it { is_expected.not_to contain_profiles__jenkins__node_labels('terraform') }
 
         it { is_expected.to contain_apt__source('hashicorp').that_comes_before('Package[terraform]') }
-        it { is_expected.to contain_apt__source('publiq-tools').that_comes_before('Package[terrafile]') }
 
         context 'with all virtual resources collected' do
           let(:pre_condition) { 'Profiles::Jenkins::Node_labels <| |>' }
@@ -40,18 +33,13 @@ describe 'profiles::terraform' do
         end
       end
 
-      context "with version => 1.2.3 and terrafile_version => 4.5.6" do
+      context "with version => 1.2.3" do
         let(:params) { {
-          'version'           => '1.2.3',
-          'terrafile_version' => '4.5.6'
+          'version' => '1.2.3'
         } }
 
         it { is_expected.to contain_package('terraform').with(
           'ensure' => '1.2.3'
-        ) }
-
-        it { is_expected.to contain_package('terrafile').with(
-          'ensure' => '4.5.6'
         ) }
       end
     end
