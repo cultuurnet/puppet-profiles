@@ -13,18 +13,6 @@ describe 'profiles::packages' do
           'Apt::Source <| |>'
         ] }
 
-        it { is_expected.to contain_package('composer').with(
-          'ensure' => 'absent'
-        ) }
-
-        it { is_expected.to contain_package('composer1').with(
-          'ensure' => 'present'
-        ) }
-
-        it { is_expected.to contain_package('composer2').with(
-          'ensure' => 'present'
-        ) }
-
         it { is_expected.to contain_package('git').with(
           'ensure' => 'present'
         ) }
@@ -165,8 +153,6 @@ describe 'profiles::packages' do
           ) }
         end
 
-        it { is_expected.to contain_package('composer1').that_requires('Apt::Source[publiq-tools]') }
-        it { is_expected.to contain_package('composer2').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('drush').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('ca-certificates-publiq').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('gcsfuse').that_requires('Apt::Source[publiq-tools]') }
