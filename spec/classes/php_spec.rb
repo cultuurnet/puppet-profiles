@@ -20,7 +20,6 @@ describe 'profiles::php' do
               'version'                  => '7.4',
               'extensions'               => {},
               'settings'                 => {},
-              'composer_default_version' => 2,
               'fpm'                      => true,
               'fpm_socket_type'          => 'tcp',
               'fpm_service_status'       => 'running',
@@ -32,7 +31,6 @@ describe 'profiles::php' do
             ) }
 
             it { is_expected.to contain_apt__source('php') }
-            it { is_expected.to contain_apt__source('publiq-tools') }
 
             it { is_expected.to contain_class('php::globals').with(
               'php_version' => '7.4',
@@ -99,21 +97,29 @@ describe 'profiles::php' do
 
             it { is_expected.to contain_systemd__daemon_reload('php-fpm') }
 
-            it { is_expected.to contain_package('composer').with(
-              'ensure' => 'absent'
-            ) }
+            case facts[:os]['release']['major']
+            when '20.04'
+              it { is_expected.to contain_apt__source('publiq-tools') }
 
-            it { is_expected.to contain_package('composer1').with(
-              'ensure' => 'present'
-            ) }
+              it { is_expected.to contain_package('composer1').with(
+                'ensure' => 'absent'
+              ) }
 
-            it { is_expected.to contain_package('composer2').with(
-              'ensure' => 'present'
-            ) }
+              it { is_expected.to contain_package('composer2').with(
+                'ensure' => 'present'
+              ) }
 
-            it { is_expected.to contain_alternatives('composer').with(
-              'path' => '/usr/bin/composer2'
-            ) }
+              it { is_expected.to contain_alternatives('composer').with(
+                'path' => '/usr/bin/composer2'
+              ) }
+
+              it { is_expected.to contain_package('composer2').that_requires('Apt::Source[publiq-tools]') }
+              it { is_expected.to contain_alternatives('composer').that_requires('Package[composer2]') }
+            else
+              it { is_expected.to contain_package('composer').with(
+                'ensure' => 'present'
+              ) }
+            end
 
             it { is_expected.to contain_package('git').with(
               'ensure' => 'present'
@@ -155,7 +161,6 @@ describe 'profiles::php' do
               'version'                  => '7.4',
               'extensions'               => {},
               'settings'                 => {},
-              'composer_default_version' => 2,
               'fpm'                      => true,
               'fpm_socket_type'          => 'unix',
               'fpm_service_status'       => 'running',
@@ -167,20 +172,19 @@ describe 'profiles::php' do
           end
         end
 
-        context 'with version => 8.0, extensions => { mbstring => {}, mysql => { so_name => mysqlnd }, mongodb => {} }, settings => { PHP/upload_max_filesize => 22M, PHP/post_max_size => 24M }, fpm => false and composer_default_version => 1' do
+        context 'with version => 8.0, extensions => { mbstring => {}, mysql => { so_name => mysqlnd }, mongodb => {} }, settings => { PHP/upload_max_filesize => 22M, PHP/post_max_size => 24M } and fpm => false' do
           let(:params) { {
-            'version'                  => '8.0',
-            'extensions'               => {
-                                            'mbstring' => {},
-                                            'mysql'    => { 'so_name' => 'mysqlnd' },
-                                            'mongodb'  => {}
-                                          },
-            'settings'                 => {
-                                            'PHP/upload_max_filesize' => '22M',
-                                            'PHP/post_max_size'       => '24M'
-                                          },
-            'fpm'                      => false,
-            'composer_default_version' => 1
+            'version'    => '8.0',
+            'extensions' => {
+                              'mbstring' => {},
+                              'mysql'    => { 'so_name' => 'mysqlnd' },
+                              'mongodb'  => {}
+                            },
+            'settings'   => {
+                              'PHP/upload_max_filesize' => '22M',
+                              'PHP/post_max_size'       => '24M'
+                            },
+            'fpm'        => false,
           } }
 
           it { is_expected.to contain_class('php::globals').with(
@@ -222,25 +226,7 @@ describe 'profiles::php' do
 
           it { is_expected.not_to contain_systemd__daemon_reload('php-fpm') }
 
-          it { is_expected.to contain_apt__source('publiq-tools') }
-
-          it { is_expected.to contain_package('composer1').with(
-            'ensure' => 'present'
-          ) }
-
-          it { is_expected.to contain_package('composer2').with(
-            'ensure' => 'present'
-          ) }
-
-          it { is_expected.to contain_alternatives('composer').with(
-            'path' => '/usr/bin/composer1'
-          ) }
-
           it { is_expected.not_to contain_class('profiles::newrelic::php') }
-
-          it { is_expected.to contain_package('composer1').that_requires('Class[php]') }
-          it { is_expected.to contain_package('composer2').that_requires('Class[php]') }
-          it { is_expected.to contain_alternatives('composer').that_requires(['Package[composer1]', 'Package[composer2]']) }
 
           context 'with all virtual resources collected' do
             let(:pre_condition) { 'Profiles::Jenkins::Node_labels <| |>' }
@@ -263,18 +249,17 @@ describe 'profiles::php' do
       context 'on node bbb.example.com' do
         let(:node) { 'bbb.example.com' }
 
-        context 'with version => 8.2, composer_default_version => 1, newrelic => true, fpm_socket_type => unix, fpm_restart_on_change => true, fpm_settings => { pm_max_children => 100, pm_max_requests => 5000 } and fpm_service_status => stopped' do
+        context 'with version => 8.2, newrelic => true, fpm_socket_type => unix, fpm_restart_on_change => true, fpm_settings => { pm_max_children => 100, pm_max_requests => 5000 } and fpm_service_status => stopped' do
           let(:params) { {
-            'version'                  => '8.2',
-            'composer_default_version' => 1,
-            'fpm_socket_type'          => 'unix',
-            'fpm_service_status'       => 'stopped',
-            'fpm_restart_on_change'    => true,
-            'fpm_settings'             => {
-                                            'pm_max_children' => 100,
-                                            'pm_max_requests' => 5000
-                                          },
-            'newrelic'                 => true
+            'version'               => '8.2',
+            'fpm_socket_type'       => 'unix',
+            'fpm_service_status'    => 'stopped',
+            'fpm_restart_on_change' => true,
+            'fpm_settings'          => {
+                                         'pm_max_children' => 100,
+                                         'pm_max_requests' => 5000
+                                       },
+            'newrelic'              => true
           } }
 
           context 'with hieradata' do
@@ -282,20 +267,6 @@ describe 'profiles::php' do
 
             it { is_expected.to contain_class('profiles::php').with(
               'newrelic_app_name' => 'bbb.example.com'
-            ) }
-
-            it { is_expected.to contain_apt__source('publiq-tools') }
-
-            it { is_expected.to contain_package('composer1').with(
-              'ensure' => 'present'
-            ) }
-
-            it { is_expected.to contain_package('composer2').with(
-              'ensure' => 'present'
-            ) }
-
-            it { is_expected.to contain_alternatives('composer').with(
-              'path' => '/usr/bin/composer1'
             ) }
 
             it { is_expected.to contain_class('php').with(

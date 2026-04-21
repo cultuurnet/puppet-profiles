@@ -2,7 +2,6 @@ class profiles::php (
   String                     $version                  = '7.4',
   Hash                       $extensions               = {},
   Hash                       $settings                 = {},
-  Integer[1, 2]              $composer_default_version = 2,
   Boolean                    $fpm                      = true,
   Enum['unix', 'tcp']        $fpm_socket_type          = 'unix',
   Enum['running', 'stopped'] $fpm_service_status       = 'running',
@@ -50,21 +49,30 @@ class profiles::php (
   }
 
   realize Apt::Source['php']
-  realize Apt::Source['publiq-tools']
 
-  realize Package['composer']
-  realize Package['composer1']
-  realize Package['composer2']
   realize Package['git']
 
-  Package['composer'] -> Package['composer1']
-  Package['composer'] -> Package['composer2']
-  Class['::php'] -> Package['composer1']
-  Class['::php'] -> Package['composer2']
+  case $facts['os']['release']['major'] {
+    '20.04': {
+      realize Apt::Source['publiq-tools']
 
-  alternatives { 'composer':
-    path    => "/usr/bin/composer${composer_default_version}",
-    require => [Package['composer1'], Package['composer2']]
+      package { 'composer1':
+        ensure  => 'absent'
+      }
+
+      package { 'composer2':
+        ensure  => 'present',
+        require => [Apt::Source['publiq-tools'], Class['::php']]
+      }
+
+      alternatives { 'composer':
+        path    => '/usr/bin/composer2',
+        require => Package['composer2']
+      }
+    }
+    default: {
+      realize Package['composer']
+    }
   }
 
   if $fpm {

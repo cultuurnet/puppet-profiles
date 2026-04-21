@@ -3,20 +3,6 @@ class profiles::packages (
 )
 inherits ::profiles {
 
-  @package { 'composer':
-    ensure => 'absent'
-  }
-
-  @package { 'composer1':
-    ensure  => 'present',
-    require => Apt::Source['publiq-tools']
-  }
-
-  @package { 'composer2':
-    ensure  => 'present',
-    require => Apt::Source['publiq-tools']
-  }
-
   @package { 'drush':
     ensure  => 'present',
     require => Apt::Source['publiq-tools']
@@ -50,6 +36,7 @@ inherits ::profiles {
   @package { 'yq':
     ensure => 'present'
   }
+
   @package { 'maven':
     ensure => 'present'
   }
@@ -177,6 +164,12 @@ inherits ::profiles {
   @package { 'terrafile':
     ensure  => !!$versions['terrafile'] ? { true => $versions['terrafile'], default => 'present' },
     require => Apt::Source['publiq-tools']
+  }
+
+  unless $facts['os']['release']['major'] == '20.04' {
+    @package { 'composer':
+      ensure  => !!$versions['composer'] ? { true => $versions['composer'], default => 'present' }
+    }
   }
 
   # Realize a list of 'default' packages on all nodes
