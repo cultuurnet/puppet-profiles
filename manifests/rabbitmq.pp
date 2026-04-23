@@ -15,7 +15,7 @@ class profiles::rabbitmq (
   }
 
   class { '::rabbitmq':
-    manage_repos      => false,
+    repos_ensure      => false,
     package_ensure    => $version,
     delete_guest_user => true,
     require           => Package['erlang-nox']

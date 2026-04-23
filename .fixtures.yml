@@ -135,6 +135,12 @@ fixtures:
     rsyslog:
       repo: 'puppet/rsyslog'
       ref: '7.3.0'
+    rabbitmq:
+      repo: 'puppet/rabbitmq'
+      ref: '13.4.0'
+    archive:
+      repo: 'puppet/archive'
+      ref: '6.1.2'
     debconf:
       repo: 'stm/debconf'
       ref: '6.2.0'
@@ -142,9 +148,6 @@ fixtures:
     filebeat:
       repo: 'https://github.com/cultuurnet/puppet-filebeat.git'
       ref: '598539b'
-    rabbitmq:
-      repo: 'https://github.com/cultuurnet/puppetlabs-rabbitmq.git'
-      ref: 'cdcb352'
     borgbackup:
       repo: 'https://github.com/cultuurnet/puppet-borgbackup.git'
       ref: '0c92c9b'
