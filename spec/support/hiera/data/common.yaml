@@ -9,7 +9,7 @@ data::openid::client_id: 'abc123'
 data::openid::client_secret: 'def456'
 
 data::mysql::etl::password: 'my_etl_password'
-data::mysql::secondline_ro::password: 'my_2ndline_ro_password
+data::mysql::secondline_ro::password: 'my_2ndline_ro_password'
 
 profiles::packages::versions:
   awscli: 'latest'
