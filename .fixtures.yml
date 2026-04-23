@@ -88,8 +88,8 @@ fixtures:
       repo: 'puppetlabs/docker'
       ref: '4.1.2'
     timezone:
-      repo: 'bashtoni/timezone'
-      ref: '1.0.0'
+      repo: 'saz/timezone'
+      ref: '7.0.0'
     collectd:
       repo: 'puppet/collectd'
       ref: '13.0.0'
@@ -135,6 +135,9 @@ fixtures:
     rsyslog:
       repo: 'puppet/rsyslog'
       ref: '7.3.0'
+    debconf:
+      repo: 'stm/debconf'
+      ref: '6.2.0'
   repositories:
     filebeat:
       repo: 'https://github.com/cultuurnet/puppet-filebeat.git'
