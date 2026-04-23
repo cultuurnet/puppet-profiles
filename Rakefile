@@ -1,10 +1,31 @@
 require 'puppet'
-require 'puppetlabs_spec_helper/rake_tasks'
+require 'rspec/core/rake_task'
+require 'puppet-syntax/tasks/puppet-syntax'
 require 'puppet-lint/tasks/puppet-lint'
+require 'puppet_fixtures/tasks'
+
+PuppetSyntax.hieradata_paths = ["spec/support/hiera/data/*.yaml"]
+PuppetSyntax.exclude_paths = ['spec/fixtures/**/*', 'vendor/**/*', 'spec/support/hiera/data/vault.yaml']
 
 PuppetLint.configuration.send('disable_80chars')
 PuppetLint.configuration.send('disable_puppet_url_without_modules')
 PuppetLint.configuration.ignore_paths = ["spec/**/*.pp", "pkg/**/*.pp"]
+
+desc "Default task prints the available targets."
+task :default do
+  system("rake -T")
+end
+
+RSpec::Core::RakeTask.new(:spec) do |task|
+  task.pattern = 'spec/{aliases,classes,defines,functions,hosts,integration,plans,tasks,type_aliases,types,unit}/**/*_spec.rb'
+end
+
+desc "Run syntax, lint, and spec tests."
+task :test => [
+  :syntax,
+  :lint,
+  :spec
+]
 
 desc "Validate manifests, templates, and ruby files"
 task :validate do
@@ -17,16 +38,4 @@ task :validate do
   Dir['templates/**/*.erb'].each do |template|
     sh "erb -P -x -T '-' #{template} | ruby -c"
   end
-end
-
-desc "Run syntax, lint, and spec tests."
-task :test => [
-  :syntax,
-  :spec,
-  :lint
-]
-
-desc "Default task prints the available targets."
-task :default do
-  system("rake -T")
 end
