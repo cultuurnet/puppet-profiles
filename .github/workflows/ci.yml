@@ -9,7 +9,7 @@ on:
 jobs:
   test:
     if: ${{ ! github.event.pull_request.merged }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout project
         uses: actions/checkout@v4
@@ -17,7 +17,7 @@ jobs:
       - name: Install Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.0
+          ruby-version: 3.2.3
 
       - name: Install dependencies
         run: bundle install
