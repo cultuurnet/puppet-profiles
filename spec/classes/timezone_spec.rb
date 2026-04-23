@@ -16,8 +16,7 @@ describe 'profiles::timezone' do
         ) }
 
         it { is_expected.to contain_class('timezone').with(
-          'region'   => 'Etc',
-          'locality' => 'UTC',
+          'timezone' => 'Etc/UTC',
           'hwutc'    => true
         ) }
       end
@@ -31,8 +30,7 @@ describe 'profiles::timezone' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('timezone').with(
-          'region'   => 'Europe',
-          'locality' => 'Brussels',
+          'timezone' => 'Europe/Brussels',
           'hwutc'    => true
         ) }
       end

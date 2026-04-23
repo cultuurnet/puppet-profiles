@@ -5,7 +5,7 @@ class profiles::timezone (
 ) inherits ::profiles {
 
   class { '::timezone':
-    region   => $region,
-    locality => $locality
+    timezone => "${region}/${locality}",
+    hwutc    => true
   }
 }
