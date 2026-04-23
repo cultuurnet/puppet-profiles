@@ -16,11 +16,17 @@ task :default do
   system("rake -T")
 end
 
-RSpec::Core::RakeTask.new(:spec) do |task|
+RSpec::Core::RakeTask.new(:'spec:standalone') do |task|
   task.pattern = 'spec/{aliases,classes,defines,functions,hosts,integration,plans,tasks,type_aliases,types,unit}/**/*_spec.rb'
 end
 
-desc "Run syntax, lint, and spec tests."
+desc "Install fixtures and run spec tests."
+task :spec => [
+  :'fixtures:prep',
+  :'spec:standalone'
+]
+
+desc "Run syntax, lint, and spec tasks."
 task :test => [
   :syntax,
   :lint,
