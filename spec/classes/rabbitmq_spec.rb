@@ -3,7 +3,7 @@ describe 'profiles::rabbitmq' do
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do
-      let(:facts) { facts }
+      let(:facts) { facts.merge( { 'osfamily' => facts[:os]['family'], 'operatingsystemmajrelease' => facts[:os]['release']['major'] } ) }
 
       context "with admin_user => 'foo' and admin_password => 'bar'" do
         let(:params) { {
@@ -25,7 +25,7 @@ describe 'profiles::rabbitmq' do
         ) }
 
         it { is_expected.to contain_class('rabbitmq').with(
-          'manage_repos'      => false,
+          'repos_ensure'      => false,
           'package_ensure'    => 'latest',
           'delete_guest_user' => true
         ) }
@@ -56,7 +56,7 @@ describe 'profiles::rabbitmq' do
           ) }
 
           it { is_expected.to contain_class('rabbitmq').with(
-            'manage_repos'      => false,
+            'repos_ensure'      => false,
             'package_ensure'    => '4.5.6',
             'delete_guest_user' => true
           ) }
