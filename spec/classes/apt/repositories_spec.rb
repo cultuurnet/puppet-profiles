@@ -106,10 +106,10 @@ describe 'profiles::apt::repositories' do
           context 'in the acceptance environment' do
             let(:environment) { 'acceptance' }
 
-            include_examples 'apt repositories', 'noble', { :location => 'https://apt-mirror.publiq.be/noble-amd64-testing', :repos => 'main', :release => 'noble' }
-            include_examples 'apt repositories', 'noble-updates', { :location => 'https://apt-mirror.publiq.be/noble-updates-amd64-testing', :repos => 'main', :release => 'noble-updates' }
-            include_examples 'apt repositories', 'noble-security', { :location => 'https://apt-mirror.publiq.be/noble-security-amd64-testing', :repos => 'main', :release => 'noble-security' }
-            include_examples 'apt repositories', 'noble-backports', { :location => 'https://apt-mirror.publiq.be/noble-backports-amd64-testing', :repos => 'main', :release => 'noble-backports' }
+            include_examples 'apt repositories', 'noble', { :location => 'https://apt-mirror.publiq.be/noble-amd64-acceptance', :repos => 'main', :release => 'noble' }
+            include_examples 'apt repositories', 'noble-updates', { :location => 'https://apt-mirror.publiq.be/noble-updates-amd64-acceptance', :repos => 'main', :release => 'noble' }
+            include_examples 'apt repositories', 'noble-security', { :location => 'https://apt-mirror.publiq.be/noble-security-amd64-acceptance', :repos => 'main', :release => 'noble' }
+            include_examples 'apt repositories', 'noble-backports', { :location => 'https://apt-mirror.publiq.be/noble-backports-amd64-acceptance', :repos => 'main', :release => 'noble' }
 
             include_examples 'apt repositories', 'php', { :location => 'https://apt-mirror.publiq.be/php-noble-acceptance', :repos => 'main', :release => 'noble' }
           end
