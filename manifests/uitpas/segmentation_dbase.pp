@@ -1,7 +1,7 @@
 class profiles::uitpas::segmentation_dbase (
   String $database_name = 'uitpas_seg_prod_copy',
   String $ro_user       = '2ndline_ro',
-  String $ro_password   = lookup('data::mysql::2ndline_ro::password', Optional[String], 'first', undef),
+  String $ro_password   = lookup('data::mysql::secondline_ro::password', Optional[String], 'first', undef),
   String $rw_password   = undef,
   String $rw_user       = undef
 ) inherits ::profiles {

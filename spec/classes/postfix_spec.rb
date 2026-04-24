@@ -3,7 +3,7 @@ describe 'profiles::postfix' do
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do
-      let(:facts) { facts }
+      let(:facts) { facts.merge( { 'osfamily' => facts[:os]['family'], 'operatingsystem' => facts[:os]['name'], 'operatingsystemrelease' => facts[:os]['release']['full'] }) }
 
       context "on host with ipaddress 1.2.3.4" do
         let(:facts) {

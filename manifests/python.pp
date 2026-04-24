@@ -13,9 +13,6 @@ class profiles::python (
   }
 
   @profiles::jenkins::node_labels { 'python':
-    content => $facts['os']['distro']['codename'] ? {
-                 'focal' => 'python3.8',
-                 'noble' => 'python3.12'
-               }
+    content => "python${facts['python3_release']}"
   }
 }

@@ -135,6 +135,12 @@ fixtures:
     rsyslog:
       repo: 'puppet/rsyslog'
       ref: '7.3.0'
+    rabbitmq:
+      repo: 'puppet/rabbitmq'
+      ref: '13.4.0'
+    archive:
+      repo: 'puppet/archive'
+      ref: '6.1.2'
     debconf:
       repo: 'stm/debconf'
       ref: '6.2.0'
@@ -142,15 +148,12 @@ fixtures:
     filebeat:
       repo: 'https://github.com/cultuurnet/puppet-filebeat.git'
       ref: '598539b'
-    rabbitmq:
-      repo: 'https://github.com/cultuurnet/puppetlabs-rabbitmq.git'
-      ref: 'cdcb352'
     borgbackup:
       repo: 'https://github.com/cultuurnet/puppet-borgbackup.git'
       ref: '0c92c9b'
     glassfish:
       repo: 'https://github.com/cultuurnet/fatmcgav-glassfish.git'
-      ref: 'c9ec792'
+      ref: 'f91d0b6f'
     aptly:
       repo: 'https://github.com/cultuurnet/puppet-aptly.git'
       ref: '2d5031b'
@@ -158,5 +161,5 @@ fixtures:
       repo: 'https://github.com/cultuurnet/puppetlabs-mysql.git'
       ref: '844aa07'
   symlinks:
-    appconfig: "#{source_dir}/spec/support/appconfig"
-    profiles: "#{source_dir}"
+    appconfig: ${PWD}/spec/support/appconfig
+    profiles: ${PWD}
