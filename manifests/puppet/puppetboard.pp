@@ -34,6 +34,7 @@ class profiles::puppet::puppetboard (
     puppetdb_ssl_verify => "${basedir}/ssl/ca.pem",
     puppetdb_key        => "${basedir}/ssl/private.pem",
     puppetdb_cert       => "${basedir}/ssl/public.pem",
+    python_version      => $facts['python3_release'],
     enable_catalog      => false,
     enable_query        => true,
     default_environment => 'production',
