@@ -24,15 +24,21 @@ describe 'profiles::python' do
         context 'with all virtual resources collected' do
           let(:pre_condition) { 'Profiles::Jenkins::Node_labels <| |>' }
 
-          case facts[:os]['release']['major']
-          when '20.04'
-            it { is_expected.to contain_profiles__jenkins__node_labels('python').with(
-              'content' => 'python3.8'
-            ) }
-          when '24.04'
-            it { is_expected.to contain_profiles__jenkins__node_labels('python').with(
-              'content' => 'python3.12'
-            ) }
+          context "with Python available" do
+            case facts[:os]['release']['major']
+            when '20.04'
+              let(:facts) { facts.merge({ 'python3_release' => '3.8' }) }
+
+              it { is_expected.to contain_profiles__jenkins__node_labels('python').with(
+                'content' => 'python3.8'
+              ) }
+            when '24.04'
+              let(:facts) { facts.merge({ 'python3_release' => '3.12' }) }
+
+              it { is_expected.to contain_profiles__jenkins__node_labels('python').with(
+                'content' => 'python3.12'
+              ) }
+            end
           end
         end
       end
