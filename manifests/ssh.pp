@@ -36,7 +36,6 @@ class profiles::ssh(
 
   if $settings::storeconfigs {
     @@sshkey { "${facts['networking']['hostname']}@ssh-rsa":
-      type         => 'ssh-rsa',
       key          => $facts['ssh']['rsa']['key'],
       host_aliases => [$facts['networking']['ip'], $facts['networking']['fqdn']],
       provider     => 'parsed'
