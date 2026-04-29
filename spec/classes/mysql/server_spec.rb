@@ -24,7 +24,8 @@ describe 'profiles::mysql::server' do
           'long_query_time'       => 2,
           'backup_retention_days' => 7,
           'transaction_isolation' => 'REPEATABLE-READ',
-          'event_scheduler'       => 'OFF'
+          'event_scheduler'       => 'OFF',
+          'release'               => '8.0'
         ) }
 
         it { is_expected.not_to contain_profiles__lvm__mount('mysqldata') }
@@ -213,6 +214,21 @@ describe 'profiles::mysql::server' do
               'volume_size'    => '10G',
               'retention_days' => 5
             ) }
+
+            context 'with release => 8.4' do
+              let(:params) {
+                super().merge({ 'release' => '8.4' })
+              }
+
+              case facts[:os]['release']['major']
+              when '20.04'
+                it { expect { catalogue }.to raise_error(Puppet::ParseError, /MySQL server release 8.4 is not available on Ubuntu 20.04/) }
+              else
+                it { is_expected.to contain_apt__source('mysql-8.4') }
+
+                it { is_expected.to contain_apt__source('mysql-8.4').that_comes_before('Class[mysql::server]') }
+              end
+            end
 
             it { is_expected.to contain_mysql_user('root@%').that_requires('Class[mysql::server]') }
             it { is_expected.to contain_mysql_user('root@%').that_requires('Profiles::Mysql::Root_my_cnf[localhost]') }

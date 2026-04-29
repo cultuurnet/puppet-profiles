@@ -61,6 +61,8 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'hashicorp', { :location => 'https://apt-mirror.publiq.be/hashicorp-focal-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'openvox', { :location => 'https://apt-mirror.publiq.be/openvox-focal-testing', :repos => 'main', :release => 'focal' }
 
+            it { is_expected.not_to contain_apt__source('mysql-8.4') }
+
             include_examples 'apt repositories', 'publiq-jenkins', { :location => 'https://apt.publiq.be/publiq-jenkins-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'publiq-prototypes', { :location => 'https://apt.publiq.be/publiq-prototypes-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'publiq-versions', { :location => 'https://apt.publiq.be/publiq-versions-testing', :repos => 'main', :release => 'focal' }
@@ -112,6 +114,7 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'noble-backports', { :location => 'https://apt-mirror.publiq.be/noble-backports-amd64-acceptance', :repos => 'main', :release => 'noble' }
 
             include_examples 'apt repositories', 'php', { :location => 'https://apt-mirror.publiq.be/php-noble-acceptance', :repos => 'main', :release => 'noble' }
+            include_examples 'apt repositories', 'mysql-8.4', { :location => 'https://apt-mirror.publiq.be/mysql-8.4-noble-acceptance', :repos => 'mysql-8.4-lts', :release => 'noble' }
           end
         end
       end
