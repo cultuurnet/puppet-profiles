@@ -5,22 +5,20 @@ class profiles::ssh(
   include ::profiles::firewall::rules
   include ::profiles::ssh_authorized_keys
 
-  Sshd_config {
-    notify  => Service['ssh']
-  }
-
   package { 'openssh-server':
     ensure => 'latest',
     notify => Service['ssh']
   }
 
-  sshd_config { 'PermitRootLogin':
+  profiles::ssh::sshd_config { 'PermitRootLogin':
     ensure => 'present',
-    value  => 'no'
+    value  => 'no',
+    notify  => Service['ssh']
   }
 
-  sshd_config { 'PubkeyAcceptedKeyTypes':
-    ensure => 'absent'
+  profiles::ssh::sshd_config { 'PubkeyAcceptedKeyTypes':
+    ensure => 'absent',
+    notify  => Service['ssh']
   }
 
   service { 'ssh':
@@ -37,8 +35,7 @@ class profiles::ssh(
   if $settings::storeconfigs {
     @@sshkey { "${facts['networking']['hostname']}@ssh-rsa":
       key          => $facts['ssh']['rsa']['key'],
-      host_aliases => [$facts['networking']['ip'], $facts['networking']['fqdn']],
-      provider     => 'parsed'
+      host_aliases => [$facts['networking']['ip'], $facts['networking']['fqdn']]
     }
 
     Sshkey <<| |>>

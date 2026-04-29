@@ -16,16 +16,14 @@ describe 'profiles::ssh' do
           'ensure' => 'latest'
         ) }
 
-        it { is_expected.to contain_sshd_config('PermitRootLogin').with(
+        it { is_expected.to contain_profiles__ssh__sshd_config('PermitRootLogin').with(
           'ensure' => 'present',
           'value'  => 'no'
         ) }
 
-        it { is_expected.to contain_sshd_config('PubkeyAcceptedKeyTypes').with(
+        it { is_expected.to contain_profiles__ssh__sshd_config('PubkeyAcceptedKeyTypes').with(
           'ensure' => 'absent'
         ) }
-
-        it { is_expected.to contain_sshd_config('PermitRootLogin').that_notifies('Service[ssh]') }
 
         it { is_expected.to contain_service('ssh').with(
           'ensure' => 'running',
@@ -54,6 +52,8 @@ describe 'profiles::ssh' do
 
         it { is_expected.to have_ssh_authorized_key_resource_count(0) }
 
+        it { is_expected.to contain_profiles__ssh__sshd_config('PermitRootLogin').that_notifies('Service[ssh]') }
+        it { is_expected.to contain_profiles__ssh__sshd_config('PubkeyAcceptedKeyTypes').that_notifies('Service[ssh]') }
         it { is_expected.to contain_package('openssh-server').that_notifies('Service[ssh]') }
       end
 
