@@ -1,19 +1,19 @@
 class profiles::mysql::server (
-  Optional[String]                                                              $root_password               = undef,
-  Stdlib::IP::Address::V4                                                       $listen_address              = '127.0.0.1',
-  Boolean                                                                       $monitoring                  = false,
-  Boolean                                                                       $lvm                         = false,
-  Optional[String]                                                              $volume_group                = undef,
-  Optional[String]                                                              $volume_size                 = undef,
-  Boolean                                                                       $backup_lvm                  = false,
-  Optional[String]                                                              $backup_volume_group         = undef,
-  Optional[String]                                                              $backup_volume_size          = undef,
-  Optional[String]                                                              $event_scheduler             = 'OFF',
-  Integer                                                                       $backup_retention_days       = 7,
-  Integer                                                                       $max_open_files              = 1024,
-  Integer                                                                       $long_query_time             = 2,
-  Enum['READ-COMMITTED', 'REPEATABLE-READ', 'READ-UNCOMMITTED', 'SERIALIZABLE'] $transaction_isolation       = 'REPEATABLE-READ'
-
+  Optional[String]                                                              $root_password          = undef,
+  Stdlib::IP::Address::V4                                                       $listen_address         = '127.0.0.1',
+  Boolean                                                                       $monitoring             = false,
+  Boolean                                                                       $lvm                    = false,
+  Optional[String]                                                              $volume_group           = undef,
+  Optional[String]                                                              $volume_size            = undef,
+  Boolean                                                                       $backup_lvm             = false,
+  Optional[String]                                                              $backup_volume_group    = undef,
+  Optional[String]                                                              $backup_volume_size     = undef,
+  Optional[String]                                                              $event_scheduler        = 'OFF',
+  Integer                                                                       $backup_retention_days  = 7,
+  Integer                                                                       $max_open_files         = 1024,
+  Integer                                                                       $long_query_time        = 2,
+  Enum['READ-COMMITTED', 'REPEATABLE-READ', 'READ-UNCOMMITTED', 'SERIALIZABLE'] $transaction_isolation  = 'REPEATABLE-READ',
+  Enum['8.0', '8.4']                                                            $release                = '8.0'
 ) inherits ::profiles {
 
   $root_user = 'root'
@@ -36,6 +36,19 @@ class profiles::mysql::server (
                }
 
   include profiles::firewall::rules
+
+  realize Group['mysql']
+  realize User['mysql']
+
+  unless $release == '8.0' {
+    unless $facts['os']['release']['major'] == '20.04' {
+      realize Apt::Source["mysql-${release}"]
+
+      Apt::Source["mysql-${release}"] -> Class['mysql::server']
+    } else {
+      fail("MySQL server release ${release} is not available on Ubuntu ${facts['os']['release']['major']}")
+    }
+  }
 
   if $listen_address == '127.0.0.1' {
     profiles::mysql::root_my_cnf { 'localhost':
@@ -82,9 +95,6 @@ class profiles::mysql::server (
       require       => [Class['mysql::server'], Profiles::Mysql::Root_my_cnf['localhost']]
     }
   }
-
-  realize Group['mysql']
-  realize User['mysql']
 
   if $lvm {
     unless ($volume_group and $volume_size) {

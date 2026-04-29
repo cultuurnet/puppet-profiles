@@ -167,6 +167,15 @@ class profiles::apt::repositories {
     repos        => 'main'
   }
 
+  unless $facts['os']['release']['major'] == '20.04' {
+    @apt::source { 'mysql-8.4':
+      location     => "https://apt-mirror.publiq.be/mysql-8.4-${codename}-${environment}",
+      release      => $codename,
+      architecture => $arch,
+      repos        => 'mysql-8.4-lts'
+    }
+  }
+
   # Project repositories
   @apt::source { 'uit-mail-subscriptions':
     location => "https://apt.publiq.be/uit-mail-subscriptions-${environment}",
