@@ -54,9 +54,6 @@ fixtures:
     elasticsearch:
       repo: 'puppet/elasticsearch'
       ref: '8.1.0'
-    datacat:
-      repo: 'richardc/datacat'
-      ref: '0.6.2'
     firewall:
       repo: 'puppetlabs/firewall'
       ref: '3.6.0'
