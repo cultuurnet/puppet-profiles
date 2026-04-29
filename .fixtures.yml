@@ -24,9 +24,6 @@ fixtures:
     augeasproviders_sysctl:
       repo: 'puppet/augeasproviders_sysctl'
       ref: '3.2.0'
-    augeasproviders_ssh:
-      repo: 'puppet/augeasproviders_ssh'
-      ref: '5.0.0'
     stdlib:
       repo: 'puppetlabs/stdlib'
       ref: '8.6.0'
