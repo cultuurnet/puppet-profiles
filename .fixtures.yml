@@ -36,9 +36,6 @@ fixtures:
     apt:
       repo: 'puppetlabs/apt'
       ref: '8.4.0'
-    staging:
-      repo: 'puppet/staging'
-      ref: '2.2.0'
     lvm:
       repo: 'puppetlabs/lvm'
       ref: '2.1.0'
