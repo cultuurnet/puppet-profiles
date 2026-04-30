@@ -1,16 +1,17 @@
 class profiles::ecsagent (
-
-  String $ecs_cluster_name   = undef,
+  Optional[String] $ecs_cluster_name = undef
 ) inherits ::profiles {
-  
+
   realize Apt::Source['publiq-tools']
+  realize Firewall['600 accept docker ephemeral ports traffic']
+
+  include profiles::docker
 
   package { 'amazon-ecs-init':
     ensure  => 'present',
     require => Apt::Source['publiq-tools']
   }
-  realize Firewall['600 accept docker ephemeral ports traffic']
-  include profiles::docker
+
   file { '/etc/ecs':
     ensure => 'directory',
     owner  => 'root',
@@ -18,6 +19,7 @@ class profiles::ecsagent (
     mode   => '0755',
     require => Package['amazon-ecs-init']
   }
+
   if $ecs_cluster_name {
     file { '/etc/ecs/ecs.config':
       ensure  => 'file',
@@ -27,17 +29,19 @@ class profiles::ecsagent (
       mode    => '0644',
       require => Package['amazon-ecs-init']
     }
-  }
-  service { 'ecs':
-    ensure    => 'running',
-    enable    => true,
-    require   => [Package['amazon-ecs-init'],Class['profiles::docker']],
-    subscribe => File['/etc/ecs/ecs.config']
-  }
-  service { 'amazon-ecs-volume-plugin':
-    ensure    => 'running',
-    enable    => true,
-    require   => [Package['amazon-ecs-init'],Class['profiles::docker']],
-    subscribe => File['/etc/ecs/ecs.config']
+
+    service { 'ecs':
+      ensure    => 'running',
+      enable    => true,
+      require   => [Package['amazon-ecs-init'], Class['profiles::docker']],
+      subscribe => File['/etc/ecs/ecs.config']
+    }
+
+    service { 'amazon-ecs-volume-plugin':
+      ensure    => 'running',
+      enable    => true,
+      require   => [Package['amazon-ecs-init'], Class['profiles::docker']],
+      subscribe => File['/etc/ecs/ecs.config']
+    }
   }
 }
