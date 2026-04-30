@@ -27,13 +27,13 @@ describe 'profiles::python' do
           context "with Python available" do
             case facts[:os]['release']['major']
             when '20.04'
-              let(:facts) { facts.merge({ 'python3_release' => '3.8' }) }
+              let(:facts) { facts.merge({ 'python_version' => '3.8.12' }) }
 
               it { is_expected.to contain_profiles__jenkins__node_labels('python').with(
                 'content' => 'python3.8'
               ) }
             when '24.04'
-              let(:facts) { facts.merge({ 'python3_release' => '3.12' }) }
+              let(:facts) { facts.merge({ 'python_version' => '3.12.3' }) }
 
               it { is_expected.to contain_profiles__jenkins__node_labels('python').with(
                 'content' => 'python3.12'
