@@ -15,6 +15,7 @@ describe 'profiles::puppet::puppetdb' do
 
           it { is_expected.to contain_class('profiles::puppet::puppetdb').with(
             'version'           => 'installed',
+            'postgres_version'  => '12',
             'certname'          => 'aaa.example.com',
             'initial_heap_size' => nil,
             'maximum_heap_size' => nil,
@@ -25,6 +26,7 @@ describe 'profiles::puppet::puppetdb' do
           it { is_expected.to contain_user('puppetdb') }
 
           it { is_expected.to contain_apt__source('openvox') }
+          it { is_expected.not_to contain_apt__source('postgresql') }
           it { is_expected.to contain_firewall('300 accept puppetdb HTTPS traffic') }
 
           it { is_expected.to contain_class('profiles::java') }
@@ -69,9 +71,10 @@ describe 'profiles::puppet::puppetdb' do
           it { is_expected.to contain_class('puppetdb::server').that_requires('Class[puppetdb::database::postgresql]') }
         end
 
-        context "with version => 7.2.3, certname => puppetdb.example.com, initial_heap_size => 512m, maximum_heap_size => 512m and service_status => stopped" do
+        context "with version => 7.2.3, postgres_version => 14, certname => puppetdb.example.com, initial_heap_size => 512m, maximum_heap_size => 512m and service_status => stopped" do
           let(:params) { {
             'version'           => '7.2.3',
+            'postgres_version'  => '14',
             'certname'          => 'puppetdb.example.com',
             'initial_heap_size' => '512m',
             'maximum_heap_size' => '512m',
@@ -80,12 +83,25 @@ describe 'profiles::puppet::puppetdb' do
 
           it { is_expected.to compile.with_all_deps }
 
+          case facts[:os]['release']['major']
+          when '20.04'
+            it { is_expected.to contain_apt__source('postgresql') }
+          when '24.04'
+            it { is_expected.not_to contain_apt__source('postgresql') }
+          end
+
           it { is_expected.to contain_class('profiles::puppet::puppetdb::certificate').with(
             'certname' => 'puppetdb.example.com'
           ) }
 
           it { is_expected.to contain_class('puppetdb::globals').with(
             'version' => '7.2.3'
+          ) }
+
+          it { is_expected.to contain_class('puppetdb::database::postgresql').with(
+            'manage_package_repo' => false,
+            'postgres_version'    => '14',
+            'listen_addresses'    => '127.0.0.1'
           ) }
 
           it { is_expected.to contain_class('puppetdb::server').with(

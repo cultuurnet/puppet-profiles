@@ -1,5 +1,6 @@
 class profiles::puppet::puppetdb (
   String                     $version           = 'installed',
+  Enum['12', '14']           $postgres_version  = '12',
   Optional[String]           $certname          = $facts['networking']['fqdn'],
   Optional[String]           $initial_heap_size = undef,
   Optional[String]           $maximum_heap_size = undef,
@@ -20,6 +21,10 @@ class profiles::puppet::puppetdb (
   realize User['puppetdb']
   realize Apt::Source['openvox']
 
+  if $facts['os']['release']['major'] == '20.04' and $postgres_version != '12' {
+    realize Apt::Source['postgresql']
+  }
+
   realize Firewall['300 accept puppetdb HTTPS traffic']
 
   include profiles::java
@@ -35,7 +40,7 @@ class profiles::puppet::puppetdb (
 
   class { 'puppetdb::database::postgresql':
     manage_package_repo => false,
-    postgres_version    => '12',
+    postgres_version    => $postgres_version,
     listen_addresses    => '127.0.0.1',
     require             => [Group['postgres'], User['postgres'], Class['puppetdb::globals']]
   }
