@@ -176,6 +176,15 @@ class profiles::apt::repositories {
     }
   }
 
+  if $facts['os']['release']['major'] == '20.04' {
+    @apt::source { 'postgresql':
+      location     => "https://apt-mirror.publiq.be/postgresql-${codename}-${environment}",
+      release      => $codename,
+      architecture => $arch,
+      repos        => 'main'
+    }
+  }
+
   # Project repositories
   @apt::source { 'uit-mail-subscriptions':
     location => "https://apt.publiq.be/uit-mail-subscriptions-${environment}",

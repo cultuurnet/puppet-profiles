@@ -60,6 +60,7 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'elastic-8.x', { :location => 'https://apt-mirror.publiq.be/elastic-8.x-testing', :repos => 'main', :release => 'stable' }
             include_examples 'apt repositories', 'hashicorp', { :location => 'https://apt-mirror.publiq.be/hashicorp-focal-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'openvox', { :location => 'https://apt-mirror.publiq.be/openvox-focal-testing', :repos => 'main', :release => 'focal' }
+            include_examples 'apt repositories', 'postgresql', { :location => 'https://apt-mirror.publiq.be/postgresql-focal-testing', :repos => 'main', :release => 'focal' }
 
             it { is_expected.not_to contain_apt__source('mysql-8.4') }
 
@@ -115,6 +116,8 @@ describe 'profiles::apt::repositories' do
 
             include_examples 'apt repositories', 'php', { :location => 'https://apt-mirror.publiq.be/php-noble-acceptance', :repos => 'main', :release => 'noble' }
             include_examples 'apt repositories', 'mysql-8.4', { :location => 'https://apt-mirror.publiq.be/mysql-8.4-noble-acceptance', :repos => 'mysql-8.4-lts', :release => 'noble' }
+
+            it { is_expected.not_to contain_apt__source('postgresql') }
           end
         end
       end
