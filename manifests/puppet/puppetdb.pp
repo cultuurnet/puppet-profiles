@@ -1,6 +1,6 @@
 class profiles::puppet::puppetdb (
   String                     $version           = 'installed',
-  Enum['12', '14']           $postgres_version  = '12',
+  Enum['12', '14', '16']     $postgres_version  = '12',
   Optional[String]           $certname          = $facts['networking']['fqdn'],
   Optional[String]           $initial_heap_size = undef,
   Optional[String]           $maximum_heap_size = undef,
