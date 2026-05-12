@@ -19,7 +19,6 @@ class profiles::logstash (
 
   include profiles::java
   include profiles::firewall::rules
-  include profiles::data_integration
 
   realize Group['logstash']
   realize User['logstash']
