@@ -1,6 +1,5 @@
 class profiles::uitpas::cid_logs (
   String                        $hostname,
-  String                        $gcs_credentials,
   Variant[String,Array[String]] $aliases         = undef,
   Stdlib::IP::Address::V4       $service_address = '127.0.0.1',
   Stdlib::Port::Unprivileged    $service_port    = 8080,
@@ -20,17 +19,6 @@ class profiles::uitpas::cid_logs (
 
   profiles::google::gcloud::credentials { 'bigquery':
     * => $gcloud_credentials['bigquery']
-  }
-
-  file { 'gcs_credentials':
-    ensure  => 'file',
-    path    => '/etc/logstash/gcs_credentials.json',
-    owner   => 'logstash',
-    group   => 'logstash',
-    mode    => '0640',
-    source  => $gcs_credentials,
-    require => [User['logstash'], Package['logstash']],
-    notify  => Service['logstash']
   }
 
   file { $data_dir:
