@@ -141,7 +141,7 @@ fixtures:
   repositories:
     filebeat:
       repo: 'https://github.com/cultuurnet/puppet-filebeat.git'
-      ref: '58c0f6c'
+      ref: '598539b'
     borgbackup:
       repo: 'https://github.com/cultuurnet/puppet-borgbackup.git'
       ref: '0c92c9b'
