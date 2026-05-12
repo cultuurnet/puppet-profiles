@@ -20,7 +20,7 @@ describe 'profiles::nodejs' do
 
         it { is_expected.to contain_class('nodejs').with(
           'manage_package_repo'   => false,
-          'nodejs_package_ensure' => 'present'
+          'nodejs_package_ensure' => 'installed'
         ) }
 
         it { is_expected.not_to contain_profiles__jenkins__node_labels('nodejs') }
@@ -49,7 +49,7 @@ describe 'profiles::nodejs' do
 
         it { is_expected.to contain_class('nodejs').with(
           'manage_package_repo'   => false,
-          'nodejs_package_ensure' => 'present'
+          'nodejs_package_ensure' => 'installed'
         ) }
 
         it { is_expected.not_to contain_profiles__jenkins__node_labels('nodejs') }
