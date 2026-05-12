@@ -7,6 +7,8 @@ class profiles::uitpas::cid_logs (
   String                        $data_dir        = '/data/cidlogs'
 ) inherits ::profiles {
 
+  $gcloud_credentials = lookup('data::google::gcloud_credentials')
+
   realize Group['logstash']
   realize User['logstash']
 
@@ -14,6 +16,10 @@ class profiles::uitpas::cid_logs (
     destination => "http://${service_address}:${service_port}/",
     aliases     => $aliases,
     headers     => 'set Access-Control-Allow-Origin "*"'
+  }
+
+  profiles::google::gcloud::credentials { 'bigquery':
+    * => $gcloud_credentials['bigquery']
   }
 
   file { 'gcs_credentials':
