@@ -1,11 +1,12 @@
 class profiles::uitpas::cid_logs (
   String                        $hostname,
-  String                        $gcs_credentials,
   Variant[String,Array[String]] $aliases         = undef,
   Stdlib::IP::Address::V4       $service_address = '127.0.0.1',
   Stdlib::Port::Unprivileged    $service_port    = 8080,
   String                        $data_dir        = '/data/cidlogs'
 ) inherits ::profiles {
+
+  $gcloud_credentials = lookup('data::google::gcloud_credentials')
 
   realize Group['logstash']
   realize User['logstash']
@@ -16,15 +17,8 @@ class profiles::uitpas::cid_logs (
     headers     => 'set Access-Control-Allow-Origin "*"'
   }
 
-  file { 'gcs_credentials':
-    ensure  => 'file',
-    path    => '/etc/logstash/gcs_credentials.json',
-    owner   => 'logstash',
-    group   => 'logstash',
-    mode    => '0640',
-    source  => $gcs_credentials,
-    require => [User['logstash'], Package['logstash']],
-    notify  => Service['logstash']
+  profiles::google::gcloud::credentials { 'bigquery':
+    * => $gcloud_credentials['bigquery']
   }
 
   file { $data_dir:
