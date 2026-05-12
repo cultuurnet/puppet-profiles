@@ -17,7 +17,7 @@ jobs:
       - name: Install Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.2.3
+          ruby-version: 2.7.0
 
       - name: Install dependencies
         run: bundle install
