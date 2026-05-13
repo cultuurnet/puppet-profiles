@@ -26,16 +26,16 @@ fixtures:
       ref: '3.3.0'
     stdlib:
       repo: 'puppetlabs/stdlib'
-      ref: '8.6.0'
+      ref: '9.7.0'
     concat:
       repo: 'puppetlabs/concat'
-      ref: '7.4.0'
+      ref: '9.1.0'
     postfix:
       repo: 'thias/postfix'
       ref: '0.3.8'
     apt:
       repo: 'puppetlabs/apt'
-      ref: '8.4.0'
+      ref: '9.4.0'
     lvm:
       repo: 'puppetlabs/lvm'
       ref: '2.1.0'
@@ -53,7 +53,7 @@ fixtures:
       ref: '9.0.0'
     firewall:
       repo: 'puppetlabs/firewall'
-      ref: '3.6.0'
+      ref: '6.0.0'
     inifile:
       repo: 'puppetlabs/inifile'
       ref: '1.6.0'
@@ -71,13 +71,13 @@ fixtures:
       ref: '3.0.0'
     gnupg:
       repo: 'h0tw1r3/gnupg'
-      ref: '1.5.2'
+      ref: '2.0.2'
     java_ks:
       repo: 'puppetlabs/java_ks'
       ref: '2.2.0'
     docker:
       repo: 'puppetlabs/docker'
-      ref: '5.1.0'
+      ref: '8.0.0'
     timezone:
       repo: 'saz/timezone'
       ref: '7.0.0'
@@ -86,10 +86,10 @@ fixtures:
       ref: '15.0.0'
     postgresql:
       repo: 'puppetlabs/postgresql'
-      ref: '8.2.1'
+      ref: '9.2.0'
     puppetdb:
       repo: 'puppetlabs/puppetdb'
-      ref: '7.13.0'
+      ref: '7.14.0'
     hocon:
       repo: 'puppetlabs/hocon'
       ref: '1.1.0'
@@ -107,13 +107,13 @@ fixtures:
       ref: '5.0.2'
     php:
       repo: 'puppet/php'
-      ref: '9.0.0'
+      ref: '11.0.0'
     logrotate:
       repo: 'puppet/logrotate'
       ref: '7.0.0'
     docker:
       repo: 'puppetlabs/docker'
-      ref: '5.1.0'
+      ref: '8.0.0'
     puppetboard:
       repo: 'puppet/puppetboard'
       ref: '11.0.0'
@@ -122,7 +122,7 @@ fixtures:
       ref: '5.0.0'
     puppet-openssl:
       repo: 'puppet/openssl'
-      ref: '2.0.1'
+      ref: '3.2.0'
     rsyslog:
       repo: 'puppet/rsyslog'
       ref: '7.3.0'
@@ -138,10 +138,13 @@ fixtures:
     python:
       repo: 'puppet/python'
       ref: '7.4.0'
+    mysql:
+      repo: 'puppetlabs/mysql'
+      ref: '16.3.0'
   repositories:
     filebeat:
       repo: 'https://github.com/cultuurnet/puppet-filebeat.git'
-      ref: '598539b'
+      ref: '2008f2e'
     borgbackup:
       repo: 'https://github.com/cultuurnet/puppet-borgbackup.git'
       ref: '0c92c9b'
@@ -151,9 +154,6 @@ fixtures:
     aptly:
       repo: 'https://github.com/cultuurnet/puppet-aptly.git'
       ref: '2d5031b'
-    mysql:
-      repo: 'https://github.com/cultuurnet/puppetlabs-mysql.git'
-      ref: '844aa07'
   symlinks:
     appconfig: ${PWD}/spec/support/appconfig
     profiles: ${PWD}
