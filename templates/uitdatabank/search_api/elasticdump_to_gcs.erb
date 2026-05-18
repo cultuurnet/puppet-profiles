@@ -2,7 +2,6 @@
 
 files=$@
 
-bucket_name=<%= @bucket_name %>
 bucket_dumplocation=<%= @bucket_dumplocation %>
 
 for file in ${files}
@@ -10,6 +9,6 @@ do
     local_dumpfile=$(basename ${file})
     bucket_dumpfile=${local_dumpfile%%_v*}_full_$(date +%Y%m%d --date=yesterday).json
 
-    echo "Copying local dumpfile ${file} to GCS bucket file gs://${bucket_name}/${bucket_dumplocation}/${bucket_dumpfile}"
-    /usr/bin/gcloud storage cp ${file} gs://${bucket_name}/${bucket_dumplocation}/${bucket_dumpfile}
+    echo "Copying local dumpfile ${file} to GCS bucket file ${bucket_dumplocation}/${bucket_dumpfile}"
+    /usr/local/bin/sling run --src-stream file://${file} --tgt-conn 'publiq-ingestion' --tgt-object ${bucket_dumplocation}/${bucket_dumpfile}
 done
