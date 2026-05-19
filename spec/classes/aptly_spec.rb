@@ -9,7 +9,7 @@ describe 'profiles::aptly' do
 
       context "with api_hostname => aptly.example.com and gpg_passphrase => secret" do
         let(:params) { {
-          'api_hostname' => 'aptly.example.com',
+          'api_hostname'   => 'aptly.example.com',
           'gpg_passphrase' => 'secret'
         } }
 
@@ -44,19 +44,21 @@ describe 'profiles::aptly' do
         it { is_expected.not_to contain_mount('/var/aptly') }
 
         it { is_expected.to contain_class('aptly').with(
-          'version'              => 'latest',
-          'install_repo'         => false,
-          'manage_user'          => false,
+          'package_ensure'       => 'latest',
+          'repo'                 => false,
           'user'                 => 'aptly',
-          'group'                => 'aptly',
-          'root_dir'             => '/var/aptly',
-          'enable_service'       => false,
-          'enable_api'           => true,
-          'api_bind'             => '127.0.0.1',
-          'api_port'             => '8081',
-          'api_nolock'           => true,
-          'architectures'        => ['amd64'],
-          's3_publish_endpoints' => {}
+          'config'               => {
+                                      'rootDir'            => '/var/aptly',
+                                      'architectures'      => 'amd64',
+                                      'S3PublishEndpoints' => {}
+                                    }
+        ) }
+
+        it { is_expected.to contain_class('aptly::api').with(
+          'user'                => 'aptly',
+          'group'               => 'aptly',
+          'listen'              => '127.0.0.1:8081',
+          'enable_cli_and_http' => true
         ) }
 
         it { is_expected.to_not contain_profiles__apache__vhost__redirect('http://foobar.example.com') }
@@ -74,11 +76,6 @@ describe 'profiles::aptly' do
           'minute'      => '0'
         ) }
 
-        it { is_expected.to contain_systemd__unit_file('aptly-api.service').with(
-          'enable' => true,
-          'active' => true
-        ) }
-
         it { is_expected.not_to contain_file('aptly trustedkeys.gpg') }
 
         it { is_expected.to contain_file('version restore script').with(
@@ -87,15 +84,14 @@ describe 'profiles::aptly' do
           'mode'   => '0755'
         ) }
 
-        it { is_expected.to contain_systemd__unit_file('aptly-api.service').with_content(/WorkingDirectory=\/var\/aptly/) }
-        it { is_expected.to contain_systemd__unit_file('aptly-api.service').with_content(/ExecStart=\/usr\/bin\/aptly api serve -listen=127.0.0.1:8081 -no-lock/) }
-
-        it { is_expected.to contain_systemd__unit_file('aptly-api.service').that_requires('Class[aptly]') }
-
         it { is_expected.to contain_class('aptly').that_requires('User[aptly]') }
+        it { is_expected.to contain_class('aptly').that_requires('Apt::Source[aptly]') }
+
+        it { is_expected.to contain_class('aptly::api').that_requires('Class[aptly]') }
+        it { is_expected.to contain_class('aptly::api').that_requires('User[aptly]') }
+        it { is_expected.to contain_class('aptly::api').that_requires('Group[aptly]') }
 
         it { is_expected.to contain_apt__key('aptly').that_comes_before('Apt::Source[aptly]') }
-        it { is_expected.to contain_class('aptly').that_requires('Apt::Source[aptly]') }
 
         it { is_expected.to contain_cron('aptly db cleanup daily').that_requires('Class[aptly]') }
         it { is_expected.to contain_cron('aptly db cleanup daily').that_requires('User[aptly]') }
@@ -116,7 +112,7 @@ describe 'profiles::aptly' do
               'version'      => '1.2.3',
               'api_bind'     => '1.2.3.4',
               'api_port'     => 8080,
-              'repositories' => {'foo' => { 'archive' => false }, 'bar' => { 'archive' => true }},
+              'repositories' => { 'foo' => { 'archive' => false }, 'bar' => { 'archive' => true } },
               'lvm'          => true,
               'volume_group' => 'myvg',
               'volume_size'  => '10G',
@@ -159,10 +155,20 @@ describe 'profiles::aptly' do
             ) }
 
             it { is_expected.to contain_class('aptly').with(
-              'version'  => '1.2.3',
-              'root_dir' => '/var/aptly',
-              'api_bind' => '1.2.3.4',
-              'api_port' => 8080
+              'package_ensure'       => '1.2.3',
+              'user'                 => 'aptly',
+              'config'               => {
+                                          'rootDir'            => '/var/aptly',
+                                          'architectures'      => 'amd64',
+                                          'S3PublishEndpoints' => {}
+                                        }
+            ) }
+
+            it { is_expected.to contain_class('aptly::api').with(
+              'user'                => 'aptly',
+              'group'               => 'aptly',
+              'listen'              => '1.2.3.4:8080',
+              'enable_cli_and_http' => true
             ) }
 
             it { is_expected.to contain_profiles__apache__vhost__redirect('http://foobar.example.com').with(
@@ -176,17 +182,17 @@ describe 'profiles::aptly' do
             ) }
 
             it { is_expected.to contain_aptly__repo('foo').with(
-              'default_component' => 'main'
+              'component' => 'main'
             ) }
 
             it { is_expected.not_to contain_aptly__repo('foo-archive') }
 
             it { is_expected.to contain_aptly__repo('bar').with(
-              'default_component' => 'main'
+              'component' => 'main'
             ) }
 
             it { is_expected.to contain_aptly__repo('bar-archive').with(
-              'default_component' => 'main'
+              'component' => 'main'
             ) }
 
             it { is_expected.to contain_file('aptly trustedkeys.gpg').with(
@@ -199,10 +205,9 @@ describe 'profiles::aptly' do
 
             it { is_expected.to contain_aptly__mirror('mymirror').with(
               'location'      => 'http://mymirror.example.com',
-              'distribution'  => 'unstable',
-              'components'    => ['main', 'contrib'],
+              'release'       => 'unstable',
+              'repos'         => ['main', 'contrib'],
               'architectures' => ['amd64'],
-              'update'        => false,
               'keyring'       => '/home/aptly/.gnupg/trustedkeys.gpg'
             ) }
 
@@ -243,13 +248,13 @@ describe 'profiles::aptly' do
               'volume_size'       => '100G',
               'publish_endpoints' => {
                  'apt1' => {
-                   'region' => 'eu-west-1',
-                   'bucket' => 'apt1',
-                   'awsAccessKeyID' => '123',
+                   'region'             => 'eu-west-1',
+                   'bucket'             => 'apt1',
+                   'awsAccessKeyID'     => '123',
                    'awsSecretAccessKey' => 'abc'
                  }
               },
-              'repositories'      => {'baz' => {} },
+              'repositories'      => { 'baz' => {} },
               'mirrors'           => { 'mirror1' => {
                                                       'location'      => 'http://mirror1.example.com' ,
                                                       'distribution'  => 'testing',
@@ -304,17 +309,24 @@ describe 'profiles::aptly' do
             ) }
 
             it { is_expected.to contain_class('aptly').with(
-              's3_publish_endpoints' => { 'apt1' => {
-                                            'region' => 'eu-west-1',
-                                            'bucket' => 'apt1',
-                                            'awsAccessKeyID' => '123',
-                                            'awsSecretAccessKey' => 'abc'
+              'package_ensure'       => 'latest',
+              'user'                 => 'aptly',
+              'config'               => {
+                                          'rootDir'            => '/var/aptly',
+                                          'architectures'      => 'amd64',
+                                          'S3PublishEndpoints' => {
+                                            'apt1' => {
+                                              'region'             => 'eu-west-1',
+                                              'bucket'             => 'apt1',
+                                              'awsAccessKeyID'     => '123',
+                                              'awsSecretAccessKey' => 'abc'
+                                            }
                                           }
                                         }
             ) }
 
             it { is_expected.to contain_aptly__repo('baz').with(
-              'default_component' => 'main'
+              'component' => 'main'
             ) }
 
             it { is_expected.not_to contain_aptly__repo('baz-archive') }
@@ -329,19 +341,17 @@ describe 'profiles::aptly' do
 
             it { is_expected.to contain_aptly__mirror('mirror1').with(
               'location'      => 'http://mirror1.example.com',
-              'distribution'  => 'testing',
-              'components'    => ['nonfree'],
+              'release'       => 'testing',
+              'repos'         => ['nonfree'],
               'architectures' => ['arm64', 'amd64'],
-              'update'        => false,
               'keyring'       => '/home/aptly/.gnupg/trustedkeys.gpg'
             ) }
 
             it { is_expected.to contain_aptly__mirror('mirror2').with(
               'location'      => 'http://mirror2.example.com',
-              'distribution'  => 'stable',
-              'components'    => ['bar', 'baz'],
+              'release'       => 'stable',
+              'repos'         => ['bar', 'baz'],
               'architectures' => ['arm64'],
-              'update'        => false,
               'keyring'       => '/home/aptly/.gnupg/trustedkeys.gpg'
             ) }
 

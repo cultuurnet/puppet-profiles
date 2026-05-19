@@ -141,6 +141,9 @@ fixtures:
     mysql:
       repo: 'puppetlabs/mysql'
       ref: '16.3.0'
+    aptly:
+      repo: 'puppet/aptly'
+      ref: '2.3.0'
   repositories:
     filebeat:
       repo: 'https://github.com/cultuurnet/puppet-filebeat.git'
@@ -150,10 +153,7 @@ fixtures:
       ref: '0c92c9b'
     glassfish:
       repo: 'https://github.com/cultuurnet/fatmcgav-glassfish.git'
-      ref: 'f91d0b6f'
-    aptly:
-      repo: 'https://github.com/cultuurnet/puppet-aptly.git'
-      ref: '2d5031b'
+      ref: '9bb2ceb'
   symlinks:
     appconfig: ${PWD}/spec/support/appconfig
     profiles: ${PWD}
