@@ -10,8 +10,8 @@ class profiles::aptly (
   Hash                           $publish_endpoints = {},
   Hash                           $repositories      = {},
   Hash                           $mirrors           = {},
-  Boolean                        $lvm               = false,
   Variant[String, Array[String]] $architectures     = 'amd64',
+  Boolean                        $lvm               = false,
   Optional[String]               $volume_group      = undef,
   Optional[String]               $volume_size       = undef
 ) inherits ::profiles {
@@ -56,25 +56,23 @@ class profiles::aptly (
   }
 
   class { '::aptly':
-    version              => $version,
-    install_repo         => false,
-    manage_user          => false,
-    root_dir             => $data_dir,
-    enable_service       => false,
-    enable_api           => true,
-    api_bind             => $api_bind,
-    api_port             => $api_port,
-    api_nolock           => true,
-    architectures        => [$architectures].flatten,
-    require              => [Apt::Source['aptly'], User['aptly']],
-    s3_publish_endpoints => $publish_endpoints
+    package_ensure => $version,
+    repo           => false,
+    user           => 'aptly',
+    config         => {
+                        'rootDir'            => $data_dir,
+                        'architectures'      => 'amd64',
+                        'S3PublishEndpoints' => $publish_endpoints
+                      },
+    require        => [Apt::Source['aptly'], User['aptly']],
   }
 
-  systemd::unit_file { 'aptly-api.service':
-    content => template('profiles/aptly/aptly-api.service.erb'),
-    enable  => true,
-    active  => true,
-    require => Class['aptly']
+  class { '::aptly::api':
+    user                => 'aptly',
+    group               => 'aptly',
+    listen              => "${api_bind}:${api_port}",
+    enable_cli_and_http => true,
+    require             => [Class['::aptly'], Group['aptly'], User['aptly']]
   }
 
   if $certificate {
@@ -131,13 +129,13 @@ class profiles::aptly (
     $archive = $attributes['archive']
 
     aptly::repo { $repo:
-      default_component => 'main'
+      component => 'main'
     }
 
     if $archive {
       aptly::repo { "${repo}-archive":
-        default_component => 'main',
-        require           => Aptly::Repo[$repo]
+        component => 'main',
+        require   => Aptly::Repo[$repo]
       }
     }
 
@@ -174,10 +172,9 @@ class profiles::aptly (
 
       aptly::mirror { $mirror:
         location      => $attributes['location'],
-        distribution  => $attributes['distribution'],
-        components    => [$attributes['components']].flatten,
+        release       => $attributes['distribution'],
+        repos         => [$attributes['components']].flatten,
         architectures => [$attributes['architectures']].flatten,
-        update        => false,
         keyring       => "${home_dir}/.gnupg/trustedkeys.gpg",
         require       => File['aptly trustedkeys.gpg']
       }
