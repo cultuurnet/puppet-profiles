@@ -153,7 +153,7 @@ fixtures:
       ref: '0c92c9b'
     glassfish:
       repo: 'https://github.com/cultuurnet/fatmcgav-glassfish.git'
-      ref: 'c8178d0'
+      ref: 'cb923fa'
   symlinks:
     appconfig: ${PWD}/spec/support/appconfig
     profiles: ${PWD}
