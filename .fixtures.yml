@@ -53,7 +53,7 @@ fixtures:
       ref: '9.0.0'
     firewall:
       repo: 'puppetlabs/firewall'
-      ref: '6.0.0'
+      ref: '7.0.2'
     inifile:
       repo: 'puppetlabs/inifile'
       ref: '1.6.0'
@@ -62,10 +62,10 @@ fixtures:
       ref: '8.0.0'
     systemd:
       repo: 'puppet/systemd'
-      ref: '5.2.0'
+      ref: '8.3.1'
     redis:
       repo: 'puppet/redis'
-      ref: '9.1.0'
+      ref: '11.1.0'
     alternatives:
       repo: 'puppet/alternatives'
       ref: '3.0.0'
@@ -86,10 +86,10 @@ fixtures:
       ref: '15.0.0'
     postgresql:
       repo: 'puppetlabs/postgresql'
-      ref: '9.2.0'
+      ref: '10.5.0'
     puppetdb:
       repo: 'puppetlabs/puppetdb'
-      ref: '7.14.0'
+      ref: '8.0.0'
     hocon:
       repo: 'puppetlabs/hocon'
       ref: '1.1.0'
