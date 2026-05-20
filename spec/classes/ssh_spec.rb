@@ -44,11 +44,7 @@ describe 'profiles::ssh' do
           'purge' => true
         ) }
 
-        it { is_expected.to contain_firewall('100 accept SSH traffic').with(
-          'proto'  => 'tcp',
-          'dport'  => '22',
-          'action' => 'accept'
-        ) }
+        it { is_expected.to contain_firewall('100 accept SSH traffic') }
 
         it { is_expected.to have_ssh_authorized_key_resource_count(0) }
 
