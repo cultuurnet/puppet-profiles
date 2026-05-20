@@ -21,32 +21,32 @@ describe 'profiles::firewall' do
         ) }
 
         it { is_expected.to contain_firewall('000 accept all ICMP traffic').with(
-          'proto'  => 'icmp',
-          'action' => 'accept'
+          'proto' => 'icmp',
+          'jump'  => 'accept'
         ) }
 
         it { is_expected.to contain_firewall('001 accept all traffic to lo interface').with(
           'proto'   => 'all',
           'iniface' => 'lo',
-          'action'  => 'accept'
+          'jump'    => 'accept'
         ) }
 
         it { is_expected.to contain_firewall('002 reject local traffic not on loopback interface').with(
           'proto'       => 'all',
           'iniface'     => '! lo',
           'destination' => '127.0.0.0/8',
-          'action'      => 'reject'
+          'jump'        => 'reject'
         ) }
 
         it { is_expected.to contain_firewall('003 accept related established rules').with(
-          'proto'  => 'all',
-          'state'  => ['RELATED', 'ESTABLISHED'],
-          'action' => 'accept'
+          'proto' => 'all',
+          'state' => ['RELATED', 'ESTABLISHED'],
+          'jump'  => 'accept'
         ) }
 
         it { is_expected.to contain_firewall('999 drop all').with(
           'proto'  => 'all',
-          'action' => 'drop',
+          'jump'   => 'drop',
           'before' => nil
         ) }
       end
