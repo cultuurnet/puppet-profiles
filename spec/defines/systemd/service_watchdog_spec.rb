@@ -62,10 +62,10 @@ describe 'profiles::systemd::service_watchdog' do
 
         context 'with service => bar, timeout_seconds => 15, initial_wait_seconds => 20 and healthcheck => test -f /tmp/watchdog_file_present' do
           let(:params) { {
-            'service'         => 'bar',
-            'timeout_seconds' => 15,
+            'service'              => 'bar',
+            'timeout_seconds'      => 15,
             'initial_wait_seconds' => 20,
-            'healthcheck'     => 'test -f /tmp/watchdog_file_present'
+            'healthcheck'          => 'test -f /tmp/watchdog_file_present'
           } }
 
           it { is_expected.to contain_file('foo-watchdog').with_content(/CHECK_INTERVAL_SECONDS=3/) }
