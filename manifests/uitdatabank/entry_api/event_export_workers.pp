@@ -10,7 +10,7 @@ class profiles::uitdatabank::entry_api::event_export_workers (
   systemd::unit_file { 'uitdatabank-event-export-worker@.service':
     ensure        => $count ? {
                        0       => 'absent',
-                       default => 'file'
+                       default => 'present'
                      },
     daemon_reload => false,
     content       => template('profiles/uitdatabank/entry_api/uitdatabank-event-export-worker@.service.erb'),

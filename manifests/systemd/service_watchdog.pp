@@ -14,10 +14,7 @@ define profiles::systemd::service_watchdog (
   }
 
   file { "${title}-watchdog":
-    ensure  => $ensure ? {
-                 'absent'  => 'absent',
-                 'present' => 'file'
-               },
+    ensure  => $ensure,
     path    => "/usr/local/bin/${title}-watchdog",
     owner   => 'root',
     group   => 'root',

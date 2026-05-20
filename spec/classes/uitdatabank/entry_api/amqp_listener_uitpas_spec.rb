@@ -19,7 +19,7 @@ describe 'profiles::uitdatabank::entry_api::amqp_listener_uitpas' do
         it { is_expected.to contain_user('www-data') }
 
         it { is_expected.to contain_systemd__unit_file('uitdatabank-amqp-listener-uitpas.service').with(
-          'ensure' => 'file'
+          'ensure' => 'present'
         ) }
 
         it { is_expected.to contain_systemd__unit_file('uitdatabank-amqp-listener-uitpas.service').with_content(/WorkingDirectory=\/var\/www\/udb3-backend/) }

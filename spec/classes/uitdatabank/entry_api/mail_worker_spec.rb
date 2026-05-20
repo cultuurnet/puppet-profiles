@@ -19,7 +19,7 @@ describe 'profiles::uitdatabank::entry_api::mail_worker' do
         it { is_expected.to contain_user('www-data') }
 
         it { is_expected.to contain_systemd__unit_file('uitdatabank-mail-worker.service').with(
-          'ensure' => 'file'
+          'ensure' => 'present'
         ) }
 
         it { is_expected.to contain_systemd__unit_file('uitdatabank-mail-worker.service').with_content(/WorkingDirectory=\/var\/www\/udb3-backend/) }

@@ -53,9 +53,9 @@ class profiles::uitpas::api::deployment (
 
   profiles::systemd::service_watchdog { 'uitpas':
     ensure                 => $service_watchdog ? {
-      true  => 'present',
-      false => 'absent'
-    },
+                                true  => 'present',
+                                false => 'absent'
+                              },
     check_interval_seconds => $healthcheck_interval_seconds,
     timeout_seconds        => $healthcheck_timeout_seconds,
     initial_wait_seconds   => $healthcheck_initial_wait_seconds,

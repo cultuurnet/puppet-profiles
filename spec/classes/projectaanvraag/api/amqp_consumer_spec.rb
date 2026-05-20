@@ -19,7 +19,7 @@ describe 'profiles::projectaanvraag::api::amqp_consumer' do
         it { is_expected.to contain_user('www-data') }
 
         it { is_expected.to contain_systemd__unit_file('projectaanvraag-api-amqp-consumer.service').with(
-          'ensure' => 'file'
+          'ensure' => 'present'
         ) }
 
         it { is_expected.to contain_systemd__unit_file('projectaanvraag-api-amqp-consumer.service').with_content(/WorkingDirectory=\/var\/www\/projectaanvraag-api/) }
