@@ -61,7 +61,7 @@ class profiles::aptly (
     user           => 'aptly',
     config         => {
                         'rootDir'            => $data_dir,
-                        'architectures'      => 'amd64',
+                        'architectures'      => ['amd64'],
                         'S3PublishEndpoints' => $publish_endpoints
                       },
     require        => [Apt::Source['aptly'], User['aptly']],
