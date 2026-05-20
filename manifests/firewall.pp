@@ -9,32 +9,32 @@ class profiles::firewall (
   }
 
   firewall { '000 accept all ICMP traffic':
-    proto  => 'icmp',
-    action => 'accept'
+    proto => 'icmp',
+    jump  => 'accept'
   }
 
   firewall { '001 accept all traffic to lo interface':
     proto   => 'all',
     iniface => 'lo',
-    action  => 'accept'
+    jump    => 'accept'
   }
 
   firewall { '002 reject local traffic not on loopback interface':
     proto       => 'all',
     iniface     => '! lo',
     destination => '127.0.0.0/8',
-    action      => 'reject'
+    jump        => 'reject'
   }
 
   firewall { '003 accept related established rules':
-    proto  => 'all',
-    state  => ['RELATED', 'ESTABLISHED'],
-    action => 'accept'
+    proto => 'all',
+    state => ['RELATED', 'ESTABLISHED'],
+    jump  => 'accept'
   }
 
   firewall { '999 drop all':
     proto  => 'all',
-    action => 'drop',
+    jump   => 'drop',
     before => undef
   }
 }

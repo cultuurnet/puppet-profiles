@@ -53,15 +53,15 @@ describe 'profiles::glassfish::domain' do
             ) }
 
             it { is_expected.to contain_firewall('400 accept glassfish domain foobar-api HTTP traffic').with(
-              'proto'  => 'tcp',
-              'dport'  => '4880',
-              'action' => 'accept'
+              'proto' => 'tcp',
+              'dport' => '4880',
+              'jump'  => 'accept'
             ) }
 
             it { is_expected.to contain_firewall('400 accept glassfish domain foobar-api HTTPS traffic').with(
-              'proto'  => 'tcp',
-              'dport'  => '4881',
-              'action' => 'accept'
+              'proto' => 'tcp',
+              'dport' => '4881',
+              'jump'  => 'accept'
             ) }
 
             it { is_expected.to contain_profiles__glassfish__domain__service('foobar-api').with(
@@ -158,15 +158,15 @@ describe 'profiles::glassfish::domain' do
             ) }
 
             it { is_expected.to contain_firewall('400 accept glassfish domain foobar-api HTTP traffic').with(
-              'proto'  => 'tcp',
-              'dport'  => '14880',
-              'action' => 'accept'
+              'proto' => 'tcp',
+              'dport' => '14880',
+              'jump'  => 'accept'
             ) }
 
             it { is_expected.to contain_firewall('400 accept glassfish domain foobar-api HTTPS traffic').with(
-              'proto'  => 'tcp',
-              'dport'  => '14881',
-              'action' => 'accept'
+              'proto' => 'tcp',
+              'dport' => '14881',
+              'jump'  => 'accept'
             ) }
 
             it { is_expected.to contain_profiles__glassfish__domain__service('foobar-api').with(
