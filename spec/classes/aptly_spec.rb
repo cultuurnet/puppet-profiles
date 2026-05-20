@@ -43,6 +43,12 @@ describe 'profiles::aptly' do
         it { is_expected.not_to contain_profiles__lvm__mount('aptlydata') }
         it { is_expected.not_to contain_mount('/var/aptly') }
 
+        it { is_expected.to contain_file('/var/aptly').with(
+          'ensure' => 'directory',
+          'owner'  => 'aptly',
+          'group'  => 'aptly'
+        ) }
+
         it { is_expected.to contain_class('aptly').with(
           'package_ensure'       => 'latest',
           'repo'                 => false,
@@ -83,6 +89,10 @@ describe 'profiles::aptly' do
           'path'   => '/usr/local/sbin/restore-versions',
           'mode'   => '0755'
         ) }
+
+        it { is_expected.to contain_file('/var/aptly').that_requires('Group[aptly]') }
+        it { is_expected.to contain_file('/var/aptly').that_requires('User[aptly]') }
+        it { is_expected.to contain_file('/var/aptly').that_comes_before('Class[aptly]') }
 
         it { is_expected.to contain_class('aptly').that_requires('User[aptly]') }
         it { is_expected.to contain_class('aptly').that_requires('Apt::Source[aptly]') }
@@ -129,6 +139,8 @@ describe 'profiles::aptly' do
 
           context "with volume_group myvg present" do
             let(:pre_condition) { 'volume_group { "myvg": ensure => "present" }' }
+
+            it { is_expected.not_to contain_file('/var/aptly') }
 
             it { is_expected.to contain_profiles__lvm__mount('aptlydata').with(
               'volume_group' => 'myvg',

@@ -53,6 +53,14 @@ class profiles::aptly (
       options => 'rw,bind',
       require => [Profiles::Lvm::Mount['aptlydata'], Class['::aptly']]
     }
+  } else {
+    file { $data_dir:
+      ensure  => 'directory',
+      owner   => 'aptly',
+      group   => 'aptly',
+      require => [Group['aptly'], User['aptly']],
+      before  => Class['::aptly']
+    }
   }
 
   class { '::aptly':
