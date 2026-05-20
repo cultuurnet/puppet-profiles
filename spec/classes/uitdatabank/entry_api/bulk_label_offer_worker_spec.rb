@@ -19,7 +19,7 @@ describe 'profiles::uitdatabank::entry_api::bulk_label_offer_worker' do
         it { is_expected.to contain_user('www-data') }
 
         it { is_expected.to contain_systemd__unit_file('uitdatabank-bulk-label-offer-worker.service').with(
-          'ensure' => 'file'
+          'ensure' => 'present'
         ) }
 
         it { is_expected.to contain_systemd__unit_file('uitdatabank-bulk-label-offer-worker.service').with_content(/WorkingDirectory=\/var\/www\/udb3-backend/) }

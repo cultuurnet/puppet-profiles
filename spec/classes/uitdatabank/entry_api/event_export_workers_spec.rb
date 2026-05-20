@@ -20,6 +20,7 @@ describe 'profiles::uitdatabank::entry_api::event_export_workers' do
         it { is_expected.to contain_file('/etc/puppetlabs/facter/facts.d') }
 
         it { is_expected.to contain_systemd__unit_file('uitdatabank-event-export-worker@.service').with(
+          'ensure'        => 'present',
           'daemon_reload' => false
         ) }
 

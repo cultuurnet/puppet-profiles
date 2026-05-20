@@ -7,10 +7,7 @@ class profiles::uitdatabank::entry_api::amqp_listener_uitpas (
   realize User['www-data']
 
   systemd::unit_file { 'uitdatabank-amqp-listener-uitpas.service':
-    ensure        => $ensure ? {
-                       'absent'  => 'absent',
-                       'present' => 'file'
-                     },
+    ensure        => $ensure,
     content       => template('profiles/uitdatabank/entry_api/uitdatabank-amqp-listener-uitpas.service.erb'),
     notify        => Service['uitdatabank-amqp-listener-uitpas']
   }

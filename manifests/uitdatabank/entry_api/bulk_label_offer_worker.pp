@@ -7,10 +7,7 @@ class profiles::uitdatabank::entry_api::bulk_label_offer_worker (
   realize User['www-data']
 
   systemd::unit_file { 'uitdatabank-bulk-label-offer-worker.service':
-    ensure        => $ensure ? {
-                       'absent'  => 'absent',
-                       'present' => 'file'
-                     },
+    ensure        => $ensure,
     content       => template('profiles/uitdatabank/entry_api/uitdatabank-bulk-label-offer-worker.service.erb'),
     notify        => Service['uitdatabank-bulk-label-offer-worker']
   }

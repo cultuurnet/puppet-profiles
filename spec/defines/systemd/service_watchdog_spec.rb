@@ -31,7 +31,7 @@ describe 'profiles::systemd::service_watchdog' do
           it { is_expected.to contain_file('foo-watchdog').with_content(/\/usr\/bin\/true/) }
 
           it { is_expected.to contain_systemd__unit_file('foo-watchdog.service').with(
-            'ensure' => 'file'
+            'ensure' => 'present'
           ) }
 
           it { is_expected.to contain_systemd__unit_file('foo-watchdog.service').with_content(/Description=Watchdog service for foo/) }

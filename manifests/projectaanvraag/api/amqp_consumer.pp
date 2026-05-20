@@ -7,10 +7,7 @@ class profiles::projectaanvraag::api::amqp_consumer (
   realize User['www-data']
 
   systemd::unit_file { 'projectaanvraag-api-amqp-consumer.service':
-    ensure  => $ensure ? {
-                 'absent'  => 'absent',
-                 'present' => 'file'
-               },
+    ensure  => $ensure,
     content => template('profiles/projectaanvraag/api/projectaanvraag-api-amqp-consumer.service.erb'),
     notify  => Service['projectaanvraag-api-amqp-consumer']
   }

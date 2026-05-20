@@ -7,10 +7,7 @@ class profiles::uitdatabank::entry_api::mail_worker (
   realize User['www-data']
 
   systemd::unit_file { 'uitdatabank-mail-worker.service':
-    ensure        => $ensure ? {
-                       'absent'  => 'absent',
-                       'present' => 'file'
-                     },
+    ensure        => $ensure,
     content       => template('profiles/uitdatabank/entry_api/uitdatabank-mail-worker.service.erb'),
     notify        => Service['uitdatabank-mail-worker']
   }
