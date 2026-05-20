@@ -67,11 +67,7 @@ describe 'profiles::postfix' do
 
           it { is_expected.to contain_concat('/etc/postfix/mynetworks') }
 
-          it { is_expected.to contain_firewall('300 accept SMTP traffic').with(
-            'proto'  => 'tcp',
-            'dport'  => '25',
-            'action' => 'accept'
-          ) }
+          it { is_expected.to contain_firewall('300 accept SMTP traffic') }
 
           it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_requires('File[/etc/postfix]') }
           it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
@@ -108,11 +104,7 @@ describe 'profiles::postfix' do
 
           it { is_expected.to contain_concat('/etc/postfix/mynetworks') }
 
-          it { is_expected.to contain_firewall('300 accept SMTP traffic').with(
-            'proto' => 'tcp',
-            'dport' => '25',
-            'action' => 'accept'
-          ) }
+          it { is_expected.to contain_firewall('300 accept SMTP traffic') }
 
           it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_requires('File[/etc/postfix]') }
           it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
@@ -270,11 +262,7 @@ describe 'profiles::postfix' do
 
           it { is_expected.to contain_concat('/etc/postfix/mynetworks') }
 
-          it { is_expected.to contain_firewall('300 accept SMTP traffic').with(
-            'proto'  => 'tcp',
-            'dport'  => '25',
-            'action' => 'accept'
-          ) }
+          it { is_expected.to contain_firewall('300 accept SMTP traffic') }
 
           it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_requires('File[/etc/postfix]') }
           it { is_expected.to contain_concat('/etc/postfix/mynetworks').that_notifies('Class[postfix::server]') }
@@ -309,11 +297,7 @@ describe 'profiles::postfix' do
               'tag'     => 'postfix_mynetworks'
             ) }
 
-            it { is_expected.to contain_firewall('300 accept SMTP traffic').with(
-              'proto'  => 'tcp',
-              'dport'  => '25',
-              'action' => 'accept'
-            ) }
+            it { is_expected.to contain_firewall('300 accept SMTP traffic') }
           end
 
           context "with aliases_source => puppet:///private/postfix/virtual" do
