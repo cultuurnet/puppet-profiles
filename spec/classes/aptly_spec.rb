@@ -49,7 +49,7 @@ describe 'profiles::aptly' do
           'user'                 => 'aptly',
           'config'               => {
                                       'rootDir'            => '/var/aptly',
-                                      'architectures'      => 'amd64',
+                                      'architectures'      => ['amd64'],
                                       'S3PublishEndpoints' => {}
                                     }
         ) }
@@ -159,7 +159,7 @@ describe 'profiles::aptly' do
               'user'                 => 'aptly',
               'config'               => {
                                           'rootDir'            => '/var/aptly',
-                                          'architectures'      => 'amd64',
+                                          'architectures'      => ['amd64'],
                                           'S3PublishEndpoints' => {}
                                         }
             ) }
@@ -313,7 +313,7 @@ describe 'profiles::aptly' do
               'user'                 => 'aptly',
               'config'               => {
                                           'rootDir'            => '/var/aptly',
-                                          'architectures'      => 'amd64',
+                                          'architectures'      => ['amd64'],
                                           'S3PublishEndpoints' => {
                                             'apt1' => {
                                               'region'             => 'eu-west-1',
