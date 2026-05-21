@@ -7,7 +7,7 @@ class profiles::uitid::api::data_integration (
                               undef   => "${database_name}_sling_password",
                               default => join(["${database_name}_sling_password", file($settings::hostprivkey)], "\n")
                             }
-  $database_password      = fqdn_rand_string(20, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', $database_password_seed)
+  $database_password      = stdlib::fqdn_rand_string(20, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', $database_password_seed)
   $database_tables        = ['EVENTS_DBLOG', 'MAILINGSUBSCRIBER', 'MAILINGSUBSCRIPTION', 'DALISERVICECONSUMER']
 
   include profiles::data_integration

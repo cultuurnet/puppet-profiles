@@ -26,7 +26,7 @@ class profiles::kibana (
   file { 'kibana config':
     ensure  => 'file',
     path    => '/etc/kibana/kibana.yml',
-    content => to_yaml($kibana_default_config + $kibana_config),
+    content => stdlib::to_yaml($kibana_default_config + $kibana_config),
     require => Package['kibana'],
     notify  => Service['kibana']
   }
