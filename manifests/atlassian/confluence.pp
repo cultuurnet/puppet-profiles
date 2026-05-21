@@ -119,7 +119,7 @@ class profiles::atlassian::confluence (
     $config = {
       'hibernate.connection.url'          => $dburl,
       'hibernate.connection.username'     => $database_user,
-      'hibernate.connection.password'     => regsubst(to_json($database_credential),'"','\"',"G"),
+      'hibernate.connection.password'     => regsubst(stdlib::to_json($database_credential),'"','\"',"G"),
       'hibernate.connection.driver_class' => 'com.mysql.cj.jdbc.Driver',
       'jdbc.password.decrypter.classname' => 'com.atlassian.secrets.store.vault.VaultSecretStore'
     }

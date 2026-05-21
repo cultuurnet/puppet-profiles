@@ -40,7 +40,7 @@ class profiles::docker::ecr_login (
       path    => "${homedir}/.docker/config.json",
       owner   => $user,
       group   => $user,
-      content => to_json($config_content),
+      content => stdlib::to_json($config_content),
       require => File["${user} docker config directory"]
     }
   }

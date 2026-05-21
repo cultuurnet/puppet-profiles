@@ -84,7 +84,7 @@ define profiles::apache::vhost::graphite_web (
                                  'ClientID'                 => lookup('data::openid::client_id', Optional[String], 'first', undef),
                                  'ClientSecret'             => lookup('data::openid::client_secret', Optional[String], 'first', undef),
                                  'RedirectURI'              => "https://${servername}/redirect_uri",
-                                 'CryptoPassphrase'         => fqdn_rand_string(32, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'),
+                                 'CryptoPassphrase'         => stdlib::qdn_rand_string(32, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'),
                                  'SessionInactivityTimeout' => 43200,
                                  'SessionMaxDuration'       => 43200
                                }
