@@ -64,6 +64,8 @@ describe 'profiles::mysql::server' do
                                     'mysql'  => { 'default-character-set' => 'utf8mb4' },
                                     'mysqld' => {
                                                   'character-set-client-handshake' => 'false',
+                                                  'ssl'                            => 'false',
+                                                  'mysql_native_password'          => 'ON',
                                                   'character-set-server'           => 'utf8mb4',
                                                   'collation-server'               => 'utf8mb4_unicode_ci',
                                                   'bind-address'                   => '127.0.0.1',
@@ -190,6 +192,8 @@ describe 'profiles::mysql::server' do
                                         'mysql'  => { 'default-character-set' => 'utf8mb4' },
                                         'mysqld' => {
                                                       'character-set-client-handshake' => 'false',
+                                                      'ssl'                            => 'false',
+                                                      'mysql_native_password'          => 'ON',
                                                       'character-set-server'           => 'utf8mb4',
                                                       'collation-server'               => 'utf8mb4_unicode_ci',
                                                       'bind-address'                   => '0.0.0.0',
@@ -227,6 +231,35 @@ describe 'profiles::mysql::server' do
                 it { is_expected.to contain_apt__source('mysql-8.4') }
 
                 it { is_expected.to contain_apt__source('mysql-8.4').that_comes_before('Class[mysql::server]') }
+
+                it { is_expected.to contain_class('mysql::server').with(
+                  'root_password'      => 'test',
+                  'package_name'       => 'mysql-server',
+                  'service_name'       => 'mysql',
+                  'create_root_my_cnf' => false,
+                  'managed_dirs'       => [],
+                  'restart'            => true,
+                  'override_options'   => {
+                                            'client' => { 'default-character-set' => 'utf8mb4' },
+                                            'mysql'  => { 'default-character-set' => 'utf8mb4' },
+                                            'mysqld' => {
+                                                          'character-set-client-handshake' => nil,
+                                                          'ssl'                            => nil,
+                                                          'mysql_native_password'          => 'ON',
+                                                          'character-set-server'           => 'utf8mb4',
+                                                          'collation-server'               => 'utf8mb4_unicode_ci',
+                                                          'bind-address'                   => '0.0.0.0',
+                                                          'skip-name-resolve'              => 'true',
+                                                          'innodb_file_per_table'          => 'ON',
+                                                          'slow_query_log'                 => 'ON',
+                                                          'slow_query_log_file'            => '/var/log/mysql/slow-query.log',
+                                                          'long_query_time'                => '5',
+                                                          'transaction_isolation'          => 'READ-COMMITTED',
+                                                          'event_scheduler'                => 'OFF'
+                                                        }
+                                          }
+
+                ) }
               end
             end
 

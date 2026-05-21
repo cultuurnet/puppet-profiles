@@ -37,7 +37,15 @@ class profiles::mysql::server (
                        'client' => { 'default-character-set' => 'utf8mb4' },
                        'mysql'  => { 'default-character-set' => 'utf8mb4' },
                        'mysqld' => {
-                                     'character-set-client-handshake' => 'false',
+                                     'character-set-client-handshake' => $release ? {
+                                                                           '8.0'   => 'false',
+                                                                           default => undef
+                                                                         },
+                                     'ssl'                            => $release ? {
+                                                                           '8.0'   => 'false',
+                                                                           default => undef
+                                                                         },
+                                     'mysql_native_password'          => 'ON',
                                      'character-set-server'           => 'utf8mb4',
                                      'collation-server'               => 'utf8mb4_unicode_ci',
                                      'bind-address'                   => $listen_address,
