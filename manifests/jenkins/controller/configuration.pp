@@ -1,13 +1,14 @@
 class profiles::jenkins::controller::configuration(
   Stdlib::Httpurl            $url,
   String                     $admin_password,
-  Optional[Stdlib::Httpurl]  $docker_registry_url          = undef,
-  Variant[Hash, Array[Hash]] $credentials                  = [],
-  Variant[Hash, Array[Hash]] $global_libraries             = [],
-  Variant[Hash, Array[Hash]] $pipelines                    = [],
-  Variant[Hash, Array[Hash]] $views                        = [],
-  Variant[Hash, Array[Hash]] $users                        = [],
-  Optional[String]           $puppetdb_url                 = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+  Boolean                    $mfa                 = false,
+  Optional[Stdlib::Httpurl]  $docker_registry_url = undef,
+  Variant[Hash, Array[Hash]] $credentials         = [],
+  Variant[Hash, Array[Hash]] $global_libraries    = [],
+  Variant[Hash, Array[Hash]] $pipelines           = [],
+  Variant[Hash, Array[Hash]] $views               = [],
+  Variant[Hash, Array[Hash]] $users               = [],
+  Optional[String]           $puppetdb_url        = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $plain_credentials       = [$credentials].flatten.filter |$credential| { $credential['type'] == 'string' or $credential['type'] == 'file' or $credential['type'] == 'username_password' }
@@ -90,6 +91,16 @@ class profiles::jenkins::controller::configuration(
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
 
+  profiles::jenkins::plugin { 'openmfa':
+    ensure        => $mfa ? {
+                       true  => 'present',
+                       false => 'absent'
+                     },
+    configuration => {
+                       'issuer' => "Jenkins publiq (${environment})"
+                     },
+    notify        => Class['profiles::jenkins::controller::configuration::reload']
+  }
   unless empty($users) {
     file { 'jenkins users':
       ensure  => 'file',
