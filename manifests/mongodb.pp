@@ -69,6 +69,7 @@ class profiles::mongodb (
     package_name   => 'mongodb-server',
     package_ensure => $version,
     service_manage => true,
+    service_name   => 'mongodb',
     service_ensure => $service_status,
     service_enable => $service_status ? {
                         'running' => true,
