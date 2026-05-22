@@ -26,6 +26,8 @@ describe 'profiles::mongodb' do
 
         it { is_expected.to contain_group('mongodb') }
         it { is_expected.to contain_user('mongodb') }
+        it { is_expected.to contain_apt__source('publiq-tools') }
+        it { is_expected.to contain_package('mongodb-mongosh') }
 
         it { is_expected.not_to contain_firewall('400 accept mongodb traffic') }
 
@@ -62,6 +64,7 @@ describe 'profiles::mongodb' do
 
         it { is_expected.to contain_group('mongodb').that_comes_before('Class[mongodb::server]') }
         it { is_expected.to contain_user('mongodb').that_comes_before('Class[mongodb::server]') }
+        it { is_expected.to contain_package('mongodb-mongosh').that_comes_before('Class[mongodb::server]') }
       end
 
       context "with volume_groups datavg and backupvg present" do
