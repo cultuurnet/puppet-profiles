@@ -18,6 +18,8 @@ class profiles::mongodb (
 
   realize Group['mongodb']
   realize User['mongodb']
+  realize Apt::Source['publiq-tools']
+  realize Package['mongodb-mongosh']
 
   if !($listen_address == '127.0.0.1') {
     realize Firewall['400 accept mongodb traffic']
@@ -78,7 +80,7 @@ class profiles::mongodb (
     user           => 'mongodb',
     group          => 'mongodb',
     bind_ip        => [$listen_address],
-    require        => [Group['mongodb'], User['mongodb']]
+    require        => [Group['mongodb'], User['mongodb'], Package['mongodb-mongosh']]
   }
 
   class { 'profiles::mongodb::backup':

@@ -156,6 +156,11 @@ inherits ::profiles {
     ensure  => 'present'
   }
 
+  @package { 'mongodb-mongosh':
+    ensure  => 'present',
+    require => Apt::Source['publiq-tools']
+  }
+
   @package { 'awscli':
     ensure  => !!$versions['awscli'] ? { true => $versions['awscli'], default => 'present' },
     require => Apt::Source['publiq-tools']

@@ -129,6 +129,10 @@ describe 'profiles::packages' do
           'ensure' => 'present'
         ) }
 
+        it { is_expected.to contain_package('mongodb-mongosh').with(
+          'ensure' => 'present'
+        ) }
+
         context 'with hieradata' do
           let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
@@ -168,6 +172,7 @@ describe 'profiles::packages' do
         it { is_expected.to contain_package('prince').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('awscli').that_requires('Apt::Source[publiq-tools]') }
         it { is_expected.to contain_package('terrafile').that_requires('Apt::Source[publiq-tools]') }
+        it { is_expected.to contain_package('mongodb-mongosh').that_requires('Apt::Source[publiq-tools]') }
       end
 
       context "without package virtual resources realized" do
