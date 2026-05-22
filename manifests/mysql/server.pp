@@ -29,7 +29,10 @@ class profiles::mysql::server (
                                                                            '8.0'   => 'false',
                                                                            default => undef
                                                                          },
-                                     'mysql_native_password'          => 'ON',
+                                     'mysql_native_password'          => $release ? {
+                                                                           '8.0'   => undef,
+                                                                           default => 'ON'
+                                                                         },
                                      'character-set-server'           => 'utf8mb4',
                                      'collation-server'               => 'utf8mb4_unicode_ci',
                                      'bind-address'                   => $listen_address,
@@ -40,7 +43,7 @@ class profiles::mysql::server (
                                      'long_query_time'                => "${long_query_time}",
                                      'transaction_isolation'          => $transaction_isolation,
                                      'event_scheduler'                => $event_scheduler
-                                   }
+                                   }.delete_undef_values
                      }
 
   include profiles::firewall::rules
