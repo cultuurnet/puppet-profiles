@@ -578,6 +578,32 @@ describe 'profiles::jenkins::plugin' do
         end
       end
 
+      context "with title openmfa" do
+        let(:title) { 'openmfa' }
+
+        context "with configuration => { 'issuer' => 'foobar' }" do
+          let(:params) { {
+              'configuration' => { 'issuer' => 'foobar' }
+          } }
+
+          it { is_expected.to contain_file('openmfa configuration').with(
+            'ensure'  => 'file',
+            'path'    => '/var/lib/jenkins/casc_config/openmfa.yaml',
+            'owner'   => 'jenkins',
+            'group'   => 'jenkins'
+          ) }
+
+          it { is_expected.to contain_file('openmfa configuration').with_content(/^\s*issuer: 'foobar'$/) }
+        end
+
+        context "with configuration => { 'issuer' => 'snafu' }" do
+          let(:params) { {
+              'configuration' => { 'issuer' => 'snafu' }
+          } }
+
+          it { is_expected.to contain_file('openmfa configuration').with_content(/^\s*issuer: 'snafu'$/) }
+        end
+      end
     end
   end
 end
