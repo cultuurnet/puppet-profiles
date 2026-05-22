@@ -2,6 +2,7 @@ class profiles::jenkins::controller (
   Stdlib::Httpurl           $url,
   String                    $admin_password,
   String                    $version             = 'latest',
+  Boolean                   $mfa                 = false,
   Boolean                   $lvm                 = false,
   Optional[String]          $volume_group        = undef,
   Optional[String]          $volume_size         = undef,
@@ -63,6 +64,7 @@ class profiles::jenkins::controller (
   class { '::profiles::jenkins::controller::configuration':
     url                 => $url,
     admin_password      => $admin_password,
+    mfa                 => $mfa,
     docker_registry_url => $docker_registry_url,
     credentials         => $credentials,
     global_libraries    => $global_libraries,
