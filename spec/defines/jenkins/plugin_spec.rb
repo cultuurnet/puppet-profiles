@@ -26,8 +26,7 @@ describe 'profiles::jenkins::plugin' do
             'tries'     => 5,
             'try_sleep' => 10,
             'logoutput' => 'on_failure'
-            )
-          }
+          ) }
 
           it { is_expected.to_not contain_group('jenkins') }
           it { is_expected.to_not contain_user('jenkins') }
@@ -48,8 +47,12 @@ describe 'profiles::jenkins::plugin' do
             'tries'     => 5,
             'try_sleep' => 10,
             'logoutput' => 'on_failure'
-            )
-          }
+          ) }
+
+          it { is_expected.to contain_file('foobar configuration').with(
+            'ensure' => 'absent',
+            'path'   => '/var/lib/jenkins/casc_config/foobar.yaml',
+          ) }
         end
 
         context "with configuration => []" do

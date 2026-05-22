@@ -24,6 +24,11 @@ define profiles::jenkins::plugin (
       onlyif  => "jenkins-cli list-plugins ${title}",
       *       => $default_exec_attributes
     }
+
+    file { "${title} configuration":
+      ensure => 'absent',
+      path   => "${config_dir}/${title}.yaml",
+    }
   } else {
     $post_action = $restart ? {
       true  => '-restart',
