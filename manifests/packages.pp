@@ -157,7 +157,7 @@ inherits ::profiles {
   }
 
   @package { 'mongodb-mongosh':
-    ensure  => 'present',
+    ensure  => !!$versions['mongodb-mongosh'] ? { true => $versions['mongodb-mongosh'], default => 'present' },
     require => Apt::Source['publiq-tools']
   }
 
