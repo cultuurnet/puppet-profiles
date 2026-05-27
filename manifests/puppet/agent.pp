@@ -103,7 +103,7 @@ class profiles::puppet::agent (
     ensure  => 'present',
     setting => 'strict',
     section => 'agent',
-    value   => 'warn',
+    value   => 'warning',
     *       => $default_ini_setting_attributes
   }
 

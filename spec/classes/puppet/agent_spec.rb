@@ -92,7 +92,7 @@ describe 'profiles::puppet::agent' do
           'path'    => '/etc/puppetlabs/puppet/puppet.conf',
           'section' => 'agent',
           'setting' => 'strict',
-          'value'   => 'warn'
+          'value'   => 'warning'
         ) }
 
         it { is_expected.to contain_ini_setting('agent include_legacy_facts').with(
