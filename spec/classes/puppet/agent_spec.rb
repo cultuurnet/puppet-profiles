@@ -71,6 +71,38 @@ describe 'profiles::puppet::agent' do
           'value'   => false
         ) }
 
+        it { is_expected.to contain_ini_setting('agent strict_variables').with(
+          'ensure'  => 'present',
+          'path'    => '/etc/puppetlabs/puppet/puppet.conf',
+          'section' => 'agent',
+          'setting' => 'strict_variables',
+          'value'   => true
+        ) }
+
+        it { is_expected.to contain_ini_setting('agent exclude_unchanged_resources').with(
+          'ensure'  => 'present',
+          'path'    => '/etc/puppetlabs/puppet/puppet.conf',
+          'section' => 'agent',
+          'setting' => 'exclude_unchanged_resources',
+          'value'   => true
+        ) }
+
+        it { is_expected.to contain_ini_setting('agent strict').with(
+          'ensure'  => 'present',
+          'path'    => '/etc/puppetlabs/puppet/puppet.conf',
+          'section' => 'agent',
+          'setting' => 'strict',
+          'value'   => 'warn'
+        ) }
+
+        it { is_expected.to contain_ini_setting('agent include_legacy_facts').with(
+          'ensure'  => 'present',
+          'path'    => '/etc/puppetlabs/puppet/puppet.conf',
+          'section' => 'agent',
+          'setting' => 'include_legacy_facts',
+          'value'   => false
+        ) }
+
         it { is_expected.to contain_ini_setting('agent reports').with(
           'ensure'  => 'present',
           'path'    => '/etc/puppetlabs/puppet/puppet.conf',

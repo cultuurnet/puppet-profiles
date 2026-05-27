@@ -83,6 +83,38 @@ class profiles::puppet::agent (
     *       => $default_ini_setting_attributes
   }
 
+  ini_setting { 'agent strict_variables':
+    ensure  => 'present',
+    setting => 'strict_variables',
+    section => 'agent',
+    value   => true,
+    *       => $default_ini_setting_attributes
+  }
+
+  ini_setting { 'agent exclude_unchanged_resources':
+    ensure  => 'present',
+    setting => 'exclude_unchanged_resources',
+    section => 'agent',
+    value   => true,
+    *       => $default_ini_setting_attributes
+  }
+
+  ini_setting { 'agent strict':
+    ensure  => 'present',
+    setting => 'strict',
+    section => 'agent',
+    value   => 'warn',
+    *       => $default_ini_setting_attributes
+  }
+
+  ini_setting { 'agent include_legacy_facts':
+    ensure  => 'present',
+    setting => 'include_legacy_facts',
+    section => 'agent',
+    value   => false,
+    *       => $default_ini_setting_attributes
+  }
+
   ini_setting { 'agent reports':
     ensure  => 'present',
     setting => 'reports',
