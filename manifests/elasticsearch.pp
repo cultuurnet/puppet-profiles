@@ -125,8 +125,10 @@ class profiles::elasticsearch (
 
   if $secure_remote_access {
     unless ($secure_remote_access_user and $secure_remote_access_password and $secure_remote_access_plugin_version) {
-      fail("with secure_remote_access enabled, expects a value for 'secure_remote_access_user' and 'secure_remote_access_password' and 'secure_remote_access_plugin_version'")
+      fail("with secure_remote_access enabled, expects a value for 'secure_remote_access_user', 'secure_remote_access_password' and 'secure_remote_access_plugin_version'")
     }
+
+    include ::profiles::firewall::rules
 
     realize Apt::Source['publiq-tools']
 
@@ -139,49 +141,48 @@ class profiles::elasticsearch (
     realize Firewall['600 accept elasticsearch http traffic']
     realize Firewall['600 accept elasticsearch cluster traffic']
 
-    $remote_access_config = {
-      'network.host'                           => [ "${::ipaddress_eth0}", "127.0.0.1" ],
-      'http.cors.enabled'                      => true,
-      'http.cors.allow-origin'                 => "*",
-      'http.cors.allow-methods'                => "OPTIONS, HEAD, GET, POST, PUT, DELETE",
-      'http.cors.allow-headers'                => "X-Requested-With, X-Auth-Token, Content-Type, Content-Length",
-      'readonlyrest.enable'                    => true,
-      'readonlyrest.response_if_req_forbidden' => 'Access denied!!!',
-      'readonlyrest.access_control_rules'      => [
-        {
-          'name'     => 'Accept all local requests without authentication',
-          'type'     => 'allow',
-          'hosts'    => ['127.0.0.1']
-        },
-        {
-          'name'     => 'Accept all write requests with basic authentication',
-          'auth_key' => "${secure_remote_access_user}:${secure_remote_access_password}",
-          'type'     => 'allow',
-          'methods'  => ['POST','PUT','DELETE']
-        },
-        {
-          'name'     => 'Accept all read requests without authentication',
-          'type'     => 'allow',
-          'indices'  => [ '*' ],
-          'actions'  => [ 'indices:data/read/*' ]
-        },
-        {
-          'name'     => 'Deny all write requests',
-          'type'     => 'forbid',
-          'indices'  => [ '*' ],
-          'actions'  => [ 'indices:data/write/*' ]
-        }
-      ]
-    }
-
     $remote_access_plugins = {
-      'readonlyrest' => {
-        'source' => "/opt/elasticsearch-readonlyrest/v${secure_remote_access_plugin_version}_es${version}.zip"
-      }
+                               'readonlyrest' => {
+                                 'source'     => "/opt/elasticsearch-readonlyrest/v${secure_remote_access_plugin_version}_es${version}.zip"
+                             }
+    }
+    $remote_access_config  = {
+                               'network.host'                           => [$facts['networking']['interfaces']['eth0']['ip'], '127.0.0.1'],
+                               'http.cors.enabled'                      => true,
+                               'http.cors.allow-origin'                 => '*',
+                               'http.cors.allow-methods'                => 'OPTIONS, HEAD, GET, POST, PUT, DELETE',
+                               'http.cors.allow-headers'                => 'X-Requested-With, X-Auth-Token, Content-Type, Content-Length',
+                               'readonlyrest.enable'                    => true,
+                               'readonlyrest.response_if_req_forbidden' => 'Access denied!!!',
+                               'readonlyrest.access_control_rules'      => [
+                                 {
+                                   'name'     => 'Accept all local requests without authentication',
+                                   'type'     => 'allow',
+                                   'hosts'    => ['127.0.0.1']
+                                 },
+                                 {
+                                   'name'     => 'Accept all write requests with basic authentication',
+                                   'auth_key' => "${secure_remote_access_user}:${secure_remote_access_password}",
+                                   'type'     => 'allow',
+                                   'methods'  => ['POST','PUT','DELETE']
+                                 },
+                                 {
+                                   'name'     => 'Accept all read requests without authentication',
+                                   'type'     => 'allow',
+                                   'indices'  => ['*'],
+                                   'actions'  => ['indices:data/read/*']
+                                 },
+                                 {
+                                   'name'     => 'Deny all write requests',
+                                   'type'     => 'forbid',
+                                   'indices'  => ['*'],
+                                   'actions'  => ['indices:data/write/*']
+                                 }
+                               ]
     }
   } else {
-    $remote_access_config  = {}
     $remote_access_plugins = {}
+    $remote_access_config  = {}
   }
 
   class { '::elasticsearch':
@@ -198,9 +199,9 @@ class profiles::elasticsearch (
                            undef   => true,
                            default => false
                          },
-    config            => $remote_access_config + $xpack_config,
+    config            => {} + $remote_access_config + $xpack_config,
     jvm_options       => ['-XX:+IgnoreUnrecognizedVMOptions'] + [$jvm_options].flatten,
-    plugins           => $remote_access_plugins,
+    plugins           => {} + $remote_access_plugins,
     init_defaults     => {
                            'ES_JAVA_OPTS' => "\"-Xms${initial_heap_size} -Xmx${maximum_heap_size}\""
                          },
