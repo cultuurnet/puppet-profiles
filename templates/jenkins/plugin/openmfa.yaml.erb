@@ -2,6 +2,6 @@ security:
   openMFA:
     issuer: '<%= @configuration['issuer'] %>'
     requireMFA: true
-    exemptUsers:
-      - admin
-      - agent
+    exemptUsers: |-
+      admin
+      agent
