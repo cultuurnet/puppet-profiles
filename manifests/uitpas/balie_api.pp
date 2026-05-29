@@ -52,6 +52,12 @@ class profiles::uitpas::balie_api (
                              }, {
                                'comment'      => 'Proxy /app/ to React app',
                                'rewrite_rule' => "^/app/(.*)\$ ${balie_next_url}/app/\$1 [P,L]"
+                             }, {
+                               'comment'      => 'Proxy /nieuw to React app',
+                               'rewrite_rule' => "^/nieuw\$ ${balie_next_url}/nieuw [P,L]"
+                             }, {
+                               'comment'      => 'Proxy /nieuw/ to React app',
+                               'rewrite_rule' => "^/nieuw/(.*)\$ ${balie_next_url}/nieuw/\$1 [P,L]"
                              }
                            ]
   }
