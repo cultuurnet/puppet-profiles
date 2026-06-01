@@ -54,8 +54,14 @@ describe 'profiles::uitpas::balie_api' do
                                           'rewrite_cond' => '%{REQUEST_URI} ^/app_v1/.*$',
                                           'rewrite_rule' => '^ - [E=legacy_app_path]'
                                         }, {
-                                          'comment'      => 'Redirect /mobile to /app/mobile',
-                                          'rewrite_rule' => '^/mobile /app/mobile [L,R=301]'
+                                          'comment'      => 'Redirect /mobile to /nieuw/mobile',
+                                          'rewrite_rule' => '^/mobile /nieuw/mobile [L,R=301]'
+                                        }, {
+                                          'comment'      => 'Proxy /app/mobile to React app',
+                                          'rewrite_rule' => '^/app/mobile$ http://balie-next.example.com/nieuw/mobile [P,L]'
+                                        }, {
+                                          'comment'      => 'Proxy /app/mobile/ to React app',
+                                          'rewrite_rule' => '^/app/mobile/(.*)$ http://balie-next.example.com/nieuw/mobile/$1 [P,L]'
                                         }, {
                                           'comment'      => 'Proxy /app to React app',
                                           'rewrite_rule' => '^/app$ http://balie-next.example.com/app [P,L]'
@@ -117,8 +123,14 @@ describe 'profiles::uitpas::balie_api' do
                                           'rewrite_cond' => '%{REQUEST_URI} ^/app_v1/.*$',
                                           'rewrite_rule' => '^ - [E=legacy_app_path]'
                                         }, {
-                                          'comment'      => 'Redirect /mobile to /app/mobile',
-                                          'rewrite_rule' => '^/mobile /app/mobile [L,R=301]'
+                                          'comment'      => 'Redirect /mobile to /nieuw/mobile',
+                                          'rewrite_rule' => '^/mobile /nieuw/mobile [L,R=301]'
+                                        }, {
+                                          'comment'      => 'Proxy /app/mobile to React app',
+                                          'rewrite_rule' => '^/app/mobile$ https://next.example.com/nieuw/mobile [P,L]'
+                                        }, {
+                                          'comment'      => 'Proxy /app/mobile/ to React app',
+                                          'rewrite_rule' => '^/app/mobile/(.*)$ https://next.example.com/nieuw/mobile/$1 [P,L]'
                                         }, {
                                           'comment'      => 'Proxy /app to React app',
                                           'rewrite_rule' => '^/app$ https://next.example.com/app [P,L]'
