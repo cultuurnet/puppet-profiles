@@ -63,11 +63,11 @@ describe 'profiles::uitpas::balie_api' do
                                           'comment'      => 'Proxy /app/mobile/ to React app',
                                           'rewrite_rule' => '^/app/mobile/(.*)$ http://balie-next.example.com/nieuw/mobile/$1 [P,L]'
                                         }, {
-                                          'comment'      => 'Proxy /app to React app',
-                                          'rewrite_rule' => '^/app$ http://balie-next.example.com/app [P,L]'
+                                          'comment'      => 'Proxy /app to angular app',
+                                          'rewrite_rule' => '^/app$ /app_v1 [P,L]'
                                         }, {
-                                          'comment'      => 'Proxy /app/ to React app',
-                                          'rewrite_rule' => '^/app/(.*)$ http://balie-next.example.com/app/$1 [P,L]'
+                                          'comment'      => 'Proxy /app/ to angular app',
+                                          'rewrite_rule' => '^/app/(.*)$ /app_v1/$1 [P,L]'
                                         }, {
                                           'comment'      => 'Proxy /nieuw to React app',
                                           'rewrite_rule' => '^/nieuw$ http://balie-next.example.com/nieuw [P,L]'
@@ -132,11 +132,11 @@ describe 'profiles::uitpas::balie_api' do
                                           'comment'      => 'Proxy /app/mobile/ to React app',
                                           'rewrite_rule' => '^/app/mobile/(.*)$ https://next.example.com/nieuw/mobile/$1 [P,L]'
                                         }, {
-                                          'comment'      => 'Proxy /app to React app',
-                                          'rewrite_rule' => '^/app$ https://next.example.com/app [P,L]'
+                                          'comment'      => 'Proxy /app to angular app',
+                                          'rewrite_rule' => '^/app$ /app_v1 [P,L]'
                                         }, {
-                                          'comment'      => 'Proxy /app/ to React app',
-                                          'rewrite_rule' => '^/app/(.*)$ https://next.example.com/app/$1 [P,L]'
+                                          'comment'      => 'Proxy /app/ to angular app',
+                                          'rewrite_rule' => '^/app/(.*)$ /app_v1/$1 [P,L]'
                                         }, {
                                           'comment'      => 'Proxy /nieuw to React app',
                                           'rewrite_rule' => '^/nieuw$ https://next.example.com/nieuw [P,L]'
