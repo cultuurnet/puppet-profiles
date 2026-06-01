@@ -40,8 +40,8 @@ class profiles::uitpas::balie_api (
                                'rewrite_cond' => '%{DOCUMENT_ROOT}/app_v1 -d',
                                'rewrite_rule' => '^/$ /app_v1/ [R]'
                              }, {
-                               'comment'      => 'Set legacy environment variable for all paths starting wit /app_v1/',
-                               'rewrite_cond' => '%{REQUEST_URI} ^/app_v1/.*$',
+                               'comment'      => 'Set legacy environment variable for all paths starting with /app_v1/ or /app/',
+                               'rewrite_cond' => '%{REQUEST_URI} ^/app(?:_v1|)/.*$',
                                'rewrite_rule' => '^ - [E=legacy_app_path]'
                              }, {
                                'comment'      => 'Redirect /mobile to /nieuw/mobile',
