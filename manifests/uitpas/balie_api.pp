@@ -53,11 +53,11 @@ class profiles::uitpas::balie_api (
                                'comment'      => 'Proxy /app/mobile/ to React app',
                                'rewrite_rule' => "^/app/mobile/(.*)\$ ${balie_next_url}/nieuw/mobile/\$1 [P,L]"
                              }, {
-                               'comment'      => 'Proxy /app to React app',
-                               'rewrite_rule' => "^/app\$ ${balie_next_url}/app [P,L]"
+                               'comment'      => 'Proxy /app to angular app',
+                               'rewrite_rule' => "^/app\$ /app_v1 [P,L]"
                              }, {
-                               'comment'      => 'Proxy /app/ to React app',
-                               'rewrite_rule' => "^/app/(.*)\$ ${balie_next_url}/app/\$1 [P,L]"
+                               'comment'      => 'Proxy /app/ to angular app',
+                               'rewrite_rule' => "^/app/(.*)\$ /app_v1/\$1 [P,L]"
                              }, {
                                'comment'      => 'Proxy /nieuw to React app',
                                'rewrite_rule' => "^/nieuw\$ ${balie_next_url}/nieuw [P,L]"
