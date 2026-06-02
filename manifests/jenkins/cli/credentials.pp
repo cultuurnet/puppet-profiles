@@ -17,7 +17,7 @@ class profiles::jenkins::cli::credentials (
 
   shellvar { 'JENKINS_PASSWORD':
     variable => 'JENKINS_PASSWORD',
-    value    => $password,
+    value    => Sensitive($password),
     *        => $default_shellvar_attributes
   }
 }
