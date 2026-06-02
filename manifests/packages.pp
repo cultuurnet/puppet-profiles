@@ -104,7 +104,7 @@ inherits ::profiles {
   }
 
   @package { 'argocd':
-    ensure  => 'present',
+    ensure  => 'latest',
     require => Apt::Source['publiq-tools']
   }
 
