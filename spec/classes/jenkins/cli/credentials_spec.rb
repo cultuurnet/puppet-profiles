@@ -24,7 +24,7 @@ describe 'profiles::jenkins::cli::credentials' do
           'ensure'   => 'present',
           'variable' => 'JENKINS_PASSWORD',
           'target'   => '/etc/jenkins-cli/cli.conf',
-          'value'    => 'doe'
+          'value'    => sensitive('doe')
         ) }
       end
 
@@ -45,7 +45,7 @@ describe 'profiles::jenkins::cli::credentials' do
           'ensure'   => 'present',
           'variable' => 'JENKINS_PASSWORD',
           'target'   => '/etc/jenkins-cli/cli.conf',
-          'value'    => 'roe'
+          'value'    => sensitive('roe')
         ) }
       end
 
