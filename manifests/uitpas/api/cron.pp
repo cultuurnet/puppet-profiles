@@ -157,7 +157,7 @@ class profiles::uitpas::api::cron (
     ensure  => $cron_enabled ? { true => 'present', default => 'absent' },
     command => "/usr/bin/curl '${base_url}/uitid/rest/cron/orders/trigger-order-completion' >> ${cron_logdir}/orders-trigger-order-completion.log 2>&1",
     hour    => '*',
-    minute  => '*/5',
+    minute  => '*',
     *       => $cron_default_attributes,
   }
 

@@ -156,7 +156,7 @@ describe 'profiles::uitpas::api::cron' do
         it { is_expected.to contain_cron('uitpas orders trigger order completion').with(
           'command'     => "/usr/bin/curl 'http://127.0.0.1:4880/uitid/rest/cron/orders/trigger-order-completion' >> /var/log/uitpas-cron/orders-trigger-order-completion.log 2>&1",
           'hour'        => '*',
-          'minute'      => '*/5',
+          'minute'      => '*',
           'ensure'      => 'present',
           'environment' => ['SHELL=/bin/bash', 'TZ=Europe/Brussels'],
         ) }
