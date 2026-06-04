@@ -157,7 +157,7 @@ class profiles::uitpas::api::cron (
     ensure  => $cron_enabled ? { true => 'present', default => 'absent' },
     command => "/usr/bin/curl '${base_url}/uitid/rest/cron/orders/trigger-order-completion' >> ${cron_logdir}/orders-trigger-order-completion.log 2>&1",
     hour    => '*',
-    minute  => '*/5',
+    minute  => '*',
     *       => $cron_default_attributes,
   }
 
@@ -230,13 +230,6 @@ class profiles::uitpas::api::cron (
     command => "/usr/bin/test \$(date +\\%H) -eq 6 && /usr/bin/curl '${base_url}/uitid/rest/cron/external-ticketsales/alert' >> ${cron_logdir}/external-ticketsales-alert.log 2>&1",
     hour    => '*',
     minute  => '45',
-    *       => $cron_default_attributes,
-  }
-  cron { 'uitpas orders trigger order completion':
-    ensure  => $cron_enabled ? { true => 'present', default => 'absent' },
-    command => "/usr/bin/curl '${base_url}/uitid/rest/cron/orders/trigger-order-completion' >> ${cron_logdir}/orders-trigger-order-completion.log 2>&1",
-    hour    => '*',
-    minute  => '*/5',
     *       => $cron_default_attributes,
   }
 }
