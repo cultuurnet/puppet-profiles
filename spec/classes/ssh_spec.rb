@@ -46,7 +46,7 @@ describe 'profiles::ssh' do
 
         it { is_expected.to contain_firewall('100 accept SSH traffic') }
 
-        it { is_expected.to have_ssh_authorized_key_resource_count(2) }
+        it { is_expected.to have_ssh_authorized_key_resource_count(0) }
 
         it { is_expected.to contain_profiles__ssh__sshd_config('PermitRootLogin').that_notifies('Service[ssh]') }
         it { is_expected.to contain_profiles__ssh__sshd_config('PubkeyAcceptedKeyTypes').that_notifies('Service[ssh]') }
@@ -56,31 +56,20 @@ describe 'profiles::ssh' do
       context "with ssh_authorized_keys_tags => publiq" do
         let(:params) { { 'ssh_authorized_keys_tags' => 'publiq' } }
 
-        it { is_expected.to contain_group('publiq-first').that_comes_before('User[publiq-first]') }
-        it { is_expected.to contain_group('publiq-second').that_comes_before('User[publiq-second]') }
-        it { is_expected.not_to contain_group('acme-first') }
-        it { is_expected.to contain_user('publiq-first').with_gid('publiq-first') }
-        it { is_expected.to contain_user('publiq-second').with_gid('publiq-second') }
-        it { is_expected.not_to contain_user('acme-first') }
-
         it { is_expected.to contain_ssh_authorized_key('publiq first key') }
-        it { is_expected.to contain_ssh_authorized_key('publiq-first').that_requires('User[publiq-first]') }
         it { is_expected.to contain_ssh_authorized_key('publiq second key') }
-        it { is_expected.to contain_ssh_authorized_key('publiq-second').that_requires('User[publiq-second]') }
 
-        it { is_expected.to have_ssh_authorized_key_resource_count(4) }
+        it { is_expected.to have_ssh_authorized_key_resource_count(2) }
       end
 
       context "with ssh_authorized_keys_tags => [publiq, acme]" do
         let(:params) { { 'ssh_authorized_keys_tags' => ['publiq', 'acme'] } }
 
         it { is_expected.to contain_ssh_authorized_key('publiq first key') }
-        it { is_expected.to contain_ssh_authorized_key('publiq-first') }
         it { is_expected.to contain_ssh_authorized_key('publiq second key') }
-        it { is_expected.to contain_ssh_authorized_key('publiq-second') }
         it { is_expected.to contain_ssh_authorized_key('acme first key') }
 
-        it { is_expected.to have_ssh_authorized_key_resource_count(5) }
+        it { is_expected.to have_ssh_authorized_key_resource_count(3) }
       end
     end
   end

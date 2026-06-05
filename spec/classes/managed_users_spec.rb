@@ -1,5 +1,6 @@
 describe 'profiles::managed_users' do
   let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+  let(:params) { { 'tags' => 'publiq' } }
 
   include_examples 'operating system support'
 

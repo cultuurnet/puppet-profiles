@@ -149,7 +149,7 @@ profiles::ssh_users:
   'acme first key':
     username: 'acme-first'
     uid: 5002
-    create_user: false
+    create_user: true
     sudo: false
     tags: 'acme'
     keys:
