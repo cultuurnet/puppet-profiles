@@ -1,0 +1,18 @@
+class profiles::managed_users inherits ::profiles {
+
+  $ssh_users = lookup('profiles::ssh_users', Hash, 'first', {})
+  $ssh_users.each |$name, $attributes| {
+    if $attributes['create_user'] {
+      $username = $attributes['username']
+
+      @profiles::managed_user { $username:
+        key_name => $name,
+        keys     => $attributes['keys'],
+        uid      => $attributes['uid'],
+        sudo     => $attributes['sudo'],
+        tags     => $attributes['tags'],
+        tag      => $attributes['tags']
+      }
+    }
+  }
+}

@@ -28,17 +28,6 @@ class profiles::ssh_authorized_keys(
         key  => $key_attributes['key'],
         tag  => $attributes['tags']
       }
-
-      if $attributes['create_user'] {
-        $username = $attributes['username']
-
-        @ssh_authorized_key { "${key_title} for ${username}":
-          user => $username,
-          type => $key_attributes['type'],
-          key  => $key_attributes['key'],
-          tag  => $attributes['tags']
-        }
-      }
     }
   }
 }

@@ -1,34 +1,5 @@
 class profiles::users inherits ::profiles {
 
-  $ssh_users = lookup('profiles::ssh_users', Hash, 'first', {})
-  $ssh_users.each |$name, $attributes| {
-    if $attributes['create_user'] {
-      $username = $attributes['username']
-      $groups = $attributes['sudo'] ? {
-        true    => ['managed_users', 'sudo'],
-        default => ['managed_users']
-      }
-
-      @group { $username:
-        ensure => 'present',
-        tag    => $attributes['tags']
-      }
-
-      @user { $username:
-        ensure         => 'present',
-        gid            => $username,
-        groups         => $groups,
-        home           => "/home/${username}",
-        managehome     => true,
-        purge_ssh_keys => true,
-        shell          => '/bin/bash',
-        uid            => $attributes['uid'],
-        tag            => $attributes['tags'],
-        require        => [Group['managed_users'], Group[$username]]
-      }
-    }
-  }
-
   @user { 'aptly':
     ensure         => 'present',
     gid            => 'aptly',

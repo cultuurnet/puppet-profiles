@@ -9,59 +9,8 @@ describe 'profiles::users' do
 
       it { is_expected.to compile.with_all_deps }
 
-      context "without virtual resources realized" do
-        it { is_expected.not_to contain_group('publiq-first') }
-        it { is_expected.not_to contain_group('publiq-second') }
-        it { is_expected.not_to contain_group('acme-first') }
-        it { is_expected.not_to contain_user('publiq-first') }
-        it { is_expected.not_to contain_user('publiq-second') }
-        it { is_expected.not_to contain_user('acme-first') }
-      end
-
       context "with all virtual resources realized" do
-        let(:pre_condition) do
-          <<~PUPPET
-            Group <| |>
-            User <| |>
-          PUPPET
-        end
-
-        it { is_expected.to contain_group('publiq-first').with(
-          'ensure' => 'present',
-          'tag'    => 'publiq'
-        ) }
-
-        it { is_expected.to contain_group('publiq-second').with(
-          'ensure' => 'present',
-          'tag'    => ['publiq', 'example']
-        ) }
-
-        it { is_expected.to contain_user('publiq-first').with(
-          'ensure'         => 'present',
-          'gid'            => 'publiq-first',
-          'groups'         => ['managed_users', 'sudo'],
-          'home'           => '/home/publiq-first',
-          'managehome'     => true,
-          'purge_ssh_keys' => true,
-          'shell'          => '/bin/bash',
-          'uid'            => 5000,
-          'tag'            => 'publiq'
-        ).that_requires('Group[managed_users]').that_requires('Group[publiq-first]') }
-
-        it { is_expected.to contain_user('publiq-second').with(
-          'ensure'         => 'present',
-          'gid'            => 'publiq-second',
-          'groups'         => ['managed_users'],
-          'home'           => '/home/publiq-second',
-          'managehome'     => true,
-          'purge_ssh_keys' => true,
-          'shell'          => '/bin/bash',
-          'uid'            => 5001,
-          'tag'            => ['publiq', 'example']
-        ).that_requires('Group[managed_users]').that_requires('Group[publiq-second]') }
-
-        it { is_expected.not_to contain_group('acme-first') }
-        it { is_expected.not_to contain_user('acme-first') }
+        let(:pre_condition) { 'User <| |>' }
 
         it { is_expected.to contain_user('aptly').with(
           'ensure'         => 'present',

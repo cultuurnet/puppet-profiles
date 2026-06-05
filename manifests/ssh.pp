@@ -50,9 +50,8 @@ class profiles::ssh(
   }
 
   [$ssh_authorized_keys_tags].flatten.each |$tag| {
+    Profiles::Managed_user <| tag == $tag |>
     Ssh_authorized_key <| tag == $tag |>
-    Group <| tag == $tag |> -> User <| tag == $tag |>
-    User <| tag == $tag |> -> Ssh_authorized_key <| tag == $tag |>
   }
 
   realize Firewall['100 accept SSH traffic']
