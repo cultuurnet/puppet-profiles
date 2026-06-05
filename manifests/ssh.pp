@@ -51,6 +51,7 @@ class profiles::ssh(
 
   [$ssh_authorized_keys_tags].flatten.each |$tag| {
     Ssh_authorized_key <| tag == $tag |>
+    Group <| tag == $tag |> -> User <| tag == $tag |>
     User <| tag == $tag |> -> Ssh_authorized_key <| tag == $tag |>
   }
 

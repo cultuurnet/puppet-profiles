@@ -56,8 +56,11 @@ describe 'profiles::ssh' do
       context "with ssh_authorized_keys_tags => publiq" do
         let(:params) { { 'ssh_authorized_keys_tags' => 'publiq' } }
 
-        it { is_expected.to contain_user('publiq-first') }
-        it { is_expected.to contain_user('publiq-second') }
+        it { is_expected.to contain_group('publiq-first').that_comes_before('User[publiq-first]') }
+        it { is_expected.to contain_group('publiq-second').that_comes_before('User[publiq-second]') }
+        it { is_expected.not_to contain_group('acme-first') }
+        it { is_expected.to contain_user('publiq-first').with_gid('publiq-first') }
+        it { is_expected.to contain_user('publiq-second').with_gid('publiq-second') }
         it { is_expected.not_to contain_user('acme-first') }
 
         it { is_expected.to contain_ssh_authorized_key('publiq first key') }

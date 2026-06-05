@@ -9,8 +9,14 @@ class profiles::users inherits ::profiles {
         default => ['managed_users']
       }
 
+      @group { $username:
+        ensure => 'present',
+        tag    => $attributes['tags']
+      }
+
       @user { $username:
         ensure         => 'present',
+        gid            => $username,
         groups         => $groups,
         home           => "/home/${username}",
         managehome     => true,
@@ -18,7 +24,7 @@ class profiles::users inherits ::profiles {
         shell          => '/bin/bash',
         uid            => $attributes['uid'],
         tag            => $attributes['tags'],
-        require        => Group['managed_users']
+        require        => [Group['managed_users'], Group[$username]]
       }
     }
   }
