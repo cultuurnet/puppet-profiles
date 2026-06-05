@@ -17,7 +17,7 @@ describe 'profiles::managed_user' do
 
         it { is_expected.to contain_group('publiq-first').with(
           'ensure' => 'present'
-        ).that_comes_before('User[publiq-first]') }
+        ) }
 
         it { is_expected.to contain_user('publiq-first').with(
           'ensure'         => 'present',
@@ -28,13 +28,18 @@ describe 'profiles::managed_user' do
           'purge_ssh_keys' => true,
           'shell'          => '/bin/bash',
           'uid'            => 5000
-        ).that_requires('Group[managed_users]').that_requires('Group[publiq-first]') }
+        ) }
 
         it { is_expected.to contain_ssh_authorized_key('publiq-first').with(
           'user' => 'publiq-first',
           'type' => 'ssh-rsa',
           'key'  => 'abcd'
-        ).that_requires('User[publiq-first]') }
+        ) }
+
+        it { is_expected.to contain_group('publiq-first').that_comes_before('User[publiq-first]') }
+        it { is_expected.to contain_user('publiq-first').that_requires('Group[managed_users]') }
+        it { is_expected.to contain_user('publiq-first').that_requires('Group[publiq-first]') }
+        it { is_expected.to contain_ssh_authorized_key('publiq-first').that_requires('User[publiq-first]') }
       end
 
       context "without sudo access and with multiple keys" do
