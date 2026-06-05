@@ -9,7 +9,8 @@ define profiles::managed_user (
   }
 
   group { $title:
-    ensure => 'present'
+    ensure => 'present',
+    gid    => $uid
   }
 
   user { $title:
