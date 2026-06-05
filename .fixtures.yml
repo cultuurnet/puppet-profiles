@@ -27,6 +27,9 @@ fixtures:
     stdlib:
       repo: 'puppetlabs/stdlib'
       ref: '9.7.0'
+    extlib:
+      repo: 'puppet/extlib'
+      ref: '7.5.1'
     concat:
       repo: 'puppetlabs/concat'
       ref: '9.1.0'
