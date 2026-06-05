@@ -56,18 +56,26 @@ describe 'profiles::ssh' do
       context "with ssh_authorized_keys_tags => publiq" do
         let(:params) { { 'ssh_authorized_keys_tags' => 'publiq' } }
 
+        it { is_expected.to contain_user('publiq-first') }
+        it { is_expected.to contain_user('publiq-second') }
+        it { is_expected.not_to contain_user('acme-first') }
+
         it { is_expected.to contain_ssh_authorized_key('publiq first key') }
+        it { is_expected.to contain_ssh_authorized_key('publiq first key for publiq-first').that_requires('User[publiq-first]') }
         it { is_expected.to contain_ssh_authorized_key('publiq second key') }
+        it { is_expected.to contain_ssh_authorized_key('publiq second key for publiq-second').that_requires('User[publiq-second]') }
       end
 
       context "with ssh_authorized_keys_tags => [publiq, acme]" do
         let(:params) { { 'ssh_authorized_keys_tags' => ['publiq', 'acme'] } }
 
         it { is_expected.to contain_ssh_authorized_key('publiq first key') }
+        it { is_expected.to contain_ssh_authorized_key('publiq first key for publiq-first') }
         it { is_expected.to contain_ssh_authorized_key('publiq second key') }
+        it { is_expected.to contain_ssh_authorized_key('publiq second key for publiq-second') }
         it { is_expected.to contain_ssh_authorized_key('acme first key') }
 
-        it { is_expected.to have_ssh_authorized_key_resource_count(3) }
+        it { is_expected.to have_ssh_authorized_key_resource_count(5) }
       end
     end
   end
