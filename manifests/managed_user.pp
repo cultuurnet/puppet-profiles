@@ -1,8 +1,7 @@
 define profiles::managed_user (
-  Variant[Hash, Array[Hash]]     $keys,
-  Integer                        $uid,
-  Boolean                        $sudo = false,
-  Variant[String, Array[String]] $tags = []
+  Variant[Hash, Array[Hash]] $keys,
+  Integer                    $uid,
+  Boolean                    $sudo = false
 ) {
   $groups = $sudo ? {
     true    => ['managed_users', 'sudo'],
@@ -10,8 +9,7 @@ define profiles::managed_user (
   }
 
   group { $title:
-    ensure => 'present',
-    tag    => $tags
+    ensure => 'present'
   }
 
   user { $title:
@@ -23,7 +21,6 @@ define profiles::managed_user (
     purge_ssh_keys => true,
     shell          => '/bin/bash',
     uid            => $uid,
-    tag            => $tags,
     require        => [Group['managed_users'], Group[$title]]
   }
 
@@ -39,7 +36,6 @@ define profiles::managed_user (
       user    => $title,
       type    => $key_attributes['type'],
       key     => $key_attributes['key'],
-      tag     => $tags,
       require => User[$title]
     }
   }

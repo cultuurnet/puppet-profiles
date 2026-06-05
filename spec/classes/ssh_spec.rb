@@ -46,7 +46,7 @@ describe 'profiles::ssh' do
 
         it { is_expected.to contain_firewall('100 accept SSH traffic') }
 
-        it { is_expected.to have_ssh_authorized_key_resource_count(0) }
+        it { is_expected.to have_ssh_authorized_key_resource_count(2) }
 
         it { is_expected.to contain_profiles__ssh__sshd_config('PermitRootLogin').that_notifies('Service[ssh]') }
         it { is_expected.to contain_profiles__ssh__sshd_config('PubkeyAcceptedKeyTypes').that_notifies('Service[ssh]') }
@@ -67,6 +67,8 @@ describe 'profiles::ssh' do
         it { is_expected.to contain_ssh_authorized_key('publiq-first').that_requires('User[publiq-first]') }
         it { is_expected.to contain_ssh_authorized_key('publiq second key') }
         it { is_expected.to contain_ssh_authorized_key('publiq-second').that_requires('User[publiq-second]') }
+
+        it { is_expected.to have_ssh_authorized_key_resource_count(4) }
       end
 
       context "with ssh_authorized_keys_tags => [publiq, acme]" do

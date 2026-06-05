@@ -10,15 +10,13 @@ describe 'profiles::managed_user' do
         let(:params) { {
           'keys' => { 'type' => 'ssh-rsa', 'key' => 'abcd' },
           'uid'  => 5000,
-          'sudo' => true,
-          'tags' => 'publiq'
+          'sudo' => true
         } }
 
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_group('publiq-first').with(
-          'ensure' => 'present',
-          'tag'    => 'publiq'
+          'ensure' => 'present'
         ).that_comes_before('User[publiq-first]') }
 
         it { is_expected.to contain_user('publiq-first').with(
@@ -29,15 +27,13 @@ describe 'profiles::managed_user' do
           'managehome'     => true,
           'purge_ssh_keys' => true,
           'shell'          => '/bin/bash',
-          'uid'            => 5000,
-          'tag'            => 'publiq'
+          'uid'            => 5000
         ).that_requires('Group[managed_users]').that_requires('Group[publiq-first]') }
 
         it { is_expected.to contain_ssh_authorized_key('publiq-first').with(
           'user' => 'publiq-first',
           'type' => 'ssh-rsa',
-          'key'  => 'abcd',
-          'tag'  => 'publiq'
+          'key'  => 'abcd'
         ).that_requires('User[publiq-first]') }
       end
 
@@ -47,8 +43,7 @@ describe 'profiles::managed_user' do
             { 'type' => 'ssh-rsa', 'key' => 'abcd' },
             { 'type' => 'ssh-ed25519', 'key' => 'efgh' }
           ],
-          'uid'  => 5001,
-          'tags' => ['publiq', 'example']
+          'uid'  => 5001
         } }
 
         it { is_expected.to contain_user('publiq-first').with_groups(['managed_users']) }

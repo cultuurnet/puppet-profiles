@@ -50,7 +50,6 @@ class profiles::ssh(
   }
 
   [$ssh_authorized_keys_tags].flatten.each |$tag| {
-    Profiles::Managed_user <| tag == $tag |>
     Ssh_authorized_key <| tag == $tag |>
   }
 
