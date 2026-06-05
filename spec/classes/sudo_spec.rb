@@ -21,6 +21,12 @@ describe 'profiles::sudo' do
 
         it { is_expected.to contain_class('sudo') }
 
+        it { is_expected.to contain_sudo__conf('sudo-group').with(
+          'content'  => '%sudo ALL=(ALL) NOPASSWD: ALL',
+          'priority' => '10'
+          )
+        }
+
         it { is_expected.to contain_sudo__conf('ubuntu').with(
           'content'  => 'ubuntu ALL=(ALL) NOPASSWD: ALL',
           'priority' => '10'
@@ -37,6 +43,7 @@ describe 'profiles::sudo' do
         it { is_expected.to contain_sudo__conf('ubuntu').that_requires('User[ubuntu]') }
         it { is_expected.to contain_sudo__conf('ssm-user').that_requires('Class[sudo]') }
         it { is_expected.to contain_sudo__conf('ssm-user').that_requires('User[ssm-user]') }
+        it { is_expected.to contain_sudo__conf('sudo-group').that_requires('Class[sudo]') }
       end
 
       context "not on AWS EC2" do
@@ -55,6 +62,12 @@ describe 'profiles::sudo' do
 
         it { is_expected.to contain_class('sudo') }
 
+        it { is_expected.to contain_sudo__conf('sudo-group').with(
+          'content'  => '%sudo ALL=(ALL) NOPASSWD: ALL',
+          'priority' => '10'
+          )
+        }
+
         it { is_expected.to contain_sudo__conf('vagrant').with(
           'content'  => 'vagrant ALL=(ALL) NOPASSWD: ALL',
           'priority' => '10'
@@ -63,6 +76,7 @@ describe 'profiles::sudo' do
 
         it { is_expected.to contain_sudo__conf('vagrant').that_requires('Class[sudo]') }
         it { is_expected.to contain_sudo__conf('vagrant').that_requires('User[vagrant]') }
+        it { is_expected.to contain_sudo__conf('sudo-group').that_requires('Class[sudo]') }
       end
     end
   end
