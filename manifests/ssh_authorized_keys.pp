@@ -14,7 +14,7 @@ class profiles::ssh_authorized_keys(
   }
 
   $keys.each | $key, $attributes| {
-   [$attributes['keys']].flatten.each | $index, $key_attributes | {
+    [$attributes['keys']].flatten.each | $index, $key_attributes | {
       if size([$attributes['keys']].flatten) == 1 {
         $key_title = $key
       } else {
@@ -27,6 +27,17 @@ class profiles::ssh_authorized_keys(
         type => $key_attributes['type'],
         key  => $key_attributes['key'],
         tag  => $attributes['tags']
+      }
+
+      if $attributes['create_user'] {
+        $username = $attributes['username']
+
+        @ssh_authorized_key { "${key_title} for ${username}":
+          user => $username,
+          type => $key_attributes['type'],
+          key  => $key_attributes['key'],
+          tag  => $attributes['tags']
+        }
       }
     }
   }
