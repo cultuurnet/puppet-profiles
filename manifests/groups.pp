@@ -1,5 +1,9 @@
 class profiles::groups inherits ::profiles {
 
+  group { 'managed_users':
+    ensure => 'present'
+  }
+
   @group { 'docker':
     ensure => 'present',
     gid    => '300'

@@ -18,7 +18,7 @@ describe 'profiles::ssh_authorized_keys' do
               {
                 'keys' => {
                   'foo' => { 'tags' => ['publiq', 'example'], 'keys' => { 'type' => 'ssh-rsa', 'key' => 'abcd1234' } },
-                  'bar' => { 'tags' => 'publiq', 'keys' => [{ 'type' => 'ssh-rsa', 'key' => 'efgh5678' }, { 'type' => 'ssh-ed25519', 'key' => 'ijkl9012' }] },
+                  'bar' => { 'username' => 'bar-user', 'create_user' => true, 'tags' => 'publiq', 'keys' => [{ 'type' => 'ssh-rsa', 'key' => 'efgh5678' }, { 'type' => 'ssh-ed25519', 'key' => 'ijkl9012' }] },
                   'baz' => { 'tags' => 'acme', 'keys' => { 'type' => 'ssh-rsa', 'key' => 'efgh5678' } }
                 }
               }
@@ -51,6 +51,8 @@ describe 'profiles::ssh_authorized_keys' do
               'key'  => 'efgh5678',
               'tag'  => 'acme'
             ) }
+
+            it { is_expected.to have_ssh_authorized_key_resource_count(4) }
           end
 
           context "with keys => { foo => { tags => [publiq, example], keys => { type => ssh-rsa, key => abcd1234 } } } and user => bla" do

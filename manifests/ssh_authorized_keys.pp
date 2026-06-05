@@ -14,7 +14,7 @@ class profiles::ssh_authorized_keys(
   }
 
   $keys.each | $key, $attributes| {
-   [$attributes['keys']].flatten.each | $index, $key_attributes | {
+    [$attributes['keys']].flatten.each | $index, $key_attributes | {
       if size([$attributes['keys']].flatten) == 1 {
         $key_title = $key
       } else {

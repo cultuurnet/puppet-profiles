@@ -91,11 +91,19 @@ profiles::certificates::certificates:
 
 profiles::ssh_authorized_keys::keys:
   'publiq first key':
+    username: 'publiq-first'
+    uid: 5000
+    create_user: true
+    sudo: true
     tags: 'publiq'
     keys:
       type: 'ssh-rsa'
       key: 'abcd'
   'publiq second key':
+    username: 'publiq-second'
+    uid: 5001
+    create_user: true
+    sudo: false
     tags:
       - 'publiq'
       - 'example'
@@ -108,6 +116,41 @@ profiles::ssh_authorized_keys::keys:
       type: 'ssh-rsa'
       key: '0123'
   'acme first key':
+    username: 'acme-first'
+    uid: 5002
+    create_user: false
+    sudo: false
+    tags: 'acme'
+    keys:
+      type: 'ssh-rsa'
+      key: '4567'
+
+profiles::ssh_users:
+  'publiq first key':
+    username: 'publiq-first'
+    uid: 5000
+    create_user: true
+    sudo: true
+    tags: 'publiq'
+    keys:
+      type: 'ssh-rsa'
+      key: 'abcd'
+  'publiq second key':
+    username: 'publiq-second'
+    uid: 5001
+    create_user: true
+    sudo: false
+    tags:
+      - 'publiq'
+      - 'example'
+    keys:
+      type: 'ssh-ed25519'
+      key: 'defg'
+  'acme first key':
+    username: 'acme-first'
+    uid: 5002
+    create_user: true
+    sudo: false
     tags: 'acme'
     keys:
       type: 'ssh-rsa'

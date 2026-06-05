@@ -1,4 +1,6 @@
 describe 'profiles::users' do
+  let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
   include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
