@@ -19,21 +19,19 @@ describe 'profiles::managed_users' do
         let(:pre_condition) { 'Profiles::Managed_user <| |>' }
 
         it { is_expected.to contain_profiles__managed_user('publiq-first').with(
-          'key_name' => 'publiq first key',
-          'keys'     => { 'type' => 'ssh-rsa', 'key' => 'abcd' },
-          'uid'      => 5000,
-          'sudo'     => true,
-          'tags'     => 'publiq',
-          'tag'      => 'publiq'
+          'keys' => { 'type' => 'ssh-rsa', 'key' => 'abcd' },
+          'uid'  => 5000,
+          'sudo' => true,
+          'tags' => 'publiq',
+          'tag'  => 'publiq'
         ) }
 
         it { is_expected.to contain_profiles__managed_user('publiq-second').with(
-          'key_name' => 'publiq second key',
-          'keys'     => { 'type' => 'ssh-ed25519', 'key' => 'defg' },
-          'uid'      => 5001,
-          'sudo'     => false,
-          'tags'     => ['publiq', 'example'],
-          'tag'      => ['publiq', 'example']
+          'keys' => { 'type' => 'ssh-ed25519', 'key' => 'defg' },
+          'uid'  => 5001,
+          'sudo' => false,
+          'tags' => ['publiq', 'example'],
+          'tag'  => ['publiq', 'example']
         ) }
 
         it { is_expected.not_to contain_profiles__managed_user('acme-first') }

@@ -8,11 +8,10 @@ describe 'profiles::managed_user' do
 
       context "with sudo access" do
         let(:params) { {
-          'key_name' => 'publiq first key',
-          'keys'     => { 'type' => 'ssh-rsa', 'key' => 'abcd' },
-          'uid'      => 5000,
-          'sudo'     => true,
-          'tags'     => 'publiq'
+          'keys' => { 'type' => 'ssh-rsa', 'key' => 'abcd' },
+          'uid'  => 5000,
+          'sudo' => true,
+          'tags' => 'publiq'
         } }
 
         it { is_expected.to compile.with_all_deps }
@@ -34,7 +33,7 @@ describe 'profiles::managed_user' do
           'tag'            => 'publiq'
         ).that_requires('Group[managed_users]').that_requires('Group[publiq-first]') }
 
-        it { is_expected.to contain_ssh_authorized_key('publiq first key for publiq-first').with(
+        it { is_expected.to contain_ssh_authorized_key('publiq-first').with(
           'user' => 'publiq-first',
           'type' => 'ssh-rsa',
           'key'  => 'abcd',
@@ -44,18 +43,17 @@ describe 'profiles::managed_user' do
 
       context "without sudo access and with multiple keys" do
         let(:params) { {
-          'key_name' => 'publiq first key',
-          'keys'     => [
+          'keys' => [
             { 'type' => 'ssh-rsa', 'key' => 'abcd' },
             { 'type' => 'ssh-ed25519', 'key' => 'efgh' }
           ],
-          'uid'      => 5001,
-          'tags'     => ['publiq', 'example']
+          'uid'  => 5001,
+          'tags' => ['publiq', 'example']
         } }
 
         it { is_expected.to contain_user('publiq-first').with_groups(['managed_users']) }
-        it { is_expected.to contain_ssh_authorized_key('publiq first key 1 for publiq-first') }
-        it { is_expected.to contain_ssh_authorized_key('publiq first key 2 for publiq-first') }
+        it { is_expected.to contain_ssh_authorized_key('publiq-first authorized_key 1') }
+        it { is_expected.to contain_ssh_authorized_key('publiq-first authorized_key 2') }
       end
     end
   end

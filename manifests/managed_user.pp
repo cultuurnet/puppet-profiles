@@ -1,5 +1,4 @@
 define profiles::managed_user (
-  String                         $key_name,
   Variant[Hash, Array[Hash]]     $keys,
   Integer                        $uid,
   Boolean                        $sudo = false,
@@ -30,13 +29,13 @@ define profiles::managed_user (
 
   [$keys].flatten.each |$index, $key_attributes| {
     if size([$keys].flatten) == 1 {
-      $key_title = $key_name
+      $key_title = $title
     } else {
       $key_number = $index + 1
-      $key_title  = "${key_name} ${key_number}"
+      $key_title  = "${title} authorized_key ${key_number}"
     }
 
-    ssh_authorized_key { "${key_title} for ${title}":
+    ssh_authorized_key { $key_title:
       user    => $title,
       type    => $key_attributes['type'],
       key     => $key_attributes['key'],

@@ -6,12 +6,11 @@ class profiles::managed_users inherits ::profiles {
       $username = $attributes['username']
 
       @profiles::managed_user { $username:
-        key_name => $name,
-        keys     => $attributes['keys'],
-        uid      => $attributes['uid'],
-        sudo     => $attributes['sudo'],
-        tags     => $attributes['tags'],
-        tag      => $attributes['tags']
+        keys => $attributes['keys'],
+        uid  => $attributes['uid'],
+        sudo => $attributes['sudo'],
+        tags => $attributes['tags'],
+        tag  => $attributes['tags']
       }
     }
   }
