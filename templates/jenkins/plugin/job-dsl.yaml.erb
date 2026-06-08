@@ -3,7 +3,7 @@ jobs:<%- if @configuration['pipelines'].empty? -%> []
   <%- else %>
   <%- [@configuration['pipelines']].flatten.each do |pipeline| -%>
   - script: >
-      pipelineJob('<%= pipeline['name'].strip.unicode_normalize(:nfd).gsub(/\p{Mn}/, '').downcase.gsub(' ', '-') %>') {
+      pipelineJob('<%= scope().call_function('slugify',[pipeline['name']]) %>') {
         <%- if pipeline['parameters'] -%>
           parameters {
             <%- pipeline['parameters'].strip.each_line do |line| -%>
