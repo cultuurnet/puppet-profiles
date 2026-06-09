@@ -16,6 +16,9 @@ class profiles::puppet::puppetserver (
   Boolean                                  $terraform_integration  = lookup('data::puppet::terraform_integration', Boolean, 'first', false),
   Optional[String]                         $terraform_bucket       = undef,
   Boolean                                  $terraform_use_iam_role = true,
+  Optional[String]                         $mfa_bucket             = undef,
+  Boolean                                  $mfa_use_iam_role       = true,
+  String                                   $mfa_aws_region         = 'eu-west-1',
   Optional[Stdlib::Httpurl]                $puppetdb_url           = undef,
   Optional[String]                         $puppetdb_version       = undef,
   Optional[String]                         $initial_heap_size      = undef,
@@ -138,6 +141,15 @@ class profiles::puppet::puppetserver (
       bucket       => $terraform_bucket,
       use_iam_role => $terraform_use_iam_role,
       require      => Class['profiles::puppet::puppetserver::hiera'],
+      notify       => Class['profiles::puppet::puppetserver::service'],
+    }
+  }
+
+  if $mfa_bucket {
+    class { 'profiles::puppet::puppetserver::mfa':
+      bucket       => $mfa_bucket,
+      use_iam_role => $mfa_use_iam_role,
+      aws_region   => $mfa_aws_region,
       notify       => Class['profiles::puppet::puppetserver::service'],
     }
   }
