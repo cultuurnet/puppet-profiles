@@ -36,4 +36,9 @@ describe 'slugify' do
   context 'with a combination of characters to convert' do
     it { is_expected.to run.with_params('Per-öwe, _kom_ terug!').and_return('per-owe-_kom_-terug') }
   end
+
+  context 'with multiple space characters, possibly intermixed with punctuation marks' do
+    it { is_expected.to run.with_params('before  after').and_return('before-after') }
+    it { is_expected.to run.with_params('before *! after').and_return('before-after') }
+  end
 end
