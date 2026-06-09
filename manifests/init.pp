@@ -15,7 +15,6 @@ class profiles {
       case $facts['os']['release']['major'] {
         '20.04', '24.04': {
           contain ::profiles::groups
-          contain ::profiles::managed_users
           contain ::profiles::users
           contain ::profiles::packages
           contain ::profiles::stages

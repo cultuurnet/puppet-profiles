@@ -89,21 +89,19 @@ profiles::certificates::certificates:
     certificate_source: '/tmp/cert/foobar.example.com.bundle.crt'
     key_source: '/tmp/cert/foobar.example.com.key'
 
-profiles::ssh_authorized_keys::keys:
+profiles::ssh::authorized_keys:
   'publiq first key':
-    username: 'publiq-first'
     uid: 5000
-    create_user: true
-    sudo: true
+    active: true
+    admin: true
     tags: 'publiq'
     keys:
       type: 'ssh-rsa'
       key: 'abcd'
   'publiq second key':
-    username: 'publiq-second'
     uid: 5001
-    create_user: true
-    sudo: false
+    active: true
+    admin: false
     tags:
       - 'publiq'
       - 'example'
@@ -111,50 +109,32 @@ profiles::ssh_authorized_keys::keys:
       type: 'ssh-ed25519'
       key: 'defg'
   'foobar first key':
+    uid: 5002
+    active: false
+    admin: true
     tags: 'foobar'
     keys:
       type: 'ssh-rsa'
       key: '0123'
   'acme first key':
-    username: 'acme-first'
-    uid: 5002
-    create_user: false
-    sudo: false
+    uid: 5003
+    active: false
+    admin: false
     tags: 'acme'
     keys:
       type: 'ssh-rsa'
       key: '4567'
 
-profiles::ssh_users:
-  'publiq first key':
-    username: 'publiq-first'
+profiles::users::shell:
+  'publiq first user':
     uid: 5000
-    create_user: true
-    sudo: true
+    admin: true
     tags: 'publiq'
-    keys:
-      type: 'ssh-rsa'
-      key: 'abcd'
-  'publiq second key':
-    username: 'publiq-second'
+  'publiq second user':
     uid: 5001
-    create_user: true
-    sudo: false
-    tags:
-      - 'publiq'
-      - 'example'
-    keys:
-      type: 'ssh-ed25519'
-      key: 'defg'
-  'acme first key':
-    username: 'acme-first'
-    uid: 5002
-    create_user: true
-    sudo: false
+    admin: true
+    active: false
     tags: 'acme'
-    keys:
-      type: 'ssh-rsa'
-      key: '4567'
 
 profiles::filebeat::outputs:
   logstash:
