@@ -1,6 +1,4 @@
 describe 'profiles::ssh' do
-  let(:hiera_config) { 'spec/support/hiera/common.yaml' }
-
   include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
@@ -11,6 +9,11 @@ describe 'profiles::ssh' do
         let(:params) { {} }
 
         it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to contain_class('Profiles::Ssh').with(
+          'authorized_keys'      => {},
+          'authorized_keys_tags' => []
+        ) }
 
         it { is_expected.to contain_package('openssh-server').with(
           'ensure' => 'latest'
@@ -46,30 +49,43 @@ describe 'profiles::ssh' do
 
         it { is_expected.to contain_firewall('100 accept SSH traffic') }
 
-        it { is_expected.to have_ssh_authorized_key_resource_count(0) }
+        it { is_expected.to contain_class('Profiles::Ssh::Authorized_keys').with(
+          'keys' => {}
+        ) }
 
         it { is_expected.to contain_profiles__ssh__sshd_config('PermitRootLogin').that_notifies('Service[ssh]') }
         it { is_expected.to contain_profiles__ssh__sshd_config('PubkeyAcceptedKeyTypes').that_notifies('Service[ssh]') }
         it { is_expected.to contain_package('openssh-server').that_notifies('Service[ssh]') }
       end
 
-      context "with authorized_keys_tags => publiq" do
-        let(:params) { { 'authorized_keys_tags' => 'publiq' } }
+      context 'with hieradata' do
+        let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-        it { is_expected.to contain_ssh_authorized_key('publiq first key') }
-        it { is_expected.to contain_ssh_authorized_key('publiq second key') }
+        context 'on AWS EC2' do
+          let(:facts) {
+            super().merge({ 'ec2_metadata' => 'true'})
+          }
 
-        it { is_expected.to have_ssh_authorized_key_resource_count(2) }
-      end
+          context "with authorized_keys_tags => publiq" do
+            let(:params) { { 'authorized_keys_tags' => 'publiq' } }
 
-      context "with authorized_keys_tags => [publiq, acme]" do
-        let(:params) { { 'authorized_keys_tags' => ['publiq', 'acme'] } }
+            it { is_expected.to contain_ssh_authorized_key('publiq first key ubuntu') }
+            it { is_expected.to contain_ssh_authorized_key('publiq second key ubuntu') }
+            it { is_expected.to contain_ssh_authorized_key('publiq first key') }
+            it { is_expected.to contain_ssh_authorized_key('publiq second key') }
 
-        it { is_expected.to contain_ssh_authorized_key('publiq first key') }
-        it { is_expected.to contain_ssh_authorized_key('publiq second key') }
-        it { is_expected.to contain_ssh_authorized_key('acme first key') }
+            it { is_expected.to have_ssh_authorized_key_resource_count(4) }
+          end
 
-        it { is_expected.to have_ssh_authorized_key_resource_count(3) }
+          context "with authorized_keys_tags => acme" do
+            let(:params) { { 'authorized_keys_tags' => 'acme' } }
+
+            it { is_expected.not_to contain_ssh_authorized_key('acme first key ubuntu') }
+            it { is_expected.not_to contain_ssh_authorized_key('acme first key') }
+
+            it { is_expected.to have_ssh_authorized_key_resource_count(0) }
+          end
+        end
       end
     end
   end
