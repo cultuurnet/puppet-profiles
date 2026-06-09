@@ -2,6 +2,12 @@ class profiles::sudo inherits ::profiles {
 
   class { '::sudo': }
 
+  sudo::conf { 'sudo-group':
+    priority => '10',
+    content  => '%sudo ALL=(ALL) NOPASSWD: ALL',
+    require  => Class['sudo']
+  }
+
   if $facts['ec2_metadata'] {
     $admin_user = 'ubuntu'
 
