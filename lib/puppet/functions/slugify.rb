@@ -19,6 +19,6 @@ Puppet::Functions.create_function(:slugify) do
   end
 
   def slug(some_string)
-    some_string.strip.unicode_normalize(:nfd).gsub(/\p{Mn}/, '').downcase.gsub(' ', '-').gsub(/[^a-z0-9_-]*/, '').gsub(/-[-]+/, '-')
+    some_string.strip.unicode_normalize(:nfd).gsub(/\p{Mn}/, '').downcase.gsub(' ', '-').gsub(/[^a-z0-9_-]+/, '').gsub(/-[-]+/, '-')
   end
 end
