@@ -8,7 +8,7 @@ class profiles::puppet::puppetserver::terraform (
     false => undef
   }
 
-  $mount_options = ['_netdev', 'nonempty', 'ro', 'nosuid', 'allow_other', 'multireq_max=5', 'uid=452', 'gid=452', $iam_role_mount_option]
+  $mount_options = ['_netdev', 'nonempty', 'ro', 'nosuid', 'allow_other', 'multireq_max=5', 'uid=452', 'gid=452', 'endpoint=eu-west-1', 'url=https://s3.eu-west-1.amazonaws.com', $iam_role_mount_option]
 
   realize Group['puppet']
   realize User['puppet']

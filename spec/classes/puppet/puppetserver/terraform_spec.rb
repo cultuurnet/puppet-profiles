@@ -33,7 +33,7 @@ describe 'profiles::puppet::puppetserver::terraform' do
           'name'     => '/etc/puppetlabs/code/data/terraform',
           'device'   => 'mybucket',
           'fstype'   => 'fuse.s3fs',
-          'options'  => '_netdev,nonempty,ro,nosuid,allow_other,multireq_max=5,uid=452,gid=452,iam_role=auto',
+          'options'  => '_netdev,nonempty,ro,nosuid,allow_other,multireq_max=5,uid=452,gid=452,endpoint=eu-west-1,url=https://s3.eu-west-1.amazonaws.com,iam_role=auto',
           'remounts' => false,
           'atboot'   => true
         ) }
@@ -55,7 +55,7 @@ describe 'profiles::puppet::puppetserver::terraform' do
           'name'     => '/etc/puppetlabs/code/data/terraform',
           'device'   => 'foobar',
           'fstype'   => 'fuse.s3fs',
-          'options'  => '_netdev,nonempty,ro,nosuid,allow_other,multireq_max=5,uid=452,gid=452',
+          'options'  => '_netdev,nonempty,ro,nosuid,allow_other,multireq_max=5,uid=452,gid=452,endpoint=eu-west-1,url=https://s3.eu-west-1.amazonaws.com',
           'remounts' => false,
           'atboot'   => true
         ) }
