@@ -109,12 +109,15 @@ profiles::ssh::authorized_keys:
       type: 'ssh-ed25519'
       key: 'defg'
   'foobar first key':
+    uid: 5002
+    active: false
+    admin: true
     tags: 'foobar'
     keys:
       type: 'ssh-rsa'
       key: '0123'
   'acme first key':
-    uid: 5002
+    uid: 5003
     active: false
     admin: false
     tags: 'acme'
