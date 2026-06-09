@@ -53,8 +53,8 @@ describe 'profiles::ssh' do
         it { is_expected.to contain_package('openssh-server').that_notifies('Service[ssh]') }
       end
 
-      context "with ssh_authorized_keys_tags => publiq" do
-        let(:params) { { 'ssh_authorized_keys_tags' => 'publiq' } }
+      context "with authorized_keys_tags => publiq" do
+        let(:params) { { 'authorized_keys_tags' => 'publiq' } }
 
         it { is_expected.to contain_ssh_authorized_key('publiq first key') }
         it { is_expected.to contain_ssh_authorized_key('publiq second key') }
@@ -62,8 +62,8 @@ describe 'profiles::ssh' do
         it { is_expected.to have_ssh_authorized_key_resource_count(2) }
       end
 
-      context "with ssh_authorized_keys_tags => [publiq, acme]" do
-        let(:params) { { 'ssh_authorized_keys_tags' => ['publiq', 'acme'] } }
+      context "with authorized_keys_tags => [publiq, acme]" do
+        let(:params) { { 'authorized_keys_tags' => ['publiq', 'acme'] } }
 
         it { is_expected.to contain_ssh_authorized_key('publiq first key') }
         it { is_expected.to contain_ssh_authorized_key('publiq second key') }

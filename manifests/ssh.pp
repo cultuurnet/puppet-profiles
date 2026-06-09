@@ -1,9 +1,9 @@
 class profiles::ssh(
-  Variant[String, Array[String]] $ssh_authorized_keys_tags = []
+  Variant[Hash, Array[Hash]]     $authorized_keys      = {},
+  Variant[String, Array[String]] $authorized_keys_tags = []
 ) inherits ::profiles {
 
   include ::profiles::firewall::rules
-  include ::profiles::ssh_authorized_keys
 
   package { 'openssh-server':
     ensure => 'latest',
@@ -49,7 +49,11 @@ class profiles::ssh(
     purge => true
   }
 
-  [$ssh_authorized_keys_tags].flatten.each |$tag| {
+  class { 'profiles::ssh::authorized_keys':
+    keys => $authorized_keys
+  }
+
+  [$authorized_keys_tags].flatten.each |$tag| {
     Ssh_authorized_key <| tag == $tag |>
   }
 
