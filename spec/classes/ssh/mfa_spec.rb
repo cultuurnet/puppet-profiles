@@ -1,4 +1,4 @@
-describe 'profiles::bastion::mfa' do
+describe 'profiles::ssh::mfa' do
   include_examples 'operating system support'
 
   on_supported_os.each do |os, facts|
@@ -25,7 +25,7 @@ describe 'profiles::bastion::mfa' do
 
       it { is_expected.to compile.with_all_deps }
 
-      it { is_expected.to contain_class('profiles::bastion::mfa').with(
+      it { is_expected.to contain_class('profiles::ssh::mfa').with(
         'user_tags' => 'bastion'
       ) }
 
