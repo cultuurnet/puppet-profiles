@@ -26,6 +26,8 @@ describe 'profiles::jenkins::controller' do
             'certificate'                  => nil,
             'docker_registry_url'          => nil,
             'credentials'                  => [],
+            'github_hook_url'              => '',
+            'github_servers'               => [],
             'global_libraries'             => [],
             'pipelines'                    => [],
             'views'                        => [],
@@ -47,6 +49,8 @@ describe 'profiles::jenkins::controller' do
             'mfa'                 => false,
             'docker_registry_url' => nil,
             'credentials'         => [],
+            'github_hook_url'     => '',
+            'github_servers'      => [],
             'global_libraries'    => [],
             'users'               => [],
             'puppetdb_url'        => 'http://localhost:8081'
@@ -86,6 +90,8 @@ describe 'profiles::jenkins::controller' do
             'mfa'                 => false,
             'docker_registry_url' => nil,
             'credentials'         => [],
+            'github_hook_url'     => '',
+            'github_servers'      => [],
             'global_libraries'    => [],
             'users'               => [],
             'puppetdb_url'        => nil
