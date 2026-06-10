@@ -123,6 +123,10 @@ class profiles::jenkins::controller::configuration(
     }
   }
 
+  class { '::profiles::jenkins::controller::configuration::private_key':
+    key => $private_key
+  }
+
   class { '::profiles::jenkins::controller::configuration::reload': }
 
   class { '::profiles::jenkins::cli::credentials':

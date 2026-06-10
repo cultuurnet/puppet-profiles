@@ -197,6 +197,10 @@ describe 'profiles::jenkins::controller::configuration' do
               'server_urls'      => 'http://localhost:8081'
             ) }
 
+            it { is_expected.to contain_class('profiles::jenkins::controller::configuration::private_key').with(
+              'key' => nil
+            ) }
+
             it { is_expected.to contain_class('profiles::jenkins::controller::configuration::reload') }
             it { is_expected.to contain_class('profiles::jenkins::cli::credentials').with(
               'user'     => 'admin',
@@ -326,6 +330,10 @@ describe 'profiles::jenkins::controller::configuration' do
           it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*name: 'Foo Bar'$/) }
           it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*password: 'baz'$/) }
           it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*emailAddress: 'foo@example.com'$/) }
+
+          it { is_expected.to contain_class('profiles::jenkins::controller::configuration::private_key').with(
+            'key' => 'dcba4321'
+          ) }
 
           it { is_expected.to contain_profiles__puppet__puppetdb__cli('jenkins').with(
             'certificate_name' => 'jenkins-controller-testing',
@@ -494,6 +502,10 @@ describe 'profiles::jenkins::controller::configuration' do
         it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*name: 'User Two'$/) }
         it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*password: 'passw0rd2'$/) }
         it { is_expected.to contain_file('jenkins users').with_content(/^[-\s]*emailAddress: 'user2@example.com'$/) }
+
+        it { is_expected.to contain_class('profiles::jenkins::controller::configuration::private_key').with(
+          'key' => 'abcd1234'
+        ) }
 
         it { is_expected.to contain_class('profiles::jenkins::cli::credentials').with(
           'user'     => 'admin',
