@@ -28,10 +28,11 @@ describe 'profiles::backup::rds' do
             'offsite_storage_public_keys' => { 'foo' => { 'type' => 'ed25519', 'key' => 'abcd1234' } }
           } }
 
-          it { is_expected.to contain_ssh_authorized_key('RDS backup public key foo').with(
+          it { expect(exported_resources).to contain_ssh_authorized_key('RDS backup public key foo').with(
             'user' => 'ubuntu',
             'type' => 'ed25519',
-            'key'  => 'abcd1234'
+            'key'  => 'abcd1234',
+            'tag'  => ['backup::rds', 'bastion']
           ) }
         end
 

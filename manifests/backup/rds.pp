@@ -11,12 +11,15 @@ class profiles::backup::rds (
 ) inherits profiles {
 
   $offsite_storage_public_keys.each |$key, $attributes| {
-    ssh_authorized_key { "RDS backup public key ${key}":
+    @@ssh_authorized_key { "RDS backup public key ${key}":
       user => 'ubuntu',
       type => $attributes['type'],
-      key  => $attributes['key']
+      key  => $attributes['key'],
+      tag  => ['backup::rds', 'bastion']
     }
   }
+
+  Ssh_authorized_key <<| tag == 'backup::rds' |>>
 
   if $lvm {
     unless ($volume_group and $volume_size) {
