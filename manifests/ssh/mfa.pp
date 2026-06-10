@@ -1,4 +1,4 @@
-class profiles::bastion::mfa (
+class profiles::ssh::mfa (
   Hash                           $users         = lookup('profiles::ssh::authorized_keys', Hash, 'first', {}),
   Variant[String, Array[String]] $user_tags     = lookup(
     'profiles::ssh::ssh_authorized_keys_tags',
