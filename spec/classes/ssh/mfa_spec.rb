@@ -12,21 +12,21 @@ describe 'profiles::ssh::mfa' do
       end
       let(:params) do
         {
-          'users'         => {
+          'authorized_keys'      => {
             'Publiq First User'    => { 'tags' => ['publiq', 'bastion'] },
             'Publiq Missing User'  => { 'tags' => 'bastion' },
             'Publiq Inactive User' => { 'tags' => 'bastion', 'active' => false },
             'Publiq Other User'    => { 'tags' => 'other' }
           },
-          'user_tags'     => 'bastion',
-          'mfa_directory' => File.expand_path('../../support/mfa', __dir__)
+          'authorized_keys_tags' => 'bastion',
+          'mfa_directory'        => File.expand_path('../../support/mfa', __dir__)
         }
       end
 
       it { is_expected.to compile.with_all_deps }
 
       it { is_expected.to contain_class('profiles::ssh::mfa').with(
-        'user_tags' => 'bastion'
+        'authorized_keys_tags' => 'bastion'
       ) }
 
       it { is_expected.to contain_file('/home/publiq-first-user/.google_authenticator').with(

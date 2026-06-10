@@ -1,23 +1,18 @@
 class profiles::ssh::mfa (
-  Hash                           $users         = lookup('profiles::ssh::authorized_keys', Hash, 'first', {}),
-  Variant[String, Array[String]] $user_tags     = lookup(
-    'profiles::ssh::ssh_authorized_keys_tags',
-    Variant[String, Array[String]],
-    'first',
-    []
-  ),
-  String                         $mfa_directory = '/etc/puppetlabs/code/data/mfa'
+  Variant[Hash, Array[Hash]]     $authorized_keys      = {},
+  Variant[String, Array[String]] $authorized_keys_tags = [],
+  String                         $mfa_directory        = '/etc/puppetlabs/code/data/mfa'
 ) inherits ::profiles {
 
-  $user_tags_array = [$user_tags].flatten
+  $authorized_keys_tags_array = [$authorized_keys_tags].flatten
 
-  $users.each |String $user, Hash $attributes| {
+  $authorized_keys.each |String $user, Hash $attributes| {
     $tags = $attributes['tags'] ? {
       undef   => [],
       default => [$attributes['tags']].flatten
     }
 
-    $configured = $tags.any |String $tag| { $tag in $user_tags_array }
+    $configured = $tags.any |String $tag| { $tag in $authorized_keys_tags_array }
 
     if $configured and $attributes['active'] != false {
       $username = slugify($user)
