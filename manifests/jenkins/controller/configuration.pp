@@ -4,7 +4,7 @@ class profiles::jenkins::controller::configuration(
   Boolean                    $mfa                 = false,
   Optional[Stdlib::Httpurl]  $docker_registry_url = undef,
   Variant[Hash, Array[Hash]] $credentials         = [],
-  Optional[Stdlib::Httpurl]  $github_hook_url     = undef,
+  String                     $github_hook_url     = '',
   Variant[Hash, Array[Hash]] $github_servers      = [],
   Variant[Hash, Array[Hash]] $global_libraries    = [],
   Variant[Hash, Array[Hash]] $pipelines           = [],
@@ -16,7 +16,7 @@ class profiles::jenkins::controller::configuration(
   $plain_credentials       = [$credentials].flatten.filter |$credential| { $credential['type'] == 'string' or $credential['type'] == 'file' or $credential['type'] == 'username_password' }
   $private_key_credentials = [$credentials].flatten.filter |$credential| { $credential['type'] == 'private_key' }
   $aws_credentials         = [$credentials].flatten.filter |$credential| { $credential['type'] == 'aws' }
-  $github_configuration    = ($github_hook_url or !empty($github_servers)) ? {
+  $github_configuration    = (!empty($github_hook_url) or !empty($github_servers)) ? {
     true    => {
                  'hook_url' => $github_hook_url,
                  'servers'  => [$github_servers].flatten

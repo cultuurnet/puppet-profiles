@@ -13,6 +13,6 @@ unclassified:
       manageHooks: <%= server['manage_hooks'] %>
       <%- end -%>
     <%- end -%>
-    <%- if @configuration['hook_url'] -%>
+    <%- unless @configuration['hook_url'].empty? -%>
     hookUrl: '<%= @configuration['hook_url'] %>'
     <%- end -%>

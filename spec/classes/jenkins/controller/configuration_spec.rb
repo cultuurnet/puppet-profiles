@@ -25,7 +25,7 @@ describe 'profiles::jenkins::controller::configuration' do
               'mfa'                 => false,
               'docker_registry_url' => nil,
               'credentials'         => [],
-              'github_hook_url'     => nil,
+              'github_hook_url'     => '',
               'github_servers'      => [],
               'global_libraries'    => [],
               'pipelines'           => [],

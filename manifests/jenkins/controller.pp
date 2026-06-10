@@ -9,7 +9,7 @@ class profiles::jenkins::controller (
   Optional[String]          $certificate         = undef,
   Optional[Stdlib::Httpurl] $docker_registry_url = undef,
   Variant[Array,Hash]       $credentials         = [],
-  Optional[Stdlib::Httpurl] $github_hook_url     = undef,
+  String                    $github_hook_url     = '',
   Variant[Array,Hash]       $github_servers      = [],
   Variant[Array,Hash]       $global_libraries    = [],
   Variant[Array,Hash]       $pipelines           = [],

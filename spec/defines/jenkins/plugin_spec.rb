@@ -324,7 +324,7 @@ describe 'profiles::jenkins::plugin' do
           ) }
 
           it { is_expected.to contain_file('github configuration').with_content(/^\s*gitHubPluginConfig:$/) }
-          it { is_expected.to contain_file('github configuration').with_content(/^\s*credentialsId: 'github-token'$/) }
+          it { is_expected.to contain_file('github configuration').with_content(/^\s*-\scredentialsId: 'github-token'$/) }
           it { is_expected.to contain_file('github configuration').with_content(/^\s*name: 'GitHub'$/) }
           it { is_expected.to contain_file('github configuration').with_content(/^\s*apiUrl: 'https:\/\/api\.github\.com'$/) }
           it { is_expected.to contain_file('github configuration').with_content(/^\s*manageHooks: true$/) }
@@ -334,15 +334,15 @@ describe 'profiles::jenkins::plugin' do
         context "with configuration => [{ credentials_id => github-token }]" do
           let(:params) { {
             'configuration' => {
-                                 'hook_url' => nil,
+                                 'hook_url' => '',
                                  'servers'  => [{ 'credentials_id' => 'github-token' }]
                                }
           } }
 
-          it { is_expected.to_not contain_file('github configuration').with_content(/^\s*manageHooks:/) }
-          it { is_expected.to_not contain_file('github configuration').with_content(/^\s*name:/) }
-          it { is_expected.to_not contain_file('github configuration').with_content(/^\s*apiUrl:/) }
-          it { is_expected.to_not contain_file('github configuration').with_content(/^\s*hookUrl:/) }
+          it { is_expected.to contain_file('github configuration').without_content(/^\s*manageHooks:/) }
+          it { is_expected.to contain_file('github configuration').without_content(/^\s*name:/) }
+          it { is_expected.to contain_file('github configuration').without_content(/^\s*apiUrl:/) }
+          it { is_expected.to contain_file('github configuration').without_content(/^\s*hookUrl:/) }
         end
       end
 
