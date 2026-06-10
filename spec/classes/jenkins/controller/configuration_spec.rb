@@ -24,6 +24,7 @@ describe 'profiles::jenkins::controller::configuration' do
               'admin_password'      => 'passw0rd',
               'mfa'                 => false,
               'docker_registry_url' => nil,
+              'private_key'         => nil,
               'credentials'         => [],
               'global_libraries'    => [],
               'pipelines'           => [],
@@ -223,12 +224,13 @@ describe 'profiles::jenkins::controller::configuration' do
         end
       end
 
-      context "with url => https://builds.foobar.com/, admin_password => letmein, mfa => true, docker_registry_url => https://docker.registry.com/, credentials => [{ id => 'foo', type => 'string', secret => 'bla'}, { id => 'awscred', type => 'aws', access_key => 'aws_key', secret_key => 'aws_secret'}, { id => 'userpass', type => 'username_password', username => 'foo', password => 'bar'}], global_libraries => { git_url => 'git@example.com:org/repo.git', git_ref => 'main', credential_id => 'mygitcred'}, pipelines => { 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'keep_builds' => 5}, users => {'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'} and puppetdb_url => 'https://foobar.com:4567'" do
+      context "with url => https://builds.foobar.com/, admin_password => letmein, mfa => true, docker_registry_url => https://docker.registry.com/, private_key => 'dcba4321', credentials => [{ id => 'foo', type => 'string', secret => 'bla'}, { id => 'awscred', type => 'aws', access_key => 'aws_key', secret_key => 'aws_secret'}, { id => 'userpass', type => 'username_password', username => 'foo', password => 'bar'}], global_libraries => { git_url => 'git@example.com:org/repo.git', git_ref => 'main', credential_id => 'mygitcred'}, pipelines => { 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'keep_builds' => 5}, users => {'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'} and puppetdb_url => 'https://foobar.com:4567'" do
         let(:params) { {
           'url'                 => 'https://builds.foobar.com/',
           'admin_password'      => 'letmein',
           'mfa'                 => true,
           'docker_registry_url' => 'https://docker.registry.com/',
+          'private_key'         => 'dcba4321',
           'credentials'         => [
                                      { 'id' => 'foo', 'type' => 'string', 'secret' => 'bla' },
                                      { 'id' => 'awscred', 'type' => 'aws', 'access_key' => 'aws_key', 'secret_key' => 'aws_secret' },
@@ -275,6 +277,14 @@ describe 'profiles::jenkins::controller::configuration' do
             'ensure'        => 'present',
             'restart'       => false,
             'configuration' => [{ 'id' => 'awscred', 'type' => 'aws', 'access_key' => 'aws_key', 'secret_key' => 'aws_secret' }]
+          ) }
+
+          it { is_expected.to contain_profiles__jenkins__plugin('ssh-credentials').with(
+            'ensure'        => 'present',
+            'restart'       => false,
+            'configuration' => [
+                                 { 'id' => 'jenkins@jenkins.publiq.be', 'type' => 'private_key', 'key' => 'dcba4321' }
+                               ]
           ) }
 
           it { is_expected.to contain_profiles__jenkins__plugin('pipeline-groovy-lib').with(
@@ -335,11 +345,12 @@ describe 'profiles::jenkins::controller::configuration' do
         end
       end
 
-      context "with url => https://builds.foobar.com/, admin_password => letmein, docker_registry_url => https://docker2.registry.com/, credentials => [{ id => 'token1', type => 'string', secret => 'secret1'}, { id => 'token2', type => 'string', secret => 'secret2'}, { id => 'key1', type => 'private_key', key => 'privkey1'}, { id => 'key2', type => 'private_key', key => 'privkey2'}, { id => 'awscred1', type => 'aws', access_key => 'aws_key1', secret_key => 'aws_secret1'}, { id => 'awscred2', type => 'aws', access_key => 'aws_key2', secret_key => 'aws_secret2'}, { 'id' => 'myfile1', 'type' => 'file', 'filename' => 'my_file1.txt', 'content' => 'spec testfile content 1'}, { 'id' => 'myfile2', 'type' => 'file', 'filename' => 'my_file2.txt', 'content' => 'spec testfile content 2'}], global_libraries => [{'git_url' => 'git@foo.com:bar/baz.git', 'git_ref' => 'develop', 'credential_id' => 'gitkey'}, {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}, { id => 'userpass1', type => 'username_password', username => 'foo1', password => 'bar1'}, { id => 'userpass2', type => 'username_password', username => 'foo2', password => 'bar2'}], pipelines => [{ 'name' => 'baz', 'git_url' => 'git@github.com:bar/baz.git', 'git_ref' => 'refs/heads/develop', 'credential_id' => 'gitkey', keep_builds => 10 }, { 'name' => 'repo', 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred', keep_builds => '2'}], views => [{ 'name' => 'myview', regex => 'myregex.*' }] and users => [{'id' => 'user1', 'name' => 'User One', 'password' => 'passw0rd1', 'email' => 'user1@example.com'}, {'id' => 'user2', 'name' => 'User Two', 'password' => 'passw0rd2', 'email' => 'user2@example.com'}]" do
+      context "with url => https://builds.foobar.com/, admin_password => letmein, docker_registry_url => https://docker2.registry.com/, private_key => abcd1234, credentials => [{ id => 'token1', type => 'string', secret => 'secret1'}, { id => 'token2', type => 'string', secret => 'secret2'}, { id => 'key1', type => 'private_key', key => 'privkey1'}, { id => 'key2', type => 'private_key', key => 'privkey2'}, { id => 'awscred1', type => 'aws', access_key => 'aws_key1', secret_key => 'aws_secret1'}, { id => 'awscred2', type => 'aws', access_key => 'aws_key2', secret_key => 'aws_secret2'}, { 'id' => 'myfile1', 'type' => 'file', 'filename' => 'my_file1.txt', 'content' => 'spec testfile content 1'}, { 'id' => 'myfile2', 'type' => 'file', 'filename' => 'my_file2.txt', 'content' => 'spec testfile content 2'}], global_libraries => [{'git_url' => 'git@foo.com:bar/baz.git', 'git_ref' => 'develop', 'credential_id' => 'gitkey'}, {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}, { id => 'userpass1', type => 'username_password', username => 'foo1', password => 'bar1'}, { id => 'userpass2', type => 'username_password', username => 'foo2', password => 'bar2'}], pipelines => [{ 'name' => 'baz', 'git_url' => 'git@github.com:bar/baz.git', 'git_ref' => 'refs/heads/develop', 'credential_id' => 'gitkey', keep_builds => 10 }, { 'name' => 'repo', 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred', keep_builds => '2'}], views => [{ 'name' => 'myview', regex => 'myregex.*' }] and users => [{'id' => 'user1', 'name' => 'User One', 'password' => 'passw0rd1', 'email' => 'user1@example.com'}, {'id' => 'user2', 'name' => 'User Two', 'password' => 'passw0rd2', 'email' => 'user2@example.com'}]" do
         let(:params) { {
           'url'                 => 'https://builds.foobar.com/',
           'admin_password'      => 'letmein',
           'docker_registry_url' => 'https://docker2.registry.com/',
+          'private_key'         => 'abcd1234',
           'credentials'         => [
                                      { 'id' => 'token1', 'type' => 'string', 'secret' => 'secret1' },
                                      { 'id' => 'token2', 'type' => 'string', 'secret' => 'secret2' },
@@ -413,7 +424,8 @@ describe 'profiles::jenkins::controller::configuration' do
           'restart'       => false,
           'configuration' => [
                                { 'id' => 'key1', 'type' => 'private_key', 'key' => 'privkey1' },
-                               { 'id' => 'key2', 'type' => 'private_key', 'key' => 'privkey2' }
+                               { 'id' => 'key2', 'type' => 'private_key', 'key' => 'privkey2' },
+                               { 'id' => 'jenkins@jenkins.publiq.be', 'type' => 'private_key', 'key' => 'abcd1234' }
                              ]
         ) }
 

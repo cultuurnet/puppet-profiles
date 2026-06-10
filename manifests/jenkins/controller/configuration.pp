@@ -3,6 +3,7 @@ class profiles::jenkins::controller::configuration(
   String                     $admin_password,
   Boolean                    $mfa                 = false,
   Optional[Stdlib::Httpurl]  $docker_registry_url = undef,
+  Optional[String]           $private_key         = undef,
   Variant[Hash, Array[Hash]] $credentials         = [],
   Variant[Hash, Array[Hash]] $global_libraries    = [],
   Variant[Hash, Array[Hash]] $pipelines           = [],
@@ -12,8 +13,12 @@ class profiles::jenkins::controller::configuration(
 ) inherits ::profiles {
 
   $plain_credentials       = [$credentials].flatten.filter |$credential| { $credential['type'] == 'string' or $credential['type'] == 'file' or $credential['type'] == 'username_password' }
-  $private_key_credentials = [$credentials].flatten.filter |$credential| { $credential['type'] == 'private_key' }
   $aws_credentials         = [$credentials].flatten.filter |$credential| { $credential['type'] == 'aws' }
+  $private_key_credentials = if $private_key {
+                               [$credentials].flatten.filter |$credential| { $credential['type'] == 'private_key' } + [{ id => 'jenkins@jenkins.publiq.be', type => 'private_key', key => $private_key }]
+                             } else {
+                               [$credentials].flatten.filter |$credential| { $credential['type'] == 'private_key' }
+                             }
 
   profiles::jenkins::plugin { 'swarm': }
   profiles::jenkins::plugin { 'mailer': }
@@ -59,7 +64,7 @@ class profiles::jenkins::controller::configuration(
   }
 
   profiles::jenkins::plugin { 'ssh-credentials':
-    configuration => $private_key_credentials,
+    configuration => [$private_key_credentials].flatten,
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
 

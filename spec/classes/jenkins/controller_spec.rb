@@ -25,6 +25,7 @@ describe 'profiles::jenkins::controller' do
             'lvm'                          => false,
             'certificate'                  => nil,
             'docker_registry_url'          => nil,
+            'private_key'                  => nil,
             'credentials'                  => [],
             'global_libraries'             => [],
             'pipelines'                    => [],
@@ -46,6 +47,7 @@ describe 'profiles::jenkins::controller' do
             'admin_password'      => 'passw0rd',
             'mfa'                 => false,
             'docker_registry_url' => nil,
+            'private_key'         => nil,
             'credentials'         => [],
             'global_libraries'    => [],
             'users'               => [],
@@ -96,7 +98,7 @@ describe 'profiles::jenkins::controller' do
       context "with volume_group datavg present" do
         let(:pre_condition) { 'volume_group { "datavg": ensure => "present" }' }
 
-        context "with url => https://foobar.example.com/, admin_password => letmein, mfa => true, certificate => foobar.example.com, version => 1.2.3, lvm => true, volume_group => datavg, volume_size => 20G, docker_registry_url => https://my.docker.registry.com/, credentials => [{ id => 'token1', type => 'string', secret => 'secret1'}, { id => 'token2', type => 'string', secret => 'secret2'}], global_libraries => [{'git_url' => 'git@foo.com:bar/baz.git', 'git_ref' => 'develop', 'credential_id' => 'gitkey'}, {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}], pipelines => [{ 'name' => 'baz', 'git_url' => 'git@github.com:bar/baz.git', 'git_ref' => 'refs/heads/develop', 'credential_id' => 'gitkey', keep_builds => 10 }, { 'name' => 'repo', 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred', keep_builds => '2' }], views => [{ 'name' => 'testview', 'regex' => 'Test.*' }], users => [{'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'}, {'id' => 'user1', 'name' => 'User One', 'password' => 'passw0rd', 'email' => 'user1@example.com'}] and puppetdb_url => 'http://example.com:8081'" do
+        context "with url => https://foobar.example.com/, admin_password => letmein, mfa => true, certificate => foobar.example.com, version => 1.2.3, lvm => true, volume_group => datavg, volume_size => 20G, docker_registry_url => https://my.docker.registry.com/, private_key => abcd1234, credentials => [{ id => 'token1', type => 'string', secret => 'secret1'}, { id => 'token2', type => 'string', secret => 'secret2'}], global_libraries => [{'git_url' => 'git@foo.com:bar/baz.git', 'git_ref' => 'develop', 'credential_id' => 'gitkey'}, {'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred'}], pipelines => [{ 'name' => 'baz', 'git_url' => 'git@github.com:bar/baz.git', 'git_ref' => 'refs/heads/develop', 'credential_id' => 'gitkey', keep_builds => 10 }, { 'name' => 'repo', 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred', keep_builds => '2' }], views => [{ 'name' => 'testview', 'regex' => 'Test.*' }], users => [{'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'}, {'id' => 'user1', 'name' => 'User One', 'password' => 'passw0rd', 'email' => 'user1@example.com'}] and puppetdb_url => 'http://example.com:8081'" do
           let(:params) { {
             'url'                 => 'https://foobar.example.com/',
             'admin_password'      => 'letmein',
@@ -107,6 +109,7 @@ describe 'profiles::jenkins::controller' do
             'volume_group'        => 'datavg',
             'volume_size'         => '20G',
             'docker_registry_url' => 'https://my.docker.registry.com/',
+            'private_key'         => 'abcd1234',
             'credentials'         => [
                                        { 'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'},
                                        { 'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'}
@@ -183,6 +186,7 @@ describe 'profiles::jenkins::controller' do
             'admin_password'      => 'letmein',
             'mfa'                 => true,
             'docker_registry_url' => 'https://my.docker.registry.com/',
+            'private_key'         => 'abcd1234',
             'credentials'         => [
                                        { 'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'},
                                        { 'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'}
