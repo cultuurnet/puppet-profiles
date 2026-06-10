@@ -25,6 +25,8 @@ describe 'profiles::jenkins::controller::configuration' do
               'mfa'                 => false,
               'docker_registry_url' => nil,
               'credentials'         => [],
+              'github_hook_url'     => nil,
+              'github_servers'      => [],
               'global_libraries'    => [],
               'pipelines'           => [],
               'views'               => [],
@@ -61,6 +63,12 @@ describe 'profiles::jenkins::controller::configuration' do
               'ensure'        => 'present',
               'restart'       => false,
               'configuration' => { 'hostkey_verification_strategy' => 'noHostKeyVerificationStrategy' }
+            ) }
+
+            it { is_expected.to contain_profiles__jenkins__plugin('github').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => []
             ) }
 
             it { is_expected.to contain_profiles__jenkins__plugin('swarm').with(
@@ -210,6 +218,7 @@ describe 'profiles::jenkins::controller::configuration' do
             it { is_expected.to contain_profiles__jenkins__plugin('git').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
             it { is_expected.to contain_profiles__jenkins__plugin('openmfa').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
             it { is_expected.to contain_profiles__jenkins__plugin('git-client').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
+            it { is_expected.to contain_profiles__jenkins__plugin('github').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
             it { is_expected.to contain_profiles__jenkins__plugin('configuration-as-code').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
             it { is_expected.to contain_profiles__jenkins__plugin('docker-workflow').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
             it { is_expected.to contain_class('profiles::jenkins::cli::credentials').that_requires('Class[profiles::jenkins::controller::configuration::reload]') }
@@ -235,6 +244,13 @@ describe 'profiles::jenkins::controller::configuration' do
                                      { 'id' => 'filecred', 'type' => 'file', 'filename' => 'my_file.txt', 'content' => 'filecontent' },
                                      { 'id' => 'userpass', 'type' => 'username_password', 'username' => 'foo', 'password' => 'bar' }
                                    ],
+          'github_hook_url'     => 'https://builds.foobar.com/github-webhook/',
+          'github_servers'      => {
+                                     'credentials_id'   => 'github-token',
+                                     'name'             => 'GitHub',
+                                     'api_url'          => 'https://api.github.com',
+                                     'manage_hooks'     => true
+                                   },
           'global_libraries'    => { 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'credential_id' => 'mygitcred' },
           'pipelines'           => { 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'keep_builds' => 5 },
           'views'               => [{ 'name' => 'foo', 'regex' => 'foo.*' }, { 'name' => 'bar', 'regex' => 'bar.*' }],
@@ -269,6 +285,20 @@ describe 'profiles::jenkins::controller::configuration' do
                                  { 'id' => 'filecred', 'type' => 'file', 'filename' => 'my_file.txt', 'content' => 'filecontent' },
                                  { 'id' => 'userpass', 'type' => 'username_password', 'username' => 'foo', 'password' => 'bar' }
                                ]
+          ) }
+
+          it { is_expected.to contain_profiles__jenkins__plugin('github').with(
+            'ensure'        => 'present',
+            'restart'       => false,
+            'configuration' => {
+                                 'hook_url' => 'https://builds.foobar.com/github-webhook/',
+                                 'servers'  => [{
+                                                  'credentials_id'    => 'github-token',
+                                                  'name'              => 'GitHub',
+                                                  'api_url'           => 'https://api.github.com',
+                                                  'manage_hooks'      => true
+                                                }]
+                               }
           ) }
 
           it { is_expected.to contain_profiles__jenkins__plugin('aws-credentials').with(

@@ -300,6 +300,52 @@ describe 'profiles::jenkins::plugin' do
         end
       end
 
+      context "with title github" do
+        let(:title) { 'github' }
+
+        context "with configuration => [{ credentials_id => github-token, name => GitHub, api_url => https://api.github.com, manage_hooks => true }]" do
+          let(:params) { {
+            'configuration' => {
+                                 'hook_url' => 'https://jenkins.example.com/github-webhook/',
+                                 'servers'  => [{
+                                                  'credentials_id'    => 'github-token',
+                                                  'name'              => 'GitHub',
+                                                  'api_url'           => 'https://api.github.com',
+                                                  'manage_hooks'      => true
+                                                }]
+                               }
+          } }
+
+          it { is_expected.to contain_file('github configuration').with(
+            'ensure' => 'file',
+            'path'   => '/var/lib/jenkins/casc_config/github.yaml',
+            'owner'  => 'jenkins',
+            'group'  => 'jenkins'
+          ) }
+
+          it { is_expected.to contain_file('github configuration').with_content(/^\s*gitHubPluginConfig:$/) }
+          it { is_expected.to contain_file('github configuration').with_content(/^\s*credentialsId: 'github-token'$/) }
+          it { is_expected.to contain_file('github configuration').with_content(/^\s*name: 'GitHub'$/) }
+          it { is_expected.to contain_file('github configuration').with_content(/^\s*apiUrl: 'https:\/\/api\.github\.com'$/) }
+          it { is_expected.to contain_file('github configuration').with_content(/^\s*manageHooks: true$/) }
+          it { is_expected.to contain_file('github configuration').with_content(/^\s*hookUrl: 'https:\/\/jenkins\.example\.com\/github-webhook\/'$/) }
+        end
+
+        context "with configuration => [{ credentials_id => github-token }]" do
+          let(:params) { {
+            'configuration' => {
+                                 'hook_url' => nil,
+                                 'servers'  => [{ 'credentials_id' => 'github-token' }]
+                               }
+          } }
+
+          it { is_expected.to_not contain_file('github configuration').with_content(/^\s*manageHooks:/) }
+          it { is_expected.to_not contain_file('github configuration').with_content(/^\s*name:/) }
+          it { is_expected.to_not contain_file('github configuration').with_content(/^\s*apiUrl:/) }
+          it { is_expected.to_not contain_file('github configuration').with_content(/^\s*hookUrl:/) }
+        end
+      end
+
       context "with title pipeline-groovy-lib" do
         let(:title) { 'pipeline-groovy-lib' }
 

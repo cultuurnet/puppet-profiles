@@ -1,0 +1,18 @@
+unclassified:
+  gitHubPluginConfig:
+    configs:
+    <%- @configuration['servers'].each do |server| -%>
+    - credentialsId: '<%= server['credentials_id'] %>'
+      <%- if server['name'] -%>
+      name: '<%= server['name'] %>'
+      <%- end -%>
+      <%- if server['api_url'] -%>
+      apiUrl: '<%= server['api_url'] %>'
+      <%- end -%>
+      <%- unless server['manage_hooks'].nil? -%>
+      manageHooks: <%= server['manage_hooks'] %>
+      <%- end -%>
+    <%- end -%>
+    <%- if @configuration['hook_url'] -%>
+    hookUrl: '<%= @configuration['hook_url'] %>'
+    <%- end -%>
