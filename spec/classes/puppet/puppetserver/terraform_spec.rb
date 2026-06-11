@@ -14,7 +14,8 @@ describe 'profiles::puppet::puppetserver::terraform' do
 
         it { is_expected.to contain_class('profiles::puppet::puppetserver::terraform').with(
           'bucket'       => 'mybucket',
-          'use_iam_role' => true
+          'use_iam_role' => true,
+          'aws_region'   => 'eu-west-1'
         ) }
 
         it { is_expected.to contain_group('puppet') }
@@ -33,7 +34,7 @@ describe 'profiles::puppet::puppetserver::terraform' do
           'name'     => '/etc/puppetlabs/code/data/terraform',
           'device'   => 'mybucket',
           'fstype'   => 'fuse.s3fs',
-          'options'  => '_netdev,nonempty,ro,nosuid,allow_other,multireq_max=5,uid=452,gid=452,iam_role=auto',
+          'options'  => '_netdev,nonempty,ro,nosuid,allow_other,multireq_max=5,uid=452,gid=452,endpoint=eu-west-1,url=https://s3.eu-west-1.amazonaws.com,iam_role=auto',
           'remounts' => false,
           'atboot'   => true
         ) }
@@ -44,10 +45,11 @@ describe 'profiles::puppet::puppetserver::terraform' do
         it { is_expected.to contain_class('profiles::s3fs').that_comes_before('Mount[puppetserver-terraform-data]') }
       end
 
-      context "with bucket => foobar and use_iam_role => false" do
+      context "with bucket => foobar, use_iam_role => false and aws_region => eu-central-1" do
         let(:params) { {
           'bucket'       => 'foobar',
-          'use_iam_role' => false
+          'use_iam_role' => false,
+          'aws_region'   => 'eu-central-1'
         } }
 
         it { is_expected.to contain_mount('puppetserver-terraform-data').with(
@@ -55,7 +57,7 @@ describe 'profiles::puppet::puppetserver::terraform' do
           'name'     => '/etc/puppetlabs/code/data/terraform',
           'device'   => 'foobar',
           'fstype'   => 'fuse.s3fs',
-          'options'  => '_netdev,nonempty,ro,nosuid,allow_other,multireq_max=5,uid=452,gid=452',
+          'options'  => '_netdev,nonempty,ro,nosuid,allow_other,multireq_max=5,uid=452,gid=452,endpoint=eu-central-1,url=https://s3.eu-central-1.amazonaws.com',
           'remounts' => false,
           'atboot'   => true
         ) }

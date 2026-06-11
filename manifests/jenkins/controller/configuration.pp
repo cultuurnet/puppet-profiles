@@ -5,6 +5,8 @@ class profiles::jenkins::controller::configuration(
   Optional[Stdlib::Httpurl]  $docker_registry_url = undef,
   Optional[String]           $private_key         = undef,
   Variant[Hash, Array[Hash]] $credentials         = [],
+  String                     $github_hook_url     = '',
+  Variant[Hash, Array[Hash]] $github_servers      = [],
   Variant[Hash, Array[Hash]] $global_libraries    = [],
   Variant[Hash, Array[Hash]] $pipelines           = [],
   Variant[Hash, Array[Hash]] $views               = [],
@@ -19,6 +21,13 @@ class profiles::jenkins::controller::configuration(
                              } else {
                                [$credentials].flatten.filter |$credential| { $credential['type'] == 'private_key' }
                              }
+  $github_configuration    = (!empty($github_hook_url) or !empty($github_servers)) ? {
+    true    => {
+                 'hook_url' => $github_hook_url,
+                 'servers'  => [$github_servers].flatten
+               },
+    default => []
+  }
 
   profiles::jenkins::plugin { 'swarm': }
   profiles::jenkins::plugin { 'mailer': }
@@ -45,6 +54,11 @@ class profiles::jenkins::controller::configuration(
 
   profiles::jenkins::plugin { 'git-client':
     configuration => { 'hostkey_verification_strategy' => 'noHostKeyVerificationStrategy' },
+    notify        => Class['profiles::jenkins::controller::configuration::reload']
+  }
+
+  profiles::jenkins::plugin { 'github':
+    configuration => $github_configuration,
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
 
