@@ -42,13 +42,13 @@ describe 'profiles::jenkins::controller::configuration::private_key' do
           'path'   => '/var/lib/jenkins/.ssh',
           'owner'  => 'jenkins',
           'group'  => 'jenkins',
-          'mode'   => '0500'
+          'mode'   => '0700'
         ) }
 
         it { is_expected.to contain_file('Jenkins private key').with(
           'ensure'  => 'file',
           'path'    => '/var/lib/jenkins/.ssh/id_jenkins',
-          'content' => 'abc123',
+          'content' => "abc123\n",
           'owner'   => 'jenkins',
           'group'   => 'jenkins',
           'mode'    => '0400'

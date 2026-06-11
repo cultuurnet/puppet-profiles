@@ -17,7 +17,7 @@ class profiles::jenkins::controller::configuration::private_key (
   file { 'Jenkins private key':
     ensure  => $key ? { undef => 'absent', default => 'file' },
     path    => '/var/lib/jenkins/.ssh/id_jenkins',
-    content => $key,
+    content => "${key}\n",
     owner   => 'jenkins',
     group   => 'jenkins',
     mode    => '0400',
