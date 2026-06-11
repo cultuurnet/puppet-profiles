@@ -61,7 +61,7 @@ describe 'profiles::uitpas::soap::fidus' do
         ) }
 
         it { is_expected.to contain_file('/opt/uitpas/fidus/soap/fidus-soap-cert.crt').that_requires('File[/opt/uitpas/fidus/soap]') }
-        it { is_expected.to contain_file('/opt/uitpas/fidus/soap/fidus-soap-cert.crt').that_notifies('Openssl::Export::Pkcs12[fidus-soap-alias]') }
+        it { is_expected.to contain_file('/opt/uitpas/fidus/soap/fidus-soap-cert.crt').that_notifies('Exec[remove_stale_fidus-soap-alias_pkcs12]') }
 
         it { is_expected.to contain_file('/opt/uitpas/fidus/soap/fidus-soap-key.pem').with(
           'ensure'  => 'file',
@@ -71,7 +71,13 @@ describe 'profiles::uitpas::soap::fidus' do
         ) }
 
         it { is_expected.to contain_file('/opt/uitpas/fidus/soap/fidus-soap-key.pem').that_requires('File[/opt/uitpas/fidus/soap]') }
-        it { is_expected.to contain_file('/opt/uitpas/fidus/soap/fidus-soap-key.pem').that_notifies('Openssl::Export::Pkcs12[fidus-soap-alias]') }
+        it { is_expected.to contain_file('/opt/uitpas/fidus/soap/fidus-soap-key.pem').that_notifies('Exec[remove_stale_fidus-soap-alias_pkcs12]') }
+
+        it { is_expected.to contain_exec('remove_stale_fidus-soap-alias_pkcs12').with(
+          'command'     => '/bin/rm -f /opt/uitpas/fidus/soap/fidus-soap-alias.p12',
+          'onlyif'      => '/usr/bin/test -f /opt/uitpas/fidus/soap/fidus-soap-alias.p12',
+          'refreshonly' => true
+        ).that_notifies('Openssl::Export::Pkcs12[fidus-soap-alias]') }
 
         it { is_expected.to contain_openssl__export__pkcs12('fidus-soap-alias').with(
           'ensure'   => 'present',

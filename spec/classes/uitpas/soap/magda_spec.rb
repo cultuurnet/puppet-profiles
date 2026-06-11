@@ -74,7 +74,7 @@ describe 'profiles::uitpas::soap::magda' do
         ) }
 
         it { is_expected.to contain_file('/opt/uitpas/magda/soap/magda-soap-cert.crt').that_requires('File[/opt/uitpas/magda/soap]') }
-        it { is_expected.to contain_file('/opt/uitpas/magda/soap/magda-soap-cert.crt').that_notifies('Openssl::Export::Pkcs12[magda-soap-alias]') }
+        it { is_expected.to contain_file('/opt/uitpas/magda/soap/magda-soap-cert.crt').that_notifies('Exec[remove_stale_magda-soap-alias_pkcs12]') }
 
         it { is_expected.to contain_file('/opt/uitpas/magda/soap/magda-soap-key.pem').with(
           'ensure'  => 'file',
@@ -84,7 +84,13 @@ describe 'profiles::uitpas::soap::magda' do
         ) }
 
         it { is_expected.to contain_file('/opt/uitpas/magda/soap/magda-soap-key.pem').that_requires('File[/opt/uitpas/magda/soap]') }
-        it { is_expected.to contain_file('/opt/uitpas/magda/soap/magda-soap-key.pem').that_notifies('Openssl::Export::Pkcs12[magda-soap-alias]') }
+        it { is_expected.to contain_file('/opt/uitpas/magda/soap/magda-soap-key.pem').that_notifies('Exec[remove_stale_magda-soap-alias_pkcs12]') }
+
+        it { is_expected.to contain_exec('remove_stale_magda-soap-alias_pkcs12').with(
+          'command'     => '/bin/rm -f /opt/uitpas/magda/soap/magda-soap-alias.p12',
+          'onlyif'      => '/usr/bin/test -f /opt/uitpas/magda/soap/magda-soap-alias.p12',
+          'refreshonly' => true
+        ).that_notifies('Openssl::Export::Pkcs12[magda-soap-alias]') }
 
         it { is_expected.to contain_openssl__export__pkcs12('magda-soap-alias').with(
           'ensure'   => 'present',
