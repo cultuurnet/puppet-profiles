@@ -35,7 +35,7 @@ class profiles::jenkins::controller::configuration::private_key (
   }
 
   if $facts['jenkins_pubkey'] {
-    @@ssh_authorized_key { 'Jenkins public key':
+    @@ssh_authorized_key { "Jenkins public key (${trusted['hostname']})":
       user => if $facts['ec2_metadata'] { 'ubuntu' } else { 'vagrant' },
       type => $facts['jenkins_pubkey']['type'],
       key  => $facts['jenkins_pubkey']['key'],
