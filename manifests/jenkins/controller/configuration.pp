@@ -3,6 +3,7 @@ class profiles::jenkins::controller::configuration(
   String                     $admin_password,
   Boolean                    $mfa                 = false,
   Optional[Stdlib::Httpurl]  $docker_registry_url = undef,
+  Optional[String]           $private_key         = undef,
   Variant[Hash, Array[Hash]] $credentials         = [],
   String                     $github_hook_url     = '',
   Variant[Hash, Array[Hash]] $github_servers      = [],
@@ -14,8 +15,12 @@ class profiles::jenkins::controller::configuration(
 ) inherits ::profiles {
 
   $plain_credentials       = [$credentials].flatten.filter |$credential| { $credential['type'] == 'string' or $credential['type'] == 'file' or $credential['type'] == 'username_password' }
-  $private_key_credentials = [$credentials].flatten.filter |$credential| { $credential['type'] == 'private_key' }
   $aws_credentials         = [$credentials].flatten.filter |$credential| { $credential['type'] == 'aws' }
+  $private_key_credentials = if $private_key {
+                               [$credentials].flatten.filter |$credential| { $credential['type'] == 'private_key' } + [{ id => 'jenkins@jenkins.publiq.be', type => 'private_key', key => $private_key }]
+                             } else {
+                               [$credentials].flatten.filter |$credential| { $credential['type'] == 'private_key' }
+                             }
   $github_configuration    = (!empty($github_hook_url) or !empty($github_servers)) ? {
     true    => {
                  'hook_url' => $github_hook_url,
@@ -73,7 +78,7 @@ class profiles::jenkins::controller::configuration(
   }
 
   profiles::jenkins::plugin { 'ssh-credentials':
-    configuration => $private_key_credentials,
+    configuration => [$private_key_credentials].flatten,
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
 
@@ -130,6 +135,10 @@ class profiles::jenkins::controller::configuration(
       certificate_name => "jenkins-controller-${environment}",
       server_urls      => $puppetdb_url
     }
+  }
+
+  class { '::profiles::jenkins::controller::configuration::private_key':
+    key => $private_key
   }
 
   class { '::profiles::jenkins::controller::configuration::reload': }
