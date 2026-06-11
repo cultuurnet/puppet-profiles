@@ -10,7 +10,7 @@ class profiles::jenkins::controller::configuration::private_key (
     path    => '/var/lib/jenkins/.ssh',
     owner   => 'jenkins',
     group   => 'jenkins',
-    mode    => '0500',
+    mode    => '0700',
     require => [Group['jenkins'], User['jenkins']]
   }
 
