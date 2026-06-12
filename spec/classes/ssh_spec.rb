@@ -12,8 +12,11 @@ describe 'profiles::ssh' do
 
         it { is_expected.to contain_class('Profiles::Ssh').with(
           'authorized_keys'      => {},
-          'authorized_keys_tags' => []
+          'authorized_keys_tags' => [],
+          'mfa'                  => false
         ) }
+
+        it { is_expected.not_to contain_class('Profiles::Ssh::Mfa') }
 
         it { is_expected.to contain_package('openssh-server').with(
           'ensure' => 'latest'
@@ -60,6 +63,29 @@ describe 'profiles::ssh' do
 
       context 'with hieradata' do
         let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
+        context 'with mfa enabled' do
+          let(:authorized_keys) { {
+            'Publiq First User' => {
+              'active' => true,
+              'tags'   => 'publiq',
+              'keys'   => {
+                'type' => 'ssh-rsa',
+                'key'  => 'abcd'
+              }
+            }
+          } }
+          let(:params) { {
+            'authorized_keys'      => authorized_keys,
+            'authorized_keys_tags' => 'publiq',
+            'mfa'                  => true
+          } }
+
+          it { is_expected.to contain_class('Profiles::Ssh::Mfa').with(
+            'authorized_keys'      => authorized_keys,
+            'authorized_keys_tags' => 'publiq'
+          ) }
+        end
 
         context 'on AWS EC2' do
           let(:facts) {

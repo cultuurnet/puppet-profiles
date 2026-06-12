@@ -1,6 +1,7 @@
 class profiles::ssh(
   Variant[Hash, Array[Hash]]     $authorized_keys      = {},
-  Variant[String, Array[String]] $authorized_keys_tags = []
+  Variant[String, Array[String]] $authorized_keys_tags = [],
+  Boolean                        $mfa                  = false
 ) inherits ::profiles {
 
   include ::profiles::firewall::rules
@@ -51,6 +52,13 @@ class profiles::ssh(
 
   class { 'profiles::ssh::authorized_keys':
     keys => $authorized_keys
+  }
+
+  if $mfa {
+    class { 'profiles::ssh::mfa':
+      authorized_keys      => $authorized_keys,
+      authorized_keys_tags => $authorized_keys_tags
+    }
   }
 
   [$authorized_keys_tags].flatten.each |$tag| {
