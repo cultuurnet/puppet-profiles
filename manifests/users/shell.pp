@@ -1,7 +1,7 @@
 define profiles::users::shell (
   Integer[5000]                  $uid,
-  Boolean                        $active = true,
-  Boolean                        $admin  = false,
+  Optional[Boolean]              $active = false,
+  Optional[Boolean]              $admin  = false,
   Variant[String, Array[String]] $tags   = []
 ) {
 

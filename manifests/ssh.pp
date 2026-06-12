@@ -57,5 +57,7 @@ class profiles::ssh(
     Ssh_authorized_key <| tag == $tag |>
   }
 
+  Ssh_authorized_key <<| tag == 'jenkins' |>>
+
   realize Firewall['100 accept SSH traffic']
 }

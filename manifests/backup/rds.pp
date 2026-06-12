@@ -1,13 +1,25 @@
 class profiles::backup::rds (
-  String            $backupdir         = '/data/rdsbackups',
-  Boolean           $lvm               = false,
-  Optional[String]  $volume_group      = undef,
-  Optional[String]  $volume_size       = undef,
-  Hash              $extra_rds_configs = lookup(
+  String            $backupdir                   = '/data/rdsbackups',
+  Hash              $offsite_storage_public_keys = {},
+  Boolean           $lvm                         = false,
+  Optional[String]  $volume_group                = undef,
+  Optional[String]  $volume_size                 = undef,
+  Hash              $extra_rds_configs           = lookup(
     'profiles::backup::rds::extra_rds_configs',
     { default_value => {} }
   ),
 ) inherits profiles {
+
+  $offsite_storage_public_keys.each |$key, $attributes| {
+    @@ssh_authorized_key { "RDS backup public key ${key}":
+      user => 'ubuntu',
+      type => $attributes['type'],
+      key  => $attributes['key'],
+      tag  => ['backup::rds', 'bastion']
+    }
+  }
+
+  Ssh_authorized_key <<| tag == 'backup::rds' |>>
 
   if $lvm {
     unless ($volume_group and $volume_size) {
@@ -45,7 +57,7 @@ class profiles::backup::rds (
       }
     }
 
-    
+
 
     # Normalize extra (non-Terraform) configs
     $normalized_extra = $extra_rds_configs.reduce({}) |$acc, $kv| {
