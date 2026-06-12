@@ -13,10 +13,11 @@ class profiles::uitpas::soap::magda (
 
   $secrets = lookup('vault:uitpas/api')
 
-  $magda_sftp_certpath = "${magda_sftp_path}/${magda_sftp_cert}"
-  $magda_sftp_keypath  = "${magda_sftp_path}/${magda_sftp_key}"
-  $magda_soap_keystorepath = "${magda_soap_path}/${magda_soap_keystore}"
-  $magda_soap_truststorepath  = "${magda_soap_path}/${magda_soap_truststore}"
+  $magda_sftp_certpath       = "${magda_sftp_path}/${magda_sftp_cert}"
+  $magda_sftp_keypath        = "${magda_sftp_path}/${magda_sftp_key}"
+  $magda_soap_keystorepath   = "${magda_soap_path}/${magda_soap_keystore}"
+  $magda_soap_exportpath     = "${magda_soap_path}/${magda_soap_alias}.p12"
+  $magda_soap_truststorepath = "${magda_soap_path}/${magda_soap_truststore}"
 
 
   file { $magda_soap_path:
@@ -54,7 +55,7 @@ class profiles::uitpas::soap::magda (
     group   => 'glassfish',
     mode    => '0644',
     require => File[$magda_soap_path],
-    notify  => Openssl::Export::Pkcs12[$magda_soap_alias],
+    notify  => Exec["remove_stale_${magda_soap_alias}_pkcs12"],
   }
   file { "${magda_soap_path}/magda-soap-key.pem":
     ensure  => 'file',
@@ -63,7 +64,13 @@ class profiles::uitpas::soap::magda (
     group   => 'glassfish',
     mode    => '0600',
     require => File[$magda_soap_path],
-    notify  => Openssl::Export::Pkcs12[$magda_soap_alias],
+    notify  => Exec["remove_stale_${magda_soap_alias}_pkcs12"],
+  }
+  exec { "remove_stale_${magda_soap_alias}_pkcs12":
+    command     => "/bin/rm -f ${magda_soap_exportpath}",
+    onlyif      => "/usr/bin/test -f ${magda_soap_exportpath}",
+    refreshonly => true,
+    notify      => Openssl::Export::Pkcs12[$magda_soap_alias],
   }
   openssl::export::pkcs12 { $magda_soap_alias:
     ensure   => 'present',
