@@ -31,6 +31,9 @@ describe 'profiles::puppet::puppetserver' do
             'terraform_integration'  => false,
             'terraform_bucket'       => nil,
             'terraform_use_iam_role' => true,
+            'mfa_bucket'             => nil,
+            'mfa_use_iam_role'       => true,
+            'mfa_aws_region'         => 'eu-west-1',
             'puppetdb_url'           => nil,
             'puppetdb_version'       => nil,
             'initial_heap_size'      => nil,
@@ -145,6 +148,7 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to contain_class('profiles::puppet::puppetserver::vault') }
 
           it { is_expected.not_to contain_class('profiles::puppet::puppetserver::terraform') }
+          it { is_expected.not_to contain_class('profiles::puppet::puppetserver::mfa') }
 
           it { is_expected.to contain_cron('puppetserver_report_retention').with(
             'environment' => [ 'MAILTO=infra+cron@publiq.be'],
@@ -237,7 +241,7 @@ describe 'profiles::puppet::puppetserver' do
           end
         end
 
-        context "with version => 1.2.3, dns_alt_names => puppet.services.example.com, autosign => true, trusted_amis => ami-123, trusted_certnames => [], eyaml => true, eyaml_gpg_key => { 'id' => '6789DEFD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\neyamlkey\n-----END PGP PRIVATE KEY BLOCK-----' }, lookup_hierarchy => { name => Common data, path => common.yaml }, terraform_integration => true, terraform_bucket => mybucket, puppetdb_url => https://puppetdb.example.com:8081, initial_heap_size => 512m, maximum_heap_size => 512m, report_retention_days => 5 and service_status => stopped" do
+        context "with version => 1.2.3, dns_alt_names => puppet.services.example.com, autosign => true, trusted_amis => ami-123, trusted_certnames => [], eyaml => true, eyaml_gpg_key => { 'id' => '6789DEFD', 'content' => '-----BEGIN PGP PRIVATE KEY BLOCK-----\neyamlkey\n-----END PGP PRIVATE KEY BLOCK-----' }, lookup_hierarchy => { name => Common data, path => common.yaml }, terraform_integration => true, terraform_bucket => mybucket, mfa_bucket => configdata:/mfa, puppetdb_url => https://puppetdb.example.com:8081, initial_heap_size => 512m, maximum_heap_size => 512m, report_retention_days => 5 and service_status => stopped" do
           let(:params) { {
             'version'               => '1.2.3',
             'dns_alt_names'         => 'puppet.services.example.com',
@@ -252,6 +256,7 @@ describe 'profiles::puppet::puppetserver' do
             'lookup_hierarchy'      => { 'name' => 'Common data', 'path' => 'common.yaml' },
             'terraform_integration' => true,
             'terraform_bucket'      => 'mybucket',
+            'mfa_bucket'            => 'configdata:/mfa',
             'puppetdb_url'          => 'https://puppetdb.example.com:8081',
             'initial_heap_size'     => '512m',
             'maximum_heap_size'     => '512m',
@@ -308,6 +313,12 @@ describe 'profiles::puppet::puppetserver' do
             'use_iam_role' => true
           ) }
 
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::mfa').with(
+            'bucket'       => 'configdata:/mfa',
+            'use_iam_role' => true,
+            'aws_region'   => 'eu-west-1'
+          ) }
+
           it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').with(
             'url'     => 'https://puppetdb.example.com:8081',
             'version' => nil
@@ -329,6 +340,7 @@ describe 'profiles::puppet::puppetserver' do
           it { is_expected.to contain_class('profiles::puppet::puppetserver::autosign').that_notifies('Class[profiles::puppet::puppetserver::service]') }
           it { is_expected.to contain_class('profiles::puppet::puppetserver::hiera').that_notifies('Class[profiles::puppet::puppetserver::service]') }
           it { is_expected.to contain_class('profiles::puppet::puppetserver::terraform').that_notifies('Class[profiles::puppet::puppetserver::service]') }
+          it { is_expected.to contain_class('profiles::puppet::puppetserver::mfa').that_notifies('Class[profiles::puppet::puppetserver::service]') }
           it { is_expected.to contain_class('profiles::puppet::puppetserver::puppetdb').that_notifies('Class[profiles::puppet::puppetserver::service]') }
           it { is_expected.to contain_augeas('puppetserver_initial_heap_size').that_requires('Class[profiles::puppet::puppetserver::install]') }
           it { is_expected.to contain_augeas('puppetserver_initial_heap_size').that_notifies('Class[profiles::puppet::puppetserver::service]') }

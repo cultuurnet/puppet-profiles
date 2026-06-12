@@ -12,7 +12,8 @@ class profiles::uitpas::soap::fidus (
   $secrets = lookup('vault:uitpas/api')
 
   $fidus_soap_keystorepath = "${fidus_soap_path}/${fidus_soap_keystore}"
-  $fidus_sftp_keypath  = "${fidus_sftp_path}/${fidus_sftp_key}"
+  $fidus_soap_exportpath   = "${fidus_soap_path}/${fidus_soap_alias}.p12"
+  $fidus_sftp_keypath      = "${fidus_sftp_path}/${fidus_sftp_key}"
 
   file { $fidus_sftp_path:
     ensure => 'directory',
@@ -41,7 +42,7 @@ class profiles::uitpas::soap::fidus (
     group   => 'glassfish',
     mode    => '0644',
     require => File[$fidus_soap_path],
-    notify  => Openssl::Export::Pkcs12[$fidus_soap_alias],
+    notify  => Exec["remove_stale_${fidus_soap_alias}_pkcs12"],
   }
   file { "${fidus_soap_path}/fidus-soap-key.pem":
     ensure  => 'file',
@@ -50,7 +51,13 @@ class profiles::uitpas::soap::fidus (
     group   => 'glassfish',
     mode    => '0600',
     require => File[$fidus_soap_path],
-    notify  => Openssl::Export::Pkcs12[$fidus_soap_alias],
+    notify  => Exec["remove_stale_${fidus_soap_alias}_pkcs12"],
+  }
+  exec { "remove_stale_${fidus_soap_alias}_pkcs12":
+    command     => "/bin/rm -f ${fidus_soap_exportpath}",
+    onlyif      => "/usr/bin/test -f ${fidus_soap_exportpath}",
+    refreshonly => true,
+    notify      => Openssl::Export::Pkcs12[$fidus_soap_alias],
   }
   openssl::export::pkcs12 { $fidus_soap_alias:
     ensure   => 'present',
@@ -63,8 +70,8 @@ class profiles::uitpas::soap::fidus (
   }
 
   exec { "chown_${fidus_soap_alias}":
-    command => "/bin/chown glassfish:glassfish ${fidus_soap_keystorepath}",
-    onlyif  => "/usr/bin/test -f ${fidus_soap_keystorepath}",
+    command     => "/bin/chown glassfish:glassfish ${fidus_soap_keystorepath}",
+    onlyif      => "/usr/bin/test -f ${fidus_soap_keystorepath}",
     refreshonly => true,
   }
 }

@@ -1,4 +1,4 @@
-class profiles::puppet::puppetserver::terraform (
+class profiles::puppet::puppetserver::mfa (
   String  $bucket,
   Boolean $use_iam_role = true,
   String  $aws_region   = 'eu-west-1'
@@ -16,22 +16,22 @@ class profiles::puppet::puppetserver::terraform (
 
   include profiles::s3fs
 
-  file { 'puppetserver-terraform-data':
+  file { 'puppetserver-mfa-data':
     ensure  => 'directory',
-    path    => '/etc/puppetlabs/code/data/terraform',
+    path    => '/etc/puppetlabs/code/data/mfa',
     owner   => 'puppet',
     group   => 'puppet',
     require => [Group['puppet'], User['puppet']]
   }
 
-  mount { 'puppetserver-terraform-data':
+  mount { 'puppetserver-mfa-data':
     ensure   => 'mounted',
     device   => $bucket,
-    name     => '/etc/puppetlabs/code/data/terraform',
+    name     => '/etc/puppetlabs/code/data/mfa',
     fstype   => 'fuse.s3fs',
     options  => join($mount_options.filter |$option| { $option }, ','),
     remounts => false,
     atboot   => true,
-    require  => [File['puppetserver-terraform-data'], Class['profiles::s3fs']]
+    require  => [File['puppetserver-mfa-data'], Class['profiles::s3fs']]
   }
 }
