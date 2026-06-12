@@ -15,17 +15,17 @@ describe 'profiles::users::shell' do
 
           it { is_expected.to contain_profiles__users__shell('publiq-first').with(
             'uid'    => 5500,
-            'active' => true,
+            'active' => false,
             'admin'  => false
           ) }
 
           it { is_expected.to contain_group('publiq-first').with(
             'gid'    => '5500',
-            'ensure' => 'present'
+            'ensure' => 'absent'
           ) }
 
           it { is_expected.to contain_user('publiq-first').with(
-            'ensure'         => 'present',
+            'ensure'         => 'absent',
             'gid'            => 'publiq-first',
             'groups'         => [],
             'home'           => '/home/publiq-first',
@@ -36,10 +36,11 @@ describe 'profiles::users::shell' do
           ) }
         end
 
-        context 'with uid => 6000, admin => true' do
+        context 'with uid => 6000, active => true, admin => true' do
           let(:params) { {
-            'uid'   => 6000,
-            'admin' => true
+            'uid'    => 6000,
+            'active' => true,
+            'admin'  => true
           } }
 
           it { is_expected.to contain_group('publiq-first').with(
@@ -104,9 +105,10 @@ describe 'profiles::users::shell' do
       context "on #{os}" do
         let(:facts) { facts }
 
-        context 'with uid => 5600' do
+        context 'with uid => 5600, active => true' do
           let(:params) { {
-            'uid' => 5600
+            'uid'    => 5600,
+            'active' => true
           } }
 
           it { is_expected.to contain_group('cafe-hotel').with(

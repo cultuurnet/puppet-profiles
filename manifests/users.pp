@@ -7,8 +7,10 @@ class profiles::users (
 
   $shell.each |String $user, Hash $attributes| {
     @profiles::users::shell { $user:
-      tag => $attributes['tags'],
-      *   => $attributes - 'tags'
+      uid    => $attributes['uid'],
+      active => $attributes['active'],
+      admin  => $attributes['admin'],
+      tag    => $attributes['tags']
     }
   }
 
