@@ -40,6 +40,17 @@ describe 'profiles::ssh' do
           'enable' => true
         ) }
 
+        it { is_expected.to contain_class('Profiles::Ssh::Service') }
+
+        it { is_expected.to contain_file('/etc/ssh/sshd_config.d').with(
+          'ensure' => 'directory',
+          'owner'  => 'root',
+          'group'  => 'root',
+          'mode'   => '0755'
+        ) }
+
+        it { is_expected.to contain_profiles__ssh__sshd_config('Include').with_value('/etc/ssh/sshd_config.d/*.conf') }
+
         it { is_expected.to contain_file('ssh_known_hosts').with(
           'ensure' => 'file',
           'path'   => '/etc/ssh/ssh_known_hosts',
@@ -60,9 +71,10 @@ describe 'profiles::ssh' do
           'keys' => {}
         ) }
 
-        it { is_expected.to contain_profiles__ssh__sshd_config('PermitRootLogin').that_notifies('Service[ssh]') }
-        it { is_expected.to contain_profiles__ssh__sshd_config('PubkeyAcceptedKeyTypes').that_notifies('Service[ssh]') }
-        it { is_expected.to contain_package('openssh-server').that_notifies('Service[ssh]') }
+        it { is_expected.to contain_profiles__ssh__sshd_config('PermitRootLogin').that_notifies('Class[Profiles::Ssh::Service]') }
+        it { is_expected.to contain_profiles__ssh__sshd_config('PubkeyAcceptedKeyTypes').that_notifies('Class[Profiles::Ssh::Service]') }
+        it { is_expected.to contain_profiles__ssh__sshd_config('Include').that_notifies('Class[Profiles::Ssh::Service]') }
+        it { is_expected.to contain_package('openssh-server').that_notifies('Class[Profiles::Ssh::Service]') }
       end
 
       context 'with hieradata' do
@@ -90,6 +102,8 @@ describe 'profiles::ssh' do
             'authorized_keys'      => authorized_keys,
             'authorized_keys_tags' => 'publiq'
           ) }
+
+          it { is_expected.to contain_class('Profiles::Ssh::Mfa').that_notifies('Class[Profiles::Ssh::Service]') }
         end
 
         context 'on AWS EC2' do
