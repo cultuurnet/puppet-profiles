@@ -16,7 +16,11 @@ describe 'profiles::ssh' do
           'mfa'                  => false
         ) }
 
-        it { is_expected.not_to contain_class('Profiles::Ssh::Mfa') }
+        it { is_expected.to contain_class('Profiles::Ssh::Mfa').with(
+          'enabled'              => false,
+          'authorized_keys'      => {},
+          'authorized_keys_tags' => []
+        ) }
 
         it { is_expected.to contain_package('openssh-server').with(
           'ensure' => 'latest'
@@ -35,6 +39,17 @@ describe 'profiles::ssh' do
           'ensure' => 'running',
           'enable' => true
         ) }
+
+        it { is_expected.to contain_class('Profiles::Ssh::Service') }
+
+        it { is_expected.to contain_file('/etc/ssh/sshd_config.d').with(
+          'ensure' => 'directory',
+          'owner'  => 'root',
+          'group'  => 'root',
+          'mode'   => '0755'
+        ) }
+
+        it { is_expected.to contain_profiles__ssh__sshd_config('Include').with_value('/etc/ssh/sshd_config.d/*.conf') }
 
         it { is_expected.to contain_file('ssh_known_hosts').with(
           'ensure' => 'file',
@@ -56,9 +71,10 @@ describe 'profiles::ssh' do
           'keys' => {}
         ) }
 
-        it { is_expected.to contain_profiles__ssh__sshd_config('PermitRootLogin').that_notifies('Service[ssh]') }
-        it { is_expected.to contain_profiles__ssh__sshd_config('PubkeyAcceptedKeyTypes').that_notifies('Service[ssh]') }
-        it { is_expected.to contain_package('openssh-server').that_notifies('Service[ssh]') }
+        it { is_expected.to contain_profiles__ssh__sshd_config('PermitRootLogin').that_notifies('Class[Profiles::Ssh::Service]') }
+        it { is_expected.to contain_profiles__ssh__sshd_config('PubkeyAcceptedKeyTypes').that_notifies('Class[Profiles::Ssh::Service]') }
+        it { is_expected.to contain_profiles__ssh__sshd_config('Include').that_notifies('Class[Profiles::Ssh::Service]') }
+        it { is_expected.to contain_package('openssh-server').that_notifies('Class[Profiles::Ssh::Service]') }
       end
 
       context 'with hieradata' do
@@ -82,9 +98,12 @@ describe 'profiles::ssh' do
           } }
 
           it { is_expected.to contain_class('Profiles::Ssh::Mfa').with(
+            'enabled'              => true,
             'authorized_keys'      => authorized_keys,
             'authorized_keys_tags' => 'publiq'
           ) }
+
+          it { is_expected.to contain_class('Profiles::Ssh::Mfa').that_notifies('Class[Profiles::Ssh::Service]') }
         end
 
         context 'on AWS EC2' do

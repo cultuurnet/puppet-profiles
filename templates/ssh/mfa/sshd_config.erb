@@ -1,0 +1,5 @@
+# Managed by Puppet
+
+Match Group mfa_users Address <%= @mfa_addresses.join(',') %>
+  AuthenticationMethods publickey,keyboard-interactive:pam
+Match all

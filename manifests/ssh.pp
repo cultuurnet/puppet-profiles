@@ -5,26 +5,34 @@ class profiles::ssh(
 ) inherits ::profiles {
 
   include ::profiles::firewall::rules
+  include ::profiles::ssh::service
 
   package { 'openssh-server':
     ensure => 'latest',
-    notify => Service['ssh']
+    notify => Class['profiles::ssh::service']
   }
 
   profiles::ssh::sshd_config { 'PermitRootLogin':
     ensure => 'present',
     value  => 'no',
-    notify  => Service['ssh']
+    notify  => Class['profiles::ssh::service']
   }
 
   profiles::ssh::sshd_config { 'PubkeyAcceptedKeyTypes':
     ensure => 'absent',
-    notify  => Service['ssh']
+    notify  => Class['profiles::ssh::service']
   }
 
-  service { 'ssh':
-    ensure => 'running',
-    enable => true
+  file { '/etc/ssh/sshd_config.d':
+    ensure => 'directory',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755'
+  }
+
+  profiles::ssh::sshd_config { 'Include':
+    value  => '/etc/ssh/sshd_config.d/*.conf',
+    notify => Class['profiles::ssh::service']
   }
 
   file { 'ssh_known_hosts':
@@ -54,12 +62,13 @@ class profiles::ssh(
     keys => $authorized_keys
   }
 
-  if $mfa {
-    class { 'profiles::ssh::mfa':
-      authorized_keys      => $authorized_keys,
-      authorized_keys_tags => $authorized_keys_tags
-    }
+  class { 'profiles::ssh::mfa':
+    enabled              => $mfa,
+    authorized_keys      => $authorized_keys,
+    authorized_keys_tags => $authorized_keys_tags
   }
+
+  Class['profiles::ssh::mfa'] ~> Class['profiles::ssh::service']
 
   [$authorized_keys_tags].flatten.each |$tag| {
     Ssh_authorized_key <| tag == $tag |>
