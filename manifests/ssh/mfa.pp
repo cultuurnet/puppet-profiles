@@ -1,34 +1,128 @@
 class profiles::ssh::mfa (
+  Boolean                        $enabled              = false,
   Variant[Hash, Array[Hash]]     $authorized_keys      = {},
   Variant[String, Array[String]] $authorized_keys_tags = [],
+  Array[String]                  $bypass_ips           = ['194.78.13.220'],
   String                         $mfa_directory        = '/etc/puppetlabs/code/data/mfa'
 ) inherits ::profiles {
 
   $authorized_keys_tags_array = [$authorized_keys_tags].flatten
 
-  $authorized_keys.each |String $user, Hash $attributes| {
+  $configured_users = $authorized_keys.filter |String $user, Hash $attributes| {
     $tags = $attributes['tags'] ? {
       undef   => [],
       default => [$attributes['tags']].flatten
     }
-
     $configured = $tags.any |String $tag| { $tag in $authorized_keys_tags_array }
+    $username   = slugify($user)
 
-    if $configured and $attributes['active'] != false {
-      $username = slugify($user)
-      $config   = "${mfa_directory}/${username}.conf"
+    $enabled and $configured and $attributes['active'] != false and find_file("${mfa_directory}/${username}.conf")
+  }
+  $configured_usernames = $configured_users.keys.map |String $user| { slugify($user) }
+  $mfa_addresses        = ['*'] + $bypass_ips.map |String $ip| { "!${ip}" }
 
-      if find_file($config) {
-        file { "/home/${username}/.google_authenticator":
-          ensure    => 'file',
-          owner     => $username,
-          group     => $username,
-          mode      => '0600',
-          content   => file($config),
-          show_diff => false,
-          require   => User[$username]
-        }
+  if $enabled {
+    package { 'libpam-google-authenticator':
+      ensure => 'installed'
+    }
+  }
+
+  file { '/etc/pam.d/sshd':
+    ensure  => 'file',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    content => template('profiles/ssh/mfa/sshd.pam.erb'),
+    notify  => Service['ssh']
+  }
+
+  if $enabled {
+    Package['libpam-google-authenticator'] -> File['/etc/pam.d/sshd']
+  }
+
+  group { 'mfa_users':
+    ensure => 'present'
+  }
+
+  $authorized_keys.each |String $user, Hash $attributes| {
+    $username = slugify($user)
+    $groups   = $attributes['admin'] ? {
+      true    => ['sudo'],
+      default => []
+    }
+
+    if $username in $configured_usernames {
+      User <| title == $username |> {
+        groups => $groups + ['mfa_users']
       }
+    } else {
+      User <| title == $username |> {
+        groups => $groups
+      }
+    }
+  }
+
+  file { '/etc/ssh/sshd_config.d':
+    ensure => 'directory',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755'
+  }
+
+  if $enabled and !empty($configured_users) {
+    file { '/etc/ssh/sshd_config.d/publiq-mfa.conf':
+      ensure  => 'file',
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+      content => template('profiles/ssh/mfa/sshd_config.erb'),
+      require => File['/etc/ssh/sshd_config.d'],
+      notify  => Service['ssh']
+    }
+  } else {
+    file { '/etc/ssh/sshd_config.d/publiq-mfa.conf':
+      ensure  => 'absent',
+      require => File['/etc/ssh/sshd_config.d'],
+      notify  => Service['ssh']
+    }
+  }
+
+  profiles::ssh::sshd_config { 'Include':
+    value  => '/etc/ssh/sshd_config.d/*.conf',
+    notify => Service['ssh']
+  }
+
+  profiles::ssh::sshd_config { 'UsePAM':
+    value  => 'yes',
+    notify => Service['ssh']
+  }
+
+  profiles::ssh::sshd_config { 'ChallengeResponseAuthentication':
+    value  => $enabled ? {
+      true    => 'yes',
+      default => 'no'
+    },
+    notify => Service['ssh']
+  }
+
+  profiles::ssh::sshd_config { 'AuthenticationMethods':
+    ensure => 'absent',
+    value  => 'publickey,keyboard-interactive:pam',
+    notify => Service['ssh']
+  }
+
+  $configured_users.each |String $user, Hash $attributes| {
+    $username = slugify($user)
+    $config   = "${mfa_directory}/${username}.conf"
+
+    file { "/home/${username}/.google_authenticator":
+      ensure    => 'file',
+      owner     => $username,
+      group     => $username,
+      mode      => '0400',
+      content   => file($config),
+      show_diff => false,
+      require   => User[$username]
     }
   }
 }
