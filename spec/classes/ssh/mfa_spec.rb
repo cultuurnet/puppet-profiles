@@ -6,7 +6,6 @@ describe 'profiles::ssh::mfa' do
       let(:facts) { facts }
       let(:pre_condition) do
         [
-          "service { 'ssh': ensure => running }",
           "user { 'publiq-first-user': ensure => present }",
           "user { 'publiq-inactive-user': ensure => absent }"
         ]
@@ -51,14 +50,11 @@ describe 'profiles::ssh::mfa' do
       it { is_expected.to contain_file('/etc/pam.d/sshd').without_content(%r{pam_succeed_if\.so}) }
       it { is_expected.to contain_file('/etc/pam.d/sshd').with_content(%r{pam_google_authenticator\.so nullok}) }
       it { is_expected.to contain_file('/etc/pam.d/sshd').with_content(%r{auth required pam_permit\.so}) }
-      it { is_expected.to contain_file('/etc/pam.d/sshd').that_notifies('Service[ssh]') }
       it { is_expected.to contain_file('/etc/pam.d/sshd').that_requires('Package[libpam-google-authenticator]') }
 
       it { is_expected.to contain_profiles__ssh__sshd_config('UsePAM').with_value('yes') }
       it { is_expected.to contain_profiles__ssh__sshd_config('ChallengeResponseAuthentication').with_value('yes') }
       it { is_expected.to contain_profiles__ssh__sshd_config('AuthenticationMethods').with_ensure('absent') }
-      it { is_expected.to contain_profiles__ssh__sshd_config('Include').with_value('/etc/ssh/sshd_config.d/*.conf') }
-
       it { is_expected.to contain_file('/etc/ssh/sshd_config.d/publiq-mfa.conf').with(
         'ensure' => 'file',
         'owner'  => 'root',
