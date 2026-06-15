@@ -9,7 +9,7 @@ on:
 jobs:
   test:
     if: ${{ ! github.event.pull_request.merged }}
-    runs-on: ubuntu-24.04
+    runs-on: arc-runner-set
     steps:
       - name: Checkout project
         uses: actions/checkout@v4
