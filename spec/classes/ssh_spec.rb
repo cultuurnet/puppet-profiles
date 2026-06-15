@@ -16,7 +16,11 @@ describe 'profiles::ssh' do
           'mfa'                  => false
         ) }
 
-        it { is_expected.not_to contain_class('Profiles::Ssh::Mfa') }
+        it { is_expected.to contain_class('Profiles::Ssh::Mfa').with(
+          'enabled'              => false,
+          'authorized_keys'      => {},
+          'authorized_keys_tags' => []
+        ) }
 
         it { is_expected.to contain_package('openssh-server').with(
           'ensure' => 'latest'
@@ -82,6 +86,7 @@ describe 'profiles::ssh' do
           } }
 
           it { is_expected.to contain_class('Profiles::Ssh::Mfa').with(
+            'enabled'              => true,
             'authorized_keys'      => authorized_keys,
             'authorized_keys_tags' => 'publiq'
           ) }

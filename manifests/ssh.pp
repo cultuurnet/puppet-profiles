@@ -54,11 +54,10 @@ class profiles::ssh(
     keys => $authorized_keys
   }
 
-  if $mfa {
-    class { 'profiles::ssh::mfa':
-      authorized_keys      => $authorized_keys,
-      authorized_keys_tags => $authorized_keys_tags
-    }
+  class { 'profiles::ssh::mfa':
+    enabled              => $mfa,
+    authorized_keys      => $authorized_keys,
+    authorized_keys_tags => $authorized_keys_tags
   }
 
   [$authorized_keys_tags].flatten.each |$tag| {
