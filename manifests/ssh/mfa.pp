@@ -13,12 +13,15 @@ class profiles::ssh::mfa (
       undef   => [],
       default => [$attributes['tags']].flatten
     }
-    $configured = $tags.any |String $tag| { $tag in $authorized_keys_tags_array }
-    $username   = slugify($user)
+    $configured  = $tags.any |String $tag| { $tag in $authorized_keys_tags_array }
+    $mfa_enabled = $attributes['mfa'] ? {
+      undef   => true,
+      default => $attributes['mfa']
+    }
+    $username    = slugify($user)
 
-    $enabled and $configured and $attributes['active'] != false and find_file("${mfa_directory}/${username}.conf")
+    $enabled and $configured and $mfa_enabled and $attributes['active'] != false and find_file("${mfa_directory}/${username}.conf") != undef
   }
-  $configured_usernames = $configured_users.keys.map |String $user| { slugify($user) }
   $mfa_addresses        = ['*'] + $bypass_ips.map |String $ip| { "!${ip}" }
 
   if $enabled {
@@ -52,21 +55,6 @@ class profiles::ssh::mfa (
     profiles::ssh::sshd_config { 'ChallengeResponseAuthentication':
       value => 'yes'
     }
-
-    $configured_users.each |String $user, Hash $attributes| {
-      $username = slugify($user)
-      $config   = "${mfa_directory}/${username}.conf"
-
-      file { "/home/${username}/.google_authenticator":
-        ensure    => 'file',
-        owner     => $username,
-        group     => $username,
-        mode      => '0400',
-        content   => file($config),
-        show_diff => false,
-        require   => User[$username]
-      }
-    }
   } else {
     file { '/etc/pam.d/sshd':
       ensure  => 'file',
@@ -90,20 +78,26 @@ class profiles::ssh::mfa (
   }
 
   $authorized_keys.each |String $user, Hash $attributes| {
-    $username = slugify($user)
-    $groups   = $attributes['admin'] ? {
-      true    => ['sudo'],
-      default => []
+    $tags = $attributes['tags'] ? {
+      undef   => [],
+      default => [$attributes['tags']].flatten
+    }
+    $configured  = $tags.any |String $tag| { $tag in $authorized_keys_tags_array }
+    $mfa_enabled = $attributes['mfa'] ? {
+      undef   => true,
+      default => $attributes['mfa']
+    }
+    $username    = slugify($user)
+    $config      = "${mfa_directory}/${username}.conf"
+    $mfa         = $enabled and $configured and $mfa_enabled and $attributes['active'] != false and find_file($config) != undef
+    $mfa_config = $mfa ? {
+      true    => $config,
+      default => undef
     }
 
-    if $username in $configured_usernames {
-      User <| title == $username |> {
-        groups => $groups + ['mfa_users']
-      }
-    } else {
-      User <| title == $username |> {
-        groups => $groups
-      }
+    Profiles::Users::Shell <| title == $user |> {
+      mfa        => $mfa,
+      mfa_config => $mfa_config
     }
   }
 
