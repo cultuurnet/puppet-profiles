@@ -27,7 +27,6 @@ describe 'profiles::users::shell' do
 
           it { is_expected.to contain_user('publiq-first').with(
             'ensure'         => 'absent',
-            'gid'            => 'publiq-first',
             'groups'         => [],
             'home'           => '/home/publiq-first',
             'managehome'     => true,
@@ -36,6 +35,7 @@ describe 'profiles::users::shell' do
             'uid'            => 5500
           ) }
 
+          it { is_expected.to contain_user('publiq-first').that_comes_before('Group[publiq-first]') }
           it { is_expected.to contain_file('/home/publiq-first/.google_authenticator').with_ensure('absent') }
         end
 
@@ -62,6 +62,7 @@ describe 'profiles::users::shell' do
             'uid'            => 6000
           ) }
 
+          it { is_expected.to contain_group('publiq-first').that_comes_before('User[publiq-first]') }
           it { is_expected.to contain_file('/home/publiq-first/.google_authenticator').with_ensure('absent') }
         end
 
@@ -150,7 +151,6 @@ describe 'profiles::users::shell' do
 
           it { is_expected.to contain_user('publiq-first').with(
             'ensure'         => 'absent',
-            'gid'            => 'publiq-first',
             'groups'         => [],
             'home'           => '/home/publiq-first',
             'managehome'     => true,
@@ -159,6 +159,7 @@ describe 'profiles::users::shell' do
             'uid'            => 7000
           ) }
 
+          it { is_expected.to contain_user('publiq-first').that_comes_before('Group[publiq-first]') }
           it { is_expected.to contain_file('/home/publiq-first/.google_authenticator').with_ensure('absent') }
         end
 
