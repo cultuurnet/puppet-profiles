@@ -115,6 +115,14 @@ class profiles::puppet::agent (
     *       => $default_ini_setting_attributes
   }
 
+  ini_setting { 'agent resubmit_facts':
+    ensure  => 'present',
+    setting => 'resubmit_facts',
+    section => 'agent',
+    value   => true,
+    *       => $default_ini_setting_attributes
+  }
+
   ini_setting { 'agent reports':
     ensure  => 'present',
     setting => 'reports',
