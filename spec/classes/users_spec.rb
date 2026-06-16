@@ -39,7 +39,16 @@ describe 'profiles::users' do
           'tag'    => ['foo', 'bar']
         ) }
 
-        it { is_expected.not_to contain_profiles__users__shell('user2') }
+        it { is_expected.to contain_profiles__users__shell('user2').with(
+          'uid'    => 5001,
+          'active' => false,
+          'admin'  => false,
+          'mfa'    => true,
+          'mfa_config' => nil,
+          'tag'    => 'baz'
+        ) }
+
+        it { is_expected.to contain_user('user2').with_ensure('absent') }
 
         it { is_expected.to contain_profiles__users__shell('user3').with(
           'uid'    => 5002,
