@@ -60,6 +60,7 @@ describe 'profiles::ssh::mfa' do
         'mfa_enforced' => false,
         'mfa_config'   => nil
       ) }
+      it { is_expected.not_to contain_profiles__users__shell('Publiq Other User') }
       it { is_expected.to contain_user('publiq-first-user').with_groups(['sudo', 'mfa_users']) }
       it { is_expected.to contain_user('publiq-inactive-user').with_groups([]) }
 
@@ -100,7 +101,7 @@ describe 'profiles::ssh::mfa' do
       it { is_expected.to contain_file('/home/publiq-first-user/.google_authenticator').that_requires('User[publiq-first-user]') }
       it { is_expected.to contain_file('/home/publiq-missing-user/.google_authenticator').with_ensure('absent') }
       it { is_expected.to contain_file('/home/publiq-inactive-user/.google_authenticator').with_ensure('absent') }
-      it { is_expected.to contain_file('/home/publiq-other-user/.google_authenticator').with_ensure('absent') }
+      it { is_expected.not_to contain_file('/home/publiq-other-user/.google_authenticator') }
       it { is_expected.to contain_file('/home/publiq-disabled-user/.google_authenticator').with_ensure('absent') }
 
       context 'with custom bypass IPs' do
