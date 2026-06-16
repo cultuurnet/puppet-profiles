@@ -103,6 +103,14 @@ describe 'profiles::puppet::agent' do
           'value'   => false
         ) }
 
+        it { is_expected.to contain_ini_setting('agent resubmit_facts').with(
+          'ensure'  => 'present',
+          'path'    => '/etc/puppetlabs/puppet/puppet.conf',
+          'section' => 'agent',
+          'setting' => 'resubmit_facts',
+          'value'   => true
+        ) }
+
         it { is_expected.to contain_ini_setting('agent reports').with(
           'ensure'  => 'present',
           'path'    => '/etc/puppetlabs/puppet/puppet.conf',
