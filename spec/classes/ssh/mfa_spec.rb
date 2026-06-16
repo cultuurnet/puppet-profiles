@@ -6,11 +6,11 @@ describe 'profiles::ssh::mfa' do
       let(:facts) { facts }
       let(:pre_condition) do
         [
-          "profiles::users::shell { 'Publiq First User': uid => 5000, active => true, admin => true }",
-          "profiles::users::shell { 'Publiq Missing User': uid => 5001, active => true }",
-          "profiles::users::shell { 'Publiq Inactive User': uid => 5002, active => false }",
-          "profiles::users::shell { 'Publiq Other User': uid => 5003, active => true }",
-          "profiles::users::shell { 'Publiq Disabled User': uid => 5004, active => true }"
+          "@profiles::users::shell { 'Publiq First User': uid => 5000, active => true, admin => true }",
+          "@profiles::users::shell { 'Publiq Missing User': uid => 5001, active => true }",
+          "@profiles::users::shell { 'Publiq Inactive User': uid => 5002, active => false }",
+          "@profiles::users::shell { 'Publiq Other User': uid => 5003, active => true }",
+          "@profiles::users::shell { 'Publiq Disabled User': uid => 5004, active => true }"
         ]
       end
       let(:params) do
