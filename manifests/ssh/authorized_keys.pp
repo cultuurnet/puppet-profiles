@@ -1,5 +1,6 @@
 class profiles::ssh::authorized_keys (
-  Hash             $keys = {}
+  Hash    $keys                              = {},
+  Boolean $manage_admin_user_authorized_keys = true
 ) inherits ::profiles {
 
   if $facts['ec2_metadata'] {
@@ -18,11 +19,13 @@ class profiles::ssh::authorized_keys (
           $key_title  = "${key} ${key_number}"
         }
 
-        @ssh_authorized_key { "${key_title} ${admin_user}":
-          user => $admin_user,
-          type => $key_attributes['type'],
-          key  => $key_attributes['key'],
-          tag  => $attributes['tags']
+        if $manage_admin_user_authorized_keys {
+          @ssh_authorized_key { "${key_title} ${admin_user}":
+            user => $admin_user,
+            type => $key_attributes['type'],
+            key  => $key_attributes['key'],
+            tag  => $attributes['tags']
+          }
         }
 
         @ssh_authorized_key { $key_title:

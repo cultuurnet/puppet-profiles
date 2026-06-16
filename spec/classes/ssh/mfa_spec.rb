@@ -32,6 +32,7 @@ describe 'profiles::ssh::mfa' do
 
       it { is_expected.to contain_class('profiles::ssh::mfa').with(
         'enabled'              => true,
+        'enforced'             => false,
         'authorized_keys_tags' => 'bastion',
         'bypass_ips'           => ['194.78.13.220']
       ) }
@@ -45,16 +46,19 @@ describe 'profiles::ssh::mfa' do
         'gid'    => '1008'
       ) }
       it { is_expected.to contain_profiles__users__shell('Publiq First User').with(
-        'mfa'        => true,
-        'mfa_config' => File.expand_path('../../support/mfa/publiq-first-user.conf', __dir__)
+        'mfa'          => true,
+        'mfa_enforced' => false,
+        'mfa_config'   => File.expand_path('../../support/mfa/publiq-first-user.conf', __dir__)
       ) }
       it { is_expected.to contain_profiles__users__shell('Publiq Missing User').with(
-        'mfa'        => false,
-        'mfa_config' => nil
+        'mfa'          => false,
+        'mfa_enforced' => false,
+        'mfa_config'   => nil
       ) }
       it { is_expected.to contain_profiles__users__shell('Publiq Disabled User').with(
-        'mfa'        => false,
-        'mfa_config' => nil
+        'mfa'          => false,
+        'mfa_enforced' => false,
+        'mfa_config'   => nil
       ) }
       it { is_expected.to contain_user('publiq-first-user').with_groups(['sudo', 'mfa_users']) }
       it { is_expected.to contain_user('publiq-inactive-user').with_groups([]) }
@@ -116,6 +120,26 @@ describe 'profiles::ssh::mfa' do
 
         it { is_expected.to contain_file('/etc/ssh/sshd_config.d/publiq-mfa.conf').with_content(
           %r{Match Group mfa_users Address \*\n}
+        ) }
+      end
+
+      context 'with MFA enforced' do
+        let(:params) do
+          super().merge({ 'enforced' => true })
+        end
+
+        it { is_expected.to contain_profiles__users__shell('Publiq Missing User').with(
+          'mfa'          => true,
+          'mfa_enforced' => true,
+          'mfa_config'   => nil
+        ) }
+
+        it { is_expected.to contain_user('publiq-missing-user').with_groups(['mfa_users']) }
+        it { is_expected.to contain_file('/home/publiq-missing-user/.google_authenticator').with_ensure('absent') }
+        it { is_expected.to contain_profiles__users__shell('Publiq Disabled User').with(
+          'mfa'          => false,
+          'mfa_enforced' => true,
+          'mfa_config'   => nil
         ) }
       end
 

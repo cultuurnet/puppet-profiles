@@ -1,5 +1,6 @@
 class profiles::ssh::mfa (
   Boolean                        $enabled              = false,
+  Boolean                        $enforced             = false,
   Variant[Hash, Array[Hash]]     $authorized_keys      = {},
   Variant[String, Array[String]] $authorized_keys_tags = [],
   Array[String]                  $bypass_ips           = ['194.78.13.220'],
@@ -20,7 +21,7 @@ class profiles::ssh::mfa (
     }
     $username    = slugify($user)
 
-    $enabled and $configured and $mfa_enabled and $attributes['active'] != false and find_file("${mfa_directory}/${username}.conf") != undef
+    $enabled and $configured and $mfa_enabled and $attributes['active'] != false and ($enforced or find_file("${mfa_directory}/${username}.conf") != undef)
   }
   $mfa_addresses        = ['*'] + $bypass_ips.map |String $ip| { "!${ip}" }
 
@@ -77,15 +78,17 @@ class profiles::ssh::mfa (
     }
     $username    = slugify($user)
     $config      = "${mfa_directory}/${username}.conf"
-    $mfa         = $enabled and $configured and $mfa_enabled and $attributes['active'] != false and find_file($config) != undef
+    $config_file = find_file($config)
+    $mfa         = $enabled and $configured and $mfa_enabled and $attributes['active'] != false and ($enforced or $config_file != undef)
     $mfa_config = $mfa ? {
-      true    => $config,
+      true    => $config_file,
       default => undef
     }
 
     Profiles::Users::Shell <| title == $user |> {
-      mfa        => $mfa,
-      mfa_config => $mfa_config
+      mfa          => $mfa,
+      mfa_enforced => $enforced,
+      mfa_config   => $mfa_config
     }
   }
 

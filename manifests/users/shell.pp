@@ -3,6 +3,7 @@ define profiles::users::shell (
   Optional[Boolean]              $active = false,
   Optional[Boolean]              $admin  = false,
   Optional[Boolean]              $mfa    = true,
+  Optional[Boolean]              $mfa_enforced = false,
   Optional[String]               $mfa_config = undef,
   Variant[String, Array[String]] $tags   = []
 ) {
@@ -13,7 +14,8 @@ define profiles::users::shell (
                     true  => ['sudo'],
                     false => []
                   }
-  $groups         = $mfa_configured ? {
+  $mfa_required   = $mfa and ($mfa_enforced or $mfa_configured)
+  $groups         = $mfa_required ? {
                     true  => $base_groups + ['mfa_users'],
                     false => $base_groups
                   }
