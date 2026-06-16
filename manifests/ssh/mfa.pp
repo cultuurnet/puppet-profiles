@@ -85,10 +85,12 @@ class profiles::ssh::mfa (
       default => undef
     }
 
-    Profiles::Users::Shell <| title == $user |> {
-      mfa          => $mfa,
-      mfa_enforced => $enforced,
-      mfa_config   => $mfa_config
+    if $configured {
+      Profiles::Users::Shell <| title == $user |> {
+        mfa          => $mfa,
+        mfa_enforced => $enforced,
+        mfa_config   => $mfa_config
+      }
     }
   }
 
