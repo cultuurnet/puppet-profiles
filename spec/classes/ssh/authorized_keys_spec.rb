@@ -69,6 +69,21 @@ describe 'profiles::ssh::authorized_keys' do
             it { is_expected.not_to contain_ssh_authorized_key('baz') }
 
             it { is_expected.to have_ssh_authorized_key_resource_count(6) }
+
+            context 'with manage_admin_user_authorized_keys => false' do
+              let(:params) do
+                super().merge({ 'manage_admin_user_authorized_keys' => false })
+              end
+
+              it { is_expected.not_to contain_ssh_authorized_key('foo ubuntu') }
+              it { is_expected.not_to contain_ssh_authorized_key('René 1 ubuntu') }
+              it { is_expected.not_to contain_ssh_authorized_key('René 2 ubuntu') }
+              it { is_expected.to contain_ssh_authorized_key('foo') }
+              it { is_expected.to contain_ssh_authorized_key('René 1') }
+              it { is_expected.to contain_ssh_authorized_key('René 2') }
+
+              it { is_expected.to have_ssh_authorized_key_resource_count(3) }
+            end
           end
         end
 

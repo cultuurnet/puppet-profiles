@@ -13,11 +13,14 @@ describe 'profiles::ssh' do
         it { is_expected.to contain_class('Profiles::Ssh').with(
           'authorized_keys'      => {},
           'authorized_keys_tags' => [],
-          'mfa'                  => false
+          'mfa'                  => false,
+          'manage_admin_user_authorized_keys' => true,
+          'mfa_enforced'         => false
         ) }
 
         it { is_expected.to contain_class('Profiles::Ssh::Mfa').with(
           'enabled'              => false,
+          'enforced'             => false,
           'authorized_keys'      => {},
           'authorized_keys_tags' => []
         ) }
@@ -68,7 +71,8 @@ describe 'profiles::ssh' do
         it { is_expected.to contain_firewall('100 accept SSH traffic') }
 
         it { is_expected.to contain_class('Profiles::Ssh::Authorized_keys').with(
-          'keys' => {}
+          'keys'                              => {},
+          'manage_admin_user_authorized_keys' => true
         ) }
 
         it { is_expected.to contain_profiles__ssh__sshd_config('PermitRootLogin').that_notifies('Class[Profiles::Ssh::Service]') }
@@ -94,11 +98,13 @@ describe 'profiles::ssh' do
           let(:params) { {
             'authorized_keys'      => authorized_keys,
             'authorized_keys_tags' => 'publiq',
-            'mfa'                  => true
+            'mfa'                  => true,
+            'mfa_enforced'         => true
           } }
 
           it { is_expected.to contain_class('Profiles::Ssh::Mfa').with(
             'enabled'              => true,
+            'enforced'             => true,
             'authorized_keys'      => authorized_keys,
             'authorized_keys_tags' => 'publiq'
           ) }
@@ -120,6 +126,20 @@ describe 'profiles::ssh' do
             it { is_expected.to contain_ssh_authorized_key('publiq second key') }
 
             it { is_expected.to have_ssh_authorized_key_resource_count(4) }
+          end
+
+          context "with authorized_keys_tags => publiq and manage_admin_user_authorized_keys => false" do
+            let(:params) { {
+              'authorized_keys_tags' => 'publiq',
+              'manage_admin_user_authorized_keys' => false
+            } }
+
+            it { is_expected.not_to contain_ssh_authorized_key('publiq first key ubuntu') }
+            it { is_expected.not_to contain_ssh_authorized_key('publiq second key ubuntu') }
+            it { is_expected.to contain_ssh_authorized_key('publiq first key') }
+            it { is_expected.to contain_ssh_authorized_key('publiq second key') }
+
+            it { is_expected.to have_ssh_authorized_key_resource_count(2) }
           end
 
           context "with authorized_keys_tags => acme" do

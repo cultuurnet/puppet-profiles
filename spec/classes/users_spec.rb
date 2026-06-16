@@ -23,7 +23,7 @@ describe 'profiles::users' do
       context 'with shell => { user1 => { active => true, admin => true, tags => [foo, bar] }, user2 => { active => false, admin => false, tags => baz }, user3 => { tags => bar } } and shell_tags => bar' do
         let(:params) { {
           'shell'     => {
-                            'user1' => { 'uid' => 5000, 'active' => true, 'admin' => true, 'tags' => ['foo', 'bar'] },
+                            'user1' => { 'uid' => 5000, 'active' => true, 'admin' => true, 'mfa' => false, 'mfa_config' => '/tmp/user1.conf', 'tags' => ['foo', 'bar'] },
                             'user2' => { 'uid' => 5001, 'active' => false, 'admin' => false, 'tags' => 'baz' },
                             'user3' => { 'uid' => 5002, 'tags' => 'bar' }
                           },
@@ -34,6 +34,8 @@ describe 'profiles::users' do
           'uid'    => 5000,
           'active' => true,
           'admin'  => true,
+          'mfa'    => false,
+          'mfa_config' => '/tmp/user1.conf',
           'tag'    => ['foo', 'bar']
         ) }
 
@@ -43,6 +45,8 @@ describe 'profiles::users' do
           'uid'    => 5002,
           'active' => false,
           'admin'  => false,
+          'mfa'    => true,
+          'mfa_config' => nil,
           'tag'    => 'bar'
         ) }
       end

@@ -1,7 +1,9 @@
 class profiles::ssh(
   Variant[Hash, Array[Hash]]     $authorized_keys      = {},
   Variant[String, Array[String]] $authorized_keys_tags = [],
-  Boolean                        $mfa                  = false
+  Boolean                        $mfa                  = false,
+  Boolean                        $manage_admin_user_authorized_keys = true,
+  Boolean                        $mfa_enforced         = false
 ) inherits ::profiles {
 
   include ::profiles::firewall::rules
@@ -59,11 +61,13 @@ class profiles::ssh(
   }
 
   class { 'profiles::ssh::authorized_keys':
-    keys => $authorized_keys
+    keys                              => $authorized_keys,
+    manage_admin_user_authorized_keys => $manage_admin_user_authorized_keys
   }
 
   class { 'profiles::ssh::mfa':
     enabled              => $mfa,
+    enforced             => $mfa_enforced,
     authorized_keys      => $authorized_keys,
     authorized_keys_tags => $authorized_keys_tags
   }

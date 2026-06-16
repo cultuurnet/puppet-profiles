@@ -16,7 +16,8 @@ describe 'profiles::users::shell' do
           it { is_expected.to contain_profiles__users__shell('publiq-first').with(
             'uid'    => 5500,
             'active' => false,
-            'admin'  => false
+            'admin'  => false,
+            'mfa'    => true
           ) }
 
           it { is_expected.to contain_group('publiq-first').with(
@@ -34,6 +35,8 @@ describe 'profiles::users::shell' do
             'shell'          => '/bin/bash',
             'uid'            => 5500
           ) }
+
+          it { is_expected.to contain_file('/home/publiq-first/.google_authenticator').with_ensure('absent') }
         end
 
         context 'with uid => 6000, active => true, admin => true' do
@@ -58,6 +61,80 @@ describe 'profiles::users::shell' do
             'shell'          => '/bin/bash',
             'uid'            => 6000
           ) }
+
+          it { is_expected.to contain_file('/home/publiq-first/.google_authenticator').with_ensure('absent') }
+        end
+
+        context 'with uid => 6001, active => true, mfa => true, mfa_config => support/mfa/publiq-first-user.conf' do
+          let(:params) { {
+            'uid'        => 6001,
+            'active'     => true,
+            'mfa'        => true,
+            'mfa_config' => File.expand_path('../../support/mfa/publiq-first-user.conf', __dir__)
+          } }
+
+          it { is_expected.to contain_user('publiq-first').with(
+            'ensure' => 'present',
+            'groups' => ['mfa_users']
+          ) }
+
+          it { is_expected.to contain_file('/home/publiq-first/.google_authenticator').with(
+            'ensure'    => 'file',
+            'owner'     => 'publiq-first',
+            'group'     => 'publiq-first',
+            'mode'      => '0400',
+            'content'   => "MFA configuration\n",
+            'show_diff' => false
+          ) }
+
+          it { is_expected.to contain_file('/home/publiq-first/.google_authenticator').that_requires('User[publiq-first]') }
+        end
+
+        context 'with uid => 6002, active => true, admin => true, mfa => true, mfa_config => support/mfa/publiq-first-user.conf' do
+          let(:params) { {
+            'uid'        => 6002,
+            'active'     => true,
+            'admin'      => true,
+            'mfa'        => true,
+            'mfa_config' => File.expand_path('../../support/mfa/publiq-first-user.conf', __dir__)
+          } }
+
+          it { is_expected.to contain_user('publiq-first').with_groups(['sudo', 'mfa_users']) }
+        end
+
+        context 'with uid => 6004, active => true, mfa => true' do
+          let(:params) { {
+            'uid'    => 6004,
+            'active' => true,
+            'mfa'    => true
+          } }
+
+          it { is_expected.to contain_user('publiq-first').with_groups([]) }
+          it { is_expected.to contain_file('/home/publiq-first/.google_authenticator').with_ensure('absent') }
+        end
+
+        context 'with uid => 6004, active => true, mfa => true, mfa_enforced => true' do
+          let(:params) { {
+            'uid'          => 6004,
+            'active'       => true,
+            'mfa'          => true,
+            'mfa_enforced' => true
+          } }
+
+          it { is_expected.to contain_user('publiq-first').with_groups(['mfa_users']) }
+          it { is_expected.to contain_file('/home/publiq-first/.google_authenticator').with_ensure('absent') }
+        end
+
+        context 'with uid => 6003, active => true, mfa => false, mfa_config => support/mfa/publiq-first-user.conf' do
+          let(:params) { {
+            'uid'        => 6003,
+            'active'     => true,
+            'mfa'        => false,
+            'mfa_config' => File.expand_path('../../support/mfa/publiq-first-user.conf', __dir__)
+          } }
+
+          it { is_expected.to contain_user('publiq-first').with_groups([]) }
+          it { is_expected.to contain_file('/home/publiq-first/.google_authenticator').with_ensure('absent') }
         end
 
         context 'with uid => 7000, active => false' do
@@ -81,6 +158,8 @@ describe 'profiles::users::shell' do
             'shell'          => '/bin/bash',
             'uid'            => 7000
           ) }
+
+          it { is_expected.to contain_file('/home/publiq-first/.google_authenticator').with_ensure('absent') }
         end
 
         context 'with uid => 4000' do
