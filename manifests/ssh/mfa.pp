@@ -24,18 +24,18 @@ class profiles::ssh::mfa (
   }
   $mfa_addresses        = ['*'] + $bypass_ips.map |String $ip| { "!${ip}" }
 
+  file { '/etc/pam.d/sshd':
+    ensure  => 'file',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    content => template('profiles/ssh/mfa/sshd.pam.erb')
+  }
+
   if $enabled {
     package { 'libpam-google-authenticator':
-      ensure => 'installed'
-    }
-
-    file { '/etc/pam.d/sshd':
-      ensure  => 'file',
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0644',
-      content => template('profiles/ssh/mfa/sshd.pam.erb'),
-      require => Package['libpam-google-authenticator']
+      ensure => 'installed',
+      before => File['/etc/pam.d/sshd']
     }
 
     if !empty($configured_users) {
@@ -56,14 +56,6 @@ class profiles::ssh::mfa (
       value => 'yes'
     }
   } else {
-    file { '/etc/pam.d/sshd':
-      ensure  => 'file',
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0644',
-      content => template('profiles/ssh/mfa/sshd.pam.erb')
-    }
-
     file { '/etc/ssh/sshd_config.d/publiq-mfa.conf':
       ensure => 'absent'
     }
@@ -71,10 +63,6 @@ class profiles::ssh::mfa (
     profiles::ssh::sshd_config { 'ChallengeResponseAuthentication':
       value => 'no'
     }
-  }
-
-  group { 'mfa_users':
-    ensure => 'present'
   }
 
   $authorized_keys.each |String $user, Hash $attributes| {

@@ -8,8 +8,9 @@ describe 'profiles::groups' do
       it { is_expected.to compile.with_all_deps }
 
       context "without virtual resources realized" do
-        it { is_expected.to contain_group('managed_users').with(
-          'ensure' => 'present'
+        it { is_expected.to contain_group('mfa_users').with(
+          'ensure' => 'present',
+          'gid'    => '1008'
         ) }
 
         it { is_expected.to contain_group('docker').with(

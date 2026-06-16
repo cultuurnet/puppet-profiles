@@ -40,7 +40,10 @@ describe 'profiles::ssh::mfa' do
         'ensure' => 'installed'
       ) }
 
-      it { is_expected.to contain_group('mfa_users').with_ensure('present') }
+      it { is_expected.to contain_group('mfa_users').with(
+        'ensure' => 'present',
+        'gid'    => '1008'
+      ) }
       it { is_expected.to contain_profiles__users__shell('Publiq First User').with(
         'mfa'        => true,
         'mfa_config' => File.expand_path('../../support/mfa/publiq-first-user.conf', __dir__)
@@ -66,7 +69,7 @@ describe 'profiles::ssh::mfa' do
       it { is_expected.to contain_file('/etc/pam.d/sshd').without_content(%r{pam_succeed_if\.so}) }
       it { is_expected.to contain_file('/etc/pam.d/sshd').with_content(%r{pam_google_authenticator\.so nullok}) }
       it { is_expected.to contain_file('/etc/pam.d/sshd').with_content(%r{auth required pam_permit\.so}) }
-      it { is_expected.to contain_file('/etc/pam.d/sshd').that_requires('Package[libpam-google-authenticator]') }
+      it { is_expected.to contain_package('libpam-google-authenticator').that_comes_before('File[/etc/pam.d/sshd]') }
 
       it { is_expected.to contain_profiles__ssh__sshd_config('UsePAM').with_value('yes') }
       it { is_expected.to contain_profiles__ssh__sshd_config('ChallengeResponseAuthentication').with_value('yes') }
