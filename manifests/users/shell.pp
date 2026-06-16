@@ -23,6 +23,10 @@ define profiles::users::shell (
                     true  => 'present',
                     false => 'absent'
                   }
+  $gid            = $active ? {
+                    true  => $username,
+                    false => undef
+                  }
 
   group { $username:
     ensure => $ensure,
@@ -32,7 +36,7 @@ define profiles::users::shell (
   user { $username:
     ensure         => $ensure,
     uid            => $uid,
-    gid            => $username,
+    gid            => $gid,
     groups         => $groups,
     home           => "/home/${username}",
     managehome     => true,
@@ -54,5 +58,11 @@ define profiles::users::shell (
     file { "/home/${username}/.google_authenticator":
       ensure => 'absent'
     }
+  }
+
+  if $active {
+    Group[$username] -> User[$username]
+  } else {
+    User[$username] -> Group[$username]
   }
 }
