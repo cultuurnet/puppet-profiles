@@ -19,6 +19,14 @@ class profiles::atlassian::confluence (
   $database_name = 'confluencedb'
   $dburl_params  = "sessionVariables=transaction_isolation='READ-COMMITTED'"
   $dburl         = "jdbc:mysql://${database_host}:3306/${$database_name}?${dburl_params}"
+  $homedir       = '/home/confluence'
+  $upm_configdir = "${homedir}/upmconfig"
+  $upm_truststore = "${upm_configdir}/truststore"
+  $atlassian_upm_certificates = [
+    'atlassian_mpac_intermediate_ca_v1.crt',
+    'atlassian_mpac_intermediate_ca_v2.crt',
+    'atlassian_mpac_root_ca_v1.crt'
+  ]
 
   if $database_host == '127.0.0.1' {
     $database_host_remote    = false
@@ -37,6 +45,8 @@ class profiles::atlassian::confluence (
 
   realize Group['confluence']
   realize User['confluence']
+  realize Apt::Source['publiq-tools']
+  realize Package['mysql-connector-j']
 
   # setup storage
   if ($lvm == true) and ($manage_homedir == false) {
@@ -78,7 +88,7 @@ class profiles::atlassian::confluence (
   class { 'confluence':
     version                 => $version,
     installdir              => '/opt/confluence',
-    homedir                 => '/home/confluence',
+    homedir                 => $homedir,
     manage_homedir          => $manage_homedir,
     tomcat_port             => 8090,
     manage_user             => false,
@@ -94,6 +104,32 @@ class profiles::atlassian::confluence (
                                  proxyPort => '443',
                                  scheme    => 'https'
                                }
+  }
+
+  file { $upm_configdir:
+    ensure => 'directory',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755'
+  }
+
+  file { $upm_truststore:
+    ensure  => 'directory',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    require => File[$upm_configdir]
+  }
+
+  $atlassian_upm_certificates.each |$certificate| {
+    file { "${upm_truststore}/${certificate}":
+      ensure  => 'file',
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+      source  => "puppet:///modules/profiles/atlassian/confluence/upmconfig/truststore/${certificate}",
+      require => File[$upm_truststore]
+    }
   }
 
   if $vault_enabled {

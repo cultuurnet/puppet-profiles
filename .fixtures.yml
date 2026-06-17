@@ -157,6 +157,12 @@ fixtures:
     glassfish:
       repo: 'https://github.com/cultuurnet/fatmcgav-glassfish.git'
       ref: 'cb923fa'
+    jira:
+      repo: 'https://github.com/cultuurnet/puppet-jira.git'
+      ref: 'ca7b3bb'
+    confluence:
+      repo: 'https://github.com/cultuurnet/puppet-confluence.git'
+      ref: 'cda95a8'
   symlinks:
     appconfig: ${PWD}/spec/support/appconfig
     profiles: ${PWD}
