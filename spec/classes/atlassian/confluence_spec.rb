@@ -14,6 +14,8 @@ describe 'profiles::atlassian::confluence' do
 
       it { is_expected.to compile.with_all_deps }
 
+      it { is_expected.to contain_package('mysql-connector-j').that_requires('Apt::Source[publiq-tools]') }
+
       it { is_expected.to contain_file('/home/confluence/upmconfig').with(
         'ensure' => 'directory',
         'owner'  => 'root',

@@ -45,6 +45,8 @@ class profiles::atlassian::confluence (
 
   realize Group['confluence']
   realize User['confluence']
+  realize Apt::Source['publiq-tools']
+  realize Package['mysql-connector-j']
 
   # setup storage
   if ($lvm == true) and ($manage_homedir == false) {
