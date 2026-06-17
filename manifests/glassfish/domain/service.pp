@@ -4,6 +4,7 @@ define profiles::glassfish::domain::service(
 ) {
 
   include ::profiles
+  include ::profiles::glassfish
 
   systemd::unit_file { "glassfish-${title}.service":
     ensure        => $ensure,
