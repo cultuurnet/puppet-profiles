@@ -15,7 +15,7 @@ group :development, :test do
   gem 'rspec-puppet-facts', '5.4.0', :require => false
   gem 'semantic_puppet', :require => false
   gem 'facter', '4.10.0', :require => false
-  gem 'openvox', '7.37.2', :require => false
+  gem 'openvox', '8.19.2', :require => false
 end
 
 # vim:ft=ruby
