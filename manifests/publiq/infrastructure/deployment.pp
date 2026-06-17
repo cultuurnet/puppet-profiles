@@ -1,7 +1,6 @@
 class profiles::publiq::infrastructure::deployment (
-  String           $version      = 'latest',
-  String           $repository   = 'publiq-infrastructure',
-  Optional[String] $puppetdb_url = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+  String $version    = 'latest',
+  String $repository = 'publiq-infrastructure'
 ) inherits ::profiles {
 
   include ::profiles::puppet::puppetserver::cache_clear
@@ -10,7 +9,7 @@ class profiles::publiq::infrastructure::deployment (
 
   package { 'publiq-infrastructure':
     ensure  => $version,
-    notify  => [ Class['profiles::puppet::puppetserver::cache_clear'], Profiles::Deployment::Versions[$title]],
+    notify  => Class['profiles::puppet::puppetserver::cache_clear'],
     require => Apt::Source[$repository]
   }
 
@@ -31,10 +30,5 @@ class profiles::publiq::infrastructure::deployment (
       require => [ Package['publiq-infrastructure'], File['publiq-infrastructure get_config_version']],
       notify  => Class['profiles::puppet::puppetserver::cache_clear']
     }
-  }
-
-  profiles::deployment::versions { $title:
-    puppetdb_url    => $puppetdb_url,
-    require         => Class['profiles::puppet::puppetserver::cache_clear']
   }
 }

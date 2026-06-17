@@ -48,30 +48,6 @@ describe 'profiles::publiq::infrastructure::deployment' do
           'content' => 'config_version = /etc/puppetlabs/code/get_config_version.sh'
         ) }
 
-        context "without hieradata" do
-          let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
-
-          it { is_expected.to contain_class('profiles::publiq::infrastructure::deployment').with(
-            'puppetdb_url' => nil
-          ) }
-
-          it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::infrastructure::deployment').with(
-            'puppetdb_url' => nil
-          ) }
-        end
-
-        context "with hieradata" do
-          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
-
-          it { is_expected.to contain_class('profiles::publiq::infrastructure::deployment').with(
-            'puppetdb_url' => 'http://localhost:8081'
-          ) }
-
-          it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::infrastructure::deployment').with(
-            'puppetdb_url' => 'http://localhost:8081'
-          ) }
-        end
-
         it { is_expected.to contain_package('publiq-infrastructure').that_requires('Apt::Source[publiq-infrastructure]') }
         it { is_expected.to contain_package('publiq-infrastructure').that_notifies('Class[profiles::puppet::puppetserver::cache_clear]') }
         it { is_expected.to contain_file('publiq-infrastructure get_config_version').that_requires('Package[publiq-infrastructure]') }
@@ -86,26 +62,18 @@ describe 'profiles::publiq::infrastructure::deployment' do
         it { is_expected.to contain_file('publiq-infrastructure production environment environment.conf').that_requires('Package[publiq-infrastructure]') }
         it { is_expected.to contain_file('publiq-infrastructure production environment environment.conf').that_requires('File[publiq-infrastructure get_config_version]') }
         it { is_expected.to contain_file('publiq-infrastructure production environment environment.conf').that_notifies('Class[profiles::puppet::puppetserver::cache_clear]') }
-
-        it { is_expected.to contain_package('publiq-infrastructure').that_notifies('Profiles::Deployment::Versions[profiles::publiq::infrastructure::deployment]') }
-        it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::infrastructure::deployment').that_requires('Class[profiles::puppet::puppetserver::cache_clear]') }
       end
 
-      context "with version => 1.2.3, repository => publiq-infrastructure-legacy and puppetdb_url => http://example.com:8000" do
+      context "with version => 1.2.3 and repository => publiq-infrastructure-legacy" do
         let(:params) { {
-          'version'      => '1.2.3',
-          'repository'   => 'publiq-infrastructure-legacy',
-          'puppetdb_url' => 'http://example.com:8000'
+          'version'    => '1.2.3',
+          'repository' => 'publiq-infrastructure-legacy'
         } }
 
         it { is_expected.to contain_apt__source('publiq-infrastructure-legacy') }
 
         it { is_expected.to contain_package('publiq-infrastructure').with(
           'ensure' => '1.2.3'
-        ) }
-
-        it { is_expected.to contain_profiles__deployment__versions('profiles::publiq::infrastructure::deployment').with(
-          'puppetdb_url'    => 'http://example.com:8000'
         ) }
 
         it { is_expected.to contain_package('publiq-infrastructure').that_requires('Apt::Source[publiq-infrastructure-legacy]') }
