@@ -5,6 +5,33 @@ describe 'profiles::atlassian::confluence' do
     context "on #{os}" do
       let(:facts) { facts }
 
+      let(:pre_condition) { [
+        "Apt::Source <| title == 'publiq-tools' |>",
+        "Package <| title == 'mysql-connector-j' |>",
+        <<~PUPPET
+          class confluence (
+            String $version,
+            String $installdir,
+            String $homedir,
+            Boolean $manage_homedir,
+            Integer $tomcat_port,
+            Boolean $manage_user,
+            String $javahome,
+            String $jvm_type,
+            Boolean $mysql_connector,
+            String $jvm_xms,
+            String $jvm_xmx,
+            String $java_opts,
+            Boolean $manage_service,
+            Hash $tomcat_proxy
+          ) {}
+
+          define confluence::conf (
+            String $value
+          ) {}
+        PUPPET
+      ] }
+
       let(:params) { {
         'servername'        => 'confluence.example.com',
         'version'           => '9.2.1',
