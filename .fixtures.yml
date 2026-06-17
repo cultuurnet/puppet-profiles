@@ -135,9 +135,6 @@ fixtures:
     archive:
       repo: 'puppet/archive'
       ref: '7.1.0'
-    confluence:
-      repo: 'puppet/confluence'
-      ref: '6.0.0'
     debconf:
       repo: 'stm/debconf'
       ref: '6.2.0'
@@ -160,6 +157,12 @@ fixtures:
     glassfish:
       repo: 'https://github.com/cultuurnet/fatmcgav-glassfish.git'
       ref: 'cb923fa'
+    jira:
+      repo: 'https://github.com/cultuurnet/puppet-jira.git'
+      ref: 'ca7b3bb'
+    confluence:
+      repo: 'https://github.com/cultuurnet/puppet-confluence.git'
+      ref: 'cda95a8'
   symlinks:
     appconfig: ${PWD}/spec/support/appconfig
     profiles: ${PWD}
