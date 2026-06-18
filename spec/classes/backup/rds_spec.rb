@@ -21,6 +21,16 @@ describe 'profiles::backup::rds' do
             'volume_size'                 => nil,
             'extra_rds_configs'           => {}
           ) }
+
+          it { is_expected.to contain_cron('rds-backup-cleanup').with(
+            'ensure'      => 'present',
+            'environment' => ['TZ=Europe/Brussels', 'MAILTO=infra+cron@publiq.be'],
+            'user'        => 'ubuntu',
+            'minute'      => '0',
+            'hour'        => '1',
+            'weekday'     => '0',
+            'command'     => "/usr/bin/find /data/rdsbackups -maxdepth 1 -type f -name '*.sql.gz' -mtime +90 -delete"
+          ) }
         end
 
         context 'with offsite_storage_public_keys => { foo => { type => ed25519, key => abcd1234 } }' do

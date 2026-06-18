@@ -116,6 +116,6 @@ class profiles::backup::rds (
     minute      => '0',
     hour        => '1',
     weekday     => '0',
-    command     => "/bin/rm -f ${backupdir}/*.sql.gz",
+    command     => "/usr/bin/find ${backupdir} -maxdepth 1 -type f -name '*.sql.gz' -mtime +90 -delete",
   }
 }
