@@ -61,10 +61,6 @@ class profiles::jenkins::controller::configuration(
   profiles::jenkins::plugin { 'build-token-root': }
 
   profiles::jenkins::plugin { 'role-strategy':
-    ensure => $role_based_authorization ? {
-                true  => 'present',
-                false => 'absent'
-              },
     before => Profiles::Jenkins::Plugin['configuration-as-code'],
     notify => Class['profiles::jenkins::controller::configuration::reload']
   }
