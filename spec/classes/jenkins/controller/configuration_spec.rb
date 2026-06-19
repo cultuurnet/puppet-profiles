@@ -200,7 +200,8 @@ describe 'profiles::jenkins::controller::configuration' do
             ) }
 
             it { is_expected.to contain_profiles__jenkins__plugin('role-strategy').with(
-              'ensure' => 'absent'
+              'ensure'  => 'present',
+              'restart' => false
             ) }
 
             it { is_expected.to_not contain_file('jenkins users') }
