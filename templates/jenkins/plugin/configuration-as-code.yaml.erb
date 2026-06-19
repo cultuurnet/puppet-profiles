@@ -4,7 +4,6 @@ unclassified:
     adminAddress: 'jenkins@publiq.be'
     url: '<%= @configuration['url'] %>'
 jenkins:
-  authorizationStrategy:
 <%- if @configuration['role_based_authorization'] -%>
 <%-
 users = [@configuration['users']].flatten.compact
@@ -46,6 +45,10 @@ custom_roles = custom_groups.map do |group|
 end.compact
 item_roles = [user_role].compact + custom_roles
 -%>
+  projectNamingStrategy:
+    roleBased:
+      forceExistingJobs: true
+  authorizationStrategy:
     roleBased:
       roles:
         global:
@@ -80,6 +83,7 @@ item_roles = [user_role].compact + custom_roles
 <%- end -%>
 <%- end -%>
 <%- else -%>
+  authorizationStrategy:
     loggedInUsersCanDoAnything:
       allowAnonymousRead: false
 <%- end -%>
