@@ -250,10 +250,12 @@ describe 'profiles::jenkins::controller::configuration' do
           'role_based_authorization' => true,
           'users'                    => [
                                           { 'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com', 'groups' => ['admin', 'app'] },
-                                          { 'id' => 'bar', 'name' => 'Bar Baz', 'password' => 'qux', 'email' => 'bar@example.com', 'groups' => ['app'] }
+                                          { 'id' => 'bar', 'name' => 'Bar Baz', 'password' => 'qux', 'email' => 'bar@example.com', 'groups' => ['app'] },
+                                          { 'id' => 'baz', 'name' => 'Baz Qux', 'password' => 'secret', 'email' => 'baz@example.com' }
                                         ],
           'pipelines'                => [
                                           { 'name' => 'App Build', 'git_url' => 'git@example.com:org/app.git', 'git_ref' => 'main', 'credential_id' => 'gitkey', 'keep_builds' => 10, 'authorization_groups' => ['app'] },
+                                          { 'name' => 'User Build', 'git_url' => 'git@example.com:org/user.git', 'git_ref' => 'main', 'credential_id' => 'gitkey', 'keep_builds' => 10, 'authorization_groups' => ['users'] },
                                           { 'name' => 'Admin Only', 'git_url' => 'git@example.com:org/admin.git', 'git_ref' => 'main', 'credential_id' => 'gitkey', 'keep_builds' => 10, 'authorization_groups' => ['admin'] }
                                         ]
         } }
@@ -275,11 +277,13 @@ describe 'profiles::jenkins::controller::configuration' do
                                'views'                    => [],
                                'pipelines'                => [
                                                                { 'name' => 'App Build', 'git_url' => 'git@example.com:org/app.git', 'git_ref' => 'main', 'credential_id' => 'gitkey', 'keep_builds' => 10, 'authorization_groups' => ['app'] },
+                                                               { 'name' => 'User Build', 'git_url' => 'git@example.com:org/user.git', 'git_ref' => 'main', 'credential_id' => 'gitkey', 'keep_builds' => 10, 'authorization_groups' => ['users'] },
                                                                { 'name' => 'Admin Only', 'git_url' => 'git@example.com:org/admin.git', 'git_ref' => 'main', 'credential_id' => 'gitkey', 'keep_builds' => 10, 'authorization_groups' => ['admin'] }
                                                              ],
                                'users'                    => [
                                                                { 'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com', 'groups' => ['admin', 'app'] },
-                                                               { 'id' => 'bar', 'name' => 'Bar Baz', 'password' => 'qux', 'email' => 'bar@example.com', 'groups' => ['app'] }
+                                                               { 'id' => 'bar', 'name' => 'Bar Baz', 'password' => 'qux', 'email' => 'bar@example.com', 'groups' => ['app'] },
+                                                               { 'id' => 'baz', 'name' => 'Baz Qux', 'password' => 'secret', 'email' => 'baz@example.com' }
                                                              ],
                                'role_based_authorization' => true
                              }
@@ -293,6 +297,9 @@ describe 'profiles::jenkins::controller::configuration' do
         it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- name: 'app'$/) }
         it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*pattern: '\^\(app\\-build\)\$'$/) }
         it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- user: 'bar'$/) }
+        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- name: 'users'$/) }
+        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*pattern: '\^\(user\\-build\)\$'$/) }
+        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- user: 'baz'$/) }
         it { is_expected.to_not contain_file('configuration-as-code configuration').with_content(/admin\\-only/) }
       end
 
