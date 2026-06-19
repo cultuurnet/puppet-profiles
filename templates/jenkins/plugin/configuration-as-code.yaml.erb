@@ -5,8 +5,64 @@ unclassified:
     url: '<%= @configuration['url'] %>'
 jenkins:
   authorizationStrategy:
+<%- if @configuration['role_based_authorization'] -%>
+    roleBased:
+      roles:
+        global:
+        - name: 'admin'
+          description: 'Jenkins administrators'
+          permissions:
+          - 'Overall/Administer'
+          entries:
+<%-
+users = [@configuration['users']].flatten.compact
+pipelines = [@configuration['pipelines']].flatten.compact
+admin_users = (['admin'] + users.select { |user| Array(user['groups']).include?('admin') }.map { |user| user['id'] }).compact.uniq
+admin_users.each do |user_id|
+-%>
+          - user: '<%= user_id.to_s.gsub("'", "''") %>'
+<%- end -%>
+        - name: 'authenticated'
+          description: 'Authenticated users'
+          permissions:
+          - 'Overall/Read'
+          entries:
+          - group: 'authenticated'
+<%-
+groups = pipelines.flat_map { |pipeline| Array(pipeline['authorization_groups']) }.compact.reject { |group| group == 'admin' }.uniq.sort
+item_roles = groups.map do |group|
+  job_names = pipelines.select { |pipeline| Array(pipeline['authorization_groups']).include?(group) }.map { |pipeline| scope().call_function('slugify', [pipeline['name']]) }.compact.uniq
+  user_ids = users.select { |user| Array(user['groups']).include?(group) }.map { |user| user['id'] }.compact.uniq
+  {
+    'group' => group,
+    'job_names' => job_names,
+    'user_ids' => user_ids,
+  }
+end.select { |role| !role['job_names'].empty? and !role['user_ids'].empty? }
+unless item_roles.empty?
+-%>
+        items:
+<%- item_roles.each do |role| -%>
+        - name: '<%= role['group'].to_s.gsub("'", "''") %>'
+          description: 'Pipelines for <%= role['group'].to_s.gsub("'", "''") %>'
+          pattern: '^(<%= role['job_names'].map { |job_name| Regexp.escape(job_name) }.join('|') %>)$'
+          permissions:
+          - 'Job/Build'
+          - 'Job/Cancel'
+          - 'Job/Discover'
+          - 'Job/Read'
+          - 'Job/Workspace'
+          - 'Run/Replay'
+          entries:
+<%- role['user_ids'].each do |user_id| -%>
+          - user: '<%= user_id.to_s.gsub("'", "''") %>'
+<%- end -%>
+<%- end -%>
+<%- end -%>
+<%- else -%>
     loggedInUsersCanDoAnything:
       allowAnonymousRead: false
+<%- end -%>
   numExecutors: 0
   slaveAgentPort: 0
   mode: NORMAL

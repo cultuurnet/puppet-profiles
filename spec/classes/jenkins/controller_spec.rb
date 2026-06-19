@@ -33,6 +33,7 @@ describe 'profiles::jenkins::controller' do
             'pipelines'                    => [],
             'views'                        => [],
             'users'                        => [],
+            'role_based_authorization'     => false,
             'puppetdb_url'                 => 'http://localhost:8081'
           ) }
 
@@ -55,6 +56,7 @@ describe 'profiles::jenkins::controller' do
             'github_servers'      => [],
             'global_libraries'    => [],
             'users'               => [],
+            'role_based_authorization' => false,
             'puppetdb_url'        => 'http://localhost:8081'
           ) }
 
@@ -96,6 +98,7 @@ describe 'profiles::jenkins::controller' do
             'github_servers'      => [],
             'global_libraries'    => [],
             'users'               => [],
+            'role_based_authorization' => false,
             'puppetdb_url'        => nil
           ) }
         end
@@ -235,6 +238,7 @@ describe 'profiles::jenkins::controller' do
                                        {'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'},
                                        {'id' => 'user1', 'name' => 'User One', 'password' => 'passw0rd', 'email' => 'user1@example.com'}
                                      ],
+            'role_based_authorization' => false,
             'puppetdb_url'        => 'http://example.com:8081'
           ) }
 

@@ -32,6 +32,7 @@ describe 'profiles::jenkins::controller::configuration' do
               'pipelines'           => [],
               'views'               => [],
               'users'               => [],
+              'role_based_authorization' => false,
               'puppetdb_url'        => 'http://localhost:8081'
             ) }
 
@@ -198,6 +199,8 @@ describe 'profiles::jenkins::controller::configuration' do
               'configuration' => nil
             ) }
 
+            it { is_expected.to_not contain_profiles__jenkins__plugin('role-strategy') }
+
             it { is_expected.to_not contain_file('jenkins users') }
 
             it { is_expected.to contain_profiles__puppet__puppetdb__cli('jenkins').with(
@@ -235,6 +238,60 @@ describe 'profiles::jenkins::controller::configuration' do
             it { is_expected.to_not contain_profiles__puppet__puppetdb__cli('jenkins') }
           end
         end
+      end
+
+      context "with role_based_authorization => true, users with groups and pipelines with authorization_groups" do
+        let(:environment) { 'testing' }
+        let(:params) { {
+          'url'                      => 'https://builds.foobar.com/',
+          'admin_password'           => 'letmein',
+          'role_based_authorization' => true,
+          'users'                    => [
+                                          { 'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com', 'groups' => ['admin', 'app'] },
+                                          { 'id' => 'bar', 'name' => 'Bar Baz', 'password' => 'qux', 'email' => 'bar@example.com', 'groups' => ['app'] }
+                                        ],
+          'pipelines'                => [
+                                          { 'name' => 'App Build', 'git_url' => 'git@example.com:org/app.git', 'git_ref' => 'main', 'credential_id' => 'gitkey', 'keep_builds' => 10, 'authorization_groups' => ['app'] },
+                                          { 'name' => 'Admin Only', 'git_url' => 'git@example.com:org/admin.git', 'git_ref' => 'main', 'credential_id' => 'gitkey', 'keep_builds' => 10, 'authorization_groups' => ['admin'] }
+                                        ]
+        } }
+
+        it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to contain_profiles__jenkins__plugin('role-strategy').with(
+          'ensure'  => 'present',
+          'restart' => false
+        ) }
+
+        it { is_expected.to contain_profiles__jenkins__plugin('role-strategy').that_comes_before('Profiles::Jenkins::Plugin[configuration-as-code]') }
+        it { is_expected.to contain_profiles__jenkins__plugin('role-strategy').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
+
+        it { is_expected.to contain_profiles__jenkins__plugin('configuration-as-code').with(
+          'configuration' => {
+                               'url'                      => 'https://builds.foobar.com/',
+                               'admin_password'           => 'letmein',
+                               'views'                    => [],
+                               'pipelines'                => [
+                                                               { 'name' => 'App Build', 'git_url' => 'git@example.com:org/app.git', 'git_ref' => 'main', 'credential_id' => 'gitkey', 'keep_builds' => 10, 'authorization_groups' => ['app'] },
+                                                               { 'name' => 'Admin Only', 'git_url' => 'git@example.com:org/admin.git', 'git_ref' => 'main', 'credential_id' => 'gitkey', 'keep_builds' => 10, 'authorization_groups' => ['admin'] }
+                                                             ],
+                               'users'                    => [
+                                                               { 'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com', 'groups' => ['admin', 'app'] },
+                                                               { 'id' => 'bar', 'name' => 'Bar Baz', 'password' => 'qux', 'email' => 'bar@example.com', 'groups' => ['app'] }
+                                                             ],
+                               'role_based_authorization' => true
+                             }
+        ) }
+
+        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*roleBased:$/) }
+        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- name: 'admin'$/) }
+        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- 'Overall\/Administer'$/) }
+        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- user: 'admin'$/) }
+        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- user: 'foo'$/) }
+        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- name: 'app'$/) }
+        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*pattern: '\^\(app\\-build\)\$'$/) }
+        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- user: 'bar'$/) }
+        it { is_expected.to_not contain_file('configuration-as-code configuration').with_content(/admin\\-only/) }
       end
 
       context "with url => https://builds.foobar.com/, admin_password => letmein, mfa => true, docker_registry_url => https://docker.registry.com/, private_key => 'dcba4321', credentials => [{ id => 'foo', type => 'string', secret => 'bla'}, { id => 'awscred', type => 'aws', access_key => 'aws_key', secret_key => 'aws_secret'}, { id => 'userpass', type => 'username_password', username => 'foo', password => 'bar'}], global_libraries => { git_url => 'git@example.com:org/repo.git', git_ref => 'main', credential_id => 'mygitcred'}, pipelines => { 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'keep_builds' => 5}, users => {'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'} and puppetdb_url => 'https://foobar.com:4567'" do

@@ -11,6 +11,7 @@ class profiles::jenkins::controller::configuration(
   Variant[Hash, Array[Hash]] $pipelines           = [],
   Variant[Hash, Array[Hash]] $views               = [],
   Variant[Hash, Array[Hash]] $users               = [],
+  Boolean                    $role_based_authorization = false,
   Optional[String]           $puppetdb_url        = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
@@ -28,6 +29,25 @@ class profiles::jenkins::controller::configuration(
                },
     default => []
   }
+  $configuration_as_code_configuration = $role_based_authorization ? {
+    true    => {
+                 'url'                      => $url,
+                 'admin_password'           => $admin_password,
+                 'views'                    => $views,
+                 'pipelines'                => $pipelines,
+                 'users'                    => $users,
+                 'role_based_authorization' => true
+               },
+    default => {
+                 'url'            => $url,
+                 'admin_password' => $admin_password,
+                 'views'          => $views
+               }
+  }
+  $configuration_as_code_require = $role_based_authorization ? {
+    true    => [Profiles::Jenkins::Plugin['mailer'], Profiles::Jenkins::Plugin['role-strategy']],
+    default => Profiles::Jenkins::Plugin['mailer']
+  }
 
   profiles::jenkins::plugin { 'swarm': }
   profiles::jenkins::plugin { 'mailer': }
@@ -43,6 +63,12 @@ class profiles::jenkins::controller::configuration(
   profiles::jenkins::plugin { 'parameterized-scheduler': }
   profiles::jenkins::plugin { 'pipeline-stage-view': }
   profiles::jenkins::plugin { 'build-token-root': }
+
+  if $role_based_authorization {
+    profiles::jenkins::plugin { 'role-strategy':
+      notify => Class['profiles::jenkins::controller::configuration::reload']
+    }
+  }
 
   profiles::jenkins::plugin { 'git':
     configuration => {
@@ -63,12 +89,8 @@ class profiles::jenkins::controller::configuration(
   }
 
   profiles::jenkins::plugin { 'configuration-as-code':
-    configuration => {
-                       'url'            => $url,
-                       'admin_password' => $admin_password,
-                       'views'          => $views
-                     },
-    require       => Profiles::Jenkins::Plugin['mailer'],
+    configuration => $configuration_as_code_configuration,
+    require       => $configuration_as_code_require,
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
 
