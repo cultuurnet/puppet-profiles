@@ -242,7 +242,7 @@ describe 'profiles::jenkins::controller::configuration' do
         end
       end
 
-      context "with role_based_authorization => true, users with groups and pipelines with authorization_groups" do
+      context "with role_based_authorization => true, users with groups and admin pipelines" do
         let(:environment) { 'testing' }
         let(:params) { {
           'url'                      => 'https://builds.foobar.com/',
@@ -254,8 +254,8 @@ describe 'profiles::jenkins::controller::configuration' do
                                           { 'id' => 'baz', 'name' => 'Baz Qux', 'password' => 'secret', 'email' => 'baz@example.com' }
                                         ],
           'pipelines'                => [
-                                          { 'name' => 'App Build', 'git_url' => 'git@example.com:org/app.git', 'git_ref' => 'main', 'credential_id' => 'gitkey', 'keep_builds' => 10, 'authorization_groups' => ['app'] },
-                                          { 'name' => 'User Build', 'git_url' => 'git@example.com:org/user.git', 'git_ref' => 'main', 'credential_id' => 'gitkey', 'keep_builds' => 10, 'authorization_groups' => ['users'] },
+                                          { 'name' => 'App Build', 'git_url' => 'git@example.com:org/app.git', 'git_ref' => 'main', 'credential_id' => 'gitkey', 'keep_builds' => 10 },
+                                          { 'name' => 'Team Build', 'git_url' => 'git@example.com:org/team.git', 'git_ref' => 'main', 'credential_id' => 'gitkey', 'keep_builds' => 10, 'authorization_groups' => ['app'] },
                                           { 'name' => 'Admin Only', 'git_url' => 'git@example.com:org/admin.git', 'git_ref' => 'main', 'credential_id' => 'gitkey', 'keep_builds' => 10, 'authorization_groups' => ['admin'] }
                                         ]
         } }
@@ -276,8 +276,8 @@ describe 'profiles::jenkins::controller::configuration' do
                                'admin_password'           => 'letmein',
                                'views'                    => [],
                                'pipelines'                => [
-                                                               { 'name' => 'App Build', 'git_url' => 'git@example.com:org/app.git', 'git_ref' => 'main', 'credential_id' => 'gitkey', 'keep_builds' => 10, 'authorization_groups' => ['app'] },
-                                                               { 'name' => 'User Build', 'git_url' => 'git@example.com:org/user.git', 'git_ref' => 'main', 'credential_id' => 'gitkey', 'keep_builds' => 10, 'authorization_groups' => ['users'] },
+                                                               { 'name' => 'App Build', 'git_url' => 'git@example.com:org/app.git', 'git_ref' => 'main', 'credential_id' => 'gitkey', 'keep_builds' => 10 },
+                                                               { 'name' => 'Team Build', 'git_url' => 'git@example.com:org/team.git', 'git_ref' => 'main', 'credential_id' => 'gitkey', 'keep_builds' => 10, 'authorization_groups' => ['app'] },
                                                                { 'name' => 'Admin Only', 'git_url' => 'git@example.com:org/admin.git', 'git_ref' => 'main', 'credential_id' => 'gitkey', 'keep_builds' => 10, 'authorization_groups' => ['admin'] }
                                                              ],
                                'users'                    => [
@@ -294,13 +294,12 @@ describe 'profiles::jenkins::controller::configuration' do
         it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- 'Overall\/Administer'$/) }
         it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- user: 'admin'$/) }
         it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- user: 'foo'$/) }
-        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- name: 'app'$/) }
-        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*pattern: '\^\(app\\-build\)\$'$/) }
-        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- user: 'bar'$/) }
         it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- name: 'users'$/) }
-        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*pattern: '\^\(user\\-build\)\$'$/) }
+        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*pattern: '\^\(\?!\(admin\\-only\)\$\)\.\+'$/) }
         it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- user: 'baz'$/) }
-        it { is_expected.to_not contain_file('configuration-as-code configuration').with_content(/admin\\-only/) }
+        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- name: 'app'$/) }
+        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*pattern: '\^\(team\\-build\)\$'$/) }
+        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- user: 'bar'$/) }
       end
 
       context "with url => https://builds.foobar.com/, admin_password => letmein, mfa => true, docker_registry_url => https://docker.registry.com/, private_key => 'dcba4321', credentials => [{ id => 'foo', type => 'string', secret => 'bla'}, { id => 'awscred', type => 'aws', access_key => 'aws_key', secret_key => 'aws_secret'}, { id => 'userpass', type => 'username_password', username => 'foo', password => 'bar'}], global_libraries => { git_url => 'git@example.com:org/repo.git', git_ref => 'main', credential_id => 'mygitcred'}, pipelines => { 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'keep_builds' => 5}, users => {'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'} and puppetdb_url => 'https://foobar.com:4567'" do
