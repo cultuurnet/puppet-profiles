@@ -24,6 +24,9 @@ jobs:<%- if @configuration['pipelines'].empty? -%> []
             <%- if pipeline['git_url'] =~ /^git@github.com:/ -%>
               githubProjectUrl('https://github.com/<%= pipeline['git_url'][/^.*:(.*).git$/, 1] %>')
             <%- end -%>
+              copyArtifactPermissionProperty {
+                  projectNames('*')
+              }
               disableConcurrentBuilds { abortPrevious(<%= pipeline['abort_previous'].nil? ? 'true' : pipeline['abort_previous'] %>) }
               pipelineTriggers {
                   triggers {

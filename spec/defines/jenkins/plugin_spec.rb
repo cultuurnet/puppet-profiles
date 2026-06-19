@@ -452,6 +452,8 @@ describe 'profiles::jenkins::plugin' do
             it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*numToKeepStr\('5'\)$/) }
             it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^\s*parameters {\n\s*}$/) }
             it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*disableConcurrentBuilds { abortPrevious\(false\) }$/) }
+            it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*copyArtifactPermissionProperty {$/) }
+            it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*projectNames\('\*'\)$/) }
           end
 
           context "with configuration => { admin_password => mypass, pipelines => { 'name' => 'testrepo', 'git_url' => 'git@example.com:org/testrepo.git', 'git_ref' => 'refs/heads/master', 'credential_id' => 'mygitcred', 'auto_build' => false, 'keep_builds' => 7, 'abort_previous' => true }}" do
