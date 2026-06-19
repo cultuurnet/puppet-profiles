@@ -44,10 +44,6 @@ class profiles::jenkins::controller::configuration(
                  'views'          => $views
                }
   }
-  $configuration_as_code_require = $role_based_authorization ? {
-    true    => [Profiles::Jenkins::Plugin['mailer'], Profiles::Jenkins::Plugin['role-strategy']],
-    default => Profiles::Jenkins::Plugin['mailer']
-  }
 
   profiles::jenkins::plugin { 'swarm': }
   profiles::jenkins::plugin { 'mailer': }
@@ -64,10 +60,13 @@ class profiles::jenkins::controller::configuration(
   profiles::jenkins::plugin { 'pipeline-stage-view': }
   profiles::jenkins::plugin { 'build-token-root': }
 
-  if $role_based_authorization {
-    profiles::jenkins::plugin { 'role-strategy':
-      notify => Class['profiles::jenkins::controller::configuration::reload']
-    }
+  profiles::jenkins::plugin { 'role-strategy':
+    ensure => $role_based_authorization ? {
+                true  => 'present',
+                false => 'absent'
+              },
+    before => Profiles::Jenkins::Plugin['configuration-as-code'],
+    notify => Class['profiles::jenkins::controller::configuration::reload']
   }
 
   profiles::jenkins::plugin { 'git':
@@ -90,7 +89,7 @@ class profiles::jenkins::controller::configuration(
 
   profiles::jenkins::plugin { 'configuration-as-code':
     configuration => $configuration_as_code_configuration,
-    require       => $configuration_as_code_require,
+    require       => Profiles::Jenkins::Plugin['mailer'],
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
 
