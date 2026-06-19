@@ -14,8 +14,25 @@ user_groups = users.each_with_object({}) do |user, memo|
   memo[user['id']] = groups.empty? ? ['users'] : groups
 end
 admin_users = (['admin'] + user_groups.select { |_user_id, groups| groups.include?('admin') }.keys).compact.uniq
-pipeline_groups = pipelines.flat_map { |pipeline| Array(pipeline['authorization_groups']) }.compact.reject { |group| group == 'admin' }.uniq.sort
-item_roles = pipeline_groups.map do |group|
+admin_job_names = pipelines.select { |pipeline| Array(pipeline['authorization_groups']).include?('admin') }.map { |pipeline| scope().call_function('slugify', [pipeline['name']]) }.compact.uniq
+user_ids = user_groups.select { |_user_id, groups| groups.include?('users') }.keys.compact.uniq
+user_role = if user_ids.empty?
+              nil
+            elsif admin_job_names.empty?
+              {
+                'group'    => 'users',
+                'pattern'  => '.+',
+                'user_ids' => user_ids,
+              }
+            else
+              {
+                'group'    => 'users',
+                'pattern'  => "^(?!(#{admin_job_names.map { |job_name| Regexp.escape(job_name) }.join('|')})$).+",
+                'user_ids' => user_ids,
+              }
+            end
+custom_groups = pipelines.flat_map { |pipeline| Array(pipeline['authorization_groups']) }.compact.reject { |group| group == 'admin' or group == 'users' }.uniq.sort
+custom_roles = custom_groups.map do |group|
   job_names = pipelines.select { |pipeline| Array(pipeline['authorization_groups']).include?(group) }.map { |pipeline| scope().call_function('slugify', [pipeline['name']]) }.compact.uniq
   user_ids = user_groups.select { |_user_id, groups| groups.include?(group) }.keys.compact.uniq
 
@@ -27,6 +44,7 @@ item_roles = pipeline_groups.map do |group|
     'user_ids'  => user_ids,
   }
 end.compact
+item_roles = [user_role].compact + custom_roles
 -%>
     roleBased:
       roles:
