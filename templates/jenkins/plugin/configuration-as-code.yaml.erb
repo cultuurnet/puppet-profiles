@@ -5,46 +5,28 @@ unclassified:
     url: '<%= @configuration['url'] %>'
 jenkins:
 <%- if @configuration['role_based_authorization'] -%>
-<%-
-users = [@configuration['users']].flatten.compact
-pipelines = [@configuration['pipelines']].flatten.compact
-user_groups = users.each_with_object({}) do |user, memo|
-  groups = Array(user['groups']).compact
-  memo[user['id']] = groups.empty? ? ['users'] : groups
-end
-admin_users = (['admin'] + user_groups.select { |_user_id, groups| groups.include?('admin') }.keys).compact.uniq
-admin_job_names = pipelines.select { |pipeline| Array(pipeline['authorization_groups']).include?('admin') }.map { |pipeline| scope().call_function('slugify', [pipeline['name']]) }.compact.uniq
-user_ids = user_groups.select { |_user_id, groups| groups.include?('users') }.keys.compact.uniq
-user_role = if user_ids.empty?
-              nil
-            elsif admin_job_names.empty?
-              {
-                'group'    => 'users',
-                'pattern'  => '.+',
-                'user_ids' => user_ids,
-              }
-            else
-              {
-                'group'    => 'users',
-                'pattern'  => "^(?!(#{admin_job_names.map { |job_name| Regexp.escape(job_name) }.join('|')})$).+",
-                'user_ids' => user_ids,
-              }
-            end
-custom_groups = pipelines.flat_map { |pipeline| Array(pipeline['authorization_groups']) }.compact.reject { |group| group == 'admin' or group == 'users' }.uniq.sort
-custom_roles = custom_groups.map do |group|
-  job_names = pipelines.select { |pipeline| Array(pipeline['authorization_groups']).include?(group) }.map { |pipeline| scope().call_function('slugify', [pipeline['name']]) }.compact.uniq
-  user_ids = user_groups.select { |_user_id, groups| groups.include?(group) }.keys.compact.uniq
+  <%-
+    pipelines       = [@configuration['pipelines']].flatten
+    admin_pipelines = pipelines.select { |pipeline| [pipeline['authorization_groups']].flatten.include?('admin') }
+    group_pipelines = pipelines.select { |pipeline| pipeline['authorization_groups'] } - admin_pipelines
 
-  next if job_names.empty? or user_ids.empty?
+    users             = [@configuration['users']].flatten
+    admin_users       = users.select { |user| user['groups'] and user['groups'].include?('admin') }
+    regular_users     = users.select { |user| not user['groups'] }
+    custom_role_users = users.select { |user| not (regular_users.include?(user) or admin_users.include?(user)) }
+    custom_groups     = custom_role_users.reduce([]) { |all, user| all << user['groups']; all.flatten.uniq }
 
-  {
-    'group'     => group,
-    'pattern'   => "^(#{job_names.map { |job_name| Regexp.escape(job_name) }.join('|')})$",
-    'user_ids'  => user_ids,
-  }
-end.compact
-item_roles = [user_role].compact + custom_roles
--%>
+    item_roles = custom_groups.reduce([]) { |all, group|
+                   item_role_pipelines = group_pipelines.select { |pipeline| pipeline['authorization_groups'].include?(group) }
+                   item_role_users     = custom_role_users.select { |user| user['groups'].include?(group) }
+
+                   unless (item_role_pipelines.empty? or item_role_users.empty?); then
+                     all << { 'name' => group, 'pipelines' => item_role_pipelines, 'users' => item_role_users }
+                   end
+
+                   all
+                 }
+  -%>
   projectNamingStrategy:
     roleBased:
       forceExistingJobs: true
@@ -56,19 +38,35 @@ item_roles = [user_role].compact + custom_roles
           permissions:
           - 'Overall/Administer'
           entries:
-<%- admin_users.each do |user_id| -%>
-          - user: '<%= user_id.to_s.gsub("'", "''") %>'
-<%- end -%>
+          - user: 'admin'
+          <%- admin_users.each do |user| -%>
+          - user: '<%= user['id'] %>'
+          <%- end -%>
         - name: 'authenticated'
           permissions:
           - 'Overall/Read'
           entries:
           - group: 'authenticated'
-<%- unless item_roles.empty? -%>
         items:
-<%- item_roles.each do |role| -%>
-        - name: '<%= role['group'].to_s.gsub("'", "''") %>'
-          pattern: '<%= role['pattern'] %>'
+        - name: 'users'
+          pattern: '^(?!(<%= admin_pipelines.map { |pipeline| scope().call_function('slugify', [pipeline['name']]) }.join('|') %>)$)\w*'
+          permissions:
+          - 'Job/Build'
+          - 'Job/Cancel'
+          - 'Job/Discover'
+          - 'Job/Read'
+          - 'Job/Workspace'
+          - 'Run/Replay'
+          entries:<%- if regular_users.empty? -%> []
+          <%- else %>
+          <%- regular_users.each do |user| -%>
+          - user: '<%= user['id'] %>'
+          <%- end -%>
+          <%- end -%>
+        <%- item_roles.each do |item_role| -%>
+        - name: '<%= item_role['name'] %>'
+          pattern: '^(<%= item_role %>)$'
+          pattern: '^(<%= item_role['pipelines'].map { |pipeline| scope().call_function('slugify', [pipeline['name']]) }.join('|') %>)$'
           permissions:
           - 'Job/Build'
           - 'Job/Cancel'
@@ -77,11 +75,10 @@ item_roles = [user_role].compact + custom_roles
           - 'Job/Workspace'
           - 'Run/Replay'
           entries:
-<%- role['user_ids'].each do |user_id| -%>
-          - user: '<%= user_id.to_s.gsub("'", "''") %>'
-<%- end -%>
-<%- end -%>
-<%- end -%>
+          <%- item_role['users'].each do |user| -%>
+          - user: '<%= user['id'] %>'
+          <%- end -%>
+        <%- end -%>
 <%- else -%>
   authorizationStrategy:
     loggedInUsersCanDoAnything:
