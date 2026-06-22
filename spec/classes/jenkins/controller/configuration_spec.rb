@@ -290,17 +290,37 @@ describe 'profiles::jenkins::controller::configuration' do
                              }
         ) }
 
-        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*roleBased:$/) }
-        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- name: 'admin'$/) }
-        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- 'Overall\/Administer'$/) }
-        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- user: 'admin'$/) }
-        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- user: 'foo'$/) }
-        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- name: 'users'$/) }
-        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*pattern: '\^\(\?!\(admin\\-only\)\$\)\.\+'$/) }
-        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- user: 'baz'$/) }
-        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- name: 'app'$/) }
-        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*pattern: '\^\(team\\-build\)\$'$/) }
-        it { is_expected.to contain_file('configuration-as-code configuration').with_content(/^\s*- user: 'bar'$/) }
+        context 'with configuration-as-code YAML loaded' do
+          let(:content) { YAML.load(catalogue.resource('file', 'configuration-as-code configuration').send(:parameters)[:content]) }
+
+          it { expect(content['jenkins']['projectNamingStrategy']).to eq({ 'roleBased' => { 'forceExistingJobs' => true } }) }
+          it { expect(content['jenkins']['authorizationStrategy']).to eq(
+            {
+              'roleBased' => {
+                'roles' => {
+                  'global' => [
+                    {'name' => 'admin', 'permissions' => ['Overall/Administer'], 'entries' => [{ 'user' => 'admin'}, {'user' => 'foo' }] },
+                    {'name' => 'authenticated', 'permissions' => ['Overall/Read'], 'entries' => [{ 'group' => 'authenticated' }] }
+                  ],
+                  'items' => [
+                    {
+                      'name' => 'users',
+                      'pattern' => '^(?!(admin-only)$)\\w*',
+                      'permissions' => ['Job/Build', 'Job/Cancel', 'Job/Discover', 'Job/Read', 'Job/Workspace', 'Run/Replay'],
+                      'entries' => [{ 'user' => 'baz' }]
+                    },
+                    {
+                      'name' => 'app',
+                      'pattern' => '^(team-build)$',
+                      'permissions' => ['Job/Build', 'Job/Cancel', 'Job/Discover', 'Job/Read', 'Job/Workspace', 'Run/Replay'],
+                      'entries' => [{ 'user' => 'bar' }]
+                    }
+                  ]
+                }
+              }
+            }
+          ) }
+        end
       end
 
       context "with url => https://builds.foobar.com/, admin_password => letmein, mfa => true, docker_registry_url => https://docker.registry.com/, private_key => 'dcba4321', credentials => [{ id => 'foo', type => 'string', secret => 'bla'}, { id => 'awscred', type => 'aws', access_key => 'aws_key', secret_key => 'aws_secret'}, { id => 'userpass', type => 'username_password', username => 'foo', password => 'bar'}], global_libraries => { git_url => 'git@example.com:org/repo.git', git_ref => 'main', credential_id => 'mygitcred'}, pipelines => { 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'keep_builds' => 5}, users => {'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'} and puppetdb_url => 'https://foobar.com:4567'" do
