@@ -305,7 +305,7 @@ describe 'profiles::jenkins::controller::configuration' do
                   'items' => [
                     {
                       'name' => 'users',
-                      'pattern' => '^(?!(admin-only)$)\\w*',
+                      'pattern' => '^(?!(admin-only)$)\w*',
                       'permissions' => ['Job/Build', 'Job/Cancel', 'Job/Discover', 'Job/Read', 'Job/Workspace', 'Run/Replay'],
                       'entries' => [{ 'user' => 'baz' }]
                     },
