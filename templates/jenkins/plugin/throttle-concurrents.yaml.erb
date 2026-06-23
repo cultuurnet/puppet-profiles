@@ -1,0 +1,11 @@
+---
+unclassified:
+  <%- if @configuration['max_concurrent_builds'] == 1 -%>
+  throttleJobProperty: {}
+  <%- else -%>
+  throttleJobProperty:
+    categories:
+      - categoryName: "Concurrent"
+        maxConcurrentPerNode: 1
+        maxConcurrentTotal: <%= @configuration['max_concurrent_builds'] %>
+  <%- end -%>
