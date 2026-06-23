@@ -1,23 +1,24 @@
 class profiles::jenkins::controller (
-  Stdlib::Httpurl           $url,
-  String                    $admin_password,
-  String                    $version             = 'latest',
-  Boolean                   $mfa                 = false,
-  Boolean                   $lvm                 = false,
-  Optional[String]          $volume_group        = undef,
-  Optional[String]          $volume_size         = undef,
-  Optional[String]          $certificate         = undef,
-  Optional[Stdlib::Httpurl] $docker_registry_url = undef,
-  Optional[String]          $private_key         = undef,
-  Variant[Array,Hash]       $credentials         = [],
-  String                    $github_hook_url     = '',
-  Variant[Array,Hash]       $github_servers      = [],
-  Variant[Array,Hash]       $global_libraries    = [],
-  Variant[Array,Hash]       $pipelines           = [],
-  Variant[Array,Hash]       $views               = [],
-  Variant[Array,Hash]       $users               = [],
-  Boolean                   $role_based_authorization = false,
-  Optional[String]          $puppetdb_url        = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+  Stdlib::Httpurl            $url,
+  String                     $admin_password,
+  String                     $version                  = 'latest',
+  Boolean                    $mfa                      = false,
+  Boolean                    $role_based_authorization = false,
+  Integer[1]                 $max_concurrent_builds    = 1,
+  Boolean                    $lvm                      = false,
+  Optional[String]           $volume_group             = undef,
+  Optional[String]           $volume_size              = undef,
+  Optional[String]           $certificate              = undef,
+  Optional[Stdlib::Httpurl]  $docker_registry_url      = undef,
+  Optional[String]           $private_key              = undef,
+  Variant[Hash, Array[Hash]] $credentials              = [],
+  String                     $github_hook_url          = '',
+  Variant[Hash, Array[Hash]] $github_servers           = [],
+  Variant[Hash, Array[Hash]] $global_libraries         = [],
+  Variant[Hash, Array[Hash]] $pipelines                = [],
+  Variant[Hash, Array[Hash]] $views                    = [],
+  Variant[Hash, Array[Hash]] $users                    = [],
+  Optional[String]           $puppetdb_url             = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   include ::profiles::java
@@ -66,21 +67,22 @@ class profiles::jenkins::controller (
   }
 
   class { '::profiles::jenkins::controller::configuration':
-    url                 => $url,
-    admin_password      => $admin_password,
-    mfa                 => $mfa,
-    docker_registry_url => $docker_registry_url,
-    private_key         => $private_key,
-    credentials         => $credentials,
-    github_hook_url     => $github_hook_url,
-    github_servers      => $github_servers,
-    global_libraries    => $global_libraries,
-    pipelines           => $pipelines,
-    views               => $views,
-    users               => $users,
+    url                      => $url,
+    admin_password           => $admin_password,
+    mfa                      => $mfa,
     role_based_authorization => $role_based_authorization,
-    puppetdb_url        => $puppetdb_url,
-    require             => [ Class['profiles::jenkins::controller::service'], Class['profiles::jenkins::cli']]
+    max_concurrent_builds    => $max_concurrent_builds,
+    docker_registry_url      => $docker_registry_url,
+    private_key              => $private_key,
+    credentials              => $credentials,
+    github_hook_url          => $github_hook_url,
+    github_servers           => $github_servers,
+    global_libraries         => $global_libraries,
+    pipelines                => $pipelines,
+    views                    => $views,
+    users                    => $users,
+    puppetdb_url             => $puppetdb_url,
+    require                  => [ Class['profiles::jenkins::controller::service'], Class['profiles::jenkins::cli']]
   }
 
   if $certificate {
