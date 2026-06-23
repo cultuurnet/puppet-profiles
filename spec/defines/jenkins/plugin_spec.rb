@@ -457,35 +457,136 @@ describe 'profiles::jenkins::plugin' do
             it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*projectNames\('\*'\)$/) }
           end
 
-          context "with configuration => { admin_password => mypass, concurrent_builds => true, pipelines => { 'name' => 'testrepo', 'git_url' => 'git@example.com:org/testrepo.git', 'git_ref' => 'refs/heads/master', 'credential_id' => 'mygitcred', 'auto_build' => false, 'keep_builds' => 7, 'abort_previous' => true }}" do
+          context "with configuration => { admin_password => mypass, concurrent_builds => true, pipelines => { 'name' => 'testrepo', 'git_url' => 'git@example.com:org/testrepo.git', 'git_ref' => 'refs/heads/master', 'credential_id' => 'mygitcred', 'auto_build' => false, 'keep_builds' => 7, 'concurrent_builds' => true, abort_previous' => true }}" do
             let(:params) { {
               'configuration' => {
                                    'admin_password'    => 'mypass',
                                    'concurrent_builds' => true,
                                    'pipelines'         => {
-                                                            'name'           => 'testrepo',
-                                                            'git_url'        => 'git@example.com:org/testrepo.git',
-                                                            'git_ref'        => 'refs/heads/master',
-                                                            'credential_id'  => 'mygitcred',
-                                                            'auto_build'     => false,
-                                                            'keep_builds'    => 7,
-                                                            'abort_previous' => true
+                                                            'name'              => 'testrepo',
+                                                            'git_url'           => 'git@example.com:org/testrepo.git',
+                                                            'git_ref'           => 'refs/heads/master',
+                                                            'credential_id'     => 'mygitcred',
+                                                            'auto_build'        => false,
+                                                            'keep_builds'       => 7,
+                                                            'concurrent_builds' => true,
+                                                            'abort_previous'    => true
                                                           }
                                    }
             } }
 
-            it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*pipelineJob\('testrepo'\)/) }
-            it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*displayName\('testrepo'\)/) }
-            it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^\s*authenticationToken\(.*$/) }
-            it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*url\('git@example.com:org\/testrepo.git'\)$/) }
-            it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*scriptPath\('Jenkinsfile'\)$/) }
-            it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^\s*githubProjectUrl/) }
-            it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*branch\('refs\/heads\/master'\)$/) }
-            it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*credentials\('mygitcred'\)$/) }
-            it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^\s*githubPush\(\)$/) }
-            it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*numToKeepStr\('7'\)$/) }
-            it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^\s*parameters {\n\s*}$/) }
-            it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^\s*disableConcurrentBuilds .*$/) }
+            context 'with job-dsl configuration YAML loaded' do
+              let(:content) { YAML.load(catalogue.resource('file', 'job-dsl configuration').send(:parameters)[:content]) }
+
+              let(:expected_script) {
+                <<~SCRIPT
+                pipelineJob('testrepo') {
+                    displayName('testrepo')
+                    properties {
+                        copyArtifactPermissionProperty {
+                            projectNames('*')
+                        }
+                        pipelineTriggers {
+                            triggers {
+                            }
+                        }
+                        buildDiscarder {
+                            strategy {
+                                logRotator {
+                                    numToKeepStr('7')
+                                    artifactNumToKeepStr('')
+                                    daysToKeepStr('')
+                                    artifactDaysToKeepStr('')
+                                }
+                            }
+                        }
+                    }
+                    definition {
+                        cpsScm {
+                            scm {
+                                git {
+                                    remote {
+                                        url('git@example.com:org/testrepo.git')
+                                        credentials('mygitcred')
+                                    }
+                                    branch('refs/heads/master')
+                                }
+                                scriptPath('Jenkinsfile')
+                            }
+                            lightweight(true)
+                        }
+                    }
+                }
+                SCRIPT
+              }
+              it { expect(content['jobs'][0]['script']).to eq(expected_script) }
+            end
+          end
+
+          context "with configuration => { admin_password => mypass, concurrent_builds => true, pipelines => { 'name' => 'testrepo', 'git_url' => 'git@example.com:org/testrepo.git', 'git_ref' => 'refs/heads/master', 'credential_id' => 'mygitcred', 'auto_build' => false, 'keep_builds' => 7, abort_previous' => true }}" do
+            let(:params) { {
+              'configuration' => {
+                                   'admin_password'    => 'mypass',
+                                   'concurrent_builds' => true,
+                                   'pipelines'         => {
+                                                            'name'              => 'testrepo',
+                                                            'git_url'           => 'git@example.com:org/testrepo.git',
+                                                            'git_ref'           => 'refs/heads/master',
+                                                            'credential_id'     => 'mygitcred',
+                                                            'auto_build'        => false,
+                                                            'keep_builds'       => 7,
+                                                            'abort_previous'    => true
+                                                          }
+                                   }
+            } }
+
+            context 'with job-dsl configuration YAML loaded' do
+              let(:content) { YAML.load(catalogue.resource('file', 'job-dsl configuration').send(:parameters)[:content]) }
+
+              let(:expected_script) {
+                <<~SCRIPT
+                pipelineJob('testrepo') {
+                    displayName('testrepo')
+                    properties {
+                        copyArtifactPermissionProperty {
+                            projectNames('*')
+                        }
+                        disableConcurrentBuilds { abortPrevious(true) }
+                        pipelineTriggers {
+                            triggers {
+                            }
+                        }
+                        buildDiscarder {
+                            strategy {
+                                logRotator {
+                                    numToKeepStr('7')
+                                    artifactNumToKeepStr('')
+                                    daysToKeepStr('')
+                                    artifactDaysToKeepStr('')
+                                }
+                            }
+                        }
+                    }
+                    definition {
+                        cpsScm {
+                            scm {
+                                git {
+                                    remote {
+                                        url('git@example.com:org/testrepo.git')
+                                        credentials('mygitcred')
+                                    }
+                                    branch('refs/heads/master')
+                                }
+                                scriptPath('Jenkinsfile')
+                            }
+                            lightweight(true)
+                        }
+                    }
+                }
+                SCRIPT
+              }
+              it { expect(content['jobs'][0]['script']).to eq(expected_script) }
+            end
           end
 
           context "with configuration => { admin_password => mypassword, concurrent_builds => false, pipelines => [{ 'name' => 'Baz Test', 'git_url' => 'git@github.com:bar/baz.git', 'git_ref' => 'refs/heads/develop', 'jenkinsfile_path' => 'Jenkinsfile.baz', 'credential_id' => 'gitkey', keep_builds => 10, remote_trigger => true, parameters => booleanParam { name('Flag') defaultValue(true) description('Boolean flag')} }, { 'name' => 'repo', 'git_url' => 'git@example.com:org/repo.git', 'git_ref' => 'main', 'jenkinsfile_path' => 'pipelines/Jenkinsfile.repo', 'credential_id' => 'mygitcred', keep_builds => '2', parameters => parameters => stringParam { name('String') defaultValue('') description('String parameter example') trim(true)} booleanParam { name('Myflag') defaultValue(true) description('Boolean flag example')} }] }" do
@@ -494,14 +595,14 @@ describe 'profiles::jenkins::plugin' do
                                      'admin_password'    => 'mypassword',
                                      'concurrent_builds' => false,
                                      'pipelines'         => [{
-                                                              'name'             => 'Baz Test',
-                                                              'git_url'          => 'git@github.com:bar/baz.git',
-                                                              'git_ref'          => 'refs/heads/develop',
-                                                              'jenkinsfile_path' => 'Jenkinsfile.baz',
-                                                              'credential_id'    => 'gitkey',
-                                                              'keep_builds'      => 10,
-                                                              'remote_trigger'   => true,
-                                                              'parameters'       => "booleanParam {
+                                                              'name'              => 'Baz Test',
+                                                              'git_url'           => 'git@github.com:bar/baz.git',
+                                                              'git_ref'           => 'refs/heads/develop',
+                                                              'jenkinsfile_path'  => 'Jenkinsfile.baz',
+                                                              'credential_id'     => 'gitkey',
+                                                              'keep_builds'       => 10,
+                                                              'remote_trigger'    => true,
+                                                              'parameters'        => "booleanParam {
                                                                                        name('Flag')
                                                                                        defaultValue(true)
                                                                                        description('Boolean flag')

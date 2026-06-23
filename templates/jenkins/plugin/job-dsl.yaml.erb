@@ -27,7 +27,7 @@ jobs:<%- if @configuration['pipelines'].empty? -%> []
               copyArtifactPermissionProperty {
                   projectNames('*')
               }
-              <%- unless @configuration['concurrent_builds'] -%>
+              <%- unless (@configuration['concurrent_builds'] and pipeline['concurrent_builds']) -%>
               disableConcurrentBuilds { abortPrevious(<%= pipeline['abort_previous'].nil? ? 'true' : pipeline['abort_previous'] %>) }
               <%- end -%>
               pipelineTriggers {
