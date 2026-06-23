@@ -652,6 +652,77 @@ describe 'profiles::jenkins::plugin' do
           it { is_expected.to contain_file('openmfa configuration').with_content(/^\s*issuer: 'snafu'$/) }
         end
       end
+
+      context "with title throttle-concurrents" do
+        let(:title) { 'throttle-concurrents' }
+
+        context "with configuration => { 'max_concurrent_builds' => 1 }" do
+          let(:params) { {
+              'configuration' => { 'max_concurrent_builds' => 1 }
+          } }
+
+          it { is_expected.to contain_file('throttle-concurrents configuration').with(
+            'ensure'  => 'file',
+            'path'    => '/var/lib/jenkins/casc_config/throttle-concurrents.yaml',
+            'owner'   => 'jenkins',
+            'group'   => 'jenkins'
+          ) }
+
+          context 'with throttle-concurrents configuration YAML loaded' do
+            let(:content) { YAML.load(catalogue.resource('file', 'throttle-concurrents configuration').send(:parameters)[:content]) }
+
+            it { expect(content['unclassified']).to eq({ 'throttleJobProperty' => {} }) }
+          end
+        end
+
+        context "with configuration => { max_concurrent_builds => 3 }" do
+          let(:params) { {
+              'configuration' => { 'max_concurrent_builds' => 3 }
+          } }
+
+          context 'with throttle-concurrents configuration YAML loaded' do
+            let(:content) { YAML.load(catalogue.resource('file', 'throttle-concurrents configuration').send(:parameters)[:content]) }
+
+            it { expect(content['unclassified']).to eq(
+              {
+                'throttleJobProperty' => {
+                                           'categories' => [
+                                             {
+                                               'categoryName' => 'Concurrent',
+                                               'maxConcurrentPerNode' => 1,
+                                               'maxConcurrentTotal' => 3
+                                             }
+                                           ]
+                                         }
+              }
+            ) }
+          end
+        end
+
+        context "with configuration => { max_concurrent_builds => 42 }" do
+          let(:params) { {
+              'configuration' => { 'max_concurrent_builds' => 42 }
+          } }
+
+          context 'with throttle-concurrents configuration YAML loaded' do
+            let(:content) { YAML.load(catalogue.resource('file', 'throttle-concurrents configuration').send(:parameters)[:content]) }
+
+            it { expect(content['unclassified']).to eq(
+              {
+                'throttleJobProperty' => {
+                                           'categories' => [
+                                             {
+                                               'categoryName' => 'Concurrent',
+                                               'maxConcurrentPerNode' => 1,
+                                               'maxConcurrentTotal' => 42
+                                             }
+                                           ]
+                                         }
+              }
+            ) }
+          end
+        end
+      end
     end
   end
 end
