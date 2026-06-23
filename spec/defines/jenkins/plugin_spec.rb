@@ -477,7 +477,6 @@ describe 'profiles::jenkins::plugin' do
 
             context 'with job-dsl configuration YAML loaded' do
               let(:content) { YAML.load(catalogue.resource('file', 'job-dsl configuration').send(:parameters)[:content]) }
-
               let(:expected_script) {
                 <<~SCRIPT
                 pipelineJob('testrepo') {
@@ -519,6 +518,7 @@ describe 'profiles::jenkins::plugin' do
                 }
                 SCRIPT
               }
+
               it { expect(content['jobs'][0]['script']).to eq(expected_script) }
             end
           end
@@ -542,7 +542,6 @@ describe 'profiles::jenkins::plugin' do
 
             context 'with job-dsl configuration YAML loaded' do
               let(:content) { YAML.load(catalogue.resource('file', 'job-dsl configuration').send(:parameters)[:content]) }
-
               let(:expected_script) {
                 <<~SCRIPT
                 pipelineJob('testrepo') {
@@ -585,6 +584,7 @@ describe 'profiles::jenkins::plugin' do
                 }
                 SCRIPT
               }
+
               it { expect(content['jobs'][0]['script']).to eq(expected_script) }
             end
           end
