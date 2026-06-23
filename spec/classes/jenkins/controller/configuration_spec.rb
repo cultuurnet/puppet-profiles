@@ -20,20 +20,21 @@ describe 'profiles::jenkins::controller::configuration' do
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to contain_class('profiles::jenkins::controller::configuration').with(
-              'url'                 => 'https://jenkins.foobar.com/',
-              'admin_password'      => 'passw0rd',
-              'mfa'                 => false,
-              'docker_registry_url' => nil,
-              'private_key'         => nil,
-              'credentials'         => [],
-              'github_hook_url'     => '',
-              'github_servers'      => [],
-              'global_libraries'    => [],
-              'pipelines'           => [],
-              'views'               => [],
-              'users'               => [],
+              'url'                      => 'https://jenkins.foobar.com/',
+              'admin_password'           => 'passw0rd',
+              'mfa'                      => false,
               'role_based_authorization' => false,
-              'puppetdb_url'        => 'http://localhost:8081'
+              'max_concurrent_builds'    => 1,
+              'docker_registry_url'      => nil,
+              'private_key'              => nil,
+              'credentials'              => [],
+              'github_hook_url'          => '',
+              'github_servers'           => [],
+              'global_libraries'         => [],
+              'pipelines'                => [],
+              'views'                    => [],
+              'users'                    => [],
+              'puppetdb_url'             => 'http://localhost:8081'
             ) }
 
 
@@ -173,8 +174,9 @@ describe 'profiles::jenkins::controller::configuration' do
               'ensure'        => 'present',
               'restart'       => false,
               'configuration' => {
-                                   'admin_password' => 'passw0rd',
-                                   'pipelines'      => []
+                                   'admin_password'    => 'passw0rd',
+                                   'concurrent_builds' => false,
+                                   'pipelines'         => []
                                  }
             ) }
 
@@ -202,6 +204,12 @@ describe 'profiles::jenkins::controller::configuration' do
             it { is_expected.to contain_profiles__jenkins__plugin('role-strategy').with(
               'ensure'  => 'present',
               'restart' => false
+            ) }
+
+            it { is_expected.to contain_profiles__jenkins__plugin('throttle-concurrents').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => { 'max_concurrent_builds' => 1 }
             ) }
 
             it { is_expected.to_not contain_file('jenkins users') }
@@ -232,6 +240,7 @@ describe 'profiles::jenkins::controller::configuration' do
             it { is_expected.to contain_profiles__jenkins__plugin('github').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
             it { is_expected.to contain_profiles__jenkins__plugin('configuration-as-code').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
             it { is_expected.to contain_profiles__jenkins__plugin('docker-workflow').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
+            it { is_expected.to contain_profiles__jenkins__plugin('throttle-concurrents').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
             it { is_expected.to contain_class('profiles::jenkins::cli::credentials').that_requires('Class[profiles::jenkins::controller::configuration::reload]') }
           end
 
@@ -243,12 +252,13 @@ describe 'profiles::jenkins::controller::configuration' do
         end
       end
 
-      context "with role_based_authorization => true, users with groups and admin pipelines" do
+      context "with url => https://builds.foobar.com/, admin_password => letmein, role_based_authorization => true, max_concurrent_builds => 3, users with groups and admin pipelines" do
         let(:environment) { 'testing' }
         let(:params) { {
           'url'                      => 'https://builds.foobar.com/',
           'admin_password'           => 'letmein',
           'role_based_authorization' => true,
+          'max_concurrent_builds'    => 3,
           'users'                    => [
                                           { 'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com', 'groups' => ['admin', 'app'] },
                                           { 'id' => 'bar', 'name' => 'Bar Baz', 'password' => 'qux', 'email' => 'bar@example.com', 'groups' => ['app'] },
@@ -262,6 +272,26 @@ describe 'profiles::jenkins::controller::configuration' do
         } }
 
         it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to contain_profiles__jenkins__plugin('job-dsl').with(
+          'ensure'        => 'present',
+          'restart'       => false,
+          'configuration' => {
+                               'admin_password'    => 'letmein',
+                               'concurrent_builds' => true,
+                               'pipelines'         => [
+                                                        { 'name' => 'App Build', 'git_url' => 'git@example.com:org/app.git', 'git_ref' => 'main', 'credential_id' => 'gitkey', 'keep_builds' => 10 },
+                                                        { 'name' => 'Team Build', 'git_url' => 'git@example.com:org/team.git', 'git_ref' => 'main', 'credential_id' => 'gitkey', 'keep_builds' => 10, 'authorization_groups' => ['app'] },
+                                                        { 'name' => 'Admin Only', 'git_url' => 'git@example.com:org/admin.git', 'git_ref' => 'main', 'credential_id' => 'gitkey', 'keep_builds' => 10, 'authorization_groups' => ['admin'] }
+                                                      ]
+                             }
+        ) }
+
+        it { is_expected.to contain_profiles__jenkins__plugin('throttle-concurrents').with(
+          'ensure'        => 'present',
+          'restart'       => false,
+          'configuration' => { 'max_concurrent_builds' => 3 }
+        ) }
 
         it { is_expected.to contain_profiles__jenkins__plugin('role-strategy').with(
           'ensure'  => 'present',
@@ -417,14 +447,15 @@ describe 'profiles::jenkins::controller::configuration' do
             'ensure'        => 'present',
             'restart'       => false,
             'configuration' => {
-                                 'admin_password' => 'letmein',
-                                 'pipelines'      => {
-                                                       'name' => 'myrepo',
-                                                       'git_url' => 'git@example.com:org/myrepo.git',
-                                                       'git_ref' => 'refs/heads/main',
-                                                       'credential_id' => 'mygitcred',
-                                                       'keep_builds' => 5
-                                                     }
+                                 'admin_password'    => 'letmein',
+                                 'concurrent_builds' => false,
+                                 'pipelines'         => {
+                                                          'name' => 'myrepo',
+                                                          'git_url' => 'git@example.com:org/myrepo.git',
+                                                          'git_ref' => 'refs/heads/main',
+                                                          'credential_id' => 'mygitcred',
+                                                          'keep_builds' => 5
+                                                        }
                                }
           ) }
 
@@ -583,20 +614,21 @@ describe 'profiles::jenkins::controller::configuration' do
           'ensure'        => 'present',
           'restart'       => false,
           'configuration' => {
-                               'admin_password' => 'letmein',
-                               'pipelines'      => [{
-                                                     'name'          => 'baz',
-                                                     'git_url'       => 'git@github.com:bar/baz.git',
-                                                     'git_ref'       => 'refs/heads/develop',
-                                                     'credential_id' => 'gitkey',
-                                                     'keep_builds'   => 10
-                                                   }, {
-                                                     'name'          => 'repo',
-                                                     'git_url'       => 'git@example.com:org/repo.git',
-                                                     'git_ref'       => 'main',
-                                                     'credential_id' => 'mygitcred',
-                                                     'keep_builds'   => 2
-                                                   }]
+                               'admin_password'    => 'letmein',
+                               'concurrent_builds' => false,
+                               'pipelines'         => [{
+                                                        'name'          => 'baz',
+                                                        'git_url'       => 'git@github.com:bar/baz.git',
+                                                        'git_ref'       => 'refs/heads/develop',
+                                                        'credential_id' => 'gitkey',
+                                                        'keep_builds'   => 10
+                                                      }, {
+                                                        'name'          => 'repo',
+                                                        'git_url'       => 'git@example.com:org/repo.git',
+                                                        'git_ref'       => 'main',
+                                                        'credential_id' => 'mygitcred',
+                                                        'keep_builds'   => 2
+                                                      }]
                               }
         ) }
 

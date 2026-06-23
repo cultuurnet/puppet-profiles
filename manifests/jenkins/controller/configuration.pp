@@ -1,18 +1,19 @@
 class profiles::jenkins::controller::configuration(
   Stdlib::Httpurl            $url,
   String                     $admin_password,
-  Boolean                    $mfa                 = false,
-  Optional[Stdlib::Httpurl]  $docker_registry_url = undef,
-  Optional[String]           $private_key         = undef,
-  Variant[Hash, Array[Hash]] $credentials         = [],
-  String                     $github_hook_url     = '',
-  Variant[Hash, Array[Hash]] $github_servers      = [],
-  Variant[Hash, Array[Hash]] $global_libraries    = [],
-  Variant[Hash, Array[Hash]] $pipelines           = [],
-  Variant[Hash, Array[Hash]] $views               = [],
-  Variant[Hash, Array[Hash]] $users               = [],
+  Boolean                    $mfa                      = false,
   Boolean                    $role_based_authorization = false,
-  Optional[String]           $puppetdb_url        = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+  Integer[1]                 $max_concurrent_builds    = 1,
+  Optional[Stdlib::Httpurl]  $docker_registry_url      = undef,
+  Optional[String]           $private_key              = undef,
+  Variant[Hash, Array[Hash]] $credentials              = [],
+  String                     $github_hook_url          = '',
+  Variant[Hash, Array[Hash]] $github_servers           = [],
+  Variant[Hash, Array[Hash]] $global_libraries         = [],
+  Variant[Hash, Array[Hash]] $pipelines                = [],
+  Variant[Hash, Array[Hash]] $views                    = [],
+  Variant[Hash, Array[Hash]] $users                    = [],
+  Optional[String]           $puppetdb_url             = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $plain_credentials       = [$credentials].flatten.filter |$credential| { $credential['type'] == 'string' or $credential['type'] == 'file' or $credential['type'] == 'username_password' }
@@ -110,10 +111,19 @@ class profiles::jenkins::controller::configuration(
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
 
+  profiles::jenkins::plugin { 'throttle-concurrents':
+    configuration => { 'max_concurrent_builds' => $max_concurrent_builds },
+    notify        => Class['profiles::jenkins::controller::configuration::reload']
+  }
+
   profiles::jenkins::plugin { 'job-dsl':
     configuration => {
-                       'admin_password' => $admin_password,
-                       'pipelines'      => $pipelines
+                       'admin_password'    => $admin_password,
+                       'concurrent_builds' => $max_concurrent_builds ? {
+                                                1       => false,
+                                                default => true
+                                              },
+                       'pipelines'         => $pipelines
                      },
     require       => [ Profiles::Jenkins::Plugin['git'], Profiles::Jenkins::Plugin['ssh-credentials']],
     notify        => Class['profiles::jenkins::controller::configuration::reload']
