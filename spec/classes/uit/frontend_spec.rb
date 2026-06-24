@@ -44,9 +44,8 @@ describe 'profiles::uit::frontend' do
               'user'    => 'root',
               'hour'    => 2,
               'minute'  => 0,
-              'weekday' => '2,5'
+              'weekday' => [2, 5]
             ) }
-            it { is_expected.to contain_cron('uit-frontend-restart-apache').that_requires('Class[profiles::apache]') }
 
             it { is_expected.to contain_file('/var/www/uit-frontend').with(
               'ensure' => 'directory',

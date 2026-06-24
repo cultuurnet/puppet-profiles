@@ -53,8 +53,7 @@ class profiles::uit::frontend (
     user    => 'root',
     hour    => 2,
     minute  => 0,
-    weekday => '2,5',
-    require => Class['profiles::apache'],
+    weekday => [2, 5],
   }
 
   file { $basedir:
