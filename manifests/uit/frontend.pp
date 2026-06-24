@@ -47,6 +47,16 @@ class profiles::uit::frontend (
   include ::profiles::nodejs
   include ::profiles::apache
 
+  cron { 'uit-frontend-restart-apache':
+    ensure  => 'present',
+    command => '/bin/systemctl restart apache2',
+    user    => 'root',
+    hour    => 2,
+    minute  => 0,
+    weekday => '2,5',
+    require => Class['profiles::apache'],
+  }
+
   file { $basedir:
     ensure  => 'directory',
     owner   => 'www-data',
