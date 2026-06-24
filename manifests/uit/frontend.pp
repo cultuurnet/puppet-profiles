@@ -7,7 +7,8 @@ class profiles::uit::frontend (
   Optional[String]              $redirect_source     = undef,
   Optional[Hash]                $redirect_vhosts     = {},
   Boolean                       $maintenance_page    = false,
-  Boolean                       $deployment_page     = false
+  Boolean                       $deployment_page     = false,
+  Boolean                       $apache_restart_cron = false
 ) inherits ::profiles {
 
   $basedir              = '/var/www/uit-frontend'
@@ -48,7 +49,10 @@ class profiles::uit::frontend (
   include ::profiles::apache
 
   cron { 'uit-frontend-restart-apache':
-    ensure  => 'present',
+    ensure  => $apache_restart_cron ? {
+                 true  => 'present',
+                 false => 'absent'
+               },
     command => '/bin/systemctl restart apache2',
     user    => 'root',
     hour    => 2,
