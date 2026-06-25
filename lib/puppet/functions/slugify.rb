@@ -6,8 +6,8 @@
 #   * The string is downcased.
 #   * Spaces are replaced by dashes.
 #   * Characters that are not letters, digits, underscores or dashes are removed.
-#   * Multiple successive resulting dashes or spaces from previous steps are
-#     compacted into a single dash.
+#   * Multiple successive resulting dashes from previous steps are compacted
+#     into a single dash.
 Puppet::Functions.create_function(:slugify) do
   # @param string The string to be slugified.
   #
