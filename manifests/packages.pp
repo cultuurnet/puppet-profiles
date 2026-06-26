@@ -148,8 +148,7 @@ inherits ::profiles {
   }
 
   @package { 'golang':
-    ensure  => 'present',
-    require => Apt::Source['publiq-tools']
+    ensure  => 'present'
   }
 
   @package { 'mailutils':
