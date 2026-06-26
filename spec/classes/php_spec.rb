@@ -114,11 +114,14 @@ describe 'profiles::php' do
               ) }
 
               it { is_expected.to contain_package('composer2').that_requires('Apt::Source[publiq-tools]') }
+              it { is_expected.to contain_package('composer2').that_requires('Class[php]') }
               it { is_expected.to contain_alternatives('composer').that_requires('Package[composer2]') }
             else
               it { is_expected.to contain_package('composer').with(
                 'ensure' => 'present'
               ) }
+
+              it { is_expected.to contain_package('composer').that_requires('Class[php]') }
             end
 
             it { is_expected.to contain_package('git').with(
