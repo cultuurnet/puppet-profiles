@@ -10,6 +10,7 @@ describe 'profiles::jenkins::buildtools::bootstrap' do
       it { is_expected.to contain_package('git').with({ 'ensure' => 'present' }) }
       it { is_expected.to contain_package('build-essential').with({ 'ensure' => 'present' }) }
       it { is_expected.to contain_package('debhelper').with({ 'ensure' => 'present' }) }
+      it { is_expected.to contain_package('golang').with({ 'ensure' => 'present' }) }
     end
   end
 end
