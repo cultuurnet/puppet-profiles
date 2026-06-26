@@ -57,7 +57,7 @@ class profiles::php (
       realize Apt::Source['publiq-tools']
 
       package { 'composer1':
-        ensure  => 'absent'
+        ensure => 'absent'
       }
 
       package { 'composer2':
@@ -72,6 +72,8 @@ class profiles::php (
     }
     default: {
       realize Package['composer']
+
+      Class['::php'] -> Package['composer']
     }
   }
 
@@ -139,6 +141,7 @@ class profiles::php (
     extensions   => $default_extensions + $version_dependent_default_extensions + $extensions,
     fpm          => $fpm,
     *            => $fpm_attributes
+
   }
 
   @profiles::jenkins::node_labels { 'php':
