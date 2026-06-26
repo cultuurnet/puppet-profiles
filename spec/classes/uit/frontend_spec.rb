@@ -28,7 +28,8 @@ describe 'profiles::uit::frontend' do
               'service_port'        => 3000,
               'redirect_source'     => nil,
               'maintenance_page'    => false,
-              'deployment_page'     => false
+              'deployment_page'     => false,
+              'apache_restart_cron' => false
             ) }
 
             it { is_expected.to contain_group('www-data') }
@@ -39,12 +40,12 @@ describe 'profiles::uit::frontend' do
             it { is_expected.to contain_class('profiles::apache') }
 
             it { is_expected.to contain_cron('uit-frontend-restart-apache').with(
-              'ensure'  => 'present',
+              'ensure'  => 'absent',
               'command' => '/bin/systemctl restart apache2',
               'user'    => 'root',
               'hour'    => 2,
               'minute'  => 0,
-              'weekday' => [2, 5]
+              'weekday' => ['2', '5']
             ) }
 
             it { is_expected.to contain_file('/var/www/uit-frontend').with(
@@ -152,6 +153,29 @@ describe 'profiles::uit::frontend' do
             let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
 
             it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }
+          end
+        end
+
+        context "with apache_restart_cron => true" do
+          let(:params) {
+            super().merge( {
+              'apache_restart_cron' => true
+            } )
+          }
+
+          context "with hieradata" do
+            let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
+            it { is_expected.to compile.with_all_deps }
+
+            it { is_expected.to contain_cron('uit-frontend-restart-apache').with(
+              'ensure'  => 'present',
+              'command' => '/bin/systemctl restart apache2',
+              'user'    => 'root',
+              'hour'    => 2,
+              'minute'  => 0,
+              'weekday' => ['2', '5']
+            ) }
           end
         end
 
