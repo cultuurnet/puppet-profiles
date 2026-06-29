@@ -19,6 +19,12 @@ x-search-service: &search-service
 services:
   search-api:
     <<: *search-service
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8080/"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   search-consume-udb3-api:
     <<: *search-service
