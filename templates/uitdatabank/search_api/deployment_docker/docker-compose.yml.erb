@@ -1,0 +1,33 @@
+x-search-service: &search-service
+  image: <%= @image %>:<%= @resolved_image_tag %>
+  network_mode: host
+  restart: unless-stopped
+  environment:
+    LOG_TO_STDOUT: "true"
+  volumes:
+    - /etc/uitdatabank-search-api/config.php:/var/www/html/config.php:ro
+    - /etc/uitdatabank-search-api/public-keycloak.pem:/var/www/html/public-keycloak.pem:ro
+<% if @api_keys_matched_to_client_ids_source -%>
+    - /etc/uitdatabank-search-api/api_keys_matched_to_client_ids.php:/var/www/html/api_keys_matched_to_client_ids.php:ro
+<% end -%>
+<% if @default_queries_source -%>
+    - /etc/uitdatabank-search-api/default_queries.php:/var/www/html/default_queries.php:ro
+<% end -%>
+    - /var/www/geojson-data/output/facet_mapping_regions.php:/var/www/html/facet_mapping_regions.php:ro
+    - /var/www/geojson-data:/var/www/geojson-data:ro
+
+services:
+  search-api:
+    <<: *search-service
+
+  search-consume-udb3-api:
+    <<: *search-service
+    command: ["php", "bin/app.php", "consume-udb3-api"]
+
+  search-consume-udb3-cli:
+    <<: *search-service
+    command: ["php", "bin/app.php", "consume-udb3-cli"]
+
+  search-consume-udb3-related:
+    <<: *search-service
+    command: ["php", "bin/app.php", "consume-udb3-related"]
