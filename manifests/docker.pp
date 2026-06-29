@@ -52,6 +52,11 @@ class profiles::docker (
     require                     => Apt::Source['docker']
   }
 
+  class { 'docker::compose':
+    ensure  => present,
+    require => Class['docker']
+  }
+
   @profiles::jenkins::node_labels { 'docker':
     content => 'docker'
   }

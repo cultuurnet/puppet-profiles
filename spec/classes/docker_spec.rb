@@ -32,6 +32,8 @@ describe 'profiles::docker' do
           'docker_users'                => []
         ) }
 
+        it { is_expected.to contain_class('docker::compose') }
+
         it { is_expected.not_to contain_profiles__jenkins__node_labels('docker') }
 
         it { is_expected.to_not contain_profiles__lvm__mount('dockerdata') }
@@ -69,6 +71,7 @@ describe 'profiles::docker' do
         ) }
 
         it { is_expected.to contain_apt__source('docker').that_comes_before('Class[docker]') }
+        it { is_expected.to contain_class('docker::compose').that_requires('Class[docker]') }
         it { is_expected.to contain_file('/var/lib/docker').that_comes_before('Class[docker]') }
         it { is_expected.to contain_class('profiles::docker::ecr_login').that_requires('Class[docker]') }
 
