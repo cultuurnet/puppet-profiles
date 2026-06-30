@@ -5,14 +5,14 @@ describe 'profiles::uitdatabank::search_api::deployment' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "with config_source => appconfig/uitdatabank/udb3-search-service/config.php and pubkey_keycloak_source => appconfig/uitdatabank/keys/pubkey-keycloak.pem" do
-        let(:params) { {
-          'config_source'          => 'appconfig/uitdatabank/udb3-search-service/config.php',
-          'pubkey_keycloak_source' => 'appconfig/uitdatabank/keys/pubkey-keycloak.pem'
-        } }
+      context 'with hieradata' do
+        let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-        context "with hieradata" do
-          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+        context "with config_source => appconfig/uitdatabank/udb3-search-service/config.php and pubkey_keycloak_source => appconfig/uitdatabank/keys/pubkey-keycloak.pem" do
+          let(:params) { {
+            'config_source'          => 'appconfig/uitdatabank/udb3-search-service/config.php',
+            'pubkey_keycloak_source' => 'appconfig/uitdatabank/keys/pubkey-keycloak.pem'
+          } }
 
           it { is_expected.to compile.with_all_deps }
 
@@ -23,8 +23,7 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             'pubkey_keycloak_source'                => 'appconfig/uitdatabank/keys/pubkey-keycloak.pem',
             'region_mapping_source'                 => 'appconfig/uitdatabank/udb3-search-service/mapping_region.json',
             'default_queries_source'                => 'appconfig/uitdatabank/udb3-search-service/default_queries.php',
-            'api_keys_matched_to_client_ids_source' => nil,
-            'puppetdb_url'                          => 'http://localhost:8081'
+            'api_keys_matched_to_client_ids_source' => nil
           ) }
 
           it { is_expected.to contain_apt__source('uitdatabank-search-api') }
@@ -109,11 +108,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             'basedir' => '/var/www/udb3-search-service'
           ) }
 
-          it { is_expected.to contain_profiles__deployment__versions('profiles::uitdatabank::search_api::deployment').with(
-            'puppetdb_url' => 'http://localhost:8081'
-          ) }
-
-          it { is_expected.to contain_package('uitdatabank-search-api').that_notifies('Profiles::Deployment::Versions[profiles::uitdatabank::search_api::deployment]') }
           it { is_expected.to contain_package('uitdatabank-search-api').that_requires('Apt::Source[uitdatabank-search-api]') }
           it { is_expected.to contain_package('uitdatabank-search-api').that_notifies('Service[uitdatabank-search-api]') }
           it { is_expected.to contain_package('uitdatabank-search-api').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
@@ -146,34 +140,15 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           it { is_expected.to contain_service('uitdatabank-search-api').that_requires('Profiles::Php::Fpm_service_alias[uitdatabank-search-api]') }
         end
 
-        context "without hieradata" do
-          let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
-
-          it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').with(
-            'region_mapping_source'                 => 'profiles/uitdatabank/search_api/mapping_region.json',
-            'default_queries_source'                => nil,
-            'api_keys_matched_to_client_ids_source' => nil,
-          ) }
-
-          it { is_expected.to contain_profiles__deployment__versions('profiles::uitdatabank::search_api::deployment').with(
-            'puppetdb_url' => nil
-          ) }
-        end
-      end
-
-      context "with config_source => appconfig/uitdatabank/udb3-search-service/myconfig.php, version => 1.2.3, repository => foo, pubkey_keycloak_source => appconfig/uitdatabank/keys/mypubkey-keycloak.pem, region_mapping_source => appconfig/uitdatabank/udb3-search-service/my_region_mapping.json, api_keys_matched_to_client_ids_source => appconfig/uitdatabank/udb3-search-service/api_keys.php, and puppetdb_url => http://example.com:8000" do
-        let(:params) { {
-          'config_source'                         => 'appconfig/uitdatabank/udb3-search-service/myconfig.php',
-          'version'                               => '1.2.3',
-          'repository'                            => 'foo',
-          'pubkey_keycloak_source'                => 'appconfig/uitdatabank/keys/mypubkey-keycloak.pem',
-          'region_mapping_source'                 => 'appconfig/uitdatabank/udb3-search-service/my_region_mapping.json',
-          'api_keys_matched_to_client_ids_source' => 'appconfig/uitdatabank/udb3-search-service/api_keys.php',
-          'puppetdb_url'                          => 'http://example.com:8000'
-        } }
-
-        context "with hieradata" do
-          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+        context "with config_source => appconfig/uitdatabank/udb3-search-service/myconfig.php, version => 1.2.3, repository => foo, pubkey_keycloak_source => appconfig/uitdatabank/keys/mypubkey-keycloak.pem, region_mapping_source => appconfig/uitdatabank/udb3-search-service/my_region_mapping.json and api_keys_matched_to_client_ids_source => appconfig/uitdatabank/udb3-search-service/api_keys.php" do
+          let(:params) { {
+            'config_source'                         => 'appconfig/uitdatabank/udb3-search-service/myconfig.php',
+            'version'                               => '1.2.3',
+            'repository'                            => 'foo',
+            'pubkey_keycloak_source'                => 'appconfig/uitdatabank/keys/mypubkey-keycloak.pem',
+            'region_mapping_source'                 => 'appconfig/uitdatabank/udb3-search-service/my_region_mapping.json',
+            'api_keys_matched_to_client_ids_source' => 'appconfig/uitdatabank/udb3-search-service/api_keys.php'
+          } }
 
           context "with repository foo defined" do
             let(:pre_condition) { [
@@ -235,10 +210,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
 
             it { is_expected.to contain_class('profiles::uitdatabank::search_api::listeners').with(
               'basedir' => '/var/www/udb3-search-service'
-            ) }
-
-            it { is_expected.to contain_profiles__deployment__versions('profiles::uitdatabank::search_api::deployment').with(
-              'puppetdb_url' => 'http://example.com:8000'
             ) }
 
             it { is_expected.to contain_package('uitdatabank-search-api').that_requires('Apt::Source[foo]') }

@@ -6,7 +6,6 @@ class profiles::uitdatabank::search_api::deployment (
   String           $region_mapping_source                 = 'profiles/uitdatabank/search_api/mapping_region.json',
   Optional[String] $default_queries_source                = undef,
   Optional[String] $api_keys_matched_to_client_ids_source = undef,
-  Optional[String] $puppetdb_url                          = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $basedir                 = '/var/www/udb3-search-service'
@@ -24,7 +23,7 @@ class profiles::uitdatabank::search_api::deployment (
 
   package { 'uitdatabank-search-api':
     ensure  => $version,
-    notify  => [Service['uitdatabank-search-api'], Class['profiles::uitdatabank::search_api::listeners'], Profiles::Deployment::Versions[$title]],
+    notify  => [Service['uitdatabank-search-api'], Class['profiles::uitdatabank::search_api::listeners']],
     require => Apt::Source[$repository]
   }
 
@@ -111,9 +110,5 @@ class profiles::uitdatabank::search_api::deployment (
     hour        => '0',
     minute      => '0',
     require     => Package['uitdatabank-search-api']
-  }
-
-  profiles::deployment::versions { $title:
-    puppetdb_url => $puppetdb_url
   }
 }
