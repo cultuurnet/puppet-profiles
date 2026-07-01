@@ -7,6 +7,7 @@ x-search-service: &search-service
   volumes:
     - /etc/uitdatabank-search-api/config.php:/var/www/html/config.php:ro
     - /etc/uitdatabank-search-api/public-keycloak.pem:/var/www/html/public-keycloak.pem:ro
+    - /etc/uitdatabank-search-api/mapping_region.json:/var/www/html/src/ElasticSearch/Operations/json/mapping_region.json:ro
 <% if @api_keys_matched_to_client_ids_source -%>
     - /etc/uitdatabank-search-api/api_keys_matched_to_client_ids.php:/var/www/html/api_keys_matched_to_client_ids.php:ro
 <% end -%>
@@ -20,7 +21,7 @@ services:
   search-api:
     <<: *search-service
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://127.0.0.1:8080/"]
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 9000 || exit 1"]
       start_period: 10s
       interval: 10s
       timeout: 5s
