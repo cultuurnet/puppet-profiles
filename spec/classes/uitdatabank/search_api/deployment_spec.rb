@@ -17,28 +17,29 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').with(
+            'type'                                  => 'instance',
             'config_source'                         => 'appconfig/uitdatabank/udb3-search-service/config.php',
-            'version'                               => 'latest',
-            'repository'                            => 'uitdatabank-search-api',
             'pubkey_keycloak_source'                => 'appconfig/uitdatabank/keys/pubkey-keycloak.pem',
             'region_mapping_source'                 => 'appconfig/uitdatabank/udb3-search-service/mapping_region.json',
             'default_queries_source'                => nil,
             'api_keys_matched_to_client_ids_source' => nil
           ) }
 
-          it { is_expected.to contain_apt__source('uitdatabank-search-api') }
           it { is_expected.to contain_group('www-data') }
           it { is_expected.to contain_user('www-data') }
 
-          it { is_expected.to contain_package('uitdatabank-search-api').with(
-            'ensure' => 'latest'
+          it { is_expected.to contain_class('Profiles::Uitdatabank::Search_api::Deployment::Instance').with(
+            'default_queries_source'                => nil,
+            'api_keys_matched_to_client_ids_source' => nil
           ) }
+
+          it { is_expected.not_to contain_class('Profiles::Uitdatabank::Search_api::Deployment::Container') }
 
           it { is_expected.to contain_file('uitdatabank-search-api-config').with(
             'ensure'  => 'file',
             'owner'   => 'www-data',
             'group'   => 'www-data',
-            'path'    => '/var/www/udb3-search-service/config.php',
+            'path'    => '/etc/uitdatabank-search-api/config.php',
             'content' => ''
           ) }
 
@@ -46,30 +47,14 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             'ensure'  => 'absent',
             'owner'   => 'www-data',
             'group'   => 'www-data',
-            'path'    => '/var/www/udb3-search-service/api_keys_matched_to_client_ids.php'
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').with(
-            'ensure' => 'file',
-            'owner'  => 'www-data',
-            'group'  => 'www-data',
-            'path'   => '/var/www/udb3-search-service/facet_mapping_regions.yml',
-            'source' => '/var/www/geojson-data/output/facet_mapping_regions.yml'
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-search-api-autocomplete').with(
-            'ensure' => 'file',
-            'owner'  => 'www-data',
-            'group'  => 'www-data',
-            'path'   => '/var/www/udb3-search-service/web/autocomplete.json',
-            'source' => '/var/www/geojson-data/output/autocomplete.json'
+            'path'    => '/etc/uitdatabank-search-api/api_keys_matched_to_client_ids.php'
           ) }
 
           it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').with(
             'ensure'  => 'file',
             'owner'   => 'www-data',
             'group'   => 'www-data',
-            'path'    => '/var/www/udb3-search-service/src/ElasticSearch/Operations/json/mapping_region.json',
+            'path'    => '/etc/uitdatabank-search-api/mapping_region.json',
             'content' => "{ \"properties\": {} }\n"
           ) }
 
@@ -77,143 +62,93 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             'ensure'  => 'absent',
             'owner'   => 'www-data',
             'group'   => 'www-data',
-            'path'    => '/var/www/udb3-search-service/default_queries.php'
+            'path'    => '/etc/uitdatabank-search-api/default_queries.php'
           ) }
 
           it { is_expected.to contain_file('uitdatabank-search-api-pubkey-keycloak').with(
             'ensure'  => 'file',
             'owner'   => 'www-data',
             'group'   => 'www-data',
-            'path'    => '/var/www/udb3-search-service/public-keycloak.pem',
+            'path'    => '/etc/uitdatabank-search-api/public-keycloak.pem',
             'content' => "uitdatabank keycloak public key\n"
           ) }
 
-          it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').with(
-            'command'     => '/var/www/udb3-search-service/bin/app.php udb3-core:reindex-permanent',
-            'environment' => ['MAILTO=infra+cron@publiq.be'],
-            'hour'        => '0',
-            'minute'      => '0'
-          ) }
-
-          it { is_expected.to contain_profiles__php__fpm_service_alias('uitdatabank-search-api') }
-
-          it { is_expected.to contain_service('uitdatabank-search-api').with(
-            'hasstatus'  => true,
-            'hasrestart' => true,
-            'restart'    => '/usr/bin/systemctl reload uitdatabank-search-api'
-          ) }
-
-          it { is_expected.to contain_class('profiles::uitdatabank::search_api::listeners').with(
-            'basedir' => '/var/www/udb3-search-service'
-          ) }
-
-          it { is_expected.to contain_package('uitdatabank-search-api').that_requires('Apt::Source[uitdatabank-search-api]') }
-          it { is_expected.to contain_package('uitdatabank-search-api').that_notifies('Service[uitdatabank-search-api]') }
-          it { is_expected.to contain_package('uitdatabank-search-api').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
           it { is_expected.to contain_file('uitdatabank-search-api-config').that_requires('Group[www-data]') }
           it { is_expected.to contain_file('uitdatabank-search-api-config').that_requires('User[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-config').that_requires('Package[uitdatabank-search-api]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-config').that_notifies('Service[uitdatabank-search-api]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-config').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_requires('Group[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_requires('User[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_requires('Package[uitdatabank-search-api]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_notifies('Service[uitdatabank-search-api]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-facet-mapping-regions').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
+          it { is_expected.to contain_file('uitdatabank-search-api-config').that_notifies('Class[profiles::uitdatabank::search_api::deployment::instance]') }
           it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').that_requires('Group[www-data]') }
           it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').that_requires('User[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').that_requires('Package[uitdatabank-search-api]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').that_notifies('Service[uitdatabank-search-api]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
+          it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').that_notifies('Class[profiles::uitdatabank::search_api::deployment::instance]') }
           it { is_expected.to contain_file('uitdatabank-search-api-default-queries').that_requires('Group[www-data]') }
           it { is_expected.to contain_file('uitdatabank-search-api-default-queries').that_requires('User[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-default-queries').that_requires('Package[uitdatabank-search-api]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-default-queries').that_notifies('Service[uitdatabank-search-api]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-default-queries').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
+          it { is_expected.to contain_file('uitdatabank-search-api-default-queries').that_notifies('Class[profiles::uitdatabank::search_api::deployment::instance]') }
           it { is_expected.to contain_file('uitdatabank-search-api-api-keys-matched-to-client-ids').that_requires('Group[www-data]') }
           it { is_expected.to contain_file('uitdatabank-search-api-api-keys-matched-to-client-ids').that_requires('User[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-api-keys-matched-to-client-ids').that_requires('Package[uitdatabank-search-api]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-api-keys-matched-to-client-ids').that_notifies('Service[uitdatabank-search-api]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-api-keys-matched-to-client-ids').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
-          it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').that_requires('Package[uitdatabank-search-api]') }
-          it { is_expected.to contain_service('uitdatabank-search-api').that_requires('Profiles::Php::Fpm_service_alias[uitdatabank-search-api]') }
+          it { is_expected.to contain_file('uitdatabank-search-api-api-keys-matched-to-client-ids').that_notifies('Class[profiles::uitdatabank::search_api::deployment::instance]') }
+          it { is_expected.to contain_file('uitdatabank-search-api-pubkey-keycloak').that_requires('Group[www-data]') }
+          it { is_expected.to contain_file('uitdatabank-search-api-pubkey-keycloak').that_requires('User[www-data]') }
+          it { is_expected.to contain_file('uitdatabank-search-api-pubkey-keycloak').that_notifies('Class[profiles::uitdatabank::search_api::deployment::instance]') }
         end
 
-        context "with config_source => appconfig/uitdatabank/udb3-search-service/myconfig.php, version => 1.2.3, repository => foo, pubkey_keycloak_source => appconfig/uitdatabank/keys/mypubkey-keycloak.pem, region_mapping_source => appconfig/uitdatabank/udb3-search-service/my_region_mapping.json, default_queries_source => appconfig/uitdatabank/udb3-search-service/default_queries.php and api_keys_matched_to_client_ids_source => appconfig/uitdatabank/udb3-search-service/api_keys.php" do
+        context "with type => container, config_source => appconfig/uitdatabank/udb3-search-service/myconfig.php, pubkey_keycloak_source => appconfig/uitdatabank/keys/mypubkey-keycloak.pem, region_mapping_source => appconfig/uitdatabank/udb3-search-service/my_region_mapping.json, default_queries_source => appconfig/uitdatabank/udb3-search-service/default_queries.php and api_keys_matched_to_client_ids_source => appconfig/uitdatabank/udb3-search-service/api_keys.php" do
           let(:params) { {
+            'type'                                  => 'container',
             'config_source'                         => 'appconfig/uitdatabank/udb3-search-service/myconfig.php',
-            'version'                               => '1.2.3',
-            'repository'                            => 'foo',
             'pubkey_keycloak_source'                => 'appconfig/uitdatabank/keys/mypubkey-keycloak.pem',
             'region_mapping_source'                 => 'appconfig/uitdatabank/udb3-search-service/my_region_mapping.json',
             'default_queries_source'                => 'appconfig/uitdatabank/udb3-search-service/default_queries.php',
             'api_keys_matched_to_client_ids_source' => 'appconfig/uitdatabank/udb3-search-service/api_keys.php'
           } }
 
-          context "with repository foo defined" do
-            let(:pre_condition) { [
-              '@apt::source { "foo": location => "http://localhost", release => "focal", repos => "main" }',
-            ] }
+          it { is_expected.not_to contain_class('Profiles::Uitdatabank::Search_api::Deployment::Instance') }
 
-            it { is_expected.to contain_apt__source('foo') }
+          it { is_expected.to contain_class('Profiles::Uitdatabank::Search_api::Deployment::Container') }
 
-            it { is_expected.to contain_package('uitdatabank-search-api').with(
-              'ensure' => '1.2.3'
-            ) }
+          it { is_expected.to contain_file('uitdatabank-search-api-config').with(
+            'ensure'  => 'file',
+            'owner'   => 'www-data',
+            'group'   => 'www-data',
+            'path'    => '/etc/uitdatabank-search-api/config.php',
+            'content' => "<?php\n\nreturn [];\n"
+          ) }
 
-            it { is_expected.to contain_file('uitdatabank-search-api-config').with(
-              'ensure'  => 'file',
-              'owner'   => 'www-data',
-              'group'   => 'www-data',
-              'path'    => '/var/www/udb3-search-service/config.php',
-              'content' => "<?php\n\nreturn [];\n"
-            ) }
+          it { is_expected.to contain_file('uitdatabank-search-api-api-keys-matched-to-client-ids').with(
+            'ensure'  => 'file',
+            'owner'   => 'www-data',
+            'group'   => 'www-data',
+            'path'    => '/etc/uitdatabank-search-api/api_keys_matched_to_client_ids.php',
+            'content' => ''
+          ) }
 
-            it { is_expected.to contain_file('uitdatabank-search-api-api-keys-matched-to-client-ids').with(
-              'ensure'  => 'file',
-              'owner'   => 'www-data',
-              'group'   => 'www-data',
-              'path'    => '/var/www/udb3-search-service/api_keys_matched_to_client_ids.php',
-              'content' => ''
-            ) }
+          it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').with(
+            'ensure'  => 'file',
+            'owner'   => 'www-data',
+            'group'   => 'www-data',
+            'path'    => '/etc/uitdatabank-search-api/mapping_region.json',
+            'content' => ''
+          ) }
 
-            it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').with(
-              'ensure'  => 'file',
-              'owner'   => 'www-data',
-              'group'   => 'www-data',
-              'path'    => '/var/www/udb3-search-service/src/ElasticSearch/Operations/json/mapping_region.json',
-              'content' => ''
-            ) }
+          it { is_expected.to contain_file('uitdatabank-search-api-default-queries').with(
+            'ensure'  => 'file',
+            'owner'   => 'www-data',
+            'group'   => 'www-data',
+            'path'    => '/etc/uitdatabank-search-api/default_queries.php',
+            'content' => ''
+          ) }
 
-            it { is_expected.to contain_file('uitdatabank-search-api-default-queries').with(
-              'ensure'  => 'file',
-              'owner'   => 'www-data',
-              'group'   => 'www-data',
-              'path'    => '/var/www/udb3-search-service/default_queries.php',
-              'content' => ''
-            ) }
+          it { is_expected.to contain_file('uitdatabank-search-api-pubkey-keycloak').with(
+            'ensure'  => 'file',
+            'owner'   => 'www-data',
+            'group'   => 'www-data',
+            'path'    => '/etc/uitdatabank-search-api/public-keycloak.pem',
+            'content' => ''
+          ) }
 
-            it { is_expected.to contain_file('uitdatabank-search-api-pubkey-keycloak').with(
-              'ensure'  => 'file',
-              'owner'   => 'www-data',
-              'group'   => 'www-data',
-              'path'    => '/var/www/udb3-search-service/public-keycloak.pem',
-              'content' => ''
-            ) }
-
-            it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').with(
-              'command'     => '/var/www/udb3-search-service/bin/app.php udb3-core:reindex-permanent',
-              'environment' => ['MAILTO=infra+cron@publiq.be'],
-              'hour'        => '0',
-              'minute'      => '0'
-            ) }
-
-            it { is_expected.to contain_class('profiles::uitdatabank::search_api::listeners').with(
-              'basedir' => '/var/www/udb3-search-service'
-            ) }
-
-            it { is_expected.to contain_package('uitdatabank-search-api').that_requires('Apt::Source[foo]') }
-          end
+          it { is_expected.to contain_file('uitdatabank-search-api-config').that_notifies('Class[profiles::uitdatabank::search_api::deployment::container]') }
+          it { is_expected.to contain_file('uitdatabank-search-api-region-mapping').that_notifies('Class[profiles::uitdatabank::search_api::deployment::container]') }
+          it { is_expected.to contain_file('uitdatabank-search-api-default-queries').that_notifies('Class[profiles::uitdatabank::search_api::deployment::container]') }
+          it { is_expected.to contain_file('uitdatabank-search-api-api-keys-matched-to-client-ids').that_notifies('Class[profiles::uitdatabank::search_api::deployment::container]') }
+          it { is_expected.to contain_file('uitdatabank-search-api-pubkey-keycloak').that_notifies('Class[profiles::uitdatabank::search_api::deployment::container]') }
         end
       end
 
@@ -221,6 +156,7 @@ describe 'profiles::uitdatabank::search_api::deployment' do
         let(:params) { {} }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'pubkey_keycloak_source'/) }
       end
     end
   end

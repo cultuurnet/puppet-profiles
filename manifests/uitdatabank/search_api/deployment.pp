@@ -1,70 +1,58 @@
 class profiles::uitdatabank::search_api::deployment (
-  String           $config_source,
-  String           $pubkey_keycloak_source,
-  String           $version                               = 'latest',
-  String           $repository                            = 'uitdatabank-search-api',
-  String           $region_mapping_source                 = 'profiles/uitdatabank/search_api/mapping_region.json',
-  Optional[String] $default_queries_source                = undef,
-  Optional[String] $api_keys_matched_to_client_ids_source = undef,
+  String                        $config_source,
+  String                        $pubkey_keycloak_source,
+  Enum['instance', 'container'] $type                                  = 'instance',
+  String                        $region_mapping_source                 = 'profiles/uitdatabank/search_api/mapping_region.json',
+  Optional[String]              $default_queries_source                = undef,
+  Optional[String]              $api_keys_matched_to_client_ids_source = undef,
 ) inherits ::profiles {
 
-  $basedir                 = '/var/www/udb3-search-service'
+  $config_dir              = '/etc/uitdatabank-search-api'
   $secrets                 = lookup('vault:uitdatabank/udb3-search-service')
   $file_default_attributes = {
                                owner   => 'www-data',
                                group   => 'www-data',
-                               require => [Group['www-data'], User['www-data'], Package['uitdatabank-search-api']],
-                               notify  => [Service['uitdatabank-search-api'], Class['profiles::uitdatabank::search_api::listeners']]
+                               require => [Group['www-data'], User['www-data']],
+                               notify  => Class["profiles::uitdatabank::search_api::deployment::${type}"]
                              }
+
+  case $type {
+    'instance': {
+      class { 'profiles::uitdatabank::search_api::deployment::instance':
+        default_queries_source => $default_queries_source,
+        api_keys_matched_to_client_ids_source => $api_keys_matched_to_client_ids_source
+      }
+    }
+    'container': {
+      class { 'profiles::uitdatabank::search_api::deployment::container':
+      }
+    }
+  }
 
   realize Group['www-data']
   realize User['www-data']
-  realize Apt::Source[$repository]
 
-  package { 'uitdatabank-search-api':
-    ensure  => $version,
-    notify  => [Service['uitdatabank-search-api'], Class['profiles::uitdatabank::search_api::listeners']],
-    require => Apt::Source[$repository]
+  file { $config_dir:
+    ensure => 'directory'
   }
 
   file { 'uitdatabank-search-api-config':
     ensure  => 'file',
-    path    => "${basedir}/config.php",
+    path    => "${config_dir}/config.php",
     content => template($config_source),
     *       => $file_default_attributes
   }
 
-  file { 'uitdatabank-search-api-facet-mapping-regions':
-    ensure  => 'file',
-    path    => "${basedir}/facet_mapping_regions.yml",
-    source  => '/var/www/geojson-data/output/facet_mapping_regions.yml',
-    *      => $file_default_attributes
-  }
-
-  file { 'uitdatabank-search-api-facet-mapping-regions-php':
-    ensure  => 'file',
-    path    => "${basedir}/facet_mapping_regions.php",
-    source  => '/var/www/geojson-data/output/facet_mapping_regions.php',
-    *      => $file_default_attributes
-  }
-
-  file { 'uitdatabank-search-api-autocomplete':
-    ensure  => 'file',
-    path    => "${basedir}/web/autocomplete.json",
-    source  => '/var/www/geojson-data/output/autocomplete.json',
-    *      => $file_default_attributes
-  }
-
   file { 'uitdatabank-search-api-pubkey-keycloak':
     ensure  => 'file',
-    path    => "${basedir}/public-keycloak.pem",
+    path    => "${config_dir}/public-keycloak.pem",
     content => template($pubkey_keycloak_source),
     *       => $file_default_attributes
   }
 
   file { 'uitdatabank-search-api-region-mapping':
     ensure  => 'file',
-    path    => "${basedir}/src/ElasticSearch/Operations/json/mapping_region.json",
+    path    => "${config_dir}/mapping_region.json",
     content => template($region_mapping_source),
     *       => $file_default_attributes
   }
@@ -74,7 +62,7 @@ class profiles::uitdatabank::search_api::deployment (
                  undef   => 'absent',
                  default => 'file'
                },
-    path    => "${basedir}/default_queries.php",
+    path    => "${config_dir}/default_queries.php",
     content => $default_queries_source ? {
                  undef   => undef,
                  default => template($default_queries_source),
@@ -87,32 +75,11 @@ class profiles::uitdatabank::search_api::deployment (
                  undef   => 'absent',
                  default => 'file'
                },
-    path    => "${basedir}/api_keys_matched_to_client_ids.php",
+    path    => "${config_dir}/api_keys_matched_to_client_ids.php",
     content => $api_keys_matched_to_client_ids_source ? {
                  undef   => undef,
                  default => template($api_keys_matched_to_client_ids_source),
                },
     *       => $file_default_attributes
-  }
-
-  class { 'profiles::uitdatabank::search_api::listeners':
-    basedir => $basedir
-  }
-
-  profiles::php::fpm_service_alias { 'uitdatabank-search-api': }
-
-  service { 'uitdatabank-search-api':
-    hasstatus  => true,
-    hasrestart => true,
-    restart    => '/usr/bin/systemctl reload uitdatabank-search-api',
-    require    => Profiles::Php::Fpm_service_alias['uitdatabank-search-api'],
-  }
-
-  cron { 'uitdatabank-search-api-reindex-permanent':
-    command     => "${basedir}/bin/app.php udb3-core:reindex-permanent",
-    environment => ['MAILTO=infra+cron@publiq.be'],
-    hour        => '0',
-    minute      => '0',
-    require     => Package['uitdatabank-search-api']
   }
 }
