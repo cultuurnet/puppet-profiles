@@ -47,11 +47,6 @@ describe 'profiles::uitdatabank::search_api::deployment::instance' do
           'target' => '/etc/uitdatabank-search-api/config.php'
         ) }
 
-        it { is_expected.to contain_file('/var/www/udb3-search-service/facet_mapping_regions.yml').with(
-          'ensure' => 'link',
-          'target' => '/var/www/geojson-data/output/facet_mapping_regions.yml'
-        ) }
-
         it { is_expected.to contain_file('/var/www/udb3-search-service/facet_mapping_regions.php').with(
           'ensure' => 'link',
           'target' => '/var/www/geojson-data/output/facet_mapping_regions.php'
@@ -88,9 +83,6 @@ describe 'profiles::uitdatabank::search_api::deployment::instance' do
         it { is_expected.to contain_file('/var/www/udb3-search-service/config.php').that_requires('Package[uitdatabank-search-api]') }
         it { is_expected.to contain_file('/var/www/udb3-search-service/config.php').that_notifies('Service[uitdatabank-search-api]') }
         it { is_expected.to contain_file('/var/www/udb3-search-service/config.php').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
-        it { is_expected.to contain_file('/var/www/udb3-search-service/facet_mapping_regions.yml').that_requires('Package[uitdatabank-search-api]') }
-        it { is_expected.to contain_file('/var/www/udb3-search-service/facet_mapping_regions.yml').that_notifies('Service[uitdatabank-search-api]') }
-        it { is_expected.to contain_file('/var/www/udb3-search-service/facet_mapping_regions.yml').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
         it { is_expected.to contain_file('/var/www/udb3-search-service/facet_mapping_regions.php').that_requires('Package[uitdatabank-search-api]') }
         it { is_expected.to contain_file('/var/www/udb3-search-service/facet_mapping_regions.php').that_notifies('Service[uitdatabank-search-api]') }
         it { is_expected.to contain_file('/var/www/udb3-search-service/facet_mapping_regions.php').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
