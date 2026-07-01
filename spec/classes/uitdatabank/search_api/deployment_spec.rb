@@ -22,7 +22,7 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             'repository'                            => 'uitdatabank-search-api',
             'pubkey_keycloak_source'                => 'appconfig/uitdatabank/keys/pubkey-keycloak.pem',
             'region_mapping_source'                 => 'appconfig/uitdatabank/udb3-search-service/mapping_region.json',
-            'default_queries_source'                => 'appconfig/uitdatabank/udb3-search-service/default_queries.php',
+            'default_queries_source'                => nil,
             'api_keys_matched_to_client_ids_source' => nil
           ) }
 
@@ -74,11 +74,10 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           ) }
 
           it { is_expected.to contain_file('uitdatabank-search-api-default-queries').with(
-            'ensure'  => 'file',
+            'ensure'  => 'absent',
             'owner'   => 'www-data',
             'group'   => 'www-data',
-            'path'    => '/var/www/udb3-search-service/default_queries.php',
-            'content' => ''
+            'path'    => '/var/www/udb3-search-service/default_queries.php'
           ) }
 
           it { is_expected.to contain_file('uitdatabank-search-api-pubkey-keycloak').with(
@@ -140,13 +139,14 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           it { is_expected.to contain_service('uitdatabank-search-api').that_requires('Profiles::Php::Fpm_service_alias[uitdatabank-search-api]') }
         end
 
-        context "with config_source => appconfig/uitdatabank/udb3-search-service/myconfig.php, version => 1.2.3, repository => foo, pubkey_keycloak_source => appconfig/uitdatabank/keys/mypubkey-keycloak.pem, region_mapping_source => appconfig/uitdatabank/udb3-search-service/my_region_mapping.json and api_keys_matched_to_client_ids_source => appconfig/uitdatabank/udb3-search-service/api_keys.php" do
+        context "with config_source => appconfig/uitdatabank/udb3-search-service/myconfig.php, version => 1.2.3, repository => foo, pubkey_keycloak_source => appconfig/uitdatabank/keys/mypubkey-keycloak.pem, region_mapping_source => appconfig/uitdatabank/udb3-search-service/my_region_mapping.json, default_queries_source => appconfig/uitdatabank/udb3-search-service/default_queries.php and api_keys_matched_to_client_ids_source => appconfig/uitdatabank/udb3-search-service/api_keys.php" do
           let(:params) { {
             'config_source'                         => 'appconfig/uitdatabank/udb3-search-service/myconfig.php',
             'version'                               => '1.2.3',
             'repository'                            => 'foo',
             'pubkey_keycloak_source'                => 'appconfig/uitdatabank/keys/mypubkey-keycloak.pem',
             'region_mapping_source'                 => 'appconfig/uitdatabank/udb3-search-service/my_region_mapping.json',
+            'default_queries_source'                => 'appconfig/uitdatabank/udb3-search-service/default_queries.php',
             'api_keys_matched_to_client_ids_source' => 'appconfig/uitdatabank/udb3-search-service/api_keys.php'
           } }
 

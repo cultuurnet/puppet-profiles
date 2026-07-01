@@ -69,13 +69,17 @@ class profiles::uitdatabank::search_api::deployment (
     *       => $file_default_attributes
   }
 
-  if $default_queries_source {
-    file { 'uitdatabank-search-api-default-queries':
-      ensure  => 'file',
-      path    => "${basedir}/default_queries.php",
-      content => template($default_queries_source),
-      *       => $file_default_attributes
-    }
+  file { 'uitdatabank-search-api-default-queries':
+    ensure  => $default_queries_source ? {
+                 undef   => 'absent',
+                 default => 'file'
+               },
+    path    => "${basedir}/default_queries.php",
+    content => $default_queries_source ? {
+                 undef   => undef,
+                 default => template($default_queries_source),
+               },
+    *       => $file_default_attributes
   }
 
   file { 'uitdatabank-search-api-api-keys-matched-to-client-ids':

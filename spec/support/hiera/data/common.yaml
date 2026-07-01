@@ -64,7 +64,6 @@ profiles::uitdatabank::entry_api::deployment::pubkey_keycloak_source: 'appconfig
 profiles::uitdatabank::search_api::deployment::config_source: 'appconfig/uitdatabank/udb3-search-service/config.php'
 profiles::uitdatabank::search_api::deployment::pubkey_keycloak_source: 'appconfig/uitdatabank/keys/pubkey-keycloak.pem'
 profiles::uitdatabank::search_api::deployment::region_mapping_source: 'appconfig/uitdatabank/udb3-search-service/mapping_region.json'
-profiles::uitdatabank::search_api::deployment::default_queries_source: 'appconfig/uitdatabank/udb3-search-service/default_queries.php'
 
 profiles::uitdatabank::jwt_provider::deployment::config_source: 'appconfig/uitdatabank/udb3-jwtprovider/config.yml'
 
