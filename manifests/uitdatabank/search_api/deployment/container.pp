@@ -1,9 +1,7 @@
 class profiles::uitdatabank::search_api::deployment::container (
   String           $image,
-  String           $env_image_tag = 'acc',
-  String           $aws_region    = 'eu-west-1',
-  Optional[String] $image_tag     = undef,
-  Optional[String] $puppetdb_url  = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+  String           $aws_region = 'eu-west-1',
+  Optional[String] $image_tag  = undef,
 ) inherits ::profiles {
   $config_dir         = '/etc/uitdatabank-search-api'
   $ecr_repository     = regsubst($image, '^[^/]+/', '')
@@ -13,7 +11,7 @@ class profiles::uitdatabank::search_api::deployment::container (
     repos => {
       $ecr_repository => {
         'region'    => $aws_region,
-        'image_tag' => $env_image_tag,
+        'image_tag' => $environment,
       },
     },
   }
@@ -46,9 +44,5 @@ class profiles::uitdatabank::search_api::deployment::container (
     hour        => '0',
     minute      => '0',
     require     => Docker::Compose['uitdatabank-search-api'],
-  }
-
-  profiles::deployment::versions { $title:
-    puppetdb_url => $puppetdb_url,
   }
 }
