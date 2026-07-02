@@ -24,17 +24,19 @@ class profiles::uitdatabank::search_api::deployment::container (
     group   => 'root',
     mode    => '0644',
     require => File[$config_dir],
-    notify  => Docker::Compose['uitdatabank-search-api'],
+    notify  => Docker_compose['uitdatabank-search-api'],
   }
 
-  docker::compose { 'uitdatabank-search-api':
+  include docker::compose
+
+  docker_compose { 'uitdatabank-search-api':
     ensure        => 'present',
     compose_files => ["${config_dir}/docker-compose.yml"],
-    pull_on_start => true,
     require       => [
       File['uitdatabank-search-api-config'],
       File['uitdatabank-search-api-pubkey-keycloak'],
       File['uitdatabank-search-api-docker-compose'],
+      Class['docker::compose'],
     ],
   }
 
@@ -43,6 +45,6 @@ class profiles::uitdatabank::search_api::deployment::container (
     environment => ['MAILTO=infra+cron@publiq.be'],
     hour        => '0',
     minute      => '0',
-    require     => Docker::Compose['uitdatabank-search-api'],
+    require     => Docker_compose['uitdatabank-search-api'],
   }
 }
