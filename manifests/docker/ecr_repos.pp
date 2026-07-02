@@ -1,5 +1,5 @@
 class profiles::docker::ecr_repos (
-  Hash[String, String] $repos = {}
+  Hash[String, Hash] $repos = {}
 ) inherits ::profiles {
 
   realize File['/etc/puppetlabs/facter/facts.d']
