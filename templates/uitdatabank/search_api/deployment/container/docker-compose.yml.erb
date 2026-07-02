@@ -8,12 +8,12 @@ x-search-service: &search-service
     - /etc/uitdatabank-search-api/config.php:/var/www/html/config.php:ro
     - /etc/uitdatabank-search-api/public-keycloak.pem:/var/www/html/public-keycloak.pem:ro
     - /etc/uitdatabank-search-api/mapping_region.json:/var/www/html/src/ElasticSearch/Operations/json/mapping_region.json:ro
-<% if @api_keys_matched_to_client_ids_source -%>
+<%- if @api_keys_matched_to_client_ids -%>
     - /etc/uitdatabank-search-api/api_keys_matched_to_client_ids.php:/var/www/html/api_keys_matched_to_client_ids.php:ro
-<% end -%>
-<% if @default_queries_source -%>
+<%- end -%>
+<%- if @default_queries -%>
     - /etc/uitdatabank-search-api/default_queries.php:/var/www/html/default_queries.php:ro
-<% end -%>
+<%- end -%>
     - /var/www/geojson-data/output/facet_mapping_regions.php:/var/www/html/facet_mapping_regions.php:ro
     - /var/www/geojson-data:/var/www/geojson-data:ro
 

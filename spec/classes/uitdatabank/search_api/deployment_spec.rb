@@ -102,7 +102,10 @@ describe 'profiles::uitdatabank::search_api::deployment' do
 
           it { is_expected.not_to contain_class('Profiles::Uitdatabank::Search_api::Deployment::Instance') }
 
-          it { is_expected.to contain_class('Profiles::Uitdatabank::Search_api::Deployment::Container') }
+          it { is_expected.to contain_class('Profiles::Uitdatabank::Search_api::Deployment::Container').with(
+            'api_keys_matched_to_client_ids' => true,
+            'default_queries'                => true
+          ) }
 
           it { is_expected.to contain_file('uitdatabank-search-api-config').with(
             'ensure'  => 'file',

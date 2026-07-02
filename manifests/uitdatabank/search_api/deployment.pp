@@ -19,12 +19,14 @@ class profiles::uitdatabank::search_api::deployment (
   case $type {
     'instance': {
       class { 'profiles::uitdatabank::search_api::deployment::instance':
-        default_queries_source => $default_queries_source,
-        api_keys_matched_to_client_ids_source => $api_keys_matched_to_client_ids_source
+        api_keys_matched_to_client_ids_source => $api_keys_matched_to_client_ids_source,
+        default_queries_source                => $default_queries_source
       }
     }
     'container': {
       class { 'profiles::uitdatabank::search_api::deployment::container':
+        api_keys_matched_to_client_ids => !!$api_keys_matched_to_client_ids_source,
+        default_queries                => !!$default_queries_source
       }
     }
   }
