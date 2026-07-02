@@ -48,7 +48,7 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
         ) }
 
         it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').with(
-          'command'     => 'docker compose -f /etc/uitdatabank-search-api/docker-compose.yml exec -T search-api php bin/app.php udb3-core:reindex-permanent',
+          'command'     => '/usr/bin/docker compose -f /etc/uitdatabank-search-api/docker-compose.yml exec -T search-api php bin/app.php udb3-core:reindex-permanent',
           'environment' => ['MAILTO=infra+cron@publiq.be'],
           'hour'        => '0',
           'minute'      => '0'
