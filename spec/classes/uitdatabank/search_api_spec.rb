@@ -21,7 +21,6 @@ describe 'profiles::uitdatabank::search_api' do
             'elasticsearch_servername' => nil,
             'deployment'               => true,
             'data_migration'           => false,
-            'manage_php'               => true,
             'basedir'                  => '/var/www/udb3-search-service'
           ) }
 
@@ -71,7 +70,7 @@ describe 'profiles::uitdatabank::search_api' do
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').that_requires('Class[profiles::uitdatabank::geojson_data::deployment]') }
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').that_requires('Class[profiles::elasticsearch]') }
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').that_requires('Class[profiles::redis]') }
-          it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').that_subscribes_to('Class[profiles::php]') }
+          it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment::instance').that_subscribes_to('Class[profiles::php]') }
         end
 
         context 'without hieradata' do
@@ -79,26 +78,6 @@ describe 'profiles::uitdatabank::search_api' do
 
           it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }
           it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'pubkey_keycloak_source'/) }
-        end
-      end
-
-      context 'with servername => baz.example.com and manage_php => false' do
-        let(:params) { {
-          'servername' => 'baz.example.com',
-          'manage_php' => false
-        } }
-
-        context 'with container hieradata' do
-          let(:hiera_config) { 'spec/support/hiera/container.yaml' }
-          let(:pre_condition) { 'class profiles::docker {}' }
-
-          it { is_expected.to compile.with_all_deps }
-
-          it { is_expected.not_to contain_class('profiles::php') }
-
-          it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').that_requires('Class[profiles::elasticsearch]') }
-          it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').that_requires('Class[profiles::redis]') }
-          it { is_expected.not_to contain_class('profiles::uitdatabank::search_api::deployment').that_subscribes_to('Class[profiles::php]') }
         end
       end
 

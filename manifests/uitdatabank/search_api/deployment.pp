@@ -18,10 +18,14 @@ class profiles::uitdatabank::search_api::deployment (
 
   case $type {
     'instance': {
+      include profiles::php
+
       class { 'profiles::uitdatabank::search_api::deployment::instance':
         api_keys_matched_to_client_ids_source => $api_keys_matched_to_client_ids_source,
         default_queries_source                => $default_queries_source
       }
+
+      Class['profiles::php'] ~> Class['profiles::uitdatabank::search_api::deployment::instance']
     }
     'container': {
       class { 'profiles::uitdatabank::search_api::deployment::container':
