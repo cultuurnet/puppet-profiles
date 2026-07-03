@@ -252,4 +252,14 @@ class profiles::users::software inherits ::profiles {
     shell          => '/bin/false',
     uid            => '1007'
   }
+
+  @user { 'qdrant':
+    ensure         => 'present',
+    gid            => 'qdrant',
+    home           => '/var/lib/qdrant',
+    managehome     => true,
+    purge_ssh_keys => true,
+    shell          => '/bin/false',
+    uid            => '1009'
+  }
 }
