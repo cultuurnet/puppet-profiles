@@ -88,6 +88,12 @@ describe 'profiles::firewall::rules' do
           'jump'  => 'accept'
         ) }
 
+        it { is_expected.to contain_firewall('400 accept qdrant traffic').with(
+          'proto' => 'tcp',
+          'dport' => '6333',
+          'jump'  => 'accept'
+        ) }
+
         it { is_expected.to contain_firewall('600 accept docker ephemeral ports traffic').with(
           'proto' => 'tcp',
           'dport' => '32768:60999',

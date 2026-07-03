@@ -84,6 +84,12 @@ class profiles::firewall::rules inherits ::profiles {
     jump  => 'accept'
   }
 
+  @firewall { '400 accept qdrant traffic':
+    proto => 'tcp',
+    dport => '6333',
+    jump  => 'accept'
+  }
+
   @firewall { '500 accept carbon traffic':
     proto => 'tcp',
     dport => '2003',
