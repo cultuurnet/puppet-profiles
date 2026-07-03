@@ -126,6 +126,11 @@ describe 'profiles::groups' do
           'ensure' => 'present',
           'gid'    => '1006'
         ) }
+
+        it { is_expected.to contain_group('qdrant').with(
+          'ensure' => 'present',
+          'gid'    => '1009'
+        ) }
       end
     end
   end

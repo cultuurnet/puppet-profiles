@@ -1,10 +1,5 @@
 class profiles::groups inherits ::profiles {
 
-  group { 'mfa_users':
-    ensure => 'present',
-    gid    => '1008'
-  }
-
   @group { 'docker':
     ensure => 'present',
     gid    => '300'
@@ -133,6 +128,16 @@ class profiles::groups inherits ::profiles {
   @group { '_graphite':
     ensure => 'present',
     gid    => '1007'
+  }
+
+  group { 'mfa_users':
+    ensure => 'present',
+    gid    => '1008'
+  }
+
+  group { 'qdrant':
+    ensure => 'present',
+    gid    => '1009'
   }
 
   realize Group['docker']

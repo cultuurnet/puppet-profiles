@@ -214,6 +214,16 @@ describe 'profiles::users::software' do
           'shell'          => '/bin/sh',
           'uid'            => '1006'
         ) }
+
+        it { is_expected.to contain_user('qdrant').with(
+          'ensure'         => 'present',
+          'gid'            => 'qdrant',
+          'home'           => '/var/lib/qdrant',
+          'managehome'     => true,
+          'purge_ssh_keys' => true,
+          'shell'          => '/bin/false',
+          'uid'            => '1009'
+        ) }
       end
     end
   end
