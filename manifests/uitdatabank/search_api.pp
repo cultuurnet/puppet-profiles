@@ -3,12 +3,10 @@ class profiles::uitdatabank::search_api (
   Variant[String, Array[String]] $serveraliases            = [],
   Optional[String]               $elasticsearch_servername = undef,
   Boolean                        $deployment               = true,
-  Boolean                        $data_migration           = false
+  Boolean                        $data_migration           = false,
+  String                         $basedir                  = '/var/www/udb3-search-service'
 ) inherits ::profiles {
 
-  $basedir = '/var/www/udb3-search-service'
-
-  include profiles::php
   include profiles::redis
   include profiles::elasticsearch
 
@@ -16,8 +14,7 @@ class profiles::uitdatabank::search_api (
     include profiles::uitdatabank::geojson_data::deployment
 
     class { 'profiles::uitdatabank::search_api::deployment':
-      require   => [Class['profiles::redis'], Class['profiles::elasticsearch'], Class['profiles::uitdatabank::geojson_data::deployment']],
-      subscribe => Class['profiles::php']
+      require => [Class['profiles::redis'], Class['profiles::elasticsearch'], Class['profiles::uitdatabank::geojson_data::deployment']],
     }
 
     if $data_migration {
