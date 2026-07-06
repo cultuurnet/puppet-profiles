@@ -31,7 +31,7 @@ class profiles::uitdatabank::search_api::deployment::container (
     notify  => Docker_compose['uitdatabank-search-api']
   }
 
-  docker_compose { 'uitdatabank-search-api':
+  docker::compose { 'uitdatabank-search-api':
     ensure        => 'present',
     compose_files => ["${config_dir}/docker-compose.yml"],
     require       => Class['profiles::docker']
