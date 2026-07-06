@@ -50,6 +50,10 @@ describe 'profiles::apache' do
 
         it { is_expected.to contain_group('www-data').that_comes_before('Class[apache]') }
         it { is_expected.to contain_user('www-data').that_comes_before('Class[apache]') }
+
+        it { is_expected.to contain_class('apache::mod::mime').with(
+          'mime_support_package' => 'mime-support'
+        ) }
       end
 
       context "with mpm_module => worker, mpm_module_config => { startservers => 8, maxrequestworkers => 256 }, http2 => true, limitreqfieldsize => 32766, service_status => stopped and metrics => false" do
@@ -96,6 +100,18 @@ describe 'profiles::apache' do
         } }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /The HTTP\/2 protocol is not supported with MPM module prefork/) }
+      end
+    end
+
+    context "on ubuntu-24.04" do
+      let(:facts) { facts.merge({ os: facts[:os].merge({ 'release' => facts[:os]['release'].merge({ 'major' => '24.04', 'full' => '24.04' }) }) }) }
+
+      context "without parameters" do
+        it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to contain_class('apache::mod::mime').with(
+          'mime_support_package' => 'media-types'
+        ) }
       end
     end
   end
