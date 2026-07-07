@@ -27,6 +27,12 @@ class profiles::uitdatabank::search_api::deployment::instance (
     *      => $file_default_attributes
   }
 
+  file { "${config_dir}/facet_mapping_regions.php":
+    ensure => 'link',
+    target => '/var/www/geojson-data/output/facet_mapping_regions.php',
+    *      => $file_default_attributes
+  }
+
   file { "${basedir}/facet_mapping_regions.php":
     ensure => 'link',
     target => '/var/www/geojson-data/output/facet_mapping_regions.php',
