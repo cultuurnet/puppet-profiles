@@ -2,8 +2,8 @@ class profiles::platform::data_integration (
   String  $database_name,
   Boolean $dump_empty_tables = true,
   Integer $cron_hour         = 2,
-  String  $timezone          = 'UTC'
-  Optional[String] $developer_password        = undef,
+  String  $timezone          = 'UTC',
+  Optional[String] $developer_password = undef,
 
 ) inherits profiles {
 
