@@ -4,6 +4,7 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       let(:facts) { facts }
+      let(:pre_condition) { 'realize(Group["www-data"], User["www-data"])' }
 
       context 'with image => registry.example.com/uitdatabank-search-api' do
         let(:params) { {
@@ -53,9 +54,9 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
           it { is_expected.not_to contain_file('uitdatabank-search-api-docker-compose').with_content(/^\s+- \/etc\/uitdatabank-search-api\/default_queries.php:\/var\/www\/html\/default_queries.php:ro$/) }
           it { is_expected.not_to contain_file('uitdatabank-search-api-docker-compose').with_content(/^\s+- \/etc\/uitdatabank-search-api\/api_keys_matched_to_client_ids.php:\/var\/www\/html\/api_keys_matched_to_client_ids.php:ro$/) }
 
-          it { is_expected.to contain_docker_compose('uitdatabank-search-api').with(
-            'ensure'        => 'present',
-            'compose_files' => ['/etc/uitdatabank-search-api/docker-compose.yml']
+          it { is_expected.to contain_exec('uitdatabank-search-api-docker-compose').with(
+            'command'     => '/usr/bin/docker compose -f /etc/uitdatabank-search-api/docker-compose.yml up -d --remove-orphans',
+            'refreshonly' => true
           ) }
 
           it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').with(
@@ -65,8 +66,8 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
             'minute'      => '0'
           ) }
 
-          it { is_expected.to contain_file('uitdatabank-search-api-docker-compose').that_notifies('Docker_compose[uitdatabank-search-api]') }
-          it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').that_requires('Docker_compose[uitdatabank-search-api]') }
+          it { is_expected.to contain_file('uitdatabank-search-api-docker-compose').that_notifies('Exec[uitdatabank-search-api-docker-compose]') }
+          it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').that_requires('Exec[uitdatabank-search-api-docker-compose]') }
         end
       end
 
