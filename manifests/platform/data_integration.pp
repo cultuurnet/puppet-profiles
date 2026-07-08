@@ -3,6 +3,7 @@ class profiles::platform::data_integration (
   Boolean $dump_empty_tables = true,
   Integer $cron_hour         = 2,
   String  $timezone          = 'UTC'
+  Optional[String] $developer_password        = undef,
 
 ) inherits profiles {
 
@@ -31,6 +32,15 @@ class profiles::platform::data_integration (
                        database => $database_name
                      },
     require       => Profiles::Mysql::App_user["${database_user}@${database_name}"]
+  }
+
+  if $developer_password {
+    profiles::mysql::app_user { "developer@${database_name}":
+      password => $developer_password,
+      tables   => '*',
+      readonly => true,
+      remote   => true
+    }
   }
 
   file { 'parquetdump_to_gcs':
