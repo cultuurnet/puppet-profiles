@@ -2,6 +2,7 @@ class profiles::uitdatabank::search_api::deployment (
   String                        $config_source,
   String                        $pubkey_keycloak_source,
   Enum['instance', 'container'] $type                                  = 'instance',
+  String                        $basedir                               = '/var/www/udb3-search-service',
   String                        $region_mapping_source                 = 'profiles/uitdatabank/search_api/mapping_region.json',
   Optional[String]              $default_queries_source                = undef,
   Optional[String]              $api_keys_matched_to_client_ids_source = undef,
@@ -29,6 +30,7 @@ class profiles::uitdatabank::search_api::deployment (
     }
     'container': {
       class { 'profiles::uitdatabank::search_api::deployment::container':
+        basedir                        => $basedir,
         api_keys_matched_to_client_ids => !!$api_keys_matched_to_client_ids_source,
         default_queries                => !!$default_queries_source
       }

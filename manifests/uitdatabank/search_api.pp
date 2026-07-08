@@ -14,6 +14,7 @@ class profiles::uitdatabank::search_api (
     include profiles::uitdatabank::geojson_data::deployment
 
     class { 'profiles::uitdatabank::search_api::deployment':
+      basedir => $basedir,
       require => [Class['profiles::redis'], Class['profiles::elasticsearch'], Class['profiles::uitdatabank::geojson_data::deployment']],
     }
 
