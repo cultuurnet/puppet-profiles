@@ -14,7 +14,7 @@ x-entry-api: &entry-api
     - /etc/uitdatabank-entry-api/config.externalid_mapping_place.php:/var/www/html/config.externalid_mapping_place.php:ro
     - /etc/uitdatabank-entry-api/public-uitidv1.pem:/var/www/html/public-uitidv1.pem:ro
     - /etc/uitdatabank-entry-api/public-keycloak.pem:/var/www/html/public-keycloak.pem:ro
-<% if @api_keys_matched_to_client_ids -%>
+<% if @api_keys_matched_to_client_ids_source -%>
     - /etc/uitdatabank-entry-api/api_keys_matched_to_client_ids.php:/var/www/html/api_keys_matched_to_client_ids.php:ro
 <% end -%>
 
