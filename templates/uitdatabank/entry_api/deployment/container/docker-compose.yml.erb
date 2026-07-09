@@ -1,0 +1,79 @@
+x-entry-api: &entry-api
+  image: <%= @image %>:<%= @resolved_image_tag %>
+  network_mode: host
+  restart: unless-stopped
+  environment:
+    LOG_TO_STDOUT: "true"
+  volumes:
+    - /etc/uitdatabank-entry-api/config.php:/var/www/html/config.php:ro
+    - /etc/uitdatabank-entry-api/config.allow_all.php:/var/www/html/config.allow_all.php:ro
+    - /etc/uitdatabank-entry-api/config.client_permissions.php:/var/www/html/config.client_permissions.php:ro
+    - /etc/uitdatabank-entry-api/config.kinepolis.php:/var/www/html/config.kinepolis.php:ro
+    - /etc/uitdatabank-entry-api/config.completeness.php:/var/www/html/config.completeness.php:ro
+    - /etc/uitdatabank-entry-api/config.externalid_mapping_organizer.php:/var/www/html/config.externalid_mapping_organizer.php:ro
+    - /etc/uitdatabank-entry-api/config.externalid_mapping_place.php:/var/www/html/config.externalid_mapping_place.php:ro
+    - /etc/uitdatabank-entry-api/public-uitidv1.pem:/var/www/html/public-uitidv1.pem:ro
+    - /etc/uitdatabank-entry-api/public-keycloak.pem:/var/www/html/public-keycloak.pem:ro
+<% if @api_keys_matched_to_client_ids -%>
+    - /etc/uitdatabank-entry-api/api_keys_matched_to_client_ids.php:/var/www/html/api_keys_matched_to_client_ids.php:ro
+<% end -%>
+
+x-resque-worker: &resque-worker
+  <<: *entry-api
+  environment:
+    LOG_TO_STDOUT: "true"
+    APP_INCLUDE: /var/www/html/worker_bootstrap.php
+    INTERVAL: "1"
+    REDIS_BACKEND: "127.0.0.1:6379"
+
+services:
+  entry-api:
+    <<: *entry-api
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 9000 || exit 1"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+<% if @bulk_label_offer_worker == 'present' -%>
+  bulk-label-offer-worker:
+    <<: *resque-worker
+    command: ["php", "vendor/chrisboulton/php-resque/bin/resque"]
+    environment:
+      LOG_TO_STDOUT: "true"
+      APP_INCLUDE: /var/www/html/worker_bootstrap.php
+      INTERVAL: "1"
+      REDIS_BACKEND: "127.0.0.1:6379"
+      QUEUE: bulk_label_offer
+
+<% end -%>
+<% if @mail_worker == 'present' -%>
+  mail-worker:
+    <<: *resque-worker
+    command: ["php", "vendor/chrisboulton/php-resque/bin/resque"]
+    environment:
+      LOG_TO_STDOUT: "true"
+      APP_INCLUDE: /var/www/html/worker_bootstrap.php
+      INTERVAL: "1"
+      REDIS_BACKEND: "127.0.0.1:6379"
+      QUEUE: mails
+
+<% end -%>
+<% @event_export_worker_count.times do |i| -%>
+  event-export-worker-<%= i + 1 %>:
+    <<: *resque-worker
+    command: ["php", "vendor/chrisboulton/php-resque/bin/resque"]
+    environment:
+      LOG_TO_STDOUT: "true"
+      APP_INCLUDE: /var/www/html/worker_bootstrap.php
+      INTERVAL: "1"
+      REDIS_BACKEND: "127.0.0.1:6379"
+      QUEUE: event_export
+
+<% end -%>
+<% if @amqp_listener_uitpas == 'present' -%>
+  amqp-listener-uitpas:
+    <<: *entry-api
+    command: ["php", "bin/app.php", "amqp-listener:uitpas"]
+<% end -%>
