@@ -25,7 +25,6 @@ class profiles::uitdatabank::entry_api::deployment::container (
   $resolved_image_tag = pick($image_tag, $facts.dig('docker_image_tag', $ecr_repository), 'latest')
 
   $file_default_attributes = {
-    ensure  => 'file',
     owner   => 'root',
     group   => 'root',
     mode    => '0640',
@@ -55,54 +54,63 @@ class profiles::uitdatabank::entry_api::deployment::container (
   }
 
   file { 'uitdatabank-entry-api-config':
+    ensure  => 'file',
     path    => "${config_dir}/config.php",
     content => template($config_source),
     *       => $file_default_attributes,
   }
 
   file { 'uitdatabank-entry-api-admin-permissions':
+    ensure  => 'file',
     path    => "${config_dir}/config.allow_all.php",
     content => template($admin_permissions_source),
     *       => $file_default_attributes,
   }
 
   file { 'uitdatabank-entry-api-client-permissions':
+    ensure  => 'file',
     path    => "${config_dir}/config.client_permissions.php",
     content => template($client_permissions_source),
     *       => $file_default_attributes,
   }
 
   file { 'uitdatabank-entry-api-movie-fetcher-config':
+    ensure  => 'file',
     path    => "${config_dir}/config.kinepolis.php",
     content => template($movie_fetcher_config_source),
     *       => $file_default_attributes,
   }
 
   file { 'uitdatabank-entry-api-completeness':
+    ensure  => 'file',
     path    => "${config_dir}/config.completeness.php",
     content => template($completeness_source),
     *       => $file_default_attributes,
   }
 
   file { 'uitdatabank-entry-api-externalid-mapping-organizer':
+    ensure  => 'file',
     path    => "${config_dir}/config.externalid_mapping_organizer.php",
     content => template($externalid_mapping_organizer_source),
     *       => $file_default_attributes,
   }
 
   file { 'uitdatabank-entry-api-externalid-mapping-place':
+    ensure  => 'file',
     path    => "${config_dir}/config.externalid_mapping_place.php",
     content => template($externalid_mapping_place_source),
     *       => $file_default_attributes,
   }
 
   file { 'uitdatabank-entry-api-pubkey-uitidv1':
+    ensure  => 'file',
     path    => "${config_dir}/public-uitidv1.pem",
     content => template($pubkey_uitidv1_source),
     *       => $file_default_attributes,
   }
 
   file { 'uitdatabank-entry-api-pubkey-keycloak':
+    ensure  => 'file',
     path    => "${config_dir}/public-keycloak.pem",
     content => template($pubkey_keycloak_source),
     *       => $file_default_attributes,
