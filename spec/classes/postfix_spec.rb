@@ -21,6 +21,7 @@ describe 'profiles::postfix' do
            'tls'               => true,
            'inet_protocols'    => 'ipv4',
            'listen_addresses'  => 'all',
+           'myorigin'          => 'publiq.be',
            'relayhost'         => false,
            'aliases'           => false,
            'aliases_domains'   => [],
@@ -34,6 +35,7 @@ describe 'profiles::postfix' do
             'daemon_directory'        => '/usr/lib/postfix/sbin',
             'inet_protocols'          => 'ipv4',
             'inet_interfaces'         => 'all',
+            'myorigin'                => 'publiq.be',
             'smtp_use_tls'            => 'yes',
             'relayhost'               => false,
             'mynetworks'              => '/etc/postfix/mynetworks',
@@ -83,6 +85,7 @@ describe 'profiles::postfix' do
             'daemon_directory'   => '/usr/lib/postfix/sbin',
             'inet_protocols'     => 'ipv4',
             'inet_interfaces'    => '127.0.0.1',
+            'myorigin'           => 'publiq.be',
             'smtp_use_tls'       => 'no',
             'relayhost'          => false,
             'mynetworks'         => '/etc/postfix/mynetworks',
@@ -119,6 +122,7 @@ describe 'profiles::postfix' do
             'daemon_directory'        => '/usr/lib/postfix/sbin',
             'inet_protocols'          => 'ipv4',
             'inet_interfaces'         => 'all',
+            'myorigin'                => 'publiq.be',
             'smtp_use_tls'            => 'yes',
             'relayhost'               => '[mailhost.example.com]',
             'mynetworks'              => false,
@@ -155,6 +159,7 @@ describe 'profiles::postfix' do
             'daemon_directory'        => '/usr/lib/postfix/sbin',
             'inet_protocols'          => 'ipv4',
             'inet_interfaces'         => 'all',
+            'myorigin'                => 'publiq.be',
             'smtp_use_tls'            => 'yes',
             'relayhost'               => '[mailhost.example.com]',
             'mynetworks'              => false,
@@ -166,6 +171,18 @@ describe 'profiles::postfix' do
                                            'smtpd_recipient_restrictions' => 'permit_mynetworks,reject_unauth_destination',
                                            'smtpd_relay_restrictions'     => 'permit_mynetworks,reject_unauth_destination'
                                          }
+          ) }
+        end
+
+        context "with myorigin => example.com" do
+          let(:params) { { 'myorigin' => 'example.com' } }
+
+          it { is_expected.to contain_class('profiles::postfix').with(
+            'myorigin' => 'example.com'
+          ) }
+
+          it { is_expected.to contain_class('postfix::server').with(
+            'myorigin' => 'example.com'
           ) }
         end
       end
@@ -187,6 +204,7 @@ describe 'profiles::postfix' do
             'daemon_directory'   => '/usr/lib/postfix/sbin',
             'inet_protocols'     => 'all',
             'inet_interfaces'    => 'all',
+            'myorigin'           => 'publiq.be',
             'smtp_use_tls'       => 'yes',
             'relayhost'          => '[mailhost.example.com]',
             'mynetworks'         => false,
@@ -220,6 +238,7 @@ describe 'profiles::postfix' do
             'daemon_directory'      => '/usr/lib/postfix/sbin',
             'inet_protocols'        => 'ipv4',
             'inet_interfaces'       => 'all',
+            'myorigin'              => 'publiq.be',
             'smtp_use_tls'          => 'yes',
             'relayhost'             => false,
             'mynetworks'            => '/etc/postfix/mynetworks',
@@ -278,6 +297,7 @@ describe 'profiles::postfix' do
               'daemon_directory'      => '/usr/lib/postfix/sbin',
               'inet_protocols'        => 'ipv4',
               'inet_interfaces'       => 'all',
+              'myorigin'              => 'publiq.be',
               'smtp_use_tls'          => 'yes',
               'relayhost'             => false,
               'mynetworks'            => '/etc/postfix/mynetworks',
@@ -324,6 +344,7 @@ describe 'profiles::postfix' do
             'daemon_directory'      => '/usr/lib/postfix/sbin',
             'inet_protocols'        => 'ipv4',
             'inet_interfaces'       => 'all',
+            'myorigin'              => 'publiq.be',
             'smtp_use_tls'          => 'yes',
             'relayhost'             => false,
             'mynetworks'            => '/etc/postfix/mynetworks',
