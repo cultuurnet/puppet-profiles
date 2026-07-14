@@ -12,7 +12,9 @@ class profiles::atlassian::confluence (
   Array                      $serveraliases     = [],
   Integer[17, 21]            $java_version      = 17,
   String                     $initial_heap_size = '1024m',
-  String                     $maximum_heap_size = '1024m'
+  String                     $maximum_heap_size = '1024m',
+  Boolean                    $cleanup_old_versions = false,
+  Integer[0]                 $versions_to_keep  = 1
 ) inherits ::profiles {
 
   $database_user = 'confluenceuser'
@@ -104,6 +106,20 @@ class profiles::atlassian::confluence (
                                  proxyPort => '443',
                                  scheme    => 'https'
                                }
+  }
+
+  if $cleanup_old_versions {
+    $confluence_current_version_dir = "atlassian-confluence-${version}"
+    $confluence_old_versions        = ($facts['confluence_installed_versions'].lest || { [] }) - [$confluence_current_version_dir]
+    $confluence_versions_to_remove  = $confluence_old_versions[$versions_to_keep, -1]
+
+    $confluence_versions_to_remove.each |String $old_version_dir| {
+      file { "/opt/confluence/${old_version_dir}":
+        ensure  => absent,
+        force   => true,
+        require => Class['confluence'],
+      }
+    }
   }
 
   file { $upm_configdir:

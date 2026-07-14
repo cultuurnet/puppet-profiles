@@ -13,7 +13,9 @@ class profiles::atlassian::jira (
   Array                      $serveraliases     = [],
   Integer[17, 21]            $java_version      = 17,
   String                     $initial_heap_size = '1024m',
-  String                     $maximum_heap_size = '1024m'
+  String                     $maximum_heap_size = '1024m',
+  Boolean                    $cleanup_old_versions = false,
+  Integer[0]                 $versions_to_keep  = 1
 ) inherits ::profiles {
 
   $database_user = 'jirauser'
@@ -134,6 +136,20 @@ class profiles::atlassian::jira (
                                 proxyPort => '443',
                                 scheme    => 'https'
                               }
+  }
+
+  if $cleanup_old_versions {
+    $jira_current_version_dir = "atlassian-jira-software-${version}-standalone"
+    $jira_old_versions        = ($facts['jira_installed_versions'].lest || { [] }) - [$jira_current_version_dir]
+    $jira_versions_to_remove  = $jira_old_versions[$versions_to_keep, -1]
+
+    $jira_versions_to_remove.each |String $old_version_dir| {
+      file { "/opt/jira/${old_version_dir}":
+        ensure  => absent,
+        force   => true,
+        require => Class['jira'],
+      }
+    }
   }
 
   file { 'Jira mysql-connector-j':
