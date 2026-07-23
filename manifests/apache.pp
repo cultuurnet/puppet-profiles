@@ -53,7 +53,13 @@ class profiles::apache (
 
   include profiles::apache::logging
 
+  $mime_support_package = $facts['os']['release']['major'] ? {
+    '20.04' => 'mime-support',
+    default => 'media-types',
+  }
+
   class { "apache::mod::mime":
+    mime_support_package  => $mime_support_package,
     mime_types_additional => {
       'AddType' => { 'image/webp' => '.webp' }
     }
