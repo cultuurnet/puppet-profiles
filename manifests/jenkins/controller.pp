@@ -5,6 +5,7 @@ class profiles::jenkins::controller (
   Boolean                    $mfa                      = false,
   Boolean                    $role_based_authorization = false,
   Integer[1]                 $max_concurrent_builds    = 1,
+  Integer[1]                 $session_timeout_minutes  = 480,
   Boolean                    $lvm                      = false,
   Optional[String]           $volume_group             = undef,
   Optional[String]           $volume_size              = undef,
@@ -52,9 +53,10 @@ class profiles::jenkins::controller (
   }
 
   class { '::profiles::jenkins::controller::install':
-    version => $version,
-    require => Class['profiles::java'],
-    notify  => Class['profiles::jenkins::controller::service']
+    version                 => $version,
+    session_timeout_minutes => $session_timeout_minutes,
+    require                 => Class['profiles::java'],
+    notify                  => Class['profiles::jenkins::controller::service']
   }
 
   class { '::profiles::jenkins::controller::service':

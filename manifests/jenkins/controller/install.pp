@@ -1,14 +1,19 @@
 class profiles::jenkins::controller::install (
-  String $version = 'latest'
+  String     $version                 = 'latest',
+  Integer[1] $session_timeout_minutes = 480
 ) inherits ::profiles {
 
-  $config_dir = '/var/lib/jenkins/casc_config'
-  $java_opts  = [
-                  '-Djava.awt.headless=true',
-                  '-Djenkins.install.runSetupWizard=false',
-                  "-Dcasc.jenkins.config=${config_dir}",
-                  '-Dhudson.cli.CLIAction.ACCEPT_URL_FROM_REQUEST=true'
-                ]
+  $config_dir   = '/var/lib/jenkins/casc_config'
+  $java_opts    = [
+    '-Djava.awt.headless=true',
+    '-Djenkins.install.runSetupWizard=false',
+    "-Dcasc.jenkins.config=${config_dir}",
+    '-Dhudson.cli.CLIAction.ACCEPT_URL_FROM_REQUEST=true',
+  ]
+  $jenkins_args = [
+    "--sessionTimeout=${session_timeout_minutes}",
+    "--sessionEviction=${session_timeout_minutes * 60}",
+  ]
 
   realize Group['jenkins']
   realize User['jenkins']
@@ -36,8 +41,16 @@ class profiles::jenkins::controller::install (
     require  => File['casc_config']
   }
 
+  shellvar { 'JENKINS_ARGS':
+    ensure   => 'present',
+    variable => 'JENKINS_ARGS',
+    target   => '/etc/default/jenkins',
+    value    => $jenkins_args.join(' '),
+    require  => File['casc_config']
+  }
+
   systemd::dropin_file { 'override.conf':
     unit    => 'jenkins.service',
-    content => "[Service]\nEnvironment=\"JAVA_OPTS=${java_opts.join(' ')}\""
+    content => "[Service]\nEnvironment=\"JAVA_OPTS=${java_opts.join(' ')}\"\nEnvironment=\"JENKINS_ARGS=${jenkins_args.join(' ')}\""
   }
 }
