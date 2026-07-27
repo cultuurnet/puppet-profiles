@@ -11,7 +11,7 @@ class profiles::jenkins::controller::install (
     '-Dhudson.cli.CLIAction.ACCEPT_URL_FROM_REQUEST=true',
   ]
   $session_eviction_seconds = Integer($session_timeout_minutes) * 60
-  $jenkins_args = [
+  $jenkins_opts = [
     "--sessionTimeout=${session_timeout_minutes}",
     "--sessionEviction=${session_eviction_seconds}",
   ]
@@ -34,24 +34,13 @@ class profiles::jenkins::controller::install (
     require => Package['jenkins']
   }
 
-  shellvar { 'JAVA_ARGS':
-    ensure   => 'present',
-    variable => 'JAVA_ARGS',
-    target   => '/etc/default/jenkins',
-    value    => $java_opts.join(' '),
-    require  => File['casc_config']
-  }
-
-  shellvar { 'JENKINS_ARGS':
-    ensure   => 'present',
-    variable => 'JENKINS_ARGS',
-    target   => '/etc/default/jenkins',
-    value    => $jenkins_args.join(' '),
-    require  => File['casc_config']
+  file { '/etc/default/jenkins':
+    ensure  => absent,
+    require => Package['jenkins']
   }
 
   systemd::dropin_file { 'override.conf':
     unit    => 'jenkins.service',
-    content => "[Service]\nEnvironment=\"JAVA_OPTS=${java_opts.join(' ')}\"\nEnvironment=\"JENKINS_ARGS=${jenkins_args.join(' ')}\""
+    content => "[Service]\nEnvironment=\"JAVA_OPTS=${java_opts.join(' ')}\"\nEnvironment=\"JENKINS_OPTS=${jenkins_opts.join(' ')}\""
   }
 }

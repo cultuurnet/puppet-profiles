@@ -31,29 +31,18 @@ describe 'profiles::jenkins::controller::install' do
           'group'  => 'jenkins'
         ) }
 
-        it { is_expected.to contain_shellvar('JAVA_ARGS').with(
-          'ensure'   => 'present',
-          'variable' => 'JAVA_ARGS',
-          'target'   => '/etc/default/jenkins',
-          'value'    => '-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Dcasc.jenkins.config=/var/lib/jenkins/casc_config -Dhudson.cli.CLIAction.ACCEPT_URL_FROM_REQUEST=true'
-        ) }
-
-        it { is_expected.to contain_shellvar('JENKINS_ARGS').with(
-          'ensure'   => 'present',
-          'variable' => 'JENKINS_ARGS',
-          'target'   => '/etc/default/jenkins',
-          'value'    => '--sessionTimeout=480 --sessionEviction=28800'
+        it { is_expected.to contain_file('/etc/default/jenkins').with(
+          'ensure' => 'absent'
         ) }
 
         it { is_expected.to contain_systemd__dropin_file('override.conf').with(
           'unit'    => 'jenkins.service',
-          'content' => "[Service]\nEnvironment=\"JAVA_OPTS=-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Dcasc.jenkins.config=/var/lib/jenkins/casc_config -Dhudson.cli.CLIAction.ACCEPT_URL_FROM_REQUEST=true\"\nEnvironment=\"JENKINS_ARGS=--sessionTimeout=480 --sessionEviction=28800\""
+          'content' => "[Service]\nEnvironment=\"JAVA_OPTS=-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Dcasc.jenkins.config=/var/lib/jenkins/casc_config -Dhudson.cli.CLIAction.ACCEPT_URL_FROM_REQUEST=true\"\nEnvironment=\"JENKINS_OPTS=--sessionTimeout=480 --sessionEviction=28800\""
         ) }
 
         it { is_expected.to contain_file('casc_config').that_requires('User[jenkins]') }
         it { is_expected.to contain_file('casc_config').that_requires('Package[jenkins]') }
-        it { is_expected.to contain_shellvar('JAVA_ARGS').that_requires('File[casc_config]') }
-        it { is_expected.to contain_shellvar('JENKINS_ARGS').that_requires('File[casc_config]') }
+        it { is_expected.to contain_file('/etc/default/jenkins').that_requires('Package[jenkins]') }
         it { is_expected.to contain_package('jenkins').that_requires('User[jenkins]') }
         it { is_expected.to contain_package('jenkins').that_requires('Apt::Source[publiq-jenkins]') }
       end
@@ -77,8 +66,8 @@ describe 'profiles::jenkins::controller::install' do
 
         it { is_expected.to compile.with_all_deps }
 
-        it { is_expected.to contain_shellvar('JENKINS_ARGS').with(
-          'value' => '--sessionTimeout=120 --sessionEviction=7200'
+        it { is_expected.to contain_systemd__dropin_file('override.conf').with(
+          'content' => /Environment="JENKINS_OPTS=--sessionTimeout=120 --sessionEviction=7200"/
         ) }
       end
     end
