@@ -10,7 +10,7 @@ class profiles::jenkins::controller::install (
     "-Dcasc.jenkins.config=${config_dir}",
     '-Dhudson.cli.CLIAction.ACCEPT_URL_FROM_REQUEST=true',
   ]
-  $session_eviction_seconds = Integer($session_timeout_minutes) * 60
+  $session_eviction_seconds = $session_timeout_minutes * 60
   $jenkins_opts = [
     "--sessionTimeout=${session_timeout_minutes}",
     "--sessionEviction=${session_eviction_seconds}",
