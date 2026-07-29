@@ -80,7 +80,7 @@ fixtures:
       ref: '2.2.0'
     docker:
       repo: 'puppetlabs/docker'
-      ref: '8.0.0'
+      ref: '10.4.1'
     timezone:
       repo: 'saz/timezone'
       ref: '7.0.0'
@@ -114,9 +114,6 @@ fixtures:
     logrotate:
       repo: 'puppet/logrotate'
       ref: '7.0.0'
-    docker:
-      repo: 'puppetlabs/docker'
-      ref: '8.0.0'
     puppetboard:
       repo: 'puppet/puppetboard'
       ref: '11.0.0'
