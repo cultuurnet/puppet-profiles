@@ -30,13 +30,13 @@ class profiles::uitdatabank::search_api::deployment::container (
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    notify  => Exec['uitdatabank-search-api-docker-compose'],
+    notify  => Docker_compose['uitdatabank-search-api'],
   }
 
-  exec { 'uitdatabank-search-api-docker-compose':
-    command     => "/usr/bin/docker compose -f ${config_dir}/docker-compose.yml up -d --remove-orphans",
-    refreshonly => true,
-    require     => [Class['profiles::docker'], File['uitdatabank-search-api-docker-compose']],
+  docker_compose { 'uitdatabank-search-api':
+    ensure        => present,
+    compose_files => ["${config_dir}/docker-compose.yml"],
+    require       => Class['profiles::docker'],
   }
 
   file { $webroot:
@@ -59,6 +59,6 @@ class profiles::uitdatabank::search_api::deployment::container (
     environment => ['MAILTO=infra+cron@publiq.be'],
     hour        => '0',
     minute      => '0',
-    require     => Exec['uitdatabank-search-api-docker-compose'],
+    require     => Docker_compose['uitdatabank-search-api'],
   }
 }
