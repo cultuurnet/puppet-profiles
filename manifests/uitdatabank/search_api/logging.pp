@@ -49,9 +49,10 @@ class profiles::uitdatabank::search_api::logging (
     require    => Class['profiles::filebeat'],
   }
 
-  @@profiles::logstash::filter_fragment { "${servername}_${app_log_type}":
-    log_type => $app_log_type,
-    filter   => file('profiles/uitdatabank/search_api/logstash_filter_app.conf'),
-    tag      => $environment,
-  }
+  # The corresponding Logstash filter/output for this log_type is
+  # hand-maintained directly in infrastructure's logs-prod01 filter.conf/
+  # output.conf, since the filter_fragment/concat collector mechanism used
+  # for the access log above is never actually realized on the logstash
+  # server (see the commented-out TODO). No fragment resource here to avoid
+  # a second copy that can drift from the real one.
 }

@@ -51,11 +51,6 @@ describe 'profiles::uitdatabank::search_api::logging' do
                             }
           ) }
 
-          it { expect(exported_resources).to contain_profiles__logstash__filter_fragment('foo.example.com_uitdatabank::search_api::app').with(
-            'log_type' => 'uitdatabank::search_api::app',
-            'tag'      => 'acceptance'
-          ) }
-
           it { is_expected.to contain_filebeat__input('foo.example.com_uitdatabank::search_api::app').that_requires('Class[profiles::filebeat]') }
         end
       end
@@ -102,11 +97,6 @@ describe 'profiles::uitdatabank::search_api::logging' do
                               'log_type'    => 'uitdatabank::search_api::app',
                               'environment' => 'production'
                             }
-          ) }
-
-          it { expect(exported_resources).to contain_profiles__logstash__filter_fragment('bar.example.com_uitdatabank::search_api::app').with(
-            'log_type' => 'uitdatabank::search_api::app',
-            'tag'      => 'production'
           ) }
 
           it { is_expected.to contain_filebeat__input('bar.example.com_uitdatabank::search_api::app').that_requires('Class[profiles::filebeat]') }
