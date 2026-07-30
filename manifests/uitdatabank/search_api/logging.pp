@@ -32,4 +32,26 @@ class profiles::uitdatabank::search_api::logging (
   # if $settings::storeconfigs {
   #   Profiles::Logstash::Filter_fragment <<| |>>
   # }
+
+  # Ships stdout/stderr from all search-api Docker containers on this host
+  # (search-api, search-consume-udb3-api/cli/related). No-op on hosts that
+  # don't run Docker containers, so it's safe to include unconditionally
+  # regardless of deployment type (instance vs container).
+  $app_log_type = 'uitdatabank::search_api::app'
+
+  filebeat::input { "${servername}_${app_log_type}":
+    input_type => 'docker',
+    doc_type   => 'log',
+    fields     => {
+      log_type    => $app_log_type,
+      environment => $environment,
+    },
+    require    => Class['profiles::filebeat'],
+  }
+
+  @@profiles::logstash::filter_fragment { "${servername}_${app_log_type}":
+    log_type => $app_log_type,
+    filter   => file('profiles/uitdatabank/search_api/logstash_filter_app.conf'),
+    tag      => $environment,
+  }
 }
