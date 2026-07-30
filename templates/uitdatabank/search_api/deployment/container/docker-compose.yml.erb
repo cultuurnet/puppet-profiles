@@ -16,6 +16,7 @@ x-search-service: &search-service
 <%- end -%>
     - /var/www/geojson-data/output/facet_mapping_regions.php:/var/www/html/facet_mapping_regions.php:ro
     - /var/www/geojson-data:/var/www/geojson-data:ro
+    - <%= @basedir %>/log:/var/www/html/log
 
 services:
   search-api:

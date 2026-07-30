@@ -68,6 +68,22 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
 
           it { is_expected.to contain_file('uitdatabank-search-api-docker-compose').that_notifies('Docker_compose[uitdatabank-search-api]') }
           it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').that_requires('Docker_compose[uitdatabank-search-api]') }
+
+          it { is_expected.to contain_file('/var/www/udb3-search-service/log').with(
+            'ensure' => 'directory',
+            'owner'  => 'www-data',
+            'group'  => 'www-data'
+          ) }
+
+          it { is_expected.to contain_logrotate__rule('uitdatabank-search-api-container').with(
+            'path'         => '/var/www/udb3-search-service/log/*.log',
+            'rotate'       => 10,
+            'create_owner' => 'www-data',
+            'create_group' => 'www-data',
+            'postrotate'   => '/usr/bin/docker compose -f /etc/uitdatabank-search-api/docker-compose.yml restart search-consume-udb3-api search-consume-udb3-cli search-consume-udb3-related'
+          ) }
+
+          it { is_expected.to contain_file('uitdatabank-search-api-docker-compose').with_content(%r{^\s+- /var/www/udb3-search-service/log:/var/www/html/log$}) }
         end
       end
 

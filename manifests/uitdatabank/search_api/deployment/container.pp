@@ -9,10 +9,12 @@ class profiles::uitdatabank::search_api::deployment::container (
 
   $config_dir         = '/etc/uitdatabank-search-api'
   $webroot            = "${basedir}/web"
+  $logdir             = "${basedir}/log"
   $ecr_repository     = regsubst($image, '^[^/]+/', '')
   $resolved_image_tag = pick($image_tag, $facts.dig('docker_image_tag', $ecr_repository), 'latest')
 
   include profiles::docker
+  include profiles::logrotate
 
   class { 'profiles::docker::ecr_repos':
     repos => {
@@ -52,6 +54,23 @@ class profiles::uitdatabank::search_api::deployment::container (
     group   => 'www-data',
     content => "RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteRule ^ index.php [QSA,L]\n",
     require => File[$webroot],
+  }
+
+  file { $logdir:
+    ensure  => 'directory',
+    owner   => 'www-data',
+    group   => 'www-data',
+    require => [Group['www-data'], User['www-data']],
+  }
+
+  logrotate::rule { 'uitdatabank-search-api-container':
+    path         => "${logdir}/*.log",
+    rotate       => 10,
+    create_owner => 'www-data',
+    create_group => 'www-data',
+    postrotate   => "/usr/bin/docker compose -f ${config_dir}/docker-compose.yml restart search-consume-udb3-api search-consume-udb3-cli search-consume-udb3-related",
+    require      => [Group['www-data'], User['www-data'], File[$logdir]],
+    *            => $profiles::logrotate::default_rule_attributes,
   }
 
   cron { 'uitdatabank-search-api-reindex-permanent':
