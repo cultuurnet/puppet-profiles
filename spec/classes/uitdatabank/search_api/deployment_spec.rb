@@ -69,7 +69,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           ) }
 
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment::instance').that_requires('Class[profiles::php]') }
-          it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment::instance').that_requires('Class[profiles::uitdatabank::search_api::deployment]') }
 
           it { is_expected.to contain_file('/etc/uitdatabank-search-api/config.php').that_requires('Group[www-data]') }
           it { is_expected.to contain_file('/etc/uitdatabank-search-api/config.php').that_requires('User[www-data]') }
@@ -139,8 +138,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             'group'   => 'www-data',
             'content' => ''
           ) }
-
-          it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment::container').that_requires('Class[profiles::uitdatabank::search_api::deployment]') }
 
           it { is_expected.to contain_file('/etc/uitdatabank-search-api/config.php').that_notifies('Class[profiles::uitdatabank::search_api::deployment::container]') }
           it { is_expected.to contain_file('/etc/uitdatabank-search-api/mapping_region.json').that_notifies('Class[profiles::uitdatabank::search_api::deployment::container]') }

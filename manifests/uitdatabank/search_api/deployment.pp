@@ -23,8 +23,7 @@ class profiles::uitdatabank::search_api::deployment (
 
       class { 'profiles::uitdatabank::search_api::deployment::instance':
         api_keys_matched_to_client_ids_source => $api_keys_matched_to_client_ids_source,
-        default_queries_source                => $default_queries_source,
-        require                               => Class['profiles::uitdatabank::search_api::deployment']
+        default_queries_source                => $default_queries_source
       }
 
       Class['profiles::php'] ~> Class['profiles::uitdatabank::search_api::deployment::instance']
@@ -33,8 +32,7 @@ class profiles::uitdatabank::search_api::deployment (
       class { 'profiles::uitdatabank::search_api::deployment::container':
         basedir                        => $basedir,
         api_keys_matched_to_client_ids => !!$api_keys_matched_to_client_ids_source,
-        default_queries                => !!$default_queries_source,
-        require                        => Class['profiles::uitdatabank::search_api::deployment']
+        default_queries                => !!$default_queries_source
       }
     }
   }
