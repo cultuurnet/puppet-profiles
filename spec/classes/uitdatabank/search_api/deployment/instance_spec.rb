@@ -17,6 +17,9 @@ describe 'profiles::uitdatabank::search_api::deployment::instance' do
           'api_keys_matched_to_client_ids_source' => nil
         ) }
 
+        it { is_expected.to contain_group('www-data') }
+        it { is_expected.to contain_user('www-data') }
+
         it { is_expected.to contain_apt__source('uitdatabank-search-api') }
 
         it { is_expected.to contain_package('uitdatabank-search-api').with(
@@ -43,38 +46,52 @@ describe 'profiles::uitdatabank::search_api::deployment::instance' do
         ) }
 
         it { is_expected.to contain_file('/var/www/udb3-search-service/config.php').with(
-          'ensure' => 'link',
-          'target' => '/etc/uitdatabank-search-api/config.php'
+          'ensure' => 'file',
+          'owner'  => 'www-data',
+          'group'  => 'www-data',
+          'source' => '/etc/uitdatabank-search-api/config.php'
         ) }
 
         it { is_expected.to contain_file('/var/www/udb3-search-service/facet_mapping_regions.php').with(
-          'ensure' => 'link',
-          'target' => '/var/www/geojson-data/output/facet_mapping_regions.php'
+          'ensure' => 'file',
+          'owner'  => 'www-data',
+          'group'  => 'www-data',
+          'source' => '/var/www/geojson-data/output/facet_mapping_regions.php'
         ) }
 
         it { is_expected.to contain_file('/var/www/udb3-search-service/web/autocomplete.json').with(
-          'ensure' => 'link',
-          'target' => '/var/www/geojson-data/output/autocomplete.json'
+          'ensure' => 'file',
+          'owner'  => 'www-data',
+          'group'  => 'www-data',
+          'source' => '/var/www/geojson-data/output/autocomplete.json'
         ) }
 
         it { is_expected.to contain_file('/var/www/udb3-search-service/src/ElasticSearch/Operations/json/mapping_region.json').with(
-          'ensure' => 'link',
-          'target' => '/etc/uitdatabank-search-api/mapping_region.json'
+          'ensure' => 'file',
+          'owner'  => 'www-data',
+          'group'  => 'www-data',
+          'source' => '/etc/uitdatabank-search-api/mapping_region.json'
         ) }
 
         it { is_expected.to contain_file('/var/www/udb3-search-service/default_queries.php').with(
           'ensure' => 'absent',
-          'target' => '/etc/uitdatabank-search-api/default_queries.php'
+          'owner'  => 'www-data',
+          'group'  => 'www-data',
+          'source' => '/etc/uitdatabank-search-api/default_queries.php'
         ) }
 
         it { is_expected.to contain_file('/var/www/udb3-search-service/api_keys_matched_to_client_ids.php').with(
           'ensure' => 'absent',
-          'target' => '/etc/uitdatabank-search-api/api_keys_matched_to_client_ids.php'
+          'owner'  => 'www-data',
+          'group'  => 'www-data',
+          'source' => '/etc/uitdatabank-search-api/api_keys_matched_to_client_ids.php'
         ) }
 
         it { is_expected.to contain_file('/var/www/udb3-search-service/public-keycloak.pem').with(
-          'ensure' => 'link',
-          'target' => '/etc/uitdatabank-search-api/public-keycloak.pem',
+          'ensure' => 'file',
+          'owner'  => 'www-data',
+          'group'  => 'www-data',
+          'source' => '/etc/uitdatabank-search-api/public-keycloak.pem'
           ) }
 
         it { is_expected.to contain_package('uitdatabank-search-api').that_requires('Apt::Source[uitdatabank-search-api]') }
@@ -122,13 +139,17 @@ describe 'profiles::uitdatabank::search_api::deployment::instance' do
           ) }
 
           it { is_expected.to contain_file('/var/www/udb3-search-service/api_keys_matched_to_client_ids.php').with(
-            'ensure' => 'link',
-            'target' => '/etc/uitdatabank-search-api/api_keys_matched_to_client_ids.php',
+            'ensure' => 'file',
+            'owner'  => 'www-data',
+            'group'  => 'www-data',
+            'source' => '/etc/uitdatabank-search-api/api_keys_matched_to_client_ids.php'
           ) }
 
           it { is_expected.to contain_file('/var/www/udb3-search-service/default_queries.php').with(
-            'ensure' => 'link',
-            'target' => '/etc/uitdatabank-search-api/default_queries.php',
+            'ensure' => 'file',
+            'owner'  => 'www-data',
+            'group'  => 'www-data',
+            'source' => '/etc/uitdatabank-search-api/default_queries.php'
           ) }
 
           it { is_expected.to contain_package('uitdatabank-search-api').that_requires('Apt::Source[foo]') }
