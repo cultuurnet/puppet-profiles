@@ -4,6 +4,11 @@ x-search-service: &search-service
   restart: unless-stopped
   environment:
     LOG_TO_STDOUT: "true"
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "5"
   volumes:
     - /etc/uitdatabank-search-api/config.php:/var/www/html/config.php:ro
     - /etc/uitdatabank-search-api/public-keycloak.pem:/var/www/html/public-keycloak.pem:ro
