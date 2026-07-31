@@ -23,7 +23,8 @@ class profiles::uitdatabank::search_api::deployment (
 
       class { 'profiles::uitdatabank::search_api::deployment::instance':
         api_keys_matched_to_client_ids_source => $api_keys_matched_to_client_ids_source,
-        default_queries_source                => $default_queries_source
+        default_queries_source                => $default_queries_source,
+        require                               => Class['profiles::uitdatabank::search_api::deployment']
       }
 
       Class['profiles::php'] ~> Class['profiles::uitdatabank::search_api::deployment::instance']
@@ -32,7 +33,8 @@ class profiles::uitdatabank::search_api::deployment (
       class { 'profiles::uitdatabank::search_api::deployment::container':
         basedir                        => $basedir,
         api_keys_matched_to_client_ids => !!$api_keys_matched_to_client_ids_source,
-        default_queries                => !!$default_queries_source
+        default_queries                => !!$default_queries_source,
+        require                        => Class['profiles::uitdatabank::search_api::deployment']
       }
     }
   }
@@ -44,33 +46,29 @@ class profiles::uitdatabank::search_api::deployment (
     ensure => 'directory'
   }
 
-  file { 'uitdatabank-search-api-config':
+  file { "${config_dir}/config.php":
     ensure  => 'file',
-    path    => "${config_dir}/config.php",
     content => template($config_source),
     *       => $file_default_attributes
   }
 
-  file { 'uitdatabank-search-api-pubkey-keycloak':
+  file { "${config_dir}/public-keycloak.pem":
     ensure  => 'file',
-    path    => "${config_dir}/public-keycloak.pem",
     content => template($pubkey_keycloak_source),
     *       => $file_default_attributes
   }
 
-  file { 'uitdatabank-search-api-region-mapping':
+  file { "${config_dir}/mapping_region.json":
     ensure  => 'file',
-    path    => "${config_dir}/mapping_region.json",
     content => template($region_mapping_source),
     *       => $file_default_attributes
   }
 
-  file { 'uitdatabank-search-api-default-queries':
+  file { "${config_dir}/default_queries.php":
     ensure  => $default_queries_source ? {
                  undef   => 'absent',
                  default => 'file'
                },
-    path    => "${config_dir}/default_queries.php",
     content => $default_queries_source ? {
                  undef   => undef,
                  default => template($default_queries_source),
@@ -78,12 +76,11 @@ class profiles::uitdatabank::search_api::deployment (
     *       => $file_default_attributes
   }
 
-  file { 'uitdatabank-search-api-api-keys-matched-to-client-ids':
+  file { "${config_dir}/api_keys_matched_to_client_ids.php":
     ensure  => $api_keys_matched_to_client_ids_source ? {
                  undef   => 'absent',
                  default => 'file'
                },
-    path    => "${config_dir}/api_keys_matched_to_client_ids.php",
     content => $api_keys_matched_to_client_ids_source ? {
                  undef   => undef,
                  default => template($api_keys_matched_to_client_ids_source),

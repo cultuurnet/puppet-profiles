@@ -9,9 +9,14 @@ class profiles::uitdatabank::search_api::deployment::instance (
   $basedir                 = '/var/www/udb3-search-service'
 
   $file_default_attributes = {
+                               owner   => 'www-data',
+                               group   => 'www-data',
                                require => Package['uitdatabank-search-api'],
                                notify  => [Service['uitdatabank-search-api'], Class['profiles::uitdatabank::search_api::listeners']]
                              }
+
+  realize Group['www-data']
+  realize User['www-data']
 
   realize Apt::Source[$repository]
 
@@ -22,56 +27,50 @@ class profiles::uitdatabank::search_api::deployment::instance (
   }
 
   file { "${basedir}/config.php":
-    ensure => 'link',
-    target => "${config_dir}/config.php",
-    *      => $file_default_attributes
-  }
-
-  file { "${config_dir}/facet_mapping_regions.php":
-    ensure => 'link',
-    target => '/var/www/geojson-data/output/facet_mapping_regions.php',
+    ensure => 'file',
+    source => "${config_dir}/config.php",
     *      => $file_default_attributes
   }
 
   file { "${basedir}/facet_mapping_regions.php":
-    ensure => 'link',
-    target => '/var/www/geojson-data/output/facet_mapping_regions.php',
+    ensure => 'file',
+    source => '/var/www/geojson-data/output/facet_mapping_regions.php',
     *      => $file_default_attributes
   }
 
   file { "${basedir}/web/autocomplete.json":
-    ensure => 'link',
-    target => '/var/www/geojson-data/output/autocomplete.json',
+    ensure => 'file',
+    source => '/var/www/geojson-data/output/autocomplete.json',
     *      => $file_default_attributes
   }
 
   file { "${basedir}/public-keycloak.pem":
-    ensure => 'link',
-    target => "${config_dir}/public-keycloak.pem",
+    ensure => 'file',
+    source => "${config_dir}/public-keycloak.pem",
     *      => $file_default_attributes
   }
 
   file { "${basedir}/src/ElasticSearch/Operations/json/mapping_region.json":
-    ensure => 'link',
-    target => "${config_dir}/mapping_region.json",
+    ensure => 'file',
+    source => "${config_dir}/mapping_region.json",
     *      => $file_default_attributes
   }
 
   file { "${basedir}/default_queries.php":
     ensure => $default_queries_source ? {
                  undef   => 'absent',
-                 default => 'link'
+                 default => 'file'
                },
-    target => "${config_dir}/default_queries.php",
+    source => "${config_dir}/default_queries.php",
     *      => $file_default_attributes
   }
 
   file { "${basedir}/api_keys_matched_to_client_ids.php":
     ensure => $api_keys_matched_to_client_ids_source ? {
                  undef   => 'absent',
-                 default => 'link'
+                 default => 'file'
                },
-    target => "${config_dir}/api_keys_matched_to_client_ids.php",
+    source => "${config_dir}/api_keys_matched_to_client_ids.php",
     *      => $file_default_attributes
   }
 
