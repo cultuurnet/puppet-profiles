@@ -43,7 +43,8 @@ describe 'profiles::uitdatabank::search_api::logging' do
           it { is_expected.to contain_filebeat__input('foo.example.com_uitdatabank::search_api::access').that_requires('Class[profiles::filebeat]') }
 
           it { is_expected.to contain_filebeat__input('foo.example.com_uitdatabank::search_api::app').with(
-            'paths'    => ['/var/lib/docker/containers/*/*-json.log'],
+            'input_type' => 'log',
+            'paths'      => ['/var/lib/docker/containers/*/*-json.log'],
             'doc_type' => 'log',
             'json'     => {
                             'keys_under_root' => true,
@@ -53,7 +54,14 @@ describe 'profiles::uitdatabank::search_api::logging' do
             'fields'   => {
                             'log_type'    => 'uitdatabank::search_api::app',
                             'environment' => 'acceptance'
-                          }
+                          },
+            'processors' => [
+                               {
+                                 'add_docker_metadata' => {
+                                   'host' => 'unix:///var/run/docker.sock'
+                                 }
+                               }
+                             ]
           ) }
 
           it { is_expected.to contain_filebeat__input('foo.example.com_uitdatabank::search_api::app').that_requires('Class[profiles::filebeat]') }
@@ -96,7 +104,8 @@ describe 'profiles::uitdatabank::search_api::logging' do
           it { is_expected.to contain_filebeat__input('bar.example.com_uitdatabank::search_api::access').that_requires('Class[profiles::filebeat]') }
 
           it { is_expected.to contain_filebeat__input('bar.example.com_uitdatabank::search_api::app').with(
-            'paths'    => ['/var/lib/docker/containers/*/*-json.log'],
+            'input_type' => 'log',
+            'paths'      => ['/var/lib/docker/containers/*/*-json.log'],
             'doc_type' => 'log',
             'json'     => {
                             'keys_under_root' => true,
@@ -106,7 +115,14 @@ describe 'profiles::uitdatabank::search_api::logging' do
             'fields'   => {
                             'log_type'    => 'uitdatabank::search_api::app',
                             'environment' => 'production'
-                          }
+                          },
+            'processors' => [
+                               {
+                                 'add_docker_metadata' => {
+                                   'host' => 'unix:///var/run/docker.sock'
+                                 }
+                               }
+                             ]
           ) }
 
           it { is_expected.to contain_filebeat__input('bar.example.com_uitdatabank::search_api::app').that_requires('Class[profiles::filebeat]') }
