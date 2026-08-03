@@ -40,13 +40,18 @@ class profiles::uitdatabank::search_api::logging (
   $app_log_type = 'uitdatabank::search_api::app'
 
   filebeat::input { "${servername}_${app_log_type}":
-    input_type => 'docker',
-    doc_type   => 'log',
-    fields     => {
+    paths    => ['/var/lib/docker/containers/*/*-json.log'],
+    doc_type => 'log',
+    json     => {
+      keys_under_root => true,
+      message_key     => 'log',
+      add_error_key   => true,
+    },
+    fields   => {
       log_type    => $app_log_type,
       environment => $environment,
     },
-    require    => Class['profiles::filebeat'],
+    require  => Class['profiles::filebeat'],
   }
 
   # The corresponding Logstash filter/output for this log_type is

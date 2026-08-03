@@ -43,12 +43,17 @@ describe 'profiles::uitdatabank::search_api::logging' do
           it { is_expected.to contain_filebeat__input('foo.example.com_uitdatabank::search_api::access').that_requires('Class[profiles::filebeat]') }
 
           it { is_expected.to contain_filebeat__input('foo.example.com_uitdatabank::search_api::app').with(
-            'input_type' => 'docker',
-            'doc_type'   => 'log',
-            'fields'     => {
-                              'log_type'    => 'uitdatabank::search_api::app',
-                              'environment' => 'acceptance'
-                            }
+            'paths'    => ['/var/lib/docker/containers/*/*-json.log'],
+            'doc_type' => 'log',
+            'json'     => {
+                            'keys_under_root' => true,
+                            'message_key'     => 'log',
+                            'add_error_key'   => true
+                          },
+            'fields'   => {
+                            'log_type'    => 'uitdatabank::search_api::app',
+                            'environment' => 'acceptance'
+                          }
           ) }
 
           it { is_expected.to contain_filebeat__input('foo.example.com_uitdatabank::search_api::app').that_requires('Class[profiles::filebeat]') }
@@ -91,12 +96,17 @@ describe 'profiles::uitdatabank::search_api::logging' do
           it { is_expected.to contain_filebeat__input('bar.example.com_uitdatabank::search_api::access').that_requires('Class[profiles::filebeat]') }
 
           it { is_expected.to contain_filebeat__input('bar.example.com_uitdatabank::search_api::app').with(
-            'input_type' => 'docker',
-            'doc_type'   => 'log',
-            'fields'     => {
-                              'log_type'    => 'uitdatabank::search_api::app',
-                              'environment' => 'production'
-                            }
+            'paths'    => ['/var/lib/docker/containers/*/*-json.log'],
+            'doc_type' => 'log',
+            'json'     => {
+                            'keys_under_root' => true,
+                            'message_key'     => 'log',
+                            'add_error_key'   => true
+                          },
+            'fields'   => {
+                            'log_type'    => 'uitdatabank::search_api::app',
+                            'environment' => 'production'
+                          }
           ) }
 
           it { is_expected.to contain_filebeat__input('bar.example.com_uitdatabank::search_api::app').that_requires('Class[profiles::filebeat]') }
