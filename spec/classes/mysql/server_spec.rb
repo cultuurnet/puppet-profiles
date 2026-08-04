@@ -65,6 +65,7 @@ describe 'profiles::mysql::server' do
                                     'mysqld' => {
                                                   'character-set-client-handshake' => 'false',
                                                   'ssl'                            => 'false',
+                                                  'mysql_native_password'          => nil,
                                                   'character-set-server'           => 'utf8mb4',
                                                   'collation-server'               => 'utf8mb4_unicode_ci',
                                                   'bind-address'                   => '127.0.0.1',
@@ -192,6 +193,7 @@ describe 'profiles::mysql::server' do
                                         'mysqld' => {
                                                       'character-set-client-handshake' => 'false',
                                                       'ssl'                            => 'false',
+                                                      'mysql_native_password'          => nil,
                                                       'character-set-server'           => 'utf8mb4',
                                                       'collation-server'               => 'utf8mb4_unicode_ci',
                                                       'bind-address'                   => '0.0.0.0',
