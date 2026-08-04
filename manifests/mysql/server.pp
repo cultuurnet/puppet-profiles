@@ -43,7 +43,7 @@ class profiles::mysql::server (
                                      'long_query_time'                => "${long_query_time}",
                                      'transaction_isolation'          => $transaction_isolation,
                                      'event_scheduler'                => $event_scheduler
-                                   }.delete_undef_values
+                                   }
                      }
 
   include profiles::firewall::rules
