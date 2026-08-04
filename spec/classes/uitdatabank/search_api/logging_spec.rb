@@ -47,9 +47,8 @@ describe 'profiles::uitdatabank::search_api::logging' do
             'paths'      => ['/var/lib/docker/containers/*/*-json.log'],
             'doc_type' => 'log',
             'json'     => {
-                            'keys_under_root' => true,
-                            'message_key'     => 'log',
-                            'add_error_key'   => true
+                            'message_key'   => 'log',
+                            'add_error_key' => true
                           },
             'fields'   => {
                             'log_type'    => 'uitdatabank::search_api::app',
@@ -108,9 +107,8 @@ describe 'profiles::uitdatabank::search_api::logging' do
             'paths'      => ['/var/lib/docker/containers/*/*-json.log'],
             'doc_type' => 'log',
             'json'     => {
-                            'keys_under_root' => true,
-                            'message_key'     => 'log',
-                            'add_error_key'   => true
+                            'message_key'   => 'log',
+                            'add_error_key' => true
                           },
             'fields'   => {
                             'log_type'    => 'uitdatabank::search_api::app',
