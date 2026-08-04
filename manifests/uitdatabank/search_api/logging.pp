@@ -44,9 +44,8 @@ class profiles::uitdatabank::search_api::logging (
     paths      => ['/var/lib/docker/containers/*/*-json.log'],
     doc_type   => 'log',
     json       => {
-      keys_under_root => true,
-      message_key     => 'log',
-      add_error_key   => true,
+      message_key   => 'log',
+      add_error_key => true,
     },
     fields     => {
       log_type    => $app_log_type,
