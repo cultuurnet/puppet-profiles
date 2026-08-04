@@ -68,7 +68,7 @@ fixtures:
       ref: '8.3.1'
     redis:
       repo: 'puppet/redis'
-      ref: '11.1.0'
+      ref: '13.0.0'
     alternatives:
       repo: 'puppet/alternatives'
       ref: '3.0.0'
