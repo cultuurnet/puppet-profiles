@@ -38,6 +38,7 @@ describe 'profiles::redis' do
           'workdir'          => '/var/lib/redis',
           'save_db_to_disk'  => true,
           'appendonly'       => false,
+          'protected_mode'   => false,
           'workdir_mode'     => '0755',
           'bind'             => '127.0.0.1',
           'requirepass'      => nil,
