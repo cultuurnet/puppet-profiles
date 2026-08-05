@@ -67,6 +67,7 @@ class profiles::redis (
     save_db_to_disk  => $persist_data,
     appendonly       => $appendonly,
     bind             => $listen_address,
+    protected_mode   => false,
     requirepass      => $password,
     service_manage   => false,
     maxmemory        => $maxmemory,
