@@ -33,6 +33,19 @@ class profiles::uitdatabank::search_api::deployment::container (
     notify  => Docker_compose['uitdatabank-search-api'],
   }
 
+  # php-fpm only re-reads this at process startup, and `docker compose up -d`
+  # doesn't recreate a container for a bind-mounted file's content changing —
+  # after editing these settings, manually run:
+  #   docker compose -f /etc/uitdatabank-search-api/docker-compose.yml up -d --force-recreate search-api
+  file { 'uitdatabank-search-api-fpm-pool':
+    ensure  => 'file',
+    path    => "${config_dir}/fpm-pool.conf",
+    content => "[www]\npm = static\npm.max_children = 192\npm.max_requests = 10000\n",
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+  }
+
   docker_compose { 'uitdatabank-search-api':
     ensure        => present,
     compose_files => ["${config_dir}/docker-compose.yml"],
