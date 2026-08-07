@@ -54,8 +54,16 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
           it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').with_content(/^pm = static$/) }
           it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').with_content(/^pm\.max_children = 192$/) }
           it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').with_content(/^pm\.max_requests = 10000$/) }
+          it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').that_notifies('Exec[uitdatabank-search-api-fpm-pool-reload]') }
 
           it { is_expected.to contain_file('uitdatabank-search-api-docker-compose').with_content(%r{^\s+- /etc/uitdatabank-search-api/fpm-pool.conf:/usr/local/etc/php-fpm.d/zz-pool.conf:ro$}) }
+
+          it { is_expected.to contain_exec('uitdatabank-search-api-fpm-pool-reload').with(
+            'command'     => '/usr/bin/docker compose -f /etc/uitdatabank-search-api/docker-compose.yml kill -s SIGUSR2 search-api',
+            'refreshonly' => true
+          ) }
+
+          it { is_expected.to contain_exec('uitdatabank-search-api-fpm-pool-reload').that_requires('Docker_compose[uitdatabank-search-api]') }
 
           it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').with(
             'command'     => '/usr/bin/docker compose -f /etc/uitdatabank-search-api/docker-compose.yml exec -T search-api php bin/app.php udb3-core:reindex-permanent',
