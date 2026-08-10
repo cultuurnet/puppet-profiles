@@ -100,6 +100,30 @@ describe 'profiles::uitdatabank::search_api' do
             'access_log_format' => 'api_key_json'
           ) }
 
+          it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://baz.example.com').with_additional_rewrites(
+            [{
+              'comment'      => 'Capture apiKey from URL parameters',
+              'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
+              'rewrite_rule' => '^ - [E=API_KEY:%1]'
+            }, {
+              'comment'      => 'Capture apiKey from X-Api-Key header',
+              'rewrite_cond' => '%{HTTP:X-Api-Key} ^.+',
+              'rewrite_rule' => '^ - [E=API_KEY:%{HTTP:X-Api-Key}]'
+            }, {
+              'comment'      => 'Capture clientId from URL parameters',
+              'rewrite_cond' => '%{QUERY_STRING} (?:^|&)clientId=([^&]+)',
+              'rewrite_rule' => '^ - [E=CLIENT_ID:%1]'
+            }, {
+              'comment'      => 'Capture clientId from X-Client-Id header',
+              'rewrite_cond' => '%{HTTP:X-Client-Id} ^.+',
+              'rewrite_rule' => '^ - [E=CLIENT_ID:%{HTTP:X-Client-Id}]'
+            }, {
+              'comment'      => 'Capture JWT token from Authorization header',
+              'rewrite_cond' => '%{HTTP:Authorization} "^Bearer (.+)"',
+              'rewrite_rule' => '^ - [E=JWT_TOKEN:%1]'
+            }]
+          ) }
+
           it { is_expected.not_to contain_profiles__apache__vhost__php_fpm('http://baz.example.com') }
         end
       end

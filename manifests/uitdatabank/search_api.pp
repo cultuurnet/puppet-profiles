@@ -27,12 +27,35 @@ class profiles::uitdatabank::search_api (
     }
   }
 
+  $api_key_rewrites = [{
+                        comment      => 'Capture apiKey from URL parameters',
+                        rewrite_cond => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
+                        rewrite_rule => '^ - [E=API_KEY:%1]'
+                      }, {
+                        comment      => 'Capture apiKey from X-Api-Key header',
+                        rewrite_cond => '%{HTTP:X-Api-Key} ^.+',
+                        rewrite_rule => '^ - [E=API_KEY:%{HTTP:X-Api-Key}]'
+                      }, {
+                        comment      => 'Capture clientId from URL parameters',
+                        rewrite_cond => '%{QUERY_STRING} (?:^|&)clientId=([^&]+)',
+                        rewrite_rule => '^ - [E=CLIENT_ID:%1]'
+                      }, {
+                        comment      => 'Capture clientId from X-Client-Id header',
+                        rewrite_cond => '%{HTTP:X-Client-Id} ^.+',
+                        rewrite_rule => '^ - [E=CLIENT_ID:%{HTTP:X-Client-Id}]'
+                      }, {
+                        comment      => 'Capture JWT token from Authorization header',
+                        rewrite_cond => '%{HTTP:Authorization} "^Bearer (.+)"',
+                        rewrite_rule => '^ - [E=JWT_TOKEN:%1]'
+                      }]
+
   case $type {
     'container': {
       profiles::apache::vhost::reverse_proxy { "http://${servername}":
-        destination       => 'http://127.0.0.1:8080/',
-        aliases           => $serveraliases,
-        access_log_format => 'api_key_json',
+        destination         => 'http://127.0.0.1:8080/',
+        aliases             => $serveraliases,
+        access_log_format   => 'api_key_json',
+        additional_rewrites => $api_key_rewrites,
       }
     }
     default: {
@@ -41,27 +64,7 @@ class profiles::uitdatabank::search_api (
         public_web_directory => 'web',
         aliases              => $serveraliases,
         access_log_format    => 'api_key_json',
-        rewrites             => [{
-                                  comment      => 'Capture apiKey from URL parameters',
-                                  rewrite_cond => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
-                                  rewrite_rule => '^ - [E=API_KEY:%1]'
-                                }, {
-                                  comment      => 'Capture apiKey from X-Api-Key header',
-                                  rewrite_cond => '%{HTTP:X-Api-Key} ^.+',
-                                  rewrite_rule => '^ - [E=API_KEY:%{HTTP:X-Api-Key}]'
-                                }, {
-                                  comment      => 'Capture clientId from URL parameters',
-                                  rewrite_cond => '%{QUERY_STRING} (?:^|&)clientId=([^&]+)',
-                                  rewrite_rule => '^ - [E=CLIENT_ID:%1]'
-                                }, {
-                                  comment      => 'Capture clientId from X-Client-Id header',
-                                  rewrite_cond => '%{HTTP:X-Client-Id} ^.+',
-                                  rewrite_rule => '^ - [E=CLIENT_ID:%{HTTP:X-Client-Id}]'
-                                }, {
-                                  comment      => 'Capture JWT token from Authorization header',
-                                  rewrite_cond => '%{HTTP:Authorization} "^Bearer (.+)"',
-                                  rewrite_rule => '^ - [E=JWT_TOKEN:%1]'
-                                }],
+        rewrites             => $api_key_rewrites,
       }
     }
   }
