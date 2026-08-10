@@ -72,6 +72,22 @@ class profiles::uitdatabank::search_api::deployment::container (
     require => File[$webroot],
   }
 
+  file { 'uitdatabank-search-api-nginx-conf':
+    ensure  => 'file',
+    path    => "${config_dir}/nginx.conf",
+    content => template('profiles/uitdatabank/search_api/deployment/container/nginx.conf.erb'),
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    notify  => Exec['uitdatabank-search-api-nginx-reload'],
+  }
+
+  exec { 'uitdatabank-search-api-nginx-reload':
+    command     => "/usr/bin/docker compose -f ${config_dir}/docker-compose.yml kill -s SIGHUP search-nginx",
+    refreshonly => true,
+    require     => Docker_compose['uitdatabank-search-api'],
+  }
+
   cron { 'uitdatabank-search-api-reindex-permanent':
     command     => "/usr/bin/docker compose -f ${config_dir}/docker-compose.yml exec -T search-api php bin/app.php udb3-core:reindex-permanent",
     environment => ['MAILTO=infra+cron@publiq.be'],

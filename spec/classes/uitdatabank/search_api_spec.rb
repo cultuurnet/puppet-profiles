@@ -20,6 +20,7 @@ describe 'profiles::uitdatabank::search_api' do
             'serveraliases'            => [],
             'elasticsearch_servername' => nil,
             'deployment'               => true,
+            'type'                     => 'instance',
             'data_migration'           => false,
             'basedir'                  => '/var/www/udb3-search-service'
           ) }
@@ -78,6 +79,28 @@ describe 'profiles::uitdatabank::search_api' do
 
           it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'config_source'/) }
           it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'pubkey_keycloak_source'/) }
+        end
+      end
+
+      context 'with servername => baz.example.com and type => container' do
+        let(:params) { {
+          'servername' => 'baz.example.com',
+          'type'       => 'container',
+          'deployment' => false
+        } }
+
+        context 'with hieradata' do
+          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
+          it { is_expected.to compile.with_all_deps }
+
+          it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://baz.example.com').with(
+            'destination'       => 'http://127.0.0.1:8080/',
+            'aliases'           => [],
+            'access_log_format' => 'api_key_json'
+          ) }
+
+          it { is_expected.not_to contain_profiles__apache__vhost__php_fpm('http://baz.example.com') }
         end
       end
 
