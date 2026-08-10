@@ -8,7 +8,6 @@ class profiles::uitdatabank::search_api::deployment::container (
 ) inherits ::profiles {
 
   $config_dir         = '/etc/uitdatabank-search-api'
-  $webroot            = "${basedir}/web"
   $ecr_repository     = regsubst($image, '^[^/]+/', '')
   $resolved_image_tag = pick($image_tag, $facts.dig('docker_image_tag', $ecr_repository), 'latest')
 
@@ -55,21 +54,6 @@ class profiles::uitdatabank::search_api::deployment::container (
     command     => "/usr/bin/docker compose -f ${config_dir}/docker-compose.yml kill -s SIGUSR2 search-api",
     refreshonly => true,
     require     => Docker_compose['uitdatabank-search-api'],
-  }
-
-  file { $webroot:
-    ensure  => 'directory',
-    owner   => 'www-data',
-    group   => 'www-data',
-    require => [Group['www-data'], User['www-data']],
-  }
-
-  file { "${webroot}/.htaccess":
-    ensure  => 'file',
-    owner   => 'www-data',
-    group   => 'www-data',
-    content => "RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteRule ^ index.php [QSA,L]\n",
-    require => File[$webroot],
   }
 
   file { 'uitdatabank-search-api-nginx-conf':

@@ -86,6 +86,9 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
           it { is_expected.to contain_file('uitdatabank-search-api-docker-compose').with_content(%r{^\s+- /etc/uitdatabank-search-api/nginx.conf:/etc/nginx/conf.d/default.conf:ro$}) }
           it { is_expected.to contain_file('uitdatabank-search-api-docker-compose').with_content(/^\s+network_mode: "service:search-api"$/) }
 
+          it { is_expected.not_to contain_file('/var/www/udb3-search-service/web') }
+          it { is_expected.not_to contain_file('/var/www/udb3-search-service/web/.htaccess') }
+
           it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').with(
             'command'     => '/usr/bin/docker compose -f /etc/uitdatabank-search-api/docker-compose.yml exec -T search-api php bin/app.php udb3-core:reindex-permanent',
             'environment' => ['MAILTO=infra+cron@publiq.be'],
