@@ -467,8 +467,7 @@ describe 'profiles::elasticsearch' do
         it { is_expected.to contain_cron('elasticsearch-index-retention').that_requires('File[elasticsearch-index-retention]') }
 
         it { is_expected.not_to contain_profiles__sling__connection('elasticsearch-index-archive') }
-        it { is_expected.to contain_file('elasticsearch-index-retention').with_content(/No archival is configured/) }
-        it { is_expected.not_to contain_file('elasticsearch-index-retention').with_content(/elasticdump/) }
+        it { is_expected.to contain_file('elasticsearch-index-retention').with_content(/ARCHIVE_BUCKET=""/) }
       end
 
       context "with index_retention_patterns => [uitdatabank-search-api-app_*] and archive_bucket => pbq-es-log-archive" do
@@ -496,7 +495,8 @@ describe 'profiles::elasticsearch' do
 
         it { is_expected.to contain_file('elasticsearch-index-retention').with_content(/elasticdump --input="http:\/\/localhost:9200\/\$\{index\}"/) }
         it { is_expected.to contain_file('elasticsearch-index-retention').with_content(/--tgt-conn 'elasticsearch-index-archive'/) }
-        it { is_expected.to contain_file('elasticsearch-index-retention').with_content(%r{s3://pbq-es-log-archive/logs/<index>/}) }
+        it { is_expected.to contain_file('elasticsearch-index-retention').with_content(/ARCHIVE_BUCKET="pbq-es-log-archive"/) }
+        it { is_expected.to contain_file('elasticsearch-index-retention').with_content(%r{uploading \$\{index\} to s3://\$\{ARCHIVE_BUCKET\}/}) }
 
         it { is_expected.to contain_cron('elasticsearch-index-retention').that_requires('Profiles::Sling::Connection[elasticsearch-index-archive]') }
         it { is_expected.to contain_cron('elasticsearch-index-retention').that_requires('File[elasticsearch-index-retention]') }

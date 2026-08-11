@@ -3,48 +3,61 @@
 #
 # Deletes Elasticsearch indices matching INDEX_PATTERNS once they're
 # older than RETENTION_DAYS, based on each index's actual creation date
-# (not its name), so this works regardless of naming convention.
-<%- if @archive_bucket -%>
-# Before deletion, each index is dumped locally via elasticdump and
-# uploaded to s3://<%= @archive_bucket %>/logs/<index>/<index>_<archived-date>.jsonl
-# (sling connection "elasticsearch-index-archive") -- the live index is
-# only deleted once that upload succeeds. If either step fails, the
-# index is left alone and picked up again on the next run.
-<%- else -%>
-# No archival is configured (archive_bucket unset) -- matching indices
-# are deleted outright, with nothing kept elsewhere.
-<%- end -%>
+# (not its name), so this works regardless of naming convention. If
+# ARCHIVE_BUCKET is set, each index is first dumped locally via
+# elasticdump and uploaded to S3 (sling connection
+# "elasticsearch-index-archive"). The live index is only deleted once
+# that upload succeeds. If either step fails, the index is left alone
+# and picked up again on the next run. If ARCHIVE_BUCKET is unset,
+# matching indices are deleted outright, with nothing kept elsewhere.
+
 set -euo pipefail
 
 RETENTION_DAYS=<%= @index_retention_days %>
 INDEX_PATTERNS="<%= @index_retention_patterns.join(',') %>"
+ARCHIVE_BUCKET="<%= @archive_bucket %>"
 CUTOFF_EPOCH_MS=$(( $(date +%s) * 1000 - RETENTION_DAYS * 86400 * 1000 ))
-<%- if @archive_bucket -%>
+
 DUMP_DIR=$(mktemp -d)
 trap 'rm -rf "${DUMP_DIR}"' EXIT
-<%- end -%>
 
+archive_index() {
+  local index="$1"
+  local dump_file="${DUMP_DIR}/${index}.jsonl"
+
+  echo "$(date -Iseconds) dumping ${index} to ${dump_file}"
+
+  # create an  elasticdump of the given index. On failure, skip this index and move on to the next one
+  if ! elasticdump --input="http://localhost:9200/${index}" --output="${dump_file}" --type=data --limit=1000; then
+    echo "$(date -Iseconds) elasticdump failed for ${index}, leaving index in place" >&2
+    return 1
+  fi
+
+  local archive_key="logs/${index}/${index}_$(date +%Y%m%d).jsonl"
+  echo "$(date -Iseconds) uploading ${index} to s3://${ARCHIVE_BUCKET}/${archive_key}"
+
+  # upload the dump file to s3 using sling
+  if ! /usr/local/bin/sling run --src-stream "file://${dump_file}" --src-options '{"format":"jsonlines"}' \
+       --tgt-conn 'elasticsearch-index-archive' --tgt-object "${archive_key}" --tgt-options '{"format":"jsonlines"}'; then
+    echo "$(date -Iseconds) upload failed for ${index}, leaving index in place" >&2
+    return 1
+  fi
+
+  # remove the dump file
+  rm -f "${dump_file}"
+}
+
+# getting the list of indices matching the INDEX_PATTERNS that are older than the retention cutoff
 curl -sf "http://localhost:9200/_cat/indices/${INDEX_PATTERNS}?h=index,creation.date&format=json" |
   jq -r --argjson cutoff "${CUTOFF_EPOCH_MS}" \
     '.[] | select((.["creation.date"] | tonumber) < $cutoff) | .index' |
+
   while read -r index; do
-<%- if @archive_bucket -%>
-    dump_file="${DUMP_DIR}/${index}.jsonl"
-    echo "$(date -Iseconds) dumping ${index} to ${dump_file}"
-    if ! elasticdump --input="http://localhost:9200/${index}" --output="${dump_file}" --type=data --limit=1000; then
-      echo "$(date -Iseconds) elasticdump failed for ${index}, leaving index in place" >&2
+    if [ -n "${ARCHIVE_BUCKET}" ] && ! archive_index "${index}"; then
       continue
     fi
 
-    archive_key="logs/${index}/${index}_$(date +%Y%m%d).jsonl"
-    echo "$(date -Iseconds) uploading ${index} to s3://<%= @archive_bucket %>/${archive_key}"
-    if ! /usr/local/bin/sling run --src-stream "file://${dump_file}" --src-options '{"format":"jsonlines"}' \
-         --tgt-conn 'elasticsearch-index-archive' --tgt-object "${archive_key}" --tgt-options '{"format":"jsonlines"}'; then
-      echo "$(date -Iseconds) upload failed for ${index}, leaving index in place" >&2
-      continue
-    fi
-    rm -f "${dump_file}"
-<%- end -%>
     echo "$(date -Iseconds) deleting index older than ${RETENTION_DAYS}d: ${index}"
-    <%# curl -sf -X DELETE "http://localhost:9200/${index}" %>
+    # TODO: uncomment
+    # curl -sf -X DELETE "http://localhost:9200/${index}"
   done
