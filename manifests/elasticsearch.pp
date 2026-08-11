@@ -18,7 +18,16 @@ class profiles::elasticsearch (
   Integer                        $backup_hour                         = 0,
   Integer                        $backup_retention_days               = 7,
   Variant[String, Array[String]] $jvm_options                         = [],
-  Integer                        $log_retention_days                  = 7
+  Integer                        $log_retention_days                  = 7,
+  # Index names (wildcards allowed) eligible for automatic deletion once
+  # older than $index_retention_days
+  Array[String]                  $index_retention_patterns            = [],
+  Integer                        $index_retention_days                = 90,
+  # If set, matching indices are dumped and uploaded to this S3 bucket before being deleted
+  Optional[String]               $archive_bucket                      = undef,
+  String                         $archive_region                      = 'eu-west-1',
+  Optional[String]               $archive_access_key_id               = undef,
+  Optional[String]               $archive_secret_access_key           = undef
 ) inherits ::profiles {
 
   if ($version and $major_version) {
@@ -223,6 +232,43 @@ class profiles::elasticsearch (
     command     => "/usr/bin/find /var/log/elasticsearch -type f -name \"*.log\" -mtime +${log_retention} -exec rm {} \\;",
     hour        => '0',
     minute      => '0'
+  }
+
+  if !empty($index_retention_patterns) {
+    if $archive_bucket {
+      include profiles::elasticdump
+
+      profiles::sling::connection { 'elasticsearch-index-archive':
+        type          => 's3',
+        configuration => {
+          'bucket'            => $archive_bucket,
+          'region'            => $archive_region,
+          'access_key_id'     => $archive_access_key_id,
+          'secret_access_key' => $archive_secret_access_key,
+        },
+      }
+    }
+
+    file { 'elasticsearch-index-retention':
+      ensure  => 'file',
+      path    => '/usr/local/bin/elasticsearch-index-retention.sh',
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0750',
+      content => template('profiles/elasticsearch/index_retention.sh.erb'),
+    }
+
+    cron { 'elasticsearch-index-retention':
+      command     => '/usr/local/bin/elasticsearch-index-retention.sh >> /var/log/elasticsearch-index-retention.log 2>&1',
+      environment => ['MAILTO=infra+cron@publiq.be'],
+      user        => 'root',
+      hour        => '3',
+      minute      => '0',
+      require     => $archive_bucket ? {
+        undef   => File['elasticsearch-index-retention'],
+        default => [File['elasticsearch-index-retention'], Profiles::Sling::Connection['elasticsearch-index-archive']],
+      },
+    }
   }
 
   # include ::profiles::elasticsearch::logging

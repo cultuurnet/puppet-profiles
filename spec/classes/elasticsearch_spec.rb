@@ -427,6 +427,95 @@ describe 'profiles::elasticsearch' do
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /with secure_remote_access enabled, expects a value for 'secure_remote_access_user', 'secure_remote_access_password' and 'secure_remote_access_plugin_version'/) }
       end
+
+      context "without index_retention_patterns" do
+        let(:params) { {} }
+
+        it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.not_to contain_file('elasticsearch-index-retention') }
+        it { is_expected.not_to contain_cron('elasticsearch-index-retention') }
+      end
+
+      context "with index_retention_patterns => [uit-frontend-access_*, uitdatabank-search-api-app_*] and index_retention_days => 60" do
+        let(:params) { {
+          'index_retention_patterns' => ['uit-frontend-access_*', 'uitdatabank-search-api-app_*'],
+          'index_retention_days'     => 60
+        } }
+
+        it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to contain_file('elasticsearch-index-retention').with(
+          'ensure' => 'file',
+          'path'   => '/usr/local/bin/elasticsearch-index-retention.sh',
+          'owner'  => 'root',
+          'group'  => 'root',
+          'mode'   => '0750'
+        ) }
+
+        it { is_expected.to contain_file('elasticsearch-index-retention').with_content(/RETENTION_DAYS=60/) }
+        it { is_expected.to contain_file('elasticsearch-index-retention').with_content(%r{INDEX_PATTERNS="uit-frontend-access_\*,uitdatabank-search-api-app_\*"}) }
+
+        it { is_expected.to contain_cron('elasticsearch-index-retention').with(
+          'command'     => '/usr/local/bin/elasticsearch-index-retention.sh >> /var/log/elasticsearch-index-retention.log 2>&1',
+          'environment' => ['MAILTO=infra+cron@publiq.be'],
+          'user'        => 'root',
+          'hour'        => '3',
+          'minute'      => '0'
+        ) }
+
+        it { is_expected.to contain_cron('elasticsearch-index-retention').that_requires('File[elasticsearch-index-retention]') }
+
+        it { is_expected.not_to contain_profiles__sling__connection('elasticsearch-index-archive') }
+        it { is_expected.to contain_file('elasticsearch-index-retention').with_content(/No archival is configured/) }
+        it { is_expected.not_to contain_file('elasticsearch-index-retention').with_content(/elasticdump/) }
+      end
+
+      context "with index_retention_patterns => [uitdatabank-search-api-app_*] and archive_bucket => pbq-es-log-archive" do
+        let(:params) { {
+          'index_retention_patterns' => ['uitdatabank-search-api-app_*'],
+          'archive_bucket'           => 'pbq-es-log-archive',
+          'archive_region'           => 'eu-west-1',
+          'archive_access_key_id'    => 'AKIAEXAMPLE',
+          'archive_secret_access_key' => 'supersecret'
+        } }
+
+        it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to contain_class('profiles::elasticdump') }
+
+        it { is_expected.to contain_profiles__sling__connection('elasticsearch-index-archive').with(
+          'type'          => 's3',
+          'configuration' => {
+                                'bucket'            => 'pbq-es-log-archive',
+                                'region'            => 'eu-west-1',
+                                'access_key_id'     => 'AKIAEXAMPLE',
+                                'secret_access_key' => 'supersecret'
+                              }
+        ) }
+
+        it { is_expected.to contain_file('elasticsearch-index-retention').with_content(/elasticdump --input="http:\/\/localhost:9200\/\$\{index\}"/) }
+        it { is_expected.to contain_file('elasticsearch-index-retention').with_content(/--tgt-conn 'elasticsearch-index-archive'/) }
+        it { is_expected.to contain_file('elasticsearch-index-retention').with_content(%r{s3://pbq-es-log-archive/logs/<index>/}) }
+
+        it { is_expected.to contain_cron('elasticsearch-index-retention').that_requires('Profiles::Sling::Connection[elasticsearch-index-archive]') }
+        it { is_expected.to contain_cron('elasticsearch-index-retention').that_requires('File[elasticsearch-index-retention]') }
+      end
+
+      context "with index_retention_patterns scoped to testing/acceptance only, excluding production" do
+        let(:params) { {
+          'index_retention_patterns' => ['uit-frontend-access_testing_*', 'uit-frontend-access_acceptance_*'],
+          'index_retention_days'     => 30
+        } }
+
+        it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to contain_file('elasticsearch-index-retention').with_content(
+          %r{INDEX_PATTERNS="uit-frontend-access_testing_\*,uit-frontend-access_acceptance_\*"}
+        ) }
+
+        it { is_expected.not_to contain_file('elasticsearch-index-retention').with_content(/production/) }
+      end
     end
   end
 end
