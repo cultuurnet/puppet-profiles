@@ -46,5 +46,5 @@ curl -sf "http://localhost:9200/_cat/indices/${INDEX_PATTERNS}?h=index,creation.
     rm -f "${dump_file}"
 <%- end -%>
     echo "$(date -Iseconds) deleting index older than ${RETENTION_DAYS}d: ${index}"
-    curl -sf -X DELETE "http://localhost:9200/${index}"
+    <%# curl -sf -X DELETE "http://localhost:9200/${index}" %>
   done
