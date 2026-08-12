@@ -1,6 +1,11 @@
 class profiles::uitdatabank::search_api::deployment (
   String                        $config_source,
   String                        $pubkey_keycloak_source,
+  # Always passed explicitly by profiles::uitdatabank::search_api, which also
+  # uses its own copy of this value to pick the Apache vhost type. An explicit
+  # parameter shadows this class's own Hiera lookup, so setting
+  # profiles::uitdatabank::search_api::deployment::type directly has no effect
+  # unless profiles::uitdatabank::search_api::type is set to the same value.
   Enum['instance', 'container'] $type                                  = 'instance',
   String                        $basedir                               = '/var/www/udb3-search-service',
   String                        $region_mapping_source                 = 'profiles/uitdatabank/search_api/mapping_region.json',
