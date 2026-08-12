@@ -48,16 +48,17 @@ archive_index() {
 }
 
 # getting the list of indices matching the INDEX_PATTERNS that are older than the retention cutoff
-curl -sf "http://localhost:9200/_cat/indices/${INDEX_PATTERNS}?h=index,creation.date&format=json" |
-  jq -r --argjson cutoff "${CUTOFF_EPOCH_MS}" \
-    '.[] | select((.["creation.date"] | tonumber) < $cutoff) | .index' |
+old_indices() {
+  curl -sf "http://localhost:9200/_cat/indices/${INDEX_PATTERNS}?h=index,creation.date&format=json" |
+    jq -r --argjson cutoff "${CUTOFF_EPOCH_MS}" \
+      '.[] | select((.["creation.date"] | tonumber) < $cutoff) | .index'
+}
 
-  while read -r index; do
-    if [ -n "${ARCHIVE_BUCKET}" ] && ! archive_index "${index}"; then
-      continue
-    fi
+old_indices | while read -r index; do
+  if [ -n "${ARCHIVE_BUCKET}" ] && ! archive_index "${index}"; then
+    continue
+  fi
 
-    echo "$(date -Iseconds) deleting index older than ${RETENTION_DAYS}d: ${index}"
-    # TODO: uncomment
-    # curl -sf -X DELETE "http://localhost:9200/${index}"
-  done
+  echo "$(date -Iseconds) deleting index older than ${RETENTION_DAYS}d: ${index}"
+  curl -sf -X DELETE "http://localhost:9200/${index}"
+done
