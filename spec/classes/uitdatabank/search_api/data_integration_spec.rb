@@ -28,7 +28,7 @@ describe 'profiles::uitdatabank::search_api::data_integration' do
         it { is_expected.to contain_cron('elasticdump_to_gcs').with(
           'ensure'      => 'present',
           'environment' => ['SHELL=/bin/bash', 'TZ=UTC', 'MAILTO=infra+cron@publiq.be'],
-          'command'     => '/usr/bin/test $(date +\\%0H) -eq 0 && /usr/local/bin/elasticdump_to_gcs /data/backup/elasticsearch/current/udb3_core_v*',
+          'command'     => '/usr/bin/test $(date +\\%0H) -eq 0 && /usr/local/bin/elasticdump_to_gcs /data/backup/elasticsearch/current/$(curl -s -XGET \'http://localhost:9200/_cat/aliases/udb3_core_read?h=idx\').json',
           'hour'        => '*',
           'minute'      => '00'
         ) }
@@ -57,7 +57,7 @@ describe 'profiles::uitdatabank::search_api::data_integration' do
         it { is_expected.to contain_cron('elasticdump_to_gcs').with(
           'ensure'      => 'present',
           'environment' => ['SHELL=/bin/bash', 'TZ=CEST', 'MAILTO=infra+cron@publiq.be'],
-          'command'     => '/usr/bin/test $(date +\\%0H) -eq 2 && /usr/local/bin/elasticdump_to_gcs /data/backup/elasticsearch/current/udb3_core_v*',
+          'command'     => '/usr/bin/test $(date +\\%0H) -eq 2 && /usr/local/bin/elasticdump_to_gcs /data/backup/elasticsearch/current/$(curl -s -XGET \'http://localhost:9200/_cat/aliases/udb3_core_read?h=idx\').json',
           'hour'        => '*',
           'minute'      => '00'
         ) }
@@ -68,7 +68,7 @@ describe 'profiles::uitdatabank::search_api::data_integration' do
 
       context 'with dump_schedule => false' do
         let(:params) { {
-          'dump_schedule'       => false
+          'dump_schedule' => false
         } }
 
         it { is_expected.to contain_cron('elasticdump_to_gcs').with(
