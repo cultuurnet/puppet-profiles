@@ -55,6 +55,7 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
           it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').with_content(/^pm\.max_children = 192$/) }
           it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').with_content(/^pm\.max_requests = 10000$/) }
           it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').that_notifies('Exec[uitdatabank-search-api-fpm-pool-reload]') }
+          it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').that_comes_before('Docker_compose[uitdatabank-search-api]') }
 
           it { is_expected.to contain_file('uitdatabank-search-api-docker-compose').with_content(%r{^\s+- /etc/uitdatabank-search-api/fpm-pool.conf:/usr/local/etc/php-fpm.d/zz-pool.conf:ro$}) }
 
@@ -75,6 +76,7 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
 
           it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').with_content(/fastcgi_pass 127\.0\.0\.1:9000;/) }
           it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').that_notifies('Exec[uitdatabank-search-api-nginx-reload]') }
+          it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').that_comes_before('Docker_compose[uitdatabank-search-api]') }
 
           it { is_expected.to contain_exec('uitdatabank-search-api-nginx-reload').with(
             'command'     => '/usr/bin/docker compose -f /etc/uitdatabank-search-api/docker-compose.yml kill -s SIGHUP search-nginx',

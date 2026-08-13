@@ -39,6 +39,7 @@ class profiles::uitdatabank::search_api::deployment::container (
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
+    before  => Docker_compose['uitdatabank-search-api'],
     notify  => Exec['uitdatabank-search-api-fpm-pool-reload'],
   }
 
@@ -63,6 +64,7 @@ class profiles::uitdatabank::search_api::deployment::container (
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
+    before  => Docker_compose['uitdatabank-search-api'],
     notify  => Exec['uitdatabank-search-api-nginx-reload'],
   }
 
