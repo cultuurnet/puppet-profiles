@@ -140,6 +140,30 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                            }
               ) }
             end
+
+            context "with destination => http://davinci.example.com, support_websockets => true and additional_rewrites => capture apiKey" do
+              let(:params) { {
+                'destination'          => 'http://davinci.example.com/',
+                'support_websockets'   => true,
+                'additional_rewrites'  => [{
+                  'comment'      => 'Capture apiKey from URL parameters',
+                  'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
+                  'rewrite_rule' => '^ - [E=API_KEY:%1]'
+                }]
+              } }
+
+              it { is_expected.to contain_apache__vhost('leonardo.example.com_80').with(
+                'rewrites' => [{
+                                'comment'      => 'Proxy Websocket support',
+                                'rewrite_cond' => ['%{HTTP:Upgrade} =websocket [NC]'],
+                                'rewrite_rule' => '^/(.*) ws://davinci.example.com/$1 [P,L]'
+                              }, {
+                                'comment'      => 'Capture apiKey from URL parameters',
+                                'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
+                                'rewrite_rule' => '^ - [E=API_KEY:%1]'
+                              }]
+              ) }
+            end
           end
 
           context "without hieradata" do

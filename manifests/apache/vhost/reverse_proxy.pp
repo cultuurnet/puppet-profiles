@@ -10,7 +10,8 @@ define profiles::apache::vhost::reverse_proxy (
   Variant[String, Array[String]] $aliases               = [],
   Array[String]                  $additional_headers    = [],
   Variant[String, Array[String]] $headers               = [],
-  String                         $access_log_format     = 'extended_json'
+  String                         $access_log_format     = 'extended_json',
+  Variant[Hash, Array[Hash]]     $additional_rewrites   = []
 ) {
 
   include ::profiles
@@ -65,14 +66,16 @@ define profiles::apache::vhost::reverse_proxy (
 
     $websockets_destination = regsubst($destination,'^http(.*)/?$','ws\\1')
 
-    $rewrites = [{
-                  'comment'      => 'Proxy Websocket support',
-                  'rewrite_cond' => [ '%{HTTP:Upgrade} =websocket [NC]'],
-                  'rewrite_rule' => "^/(.*) ${websockets_destination}\$1 [P,L]"
-                }]
+    $websocket_rewrites = [{
+                             'comment'      => 'Proxy Websocket support',
+                             'rewrite_cond' => [ '%{HTTP:Upgrade} =websocket [NC]'],
+                             'rewrite_rule' => "^/(.*) ${websockets_destination}\$1 [P,L]"
+                           }]
   } else {
-    $rewrites = []
+    $websocket_rewrites = []
   }
+
+  $rewrites = $websocket_rewrites + [$additional_rewrites].flatten
 
   if $auth_openid_connect {
     include apache::mod::authn_core

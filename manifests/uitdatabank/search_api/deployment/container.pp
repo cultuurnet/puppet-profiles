@@ -8,7 +8,6 @@ class profiles::uitdatabank::search_api::deployment::container (
 ) inherits ::profiles {
 
   $config_dir         = '/etc/uitdatabank-search-api'
-  $webroot            = "${basedir}/web"
   $ecr_repository     = regsubst($image, '^[^/]+/', '')
   $resolved_image_tag = pick($image_tag, $facts.dig('docker_image_tag', $ecr_repository), 'latest')
 
@@ -57,19 +56,20 @@ class profiles::uitdatabank::search_api::deployment::container (
     require     => Docker_compose['uitdatabank-search-api'],
   }
 
-  file { $webroot:
-    ensure  => 'directory',
-    owner   => 'www-data',
-    group   => 'www-data',
-    require => [Group['www-data'], User['www-data']],
+  file { 'uitdatabank-search-api-nginx-conf':
+    ensure  => 'file',
+    path    => "${config_dir}/nginx.conf",
+    content => template('profiles/uitdatabank/search_api/deployment/container/nginx.conf.erb'),
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    notify  => Exec['uitdatabank-search-api-nginx-reload'],
   }
 
-  file { "${webroot}/.htaccess":
-    ensure  => 'file',
-    owner   => 'www-data',
-    group   => 'www-data',
-    content => "RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteRule ^ index.php [QSA,L]\n",
-    require => File[$webroot],
+  exec { 'uitdatabank-search-api-nginx-reload':
+    command     => "/usr/bin/docker compose -f ${config_dir}/docker-compose.yml kill -s SIGHUP search-nginx",
+    refreshonly => true,
+    require     => Docker_compose['uitdatabank-search-api'],
   }
 
   cron { 'uitdatabank-search-api-reindex-permanent':
