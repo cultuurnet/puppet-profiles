@@ -12,15 +12,13 @@ describe 'profiles::apache::logging' do
         it { is_expected.to contain_class('profiles::logrotate') }
 
         it { is_expected.to contain_class('profiles::apache::logging').with(
-          'retention_days'  => 16,
-          'access_maxsize'  => '500M',
+          'retention_days' => 21,
         ) }
 
         it { is_expected.to contain_logrotate__rule('apache2').with(
           'path'          => '/var/log/apache2/*.log',
-          'rotate'        => 15,
+          'rotate'        => 20,
           'rotate_every'  => 'day',
-          'maxsize'       => '500M',
           'create'        => true,
           'create_mode'   => '0640',
           'create_owner'  => 'root',
@@ -40,27 +38,6 @@ describe 'profiles::apache::logging' do
           'path'          => '/var/log/apache2/*.log',
           'rotate'        => 29,
           'rotate_every'  => 'day',
-          'maxsize'       => '500M',
-          'create'        => true,
-          'create_mode'   => '0640',
-          'create_owner'  => 'root',
-          'create_group'  => 'adm',
-          'compress'      => true,
-          'delaycompress' => true,
-          'sharedscripts' => true,
-          'postrotate'    => 'systemctl status apache2 > /dev/null 2>&1 && systemctl reload apache2 > /dev/null 2>&1'
-        ) }
-      end
-      context 'with access_maxsize => "1G"' do
-        let(:params) { {
-          'access_maxsize' => '1G'
-        } }
-
-        it { is_expected.to contain_logrotate__rule('apache2').with(
-          'path'          => '/var/log/apache2/*.log',
-          'rotate'        => 15,
-          'rotate_every'  => 'day',
-          'maxsize'       => '1G',
           'create'        => true,
           'create_mode'   => '0640',
           'create_owner'  => 'root',
