@@ -21,6 +21,7 @@ class profiles::uitpas::segmentatie (
   $database_user              = 'uitpas_segmentatie'
   $database_host_remote       = true
   $glassfish_domain_http_port = $portbase + 80
+  $glassfish_domain_admin_port = $portbase + 48
   $default_attributes         = {
                                   user         => 'glassfish',
                                   passwordfile => '/home/glassfish/asadmin.pass',
@@ -121,40 +122,40 @@ class profiles::uitpas::segmentatie (
   set { 'server.network-config.protocols.protocol.http-listener-1.http.scheme-mapping':
     ensure  => 'present',
     value   => 'X-Forwarded-Proto',
-    require => Profiles::Glassfish::Domain['uitpas-segmentatie'],
-    notify  => Service['uitpas-segmentatie'],
+    require => [Profiles::Glassfish::Domain['uitpas-segmentatie'], Exec['wait for uitpas-segmentatie glassfish admin']],
+    notify  => Exec['restart uitpas-segmentatie after glassfish configuration change'],
     *       => $default_attributes
   }
 
   set { 'server.thread-pools.thread-pool.http-thread-pool.max-thread-pool-size':
     ensure  => 'present',
     value   => '32',
-    require => Profiles::Glassfish::Domain['uitpas-segmentatie'],
-    notify  => Service['uitpas-segmentatie'],
+    require => [Profiles::Glassfish::Domain['uitpas-segmentatie'], Exec['wait for uitpas-segmentatie glassfish admin']],
+    notify  => Exec['restart uitpas-segmentatie after glassfish configuration change'],
     *       => $default_attributes
   }
 
   jvmoption { 'Clear domain uitpas-segmentatie default truststore':
     ensure  => 'absent',
     option  => '-Djavax.net.ssl.trustStore=\$\{com.sun.aas.instanceRoot\}/config/cacerts.jks',
-    require => Profiles::Glassfish::Domain['uitpas-segmentatie'],
-    notify  => Service['uitpas-segmentatie'],
+    require => [Profiles::Glassfish::Domain['uitpas-segmentatie'], Exec['wait for uitpas-segmentatie glassfish admin']],
+    notify  => Exec['restart uitpas-segmentatie after glassfish configuration change'],
     *       => $default_attributes
   }
 
   jvmoption { 'Domain uitpas truststore':
     ensure  => 'present',
     option  => '-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts',
-    require => Profiles::Glassfish::Domain['uitpas-segmentatie'],
-    notify  => Service['uitpas-segmentatie'],
+    require => [Profiles::Glassfish::Domain['uitpas-segmentatie'], Exec['wait for uitpas-segmentatie glassfish admin']],
+    notify  => Exec['restart uitpas-segmentatie after glassfish configuration change'],
     *       => $default_attributes
   }
 
   jvmoption { 'Domain uitpas timezone':
     ensure  => 'present',
     option  => '-Duser.timezone=CET',
-    require => Profiles::Glassfish::Domain['uitpas-segmentatie'],
-    notify  => Service['uitpas-segmentatie'],
+    require => [Profiles::Glassfish::Domain['uitpas-segmentatie'], Exec['wait for uitpas-segmentatie glassfish admin']],
+    notify  => Exec['restart uitpas-segmentatie after glassfish configuration change'],
     *       => $default_attributes
   }
 
@@ -162,8 +163,8 @@ class profiles::uitpas::segmentatie (
     systemproperty { $name:
       ensure  => 'present',
       value   => $value,
-      require => Profiles::Glassfish::Domain['uitpas-segmentatie'],
-      notify  => Service['uitpas-segmentatie'],
+      require => [Profiles::Glassfish::Domain['uitpas-segmentatie'], Exec['wait for uitpas-segmentatie glassfish admin']],
+      notify  => Exec['restart uitpas-segmentatie after glassfish configuration change'],
       *       => $default_attributes
     }
   }
@@ -179,6 +180,18 @@ class profiles::uitpas::segmentatie (
                   'stopped' => false
                  },
     require   => Profiles::Glassfish::Domain::Service_alias['uitpas-segmentatie']
+  }
+
+  exec { 'wait for uitpas-segmentatie glassfish admin':
+    command => "/usr/bin/timeout 120 /bin/sh -c 'until /opt/payara/glassfish/bin/asadmin --passwordfile /home/glassfish/asadmin.pass --port ${glassfish_domain_admin_port} list-applications >/dev/null 2>&1; do sleep 2; done'",
+    timeout => 130,
+    require => Service['uitpas-segmentatie'],
+  }
+
+  exec { 'restart uitpas-segmentatie after glassfish configuration change':
+    command     => '/usr/bin/systemctl restart uitpas-segmentatie',
+    refreshonly => true,
+    require     => Exec['wait for uitpas-segmentatie glassfish admin'],
   }
 
   file { 'Domain uitpas-segmentatie mysql-connector-j':
