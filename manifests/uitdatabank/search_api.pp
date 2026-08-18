@@ -38,7 +38,9 @@ class profiles::uitdatabank::search_api (
         maxmemory        => '100mb',
         maxmemory_policy => 'allkeys-lru',
       }
-      $redis_class = Class['profiles::redis::container']
+      if $deployment {
+        Class['profiles::redis::container'] -> Class['profiles::uitdatabank::search_api::deployment']
+      }
 
       profiles::apache::vhost::reverse_proxy { "http://${servername}":
         destination         => 'http://127.0.0.1:8080/',
@@ -49,7 +51,9 @@ class profiles::uitdatabank::search_api (
     }
     default: {
       include profiles::redis
-      $redis_class = Class['profiles::redis']
+      if $deployment {
+        Class['profiles::redis'] -> Class['profiles::uitdatabank::search_api::deployment']
+      }
 
       profiles::apache::vhost::php_fpm { "http://${servername}":
         basedir              => $basedir,
@@ -68,7 +72,7 @@ class profiles::uitdatabank::search_api (
 
     class { 'profiles::uitdatabank::search_api::deployment':
       basedir => $basedir,
-      require => [$redis_class, Class['profiles::elasticsearch'], Class['profiles::uitdatabank::geojson_data::deployment']],
+      require => [Class['profiles::elasticsearch'], Class['profiles::uitdatabank::geojson_data::deployment']],
     }
 
     if $data_migration {
