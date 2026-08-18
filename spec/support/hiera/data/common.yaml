@@ -24,7 +24,6 @@ profiles::uit::cms::deployment::config_source: 'appconfig/uit/cms/env'
 profiles::uit::cms::deployment::drush_config_source: 'appconfig/uit/cms/env'
 profiles::uit::notifications::deployment::config_source: 'appconfig/uit/notifications/env'
 profiles::uit::mail_subscriptions::deployment::config_source: 'appconfig/uit/mail-subscriptions/env'
-profiles::uit::recommender_frontend::deployment::config_source: 'appconfig/uit/recommender-frontend/env'
 
 profiles::uitpas::balie_frontend::deployment::config_source: 'appconfig/uitpas/balie_frontend/config.json'
 profiles::uitpas::balie_api::deployment::config_source: 'appconfig/uitpas/balie_api/config.yml'
