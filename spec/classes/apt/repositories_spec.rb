@@ -100,7 +100,6 @@ describe 'profiles::apt::repositories' do
 
             include_examples 'apt repositories', 'uit-mail-subscriptions', { :location => 'https://apt.publiq.be/uit-mail-subscriptions-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uit-notifications', { :location => 'https://apt.publiq.be/uit-notifications-testing', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'uit-recommender-frontend', { :location => 'https://apt.publiq.be/uit-recommender-frontend-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uit-frontend', { :location => 'https://apt.publiq.be/uit-frontend-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uit-api', { :location => 'https://apt.publiq.be/uit-api-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uit-cms', { :location => 'https://apt.publiq.be/uit-cms-testing', :repos => 'main', :release => 'focal' }
