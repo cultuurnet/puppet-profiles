@@ -62,6 +62,9 @@ class profiles::docker (
     require    => Class['::docker']
   }
 
+  # Explicitly including profiles::collectd here avoids a duplicate-declaration error
+  include profiles::collectd
+
   collectd::plugin::filter::rule { 'ignore_docker_mounts':
     chain => 'PostCache'
   }
