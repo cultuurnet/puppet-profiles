@@ -15,6 +15,9 @@ class profiles::uitid::reverse_proxy (
   realize Firewall['300 accept HTTPS traffic']
   realize Firewall['300 accept HTTP traffic']
 
+  Profiles::Certificate[$certificate] ~> Service['nginx']
+
+
   if $gcloud_etl_sync_enabled {
     $secrets = lookup('vault:uitid/reverseproxy')
 
