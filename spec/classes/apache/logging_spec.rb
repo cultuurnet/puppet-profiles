@@ -15,6 +15,10 @@ describe 'profiles::apache::logging' do
           'retention_days' => 21,
         ) }
 
+        it { is_expected.to contain_package('lsof').with(
+          'ensure' => 'installed',
+        ) }
+
         it { is_expected.to contain_logrotate__rule('apache2').with(
           'path'          => '/var/log/apache2/*.log',
           'rotate'        => 20,
@@ -24,9 +28,12 @@ describe 'profiles::apache::logging' do
           'create_owner'  => 'root',
           'create_group'  => 'adm',
           'compress'      => true,
-          'delaycompress' => true,
+          'delaycompress' => false,
           'sharedscripts' => true,
-          'postrotate'    => 'systemctl status apache2 > /dev/null 2>&1 && systemctl reload apache2 > /dev/null 2>&1'
+          'postrotate'    => [
+            'systemctl status apache2 > /dev/null 2>&1 && systemctl reload apache2 > /dev/null 2>&1',
+            'for pid in $(lsof +L1 2>/dev/null | awk \'$1=="apache2" && /\(deleted\)/ && /var\/log\/apache2/ {print $2}\' | sort -u); do kill "$pid"; done'
+          ]
         ) }
       end
       context 'with retention_days => 30' do
@@ -43,9 +50,12 @@ describe 'profiles::apache::logging' do
           'create_owner'  => 'root',
           'create_group'  => 'adm',
           'compress'      => true,
-          'delaycompress' => true,
+          'delaycompress' => false,
           'sharedscripts' => true,
-          'postrotate'    => 'systemctl status apache2 > /dev/null 2>&1 && systemctl reload apache2 > /dev/null 2>&1'
+          'postrotate'    => [
+            'systemctl status apache2 > /dev/null 2>&1 && systemctl reload apache2 > /dev/null 2>&1',
+            'for pid in $(lsof +L1 2>/dev/null | awk \'$1=="apache2" && /\(deleted\)/ && /var\/log\/apache2/ {print $2}\' | sort -u); do kill "$pid"; done'
+          ]
         ) }
       end
     end
