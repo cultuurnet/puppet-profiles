@@ -13,6 +13,7 @@ describe 'profiles::apache::logging' do
 
         it { is_expected.to contain_class('profiles::apache::logging').with(
           'retention_days' => 21,
+          'delaycompress'  => true,
         ) }
 
         it { is_expected.to contain_logrotate__rule('apache2').with(
@@ -44,6 +45,25 @@ describe 'profiles::apache::logging' do
           'create_group'  => 'adm',
           'compress'      => true,
           'delaycompress' => true,
+          'sharedscripts' => true,
+          'postrotate'    => 'systemctl status apache2 > /dev/null 2>&1 && systemctl reload apache2 > /dev/null 2>&1'
+        ) }
+      end
+      context 'with delaycompress => false' do
+        let(:params) { {
+          'delaycompress' => false
+        } }
+
+        it { is_expected.to contain_logrotate__rule('apache2').with(
+          'path'          => '/var/log/apache2/*.log',
+          'rotate'        => 20,
+          'rotate_every'  => 'day',
+          'create'        => true,
+          'create_mode'   => '0640',
+          'create_owner'  => 'root',
+          'create_group'  => 'adm',
+          'compress'      => true,
+          'delaycompress' => false,
           'sharedscripts' => true,
           'postrotate'    => 'systemctl status apache2 > /dev/null 2>&1 && systemctl reload apache2 > /dev/null 2>&1'
         ) }
