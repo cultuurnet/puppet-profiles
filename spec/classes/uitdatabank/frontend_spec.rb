@@ -75,6 +75,29 @@ describe 'profiles::uitdatabank::frontend' do
             ) }
           end
 
+          context 'with type => container' do
+            let(:params) { super().merge({
+              'type' => 'container'
+            }) }
+
+            it { is_expected.to compile.with_all_deps }
+
+            it { is_expected.to contain_class('profiles::apache') }
+            it { is_expected.not_to contain_class('profiles::nodejs') }
+
+            it { is_expected.not_to contain_file('/var/www/udb3-frontend') }
+
+            it { is_expected.to contain_class('profiles::uitdatabank::frontend::deployment::container') }
+            it { is_expected.not_to contain_class('profiles::uitdatabank::frontend::deployment::instance') }
+
+            it { is_expected.to contain_class('profiles::uitdatabank::frontend::deployment').that_requires('Class[profiles::apache]') }
+
+            it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://frontend.example.com').with(
+              'aliases'     => [],
+              'destination' => 'http://127.0.0.1:4000/'
+            ) }
+          end
+
           context 'with deployment => false' do
             let(:params) { super().merge({
               'deployment' => false

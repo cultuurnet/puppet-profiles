@@ -1,0 +1,16 @@
+services:
+  frontend:
+    image: <%= @image %>:<%= @resolved_image_tag %>
+    network_mode: host
+    restart: unless-stopped
+    env_file:
+      - <%= @config_dir %>/env
+    environment:
+      HOSTNAME: "<%= @service_address %>"
+      PORT: "<%= @service_port %>"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://<%= @service_address %>:<%= @service_port %>/ || exit 1"]
+      start_period: 30s
+      interval: 10s
+      timeout: 5s
+      retries: 3
