@@ -36,7 +36,10 @@ describe 'profiles::uitdatabank::entry_api::deployment::container' do
             'amqp_listener_uitpas'           => 'present',
             'bulk_label_offer_worker'        => 'present',
             'mail_worker'                    => 'present',
-            'event_export_worker_count'      => 1
+            'event_export_worker_count'      => 1,
+            'pm'                             => 'dynamic',
+            'pm_max_children'                => 50,
+            'pm_max_requests'                => 0
           ) }
 
           it { is_expected.to contain_class('profiles::docker') }
@@ -88,12 +91,57 @@ describe 'profiles::uitdatabank::entry_api::deployment::container' do
             'mode'   => '0644'
           ) }
 
-          it { is_expected.to contain_exec('uitdatabank-entry-api-docker-compose').with(
-            'command'     => '/usr/bin/docker compose -f /etc/uitdatabank-entry-api/docker-compose.yml up -d --remove-orphans',
+          it { is_expected.to contain_docker_compose('uitdatabank-entry-api').with(
+            'ensure'        => 'present',
+            'compose_files' => ['/etc/uitdatabank-entry-api/docker-compose.yml']
+          ) }
+
+          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').that_notifies('Docker_compose[uitdatabank-entry-api]') }
+
+          it { is_expected.to contain_file('uitdatabank-entry-api-fpm-pool').with(
+            'ensure' => 'file',
+            'path'   => '/etc/uitdatabank-entry-api/fpm-pool.conf',
+            'owner'  => 'root',
+            'group'  => 'root',
+            'mode'   => '0644'
+          ) }
+
+          it { is_expected.to contain_file('uitdatabank-entry-api-fpm-pool').with_content(/^pm = dynamic$/) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-fpm-pool').with_content(/^pm\.max_children = 50$/) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-fpm-pool').with_content(/^pm\.max_requests = 0$/) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-fpm-pool').that_notifies('Exec[uitdatabank-entry-api-fpm-pool-reload]') }
+          it { is_expected.to contain_file('uitdatabank-entry-api-fpm-pool').that_comes_before('Docker_compose[uitdatabank-entry-api]') }
+
+          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(%r{^\s+- /etc/uitdatabank-entry-api/fpm-pool.conf:/usr/local/etc/php-fpm.d/zz-pool.conf:ro$}) }
+
+          it { is_expected.to contain_exec('uitdatabank-entry-api-fpm-pool-reload').with(
+            'command'     => '/usr/bin/docker compose -f /etc/uitdatabank-entry-api/docker-compose.yml kill -s SIGUSR2 entry-api',
             'refreshonly' => true
           ) }
 
-          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').that_notifies('Exec[uitdatabank-entry-api-docker-compose]') }
+          it { is_expected.to contain_exec('uitdatabank-entry-api-fpm-pool-reload').that_requires('Docker_compose[uitdatabank-entry-api]') }
+
+          it { is_expected.to contain_file('uitdatabank-entry-api-nginx-conf').with(
+            'ensure' => 'file',
+            'path'   => '/etc/uitdatabank-entry-api/nginx.conf',
+            'owner'  => 'root',
+            'group'  => 'root',
+            'mode'   => '0644'
+          ) }
+
+          it { is_expected.to contain_file('uitdatabank-entry-api-nginx-conf').with_content(/fastcgi_pass 127\.0\.0\.1:9000;/) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-nginx-conf').that_notifies('Exec[uitdatabank-entry-api-nginx-reload]') }
+          it { is_expected.to contain_file('uitdatabank-entry-api-nginx-conf').that_comes_before('Docker_compose[uitdatabank-entry-api]') }
+
+          it { is_expected.to contain_exec('uitdatabank-entry-api-nginx-reload').with(
+            'command'     => '/usr/bin/docker compose -f /etc/uitdatabank-entry-api/docker-compose.yml kill -s SIGHUP entry-nginx',
+            'refreshonly' => true
+          ) }
+
+          it { is_expected.to contain_exec('uitdatabank-entry-api-nginx-reload').that_requires('Docker_compose[uitdatabank-entry-api]') }
+
+          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(%r{^\s+- /etc/uitdatabank-entry-api/nginx.conf:/etc/nginx/conf.d/default.conf:ro$}) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/^\s+network_mode: "service:entry-api"$/) }
 
           it { is_expected.to contain_file('/var/www/udb3-backend/web').with(
             'ensure' => 'directory',
@@ -125,12 +173,19 @@ describe 'profiles::uitdatabank::entry_api::deployment::container' do
           'api_keys_matched_to_client_ids_source'  => 'appconfig/uitdatabank/udb3-backend/config.api_keys_matched_to_client_ids.php',
           'amqp_listener_uitpas'                   => 'absent',
           'mail_worker'                            => 'absent',
-          'event_export_worker_count'              => 2
+          'event_export_worker_count'              => 2,
+          'pm'                                     => 'static',
+          'pm_max_children'                        => 24,
+          'pm_max_requests'                        => 10000
         }) }
 
         context 'in the testing environment' do
           let(:environment) { 'testing' }
           let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
+          it { is_expected.to contain_file('uitdatabank-entry-api-fpm-pool').with_content(/^pm = static$/) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-fpm-pool').with_content(/^pm\.max_children = 24$/) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-fpm-pool').with_content(/^pm\.max_requests = 10000$/) }
 
           it { is_expected.to contain_class('profiles::docker::ecr_repos').with(
             'repos' => {

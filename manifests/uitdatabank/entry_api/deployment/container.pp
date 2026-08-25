@@ -16,6 +16,9 @@ class profiles::uitdatabank::entry_api::deployment::container (
   Enum['present', 'absent'] $bulk_label_offer_worker              = 'present',
   Enum['present', 'absent'] $mail_worker                          = 'present',
   Integer[0]                $event_export_worker_count            = 1,
+  String                    $pm                                   = 'dynamic',
+  Integer                   $pm_max_children                      = 50,
+  Integer                   $pm_max_requests                      = 0,
 ) inherits ::profiles {
   $config_dir         = '/etc/uitdatabank-entry-api'
   $basedir            = '/var/www/udb3-backend'
@@ -29,7 +32,7 @@ class profiles::uitdatabank::entry_api::deployment::container (
     group   => 'root',
     mode    => '0640',
     require => File[$config_dir],
-    notify  => Exec['uitdatabank-entry-api-docker-compose'],
+    notify  => Docker_compose['uitdatabank-entry-api'],
   }
 
   include profiles::docker
@@ -137,13 +140,51 @@ class profiles::uitdatabank::entry_api::deployment::container (
     group   => 'root',
     mode    => '0644',
     require => File[$config_dir],
-    notify  => Exec['uitdatabank-entry-api-docker-compose'],
+    notify  => Docker_compose['uitdatabank-entry-api'],
   }
 
-  exec { 'uitdatabank-entry-api-docker-compose':
-    command     => "/usr/bin/docker compose -f ${config_dir}/docker-compose.yml up -d --remove-orphans",
+  file { 'uitdatabank-entry-api-fpm-pool':
+    ensure  => 'file',
+    path    => "${config_dir}/fpm-pool.conf",
+    content => "[www]\npm = ${pm}\npm.max_children = ${pm_max_children}\npm.max_requests = ${pm_max_requests}\n",
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    require => File[$config_dir],
+    before  => Docker_compose['uitdatabank-entry-api'],
+    notify  => Exec['uitdatabank-entry-api-fpm-pool-reload'],
+  }
+
+  docker_compose { 'uitdatabank-entry-api':
+    ensure        => present,
+    compose_files => ["${config_dir}/docker-compose.yml"],
+    require       => Class['profiles::docker'],
+  }
+
+  # SIGUSR2 tells php-fpm's master process to re-read its config and gracefully
+  # restart just its workers
+  exec { 'uitdatabank-entry-api-fpm-pool-reload':
+    command     => "/usr/bin/docker compose -f ${config_dir}/docker-compose.yml kill -s SIGUSR2 entry-api",
     refreshonly => true,
-    require     => [Class['profiles::docker'], File['uitdatabank-entry-api-docker-compose']],
+    require     => Docker_compose['uitdatabank-entry-api'],
+  }
+
+  file { 'uitdatabank-entry-api-nginx-conf':
+    ensure  => 'file',
+    path    => "${config_dir}/nginx.conf",
+    content => template('profiles/uitdatabank/entry_api/deployment/container/nginx.conf.erb'),
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    require => File[$config_dir],
+    before  => Docker_compose['uitdatabank-entry-api'],
+    notify  => Exec['uitdatabank-entry-api-nginx-reload'],
+  }
+
+  exec { 'uitdatabank-entry-api-nginx-reload':
+    command     => "/usr/bin/docker compose -f ${config_dir}/docker-compose.yml kill -s SIGHUP entry-nginx",
+    refreshonly => true,
+    require     => Docker_compose['uitdatabank-entry-api'],
   }
 
   file { $webroot:
