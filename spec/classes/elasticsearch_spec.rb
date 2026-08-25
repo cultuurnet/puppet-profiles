@@ -498,7 +498,7 @@ describe 'profiles::elasticsearch' do
         it { is_expected.to contain_file('elasticsearch-index-retention').with_content(/--tgt-conn 'elasticsearch-index-archive'/) }
         it { is_expected.to contain_file('elasticsearch-index-retention').with_content(/ARCHIVE_BUCKET="pbq-es-log-archive"/) }
         it { is_expected.to contain_file('elasticsearch-index-retention').with_content(%r{archiving \$\{index\}.*to s3://\$\{ARCHIVE_BUCKET\}/}) }
-        it { is_expected.to contain_file('elasticsearch-index-retention').with_content(/CHUNK_THRESHOLD_BYTES=3000000000/) }
+        it { is_expected.to contain_file('elasticsearch-index-retention').with_content(/CHUNK_THRESHOLD_BYTES=2000000000/) }
         it { is_expected.to contain_file('elasticsearch-index-retention').with_content(/"field":"@timestamp"/) }
         it { is_expected.to contain_file('elasticsearch-index-retention').with_content(/archive_index_chunked\(\)/) }
         it { is_expected.to contain_file('elasticsearch-index-retention').without_content(/--concurrency/) }

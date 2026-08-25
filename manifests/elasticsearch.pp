@@ -29,7 +29,7 @@ class profiles::elasticsearch (
   Optional[String]               $archive_access_key_id               = undef,
   Optional[String]               $archive_secret_access_key           = undef,
   # Indices whose compressed store size (bytes) exceeds this are archived day-by-day
-  Integer                        $archive_chunk_threshold_bytes       = 3000000000
+  Integer                        $archive_chunk_threshold_bytes       = 2000000000
 ) inherits ::profiles {
 
   if ($version and $major_version) {
