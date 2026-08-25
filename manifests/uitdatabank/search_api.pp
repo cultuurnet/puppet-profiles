@@ -30,7 +30,8 @@ class profiles::uitdatabank::search_api (
                         rewrite_rule => '^ - [E=JWT_TOKEN:%1]'
                       }]
 
-  # A single $type drives both the deployment mechanism and the backing Redis instance together
+  # A single $type drives the deployment mechanism and both backing services (Redis,
+  # Elasticsearch) together — there's no case where only some of them are containerized.
   case $type {
     'container': {
       class { 'profiles::redis::container':
@@ -38,7 +39,22 @@ class profiles::uitdatabank::search_api (
         maxmemory        => '100mb',
         maxmemory_policy => 'allkeys-lru',
       }
-      $redis_class = Class['profiles::redis::container']
+      class { 'profiles::elasticsearch::container':
+        version             => '8.19.12',
+        lvm                 => true,
+        volume_group        => 'datavg',
+        volume_size         => '30G',
+        log_volume_size     => '10G',
+        initial_heap_size   => '2048m',
+        maximum_heap_size   => '2048m',
+        backup_lvm          => true,
+        backup_volume_group => 'backupvg',
+        backup_volume_size  => '15G',
+      }
+      if $deployment {
+        Class['profiles::redis::container'] -> Class['profiles::uitdatabank::search_api::deployment']
+        Class['profiles::elasticsearch::container'] -> Class['profiles::uitdatabank::search_api::deployment']
+      }
 
       profiles::apache::vhost::reverse_proxy { "http://${servername}":
         destination         => 'http://127.0.0.1:8080/',
@@ -49,7 +65,11 @@ class profiles::uitdatabank::search_api (
     }
     default: {
       include profiles::redis
-      $redis_class = Class['profiles::redis']
+      include profiles::elasticsearch
+      if $deployment {
+        Class['profiles::redis'] -> Class['profiles::uitdatabank::search_api::deployment']
+        Class['profiles::elasticsearch'] -> Class['profiles::uitdatabank::search_api::deployment']
+      }
 
       profiles::apache::vhost::php_fpm { "http://${servername}":
         basedir              => $basedir,
@@ -61,14 +81,12 @@ class profiles::uitdatabank::search_api (
     }
   }
 
-  include profiles::elasticsearch
-
   if $deployment {
     include profiles::uitdatabank::geojson_data::deployment
 
     class { 'profiles::uitdatabank::search_api::deployment':
       basedir => $basedir,
-      require => [$redis_class, Class['profiles::elasticsearch'], Class['profiles::uitdatabank::geojson_data::deployment']],
+      require => [Class['profiles::uitdatabank::geojson_data::deployment']],
     }
 
     if $data_migration {

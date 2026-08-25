@@ -90,6 +90,7 @@ describe 'profiles::uitdatabank::search_api' do
 
         context 'with hieradata' do
           let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+          let(:pre_condition) { ['volume_group { "datavg": ensure => "present" }', 'volume_group { "backupvg": ensure => "present" }'] }
 
           it { is_expected.to compile.with_all_deps }
 
@@ -100,7 +101,17 @@ describe 'profiles::uitdatabank::search_api' do
           ) }
           it { is_expected.not_to contain_class('profiles::redis') }
 
+          it { is_expected.to contain_class('profiles::elasticsearch::container').with(
+            'version'         => '8.19.12',
+            'lvm'             => true,
+            'volume_group'    => 'datavg',
+            'volume_size'     => '30G',
+            'log_volume_size' => '10G'
+          ) }
+          it { is_expected.not_to contain_class('profiles::elasticsearch') }
+
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').that_requires('Class[profiles::redis::container]') }
+          it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').that_requires('Class[profiles::elasticsearch::container]') }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://baz.example.com').with(
             'destination'       => 'http://127.0.0.1:8080/',
