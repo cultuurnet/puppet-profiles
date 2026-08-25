@@ -4,47 +4,117 @@
 # Deletes Elasticsearch indices matching INDEX_PATTERNS once they're
 # older than RETENTION_DAYS, based on each index's actual creation date
 # (not its name), so this works regardless of naming convention. If
-# ARCHIVE_BUCKET is set, each index is first dumped locally via
-# elasticdump and uploaded to S3 (sling connection
-# "elasticsearch-index-archive"). The live index is only deleted once
-# that upload succeeds. If either step fails, the index is left alone
-# and picked up again on the next run. If ARCHIVE_BUCKET is unset,
-# matching indices are deleted outright, with nothing kept elsewhere.
+# ARCHIVE_BUCKET is set, each index is archived to S3 before being
+# deleted. 
+# Indices larger than CHUNK_THRESHOLD_BYTES (compressed store size) are archived one day at a time
+# If ARCHIVE_BUCKET is unset, matching indices are deleted outright
 
 set -euo pipefail
 
 RETENTION_DAYS=<%= @index_retention_days %>
 INDEX_PATTERNS="<%= @index_retention_patterns.join(',') %>"
 ARCHIVE_BUCKET="<%= @archive_bucket %>"
+CHUNK_THRESHOLD_BYTES=<%= @archive_chunk_threshold_bytes %>
 CUTOFF_EPOCH_MS=$(( $(date +%s) * 1000 - RETENTION_DAYS * 86400 * 1000 ))
 
-DUMP_DIR=$(mktemp -d)
-trap 'rm -rf "${DUMP_DIR}"' EXIT
+# number of documents in $1, optionally matching the query body in $2
+index_count() {
+  local index="$1"
+  local search_body="${2:-}"
+
+  if [ -n "${search_body}" ]; then
+    curl -sf "http://localhost:9200/${index}/_count" -H 'Content-Type: application/json' -d "${search_body}" | jq -r '.count'
+  else
+    curl -sf "http://localhost:9200/${index}/_count" | jq -r '.count'
+  fi
+}
+
+index_size_bytes() {
+  local index="$1"
+  curl -sf "http://localhost:9200/_cat/indices/${index}?h=store.size&bytes=b" | tr -d ' '
+}
+
+# streams $1's documents straight into sling at $3
+archive_to_s3() {
+  local index="$1"
+  local search_body="$2"
+  local s3_key="$3"
+  local expected_count="$4"
+  local sling_output actual_count
+  local -a elasticdump_args=(--input="http://localhost:9200/${index}" --output=$ --type=data --limit=10000)
+
+  if [ -n "${search_body}" ]; then
+    elasticdump_args+=(--searchBody="${search_body}")
+  fi
+
+  echo "$(date -Iseconds) archiving ${index} (${expected_count} docs) to s3://${ARCHIVE_BUCKET}/${s3_key}"
+
+  if ! sling_output=$(elasticdump "${elasticdump_args[@]}" |
+       /usr/local/bin/sling run --src-options '{"format":"jsonlines"}' \
+         --tgt-conn 'elasticsearch-index-archive' --tgt-object "${s3_key}" --tgt-options '{"format":"jsonlines"}' 2>&1); then
+    echo "$(date -Iseconds) archive failed for ${index} (${s3_key}), leaving index in place" >&2
+    echo "${sling_output}" >&2
+    return 1
+  fi
+
+  actual_count=$(echo "${sling_output}" | grep -oP 'wrote \K[0-9]+(?= rows)' || echo 0)
+
+  if [ "${actual_count}" != "${expected_count}" ]; then
+    echo "$(date -Iseconds) row count mismatch for ${index} (${s3_key}): expected ${expected_count}, archived ${actual_count}, leaving index in place" >&2
+    return 1
+  fi
+
+  echo "${actual_count}"
+}
 
 archive_index() {
   local index="$1"
-  local dump_file="${DUMP_DIR}/${index}.jsonl"
-
-  echo "$(date -Iseconds) dumping ${index} to ${dump_file}"
-
-  # create an  elasticdump of the given index. On failure, skip this index and move on to the next one
-  if ! elasticdump --input="http://localhost:9200/${index}" --output="${dump_file}" --type=data --limit=1000; then
-    echo "$(date -Iseconds) elasticdump failed for ${index}, leaving index in place" >&2
-    return 1
-  fi
-
   local archive_key="logs/${index}/${index}_$(date +%Y%m%d).jsonl"
-  echo "$(date -Iseconds) uploading ${index} to s3://${ARCHIVE_BUCKET}/${archive_key}"
+  local expected_count
 
-  # upload the dump file to s3 using sling
-  if ! /usr/local/bin/sling run --src-stream "file://${dump_file}" --src-options '{"format":"jsonlines"}' \
-       --tgt-conn 'elasticsearch-index-archive' --tgt-object "${archive_key}" --tgt-options '{"format":"jsonlines"}'; then
-    echo "$(date -Iseconds) upload failed for ${index}, leaving index in place" >&2
+  expected_count=$(index_count "${index}")
+  archive_to_s3 "${index}" '' "${archive_key}" "${expected_count}" > /dev/null
+}
+
+# archives a large index one calendar day at a time (by @timestamp),
+archive_index_chunked() {
+  local index="$1"
+  local range min_ts max_ts day end_day next_day
+  local day_key day_search day_expected day_written
+  local total_written=0 total_expected
+
+  range=$(curl -sf "http://localhost:9200/${index}/_search" -H 'Content-Type: application/json' \
+    -d '{"size":0,"aggs":{"min_ts":{"min":{"field":"@timestamp"}},"max_ts":{"max":{"field":"@timestamp"}}}}')
+  min_ts=$(echo "${range}" | jq -r '.aggregations.min_ts.value_as_string')
+  max_ts=$(echo "${range}" | jq -r '.aggregations.max_ts.value_as_string')
+
+  if [ "${min_ts}" == "null" ] || [ "${max_ts}" == "null" ]; then
+    echo "$(date -Iseconds) could not determine a @timestamp range for ${index}, leaving index in place" >&2
     return 1
   fi
 
-  # remove the dump file
-  rm -f "${dump_file}"
+  day=$(date -u -d "${min_ts}" +%Y-%m-%d)
+  end_day=$(date -u -d "${max_ts}" +%Y-%m-%d)
+  total_expected=$(index_count "${index}")
+
+  while [ "$(date -d "${day}" +%s)" -le "$(date -d "${end_day}" +%s)" ]; do
+    next_day=$(date -u -d "${day} +1 day" +%Y-%m-%d)
+    day_key="logs/${index}/${day}.jsonl"
+    day_search="{\"query\":{\"range\":{\"@timestamp\":{\"gte\":\"${day}T00:00:00.000Z\",\"lt\":\"${next_day}T00:00:00.000Z\"}}}}"
+    day_expected=$(index_count "${index}" "${day_search}")
+
+    if ! day_written=$(archive_to_s3 "${index}" "${day_search}" "${day_key}" "${day_expected}"); then
+      return 1
+    fi
+
+    total_written=$((total_written + day_written))
+    day="${next_day}"
+  done
+
+  if [ "${total_written}" != "${total_expected}" ]; then
+    echo "$(date -Iseconds) total row count mismatch for ${index}: expected ${total_expected}, archived ${total_written} across all days, leaving index in place" >&2
+    return 1
+  fi
 }
 
 # getting the list of indices matching the INDEX_PATTERNS that are older than the retention cutoff
@@ -55,7 +125,19 @@ old_indices() {
 }
 
 old_indices | while read -r index; do
-  if [ -n "${ARCHIVE_BUCKET}" ] && ! archive_index "${index}"; then
+  archived=true
+
+  if [ -n "${ARCHIVE_BUCKET}" ]; then
+    size_bytes=$(index_size_bytes "${index}")
+
+    if [ "${size_bytes}" -gt "${CHUNK_THRESHOLD_BYTES}" ]; then
+      archive_index_chunked "${index}" || archived=false
+    else
+      archive_index "${index}" || archived=false
+    fi
+  fi
+
+  if [ "${archived}" != "true" ]; then
     continue
   fi
 
