@@ -116,6 +116,54 @@ describe 'profiles::uitdatabank::entry_api' do
           end
         end
 
+        context 'with database_password => mypassword, servername => uitdatabank.example.com, job_interface_servername => jobs.example.com and type => container' do
+          let(:params) { {
+            'database_password'        => 'mypassword',
+            'servername'               => 'uitdatabank.example.com',
+            'job_interface_servername' => 'jobs.example.com',
+            'type'                     => 'container'
+          } }
+
+          context "with class profiles::mysql::server present" do
+            let(:pre_condition) { 'include profiles::mysql::server' }
+
+            it { is_expected.to compile.with_all_deps }
+
+            it { is_expected.to contain_class('profiles::uitdatabank::entry_api::deployment::container') }
+            it { is_expected.not_to contain_class('profiles::uitdatabank::entry_api::deployment::instance') }
+
+            it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://uitdatabank.example.com').with(
+              'destination'           => 'http://127.0.0.1:8080/',
+              'aliases'               => [],
+              'access_log_format'    => 'api_key_json',
+              'allow_encoded_slashes' => 'nodecode',
+              'additional_rewrites'   => [{
+                                           'comment'      => 'Capture apiKey from URL parameters',
+                                           'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
+                                           'rewrite_rule' => '^ - [E=API_KEY:%1]'
+                                         }, {
+                                           'comment'      => 'Capture apiKey from X-Api-Key header',
+                                           'rewrite_cond' => '%{HTTP:X-Api-Key} ^.+',
+                                           'rewrite_rule' => '^ - [E=API_KEY:%{HTTP:X-Api-Key}]'
+                                         }, {
+                                           'comment'      => 'Capture clientId from URL parameters',
+                                           'rewrite_cond' => '%{QUERY_STRING} (?:^|&)clientId=([^&]+)',
+                                           'rewrite_rule' => '^ - [E=CLIENT_ID:%1]'
+                                         }, {
+                                           'comment'      => 'Capture clientId from X-Client-Id header',
+                                           'rewrite_cond' => '%{HTTP:X-Client-Id} ^.+',
+                                           'rewrite_rule' => '^ - [E=CLIENT_ID:%{HTTP:X-Client-Id}]'
+                                         }, {
+                                           'comment'      => 'Capture JWT token from Authorization header',
+                                           'rewrite_cond' => '%{HTTP:Authorization} "^Bearer (.+)"',
+                                           'rewrite_rule' => '^ - [E=JWT_TOKEN:%1]'
+                                         }]
+            ) }
+
+            it { is_expected.not_to contain_profiles__apache__vhost__php_fpm('http://uitdatabank.example.com') }
+          end
+        end
+
         context 'with database_password => secret, database_host => foo.example.com, servername => uitdatabank.example.com, job_interface_servername => bar.example.com, uitpas_servername => uitpas.example.com and deployment => false' do
           let(:params) { {
             'database_password'        => 'secret',

@@ -51,6 +51,7 @@ profiles::uitdatabank::angular_app::deployment::config_source: 'appconfig/uitdat
 profiles::uitdatabank::frontend::deployment::config_source: 'appconfig/uitdatabank/udb3-frontend/env'
 
 profiles::uitdatabank::entry_api::deployment::config_source: 'appconfig/uitdatabank/udb3-backend/config.php'
+profiles::uitdatabank::entry_api::deployment::container::image: 'path-to-ecr'
 profiles::uitdatabank::entry_api::deployment::admin_permissions_source: 'appconfig/uitdatabank/udb3-backend/config.allow_all.php'
 profiles::uitdatabank::entry_api::deployment::client_permissions_source: 'appconfig/uitdatabank/udb3-backend/config.client_permissions.php'
 profiles::uitdatabank::entry_api::deployment::movie_fetcher_config_source: 'appconfig/uitdatabank/udb3-backend/config.kinepolis.php'
