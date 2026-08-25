@@ -458,7 +458,6 @@ describe 'profiles::elasticsearch' do
 
         it { is_expected.to contain_cron('elasticsearch-index-retention').with(
           'command'     => '/usr/local/bin/elasticsearch-index-retention.sh >> /var/log/elasticsearch-index-retention.log 2>&1',
-          'environment' => ['MAILTO=infra+cron@publiq.be'],
           'user'        => 'root',
           'weekday'     => '0',
           'hour'        => '3',
