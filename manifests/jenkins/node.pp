@@ -24,6 +24,7 @@ class profiles::jenkins::node (
   realize Apt::Source['publiq-jenkins']
 
   include ::profiles::java
+  include ::profiles::logrotate
 
   if $lvm {
     unless ($volume_group and $volume_size) {
@@ -122,14 +123,21 @@ class profiles::jenkins::node (
     }
 
     cron { 'jenkins-yarn-cache-cleanup':
-      ensure      => 'present',
-      command     => '/usr/local/sbin/jenkins-yarn-cache-cleanup >> /var/log/jenkins-yarn-cache-cleanup.log 2>&1',
-      user        => 'root',
-      minute      => '0',
-      hour        => '3',
-      weekday     => '0',
-      environment => ['MAILTO=infra+cron@publiq.be'],
-      require     => File['jenkins-yarn-cache-cleanup']
+      ensure  => 'present',
+      command => '/usr/local/sbin/jenkins-yarn-cache-cleanup >> /var/log/jenkins-yarn-cache-cleanup.log 2>&1',
+      user    => 'root',
+      minute  => '0',
+      hour    => '3',
+      weekday => '0',
+      require => File['jenkins-yarn-cache-cleanup']
+    }
+
+    logrotate::rule { 'jenkins-yarn-cache-cleanup':
+      path         => '/var/log/jenkins-yarn-cache-cleanup.log',
+      rotate       => 10,
+      create_owner => 'root',
+      create_group => 'adm',
+      *            => $profiles::logrotate::default_rule_attributes
     }
   } else {
     file { 'jenkins-yarn-cache-cleanup':
@@ -138,6 +146,10 @@ class profiles::jenkins::node (
     }
 
     cron { 'jenkins-yarn-cache-cleanup':
+      ensure => 'absent'
+    }
+
+    logrotate::rule { 'jenkins-yarn-cache-cleanup':
       ensure => 'absent'
     }
   }

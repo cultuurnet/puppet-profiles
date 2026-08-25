@@ -34,6 +34,7 @@ describe 'profiles::jenkins::node' do
           it { is_expected.to contain_group('jenkins') }
           it { is_expected.to contain_user('jenkins') }
           it { is_expected.to contain_class('profiles::java') }
+          it { is_expected.to contain_class('profiles::logrotate') }
 
           it { is_expected.to contain_package('jenkins-swarm-client').with(
             'ensure' => 'latest'
@@ -103,13 +104,19 @@ describe 'profiles::jenkins::node' do
           it { is_expected.to contain_file('jenkins-yarn-cache-cleanup').with_content(%r{find "\$\{cache_dir\}" -mindepth 1 -maxdepth 1 -exec rm -rf \{\} \+}) }
 
           it { is_expected.to contain_cron('jenkins-yarn-cache-cleanup').with(
-            'ensure'      => 'present',
-            'command'     => '/usr/local/sbin/jenkins-yarn-cache-cleanup >> /var/log/jenkins-yarn-cache-cleanup.log 2>&1',
-            'user'        => 'root',
-            'minute'      => '0',
-            'hour'        => '3',
-            'weekday'     => '0',
-            'environment' => ['MAILTO=infra+cron@publiq.be']
+            'ensure'  => 'present',
+            'command' => '/usr/local/sbin/jenkins-yarn-cache-cleanup >> /var/log/jenkins-yarn-cache-cleanup.log 2>&1',
+            'user'    => 'root',
+            'minute'  => '0',
+            'hour'    => '3',
+            'weekday' => '0'
+          ) }
+
+          it { is_expected.to contain_logrotate__rule('jenkins-yarn-cache-cleanup').with(
+            'path'         => '/var/log/jenkins-yarn-cache-cleanup.log',
+            'rotate'       => 10,
+            'create_owner' => 'root',
+            'create_group' => 'adm'
           ) }
 
           it { is_expected.to contain_file('jenkins-swarm-client_service-defaults').with_content(/^JENKINS_USER=john$/) }
@@ -262,6 +269,10 @@ describe 'profiles::jenkins::node' do
           ) }
 
           it { is_expected.to contain_cron('jenkins-yarn-cache-cleanup').with(
+            'ensure' => 'absent'
+          ) }
+
+          it { is_expected.to contain_logrotate__rule('jenkins-yarn-cache-cleanup').with(
             'ensure' => 'absent'
           ) }
         end
