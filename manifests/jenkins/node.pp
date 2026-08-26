@@ -1,13 +1,14 @@
 class profiles::jenkins::node (
-  String                         $version        = 'latest',
-  String                         $user           = 'admin',
-  String                         $password       = lookup('profiles::jenkins::controller::admin_password', String, 'first', ''),
-  String                         $controller_url = lookup('profiles::jenkins::controller::url', String, 'first', 'http://localhost:8080/'),
-  Boolean                        $lvm            = false,
-  Optional[String]               $volume_group   = undef,
-  Optional[String]               $volume_size    = undef,
-  Integer                        $executors      = 1,
-  Variant[String, Array[String]] $labels         = []
+  String                         $version            = 'latest',
+  String                         $user               = 'admin',
+  String                         $password           = lookup('profiles::jenkins::controller::admin_password', String, 'first', ''),
+  String                         $controller_url     = lookup('profiles::jenkins::controller::url', String, 'first', 'http://localhost:8080/'),
+  Boolean                        $lvm                = false,
+  Optional[String]               $volume_group       = undef,
+  Optional[String]               $volume_size        = undef,
+  Integer                        $executors          = 1,
+  Variant[String, Array[String]] $labels             = [],
+  Boolean                        $yarn_cache_cleanup = true
 ) inherits ::profiles {
 
   $data_dir  = '/var/lib/jenkins-swarm-client'
@@ -23,6 +24,7 @@ class profiles::jenkins::node (
   realize Apt::Source['publiq-jenkins']
 
   include ::profiles::java
+  include ::profiles::logrotate
 
   if $lvm {
     unless ($volume_group and $volume_size) {
@@ -103,6 +105,53 @@ class profiles::jenkins::node (
     content => template('profiles/jenkins/jenkins-swarm-client_service-defaults.erb'),
     require => Package['jenkins-swarm-client'],
     notify  => Service['jenkins-swarm-client']
+  }
+
+  if $yarn_cache_cleanup {
+    file { 'jenkins-yarn-cache-cleanup':
+      ensure  => 'file',
+      path    => '/usr/local/sbin/jenkins-yarn-cache-cleanup',
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0755',
+      content => template('profiles/jenkins/yarn-cache-cleanup.erb'),
+      require => [
+        File[$data_dir],
+        File['jenkins-swarm-client_passwordfile'],
+        File['jenkins-swarm-client_service-defaults']
+      ]
+    }
+
+    cron { 'jenkins-yarn-cache-cleanup':
+      ensure  => 'present',
+      command => '/usr/local/sbin/jenkins-yarn-cache-cleanup >> /var/log/jenkins-yarn-cache-cleanup.log 2>&1',
+      user    => 'root',
+      minute  => '0',
+      hour    => '3',
+      weekday => '0',
+      require => File['jenkins-yarn-cache-cleanup']
+    }
+
+    logrotate::rule { 'jenkins-yarn-cache-cleanup':
+      path         => '/var/log/jenkins-yarn-cache-cleanup.log',
+      rotate       => 10,
+      create_owner => 'root',
+      create_group => 'adm',
+      *            => $profiles::logrotate::default_rule_attributes
+    }
+  } else {
+    file { 'jenkins-yarn-cache-cleanup':
+      ensure => 'absent',
+      path   => '/usr/local/sbin/jenkins-yarn-cache-cleanup'
+    }
+
+    cron { 'jenkins-yarn-cache-cleanup':
+      ensure => 'absent'
+    }
+
+    logrotate::rule { 'jenkins-yarn-cache-cleanup':
+      ensure => 'absent'
+    }
   }
 
   service { 'jenkins-swarm-client':

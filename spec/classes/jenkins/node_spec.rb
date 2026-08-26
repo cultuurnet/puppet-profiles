@@ -18,21 +18,23 @@ describe 'profiles::jenkins::node' do
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_class('profiles::jenkins::node').with(
-            'user'           => 'john',
-            'password'       => 'doe',
-            'version'        => 'latest',
-            'controller_url' => 'https://jenkins.example.com/',
-            'lvm'            => false,
-            'volume_group'   => nil,
-            'volume_size'    => nil,
-            'executors'      => 1,
-            'labels'         => []
+            'user'               => 'john',
+            'password'           => 'doe',
+            'version'            => 'latest',
+            'controller_url'     => 'https://jenkins.example.com/',
+            'lvm'                => false,
+            'volume_group'       => nil,
+            'volume_size'        => nil,
+            'executors'          => 1,
+            'labels'             => [],
+            'yarn_cache_cleanup' => true
           ) }
 
           it { is_expected.to contain_apt__source('publiq-jenkins') }
           it { is_expected.to contain_group('jenkins') }
           it { is_expected.to contain_user('jenkins') }
           it { is_expected.to contain_class('profiles::java') }
+          it { is_expected.to contain_class('profiles::logrotate') }
 
           it { is_expected.to contain_package('jenkins-swarm-client').with(
             'ensure' => 'latest'
@@ -86,6 +88,37 @@ describe 'profiles::jenkins::node' do
             'mode'    => '0644'
           ) }
 
+          it { is_expected.to contain_file('jenkins-yarn-cache-cleanup').with(
+            'ensure' => 'file',
+            'path'   => '/usr/local/sbin/jenkins-yarn-cache-cleanup',
+            'owner'  => 'root',
+            'group'  => 'root',
+            'mode'   => '0755'
+          ) }
+
+          it { is_expected.to contain_file('jenkins-yarn-cache-cleanup').with_content(%r{^cache_dir='/var/lib/jenkins-swarm-client/\.cache/yarn'$}) }
+          it { is_expected.to contain_file('jenkins-yarn-cache-cleanup').with_content(/^attempts=5$/) }
+          it { is_expected.to contain_file('jenkins-yarn-cache-cleanup').with_content(/^delay=600$/) }
+          it { is_expected.to contain_file('jenkins-yarn-cache-cleanup').with_content(%r{curl -fsS -u "\$\{JENKINS_USER\}:\$\{JENKINS_PASSWORD\}"}) }
+          it { is_expected.to contain_file('jenkins-yarn-cache-cleanup').with_content(%r{jq '\[\.executors\[\]\?, \.oneOffExecutors\[\]\?\] | map\(select\(\.currentExecutable != null\)\) | length'}) }
+          it { is_expected.to contain_file('jenkins-yarn-cache-cleanup').with_content(%r{find "\$\{cache_dir\}" -mindepth 1 -maxdepth 1 -exec rm -rf \{\} \+}) }
+
+          it { is_expected.to contain_cron('jenkins-yarn-cache-cleanup').with(
+            'ensure'  => 'present',
+            'command' => '/usr/local/sbin/jenkins-yarn-cache-cleanup >> /var/log/jenkins-yarn-cache-cleanup.log 2>&1',
+            'user'    => 'root',
+            'minute'  => '0',
+            'hour'    => '3',
+            'weekday' => '0'
+          ) }
+
+          it { is_expected.to contain_logrotate__rule('jenkins-yarn-cache-cleanup').with(
+            'path'         => '/var/log/jenkins-yarn-cache-cleanup.log',
+            'rotate'       => 10,
+            'create_owner' => 'root',
+            'create_group' => 'adm'
+          ) }
+
           it { is_expected.to contain_file('jenkins-swarm-client_service-defaults').with_content(/^JENKINS_USER=john$/) }
           it { is_expected.to contain_file('jenkins-swarm-client_service-defaults').with_content(/^CONTROLLER_URL=https:\/\/jenkins\.example\.com\/$/) }
           it { is_expected.to contain_file('jenkins-swarm-client_service-defaults').with_content(/^BUILD_EXECUTORS=1$/) }
@@ -110,6 +143,10 @@ describe 'profiles::jenkins::node' do
           it { is_expected.to contain_concat('jenkins-swarm-client_node-labels').that_notifies('Service[jenkins-swarm-client]') }
           it { is_expected.to contain_file('jenkins-swarm-client_service-defaults').that_requires('Package[jenkins-swarm-client]') }
           it { is_expected.to contain_file('jenkins-swarm-client_service-defaults').that_notifies('Service[jenkins-swarm-client]') }
+          it { is_expected.to contain_file('jenkins-yarn-cache-cleanup').that_requires('File[/var/lib/jenkins-swarm-client]') }
+          it { is_expected.to contain_file('jenkins-yarn-cache-cleanup').that_requires('File[jenkins-swarm-client_passwordfile]') }
+          it { is_expected.to contain_file('jenkins-yarn-cache-cleanup').that_requires('File[jenkins-swarm-client_service-defaults]') }
+          it { is_expected.to contain_cron('jenkins-yarn-cache-cleanup').that_requires('File[jenkins-yarn-cache-cleanup]') }
           it { is_expected.to contain_service('jenkins-swarm-client').that_requires('User[jenkins]') }
           it { is_expected.to contain_service('jenkins-swarm-client').that_requires('Group[jenkins]') }
           it { is_expected.to contain_service('jenkins-swarm-client').that_subscribes_to('Class[profiles::java]') }
@@ -217,19 +254,43 @@ describe 'profiles::jenkins::node' do
           end
         end
 
+        context "with yarn_cache_cleanup => false" do
+          let(:params) { {
+            'user'               => 'john',
+            'password'           => 'doe',
+            'controller_url'     => 'https://jenkins.example.com/',
+            'yarn_cache_cleanup' => false
+          } }
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to contain_file('jenkins-yarn-cache-cleanup').with(
+            'ensure' => 'absent',
+            'path'   => '/usr/local/sbin/jenkins-yarn-cache-cleanup'
+          ) }
+
+          it { is_expected.to contain_cron('jenkins-yarn-cache-cleanup').with(
+            'ensure' => 'absent'
+          ) }
+
+          it { is_expected.to contain_logrotate__rule('jenkins-yarn-cache-cleanup').with(
+            'ensure' => 'absent'
+          ) }
+        end
+
         context "without parameters it uses hieradata from profiles::jenkins::controller" do
           let(:params) { {} }
 
           it { is_expected.to contain_class('profiles::jenkins::node').with(
-            'user'           => 'admin',
-            'password'       => 'bar',
-            'version'        => 'latest',
-            'controller_url' => 'https://foobar.com/',
-            'lvm'            => false,
-            'volume_group'   => nil,
-            'volume_size'    => nil,
-            'executors'      => 1,
-            'labels'         => []
+            'user'               => 'admin',
+            'password'           => 'bar',
+            'version'            => 'latest',
+            'controller_url'     => 'https://foobar.com/',
+            'lvm'                => false,
+            'volume_group'       => nil,
+            'volume_size'        => nil,
+            'executors'          => 1,
+            'labels'             => [],
+            'yarn_cache_cleanup' => true
           ) }
         end
       end
