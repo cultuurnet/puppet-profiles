@@ -41,7 +41,7 @@ running_builds() {
 
   url="${controller_url}/computer/${node_name}/api/json?tree=executors[currentExecutable[url]],oneOffExecutors[currentExecutable[url]]"
 
-  response="$(curl -fsS -u "${JENKINS_USER}:${JENKINS_PASSWORD}" "${url}")" || return 2
+  response="$(curl -gfsS -u "${JENKINS_USER}:${JENKINS_PASSWORD}" "${url}")" || return 2
 
   jq '[.executors[]?, .oneOffExecutors[]?] | map(select(.currentExecutable != null)) | length' <<< "${response}"
 }
