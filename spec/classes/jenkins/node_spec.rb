@@ -99,7 +99,7 @@ describe 'profiles::jenkins::node' do
           it { is_expected.to contain_file('jenkins-yarn-cache-cleanup').with_content(%r{^cache_dir='/var/lib/jenkins-swarm-client/\.cache/yarn'$}) }
           it { is_expected.to contain_file('jenkins-yarn-cache-cleanup').with_content(/^attempts=5$/) }
           it { is_expected.to contain_file('jenkins-yarn-cache-cleanup').with_content(/^delay=600$/) }
-          it { is_expected.to contain_file('jenkins-yarn-cache-cleanup').with_content(%r{curl -fsS -u "\$\{JENKINS_USER\}:\$\{JENKINS_PASSWORD\}"}) }
+          it { is_expected.to contain_file('jenkins-yarn-cache-cleanup').with_content(%r{curl -gfsS -u "\$\{JENKINS_USER\}:\$\{JENKINS_PASSWORD\}"}) }
           it { is_expected.to contain_file('jenkins-yarn-cache-cleanup').with_content(%r{jq '\[\.executors\[\]\?, \.oneOffExecutors\[\]\?\] | map\(select\(\.currentExecutable != null\)\) | length'}) }
           it { is_expected.to contain_file('jenkins-yarn-cache-cleanup').with_content(%r{find "\$\{cache_dir\}" -mindepth 1 -maxdepth 1 -exec rm -rf \{\} \+}) }
 
