@@ -32,7 +32,7 @@ fi
 
 JENKINS_PASSWORD="$(cat "${password_file}")"
 controller_url="${CONTROLLER_URL%/}"
-node_names=("$(hostname -f)" "$(hostname -s)")
+node_names=("$(hostname -s)" "$(hostname -f)")
 
 running_builds() {
   local node_name="$1"
@@ -41,7 +41,7 @@ running_builds() {
 
   url="${controller_url}/computer/${node_name}/api/json?tree=executors[currentExecutable[url]],oneOffExecutors[currentExecutable[url]]"
 
-  response="$(curl -gfsS -u "${JENKINS_USER}:${JENKINS_PASSWORD}" "${url}")" || return 2
+  response="$(curl -gfsS -u "${JENKINS_USER}:${JENKINS_PASSWORD}" "${url}" 2>/dev/null)" || return 2
 
   jq '[.executors[]?, .oneOffExecutors[]?] | map(select(.currentExecutable != null)) | length' <<< "${response}"
 }
