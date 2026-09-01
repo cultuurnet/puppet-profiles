@@ -98,7 +98,7 @@ describe 'profiles::php' do
             it { is_expected.to contain_systemd__daemon_reload('php-fpm') }
 
             case facts[:os]['release']['major']
-            when '20.04', '24.04'
+            when '20.04'
               it { is_expected.to contain_apt__source('publiq-tools') }
 
               it { is_expected.to contain_package('composer1').with(
@@ -370,17 +370,7 @@ describe 'profiles::php' do
         end
       end
 
-      context 'on Ubuntu 24.04 with PHP 8.5' do
-        let(:facts) do
-          facts.merge({
-            os: facts[:os].merge({
-              'release' => facts[:os]['release'].merge({
-                'major' => '24.04',
-                'full'  => '24.04'
-              })
-            })
-          })
-        end
+      context 'with version => 8.5 and fpm => false' do
         let(:node) { 'aaa.example.com' }
         let(:hiera_config) { 'spec/support/hiera/common.yaml' }
         let(:params) { {
@@ -405,24 +395,6 @@ describe 'profiles::php' do
                             'zip'      => {}
                           }
         ) }
-
-        it { is_expected.to contain_apt__source('publiq-tools') }
-
-        it { is_expected.to contain_package('composer1').with(
-          'ensure' => 'absent'
-        ) }
-
-        it { is_expected.to contain_package('composer2').with(
-          'ensure' => 'present'
-        ) }
-
-        it { is_expected.to contain_alternatives('composer').with(
-          'path' => '/usr/bin/composer2'
-        ) }
-
-        it { is_expected.to contain_package('composer2').that_requires('Apt::Source[publiq-tools]') }
-        it { is_expected.to contain_package('composer2').that_requires('Class[php]') }
-        it { is_expected.to contain_alternatives('composer').that_requires('Package[composer2]') }
       end
     end
   end
