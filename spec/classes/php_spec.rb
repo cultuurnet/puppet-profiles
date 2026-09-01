@@ -98,7 +98,7 @@ describe 'profiles::php' do
             it { is_expected.to contain_systemd__daemon_reload('php-fpm') }
 
             case facts[:os]['release']['major']
-            when '20.04'
+            when '20.04', '24.04'
               it { is_expected.to contain_apt__source('publiq-tools') }
 
               it { is_expected.to contain_package('composer1').with(
@@ -368,6 +368,61 @@ describe 'profiles::php' do
             it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'newrelic_license_key'/) }
           end
         end
+      end
+
+      context 'on Ubuntu 24.04 with PHP 8.5' do
+        let(:facts) do
+          facts.merge({
+            os: facts[:os].merge({
+              'release' => facts[:os]['release'].merge({
+                'major' => '24.04',
+                'full'  => '24.04'
+              })
+            })
+          })
+        end
+        let(:node) { 'aaa.example.com' }
+        let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+        let(:params) { {
+          'version' => '8.5',
+          'fpm'     => false
+        } }
+
+        it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to contain_class('php').with(
+          'extensions' => {
+                            'bcmath'   => {},
+                            'curl'     => {},
+                            'gd'       => {},
+                            'intl'     => {},
+                            'mbstring' => {},
+                            'mysql'    => {},
+                            'readline' => {},
+                            'redis'    => {},
+                            'tidy'     => {},
+                            'xml'      => {},
+                            'zip'      => {}
+                          }
+        ) }
+
+        it { is_expected.to contain_apt__source('publiq-tools') }
+
+        it { is_expected.to contain_package('composer1').with(
+          'ensure' => 'absent'
+        ) }
+
+        it { is_expected.to contain_package('composer2').with(
+          'ensure' => 'present'
+        ) }
+
+        it { is_expected.to contain_alternatives('composer').with(
+          'path' => '/usr/bin/composer2'
+        ) }
+
+        it { is_expected.to contain_package('composer2').that_requires('Apt::Source[publiq-tools]') }
+        it { is_expected.to contain_package('composer2').that_requires('Class[php]') }
+        it { is_expected.to contain_alternatives('composer').that_requires('Package[composer2]') }
       end
     end
   end
