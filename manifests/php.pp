@@ -27,6 +27,7 @@ class profiles::php (
                             'pm_start_servers'          => 5,
                             'request_terminate_timeout' => 0,
                           }
+  $opcache_extension = { 'opcache' => { 'zend' => true } }
 
   $default_extensions   = {
                             'bcmath'   => {},
@@ -35,7 +36,6 @@ class profiles::php (
                             'intl'     => {},
                             'mbstring' => {},
                             'mysql'    => {},
-                            'opcache'  => { 'zend' => true },
                             'readline' => {},
                             'redis'    => {},
                             'tidy'     => {},
@@ -44,8 +44,9 @@ class profiles::php (
                           }
 
   $version_dependent_default_extensions = $version ? {
-    '7.4'   => { 'json' => {} },
-    default => {}
+    '7.4'   => { 'json' => {} } + $opcache_extension,
+    '8.5'   => {},
+    default => $opcache_extension
   }
 
   realize Apt::Source['php']
@@ -53,7 +54,8 @@ class profiles::php (
   realize Package['git']
 
   case $facts['os']['release']['major'] {
-    '20.04': {
+    '20.04',
+    '24.04': {
       realize Apt::Source['publiq-tools']
 
       package { 'composer1':
