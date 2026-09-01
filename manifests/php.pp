@@ -54,7 +54,8 @@ class profiles::php (
   realize Package['git']
 
   case $facts['os']['release']['major'] {
-    '20.04': {
+    '20.04',
+    '24.04': {
       realize Apt::Source['publiq-tools']
 
       package { 'composer1':
