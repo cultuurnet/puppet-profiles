@@ -75,6 +75,8 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
           ) }
 
           it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').with_content(/fastcgi_pass 127\.0\.0\.1:9000;/) }
+          it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').with_content(/^\s+access_log off;$/) }
+          it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').with_content(%r{^\s+error_log /dev/stderr warn;$}) }
           it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').that_notifies('Exec[uitdatabank-search-api-nginx-reload]') }
           it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').that_comes_before('Docker_compose[uitdatabank-search-api]') }
 

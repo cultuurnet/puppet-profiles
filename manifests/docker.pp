@@ -5,7 +5,9 @@ class profiles::docker (
   Optional[String]               $volume_group   = undef,
   Optional[String]               $volume_size    = undef,
   Variant[String, Array[String]] $ecr_registries = [],
-  Variant[String, Array[String]] $ecr_users      = []
+  Variant[String, Array[String]] $ecr_users      = [],
+  Optional[String]               $log_driver     = 'json-file',
+  Array[String]                  $log_opt        = ['max-size=50m', 'max-file=5']
 ) inherits ::profiles {
 
   $data_dir = '/var/lib/docker'
@@ -49,6 +51,8 @@ class profiles::docker (
     use_upstream_package_source => false,
     docker_users                => [],
     extra_parameters            => [ "--experimental=${experimental}"],
+    log_driver                  => $log_driver,
+    log_opt                     => $log_opt,
     require                     => Apt::Source['docker']
   }
 
