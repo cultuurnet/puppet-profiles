@@ -8,24 +8,6 @@ class profiles::uitdatabank::search_api (
   String                         $basedir                  = '/var/www/udb3-search-service'
 ) inherits ::profiles {
 
-  include profiles::redis
-  include profiles::elasticsearch
-
-  if $deployment {
-    include profiles::uitdatabank::geojson_data::deployment
-
-    class { 'profiles::uitdatabank::search_api::deployment':
-      basedir => $basedir,
-      require => [Class['profiles::redis'], Class['profiles::elasticsearch'], Class['profiles::uitdatabank::geojson_data::deployment']],
-    }
-
-    if $data_migration {
-      class { 'profiles::uitdatabank::search_api::data_migration':
-        subscribe => [Class['profiles::uitdatabank::geojson_data::deployment'], Class['profiles::uitdatabank::search_api::deployment']]
-      }
-    }
-  }
-
   $api_key_rewrites = [{
                         comment      => 'Capture apiKey from URL parameters',
                         rewrite_cond => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
@@ -48,8 +30,18 @@ class profiles::uitdatabank::search_api (
                         rewrite_rule => '^ - [E=JWT_TOKEN:%1]'
                       }]
 
+  # A single $type drives both the deployment mechanism and the backing Redis instance together
   case $type {
     'container': {
+      class { 'profiles::redis::container':
+        container_name   => 'uitdatabank-search-api-redis',
+        maxmemory        => '100mb',
+        maxmemory_policy => 'allkeys-lru',
+      }
+      if $deployment {
+        Class['profiles::redis::container'] -> Class['profiles::uitdatabank::search_api::deployment']
+      }
+
       profiles::apache::vhost::reverse_proxy { "http://${servername}":
         destination         => 'http://127.0.0.1:8080/',
         aliases             => $serveraliases,
@@ -58,12 +50,34 @@ class profiles::uitdatabank::search_api (
       }
     }
     default: {
+      include profiles::redis
+      if $deployment {
+        Class['profiles::redis'] -> Class['profiles::uitdatabank::search_api::deployment']
+      }
+
       profiles::apache::vhost::php_fpm { "http://${servername}":
         basedir              => $basedir,
         public_web_directory => 'web',
         aliases              => $serveraliases,
         access_log_format    => 'api_key_json',
         rewrites             => $api_key_rewrites,
+      }
+    }
+  }
+
+  include profiles::elasticsearch
+
+  if $deployment {
+    include profiles::uitdatabank::geojson_data::deployment
+
+    class { 'profiles::uitdatabank::search_api::deployment':
+      basedir => $basedir,
+      require => [Class['profiles::elasticsearch'], Class['profiles::uitdatabank::geojson_data::deployment']],
+    }
+
+    if $data_migration {
+      class { 'profiles::uitdatabank::search_api::data_migration':
+        subscribe => [Class['profiles::uitdatabank::geojson_data::deployment'], Class['profiles::uitdatabank::search_api::deployment']]
       }
     }
   }
