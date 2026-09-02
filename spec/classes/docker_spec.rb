@@ -19,7 +19,9 @@ describe 'profiles::docker' do
           'volume_group'   => nil,
           'volume_size'    => nil,
           'ecr_registries' => [],
-          'ecr_users'      => []
+          'ecr_users'      => [],
+          'log_driver'     => 'json-file',
+          'log_opt'        => ['max-size=50m', 'max-file=5']
         ) }
 
         it { is_expected.to contain_file('/var/lib/docker').with(
@@ -29,7 +31,9 @@ describe 'profiles::docker' do
         it { is_expected.to contain_class('docker').with(
           'use_upstream_package_source' => false,
           'extra_parameters'            => [ '--experimental=false'],
-          'docker_users'                => []
+          'docker_users'                => [],
+          'log_driver'                  => 'json-file',
+          'log_opt'                     => ['max-size=50m', 'max-file=5']
         ) }
 
         it { is_expected.not_to contain_profiles__jenkins__node_labels('docker') }
@@ -190,6 +194,20 @@ describe 'profiles::docker' do
           it { is_expected.to contain_mount('/var/lib/docker').that_comes_before('Class[docker]') }
           it { is_expected.to contain_cron('docker system prune').that_requires('Class[docker]') }
         end
+      end
+
+      context "with log_driver => local and log_opt => [max-size=50m, max-file=3]" do
+        let(:params) { {
+          'log_driver' => 'local',
+          'log_opt'    => ['max-size=50m', 'max-file=3']
+        } }
+
+        it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to contain_class('docker').with(
+          'log_driver' => 'local',
+          'log_opt'    => ['max-size=50m', 'max-file=3']
+        ) }
       end
     end
   end

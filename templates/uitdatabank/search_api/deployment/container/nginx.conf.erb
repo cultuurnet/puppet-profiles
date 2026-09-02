@@ -1,6 +1,17 @@
 server {
     listen 127.0.0.1:8080;
 
+    # Every request reaching nginx has already passed through the native Apache reverse proxy, whose access logs are shipped by filebeat.
+    # Logging here would duplicate that record
+    #
+    # Re-enable this when Apache is removed from in front of the container: at
+    # that point nginx becomes the only access log, and it needs its own
+    # `logging:` block in docker-compose.yml.erb sized for the request volume
+    access_log off;
+
+    # Kept on: nginx error/warning output is not duplicated anywhere else.
+    error_log /dev/stderr warn;
+
     location / {
         include fastcgi_params;
         fastcgi_pass 127.0.0.1:9000;
