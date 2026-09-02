@@ -5,356 +5,89 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context 'with config_source => appconfig/uitdatabank/udb3-backend/config.php, admin_permissions_source => appconfig/uitdatabank/udb3-backend/config.allow_all.php, client_permissions_source => appconfig/uitdatabank/udb3-backend/config.client_permissions.php, api_keys_matched_to_client_ids_source => config.api_keys_matched_to_client_ids.php, movie_fetcher_config_source => appconfig/uitdatabank/udb3-backend/config.kinepolis.php, completeness_source => appconfig/uitdatabank/udb3-backend/config.completeness.php, externalid_mapping_organizer_source => appconfig/uitdatabank/udb3-backend/config.external_id_mapping_organizer.php, externalid_mapping_place_source => appconfig/uitdatabank/udb3-backend/config.external_id_mapping_place.php, pubkey_uitidv1_source => appconfig/uitdatabank/keys/public.pem and pubkey_keycloak_source => appconfig/uitdatabank/keys/pubkey-keycloak.pem' do
-        let(:params) { {
-          'config_source'                         => 'appconfig/uitdatabank/udb3-backend/config.php',
-          'admin_permissions_source'              => 'appconfig/uitdatabank/udb3-backend/config.allow_all.php',
-          'client_permissions_source'             => 'appconfig/uitdatabank/udb3-backend/config.client_permissions.php',
-          'api_keys_matched_to_client_ids_source' => 'appconfig/uitdatabank/udb3-backend/config.api_keys_matched_to_client_ids.php',
-          'movie_fetcher_config_source'           => 'appconfig/uitdatabank/udb3-backend/config.kinepolis.php',
-          'completeness_source'                   => 'appconfig/uitdatabank/udb3-backend/config.completeness.php',
-          'externalid_mapping_organizer_source'   => 'appconfig/uitdatabank/udb3-backend/config.external_id_mapping_organizer.php',
-          'externalid_mapping_place_source'       => 'appconfig/uitdatabank/udb3-backend/config.external_id_mapping_place.php',
-          'pubkey_uitidv1_source'                 => 'appconfig/uitdatabank/keys/public.pem',
-          'pubkey_keycloak_source'                => 'appconfig/uitdatabank/keys/pubkey-keycloak.pem'
-        } }
+      let(:params) { {
+        'config_source'                       => 'appconfig/uitdatabank/udb3-backend/config.php',
+        'admin_permissions_source'             => 'appconfig/uitdatabank/udb3-backend/config.allow_all.php',
+        'client_permissions_source'            => 'appconfig/uitdatabank/udb3-backend/config.client_permissions.php',
+        'movie_fetcher_config_source'          => 'appconfig/uitdatabank/udb3-backend/config.kinepolis.php',
+        'completeness_source'                  => 'appconfig/uitdatabank/udb3-backend/config.completeness.php',
+        'externalid_mapping_organizer_source'  => 'appconfig/uitdatabank/udb3-backend/config.external_id_mapping_organizer.php',
+        'externalid_mapping_place_source'      => 'appconfig/uitdatabank/udb3-backend/config.external_id_mapping_place.php',
+        'pubkey_uitidv1_source'                => 'appconfig/uitdatabank/keys/public.pem',
+        'pubkey_keycloak_source'               => 'appconfig/uitdatabank/keys/pubkey-keycloak.pem'
+      } }
 
-        context 'with hieradata' do
-          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+      context 'with hieradata' do
+        let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
+        context 'with type => instance (the default)' do
+          let(:pre_condition) { "class { 'profiles::uitdatabank::entry_api': database_password => 'secret', servername => 'entry-api.example.com', job_interface_servername => 'jobs.example.com', deployment => false }" }
 
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_class('profiles::uitdatabank::entry_api::deployment').with(
-            'config_source'                         => 'appconfig/uitdatabank/udb3-backend/config.php',
+            'config_source'                        => 'appconfig/uitdatabank/udb3-backend/config.php',
             'admin_permissions_source'              => 'appconfig/uitdatabank/udb3-backend/config.allow_all.php',
             'client_permissions_source'             => 'appconfig/uitdatabank/udb3-backend/config.client_permissions.php',
-            'api_keys_matched_to_client_ids_source' => 'appconfig/uitdatabank/udb3-backend/config.api_keys_matched_to_client_ids.php',
             'movie_fetcher_config_source'           => 'appconfig/uitdatabank/udb3-backend/config.kinepolis.php',
             'completeness_source'                   => 'appconfig/uitdatabank/udb3-backend/config.completeness.php',
             'externalid_mapping_organizer_source'   => 'appconfig/uitdatabank/udb3-backend/config.external_id_mapping_organizer.php',
             'externalid_mapping_place_source'       => 'appconfig/uitdatabank/udb3-backend/config.external_id_mapping_place.php',
             'pubkey_uitidv1_source'                 => 'appconfig/uitdatabank/keys/public.pem',
             'pubkey_keycloak_source'                => 'appconfig/uitdatabank/keys/pubkey-keycloak.pem',
-            'version'                               => 'latest',
-            'repository'                            => 'uitdatabank-entry-api',
+            'api_keys_matched_to_client_ids_source' => nil,
+            'amqp_listener_uitpas'                  => 'present',
+            'bulk_label_offer_worker'                => 'present',
+            'mail_worker'                            => 'present',
+            'event_export_worker_count'              => 1
+          ) }
+
+          it { is_expected.to contain_class('profiles::uitdatabank::entry_api::deployment::instance').with(
+            'config_source'                       => 'appconfig/uitdatabank/udb3-backend/config.php',
+            'amqp_listener_uitpas'                 => 'present',
             'bulk_label_offer_worker'               => 'present',
             'mail_worker'                           => 'present',
-            'amqp_listener_uitpas'                  => 'present',
-            'event_export_worker_count'             => 1,
-            'puppetdb_url'                          => 'http://localhost:8081'
+            'event_export_worker_count'             => 1
           ) }
 
-          it { is_expected.to contain_apt__source('uitdatabank-entry-api') }
-          it { is_expected.to contain_group('www-data') }
-          it { is_expected.to contain_user('www-data') }
-
-          it { is_expected.to contain_package('uitdatabank-entry-api').with(
-            'ensure' => 'latest'
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-entry-api-config').with(
-            'ensure'  => 'file',
-            'path'    => '/var/www/udb3-backend/config.php',
-            'owner'   => 'www-data',
-            'group'   => 'www-data',
-            'content' => "UiTdatabank entry API configuration\n"
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-entry-api-admin-permissions').with(
-            'ensure'  => 'file',
-            'path'    => '/var/www/udb3-backend/config.allow_all.php',
-            'owner'   => 'www-data',
-            'group'   => 'www-data',
-            'content' => ''
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-entry-api-client-permissions').with(
-            'ensure'  => 'file',
-            'path'    => '/var/www/udb3-backend/config.client_permissions.php',
-            'owner'   => 'www-data',
-            'group'   => 'www-data',
-            'content' => ''
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-entry-api-api-keys-matched-to-client-ids').with(
-            'ensure'  => 'file',
-            'path'    => '/var/www/udb3-backend/config.api_keys_matched_to_client_ids.php',
-            'owner'   => 'www-data',
-            'group'   => 'www-data',
-            'content' => ''
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-entry-api-movie-fetcher-config').with(
-            'ensure'  => 'file',
-            'path'    => '/var/www/udb3-backend/config.kinepolis.php',
-            'owner'   => 'www-data',
-            'group'   => 'www-data',
-            'content' => "UiTdatabank entry API movie fetcher configuration\n"
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-entry-api-completeness').with(
-            'ensure'  => 'file',
-            'path'    => '/var/www/udb3-backend/config.completeness.php',
-            'owner'   => 'www-data',
-            'group'   => 'www-data',
-            'content' => ''
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-organizer').with(
-            'ensure'  => 'file',
-            'path'    => '/var/www/udb3-backend/config.external_id_mapping_organizer.php',
-            'owner'   => 'www-data',
-            'group'   => 'www-data',
-            'content' => ''
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-place').with(
-            'ensure'  => 'file',
-            'path'    => '/var/www/udb3-backend/config.external_id_mapping_place.php',
-            'owner'   => 'www-data',
-            'group'   => 'www-data',
-            'content' => ''
-          ) }
-
-          it { is_expected.to contain_exec('uitdatabank-entry-api-db-migrate').with(
-             'command'     => 'vendor/bin/doctrine-dbal --no-interaction migrations:migrate',
-             'cwd'         => '/var/www/udb3-backend',
-             'path'        => ['/usr/local/bin', '/usr/bin', '/bin', '/var/www/udb3-backend'],
-             'refreshonly' => true
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').with(
-            'ensure'  => 'file',
-            'path'    => '/var/www/udb3-backend/public.pem',
-            'owner'   => 'www-data',
-            'group'   => 'www-data',
-            'content' => "uitdatabank public key\n"
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').with(
-            'ensure'  => 'file',
-            'path'    => '/var/www/udb3-backend/public-keycloak.pem',
-            'owner'   => 'www-data',
-            'group'   => 'www-data',
-            'content' => "uitdatabank keycloak public key\n"
-          ) }
-
-          it { is_expected.to contain_profiles__php__fpm_service_alias('uitdatabank-entry-api') }
-
-          it { is_expected.to contain_service('uitdatabank-entry-api').with(
-            'hasstatus'  => true,
-            'hasrestart' => true,
-            'restart'    => '/usr/bin/systemctl reload uitdatabank-entry-api'
-          ) }
-
-          it { is_expected.to contain_class('profiles::uitdatabank::entry_api::amqp_listener_uitpas').with(
-            'ensure'  => 'present',
-            'basedir' => '/var/www/udb3-backend'
-          ) }
-
-          it { is_expected.to contain_class('profiles::uitdatabank::entry_api::bulk_label_offer_worker').with(
-            'ensure'  => 'present',
-            'basedir' => '/var/www/udb3-backend'
-          ) }
-
-          it { is_expected.to contain_class('profiles::uitdatabank::entry_api::mail_worker').with(
-            'ensure'  => 'present',
-            'basedir' => '/var/www/udb3-backend'
-          ) }
-
-          it { is_expected.to contain_class('profiles::uitdatabank::entry_api::event_export_workers').with(
-            'count'   => 1,
-            'basedir' => '/var/www/udb3-backend'
-          ) }
-
-          it { is_expected.to contain_class('profiles::uitdatabank::entry_api::logrotate').with(
-            'basedir' => '/var/www/udb3-backend'
-          ) }
-
-          it { is_expected.to contain_profiles__deployment__versions('profiles::uitdatabank::entry_api::deployment').with(
-            'puppetdb_url' => 'http://localhost:8081'
-          ) }
-
-          it { is_expected.to contain_package('uitdatabank-entry-api').that_requires('Apt::Source[uitdatabank-entry-api]') }
-          it { is_expected.to contain_package('uitdatabank-entry-api').that_notifies('Exec[uitdatabank-entry-api-db-migrate]') }
-          it { is_expected.to contain_package('uitdatabank-entry-api').that_notifies('Service[uitdatabank-entry-api]') }
-          it { is_expected.to contain_package('uitdatabank-entry-api').that_notifies('Profiles::Deployment::Versions[profiles::uitdatabank::entry_api::deployment]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-config').that_requires('Group[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-config').that_requires('User[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-config').that_requires('Package[uitdatabank-entry-api]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-config').that_notifies('Service[uitdatabank-entry-api]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-admin-permissions').that_requires('Group[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-admin-permissions').that_requires('User[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-admin-permissions').that_requires('Package[uitdatabank-entry-api]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-admin-permissions').that_notifies('Service[uitdatabank-entry-api]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-client-permissions').that_requires('Group[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-client-permissions').that_requires('User[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-client-permissions').that_requires('Package[uitdatabank-entry-api]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-client-permissions').that_notifies('Service[uitdatabank-entry-api]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-api-keys-matched-to-client-ids').that_requires('Group[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-api-keys-matched-to-client-ids').that_requires('User[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-api-keys-matched-to-client-ids').that_requires('Package[uitdatabank-entry-api]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-api-keys-matched-to-client-ids').that_notifies('Service[uitdatabank-entry-api]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-movie-fetcher-config').that_requires('Group[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-movie-fetcher-config').that_requires('User[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-movie-fetcher-config').that_requires('Package[uitdatabank-entry-api]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-movie-fetcher-config').that_notifies('Service[uitdatabank-entry-api]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-completeness').that_requires('Group[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-completeness').that_requires('User[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-completeness').that_requires('Package[uitdatabank-entry-api]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-completeness').that_notifies('Service[uitdatabank-entry-api]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-organizer').that_requires('Group[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-organizer').that_requires('User[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-organizer').that_requires('Package[uitdatabank-entry-api]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-organizer').that_notifies('Service[uitdatabank-entry-api]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-place').that_requires('Group[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-place').that_requires('User[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-place').that_requires('Package[uitdatabank-entry-api]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-place').that_notifies('Service[uitdatabank-entry-api]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').that_requires('Group[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').that_requires('User[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').that_requires('Package[uitdatabank-entry-api]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').that_notifies('Service[uitdatabank-entry-api]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').that_requires('Group[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').that_requires('User[www-data]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').that_requires('Package[uitdatabank-entry-api]') }
-          it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').that_notifies('Service[uitdatabank-entry-api]') }
-          it { is_expected.to contain_exec('uitdatabank-entry-api-db-migrate').that_notifies('Service[uitdatabank-entry-api]') }
-          it { is_expected.to contain_profiles__php__fpm_service_alias('uitdatabank-entry-api').that_notifies('Service[uitdatabank-entry-api]') }
-          it { is_expected.to contain_service('uitdatabank-entry-api').that_notifies('Class[profiles::uitdatabank::entry_api::amqp_listener_uitpas]') }
-          it { is_expected.to contain_service('uitdatabank-entry-api').that_notifies('Class[profiles::uitdatabank::entry_api::bulk_label_offer_worker]') }
-          it { is_expected.to contain_service('uitdatabank-entry-api').that_notifies('Class[profiles::uitdatabank::entry_api::mail_worker]') }
-          it { is_expected.to contain_service('uitdatabank-entry-api').that_notifies('Class[profiles::uitdatabank::entry_api::event_export_workers]') }
+          it { is_expected.not_to contain_class('profiles::uitdatabank::entry_api::deployment::container') }
         end
 
-        context 'without Terraform NFS mount hieradata' do
-          let(:hiera_config) { 'spec/support/hiera/terraform_empty.yaml' }
+        context 'with type => container' do
+          let(:pre_condition) { "class { 'profiles::uitdatabank::entry_api': database_password => 'secret', servername => 'entry-api.example.com', job_interface_servername => 'jobs.example.com', deployment => false, type => 'container' }" }
 
-          it { is_expected.not_to contain_profiles__nfs__mount('foo.fs-1234.efs.eu-west-1.amazonaws.com:/') }
-        end
+          let(:params) { super().merge({ 'type' => 'container' }) }
 
-        context 'with Terraform NFS mount hieradata' do
-          let(:hiera_config) { 'spec/support/hiera/terraform_common.yaml' }
+          it { is_expected.to compile.with_all_deps }
 
-          it { is_expected.to contain_profiles__nfs__mount('foo.fs-1234.efs.eu-west-1.amazonaws.com:/').with(
-            'mountpoint'    => '/var/www/udb3-backend/web/downloads',
-            'mount_options' => 'nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2',
-            'owner'         => 'www-data',
-            'group'         => 'www-data'
+          it { is_expected.to contain_class('profiles::uitdatabank::entry_api::deployment::container').with(
+            'config_source'                       => 'appconfig/uitdatabank/udb3-backend/config.php',
+            'amqp_listener_uitpas'                 => 'present',
+            'bulk_label_offer_worker'               => 'present',
+            'mail_worker'                           => 'present',
+            'event_export_worker_count'             => 1
           ) }
 
-          it { is_expected.to contain_profiles__nfs__mount('foo.fs-1234.efs.eu-west-1.amazonaws.com:/').that_requires('Group[www-data]') }
-          it { is_expected.to contain_profiles__nfs__mount('foo.fs-1234.efs.eu-west-1.amazonaws.com:/').that_requires('User[www-data]') }
-          it { is_expected.to contain_profiles__nfs__mount('foo.fs-1234.efs.eu-west-1.amazonaws.com:/').that_requires('Package[uitdatabank-entry-api]') }
+          it { is_expected.not_to contain_class('profiles::uitdatabank::entry_api::deployment::instance') }
         end
 
-        context 'without hieradata' do
-          let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
+        context 'with amqp_listener_uitpas => absent, bulk_label_offer_worker => absent, mail_worker => absent, event_export_worker_count => 3 and api_keys_matched_to_client_ids_source set' do
+          let(:pre_condition) { "class { 'profiles::uitdatabank::entry_api': database_password => 'secret', servername => 'entry-api.example.com', job_interface_servername => 'jobs.example.com', deployment => false }" }
 
-          it { is_expected.to contain_profiles__deployment__versions('profiles::uitdatabank::entry_api::deployment').with(
-            'puppetdb_url' => nil
-          ) }
-        end
-
-        context 'with bulk_label_offer_worker => absent, mail_worker => absent, amqp_listener_uitpas => absent and event_export_worker_count => 0' do
-          let(:params) { super().merge( {
-            'amqp_listener_uitpas'      => 'absent',
-            'bulk_label_offer_worker'   => 'absent',
-            'mail_worker'               => 'absent',
-            'event_export_worker_count' => 0
+          let(:params) { super().merge({
+            'amqp_listener_uitpas'                  => 'absent',
+            'bulk_label_offer_worker'               => 'absent',
+            'mail_worker'                            => 'absent',
+            'event_export_worker_count'              => 3,
+            'api_keys_matched_to_client_ids_source' => 'appconfig/uitdatabank/udb3-backend/config.api_keys_matched_to_client_ids.php'
           }) }
 
-          context 'with hieradata' do
-            let(:hiera_config) { 'spec/support/hiera/common.yaml' }
-
-            it { is_expected.to contain_class('profiles::uitdatabank::entry_api::amqp_listener_uitpas').with(
-              'ensure'  => 'absent',
-              'basedir' => '/var/www/udb3-backend'
-            ) }
-
-            it { is_expected.to contain_class('profiles::uitdatabank::entry_api::bulk_label_offer_worker').with(
-              'ensure'  => 'absent',
-              'basedir' => '/var/www/udb3-backend'
-            ) }
-
-            it { is_expected.to contain_class('profiles::uitdatabank::entry_api::mail_worker').with(
-              'ensure'  => 'absent',
-              'basedir' => '/var/www/udb3-backend'
-            ) }
-
-            it { is_expected.to contain_class('profiles::uitdatabank::entry_api::event_export_workers').with(
-              'count'   => 0,
-              'basedir' => '/var/www/udb3-backend'
-            ) }
-
-            context 'with event_export_worker_count => 3' do
-              let(:params) { super().merge({
-                'event_export_worker_count' => 3
-              }) }
-
-              it { is_expected.to contain_class('profiles::uitdatabank::entry_api::event_export_workers').with(
-                'count' => 3
-              ) }
-            end
-          end
-        end
-      end
-
-      context 'with config_source => appconfig/uitdatabank/udb3-backend/my.config.php, admin_permissions_source => appconfig/uitdatabank/udb3-backend/config.my.allow_all.php, client_permissions_source => appconfig/uitdatabank/udb3-backend/config.my.client_permissions.php, api_keys_matched_to_client_ids_source => config.my.api_keys_matched_to_client_ids.php, movie_fetcher_config_source => appconfig/uitdatabank/udb3-backend/config.my.kinepolis.php, completeness_source => appconfig/uitdatabank/udb3-backend/config.my.completeness.php, externalid_mapping_organizer_source => appconfig/uitdatabank/udb3-backend/config.my.external_id_mapping_organizer.php, externalid_mapping_place_source => appconfig/uitdatabank/udb3-backend/config.my.external_id_mapping_place.php, pubkey_uitidv1_source => appconfig/uitdatabank/keys/my_public_key.pem and pubkey_keycloak_source => appconfig/uitdatabank/keys/mypubkey-keycloak.pem' do
-        let(:params) { {
-          'config_source'                                          => 'appconfig/uitdatabank/udb3-backend/my.config.php',
-          'admin_permissions_source'                               => 'appconfig/uitdatabank/udb3-backend/config.my.allow_all.php',
-          'client_permissions_source'                              => 'appconfig/uitdatabank/udb3-backend/config.my.client_permissions.php',
-          'api_keys_matched_to_client_ids_source'                  => 'appconfig/uitdatabank/udb3-backend/config.my.api_keys_matched_to_client_ids.php',
-          'movie_fetcher_config_source'                            => 'appconfig/uitdatabank/udb3-backend/config.my.kinepolis.php',
-          'completeness_source'                                    => 'appconfig/uitdatabank/udb3-backend/config.my.completeness.php',
-          'externalid_mapping_organizer_source'                    => 'appconfig/uitdatabank/udb3-backend/config.my.external_id_mapping_organizer.php',
-          'externalid_mapping_place_source'                        => 'appconfig/uitdatabank/udb3-backend/config.my.external_id_mapping_place.php',
-          'pubkey_uitidv1_source'                                  => 'appconfig/uitdatabank/keys/my_public_key.pem',
-          'pubkey_keycloak_source'                                 => 'appconfig/uitdatabank/keys/mypubkey-keycloak.pem'
-        } }
-
-        context 'with hieradata' do
-          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
-
-          it { is_expected.to contain_file('uitdatabank-entry-api-config').with(
-            'content' => ''
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-entry-api-admin-permissions').with(
-            'content' => "foo\n"
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-entry-api-client-permissions').with(
-            'content' => "bar\n"
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-entry-api-api-keys-matched-to-client-ids').with(
-            'content' => "akci\n"
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-entry-api-movie-fetcher-config').with(
-            'content' => ''
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-entry-api-completeness').with(
-            'content' => "baz\n"
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-organizer').with(
-            'content' => "quux\n"
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-entry-api-externalid-mapping-place').with(
-            'content' => "snafu\n"
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-uitidv1').with(
-            'content' => "my_public_key\n"
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').with(
-            'content' => ''
+          it { is_expected.to contain_class('profiles::uitdatabank::entry_api::deployment::instance').with(
+            'amqp_listener_uitpas'                  => 'absent',
+            'bulk_label_offer_worker'                => 'absent',
+            'mail_worker'                            => 'absent',
+            'event_export_worker_count'              => 3,
+            'api_keys_matched_to_client_ids_source' => 'appconfig/uitdatabank/udb3-backend/config.api_keys_matched_to_client_ids.php'
           ) }
         end
       end

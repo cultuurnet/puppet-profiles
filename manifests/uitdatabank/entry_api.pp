@@ -6,6 +6,7 @@ class profiles::uitdatabank::entry_api (
   Optional[String]               $uitpas_servername                 = undef,
   String                         $database_host                     = '127.0.0.1',
   Boolean                        $deployment                        = true,
+  Enum['instance', 'container']  $type                              = 'instance',
   Boolean                        $catch_mail                        = false,
   Boolean                        $schedule_process_duplicates       = false,
   Boolean                        $schedule_movie_fetcher            = false,
@@ -57,7 +58,9 @@ class profiles::uitdatabank::entry_api (
     }
 
     if $deployment {
-      include profiles::uitdatabank::entry_api::deployment
+      class { 'profiles::uitdatabank::entry_api::deployment':
+        type => $type,
+      }
 
       class { 'profiles::uitdatabank::entry_api::data_integration':
         database_host => $database_host,
@@ -87,33 +90,48 @@ class profiles::uitdatabank::entry_api (
     include profiles::mailpit
   }
 
-  profiles::apache::vhost::php_fpm { "http://${servername}":
-    basedir               => $basedir,
-    public_web_directory  => 'web',
-    aliases               => $serveraliases,
-    access_log_format     => 'api_key_json',
-    allow_encoded_slashes => 'nodecode',
-    rewrites              => [{
-                               comment      => 'Capture apiKey from URL parameters',
-                               rewrite_cond => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
-                               rewrite_rule => '^ - [E=API_KEY:%1]'
-                             }, {
-                               comment      => 'Capture apiKey from X-Api-Key header',
-                               rewrite_cond => '%{HTTP:X-Api-Key} ^.+',
-                               rewrite_rule => '^ - [E=API_KEY:%{HTTP:X-Api-Key}]'
-                             }, {
-                               comment      => 'Capture clientId from URL parameters',
-                               rewrite_cond => '%{QUERY_STRING} (?:^|&)clientId=([^&]+)',
-                               rewrite_rule => '^ - [E=CLIENT_ID:%1]'
-                             }, {
-                               comment      => 'Capture clientId from X-Client-Id header',
-                               rewrite_cond => '%{HTTP:X-Client-Id} ^.+',
-                               rewrite_rule => '^ - [E=CLIENT_ID:%{HTTP:X-Client-Id}]'
-                             }, {
-                               comment      => 'Capture JWT token from Authorization header',
-                               rewrite_cond => '%{HTTP:Authorization} "^Bearer (.+)"',
-                               rewrite_rule => '^ - [E=JWT_TOKEN:%1]'
-                             }]
+  $api_key_rewrites = [{
+                        comment      => 'Capture apiKey from URL parameters',
+                        rewrite_cond => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
+                        rewrite_rule => '^ - [E=API_KEY:%1]'
+                      }, {
+                        comment      => 'Capture apiKey from X-Api-Key header',
+                        rewrite_cond => '%{HTTP:X-Api-Key} ^.+',
+                        rewrite_rule => '^ - [E=API_KEY:%{HTTP:X-Api-Key}]'
+                      }, {
+                        comment      => 'Capture clientId from URL parameters',
+                        rewrite_cond => '%{QUERY_STRING} (?:^|&)clientId=([^&]+)',
+                        rewrite_rule => '^ - [E=CLIENT_ID:%1]'
+                      }, {
+                        comment      => 'Capture clientId from X-Client-Id header',
+                        rewrite_cond => '%{HTTP:X-Client-Id} ^.+',
+                        rewrite_rule => '^ - [E=CLIENT_ID:%{HTTP:X-Client-Id}]'
+                      }, {
+                        comment      => 'Capture JWT token from Authorization header',
+                        rewrite_cond => '%{HTTP:Authorization} "^Bearer (.+)"',
+                        rewrite_rule => '^ - [E=JWT_TOKEN:%1]'
+                      }]
+
+  case $type {
+    'container': {
+      profiles::apache::vhost::reverse_proxy { "http://${servername}":
+        destination           => 'http://127.0.0.1:8080/',
+        aliases               => $serveraliases,
+        access_log_format     => 'api_key_json',
+        allow_encoded_slashes => 'nodecode',
+        additional_rewrites   => $api_key_rewrites,
+      }
+    }
+    default: {
+      profiles::apache::vhost::php_fpm { "http://${servername}":
+        basedir               => $basedir,
+        public_web_directory  => 'web',
+        aliases               => $serveraliases,
+        access_log_format     => 'api_key_json',
+        allow_encoded_slashes => 'nodecode',
+        rewrites              => $api_key_rewrites
+      }
+    }
   }
 
   profiles::apache::vhost::reverse_proxy { "http://${uitpas_servername}":

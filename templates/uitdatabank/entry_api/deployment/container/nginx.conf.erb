@@ -1,0 +1,9 @@
+server {
+    listen 127.0.0.1:8080;
+
+    location / {
+        include fastcgi_params;
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_param SCRIPT_FILENAME /var/www/html/web/index.php;
+    }
+}
