@@ -21,6 +21,10 @@ describe 'profiles::mysql::server::backup' do
             'retention_days' => 7
           ) }
 
+          it { is_expected.to contain_package('bzip2').with(
+            'ensure' => 'present'
+          ) }
+
           it { is_expected.to contain_file('/data') }
           it { is_expected.to contain_file('/data/backup') }
           it { is_expected.to contain_file('/data/backup/mysql').with(
@@ -64,6 +68,7 @@ describe 'profiles::mysql::server::backup' do
           it { is_expected.to contain_file('/data/backup/mysql/archive').that_requires('File[/data/backup/mysql]') }
           it { is_expected.to contain_file('/data/backup/mysql').that_comes_before('Class[mysql::server::backup]') }
           it { is_expected.to contain_file('/data/backup/mysql/archive').that_comes_before('Class[mysql::server::backup]') }
+          it { is_expected.to contain_package('bzip2').that_comes_before('Class[mysql::server::backup]') }
           it { is_expected.to contain_cron('Cleanup old MySQL backups').that_requires('File[/data/backup/mysql/archive]') }
         end
       end

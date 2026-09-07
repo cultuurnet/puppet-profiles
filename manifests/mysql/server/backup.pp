@@ -8,6 +8,11 @@ class profiles::mysql::server::backup (
 
   $mtime = $retention_days - 1
 
+  package { 'bzip2':
+    ensure => 'present',
+    before => Class['mysql::server::backup']
+  }
+
   if $lvm {
     unless ($volume_group and $volume_size) {
       fail("with LVM enabled, expects a value for both 'volume_group' and 'volume_size'")
