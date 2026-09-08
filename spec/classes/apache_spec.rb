@@ -9,12 +9,14 @@ describe 'profiles::apache' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::apache').with(
-          'mpm_module'        => 'prefork',
-          'mpm_module_config' => {},
-          'http2'             => false,
-          'limitreqfieldsize' => 8190,
-          'service_status'    => 'running',
-          'metrics'           => true
+          'mpm_module'               => 'prefork',
+          'mpm_module_config'        => {},
+          'http2'                    => false,
+          'limitreqfieldsize'        => 8190,
+          'service_status'           => 'running',
+          'metrics'                  => true,
+          'service_override_source'  => nil,
+          'service_override_content' => nil
         ) }
 
         it { is_expected.to contain_group('www-data') }
@@ -40,6 +42,13 @@ describe 'profiles::apache' do
                                      }
         ) }
 
+        it { is_expected.to contain_systemd__dropin_file('apache2-override.conf').with(
+          'ensure'  => 'absent',
+          'unit'    => 'apache2.service',
+          'source'  => nil,
+          'content' => nil
+        ) }
+
         it { is_expected.not_to contain_class('apache::mod::http2') }
         it { is_expected.to contain_class('apache::mod::prefork') }
 
@@ -56,14 +65,15 @@ describe 'profiles::apache' do
         ) }
       end
 
-      context "with mpm_module => worker, mpm_module_config => { startservers => 8, maxrequestworkers => 256 }, http2 => true, limitreqfieldsize => 32766, service_status => stopped and metrics => false" do
+      context "with mpm_module => worker, mpm_module_config => { startservers => 8, maxrequestworkers => 256 }, http2 => true, limitreqfieldsize => 32766, service_status => stopped, metrics => false and service_override_source => /tmp/foo" do
         let(:params) { {
-          'mpm_module'            => 'worker',
-          'mpm_module_config'     => { 'startservers' => 8, 'maxrequestworkers' => 256 },
-          'http2'                 => true,
-          'limitreqfieldsize'     => 32766,
-          'service_status'        => 'stopped',
-          'metrics'               => false
+          'mpm_module'              => 'worker',
+          'mpm_module_config'       => { 'startservers' => 8, 'maxrequestworkers' => 256 },
+          'http2'                   => true,
+          'limitreqfieldsize'       => 32766,
+          'service_status'          => 'stopped',
+          'metrics'                 => false,
+          'service_override_source' => '/tmp/foo'
         } }
 
         it { is_expected.to contain_class('apache').with(
@@ -84,6 +94,13 @@ describe 'profiles::apache' do
                                      }
         ) }
 
+        it { is_expected.to contain_systemd__dropin_file('apache2-override.conf').with(
+          'ensure'  => 'present',
+          'unit'    => 'apache2.service',
+          'source'  => '/tmp/foo',
+          'content' => nil
+        ) }
+
         it { is_expected.to contain_class('apache::mod::http2') }
         it { is_expected.to contain_class('apache::mod::worker').with(
           'startservers'      => 8,
@@ -93,10 +110,24 @@ describe 'profiles::apache' do
         it { is_expected.not_to contain_class('profiles::apache::metrics') }
       end
 
+      context 'with service_override_content => bla' do
+        let(:params) { {
+          'service_override_content' => 'bla'
+        } }
+
+        it { is_expected.to contain_systemd__dropin_file('apache2-override.conf').with(
+          'ensure'  => 'present',
+          'unit'    => 'apache2.service',
+          'source'  => nil,
+          'content' => 'bla'
+        ) }
+
+      end
+
       context "with mpm_module => prefork and http2 => true" do
         let(:params) { {
-          'mpm_module'        => 'prefork',
-          'http2'             => true
+          'mpm_module' => 'prefork',
+          'http2'      => true
         } }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /The HTTP\/2 protocol is not supported with MPM module prefork/) }

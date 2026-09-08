@@ -1,10 +1,12 @@
 class profiles::apache (
-  Enum['event', 'itk', 'peruser', 'prefork', 'worker']  $mpm_module        = 'prefork',
-  Hash                                                  $mpm_module_config = {},
-  Boolean                                               $http2             = false,
-  Integer                                               $limitreqfieldsize = 8190,
-  Boolean                                               $metrics           = true,
-  Enum['running', 'stopped']                            $service_status    = 'running',
+  Enum['event', 'itk', 'peruser', 'prefork', 'worker'] $mpm_module               = 'prefork',
+  Hash                                                 $mpm_module_config        = {},
+  Boolean                                              $http2                    = false,
+  Integer                                              $limitreqfieldsize        = 8190,
+  Boolean                                              $metrics                  = true,
+  Enum['running', 'stopped']                           $service_status           = 'running',
+  Optional[String]                                     $service_override_source  = undef,
+  Optional[String]                                     $service_override_content = undef
 ) inherits ::profiles {
 
   if ($mpm_module == 'prefork' and $http2) {
@@ -41,6 +43,16 @@ class profiles::apache (
 
   if $http2 {
     include apache::mod::http2
+  }
+
+  systemd::dropin_file { 'apache2-override.conf':
+    ensure  => ($service_override_content or $service_override_source) ? {
+                 false   => 'absent',
+                 default => 'present'
+               },
+    unit    => 'apache2.service',
+    source  => $service_override_source,
+    content => $service_override_content
   }
 
   class { "apache::mod::${mpm_module}":
