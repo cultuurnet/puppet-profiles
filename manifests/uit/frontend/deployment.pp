@@ -36,6 +36,16 @@ class profiles::uit::frontend::deployment (
     notify  => Service['uit-frontend']
   }
 
+  # Temporarily make sure to reload apache when changing the uit-frontend-config
+  # file, as it is used as a source of environment variables to the apache
+  # process (to be able to access feature flags defined therein)
+  # This can be removed after the feature flags used are no longer present
+  exec { 'reload apache on uit-frontend-config change':
+    command     => '/usr/sbin/apachectl graceful',
+    refreshonly => true,
+    subscribe   => File['uit-frontend-config']
+  }
+
   file { 'uit-frontend-service-defaults':
     ensure  => 'file',
     path    => '/etc/default/uit-frontend',
