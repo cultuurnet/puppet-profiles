@@ -73,6 +73,10 @@ inherits ::profiles {
     ensure => 'present'
   }
 
+  @package { 'bzip2':
+    ensure => 'present'
+  }
+
   @package { 'mysql-client':
     ensure => 'present'
   }
@@ -180,4 +184,5 @@ inherits ::profiles {
   realize Package['jq']
   realize Package['yq']
   realize Package['iftop']
+  realize Package['bzip2']
 }

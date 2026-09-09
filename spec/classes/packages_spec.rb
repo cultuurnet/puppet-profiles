@@ -69,6 +69,10 @@ describe 'profiles::packages' do
           'ensure' => 'present'
         ) }
 
+        it { is_expected.to contain_package('bzip2').with(
+          'ensure' => 'present'
+        ) }
+
         it { is_expected.to contain_package('mysql-client').with(
           'ensure' => 'present'
         ) }
@@ -188,6 +192,10 @@ describe 'profiles::packages' do
         ) }
 
         it { is_expected.to contain_package('iftop').with(
+          'ensure' => 'present'
+        ) }
+
+        it { is_expected.to contain_package('bzip2').with(
           'ensure' => 'present'
         ) }
       end
