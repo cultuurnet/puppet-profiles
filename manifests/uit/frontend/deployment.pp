@@ -40,8 +40,8 @@ class profiles::uit::frontend::deployment (
   # file, as it is used as a source of environment variables to the apache
   # process (to be able to access feature flags defined therein)
   # This can be removed after the feature flags used are no longer present
-  exec { 'reload apache on uit-frontend-config change':
-    command     => '/usr/sbin/apachectl graceful',
+  exec { 'restart apache on uit-frontend-config change':
+    command     => '/usr/bin/systemctl restart apache2',
     refreshonly => true,
     subscribe   => File['uit-frontend-config']
   }
