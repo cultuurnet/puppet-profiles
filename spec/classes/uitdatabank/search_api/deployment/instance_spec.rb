@@ -26,6 +26,14 @@ describe 'profiles::uitdatabank::search_api::deployment::instance' do
           'ensure' => 'latest'
         ) }
 
+        it { is_expected.to contain_profiles__newrelic__php__application('uitdatabank-search-api').with(
+          'app_name' => facts[:networking]['fqdn'],
+          'docroot'  => '/var/www/udb3-search-service/web',
+          'enable'   => false
+        ) }
+
+        it { is_expected.to contain_profiles__newrelic__php__application('uitdatabank-search-api').that_requires('Package[uitdatabank-search-api]') }
+
         it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').with(
           'command'     => '/var/www/udb3-search-service/bin/app.php udb3-core:reindex-permanent',
           'environment' => ['MAILTO=infra+cron@publiq.be'],

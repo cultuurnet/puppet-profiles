@@ -52,6 +52,14 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
             'ensure' => 'latest'
           ) }
 
+          it { is_expected.to contain_profiles__newrelic__php__application('uitdatabank-entry-api').with(
+            'app_name' => facts[:networking]['fqdn'],
+            'docroot'  => '/var/www/udb3-backend/web',
+            'enable'   => false
+          ) }
+
+          it { is_expected.to contain_profiles__newrelic__php__application('uitdatabank-entry-api').that_requires('Package[uitdatabank-entry-api]') }
+
           it { is_expected.to contain_file('uitdatabank-entry-api-config').with(
             'ensure'  => 'file',
             'path'    => '/var/www/udb3-backend/config.php',
