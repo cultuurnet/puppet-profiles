@@ -66,6 +66,19 @@ describe 'profiles::newrelic::php::application' do
         it { is_expected.to contain_file('example-api newrelic php config').that_requires('Class[profiles::newrelic::php]') }
       end
 
+      context 'with New Relic enabled and no app name override' do
+        let(:title) { 'example_api' }
+        let(:params) do
+          {
+            'docroot' => '/var/www/example-api/public',
+            'enable'  => true
+          }
+        end
+
+        it { is_expected.to compile.with_all_deps }
+        it { is_expected.to contain_file('example_api newrelic php config').with_content(/^newrelic\.appname = "example-api-rp-env"$/) }
+      end
+
       context 'with two enabled PHP applications' do
         let(:params) { super().merge('enable' => true) }
         let(:post_condition) do

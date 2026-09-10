@@ -32,7 +32,7 @@ describe 'profiles::uit::cms::deployment' do
         ) }
 
         it { is_expected.to contain_profiles__newrelic__php__application('uit-cms').with(
-          'app_name' => facts[:networking]['fqdn'],
+          'app_name' => nil,
           'docroot'  => '/var/www/uit-cms/web',
           'enable'   => false
         ) }

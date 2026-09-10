@@ -31,7 +31,7 @@ describe 'profiles::uitdatabank::jwt_provider::deployment' do
           ) }
 
           it { is_expected.to contain_profiles__newrelic__php__application('uitdatabank-jwt-provider').with(
-            'app_name' => facts[:networking]['fqdn'],
+            'app_name' => nil,
             'docroot'  => '/var/www/jwt-provider/web',
             'enable'   => false
           ) }

@@ -6,8 +6,8 @@ class profiles::museumpas::partner_website::deployment (
   Optional[String]           $maintenance_source = undef,
   Boolean                    $run_scheduler_cron = true,
   Boolean                    $newrelic            = false,
-  # Override when multiple PHP applications run on the same host to prevent them sharing an app name.
-  String                     $newrelic_app_name   = $facts['networking']['fqdn'],
+  # Set explicitly to retain legacy New Relic application names during migration.
+  Optional[String]           $newrelic_app_name   = undef,
   Optional[String]           $puppetdb_url       = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 

@@ -38,7 +38,7 @@ describe 'profiles::uitpas::website::api::deployment' do
           ) }
 
           it { is_expected.to contain_profiles__newrelic__php__application('uitpas-website-api').with(
-            'app_name' => facts[:networking]['fqdn'],
+            'app_name' => nil,
             'docroot'  => '/var/www/uitpas-website-api/public',
             'enable'   => false
           ) }

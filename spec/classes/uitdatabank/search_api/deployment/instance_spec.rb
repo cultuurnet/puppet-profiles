@@ -27,7 +27,7 @@ describe 'profiles::uitdatabank::search_api::deployment::instance' do
         ) }
 
         it { is_expected.to contain_profiles__newrelic__php__application('uitdatabank-search-api').with(
-          'app_name' => facts[:networking]['fqdn'],
+          'app_name' => nil,
           'docroot'  => '/var/www/udb3-search-service/web',
           'enable'   => false
         ) }

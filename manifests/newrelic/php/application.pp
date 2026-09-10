@@ -11,12 +11,13 @@ define profiles::newrelic::php::application (
   include ::profiles
 
   if $enable {
-    unless $app_name {
-      fail("Defined resource type Profiles::Newrelic::Php::Application[${title}] expects a value for parameter 'app_name' when enabled")
+    # Normalize the logical resource title for the default New Relic app name.
+    $default_app_name = regsubst("${title}-${environment}", '_', '-', 'G')
+    $appname          = $app_name ? {
+      undef   => $default_app_name,
+      default => $app_name
     }
-
-    $appname     = $app_name
-    $file_content = template('profiles/newrelic/php/user.ini.erb')
+    $file_content     = template('profiles/newrelic/php/user.ini.erb')
 
     include ::profiles::newrelic::php
     $requirements = [Group['www-data'], User['www-data'], Class['profiles::newrelic::php']]

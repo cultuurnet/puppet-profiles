@@ -29,7 +29,7 @@ describe 'profiles::uitpas::balie_api::deployment' do
         ) }
 
         it { is_expected.to contain_profiles__newrelic__php__application('uitpas-balie-api').with(
-          'app_name' => facts[:networking]['fqdn'],
+          'app_name' => nil,
           'docroot'  => '/var/www/uitpas-balie-api/web',
           'enable'   => false
         ) }

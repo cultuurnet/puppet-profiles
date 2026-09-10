@@ -4,8 +4,8 @@ class profiles::uitdatabank::search_api::deployment::instance (
   Optional[String] $default_queries_source                = undef,
   Optional[String] $api_keys_matched_to_client_ids_source = undef,
   Boolean          $newrelic                              = false,
-  # Override when multiple PHP applications run on the same host to prevent them sharing an app name.
-  String           $newrelic_app_name                     = $facts['networking']['fqdn'],
+  # Set explicitly to retain legacy New Relic application names during migration.
+  Optional[String] $newrelic_app_name                     = undef,
 ) inherits ::profiles {
 
   $config_dir              = '/etc/uitdatabank-search-api'

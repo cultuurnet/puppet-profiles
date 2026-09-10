@@ -37,7 +37,7 @@ describe 'profiles::projectaanvraag::api::deployment' do
           ) }
 
           it { is_expected.to contain_profiles__newrelic__php__application('projectaanvraag-api').with(
-            'app_name' => facts[:networking]['fqdn'],
+            'app_name' => nil,
             'docroot'  => '/var/www/projectaanvraag-api/web',
             'enable'   => false
           ) }

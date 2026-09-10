@@ -39,7 +39,7 @@ describe 'profiles::platform::deployment' do
             ) }
 
             it { is_expected.to contain_profiles__newrelic__php__application('platform-api').with(
-              'app_name' => facts[:networking]['fqdn'],
+              'app_name' => nil,
               'docroot'  => '/var/www/platform-api/public',
               'enable'   => false
             ) }
