@@ -37,6 +37,14 @@ describe 'profiles::uitpas::website::api::deployment' do
             'ensure' => 'latest'
           ) }
 
+          it { is_expected.to contain_profiles__newrelic__php__application('uitpas-website-api').with(
+            'app_name' => facts[:networking]['fqdn'],
+            'docroot'  => '/var/www/uitpas-website-api/public',
+            'enable'   => false
+          ) }
+
+          it { is_expected.to contain_profiles__newrelic__php__application('uitpas-website-api').that_requires('Package[uitpas-website-api]') }
+
           it { is_expected.to contain_file('uitpas-website-api-config').with(
             'ensure' => 'file',
             'path'   => '/var/www/uitpas-website-api/.env',
