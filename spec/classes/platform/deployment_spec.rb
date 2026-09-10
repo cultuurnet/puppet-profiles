@@ -38,6 +38,14 @@ describe 'profiles::platform::deployment' do
               'ensure' => 'latest'
             ) }
 
+            it { is_expected.to contain_profiles__newrelic__php__application('platform-api').with(
+              'app_name' => facts[:networking]['fqdn'],
+              'docroot'  => '/var/www/platform-api/public',
+              'enable'   => false
+            ) }
+
+            it { is_expected.to contain_profiles__newrelic__php__application('platform-api').that_requires('Package[platform-api]') }
+
             it { is_expected.to contain_file('platform-api-config').with(
               'ensure'  => 'file',
               'path'    => '/var/www/platform-api/.env',

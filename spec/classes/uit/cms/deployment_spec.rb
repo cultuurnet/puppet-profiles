@@ -31,6 +31,14 @@ describe 'profiles::uit::cms::deployment' do
           'ensure' => 'latest'
         ) }
 
+        it { is_expected.to contain_profiles__newrelic__php__application('uit-cms').with(
+          'app_name' => facts[:networking]['fqdn'],
+          'docroot'  => '/var/www/uit-cms/web',
+          'enable'   => false
+        ) }
+
+        it { is_expected.to contain_profiles__newrelic__php__application('uit-cms').that_requires('Package[uit-cms]') }
+
         it { is_expected.to contain_file('uit-cms-settings').with(
           'ensure' => 'file',
           'path'   => '/var/www/uit-cms/web/sites/default/settings.private.php',

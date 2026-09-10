@@ -36,6 +36,14 @@ describe 'profiles::projectaanvraag::api::deployment' do
             'ensure' => 'latest'
           ) }
 
+          it { is_expected.to contain_profiles__newrelic__php__application('projectaanvraag-api').with(
+            'app_name' => facts[:networking]['fqdn'],
+            'docroot'  => '/var/www/projectaanvraag-api/web',
+            'enable'   => false
+          ) }
+
+          it { is_expected.to contain_profiles__newrelic__php__application('projectaanvraag-api').that_requires('Package[projectaanvraag-api]') }
+
           it { is_expected.to contain_file('projectaanvraag-api-config').with(
             'ensure'  => 'file',
             'owner'   => 'www-data',
