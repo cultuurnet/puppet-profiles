@@ -9,12 +9,11 @@ server {
     index index.php;
 
     # Every request reaching nginx already passed through Apache, whose access log
-    # filebeat ships. This inverts once Apache is removed: nginx becomes the only
-    # access log and needs its own logging: block sized for real traffic.
+    # filebeat ships
     access_log off;
 
-    # web/testfiles, web/uploads and web/downloads are served straight from disk —
-    # the acceptance tests fetch image and export URLs over HTTP. Everything else
+    # web/testfiles, web/uploads and web/downloads are served straight from disk.
+    # The acceptance tests fetch image and export URLs over HTTP. Everything else
     # goes to the front controller, which is what web/.htaccess does under Apache.
     location / {
         try_files $uri /index.php$is_args$args;

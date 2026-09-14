@@ -6,9 +6,10 @@ describe 'profiles::uitdatabank::entry_api::deployment::container' do
       let(:facts) { facts }
       let(:pre_condition) { 'realize(Group["www-data"], User["www-data"])' }
 
-      context 'with image => registry.example.com/uitdatabank/entry-api' do
+      context 'with image => registry.example.com/uitdatabank/entry-api and fpm_max_children => 24' do
         let(:params) { {
-          'image' => 'registry.example.com/uitdatabank/entry-api'
+          'image'            => 'registry.example.com/uitdatabank/entry-api',
+          'fpm_max_children' => 24
         } }
 
         context 'in the acceptance environment' do
@@ -19,8 +20,14 @@ describe 'profiles::uitdatabank::entry_api::deployment::container' do
 
           it { is_expected.to contain_class('profiles::uitdatabank::entry_api::deployment::container').with(
             'image'                          => 'registry.example.com/uitdatabank/entry-api',
+            'basedir'                        => '/var/www/udb3-backend',
             'aws_region'                     => 'eu-west-1',
             'image_tag'                      => nil,
+            'fpm_pm'                         => 'static',
+            'fpm_max_children'               => 24,
+            'fpm_max_requests'               => 10000,
+            'upload_max_filesize'            => '22M',
+            'post_max_size'                  => '24M',
             'api_keys_matched_to_client_ids' => false,
             'amqp_listener_uitpas'           => 'present',
             'bulk_label_offer_worker'        => 'present',
@@ -77,21 +84,57 @@ describe 'profiles::uitdatabank::entry_api::deployment::container' do
           it { is_expected.to contain_file('uitdatabank-entry-api-nginx-conf').that_comes_before('Exec[uitdatabank-entry-api-docker-compose]') }
           it { is_expected.to contain_file('uitdatabank-entry-api-nginx-conf').that_notifies('Exec[uitdatabank-entry-api-nginx-reload]') }
 
-          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/^  entry-nginx:$/) }
-          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/network_mode: "service:entry-api"/) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-fpm-pool').with(
+            'ensure' => 'file',
+            'path'   => '/etc/uitdatabank-entry-api/fpm-pool.conf',
+            'owner'  => 'root',
+            'group'  => 'root',
+            'mode'   => '0644'
+          ) }
 
-          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/^\s+image: registry.example.com\/uitdatabank\/entry-api:latest$/) }
-          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/^\s+command: \["php", "vendor\/chrisboulton\/php-resque\/bin\/resque"\]$/) }
-          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/QUEUE: bulk_label_offer/) }
-          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/QUEUE: mails/) }
-          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/QUEUE: event_export/) }
-          # bin/udb3.php special-cases this exact command name to set API_NAME
-          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/\["php", "bin\/udb3.php", "amqp-listen-uitpas"\]/) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-fpm-pool').with_content(/^pm = static$/) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-fpm-pool').with_content(/^pm\.max_children = 24$/) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-fpm-pool').with_content(/^pm\.max_requests = 10000$/) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-fpm-pool').with_content(/^php_admin_value\[upload_max_filesize\] = 22M$/) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-fpm-pool').with_content(/^php_admin_value\[post_max_size\] = 24M$/) }
+
+          it { is_expected.to contain_exec('uitdatabank-entry-api-fpm-pool-reload').with(
+            'command'     => '/usr/bin/docker compose -f /etc/uitdatabank-entry-api/docker-compose.yml kill -s SIGUSR2 entry-api',
+            'refreshonly' => true
+          ) }
+
+          it { is_expected.to contain_exec('uitdatabank-entry-api-db-migrate').with(
+            'command'     => '/usr/bin/docker compose -f /etc/uitdatabank-entry-api/docker-compose.yml exec -T entry-api vendor/bin/doctrine-dbal --no-interaction migrations:migrate',
+            'refreshonly' => true
+          ) }
+
+          it { is_expected.to contain_exec('uitdatabank-entry-api-docker-compose').that_notifies('Exec[uitdatabank-entry-api-db-migrate]') }
+          it { is_expected.to contain_file('uitdatabank-entry-api-fpm-pool').that_comes_before('Exec[uitdatabank-entry-api-docker-compose]') }
+          it { is_expected.to contain_file('uitdatabank-entry-api-fpm-pool').that_notifies('Exec[uitdatabank-entry-api-fpm-pool-reload]') }
 
           # the app requires these exact filenames
           it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(%r{:/var/www/html/config\.external_id_mapping_organizer\.php:ro}) }
           it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(%r{:/var/www/html/config\.external_id_mapping_place\.php:ro}) }
           it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(%r{public-uitidv1\.pem:/var/www/html/public\.pem:ro}) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(%r{fpm-pool\.conf:/usr/local/etc/php-fpm\.d/zz-pool\.conf:ro}) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(%r{/var/www/udb3-backend/web/downloads:/var/www/html/web/downloads}) }
+
+          # bin/udb3.php special-cases this exact command name
+          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/\["php", "bin\/udb3.php", "amqp-listen-uitpas"\]/) }
+          it { is_expected.not_to contain_file('uitdatabank-entry-api-docker-compose').with_content(/bin\/app.php/) }
+
+          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/^  entry-web-assets:$/) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/condition: service_completed_successfully/) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(%r{entry-api-web:/var/www/html/web:ro}) }
+
+          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/^  entry-nginx:$/) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/network_mode: "service:entry-api"/) }
+
+          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/^\s+image: registry.example.com\/uitdatabank\/entry-api:latest$/) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/command: \["php", "vendor\/chrisboulton\/php-resque\/bin\/resque"\]/) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/QUEUE: bulk_label_offer/) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/QUEUE: mails/) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/QUEUE: event_export/) }
           it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(%r{/etc/uitdatabank-entry-api/config.external_id_mapping_organizer.php:}) }
           it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(%r{/etc/uitdatabank-entry-api/public-uitidv1.pem:}) }
           it { is_expected.not_to contain_file('uitdatabank-entry-api-docker-compose').with_content(/api_keys_matched_to_client_ids/) }
@@ -101,6 +144,7 @@ describe 'profiles::uitdatabank::entry_api::deployment::container' do
       context 'with image => myregistry.example.com/uitdatabank/entry-api, image_tag => foo, aws_region => us-east-1, api_keys_matched_to_client_ids => true, amqp_listener_uitpas => absent, mail_worker => absent and event_export_worker_count => 2' do
         let(:params) { {
           'image'                          => 'myregistry.example.com/uitdatabank/entry-api',
+          'fpm_max_children'               => 192,
           'image_tag'                      => 'foo',
           'aws_region'                     => 'us-east-1',
           'api_keys_matched_to_client_ids' => true,
@@ -128,6 +172,7 @@ describe 'profiles::uitdatabank::entry_api::deployment::container' do
           it { is_expected.not_to contain_file('uitdatabank-entry-api-docker-compose').with_content(/amqp-listen-uitpas/) }
           it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/event-export-worker-1/) }
           it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/event-export-worker-2/) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-fpm-pool').with_content(/^pm\.max_children = 192$/) }
         end
       end
 
