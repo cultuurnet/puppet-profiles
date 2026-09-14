@@ -19,7 +19,6 @@ describe 'profiles::uitdatabank::entry_api::deployment::container' do
 
           it { is_expected.to contain_class('profiles::uitdatabank::entry_api::deployment::container').with(
             'image'                          => 'registry.example.com/uitdatabank/entry-api',
-            'basedir'                        => '/var/www/udb3-backend',
             'aws_region'                     => 'eu-west-1',
             'image_tag'                      => nil,
             'api_keys_matched_to_client_ids' => false,
@@ -55,17 +54,31 @@ describe 'profiles::uitdatabank::entry_api::deployment::container' do
 
           it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').that_notifies('Exec[uitdatabank-entry-api-docker-compose]') }
 
-          it { is_expected.to contain_file('/var/www/udb3-backend/web').with(
-            'ensure' => 'directory',
-            'owner'  => 'www-data',
-            'group'  => 'www-data'
+          it { is_expected.not_to contain_file('/var/www/udb3-backend/web') }
+          it { is_expected.not_to contain_file('/var/www/udb3-backend/web/.htaccess') }
+
+          it { is_expected.to contain_file('uitdatabank-entry-api-nginx-conf').with(
+            'ensure' => 'file',
+            'path'   => '/etc/uitdatabank-entry-api/nginx.conf',
+            'owner'  => 'root',
+            'group'  => 'root',
+            'mode'   => '0644'
           ) }
 
-          it { is_expected.to contain_file('/var/www/udb3-backend/web/.htaccess').with(
-            'ensure' => 'file',
-            'owner'  => 'www-data',
-            'group'  => 'www-data'
+          it { is_expected.to contain_file('uitdatabank-entry-api-nginx-conf').with_content(/listen 127\.0\.0\.1:8080;/) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-nginx-conf').with_content(/fastcgi_pass 127\.0\.0\.1:9000;/) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-nginx-conf').with_content(/access_log off;/) }
+
+          it { is_expected.to contain_exec('uitdatabank-entry-api-nginx-reload').with(
+            'command'     => '/usr/bin/docker compose -f /etc/uitdatabank-entry-api/docker-compose.yml kill -s SIGHUP entry-nginx',
+            'refreshonly' => true
           ) }
+
+          it { is_expected.to contain_file('uitdatabank-entry-api-nginx-conf').that_comes_before('Exec[uitdatabank-entry-api-docker-compose]') }
+          it { is_expected.to contain_file('uitdatabank-entry-api-nginx-conf').that_notifies('Exec[uitdatabank-entry-api-nginx-reload]') }
+
+          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/^  entry-nginx:$/) }
+          it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/network_mode: "service:entry-api"/) }
 
           it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/^\s+image: registry.example.com\/uitdatabank\/entry-api:latest$/) }
           it { is_expected.to contain_file('uitdatabank-entry-api-docker-compose').with_content(/^\s+command: \["php", "vendor\/chrisboulton\/php-resque\/bin\/resque"\]$/) }

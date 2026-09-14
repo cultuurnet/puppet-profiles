@@ -1,6 +1,5 @@
 class profiles::uitdatabank::entry_api::deployment::container (
   String                    $image,
-  String                    $basedir                        = '/var/www/udb3-backend',
   String                    $aws_region                     = 'eu-west-1',
   Optional[String]          $image_tag                      = undef,
   Boolean                   $api_keys_matched_to_client_ids = false,
@@ -11,7 +10,6 @@ class profiles::uitdatabank::entry_api::deployment::container (
 ) inherits ::profiles {
 
   $config_dir         = '/etc/uitdatabank-entry-api'
-  $webroot            = "${basedir}/web"
   $ecr_repository     = regsubst($image, '^[^/]+/', '')
   $resolved_image_tag = pick($image_tag, $facts.dig('docker_image_tag', $ecr_repository), 'latest')
 
@@ -25,9 +23,6 @@ class profiles::uitdatabank::entry_api::deployment::container (
       }
     }
   }
-
-  realize Group['www-data']
-  realize User['www-data']
 
   file { 'uitdatabank-entry-api-docker-compose':
     ensure  => 'file',
@@ -45,18 +40,22 @@ class profiles::uitdatabank::entry_api::deployment::container (
     require     => [Class['profiles::docker'], File['uitdatabank-entry-api-docker-compose']]
   }
 
-  file { $webroot:
-    ensure  => 'directory',
-    owner   => 'www-data',
-    group   => 'www-data',
-    require => [Group['www-data'], User['www-data']]
+  file { 'uitdatabank-entry-api-nginx-conf':
+    ensure  => 'file',
+    path    => "${config_dir}/nginx.conf",
+    content => template('profiles/uitdatabank/entry_api/deployment/container/nginx.conf.erb'),
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    before  => Exec['uitdatabank-entry-api-docker-compose'],
+    notify  => Exec['uitdatabank-entry-api-nginx-reload']
   }
 
-  file { "${webroot}/.htaccess":
-    ensure  => 'file',
-    owner   => 'www-data',
-    group   => 'www-data',
-    content => "RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteRule ^ index.php [QSA,L]\n",
-    require => File[$webroot]
+  # SIGHUP tells nginx's master process to re-read its config and gracefully
+  # replace its workers, so a config change needs no container recreate
+  exec { 'uitdatabank-entry-api-nginx-reload':
+    command     => "/usr/bin/docker compose -f ${config_dir}/docker-compose.yml kill -s SIGHUP entry-nginx",
+    refreshonly => true,
+    require     => Exec['uitdatabank-entry-api-docker-compose']
   }
 }
