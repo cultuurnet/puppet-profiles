@@ -4,6 +4,9 @@ class profiles::platform::deployment (
   String           $version                     = 'latest',
   String           $repository                  = 'platform-api',
   Boolean          $search_expired_integrations = false,
+  Boolean          $newrelic                    = false,
+  # Set explicitly to retain legacy New Relic application names during migration.
+  Optional[String] $newrelic_app_name           = undef,
   Optional[String] $puppetdb_url                = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
@@ -27,6 +30,13 @@ class profiles::platform::deployment (
     ensure  => $version,
     require => Apt::Source['platform-api'],
     notify  => [Service['platform-api'], Service['platform-api-horizon'], Profiles::Deployment::Versions[$title]]
+  }
+
+  profiles::newrelic::php::application { 'platform-api':
+    app_name => $newrelic_app_name,
+    docroot  => "${basedir}/public",
+    enable   => $newrelic,
+    require  => Package['platform-api']
   }
 
   file { 'platform-api-config':
