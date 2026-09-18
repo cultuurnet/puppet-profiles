@@ -52,6 +52,7 @@ class profiles::jenkins::controller::configuration(
   profiles::jenkins::plugin { 'email-ext': }
   profiles::jenkins::plugin { 'copyartifact': }
   profiles::jenkins::plugin { 'ws-cleanup': }
+  profiles::jenkins::plugin { 'junit-attachments': }
   profiles::jenkins::plugin { 'slack': }
   profiles::jenkins::plugin { 'workflow-aggregator': }
   profiles::jenkins::plugin { 'pipeline-utility-steps': }
