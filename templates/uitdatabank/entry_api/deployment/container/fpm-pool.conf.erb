@@ -1,0 +1,12 @@
+; Managed by Puppet.
+;
+; The php:8.1-fpm image ships php-fpm's stock pool (pm = dynamic,
+; pm.max_children = 5), which is not what the instance deployment runs.
+; Each node sets its values in Hiera
+[www]
+pm = <%= @fpm_pm %>
+pm.max_children = <%= @fpm_max_children %>
+pm.max_requests = <%= @fpm_max_requests %>
+
+php_admin_value[upload_max_filesize] = <%= @upload_max_filesize %>
+php_admin_value[post_max_size] = <%= @post_max_size %>
