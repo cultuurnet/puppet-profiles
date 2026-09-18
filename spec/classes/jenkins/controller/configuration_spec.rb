@@ -24,6 +24,7 @@ describe 'profiles::jenkins::controller::configuration' do
               'admin_password'           => 'passw0rd',
               'mfa'                      => false,
               'role_based_authorization' => false,
+              'timestamps'               => false,
               'max_concurrent_builds'    => 1,
               'docker_registry_url'      => nil,
               'private_key'              => nil,
@@ -60,6 +61,11 @@ describe 'profiles::jenkins::controller::configuration' do
                                    'user_name'  => 'publiq Jenkins',
                                    'user_email' => 'jenkins@publiq.be'
                                  }
+            ) }
+
+            it { is_expected.to contain_profiles__jenkins__plugin('timestamper').with(
+              'ensure'        => 'absent',
+              'restart'       => false
             ) }
 
             it { is_expected.to contain_profiles__jenkins__plugin('git-client').with(
@@ -237,6 +243,7 @@ describe 'profiles::jenkins::controller::configuration' do
             it { is_expected.to contain_profiles__jenkins__plugin('git').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
             it { is_expected.to contain_profiles__jenkins__plugin('openmfa').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
             it { is_expected.to contain_profiles__jenkins__plugin('git-client').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
+            it { is_expected.to contain_profiles__jenkins__plugin('timestamper').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
             it { is_expected.to contain_profiles__jenkins__plugin('github').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
             it { is_expected.to contain_profiles__jenkins__plugin('configuration-as-code').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
             it { is_expected.to contain_profiles__jenkins__plugin('docker-workflow').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
@@ -353,11 +360,12 @@ describe 'profiles::jenkins::controller::configuration' do
         end
       end
 
-      context "with url => https://builds.foobar.com/, admin_password => letmein, mfa => true, docker_registry_url => https://docker.registry.com/, private_key => 'dcba4321', credentials => [{ id => 'foo', type => 'string', secret => 'bla'}, { id => 'awscred', type => 'aws', access_key => 'aws_key', secret_key => 'aws_secret'}, { id => 'userpass', type => 'username_password', username => 'foo', password => 'bar'}], global_libraries => { git_url => 'git@example.com:org/repo.git', git_ref => 'main', credential_id => 'mygitcred'}, pipelines => { 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'keep_builds' => 5}, users => {'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'} and puppetdb_url => 'https://foobar.com:4567'" do
+      context "with url => https://builds.foobar.com/, admin_password => letmein, mfa => true, timestamps => true, docker_registry_url => https://docker.registry.com/, private_key => 'dcba4321', credentials => [{ id => 'foo', type => 'string', secret => 'bla'}, { id => 'awscred', type => 'aws', access_key => 'aws_key', secret_key => 'aws_secret'}, { id => 'userpass', type => 'username_password', username => 'foo', password => 'bar'}], global_libraries => { git_url => 'git@example.com:org/repo.git', git_ref => 'main', credential_id => 'mygitcred'}, pipelines => { 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'keep_builds' => 5}, users => {'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'} and puppetdb_url => 'https://foobar.com:4567'" do
         let(:params) { {
           'url'                 => 'https://builds.foobar.com/',
           'admin_password'      => 'letmein',
           'mfa'                 => true,
+          'timestamps'          => true,
           'docker_registry_url' => 'https://docker.registry.com/',
           'private_key'         => 'dcba4321',
           'credentials'         => [
@@ -398,6 +406,21 @@ describe 'profiles::jenkins::controller::configuration' do
                                  'issuer' => 'Jenkins publiq (testing)'
                                }
           ) }
+
+          it { is_expected.to contain_profiles__jenkins__plugin('timestamper').with(
+            'ensure'        => 'present',
+            'restart'       => false,
+            'configuration' => {
+                                 'elapsed_time_format' => "'<b>'HH:mm:ss.SSS'</b> '",
+                                 'system_time_format'  => "'<b>'yyyy-MM-dd'T'HH:mm:ss.SSSZ'</b> '"
+                               }
+          ) }
+
+          context 'with timestamper YAML loaded' do
+            let(:content) { YAML.load(catalogue.resource('file', 'timestamper configuration').send(:parameters)[:content]) }
+
+            it { expect(content['unclassified']['timestamper']).to eq({ 'allPipelines' => true, 'elapsedTimeFormat' => "'<b>'HH:mm:ss.SSS'</b> '", 'systemTimeFormat' => "'<b>'yyyy-MM-dd'T'HH:mm:ss.SSSZ'</b> '" }) }
+          end
 
           it { is_expected.to contain_profiles__jenkins__plugin('plain-credentials').with(
             'ensure'        => 'present',
