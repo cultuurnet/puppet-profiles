@@ -85,14 +85,22 @@ describe 'profiles::uitdatabank::search_api' do
       context 'with servername => baz.example.com and type => container' do
         let(:params) { {
           'servername' => 'baz.example.com',
-          'type'       => 'container',
-          'deployment' => false
+          'type'       => 'container'
         } }
 
         context 'with hieradata' do
           let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
           it { is_expected.to compile.with_all_deps }
+
+          it { is_expected.to contain_class('profiles::redis::container').with(
+            'container_name'   => 'uitdatabank-search-api-redis',
+            'maxmemory'        => '100mb',
+            'maxmemory_policy' => 'allkeys-lru'
+          ) }
+          it { is_expected.not_to contain_class('profiles::redis') }
+
+          it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').that_requires('Class[profiles::redis::container]') }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://baz.example.com').with(
             'destination'       => 'http://127.0.0.1:8080/',
