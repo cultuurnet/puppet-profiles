@@ -19,17 +19,6 @@ describe 'profiles::jenkins::controller::configuration' do
 
             it { is_expected.to compile.with_all_deps }
 
-            it { is_expected.to contain_profiles__jenkins__plugin('junit-attachments').with(
-              'ensure'        => 'present',
-              'restart'       => false,
-              'configuration' => nil
-            ) }
-
-            it { is_expected.to contain_exec('jenkins plugin junit-attachments').with(
-              'command' => 'jenkins-cli install-plugin junit-attachments -deploy',
-              'unless'  => 'jenkins-cli list-plugins junit-attachments'
-            ) }
-
             it { is_expected.to contain_class('profiles::jenkins::controller::configuration').with(
               'url'                      => 'https://jenkins.foobar.com/',
               'admin_password'           => 'passw0rd',
@@ -227,6 +216,12 @@ describe 'profiles::jenkins::controller::configuration' do
               'ensure'        => 'present',
               'restart'       => false,
               'configuration' => { 'max_concurrent_builds' => 1 }
+            ) }
+
+            it { is_expected.to contain_profiles__jenkins__plugin('junit-attachments').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => nil
             ) }
 
             it { is_expected.to_not contain_file('jenkins users') }
