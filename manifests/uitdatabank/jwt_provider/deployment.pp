@@ -1,8 +1,11 @@
 class profiles::uitdatabank::jwt_provider::deployment (
   String           $config_source,
-  String           $version       = 'latest',
-  String           $repository    = 'uitdatabank-jwt-provider',
-  Optional[String] $puppetdb_url  = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+  String           $version             = 'latest',
+  String           $repository          = 'uitdatabank-jwt-provider',
+  Boolean          $newrelic            = false,
+  # Set explicitly to retain legacy New Relic application names during migration.
+  Optional[String] $newrelic_app_name   = undef,
+  Optional[String] $puppetdb_url        = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $basedir = '/var/www/jwt-provider'
@@ -16,6 +19,13 @@ class profiles::uitdatabank::jwt_provider::deployment (
     ensure  => $version,
     notify  => [Service['uitdatabank-jwt-provider'], Profiles::Deployment::Versions[$title]],
     require => Apt::Source[$repository]
+  }
+
+  profiles::newrelic::php::application { 'uitdatabank-jwt-provider':
+    app_name => $newrelic_app_name,
+    docroot  => "${basedir}/web",
+    enable   => $newrelic,
+    require  => Package['uitdatabank-jwt-provider']
   }
 
   file { 'uitdatabank-jwt-provider-config':
