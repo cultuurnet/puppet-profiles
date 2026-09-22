@@ -1,6 +1,7 @@
 class profiles::uit::frontend::deployment (
   String                     $config_source,
   Integer                    $maximum_heap_size    = 512,
+  Integer[1]                 $cluster_workers      = 1,
   String                     $version              = 'latest',
   String                     $repository           = 'uit-frontend',
   Enum['running', 'stopped'] $service_status       = 'running',

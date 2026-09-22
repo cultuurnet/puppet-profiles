@@ -1,6 +1,7 @@
 HOST=<%= @service_address %>
 PORT=<%= @service_port %>
 NODE_OPTIONS=--max_old_space_size=<%= @maximum_heap_size %>
+NITRO_CLUSTER_WORKERS=<%= @cluster_workers %>
 NUXT_TELEMETRY_DISABLED=1
 <%- if @newrelic_license_key -%>
 NEW_RELIC_LICENSE_KEY=<%= @newrelic_license_key %>

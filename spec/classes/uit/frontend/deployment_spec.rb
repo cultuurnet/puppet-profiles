@@ -21,6 +21,7 @@ describe 'profiles::uit::frontend::deployment' do
             it { is_expected.to contain_class('profiles::uit::frontend::deployment').with(
               'config_source'        => 'appconfig/uit/frontend/env',
               'maximum_heap_size'    => 512,
+              'cluster_workers'      => 1,
               'version'              => 'latest',
               'repository'           => 'uit-frontend',
               'service_status'       => 'running',
@@ -58,6 +59,7 @@ describe 'profiles::uit::frontend::deployment' do
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^HOST=127.0.0.1$/) }
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^PORT=3000$/) }
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NODE_OPTIONS=--max_old_space_size=512$/) }
+            it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NITRO_CLUSTER_WORKERS=1$/) }
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NUXT_TELEMETRY_DISABLED=1$/) }
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NEW_RELIC_LICENSE_KEY=my_license_key$/) }
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NEW_RELIC_APP_NAME=uit-frontend-acceptance$/) }
@@ -72,7 +74,7 @@ describe 'profiles::uit::frontend::deployment' do
 
             it { is_expected.to contain_profiles__systemd__service_watchdog('uit-frontend').with(
               'ensure'      => 'absent',
-              'healthcheck' => "current_memory_mb=\$(( \$(/usr/bin/systemctl show -p MemoryCurrent --value \${SERVICE}) / (1024 * 1024) ))\nmaximum_memory_mb=\$(( 512 * 9 / 10 ))\n\n/usr/bin/test \${current_memory_mb} -lt \${maximum_memory_mb}\n"
+              'healthcheck' => "# MemoryCurrent covers the whole cgroup while --max_old_space_size applies per\n# worker, so the ceiling scales with the worker count.\ncurrent_memory_mb=\$(( \$(/usr/bin/systemctl show -p MemoryCurrent --value \${SERVICE}) / (1024 * 1024) ))\nmaximum_memory_mb=\$(( 512 * 1 * 9 / 10 ))\n\n/usr/bin/test \${current_memory_mb} -lt \${maximum_memory_mb}\n"
             ) }
 
             it { is_expected.to contain_profiles__deployment__versions('profiles::uit::frontend::deployment').with(
@@ -99,11 +101,12 @@ describe 'profiles::uit::frontend::deployment' do
         end
       end
 
-      context "with config_source => appconfig/uit/frontend/env, maximum_heap_size => 1024, service_address => 0.0.0.0, service_port => 3456, version => 1.2.3, repository => uit-frontend-exotic, service_status => stopped, service_watchdog => true, newrelic_license_key => foo, newrelic_app_name => bar, newrelic_tracing => true and puppetdb_url => http://example.com:8000" do
+      context "with config_source => appconfig/uit/frontend/env, maximum_heap_size => 1024, cluster_workers => 3, service_address => 0.0.0.0, service_port => 3456, version => 1.2.3, repository => uit-frontend-exotic, service_status => stopped, service_watchdog => true, newrelic_license_key => foo, newrelic_app_name => bar, newrelic_tracing => true and puppetdb_url => http://example.com:8000" do
         let(:params) { {
           'config_source'        => 'appconfig/uit/frontend/env',
           'version'              => '1.2.3',
           'maximum_heap_size'    => 1024,
+          'cluster_workers'      => 3,
           'repository'           => 'uit-frontend-exotic',
           'service_status'       => 'stopped',
           'service_address'      => '0.0.0.0',
@@ -128,6 +131,7 @@ describe 'profiles::uit::frontend::deployment' do
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^HOST=0.0.0.0$/) }
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^PORT=3456$/) }
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NODE_OPTIONS=--max_old_space_size=1024$/) }
+            it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NITRO_CLUSTER_WORKERS=3$/) }
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NEW_RELIC_LICENSE_KEY=foo$/) }
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NEW_RELIC_APP_NAME=bar$/) }
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NEW_RELIC_TRACER_ENABLED=true$/) }
@@ -142,7 +146,7 @@ describe 'profiles::uit::frontend::deployment' do
 
             it { is_expected.to contain_profiles__systemd__service_watchdog('uit-frontend').with(
               'ensure'      => 'present',
-              'healthcheck' => "current_memory_mb=\$(( \$(/usr/bin/systemctl show -p MemoryCurrent --value \${SERVICE}) / (1024 * 1024) ))\nmaximum_memory_mb=\$(( 1024 * 9 / 10 ))\n\n/usr/bin/test \${current_memory_mb} -lt \${maximum_memory_mb}\n"
+              'healthcheck' => "# MemoryCurrent covers the whole cgroup while --max_old_space_size applies per\n# worker, so the ceiling scales with the worker count.\ncurrent_memory_mb=\$(( \$(/usr/bin/systemctl show -p MemoryCurrent --value \${SERVICE}) / (1024 * 1024) ))\nmaximum_memory_mb=\$(( 1024 * 3 * 9 / 10 ))\n\n/usr/bin/test \${current_memory_mb} -lt \${maximum_memory_mb}\n"
             ) }
 
             it { is_expected.to contain_profiles__deployment__versions('profiles::uit::frontend::deployment').with(
