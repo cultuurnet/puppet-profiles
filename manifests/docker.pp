@@ -95,7 +95,7 @@ class profiles::docker (
     environment => ['MAILTO=infra+cron@publiq.be'],
     hour        => '3',
     minute      => '30',
-    weekday     => '0,2,4,6',
+    weekday     => ['0', '2', '4', '6'],
     require     => Class['::docker']
   }
 }
