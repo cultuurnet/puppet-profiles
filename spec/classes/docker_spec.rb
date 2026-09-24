@@ -140,7 +140,7 @@ describe 'profiles::docker' do
             'environment' => ['MAILTO=infra+cron@publiq.be'],
             'hour'        => '3',
             'minute'      => '30',
-            'weekday'     => '0',
+            'weekday'     => ['0', '2', '4', '6'],
           ) }
 
           it { is_expected.to contain_mount('/var/lib/docker').that_requires('Profiles::Lvm::Mount[dockerdata]') }
