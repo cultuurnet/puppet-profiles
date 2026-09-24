@@ -29,7 +29,8 @@ describe 'profiles::uit::frontend' do
               'redirect_source'     => nil,
               'maintenance_page'    => false,
               'deployment_page'     => false,
-              'apache_restart_cron' => false
+              'apache_restart_cron' => false,
+              'api_url'             => nil
             ) }
 
             it { is_expected.to contain_group('www-data') }
@@ -179,14 +180,15 @@ describe 'profiles::uit::frontend' do
           end
         end
 
-        context "with service_address => 127.0.1.1, service_port => 7000, redirect_source => /tmp/foo, maintenance_page => true and deployment_page => true" do
+        context "with service_address => 127.0.1.1, service_port => 7000, redirect_source => /tmp/foo, maintenance_page => true, deployment_page => true and api_url => https://foo.bar.com" do
           let(:params) {
             super().merge( {
               'service_address'  => '127.0.1.1',
               'service_port'     => 7000,
               'redirect_source'  => '/tmp/foo',
               'maintenance_page' => true,
-              'deployment_page'  => true
+              'deployment_page'  => true,
+              'api_url'          => 'https://foo.bar.com'
             } )
           }
 
@@ -248,7 +250,7 @@ describe 'profiles::uit::frontend' do
               'proxy_pass'         => [{
                                         'path'                => '/',
                                         'url'                 => 'http://127.0.1.1:7000/',
-                                        'no_proxy_uris'       => ['/maintenance/', '/deployment/'],
+                                        'no_proxy_uris'       => ['/maintenance/', '/deployment/', '/api/graphql'],
                                         'no_proxy_uris_match' => ['^/(css/|img/|js/|icons/|_nuxt/|sw.js)']
                                       }],
               'rewrites'           => [{
@@ -270,6 +272,12 @@ describe 'profiles::uit::frontend' do
                                                             '%{REQUEST_URI} !^/deployment/'
                                                           ],
                                         'rewrite_rule' => '^ - [R=504,L]'
+                                      }, {
+                                        'comment'      => 'Reverse proxy /api/graphql calls to GraphQL',
+                                        'rewrite_cond' => [
+                                                            '%{REQUEST_URI} ^/api/graphql$ [NC]'
+                                                          ],
+                                        'rewrite_rule' => '^/api/graphql$ https://foo.bar.com [P,L]'
                                       }, {
                                         'comment'      => 'Serve brotli compressed assets for supported clients',
                                         'rewrite_cond' => [

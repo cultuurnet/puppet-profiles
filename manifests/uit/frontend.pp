@@ -8,7 +8,8 @@ class profiles::uit::frontend (
   Optional[Hash]                $redirect_vhosts     = {},
   Boolean                       $maintenance_page    = false,
   Boolean                       $deployment_page     = false,
-  Boolean                       $apache_restart_cron = false
+  Boolean                       $apache_restart_cron = false,
+  Optional[String]              $api_url             = undef
 ) inherits ::profiles {
 
   $basedir              = '/var/www/uit-frontend'
@@ -163,6 +164,20 @@ class profiles::uit::frontend (
     $error_document_deployment_page = undef
   }
 
+  if $api_url {
+    $proxy_api_location = '/api/graphql'
+    $rewrite_proxy_api  = {
+                            comment      => "Reverse proxy ${proxy_api_location} calls to GraphQL",
+                            rewrite_cond => [
+                                              "%{REQUEST_URI} ^${proxy_api_location}\$ [NC]"
+                                            ],
+                            rewrite_rule => "^${proxy_api_location}\$ ${api_url} [P,L]"
+                          }
+ } else {
+    $proxy_api_location = undef
+    $rewrite_proxy_api  = undef
+ }
+
   if $deployment {
     class { 'profiles::uit::frontend::deployment':
       service_address => $service_address,
@@ -201,14 +216,14 @@ class profiles::uit::frontend (
     proxy_pass         => [{
                             path                => '/',
                             url                 => "http://${service_address}:${service_port}/",
-                            no_proxy_uris       => [$maintenance_page_location, $deployment_page_location].filter |$item| { $item },
+                            no_proxy_uris       => [$maintenance_page_location, $deployment_page_location, $proxy_api_location].filter |$item| { $item },
                             no_proxy_uris_match => ['^/(css/|img/|js/|icons/|_nuxt/|sw.js)']
                           }],
     aliases            => [{
                             aliasmatch => '^/(css/|img/|js/|icons/|_nuxt/|sw.js)(.*)$',
                             path       => "${basedir}/packages/app/.output/public/\$1\$2"
                           }],
-    rewrites           => [$rewrite_maintenance_page, $rewrite_deployment_page].filter |$item| { $item } + $rewrites_compression,
+    rewrites           => [$rewrite_maintenance_page, $rewrite_deployment_page, $rewrite_proxy_api].filter |$item| { $item } + $rewrites_compression,
     headers            => $headers_compression,
     error_documents    => [$error_document_maintenance_page, $error_document_deployment_page].filter |$item| { $item },
     custom_fragment    => $vhost_custom_fragment,
