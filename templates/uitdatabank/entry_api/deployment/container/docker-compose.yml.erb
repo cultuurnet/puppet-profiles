@@ -1,3 +1,10 @@
+# nginx serves the document root out of entry-api-web, a named volume that
+# entry-web-assets refills from the image on every `up`. A new image tag rewrites
+# this file, so Puppet recreates the stack and the refill runs again, which keeps
+# web/ in step with the image rather than frozen at the volume's first creation.
+volumes:
+  entry-api-web:
+
 x-entry-api: &entry-api
   image: <%= @image %>:<%= @resolved_image_tag %>
   network_mode: host
@@ -14,19 +21,32 @@ x-entry-api: &entry-api
     - /etc/uitdatabank-entry-api/config.external_id_mapping_place.php:/var/www/html/config.external_id_mapping_place.php:ro
     - /etc/uitdatabank-entry-api/public-uitidv1.pem:/var/www/html/public.pem:ro
     - /etc/uitdatabank-entry-api/public-keycloak.pem:/var/www/html/public-keycloak.pem:ro
+    # The image ships php-fpm's stock pool; zz- sorts after www.conf so this wins
+    - /etc/uitdatabank-entry-api/fpm-pool.conf:/usr/local/etc/php-fpm.d/zz-pool.conf:ro
+    # Exports are written here by the event-export workers and fetched over HTTP,
+    # so the web container, the workers and nginx all have to see the same files
+    - <%= @downloads_dir %>:/var/www/html/web/downloads
 <% if @api_keys_matched_to_client_ids -%>
     - /etc/uitdatabank-entry-api/config.api_keys_matched_to_client_ids.php:/var/www/html/config.api_keys_matched_to_client_ids.php:ro
 <% end -%>
 
 x-resque-worker: &resque-worker
   <<: *entry-api
-  environment:
+  command: ["php", "vendor/chrisboulton/php-resque/bin/resque"]
+  environment: &resque-worker-environment
     LOG_TO_STDOUT: "true"
     APP_INCLUDE: /var/www/html/worker_bootstrap.php
     INTERVAL: "1"
     REDIS_BACKEND: "127.0.0.1:6379"
 
 services:
+  entry-web-assets:
+    image: <%= @image %>:<%= @resolved_image_tag %>
+    restart: "no"
+    command: ["sh", "-c", "rm -rf /srv/web/* && cp -a /var/www/html/web/. /srv/web/"]
+    volumes:
+      - entry-api-web:/srv/web
+
   entry-api:
     <<: *entry-api
     healthcheck:
@@ -36,39 +56,47 @@ services:
       timeout: 5s
       retries: 3
 
+  entry-nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    network_mode: "service:entry-api"
+    volumes:
+      - /etc/uitdatabank-entry-api/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - entry-api-web:/var/www/html/web:ro
+      - <%= @downloads_dir %>:/var/www/html/web/downloads:ro
+    depends_on:
+      entry-api:
+        condition: service_healthy
+      entry-web-assets:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 8080 || exit 1"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
 <% if @bulk_label_offer_worker == 'present' -%>
   bulk-label-offer-worker:
     <<: *resque-worker
-    command: ["php", "vendor/chrisboulton/php-resque/bin/resque"]
     environment:
-      LOG_TO_STDOUT: "true"
-      APP_INCLUDE: /var/www/html/worker_bootstrap.php
-      INTERVAL: "1"
-      REDIS_BACKEND: "127.0.0.1:6379"
+      <<: *resque-worker-environment
       QUEUE: bulk_label_offer
 
 <% end -%>
 <% if @mail_worker == 'present' -%>
   mail-worker:
     <<: *resque-worker
-    command: ["php", "vendor/chrisboulton/php-resque/bin/resque"]
     environment:
-      LOG_TO_STDOUT: "true"
-      APP_INCLUDE: /var/www/html/worker_bootstrap.php
-      INTERVAL: "1"
-      REDIS_BACKEND: "127.0.0.1:6379"
+      <<: *resque-worker-environment
       QUEUE: mails
 
 <% end -%>
 <% @event_export_worker_count.times do |i| -%>
   event-export-worker-<%= i + 1 %>:
     <<: *resque-worker
-    command: ["php", "vendor/chrisboulton/php-resque/bin/resque"]
     environment:
-      LOG_TO_STDOUT: "true"
-      APP_INCLUDE: /var/www/html/worker_bootstrap.php
-      INTERVAL: "1"
-      REDIS_BACKEND: "127.0.0.1:6379"
+      <<: *resque-worker-environment
       QUEUE: event_export
 
 <% end -%>
