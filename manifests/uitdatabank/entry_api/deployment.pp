@@ -15,6 +15,9 @@ class profiles::uitdatabank::entry_api::deployment (
   Enum['present', 'absent'] $bulk_label_offer_worker               = 'present',
   Enum['present', 'absent'] $mail_worker                           = 'present',
   Integer[0]                $event_export_worker_count             = 1,
+  Boolean                   $newrelic                             = false,
+  # Set explicitly to retain legacy New Relic application names during migration.
+  Optional[String]          $newrelic_app_name                    = undef,
   Optional[String]          $puppetdb_url                          = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
@@ -36,6 +39,13 @@ class profiles::uitdatabank::entry_api::deployment (
     ensure  => $version,
     require => Apt::Source[$repository],
     notify  => [Service['uitdatabank-entry-api'], Profiles::Deployment::Versions[$title]]
+  }
+
+  profiles::newrelic::php::application { 'uitdatabank-entry-api':
+    app_name => $newrelic_app_name,
+    docroot  => "${basedir}/web",
+    enable   => $newrelic,
+    require  => Package['uitdatabank-entry-api']
   }
 
   if $mount_target_dns_name {
