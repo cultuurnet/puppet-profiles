@@ -19,6 +19,10 @@ describe 'profiles::uitpas::api' do
 
             it { is_expected.to compile.with_all_deps }
 
+            it { is_expected.to contain_class('profiles::uitpas::api::logging').with(
+              'servername' => 'uitpas.example.com'
+            ) }
+
             it { is_expected.to contain_class('profiles::uitpas::api').with(
               'servername'                   => 'uitpas.example.com',
               'serveraliases'                => [],

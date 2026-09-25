@@ -267,5 +267,7 @@ class profiles::uitpas::api (
   # include ::profiles::uitpas::api::monitoring
   # include ::profiles::uitpas::api::metrics
   # include ::profiles::uitpas::api::backup
-  # include ::profiles::uitpas::api::logging
+  class { 'profiles::uitpas::api::logging':
+    servername => $servername,
+  }
 }
