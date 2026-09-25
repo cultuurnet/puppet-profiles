@@ -31,6 +31,11 @@ class profiles::uitpas::api::logging (
     require       => Class['profiles::filebeat'],
   }
 
-  # Logstash parsing and output are managed in infrastructure's logs-prod01
-  # configuration, rather than through exported filter fragments.
+  # Prepared for a future global collector. Until that is enabled, the live
+  # rule remains in infrastructure's central filter.conf; keep both in sync.
+  @@profiles::logstash::filter_fragment { "${trusted['certname']}_uitpas::api":
+    log_type => 'uitpas::api',
+    filter   => file('profiles/uitpas/api/logstash_filter.conf'),
+    tag      => $environment,
+  }
 }

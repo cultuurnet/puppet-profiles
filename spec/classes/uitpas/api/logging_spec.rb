@@ -4,6 +4,7 @@ describe 'profiles::uitpas::api::logging' do
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       let(:facts) { facts }
+      let(:node) { 'api-node.example.com' }
       let(:params) { { 'servername' => 'api.example.com' } }
 
       ['testing', 'acceptance', 'production'].each do |environment|
@@ -11,6 +12,15 @@ describe 'profiles::uitpas::api::logging' do
           let(:environment) { environment }
 
           it { is_expected.to compile.with_all_deps }
+
+          it { expect(exported_resources).to contain_profiles__logstash__filter_fragment('api-node.example.com_uitpas::api').with(
+            'log_type' => 'uitpas::api',
+            'filter' => File.read('files/uitpas/api/logstash_filter.conf'),
+            'tag' => environment
+          ) }
+
+          it { is_expected.not_to contain_file('/etc/logstash/conf.d/application-uitpas-api.conf') }
+
 
           it { is_expected.to contain_filebeat__input('api.example.com_uitpas::api').with(
             'input_type'    => 'filestream',
