@@ -166,6 +166,10 @@ class profiles::uit::frontend (
 
   if $api_url {
     $proxy_api_location = '/graphql'
+    $https_api_url      = split($api_url, ':')[0] ? {
+                            'http'  => false,
+                            'https' => true
+                          }
     $rewrite_proxy_api  = {
                             comment      => "Reverse proxy ${proxy_api_location} calls to GraphQL",
                             rewrite_cond => [
@@ -173,8 +177,13 @@ class profiles::uit::frontend (
                                             ],
                             rewrite_rule => "^${proxy_api_location}\$ ${api_url} [P,L]"
                           }
+
+    if $https_api_url {
+      include apache::mod::ssl
+    }
  } else {
     $proxy_api_location = undef
+    $https_api_url      = false
     $rewrite_proxy_api  = undef
  }
 
@@ -225,6 +234,7 @@ class profiles::uit::frontend (
                           }],
     rewrites           => [$rewrite_maintenance_page, $rewrite_deployment_page, $rewrite_proxy_api].filter |$item| { $item } + $rewrites_compression,
     headers            => $headers_compression,
+    ssl_proxyengine    => $https_api_url,
     error_documents    => [$error_document_maintenance_page, $error_document_deployment_page].filter |$item| { $item },
     custom_fragment    => $vhost_custom_fragment,
     setenvif           => $profiles::apache::defaults::setenvif,
