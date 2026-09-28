@@ -250,7 +250,7 @@ describe 'profiles::uit::frontend' do
               'proxy_pass'         => [{
                                         'path'                => '/',
                                         'url'                 => 'http://127.0.1.1:7000/',
-                                        'no_proxy_uris'       => ['/maintenance/', '/deployment/', '/api/graphql'],
+                                        'no_proxy_uris'       => ['/maintenance/', '/deployment/', '/graphql'],
                                         'no_proxy_uris_match' => ['^/(css/|img/|js/|icons/|_nuxt/|sw.js)']
                                       }],
               'rewrites'           => [{
@@ -273,11 +273,11 @@ describe 'profiles::uit::frontend' do
                                                           ],
                                         'rewrite_rule' => '^ - [R=504,L]'
                                       }, {
-                                        'comment'      => 'Reverse proxy /api/graphql calls to GraphQL',
+                                        'comment'      => 'Reverse proxy /graphql calls to GraphQL',
                                         'rewrite_cond' => [
-                                                            '%{REQUEST_URI} ^/api/graphql$ [NC]'
+                                                            '%{REQUEST_URI} ^/graphql$ [NC]'
                                                           ],
-                                        'rewrite_rule' => '^/api/graphql$ https://foo.bar.com [P,L]'
+                                        'rewrite_rule' => '^/graphql$ https://foo.bar.com [P,L]'
                                       }, {
                                         'comment'      => 'Serve brotli compressed assets for supported clients',
                                         'rewrite_cond' => [

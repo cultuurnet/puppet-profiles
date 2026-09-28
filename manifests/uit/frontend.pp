@@ -165,7 +165,7 @@ class profiles::uit::frontend (
   }
 
   if $api_url {
-    $proxy_api_location = '/api/graphql'
+    $proxy_api_location = '/graphql'
     $rewrite_proxy_api  = {
                             comment      => "Reverse proxy ${proxy_api_location} calls to GraphQL",
                             rewrite_cond => [
