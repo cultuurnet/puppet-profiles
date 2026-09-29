@@ -4,7 +4,6 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       let(:facts) { facts }
-      let(:pre_condition) { 'realize(Group["www-data"], User["www-data"])' }
 
       context 'with image => registry.example.com/uitdatabank-search-api' do
         let(:params) { {
@@ -23,7 +22,8 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
             'aws_region'                     => 'eu-west-1',
             'image_tag'                      => nil,
             'default_queries'                => false,
-            'api_keys_matched_to_client_ids' => false
+            'api_keys_matched_to_client_ids' => false,
+            'cli_worker_count'               => 1
           ) }
 
           it { is_expected.to contain_class('profiles::docker::ecr_repos').with(
@@ -42,6 +42,17 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
             'group'  => 'root',
             'mode'   => '0644'
           ) }
+
+          context 'with docker-compose YAML loaded' do
+            let(:content) { YAML.load(catalogue.resource('file', 'uitdatabank-search-api-docker-compose').send(:parameters)[:content], aliases: true) }
+
+            it { expect(content['x-search-service']['image']).to eq('registry.example.com/uitdatabank-search-api:latest') }
+            it { expect(content['x-search-service']['volumes']).not_to include('/etc/uitdatabank-search-api/api_keys_matched_to_client_ids.php:/var/www/html/api_keys_matched_to_client_ids.php:ro') }
+            it { expect(content['x-search-service']['volumes']).not_to include('/etc/uitdatabank-search-api/default_queries.php:/var/www/html/default_queries.php:ro') }
+            it { expect(content['services']['search-nginx']['volumes']).to include('/etc/uitdatabank-search-api/nginx.conf:/etc/nginx/conf.d/default.conf:ro') }
+            it { expect(content['services']['search-nginx']['network_mode']).to eq('service:search-api') }
+            it { expect(content['services']['search-consume-udb3-cli']['scale']).to eq(1) }
+          end
 
           it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').with(
             'ensure' => 'file',
@@ -87,9 +98,6 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
 
           it { is_expected.to contain_exec('uitdatabank-search-api-nginx-reload').that_requires('Docker_compose[uitdatabank-search-api]') }
 
-          it { is_expected.to contain_file('uitdatabank-search-api-docker-compose').with_content(%r{^\s+- /etc/uitdatabank-search-api/nginx.conf:/etc/nginx/conf.d/default.conf:ro$}) }
-          it { is_expected.to contain_file('uitdatabank-search-api-docker-compose').with_content(/^\s+network_mode: "service:search-api"$/) }
-
           it { is_expected.not_to contain_file('/var/www/udb3-search-service/web') }
           it { is_expected.not_to contain_file('/var/www/udb3-search-service/web/.htaccess') }
 
@@ -99,10 +107,6 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
             'hour'        => '0',
             'minute'      => '0'
           ) }
-
-          it { is_expected.to contain_file('uitdatabank-search-api-docker-compose').with_content(/^\s+image: registry.example.com\/uitdatabank-search-api:latest$/) }
-          it { is_expected.not_to contain_file('uitdatabank-search-api-docker-compose').with_content(/^\s+- \/etc\/uitdatabank-search-api\/default_queries.php:\/var\/www\/html\/default_queries.php:ro$/) }
-          it { is_expected.not_to contain_file('uitdatabank-search-api-docker-compose').with_content(/^\s+- \/etc\/uitdatabank-search-api\/api_keys_matched_to_client_ids.php:\/var\/www\/html\/api_keys_matched_to_client_ids.php:ro$/) }
 
           it { is_expected.to contain_docker_compose('uitdatabank-search-api').with(
             'ensure'        => 'present',
@@ -118,16 +122,31 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
 
           it { is_expected.to contain_file('uitdatabank-search-api-docker-compose').that_notifies('Docker_compose[uitdatabank-search-api]') }
           it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').that_requires('Docker_compose[uitdatabank-search-api]') }
+
+          context 'with fact docker_image_tag => { uitdatabank-search-api => 1.2.3 }' do
+            let(:facts) { super().merge(
+              {
+                'docker_image_tag' => { 'uitdatabank-search-api' => '1.2.3' }
+              }
+            )}
+
+            context 'with docker-compose YAML loaded' do
+              let(:content) { YAML.load(catalogue.resource('file', 'uitdatabank-search-api-docker-compose').send(:parameters)[:content], aliases: true) }
+
+              it { expect(content['x-search-service']['image']).to eq('registry.example.com/uitdatabank-search-api:1.2.3') }
+            end
+          end
         end
       end
 
-      context 'with image => myregistry.example.com/uitdatabank-search-api, image_tag => foo, aws_region => us-east-1, default_queries => true and api_keys_matched_to_client_ids => true' do
+      context 'with image => myregistry.example.com/uitdatabank-search-api, image_tag => foo, aws_region => us-east-1, default_queries => true, api_keys_matched_to_client_ids => true and cli_worker_count => 4' do
         let(:params) { {
           'image'                          => 'myregistry.example.com/uitdatabank-search-api',
           'image_tag'                      => 'foo',
           'aws_region'                     => 'us-east-1',
           'default_queries'                => true,
-          'api_keys_matched_to_client_ids' => true
+          'api_keys_matched_to_client_ids' => true,
+          'cli_worker_count'               => 4
         } }
 
         context 'in the testing environment' do
@@ -142,9 +161,14 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
             }
           ) }
 
-          it { is_expected.to contain_file('uitdatabank-search-api-docker-compose').with_content(/^\s+image: myregistry.example.com\/uitdatabank-search-api:foo$/) }
-          it { is_expected.to contain_file('uitdatabank-search-api-docker-compose').with_content(/^\s+- \/etc\/uitdatabank-search-api\/default_queries.php:\/var\/www\/html\/default_queries.php:ro$/) }
-          it { is_expected.to contain_file('uitdatabank-search-api-docker-compose').with_content(/^\s+- \/etc\/uitdatabank-search-api\/api_keys_matched_to_client_ids.php:\/var\/www\/html\/api_keys_matched_to_client_ids.php:ro$/) }
+          context 'with docker-compose YAML loaded' do
+            let(:content) { YAML.load(catalogue.resource('file', 'uitdatabank-search-api-docker-compose').send(:parameters)[:content], aliases: true) }
+
+            it { expect(content['x-search-service']['image']).to eq('myregistry.example.com/uitdatabank-search-api:foo') }
+            it { expect(content['x-search-service']['volumes']).to include('/etc/uitdatabank-search-api/api_keys_matched_to_client_ids.php:/var/www/html/api_keys_matched_to_client_ids.php:ro') }
+            it { expect(content['x-search-service']['volumes']).to include('/etc/uitdatabank-search-api/default_queries.php:/var/www/html/default_queries.php:ro') }
+            it { expect(content['services']['search-consume-udb3-cli']['scale']).to eq(4) }
+          end
         end
       end
 

@@ -56,6 +56,7 @@ services:
   search-consume-udb3-cli:
     <<: *search-service
     command: ["php", "bin/app.php", "consume-udb3-cli"]
+    scale: <%= @cli_worker_count %>
 
   search-consume-udb3-related:
     <<: *search-service

@@ -4,7 +4,8 @@ class profiles::uitdatabank::search_api::deployment::container (
   String           $aws_region                     = 'eu-west-1',
   Optional[String] $image_tag                      = undef,
   Boolean          $default_queries                = false,
-  Boolean          $api_keys_matched_to_client_ids = false
+  Boolean          $api_keys_matched_to_client_ids = false,
+  Integer[1]       $cli_worker_count               = 1
 ) inherits ::profiles {
 
   $config_dir         = '/etc/uitdatabank-search-api'
