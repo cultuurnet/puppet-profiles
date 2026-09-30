@@ -110,7 +110,8 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
 
           it { is_expected.to contain_docker_compose('uitdatabank-search-api').with(
             'ensure'        => 'present',
-            'compose_files' => ['/etc/uitdatabank-search-api/docker-compose.yml']
+            'compose_files' => ['/etc/uitdatabank-search-api/docker-compose.yml'],
+            'scale'         => { 'search-consume-udb3-cli' => 1 }
           ) }
 
           it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').with(

@@ -47,6 +47,7 @@ class profiles::uitdatabank::search_api::deployment::container (
   docker_compose { 'uitdatabank-search-api':
     ensure        => present,
     compose_files => ["${config_dir}/docker-compose.yml"],
+    scale         => { 'search-consume-udb3-cli' => $cli_worker_count },
     require       => Class['profiles::docker'],
   }
 
