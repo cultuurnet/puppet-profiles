@@ -207,6 +207,12 @@ describe 'profiles::jenkins::controller::configuration' do
               'configuration' => nil
             ) }
 
+            it { is_expected.to contain_profiles__jenkins__plugin('github-branch-source').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => []
+            ) }
+
             it { is_expected.to contain_profiles__jenkins__plugin('role-strategy').with(
               'ensure'  => 'present',
               'restart' => false
@@ -378,7 +384,8 @@ describe 'profiles::jenkins::controller::configuration' do
                                      { 'id' => 'foo', 'type' => 'string', 'secret' => 'bla' },
                                      { 'id' => 'awscred', 'type' => 'aws', 'access_key' => 'aws_key', 'secret_key' => 'aws_secret' },
                                      { 'id' => 'filecred', 'type' => 'file', 'filename' => 'my_file.txt', 'content' => 'filecontent' },
-                                     { 'id' => 'userpass', 'type' => 'username_password', 'username' => 'foo', 'password' => 'bar' }
+                                     { 'id' => 'userpass', 'type' => 'username_password', 'username' => 'foo', 'password' => 'bar' },
+                                     { 'id' => 'ghapp', 'type' => 'github_app', 'app_id' => '1234567', 'private_key' => 'ghappkey', 'owner' => 'cultuurnet' }
                                    ],
           'github_hook_url'     => 'https://builds.foobar.com/github-webhook/',
           'github_servers'      => {
@@ -457,6 +464,14 @@ describe 'profiles::jenkins::controller::configuration' do
             'restart'       => false,
             'configuration' => [{ 'id' => 'awscred', 'type' => 'aws', 'access_key' => 'aws_key', 'secret_key' => 'aws_secret' }]
           ) }
+
+          it { is_expected.to contain_profiles__jenkins__plugin('github-branch-source').with(
+            'ensure'        => 'present',
+            'restart'       => false,
+            'configuration' => [{ 'id' => 'ghapp', 'type' => 'github_app', 'app_id' => '1234567', 'private_key' => 'ghappkey', 'owner' => 'cultuurnet' }]
+          ) }
+
+          it { is_expected.to contain_profiles__jenkins__plugin('github-branch-source').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
 
           it { is_expected.to contain_profiles__jenkins__plugin('ssh-credentials').with(
             'ensure'        => 'present',

@@ -19,6 +19,7 @@ class profiles::jenkins::controller::configuration(
 
   $plain_credentials       = [$credentials].flatten.filter |$credential| { $credential['type'] == 'string' or $credential['type'] == 'file' or $credential['type'] == 'username_password' }
   $aws_credentials         = [$credentials].flatten.filter |$credential| { $credential['type'] == 'aws' }
+  $github_app_credentials  = [$credentials].flatten.filter |$credential| { $credential['type'] == 'github_app' }
   $private_key_credentials = if $private_key {
                                [$credentials].flatten.filter |$credential| { $credential['type'] == 'private_key' } + [{ id => 'jenkins@jenkins.publiq.be', type => 'private_key', key => $private_key }]
                              } else {
@@ -104,6 +105,11 @@ class profiles::jenkins::controller::configuration(
 
   profiles::jenkins::plugin { 'aws-credentials':
     configuration => $aws_credentials,
+    notify        => Class['profiles::jenkins::controller::configuration::reload']
+  }
+
+  profiles::jenkins::plugin { 'github-branch-source':
+    configuration => $github_app_credentials,
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
 
