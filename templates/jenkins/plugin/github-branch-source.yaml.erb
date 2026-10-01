@@ -1,0 +1,23 @@
+<%- if ! @configuration.empty? -%>
+---
+credentials:
+  system:
+    domainCredentials:
+    - credentials:
+      <%- [@configuration].flatten.each do |credential| -%>
+      - gitHubApp:
+          id: '<%= credential['id'] %>'
+          scope: GLOBAL
+          appID: '<%= credential['app_id'] %>'
+          privateKey: |
+            <%- credential['private_key'].each_line do |line| -%>
+            <%= line -%>
+            <%- end %>
+          <%- if credential['owner'] -%>
+          owner: '<%= credential['owner'] %>'
+          <%- end -%>
+          <%- if credential['description'] -%>
+          description: '<%= credential['description'] %>'
+          <%- end -%>
+      <%- end -%>
+<%- end -%>
