@@ -23,6 +23,8 @@ jobs:<%- if @configuration['pipelines'].empty? -%> []
           properties {
             <%- if pipeline['git_url'] =~ /^git@github.com:/ -%>
               githubProjectUrl('https://github.com/<%= pipeline['git_url'][/^.*:(.*).git$/, 1] %>')
+            <%- elsif pipeline['git_url'] =~ /^https:\/\/github.com\// -%>
+              githubProjectUrl('https://github.com/<%= pipeline['git_url'][/^https:\/\/github.com\/(.*?)(\.git)?$/, 1] %>')
             <%- end -%>
               copyArtifactPermissionProperty {
                   projectNames('*')
