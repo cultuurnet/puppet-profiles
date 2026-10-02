@@ -27,7 +27,9 @@ class profiles::elasticsearch (
   Optional[String]               $archive_bucket                      = undef,
   String                         $archive_region                      = 'eu-west-1',
   Optional[String]               $archive_access_key_id               = undef,
-  Optional[String]               $archive_secret_access_key           = undef
+  Optional[String]               $archive_secret_access_key           = undef,
+  # Indices whose compressed store size (bytes) exceeds this are archived day-by-day
+  Integer                        $archive_chunk_threshold_bytes       = 2000000000
 ) inherits ::profiles {
 
   if ($version and $major_version) {
@@ -260,8 +262,8 @@ class profiles::elasticsearch (
 
     cron { 'elasticsearch-index-retention':
       command     => '/usr/local/bin/elasticsearch-index-retention.sh >> /var/log/elasticsearch-index-retention.log 2>&1',
-      environment => ['MAILTO=infra+cron@publiq.be'],
       user        => 'root',
+      weekday     => '0',
       hour        => '3',
       minute      => '0',
       require     => $archive_bucket ? {
