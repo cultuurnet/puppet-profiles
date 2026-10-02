@@ -4,6 +4,9 @@ class profiles::uit::cms::deployment (
   String           $version             = 'latest',
   String           $repository          = 'uit-cms',
   Optional[String] $robots_source       = undef,
+  Boolean          $newrelic            = false,
+  # Set explicitly to retain legacy New Relic application names during migration.
+  Optional[String] $newrelic_app_name   = undef,
   Optional[String] $puppetdb_url        = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
@@ -19,6 +22,13 @@ class profiles::uit::cms::deployment (
     ensure  => $version,
     notify  => [Service['uit-cms'], Profiles::Deployment::Versions[$title]],
     require => Apt::Source[$repository]
+  }
+
+  profiles::newrelic::php::application { 'uit-cms':
+    app_name => $newrelic_app_name,
+    docroot  => "${basedir}/web",
+    enable   => $newrelic,
+    require  => Package['uit-cms']
   }
 
   file { 'uit-cms-settings':

@@ -2,6 +2,9 @@ class profiles::uitpas::website::api::deployment (
   String                     $config_source,
   String                     $version           = 'latest',
   String                     $repository        = 'uitpas-website-api',
+  Boolean                    $newrelic          = false,
+  # Set explicitly to retain legacy New Relic application names during migration.
+  Optional[String]           $newrelic_app_name = undef,
   Optional[String]           $puppetdb_url      = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
@@ -16,6 +19,13 @@ class profiles::uitpas::website::api::deployment (
     ensure  => $version,
     notify  => Profiles::Deployment::Versions[$title],
     require => Apt::Source[$repository]
+  }
+
+  profiles::newrelic::php::application { 'uitpas-website-api':
+    app_name => $newrelic_app_name,
+    docroot  => "${basedir}/public",
+    enable   => $newrelic,
+    require  => Package['uitpas-website-api']
   }
 
   file { 'uitpas-website-api-config':
