@@ -16,6 +16,7 @@ group :development, :test do
   gem 'semantic_puppet', :require => false
   gem 'facter', '4.10.0', :require => false
   gem 'openvox', '8.19.2', :require => false
+  gem 'aws-sdk-ecr', :require => false
 end
 
 # vim:ft=ruby
