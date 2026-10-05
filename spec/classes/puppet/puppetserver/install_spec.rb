@@ -24,10 +24,17 @@ describe 'profiles::puppet::puppetserver::install' do
           'ensure' => 'installed'
         ) }
 
+        it { is_expected.to contain_package('aws-sdk-ecr-puppetserver-gem').with(
+          'ensure'   => 'installed',
+          'name'     => 'aws-sdk-ecr',
+          'provider' => 'puppetserver_gem'
+        ) }
+
         it { is_expected.to contain_package('openvox-server').that_requires('Group[puppet]') }
         it { is_expected.to contain_package('openvox-server').that_requires('User[puppet]') }
         it { is_expected.to contain_package('openvox-server').that_requires('Apt::Source[openvox]') }
         it { is_expected.to contain_package('openvox-server').that_requires('Class[profiles::java]') }
+        it { is_expected.to contain_package('openvox-server').that_comes_before('Package[aws-sdk-ecr-puppetserver-gem]') }
       end
 
       context "with version => 1.2.3" do
