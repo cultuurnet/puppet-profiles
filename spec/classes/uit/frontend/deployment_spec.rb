@@ -19,18 +19,19 @@ describe 'profiles::uit::frontend::deployment' do
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to contain_class('profiles::uit::frontend::deployment').with(
-              'config_source'        => 'appconfig/uit/frontend/env',
-              'maximum_heap_size'    => 512,
-              'version'              => 'latest',
-              'repository'           => 'uit-frontend',
-              'service_status'       => 'running',
-              'service_address'      => '127.0.0.1',
-              'service_port'         => 3000,
-              'service_watchdog'     => false,
-              'newrelic_license_key' => 'my_license_key',
-              'newrelic_app_name'    => 'uit-frontend-acceptance',
-              'newrelic_tracing'     => false,
-              'puppetdb_url'         => 'http://localhost:8081'
+              'config_source'          => 'appconfig/uit/frontend/env',
+              'maximum_heap_size'      => 512,
+              'version'                => 'latest',
+              'repository'             => 'uit-frontend',
+              'service_status'         => 'running',
+              'service_address'        => '127.0.0.1',
+              'service_port'           => 3000,
+              'service_watchdog'       => false,
+              'newrelic_license_key'   => 'my_license_key',
+              'newrelic_app_name'      => 'uit-frontend-acceptance',
+              'newrelic_tracing'       => false,
+              'newrelic_opentelemetry' => false,
+              'puppetdb_url'           => 'http://localhost:8081'
             ) }
 
             it { is_expected.to contain_apt__source('uit-frontend') }
@@ -63,6 +64,7 @@ describe 'profiles::uit::frontend::deployment' do
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NEW_RELIC_APP_NAME=uit-frontend-acceptance$/) }
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NEW_RELIC_TRACER_ENABLED=false$/) }
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NEW_RELIC_DISTRIBUTED_TRACING_ENABLED=false$/) }
+            it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NEW_RELIC_OPENTELEMETRY_ENABLED=false$/) }
 
             it { is_expected.to contain_service('uit-frontend').with(
               'ensure'    => 'running',
@@ -99,20 +101,21 @@ describe 'profiles::uit::frontend::deployment' do
         end
       end
 
-      context "with config_source => appconfig/uit/frontend/env, maximum_heap_size => 1024, service_address => 0.0.0.0, service_port => 3456, version => 1.2.3, repository => uit-frontend-exotic, service_status => stopped, service_watchdog => true, newrelic_license_key => foo, newrelic_app_name => bar, newrelic_tracing => true and puppetdb_url => http://example.com:8000" do
+      context "with config_source => appconfig/uit/frontend/env, maximum_heap_size => 1024, service_address => 0.0.0.0, service_port => 3456, version => 1.2.3, repository => uit-frontend-exotic, service_status => stopped, service_watchdog => true, newrelic_license_key => foo, newrelic_app_name => bar, newrelic_tracing => true, newrelic_opentelemetry => true and puppetdb_url => http://example.com:8000" do
         let(:params) { {
-          'config_source'        => 'appconfig/uit/frontend/env',
-          'version'              => '1.2.3',
-          'maximum_heap_size'    => 1024,
-          'repository'           => 'uit-frontend-exotic',
-          'service_status'       => 'stopped',
-          'service_address'      => '0.0.0.0',
-          'service_port'         => 3456,
-          'service_watchdog'     => true,
-          'newrelic_license_key' => 'foo',
-          'newrelic_app_name'    => 'bar',
-          'newrelic_tracing'     => true,
-          'puppetdb_url'         => 'http://example.com:8000'
+          'config_source'          => 'appconfig/uit/frontend/env',
+          'version'                => '1.2.3',
+          'maximum_heap_size'      => 1024,
+          'repository'             => 'uit-frontend-exotic',
+          'service_status'         => 'stopped',
+          'service_address'        => '0.0.0.0',
+          'service_port'           => 3456,
+          'service_watchdog'       => true,
+          'newrelic_license_key'   => 'foo',
+          'newrelic_app_name'      => 'bar',
+          'newrelic_tracing'       => true,
+          'newrelic_opentelemetry' => true,
+          'puppetdb_url'           => 'http://example.com:8000'
         } }
 
         context "with hieradata" do
@@ -131,6 +134,7 @@ describe 'profiles::uit::frontend::deployment' do
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NEW_RELIC_LICENSE_KEY=foo$/) }
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NEW_RELIC_APP_NAME=bar$/) }
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NEW_RELIC_TRACER_ENABLED=true$/) }
+            it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NEW_RELIC_OPENTELEMETRY_ENABLED=true$/) }
             it { is_expected.to contain_file('uit-frontend-service-defaults').with_content(/^NEW_RELIC_DISTRIBUTED_TRACING_ENABLED=true$/) }
 
             it { is_expected.to contain_package('uit-frontend').with( 'ensure' => '1.2.3') }
