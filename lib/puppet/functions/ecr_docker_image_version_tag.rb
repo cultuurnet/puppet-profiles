@@ -46,7 +46,11 @@ Puppet::Functions.create_function(:ecr_docker_image_version_tag) do
       repository_name: ecr_repository
     )
 
+    raise Exception.new "No images found in #{image_repository}" if output[:image_details].empty?
+
     image = output[:image_details].filter { |image| image[:image_tags].include?(source_tag) }[0]
+
+    raise Exception.new "No images found in #{image_repository} with tag #{source_tag}" if image.nil?
 
     version_tag = image[:image_tags].find { |tag| tag =~ version_tag_pattern }
 

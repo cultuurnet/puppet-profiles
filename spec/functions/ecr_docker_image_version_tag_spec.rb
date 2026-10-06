@@ -58,4 +58,36 @@ describe 'ecr_docker_image_version_tag' do
       it { is_expected.to run.with_params('123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api', 'acceptance', 'foo').and_return('foo') }
     end
   end
+
+  context 'with no ECR image with the source tag available ' do
+    let(:ecr_client_double) { instance_double('ECRClient') }
+
+    before(:each) do
+      allow(ECRClient).to receive(:new).and_return(ecr_client_double)
+
+      allow(ecr_client_double).to receive(:describe_images).with(registry_id: '123456789012', repository_name: 'uitdatabank/search-api').and_return({:image_details => [{:image_tags=>["acceptance", "latest", "foo"], :registry_id=>"123456789012", :repository_name=>"uitdatabank/search-api"}] })
+    end
+
+    context 'with parameters 123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api, testing and no default_tag' do
+      it { is_expected.to run.with_params('123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api', 'testing').and_raise_error('No images found in 123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api with tag testing') }
+    end
+
+    context 'with parameters 123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api, testing and foo' do
+      it { is_expected.to run.with_params('123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api', 'testing', 'foo').and_raise_error('No images found in 123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api with tag testing') }
+    end
+  end
+
+  context 'with no ECR image available ' do
+    let(:ecr_client_double) { instance_double('ECRClient') }
+
+    before(:each) do
+      allow(ECRClient).to receive(:new).and_return(ecr_client_double)
+
+      allow(ecr_client_double).to receive(:describe_images).with(registry_id: '123456789012', repository_name: 'uitdatabank/search-api').and_return({:image_details => [] })
+    end
+
+    context 'with parameters 123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api, acceptance and no default_tag' do
+      it { is_expected.to run.with_params('123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api', 'acceptance').and_raise_error('No images found in 123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api') }
+    end
+  end
 end
