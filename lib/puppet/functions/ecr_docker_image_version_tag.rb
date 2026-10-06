@@ -14,21 +14,18 @@ Puppet::Functions.create_function(:ecr_docker_image_version_tag) do
   #   The image repository you want to get the image version tag from.
   # @param source_tag
   #   The tag you want to use for image selection.
-  # @param default_tag
-  #   The tag returned when no version tag is found. Defaults to 'latest'.
   #
   # @return [String]
   #
   # @example Example Usage:
-  #   ecr_docker_image_version_tag('my_ecr/my_image', 'acceptance', 'foo')
+  #   ecr_docker_image_version_tag('my_ecr/my_image', 'acceptance')
   dispatch :get_version_tag do
     required_param 'String', :image_repository
     required_param 'String', :source_tag
-    optional_param 'String', :default_tag
     return_type 'String'
   end
 
-  def get_version_tag(image_repository, source_tag, default_tag = 'latest')
+  def get_version_tag(image_repository, source_tag)
     # Pipeline version tags are stamped as yyyy.MM.dd.HHmmss (see util.pipelineVersion()
     # in jenkins-global-library). Matching this shape lets us pick the immutable release
     # tag deterministically, rather than an arbitrary "other" tag on the same image
@@ -54,7 +51,7 @@ Puppet::Functions.create_function(:ecr_docker_image_version_tag) do
 
     version_tag = image[:image_tags].find { |tag| tag =~ version_tag_pattern }
 
-    # If no version tag is found, fall back to the default_tag parameter
-    version_tag || default_tag
+    # If no version tag is found, fall back to the source_tag parameter
+    version_tag || source_tag
   end
 end
