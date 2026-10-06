@@ -32,7 +32,8 @@ describe 'profiles::uitdatabank::rdf' do
               'allow_encoded_slashes' => 'nodecode',
               'access_log_format'     => 'extended_json',
               'request_headers'       => [
-                                           'set Accept "text/turtle"'
+                                           'set Accept "text/turtle"',
+                                           'set Accept "application/json" ENV=json'
                                          ],
               'rewrites'              => [{
                                            'comment'      => 'Only allow GET requests',
@@ -40,6 +41,12 @@ describe 'profiles::uitdatabank::rdf' do
                                                                '%{REQUEST_METHOD} !GET'
                                                              ],
                                            'rewrite_rule' => '^ - [F,L]'
+                                         }, {
+                                           'comment'      => 'Set environment variable for JSON requests',
+                                           'rewrite_cond' => [
+                                                               '%{HTTP:Accept} "application/json"'
+                                                             ],
+                                           'rewrite_rule' => '^ - [E=json]'
                                          }, {
                                            'comment'      => 'Only allow requests to /(event|place|organizer)s?/<uuid> or /id/(event|place|organizer)/udb/<uuid>',
                                            'rewrite_cond' => [
@@ -80,7 +87,8 @@ describe 'profiles::uitdatabank::rdf' do
               'allow_encoded_slashes' => 'nodecode',
               'access_log_format'     => 'extended_json',
               'request_headers'       => [
-                                           'set Accept "text/turtle"'
+                                           'set Accept "text/turtle"',
+                                           'set Accept "application/json" ENV=json'
                                          ],
               'rewrites'              => [{
                                            'comment'      => 'Only allow GET requests',
@@ -88,6 +96,12 @@ describe 'profiles::uitdatabank::rdf' do
                                                                '%{REQUEST_METHOD} !GET'
                                                              ],
                                            'rewrite_rule' => '^ - [F,L]'
+                                         }, {
+                                           'comment'      => 'Set environment variable for JSON requests',
+                                           'rewrite_cond' => [
+                                                               '%{HTTP:Accept} "application/json"'
+                                                             ],
+                                           'rewrite_rule' => '^ - [E=json]'
                                          }, {
                                            'comment'      => 'Only allow requests to /(event|place|organizer)s?/<uuid> or /id/(event|place|organizer)/udb/<uuid>',
                                            'rewrite_cond' => [

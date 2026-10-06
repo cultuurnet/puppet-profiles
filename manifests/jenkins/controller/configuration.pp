@@ -3,6 +3,7 @@ class profiles::jenkins::controller::configuration(
   String                     $admin_password,
   Boolean                    $mfa                      = false,
   Boolean                    $role_based_authorization = false,
+  Boolean                    $timestamps               = false,
   Integer[1]                 $max_concurrent_builds    = 1,
   Optional[Stdlib::Httpurl]  $docker_registry_url      = undef,
   Optional[String]           $private_key              = undef,
@@ -18,6 +19,7 @@ class profiles::jenkins::controller::configuration(
 
   $plain_credentials       = [$credentials].flatten.filter |$credential| { $credential['type'] == 'string' or $credential['type'] == 'file' or $credential['type'] == 'username_password' }
   $aws_credentials         = [$credentials].flatten.filter |$credential| { $credential['type'] == 'aws' }
+  $github_app_credentials  = [$credentials].flatten.filter |$credential| { $credential['type'] == 'github_app' }
   $private_key_credentials = if $private_key {
                                [$credentials].flatten.filter |$credential| { $credential['type'] == 'private_key' } + [{ id => 'jenkins@jenkins.publiq.be', type => 'private_key', key => $private_key }]
                              } else {
@@ -51,6 +53,7 @@ class profiles::jenkins::controller::configuration(
   profiles::jenkins::plugin { 'email-ext': }
   profiles::jenkins::plugin { 'copyartifact': }
   profiles::jenkins::plugin { 'ws-cleanup': }
+  profiles::jenkins::plugin { 'junit-attachments': }
   profiles::jenkins::plugin { 'slack': }
   profiles::jenkins::plugin { 'workflow-aggregator': }
   profiles::jenkins::plugin { 'pipeline-utility-steps': }
@@ -105,6 +108,11 @@ class profiles::jenkins::controller::configuration(
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
 
+  profiles::jenkins::plugin { 'github-branch-source':
+    configuration => $github_app_credentials,
+    notify        => Class['profiles::jenkins::controller::configuration::reload']
+  }
+
   profiles::jenkins::plugin { 'pipeline-groovy-lib':
     configuration => [$global_libraries].flatten,
     require       => [ Profiles::Jenkins::Plugin['git'], Profiles::Jenkins::Plugin['ssh-credentials']],
@@ -147,6 +155,19 @@ class profiles::jenkins::controller::configuration(
                      },
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
+
+  profiles::jenkins::plugin { 'timestamper':
+    ensure        => $timestamps ? {
+                       true  => 'present',
+                       false => 'absent'
+                     },
+    configuration => {
+                       'elapsed_time_format' => "'<b>'HH:mm:ss.SSS'</b> '",
+                       'system_time_format'  => "'<b>'yyyy-MM-dd'T'HH:mm:ss.SSSZ'</b> '"
+                     },
+    notify        => Class['profiles::jenkins::controller::configuration::reload']
+  }
+
   unless empty($users) {
     file { 'jenkins users':
       ensure  => 'file',

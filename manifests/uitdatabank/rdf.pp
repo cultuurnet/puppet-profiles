@@ -15,6 +15,10 @@ class profiles::uitdatabank::rdf (
                 rewrite_cond => ['%{REQUEST_METHOD} !GET'],
                 rewrite_rule => '^ - [F,L]'
               }, {
+                comment      => 'Set environment variable for JSON requests',
+                rewrite_cond => ['%{HTTP:Accept} "application/json"'],
+                rewrite_rule => '^ - [E=json]'
+              }, {
                 comment      => 'Only allow requests to /(event|place|organizer)s?/<uuid> or /id/(event|place|organizer)/udb/<uuid>',
                 rewrite_cond => [
                                   '%{REQUEST_URI} !^/(event|place|organizer)s?/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$',
@@ -40,7 +44,8 @@ class profiles::uitdatabank::rdf (
     allow_encoded_slashes => 'nodecode',
     access_log_format     => 'extended_json',
     request_headers       => [
-                               'set Accept "text/turtle"'
+                               'set Accept "text/turtle"',
+                               'set Accept "application/json" ENV=json'
                              ],
     rewrites              => $rewrites,
     ssl_proxyengine       => true

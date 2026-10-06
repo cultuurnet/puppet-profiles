@@ -10,6 +10,7 @@ class profiles::uit::frontend::deployment (
   Optional[String]           $newrelic_license_key = lookup('data::newrelic::license_key', Optional[String], 'first', undef),
   String                     $newrelic_app_name    = "uit-frontend-${environment}",
   Boolean                    $newrelic_tracing     = false,
+  Boolean                    $newrelic_opentelemetry = false,
   Optional[String]           $puppetdb_url         = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 

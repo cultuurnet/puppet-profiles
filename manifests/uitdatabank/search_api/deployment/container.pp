@@ -4,7 +4,8 @@ class profiles::uitdatabank::search_api::deployment::container (
   String           $aws_region                     = 'eu-west-1',
   Optional[String] $image_tag                      = undef,
   Boolean          $default_queries                = false,
-  Boolean          $api_keys_matched_to_client_ids = false
+  Boolean          $api_keys_matched_to_client_ids = false,
+  Integer[1]       $cli_worker_count               = 1
 ) inherits ::profiles {
 
   $config_dir         = '/etc/uitdatabank-search-api'
@@ -46,6 +47,7 @@ class profiles::uitdatabank::search_api::deployment::container (
   docker_compose { 'uitdatabank-search-api':
     ensure        => present,
     compose_files => ["${config_dir}/docker-compose.yml"],
+    scale         => { 'search-consume-udb3-cli' => $cli_worker_count },
     require       => Class['profiles::docker'],
   }
 

@@ -626,6 +626,13 @@ describe 'profiles::jenkins::plugin' do
                                                                                        defaultValue(false)
                                                                                        description('Boolean flag example')
                                                                                      }"
+                                                            },
+                                                            {
+                                                              'name'          => 'https repo',
+                                                              'git_url'       => 'https://github.com/org/httpsrepo.git',
+                                                              'git_ref'       => 'main',
+                                                              'credential_id' => 'github-app',
+                                                              'keep_builds'   => 5
                                                             }]
                                      }
             } }
@@ -651,6 +658,11 @@ describe 'profiles::jenkins::plugin' do
             it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*credentials\('mygitcred'\)$/) }
             it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*numToKeepStr\('2'\)$/) }
             it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*parameters {\n\s*stringParam {\n\s*name\('String'\)\n\s*defaultValue\(''\)\n\s*description\('String parameter example'\)\n\s*trim\(true\)\n\s*}\n\s*booleanParam {\n\s*name\('Myflag'\)\n\s*defaultValue\(false\)\n\s*description\('Boolean flag example'\)\n\s*}\n\s*}$/) }
+
+            it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*pipelineJob\('https-repo'\)/) }
+            it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*url\('https:\/\/github.com\/org\/httpsrepo.git'\)$/) }
+            it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*githubProjectUrl\('https:\/\/github.com\/org\/httpsrepo'\)$/) }
+            it { is_expected.to contain_file('job-dsl configuration').with_content(/^\s*credentials\('github-app'\)$/) }
 
             it { is_expected.to_not contain_file('job-dsl configuration').with_content(/^\s*githubPush\(\)$/) }
           end

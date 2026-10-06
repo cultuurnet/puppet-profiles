@@ -1,14 +1,15 @@
 describe 'profiles::uit::frontend' do
-  context "with servername => foo.example.com" do
-    let(:params) { {
-      'servername' => 'foo.example.com'
-    } }
 
-    include_examples 'operating system support'
+  include_examples 'operating system support'
 
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        let(:facts) { facts }
+  on_supported_os.each do |os, facts|
+    context "on #{os}" do
+      let(:facts) { facts }
+
+      context "with servername => foo.example.com" do
+        let(:params) { {
+          'servername' => 'foo.example.com'
+        } }
 
         context "without extra parameters" do
           let(:params) {
@@ -29,7 +30,8 @@ describe 'profiles::uit::frontend' do
               'redirect_source'     => nil,
               'maintenance_page'    => false,
               'deployment_page'     => false,
-              'apache_restart_cron' => false
+              'apache_restart_cron' => false,
+              'api_url'             => nil
             ) }
 
             it { is_expected.to contain_group('www-data') }
@@ -38,6 +40,8 @@ describe 'profiles::uit::frontend' do
 
             it { is_expected.to contain_class('profiles::nodejs') }
             it { is_expected.to contain_class('profiles::apache') }
+
+            it { is_expected.not_to contain_class('apache::mod::ssl') }
 
             it { is_expected.to contain_cron('uit-frontend-restart-apache').with(
               'ensure'  => 'absent',
@@ -135,6 +139,7 @@ describe 'profiles::uit::frontend' do
                                         'append Vary "Accept-Encoding" "env=brotli"',
                                         'append Vary "Accept-Encoding" "env=gzip"'
                                       ],
+              'ssl_proxyengine'    => false,
               'setenvif'           => [
                                         'X-Forwarded-Proto "https" HTTPS=on',
                                         'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
@@ -156,10 +161,11 @@ describe 'profiles::uit::frontend' do
           end
         end
 
-        context "with apache_restart_cron => true" do
+        context "with apache_restart_cron => true and api_url => http://my_api.com" do
           let(:params) {
             super().merge( {
-              'apache_restart_cron' => true
+              'apache_restart_cron' => true,
+              'api_url'             => 'http://my_api.com'
             } )
           }
 
@@ -167,6 +173,87 @@ describe 'profiles::uit::frontend' do
             let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
             it { is_expected.to compile.with_all_deps }
+
+            it { is_expected.not_to contain_class('apache::mod::ssl') }
+
+            it { is_expected.to contain_apache__vhost('foo.example.com_80').with(
+              'servername'         => 'foo.example.com',
+              'serveraliases'      => [],
+              'docroot'            => '/var/www/uit-frontend',
+              'manage_docroot'     => false,
+              'port'               => 80,
+              'access_log_format'  => 'extended_json',
+              'access_log_env_var' => '!nolog',
+              'custom_fragment'    => nil,
+              'error_documents'    => [],
+              'request_headers'    => [
+                                        'unset Proxy early',
+                                        'set X-Unique-Id %{UNIQUE_ID}e'
+                                      ],
+              'directories'        => [{
+                                        'path'           => '/',
+                                        'options'        => ['Indexes', 'MultiViews'],
+                                        'allow_override' => ['All'],
+                                        'require'        => { 'enforce' => 'all', 'requires' => ['all granted'] }
+                                      },
+                                      {
+                                        'path'           => '/(css/|img/|js/|icons/|_nuxt/|sw.js)',
+                                        'provider'       => 'locationmatch',
+                                        'headers'        => [
+                                                              'set Cache-Control "max-age=31536000, public"',
+                                                              'unset Last-Modified "expr=%{REQUEST_URI} =~ m#^/_nuxt/#"'
+                                                            ]
+                                      }],
+              'aliases'            => [{
+                                        'aliasmatch' => '^/(css/|img/|js/|icons/|_nuxt/|sw.js)(.*)$',
+                                        'path'       => '/var/www/uit-frontend/packages/app/.output/public/$1$2'
+                                      }],
+              'proxy_pass'         => [{
+                                        'path'                => '/',
+                                        'url'                 => 'http://127.0.0.1:3000/',
+                                        'no_proxy_uris'       => ['/graphql'],
+                                        'no_proxy_uris_match' => ['^/(css/|img/|js/|icons/|_nuxt/|sw.js)']
+                                      }],
+              'rewrites'           => [{
+                                        'comment'      => 'Reverse proxy /graphql calls to GraphQL',
+                                        'rewrite_cond' => [
+                                                            '%{REQUEST_URI} ^/graphql$ [NC]'
+                                                          ],
+                                        'rewrite_rule' => '^/graphql$ http://my_api.com [P,L]'
+                                      }, {
+                                        'comment'      => 'Serve brotli compressed assets for supported clients',
+                                        'rewrite_cond' => [
+                                                            '%{HTTP:Accept-encoding} "br"',
+                                                            '/var/www/uit-frontend/packages/app/.output/public%{REQUEST_FILENAME}.br -f'
+                                                          ],
+                                        'rewrite_rule' => '^/(css/|img/|js/|icons/|_nuxt/)(.*)$ /var/www/uit-frontend/packages/app/.output/public/$1$2.br [E=brotli]'
+                                      }, {
+                                        'comment'      => 'Serve gzip compressed assets for supported clients',
+                                        'rewrite_cond' => [
+                                                            '%{HTTP:Accept-encoding} "gzip"',
+                                                            '/var/www/uit-frontend/packages/app/.output/public%{REQUEST_FILENAME}.gz -f'
+                                                          ],
+                                        'rewrite_rule' => '^/(css/|img/|js/|icons/|_nuxt/)(.*)$ /var/www/uit-frontend/packages/app/.output/public/$1$2.gz [E=gzip]'
+                                      }, {
+                                        'comment'      => 'Do not compress pre-compressed content in transfer',
+                                        'rewrite_rule' => [
+                                                            '\.css\.(gz|br)$ - [T=text/css,E=no-gzip:1,E=no-brotli:1]',
+                                                            '\.js\.(gz|br)$ - [T=text/javascript,E=no-gzip:1,E=no-brotli:1]',
+                                                            '\.svg\.(gz|br)$ - [T=image/svg+xml,E=no-gzip:1,E=no-brotli:1]'
+                                                          ]
+                                      }],
+              'headers'            => [
+                                        'append Content-Encoding "br" "env=brotli"',
+                                        'append Content-Encoding "gzip" "env=gzip"',
+                                        'append Vary "Accept-Encoding" "env=brotli"',
+                                        'append Vary "Accept-Encoding" "env=gzip"'
+                                      ],
+              'ssl_proxyengine'    => false,
+              'setenvif'           => [
+                                        'X-Forwarded-Proto "https" HTTPS=on',
+                                        'X-Forwarded-For "^([^,]*),?.*" CLIENT_IP=$1'
+                                      ]
+            ) }
 
             it { is_expected.to contain_cron('uit-frontend-restart-apache').with(
               'ensure'  => 'present',
@@ -179,14 +266,15 @@ describe 'profiles::uit::frontend' do
           end
         end
 
-        context "with service_address => 127.0.1.1, service_port => 7000, redirect_source => /tmp/foo, maintenance_page => true and deployment_page => true" do
+        context "with service_address => 127.0.1.1, service_port => 7000, redirect_source => /tmp/foo, maintenance_page => true, deployment_page => true and api_url => https://foo.bar.com" do
           let(:params) {
             super().merge( {
               'service_address'  => '127.0.1.1',
               'service_port'     => 7000,
               'redirect_source'  => '/tmp/foo',
               'maintenance_page' => true,
-              'deployment_page'  => true
+              'deployment_page'  => true,
+              'api_url'          => 'https://foo.bar.com'
             } )
           }
 
@@ -236,6 +324,8 @@ describe 'profiles::uit::frontend' do
               'group'   => 'www-data'
             ) }
 
+            it { is_expected.to contain_class('apache::mod::ssl') }
+
             it { is_expected.to contain_apache__vhost('foo.example.com_80').with(
               'custom_fragment'    => 'Include /var/www/uit-frontend/.redirect',
               'error_documents'    => [{
@@ -248,7 +338,7 @@ describe 'profiles::uit::frontend' do
               'proxy_pass'         => [{
                                         'path'                => '/',
                                         'url'                 => 'http://127.0.1.1:7000/',
-                                        'no_proxy_uris'       => ['/maintenance/', '/deployment/'],
+                                        'no_proxy_uris'       => ['/maintenance/', '/deployment/', '/graphql'],
                                         'no_proxy_uris_match' => ['^/(css/|img/|js/|icons/|_nuxt/|sw.js)']
                                       }],
               'rewrites'           => [{
@@ -271,6 +361,12 @@ describe 'profiles::uit::frontend' do
                                                           ],
                                         'rewrite_rule' => '^ - [R=504,L]'
                                       }, {
+                                        'comment'      => 'Reverse proxy /graphql calls to GraphQL',
+                                        'rewrite_cond' => [
+                                                            '%{REQUEST_URI} ^/graphql$ [NC]'
+                                                          ],
+                                        'rewrite_rule' => '^/graphql$ https://foo.bar.com [P,L]'
+                                      }, {
                                         'comment'      => 'Serve brotli compressed assets for supported clients',
                                         'rewrite_cond' => [
                                                             '%{HTTP:Accept-encoding} "br"',
@@ -291,7 +387,8 @@ describe 'profiles::uit::frontend' do
                                                             '\.js\.(gz|br)$ - [T=text/javascript,E=no-gzip:1,E=no-brotli:1]',
                                                             '\.svg\.(gz|br)$ - [T=image/svg+xml,E=no-gzip:1,E=no-brotli:1]'
                                                           ]
-                                      }]
+                                      }],
+              'ssl_proxyengine'    => true
             ) }
 
             it { is_expected.to contain_file('uit-frontend-migration-script').that_requires('File[/var/www/uit-frontend]') }
@@ -329,17 +426,11 @@ describe 'profiles::uit::frontend' do
           ) }
         end
       end
-    end
-  end
 
-  context "with servername => bar.example.com" do
-    let(:params) { {
-      'servername' => 'bar.example.com'
-    } }
-
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        let(:facts) { facts }
+      context "with servername => bar.example.com" do
+        let(:params) { {
+          'servername' => 'bar.example.com'
+        } }
 
         context "with hieradata" do
           let(:hiera_config) { 'spec/support/hiera/common.yaml' }
@@ -358,15 +449,9 @@ describe 'profiles::uit::frontend' do
           it { is_expected.to contain_apache__vhost('bar.example.com_80').that_requires('File[/var/www/uit-frontend]') }
         end
       end
-    end
-  end
 
-  context "without parameters" do
-    let(:params) { {} }
-
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        let(:facts) { facts }
+      context "without parameters" do
+        let(:params) { {} }
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'servername'/) }
       end

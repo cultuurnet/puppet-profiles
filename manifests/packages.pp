@@ -73,6 +73,10 @@ inherits ::profiles {
     ensure => 'present'
   }
 
+  @package { 'make':
+    ensure => 'present'
+  }
+
   @package { 'bzip2':
     ensure => 'present'
   }
