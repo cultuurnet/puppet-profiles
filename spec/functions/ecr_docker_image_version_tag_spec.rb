@@ -2,7 +2,7 @@ describe 'ecr_docker_image_version_tag' do
   it { is_expected.not_to be_nil }
 
   context 'without parameters' do
-    it { is_expected.to run.with_params().and_raise_error(ArgumentError, %r{expects between 2 and 3 arguments, got none}i) }
+    it { is_expected.to run.with_params().and_raise_error(ArgumentError, %r{expects 2 arguments, got none}i) }
   end
 
   context 'with an ECR image on acceptance with version tag available' do
@@ -14,12 +14,8 @@ describe 'ecr_docker_image_version_tag' do
       allow(ecr_client_double).to receive(:describe_images).with(registry_id: '123456789012', repository_name: 'uitdatabank/search-api').and_return({:image_details => [{:image_tags=>["acceptance", "latest", "2026.10.01.092900", "testing"], :registry_id=>"123456789012", :repository_name=>"uitdatabank/search-api"}] })
     end
 
-    context 'with parameters 123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api, acceptance and no default_tag' do
+    context 'with parameters 123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api and  acceptance' do
       it { is_expected.to run.with_params('123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api', 'acceptance').and_return('2026.10.01.092900') }
-    end
-
-    context 'with parameters 123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api, acceptance and foo' do
-      it { is_expected.to run.with_params('123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api', 'acceptance', 'foo').and_return('2026.10.01.092900') }
     end
   end
 
@@ -32,12 +28,8 @@ describe 'ecr_docker_image_version_tag' do
       allow(ecr_client_double).to receive(:describe_images).with(registry_id: '123456789012', repository_name: 'uitdatabank/search-api').and_return({:image_details => [{:image_tags=>["acceptance", "latest", "2026.10.01.092900", "testing"], :registry_id=>"123456789012", :repository_name=>"uitdatabank/search-api"}] })
     end
 
-    context 'with parameters 123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api, testing and no default_tag' do
+    context 'with parameters 123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api and testing' do
       it { is_expected.to run.with_params('123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api', 'testing').and_return('2026.10.01.092900') }
-    end
-
-    context 'with parameters 123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api, testing and bar' do
-      it { is_expected.to run.with_params('123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api', 'testing', 'bar').and_return('2026.10.01.092900') }
     end
   end
 
@@ -50,12 +42,8 @@ describe 'ecr_docker_image_version_tag' do
       allow(ecr_client_double).to receive(:describe_images).with(registry_id: '123456789012', repository_name: 'uitdatabank/search-api').and_return({:image_details => [{:image_tags=>["acceptance", "latest", "foo"], :registry_id=>"123456789012", :repository_name=>"uitdatabank/search-api"}] })
     end
 
-    context 'with parameters 123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api, acceptance and no default_tag' do
-      it { is_expected.to run.with_params('123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api', 'acceptance').and_return('latest') }
-    end
-
-    context 'with parameters 123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api, acceptance and foo' do
-      it { is_expected.to run.with_params('123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api', 'acceptance', 'foo').and_return('foo') }
+    context 'with parameters 123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api and acceptance' do
+      it { is_expected.to run.with_params('123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api', 'acceptance').and_return('acceptance') }
     end
   end
 
@@ -71,10 +59,6 @@ describe 'ecr_docker_image_version_tag' do
     context 'with parameters 123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api, testing and no default_tag' do
       it { is_expected.to run.with_params('123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api', 'testing').and_raise_error('No images found in 123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api with tag testing') }
     end
-
-    context 'with parameters 123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api, testing and foo' do
-      it { is_expected.to run.with_params('123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api', 'testing', 'foo').and_raise_error('No images found in 123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api with tag testing') }
-    end
   end
 
   context 'with no ECR image available ' do
@@ -86,7 +70,7 @@ describe 'ecr_docker_image_version_tag' do
       allow(ecr_client_double).to receive(:describe_images).with(registry_id: '123456789012', repository_name: 'uitdatabank/search-api').and_return({:image_details => [] })
     end
 
-    context 'with parameters 123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api, acceptance and no default_tag' do
+    context 'with parameters 123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api and acceptance' do
       it { is_expected.to run.with_params('123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api', 'acceptance').and_raise_error('No images found in 123456789012.dkr.ecr.eu-west-1.amazonaws.com/uitdatabank/search-api') }
     end
   end
