@@ -1,27 +1,16 @@
 class profiles::uitdatabank::search_api::deployment::container (
-  String           $image,
+  String           $ecr_registry,
+  String           $ecr_repository                 = 'uitdatabank/search-api',
+  String           $image_tag                      = ecr_docker_image_version_tag("${ecr_registry}/${ecr_repository}", $environment),
   String           $basedir                        = '/var/www/udb3-search-service',
-  String           $aws_region                     = 'eu-west-1',
-  Optional[String] $image_tag                      = undef,
   Boolean          $default_queries                = false,
   Boolean          $api_keys_matched_to_client_ids = false,
   Integer[1]       $cli_worker_count               = 1
 ) inherits ::profiles {
 
-  $config_dir         = '/etc/uitdatabank-search-api'
-  $ecr_repository     = regsubst($image, '^[^/]+/', '')
-  $resolved_image_tag = pick($image_tag, $facts.dig('docker_image_tag', $ecr_repository), 'latest')
+  $config_dir = '/etc/uitdatabank-search-api'
 
   include profiles::docker
-
-  class { 'profiles::docker::ecr_repos':
-    repos => {
-      $ecr_repository => {
-        'region'    => $aws_region,
-        'image_tag' => $environment
-      }
-    }
-  }
 
   file { 'uitdatabank-search-api-docker-compose':
     ensure  => 'file',
