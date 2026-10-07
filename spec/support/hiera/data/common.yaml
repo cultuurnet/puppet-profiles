@@ -59,6 +59,7 @@ profiles::uitdatabank::entry_api::deployment::externalid_mapping_organizer_sourc
 profiles::uitdatabank::entry_api::deployment::externalid_mapping_place_source: 'appconfig/uitdatabank/udb3-backend/config.external_id_mapping_place.php'
 profiles::uitdatabank::entry_api::deployment::pubkey_uitidv1_source: 'appconfig/uitdatabank/keys/public.pem'
 profiles::uitdatabank::entry_api::deployment::pubkey_keycloak_source: 'appconfig/uitdatabank/keys/pubkey-keycloak.pem'
+profiles::uitdatabank::entry_api::deployment::container::image: '123456789012.dkr.ecr.eu-west-1.amazonaws.com/udb3-backend'
 
 profiles::uitdatabank::search_api::deployment::config_source: 'appconfig/uitdatabank/udb3-search-service/config.php'
 profiles::uitdatabank::search_api::deployment::pubkey_keycloak_source: 'appconfig/uitdatabank/keys/pubkey-keycloak.pem'
