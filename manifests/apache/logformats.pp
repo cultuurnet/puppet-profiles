@@ -27,6 +27,21 @@ class profiles::apache::logformats inherits ::profiles {
                     }\
                     | EXTENDED_JSON
 
+  $extended_frontend_unique_id_json = @("EXTENDED_FRONTEND_UNIQUE_ID_JSON"/L)
+                    { \"remoteIP\": \"%{CLIENT_IP}e\", \
+                    \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \
+                    \"requestPath\": \"%U\", \
+                    \"status\": \"%>s\", \
+                    \"query\": \"%q\", \
+                    \"method\": \"%m\", \
+                    \"userAgent\": \"%{User-Agent}i\", \
+                    \"referer\": \"%{Referer}i\", \
+                    \"uniqueID\": \"%{UNIQUE_ID}e\", \
+                    \"frontendUniqueID\": \"%{X-Frontend-Unique-Id}i\", \
+                    \"duration\": \"%{ms}T\" \
+                    }\
+                    | EXTENDED_FRONTEND_UNIQUE_ID_JSON
+
   $api_key_json   = @("API_KEY_JSON"/L)
                     { \"remoteIP\": \"%{CLIENT_IP}e\", \
                     \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \
@@ -46,8 +61,9 @@ class profiles::apache::logformats inherits ::profiles {
                     | API_KEY_JSON
 
   $all  = {
-            'combined_json' => $combined_json,
-            'extended_json' => $extended_json,
-            'api_key_json'  => $api_key_json
+            'combined_json'                    => $combined_json,
+            'extended_json'                    => $extended_json,
+            'extended_frontend_unique_id_json' => $extended_frontend_unique_id_json,
+            'api_key_json'                     => $api_key_json
           }
 }

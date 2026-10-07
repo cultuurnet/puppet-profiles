@@ -70,8 +70,9 @@ describe 'profiles::uit::api' do
           ) }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://foo.example.com').with(
-            'destination' => 'http://127.0.0.1:4000/',
-            'aliases'     => []
+            'destination'       => 'http://127.0.0.1:4000/',
+            'aliases'           => [],
+            'access_log_format' => 'extended_frontend_unique_id_json'
           ) }
 
           it { is_expected.to contain_file('/var/www/uit-api').that_requires('Group[www-data]') }
@@ -135,8 +136,9 @@ describe 'profiles::uit::api' do
           let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://bar.example.com').with(
-            'destination' => 'http://127.0.0.1:4001/',
-            'aliases'     => ['alias1.example.com', 'alias2.example.com']
+            'destination'       => 'http://127.0.0.1:4001/',
+            'aliases'           => ['alias1.example.com', 'alias2.example.com'],
+            'access_log_format' => 'extended_frontend_unique_id_json'
           ) }
 
           it { is_expected.to contain_class('profiles::uit::api::deployment').with(
