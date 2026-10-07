@@ -62,6 +62,19 @@ describe ECRClient do
       end
     end
 
+    context 'without an ECR image with the provided tag' do
+      let(:client) {
+        Aws::ECR::Client.new(stub_responses: {
+          describe_images:
+            'ImageNotFoundException'
+        })
+      }
+
+      it 'throws a ImageNotFoundException error' do
+        expect { described_class.new(ecr_client: client).describe_images(registry_id: '123456789012', repository_name: 'uitdatabank/search-api', image_tag: 'acceptance') }.to raise_error(Aws::ECR::Errors::ImageNotFoundException)
+      end
+    end
+
     context 'with a non-existent repository name' do
       let(:client) {
         Aws::ECR::Client.new(stub_responses: {
