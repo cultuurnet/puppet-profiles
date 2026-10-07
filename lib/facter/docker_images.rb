@@ -10,7 +10,7 @@ Facter.add('docker_images') do
       output.split("\n").map do |line|
         image = JSON.parse(line)
 
-        { 'size' => image['Size'], 'repository' => image['Repository'], 'tag' => image['Tag'], 'id' => image['ID'], 'in_use' => image['Containers'] == '0' ? false : true }
+        { 'repository' => image['Repository'], 'tag' => image['Tag'], 'id' => image['ID'], 'size' => image['Size'], 'in_use' => image['Containers'] == '0' ? false : true }
       end
     end
   end
