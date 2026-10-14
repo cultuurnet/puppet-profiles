@@ -27,6 +27,8 @@ describe 'profiles::jenkins::controller::configuration' do
               'timestamps'               => false,
               'max_concurrent_builds'    => 1,
               'docker_registry_url'      => nil,
+              'kubernetes_jnlp_image'    => nil,
+              'kubernetes_credentials_id' => nil,
               'private_key'              => nil,
               'credentials'              => [],
               'github_hook_url'          => '',

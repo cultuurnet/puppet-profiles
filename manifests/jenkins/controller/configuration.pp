@@ -6,6 +6,8 @@ class profiles::jenkins::controller::configuration(
   Boolean                    $timestamps               = false,
   Integer[1]                 $max_concurrent_builds    = 1,
   Optional[Stdlib::Httpurl]  $docker_registry_url      = undef,
+  Optional[String]           $kubernetes_jnlp_image    = undef,
+  Optional[String]           $kubernetes_credentials_id = undef,
   Optional[String]           $private_key              = undef,
   Variant[Hash, Array[Hash]] $credentials              = [],
   String                     $github_hook_url          = '',
@@ -142,6 +144,14 @@ class profiles::jenkins::controller::configuration(
                        'docker_label'        => 'docker',
                        'docker_registry_url' => $docker_registry_url
                      },
+    notify        => Class['profiles::jenkins::controller::configuration::reload']
+  }
+
+  profiles::jenkins::plugin { 'kubernetes':
+    configuration => {
+      'jnlp_image'       => $kubernetes_jnlp_image,
+      'credentials_id'   => $kubernetes_credentials_id
+    },
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
 
