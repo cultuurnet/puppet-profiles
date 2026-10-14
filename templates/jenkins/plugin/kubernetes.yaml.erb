@@ -1,7 +1,7 @@
-unclassified:
-  kubernetes:
-    clouds:
-    - containerCap: 10
+jenkins:
+  clouds:
+  - kubernetes:
+      containerCap: 10
       containerCapStr: "10"
       credentialsId: "<%= @configuration['credentials_id'] %>"
       defaultsProviderTemplate: "docker-agent"
