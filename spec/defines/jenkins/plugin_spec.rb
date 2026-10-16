@@ -156,7 +156,7 @@ describe 'profiles::jenkins::plugin' do
           it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*secret: 'foobar'$/) }
 
           it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*id: 'myfile'$/) }
-          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*secretBytes: 'spec testfile content'$/) }
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*secretBytes: 'c3BlYyB0ZXN0ZmlsZSBjb250ZW50'$/) }
           it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*fileName: 'my_file.txt'$/) }
 
           it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*id: 'userpass'$/) }
@@ -182,7 +182,7 @@ describe 'profiles::jenkins::plugin' do
           it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*secret: 'secret2'$/) }
 
           it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*id: 'myfile2'$/) }
-          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*secretBytes: 'spec testfile content 2'$/) }
+          it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*secretBytes: 'c3BlYyB0ZXN0ZmlsZSBjb250ZW50IDI='$/) }
           it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*fileName: 'my_file2.txt'$/) }
 
           it { is_expected.to contain_file('plain-credentials configuration').with_content(/^\s*id: 'userpass1'$/) }
