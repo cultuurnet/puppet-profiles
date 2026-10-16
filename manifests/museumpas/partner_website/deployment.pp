@@ -5,6 +5,9 @@ class profiles::museumpas::partner_website::deployment (
   Optional[String]           $robots_source      = undef,
   Optional[String]           $maintenance_source = undef,
   Boolean                    $run_scheduler_cron = true,
+  Boolean                    $newrelic            = false,
+  # Set explicitly to retain legacy New Relic application names during migration.
+  Optional[String]           $newrelic_app_name   = undef,
   Optional[String]           $puppetdb_url       = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
@@ -20,6 +23,13 @@ class profiles::museumpas::partner_website::deployment (
     ensure  => $version,
     require => Apt::Source[$repository],
     notify  => [Service['museumpas-partner-website'], Profiles::Deployment::Versions[$title]]
+  }
+
+  profiles::newrelic::php::application { 'museumpas-partner-website':
+    app_name => $newrelic_app_name,
+    docroot  => "${basedir}/web",
+    enable   => $newrelic,
+    require  => Package['museumpas-partner-website']
   }
 
   file { 'museumpas-partner-website-config':
@@ -77,4 +87,3 @@ class profiles::museumpas::partner_website::deployment (
 
   Class['profiles::php'] -> Class['profiles::museumpas::partner_website']
 }
-

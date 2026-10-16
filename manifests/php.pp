@@ -6,10 +6,7 @@ class profiles::php (
   Enum['unix', 'tcp']        $fpm_socket_type          = 'unix',
   Enum['running', 'stopped'] $fpm_service_status       = 'running',
   Boolean                    $fpm_restart_on_change    = false,
-  Hash                       $fpm_settings             = {},
-  Boolean                    $newrelic                 = false,
-  String                     $newrelic_app_name        = $facts['networking']['fqdn'],
-  Optional[String]           $newrelic_license_key     = lookup('data::newrelic::license_key', Optional[String], 'first', undef)
+  Hash                       $fpm_settings             = {}
 ) inherits ::profiles {
 
   $default_settings     = {
@@ -148,16 +145,5 @@ class profiles::php (
 
   @profiles::jenkins::node_labels { 'php':
     content => "php${version}"
-  }
-
-  if $newrelic {
-    unless $newrelic_license_key {
-      fail("Class Profiles::Php expects a value for parameter 'newrelic_license_key'")
-    }
-
-    class { 'profiles::newrelic::php':
-      app_name    => $newrelic_app_name,
-      license_key => $newrelic_license_key
-    }
   }
 }

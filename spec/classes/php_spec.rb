@@ -24,10 +24,7 @@ describe 'profiles::php' do
               'fpm_socket_type'          => 'tcp',
               'fpm_service_status'       => 'running',
               'fpm_restart_on_change'    => false,
-              'fpm_settings'             => {},
-              'newrelic'                 => false,
-              'newrelic_app_name'        => 'aaa.example.com',
-              'newrelic_license_key'     => 'my_license_key'
+              'fpm_settings'             => {}
             ) }
 
             it { is_expected.to contain_apt__source('php') }
@@ -167,10 +164,7 @@ describe 'profiles::php' do
               'fpm'                      => true,
               'fpm_socket_type'          => 'unix',
               'fpm_service_status'       => 'running',
-              'fpm_settings'             => {},
-              'newrelic'                 => false,
-              'newrelic_app_name'        => 'aaa.example.com',
-              'newrelic_license_key'     => nil
+              'fpm_settings'             => {}
             ) }
           end
         end
@@ -252,7 +246,7 @@ describe 'profiles::php' do
       context 'on node bbb.example.com' do
         let(:node) { 'bbb.example.com' }
 
-        context 'with version => 8.2, newrelic => true, fpm_socket_type => unix, fpm_restart_on_change => true, fpm_settings => { pm_max_children => 100, pm_max_requests => 5000 } and fpm_service_status => stopped' do
+        context 'with version => 8.2, fpm_socket_type => unix, fpm_restart_on_change => true, fpm_settings => { pm_max_children => 100, pm_max_requests => 5000 } and fpm_service_status => stopped' do
           let(:params) { {
             'version'               => '8.2',
             'fpm_socket_type'       => 'unix',
@@ -261,16 +255,11 @@ describe 'profiles::php' do
             'fpm_settings'          => {
                                          'pm_max_children' => 100,
                                          'pm_max_requests' => 5000
-                                       },
-            'newrelic'              => true
+                                       }
           } }
 
           context 'with hieradata' do
             let(:hiera_config) { 'spec/support/hiera/common.yaml' }
-
-            it { is_expected.to contain_class('profiles::php').with(
-              'newrelic_app_name' => 'bbb.example.com'
-            ) }
 
             it { is_expected.to contain_class('php').with(
               'manage_repos'                 => false,
@@ -334,10 +323,7 @@ describe 'profiles::php' do
 
             it { is_expected.to contain_systemd__daemon_reload('php-fpm') }
 
-            it { is_expected.to contain_class('profiles::newrelic::php').with(
-              'app_name'    => 'bbb.example.com',
-              'license_key' => 'my_license_key'
-            ) }
+            it { is_expected.not_to contain_class('profiles::newrelic::php') }
 
             context 'with all virtual resources collected' do
               let(:pre_condition) { 'Profiles::Jenkins::Node_labels <| |>' }
@@ -362,11 +348,6 @@ describe 'profiles::php' do
             end
           end
 
-          context 'without hieradata' do
-            let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
-
-            it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'newrelic_license_key'/) }
-          end
         end
       end
 

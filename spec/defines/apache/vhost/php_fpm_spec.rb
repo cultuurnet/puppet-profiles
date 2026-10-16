@@ -28,8 +28,7 @@ describe 'profiles::apache::vhost::php_fpm' do
               'request_headers'          => [],
               'headers'                  => [],
               'rewrites'                 => [],
-              'ssl_proxyengine'          => false,
-              'newrelic_optional_config' => {}
+              'ssl_proxyengine'          => false
             ) }
 
             it { is_expected.to contain_firewall('300 accept HTTP traffic') }
@@ -74,15 +73,9 @@ describe 'profiles::apache::vhost::php_fpm' do
               'rewrites'              => [],
               'ssl_proxyengine'       => false
             ) }
-
-            it { is_expected.to contain_profiles__newrelic__php__application('winston.example.com').with(
-              'enable'          => false,
-              'docroot'         => '/var/www/foo/public',
-              'optional_config' => {}
-            ) }
           end
 
-          context "with basedir => /tmp/bla, public_web_directory => web, aliases => [smith.example.com, foo.example.com], allow_encoded_slashes => nodecode, access_log_format => combined_json, directories => { path => /var/www/bar/files, provider => files, deny => from all }, rewrites => { comment => Capture apiKey from URL parameters, rewrite_cond => %{QUERY_STRING} (?:^|&)apiKey=([^&]+), rewrite_rule => ^ - [E=API_KEY:%1] }, socket_type => tcp, request_headers => 'set X-My-First-Request-Header \"foo\"', headers => 'set X-My-Header \"foo\"', ssl_proxyengine => true and newrelic_optional_config => { foo => bar }" do
+          context "with basedir => /tmp/bla, public_web_directory => web, aliases => [smith.example.com, foo.example.com], allow_encoded_slashes => nodecode, access_log_format => combined_json, directories => { path => /var/www/bar/files, provider => files, deny => from all }, rewrites => { comment => Capture apiKey from URL parameters, rewrite_cond => %{QUERY_STRING} (?:^|&)apiKey=([^&]+), rewrite_rule => ^ - [E=API_KEY:%1] }, socket_type => tcp, request_headers => 'set X-My-First-Request-Header \"foo\"', headers => 'set X-My-Header \"foo\"' and ssl_proxyengine => true" do
             let(:params) { {
               'basedir'                  => '/tmp/bla',
               'public_web_directory'     => 'web',
@@ -102,8 +95,7 @@ describe 'profiles::apache::vhost::php_fpm' do
                                             },
               'request_headers'          => 'set X-My-First-Request-Header "foo"',
               'headers'                  => 'set X-My-Header "foo"',
-              'ssl_proxyengine'          => true,
-              'newrelic_optional_config' => { 'foo' => 'bar' }
+              'ssl_proxyengine'          => true
             } }
 
             it { is_expected.to contain_class('apache::mod::ssl') }
@@ -150,12 +142,6 @@ describe 'profiles::apache::vhost::php_fpm' do
                                            'rewrite_rule' => '^ - [E=API_KEY:%1]'
                                          }],
               'ssl_proxyengine'       => true
-            ) }
-
-            it { is_expected.to contain_profiles__newrelic__php__application('winston.example.com').with(
-              'enable'          => false,
-              'docroot'         => '/tmp/bla/web',
-              'optional_config' => { 'foo' => 'bar' }
             ) }
           end
         end
