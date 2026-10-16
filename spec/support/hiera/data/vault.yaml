@@ -16,6 +16,7 @@ vault:uitdatabank/udb3-backend:
   gcloud_client_email: 'bar@example.com'
 
 vault:projectaanvraag/api: {}
+vault:museumpas/website: {}
 
 vault:widgetbeheer/frontend: {}
 

@@ -82,6 +82,18 @@ class profiles::museumpas::website::deployment (
     }
   }
 
+  $app_pages_source_dir = dirname($config_source)
+  ['nl-app-callback.php', 'fr-app-callback.php', 'nl-app-signout.php', 'fr-app-signout.php'].each |String $filename| {
+    file { "museumpas-${filename}":
+      ensure  => 'file',
+      path    => "${basedir}/public/${filename}",
+      content => template("${app_pages_source_dir}/${filename}"),
+      owner   => 'www-data',
+      group   => 'www-data',
+      require => Package['museumpas-website'],
+    }
+  }
+
   exec { 'composer script post-autoload-dump':
     command => 'composer run-script post-autoload-dump',
     require => File['museumpas-website-config'],
