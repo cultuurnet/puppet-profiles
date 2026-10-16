@@ -1,6 +1,7 @@
 class profiles::jenkins::controller::install (
-  String     $version                 = 'latest',
-  Integer[1] $session_timeout_minutes = 480
+  String     $version                            = 'latest',
+  Integer[1] $session_timeout_minutes            = 480,
+  Integer[1] $kubernetes_client_cache_expiration = 60
 ) inherits ::profiles {
 
   $config_dir   = '/var/lib/jenkins/casc_config'
@@ -9,6 +10,7 @@ class profiles::jenkins::controller::install (
     '-Djenkins.install.runSetupWizard=false',
     "-Dcasc.jenkins.config=${config_dir}",
     '-Dhudson.cli.CLIAction.ACCEPT_URL_FROM_REQUEST=true',
+    "-Dorg.csanchez.jenkins.plugins.kubernetes.clients.cacheExpiration=${kubernetes_client_cache_expiration}",
   ]
   $session_eviction_seconds = $session_timeout_minutes * 60
   $jenkins_opts = [

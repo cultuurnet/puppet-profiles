@@ -7,6 +7,7 @@ class profiles::jenkins::controller (
   Boolean                    $timestamps               = false,
   Integer[1]                 $max_concurrent_builds    = 1,
   Integer[1]                 $session_timeout_minutes  = 480,
+  Integer[1]                 $kubernetes_client_cache_expiration = 60,
   Boolean                    $lvm                      = false,
   Optional[String]           $volume_group             = undef,
   Optional[String]           $volume_size              = undef,
@@ -56,10 +57,11 @@ class profiles::jenkins::controller (
   }
 
   class { '::profiles::jenkins::controller::install':
-    version                 => $version,
-    session_timeout_minutes => $session_timeout_minutes,
-    require                 => Class['profiles::java'],
-    notify                  => Class['profiles::jenkins::controller::service']
+    version                            => $version,
+    session_timeout_minutes            => $session_timeout_minutes,
+    kubernetes_client_cache_expiration => $kubernetes_client_cache_expiration,
+    require                            => Class['profiles::java'],
+    notify                             => Class['profiles::jenkins::controller::service']
   }
 
   class { '::profiles::jenkins::controller::service':

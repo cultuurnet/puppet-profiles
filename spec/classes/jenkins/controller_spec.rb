@@ -46,7 +46,8 @@ describe 'profiles::jenkins::controller' do
           it { is_expected.not_to contain_profiles__lvm__mount('jenkins') }
 
           it { is_expected.to contain_class('profiles::jenkins::controller::install').with(
-            'version' => 'latest'
+            'version'                            => 'latest',
+            'kubernetes_client_cache_expiration' => 60
           ) }
 
           it { is_expected.to contain_class('profiles::jenkins::controller::configuration').with(
@@ -201,7 +202,8 @@ describe 'profiles::jenkins::controller' do
           ) }
 
           it { is_expected.to contain_class('profiles::jenkins::controller::install').with(
-            'version' => '1.2.3'
+            'version'                            => '1.2.3',
+            'kubernetes_client_cache_expiration' => 60
           ) }
 
           it { is_expected.to contain_class('profiles::jenkins::controller::configuration').with(

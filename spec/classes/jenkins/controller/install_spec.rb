@@ -11,8 +11,9 @@ describe 'profiles::jenkins::controller::install' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::jenkins::controller::install').with(
-          'version'                 => 'latest',
-          'session_timeout_minutes' => 480
+          'version'                            => 'latest',
+          'session_timeout_minutes'            => 480,
+          'kubernetes_client_cache_expiration' => 60
         ) }
 
         it { is_expected.to contain_group('jenkins') }
@@ -37,7 +38,7 @@ describe 'profiles::jenkins::controller::install' do
 
         it { is_expected.to contain_systemd__dropin_file('override.conf').with(
           'unit'    => 'jenkins.service',
-          'content' => "[Service]\nEnvironment=\"JAVA_OPTS=-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Dcasc.jenkins.config=/var/lib/jenkins/casc_config -Dhudson.cli.CLIAction.ACCEPT_URL_FROM_REQUEST=true\"\nEnvironment=\"JENKINS_OPTS=--sessionTimeout=480 --sessionEviction=28800\""
+          'content' => "[Service]\nEnvironment=\"JAVA_OPTS=-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Dcasc.jenkins.config=/var/lib/jenkins/casc_config -Dhudson.cli.CLIAction.ACCEPT_URL_FROM_REQUEST=true -Dorg.csanchez.jenkins.plugins.kubernetes.clients.cacheExpiration=60\"\nEnvironment=\"JENKINS_OPTS=--sessionTimeout=480 --sessionEviction=28800\""
         ) }
 
         it { is_expected.to contain_file('casc_config').that_requires('User[jenkins]') }
@@ -68,6 +69,18 @@ describe 'profiles::jenkins::controller::install' do
 
         it { is_expected.to contain_systemd__dropin_file('override.conf').with(
           'content' => /Environment="JENKINS_OPTS=--sessionTimeout=120 --sessionEviction=7200"/
+        ) }
+      end
+
+      context "with kubernetes_client_cache_expiration => 90" do
+        let(:params) { {
+          'kubernetes_client_cache_expiration' => 90
+        } }
+
+        it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to contain_systemd__dropin_file('override.conf').with(
+          'content' => /-Dorg\.csanchez\.jenkins\.plugins\.kubernetes\.clients\.cacheExpiration=90/
         ) }
       end
     end
