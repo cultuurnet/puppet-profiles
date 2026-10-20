@@ -98,6 +98,11 @@ class profiles::museumpas::website (
                            custom_fragment => 'SetHandler "proxy:unix:/var/run/php/php-fpm.sock|fcgi://localhost"',
                          },
                          {
+                           path            => 'apple-app-site-association$',
+                           provider        => 'filesmatch',
+                           custom_fragment => 'ForceType application/json',
+                         },
+                         {
                            path            => "${basedir}/public",
                            options         => [
                                                 'Indexes',
