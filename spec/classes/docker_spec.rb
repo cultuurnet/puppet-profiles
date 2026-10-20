@@ -13,18 +13,23 @@ describe 'profiles::docker' do
         it { is_expected.to contain_apt__source('docker') }
 
         it { is_expected.to contain_class('profiles::docker').with(
-          'experimental'   => false,
-          'schedule_prune' => false,
-          'lvm'            => false,
-          'volume_group'   => nil,
-          'volume_size'    => nil,
-          'ecr_registries' => [],
-          'ecr_users'      => [],
-          'log_driver'     => 'json-file',
-          'log_opt'        => ['max-size=50m', 'max-file=5']
+          'experimental'           => false,
+          'schedule_prune'         => false,
+          'lvm'                    => false,
+          'volume_group'           => nil,
+          'docker_volume_size'     => nil,
+          'containerd_volume_size' => nil,
+          'ecr_registries'         => [],
+          'ecr_users'              => [],
+          'log_driver'             => 'json-file',
+          'log_opt'                => ['max-size=50m', 'max-file=5']
         ) }
 
         it { is_expected.to contain_file('/var/lib/docker').with(
+          'ensure' => 'directory'
+        ) }
+
+        it { is_expected.to contain_file('/var/lib/containerd').with(
           'ensure' => 'directory'
         ) }
 
@@ -40,6 +45,9 @@ describe 'profiles::docker' do
 
         it { is_expected.to_not contain_profiles__lvm__mount('dockerdata') }
         it { is_expected.to_not contain_mount('/var/lib/docker') }
+
+        it { is_expected.to_not contain_profiles__lvm__mount('containerddata') }
+        it { is_expected.to_not contain_mount('/var/lib/containerd') }
 
         it { is_expected.to contain_class('profiles::docker::ecr_login').with(
           'registries' => [],
@@ -74,6 +82,7 @@ describe 'profiles::docker' do
 
         it { is_expected.to contain_apt__source('docker').that_comes_before('Class[docker]') }
         it { is_expected.to contain_file('/var/lib/docker').that_comes_before('Class[docker]') }
+        it { is_expected.to contain_file('/var/lib/containerd').that_comes_before('Class[docker]') }
         it { is_expected.to contain_class('profiles::docker::ecr_login').that_requires('Class[docker]') }
 
         context 'with all virtual resources collected' do
@@ -85,15 +94,16 @@ describe 'profiles::docker' do
         end
       end
 
-      context "with experimental => true, lvm => true, volume_group => dockervg, volume_size => 5G, ecr_registries => my.registry.com, ecr_users => ubuntu and schedule_prune => true" do
+      context "with experimental => true, lvm => true, volume_group => dockervg, docker_volume_size => 5G, containerd_volume_size => 10G, ecr_registries => my.registry.com, ecr_users => ubuntu and schedule_prune => true" do
         let(:params) { {
-          'experimental'   => true,
-          'schedule_prune' => true,
-          'lvm'            => true,
-          'volume_group'   => 'dockervg',
-          'volume_size'    => '5G',
-          'ecr_registries' => 'my.registry.com',
-          'ecr_users'      => 'ubuntu'
+          'experimental'           => true,
+          'schedule_prune'         => true,
+          'lvm'                    => true,
+          'volume_group'           => 'dockervg',
+          'docker_volume_size'     => '5G',
+          'containerd_volume_size' => '10G',
+          'ecr_registries'         => 'my.registry.com',
+          'ecr_users'              => 'ubuntu'
         } }
 
         context "with volume_group dockervg present" do
@@ -110,6 +120,15 @@ describe 'profiles::docker' do
             'group'        => 'root'
           ) }
 
+          it { is_expected.to contain_profiles__lvm__mount('containerddata').with(
+            'volume_group' => 'dockervg',
+            'size'         => '10G',
+            'mountpoint'   => '/data/containerd',
+            'fs_type'      => 'ext4',
+            'owner'        => 'root',
+            'group'        => 'root'
+          ) }
+
           it { is_expected.to contain_mount('/var/lib/docker').with(
             'ensure'  => 'mounted',
             'device'  => '/data/docker',
@@ -117,7 +136,18 @@ describe 'profiles::docker' do
             'options' => 'rw,bind'
           ) }
 
+          it { is_expected.to contain_mount('/var/lib/containerd').with(
+            'ensure'  => 'mounted',
+            'device'  => '/data/containerd',
+            'fstype'  => 'none',
+            'options' => 'rw,bind'
+          ) }
+
           it { is_expected.to contain_file('/var/lib/docker').with(
+            'ensure' => 'directory'
+          ) }
+
+          it { is_expected.to contain_file('/var/lib/containerd').with(
             'ensure' => 'directory'
           ) }
 
@@ -146,17 +176,21 @@ describe 'profiles::docker' do
           it { is_expected.to contain_mount('/var/lib/docker').that_requires('Profiles::Lvm::Mount[dockerdata]') }
           it { is_expected.to contain_mount('/var/lib/docker').that_requires('File[/var/lib/docker]') }
           it { is_expected.to contain_mount('/var/lib/docker').that_comes_before('Class[docker]') }
+          it { is_expected.to contain_mount('/var/lib/containerd').that_requires('Profiles::Lvm::Mount[containerddata]') }
+          it { is_expected.to contain_mount('/var/lib/containerd').that_requires('File[/var/lib/containerd]') }
+          it { is_expected.to contain_mount('/var/lib/containerd').that_comes_before('Class[docker]') }
           it { is_expected.to contain_cron('docker system prune').that_requires('Class[docker]') }
         end
       end
 
-      context "with lvm => true, volume_group => myvg, volume_size => 10G, ecr_registries => [ registry1.com, registry2.com] and ecr_users => [jenkins, root]" do
+      context "with lvm => true, volume_group => myvg, docker_volume_size => 10G, containerd_volume_size => 8G, ecr_registries => [ registry1.com, registry2.com] and ecr_users => [jenkins, root]" do
         let(:params) { {
-          'lvm'            => true,
-          'volume_group'   => 'myvg',
-          'volume_size'    => '10G',
-          'ecr_registries' => ['registry1.com', 'registry2.com'],
-          'ecr_users'      => ['jenkins', 'root']
+          'lvm'                    => true,
+          'volume_group'           => 'myvg',
+          'docker_volume_size'     => '10G',
+          'containerd_volume_size' => '8G',
+          'ecr_registries'         => ['registry1.com', 'registry2.com'],
+          'ecr_users'              => ['jenkins', 'root']
         } }
 
         context "with volume_group myvg present" do
@@ -173,9 +207,25 @@ describe 'profiles::docker' do
             'group'        => 'root'
           ) }
 
+          it { is_expected.to contain_profiles__lvm__mount('containerddata').with(
+            'volume_group' => 'myvg',
+            'size'         => '8G',
+            'mountpoint'   => '/data/containerd',
+            'fs_type'      => 'ext4',
+            'owner'        => 'root',
+            'group'        => 'root'
+          ) }
+
           it { is_expected.to contain_mount('/var/lib/docker').with(
             'ensure'  => 'mounted',
             'device'  => '/data/docker',
+            'fstype'  => 'none',
+            'options' => 'rw,bind'
+          ) }
+
+          it { is_expected.to contain_mount('/var/lib/containerd').with(
+            'ensure'  => 'mounted',
+            'device'  => '/data/containerd',
             'fstype'  => 'none',
             'options' => 'rw,bind'
           ) }
@@ -184,15 +234,14 @@ describe 'profiles::docker' do
             'ensure' => 'directory'
           ) }
 
+          it { is_expected.to contain_file('/var/lib/containerd').with(
+            'ensure' => 'directory'
+          ) }
+
           it { is_expected.to contain_class('profiles::docker::ecr_login').with(
             'registries' => ['registry1.com', 'registry2.com'],
             'users'      => ['jenkins', 'root']
           ) }
-
-          it { is_expected.to contain_mount('/var/lib/docker').that_requires('Profiles::Lvm::Mount[dockerdata]') }
-          it { is_expected.to contain_mount('/var/lib/docker').that_requires('File[/var/lib/docker]') }
-          it { is_expected.to contain_mount('/var/lib/docker').that_comes_before('Class[docker]') }
-          it { is_expected.to contain_cron('docker system prune').that_requires('Class[docker]') }
         end
       end
 
