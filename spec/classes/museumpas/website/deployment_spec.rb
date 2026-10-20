@@ -18,6 +18,42 @@ describe 'profiles::museumpas::website::deployment' do
           'group'   => 'www-data',
         ).that_requires('Package[museumpas-website]') }
       end
+
+      context 'without well_known_source' do
+        it { is_expected.not_to contain_file('museumpas-well-known-directory') }
+        it { is_expected.not_to contain_file('museumpas-well-known-apple-app-site-association') }
+        it { is_expected.not_to contain_file('museumpas-well-known-assetlinks.json') }
+      end
+
+      context 'with well_known_source' do
+        let(:params) do
+          {
+            'config_source'     => 'appconfig/museumpas/website/env',
+            'well_known_source' => 'appconfig/museumpas/website/.well-known',
+          }
+        end
+
+        it { is_expected.to compile.with_all_deps }
+        it { is_expected.to contain_file('museumpas-well-known-directory').with(
+          'ensure' => 'directory',
+          'path'   => '/var/www/museumpas/public/.well-known',
+          'owner'  => 'www-data',
+          'group'  => 'www-data',
+        ).that_requires('Package[museumpas-website]') }
+
+        {
+          'apple-app-site-association' => "{\"applinks\":{\"details\":[]}}\n",
+          'assetlinks.json'           => "[]\n",
+        }.each do |filename, content|
+          it { is_expected.to contain_file("museumpas-well-known-#{filename}").with(
+            'ensure'  => 'file',
+            'path'    => "/var/www/museumpas/public/.well-known/#{filename}",
+            'content' => content,
+            'owner'   => 'www-data',
+            'group'   => 'www-data',
+          ).that_requires('File[museumpas-well-known-directory]') }
+        end
+      end
     end
   end
 end
