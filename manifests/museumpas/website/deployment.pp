@@ -4,6 +4,7 @@ class profiles::museumpas::website::deployment (
   String                     $version            = 'latest',
   Optional[String]           $robots_source      = undef,
   Optional[String]           $maintenance_source = undef,
+  Optional[String]           $well_known_source  = undef,
   Boolean                    $run_scheduler_cron = true,
   Optional[String]           $puppetdb_url       = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
@@ -91,6 +92,27 @@ class profiles::museumpas::website::deployment (
       owner   => 'www-data',
       group   => 'www-data',
       require => Package['museumpas-website'],
+    }
+  }
+
+  if $well_known_source {
+    file { 'museumpas-well-known-directory':
+      ensure  => 'directory',
+      path    => "${basedir}/public/.well-known",
+      owner   => 'www-data',
+      group   => 'www-data',
+      require => Package['museumpas-website'],
+    }
+
+    ['apple-app-site-association', 'assetlinks.json'].each |String $filename| {
+      file { "museumpas-well-known-${filename}":
+        ensure  => 'file',
+        path    => "${basedir}/public/.well-known/${filename}",
+        content => template("${well_known_source}/${filename}"),
+        owner   => 'www-data',
+        group   => 'www-data',
+        require => File['museumpas-well-known-directory'],
+      }
     }
   }
 
