@@ -17,6 +17,8 @@ jenkins:
   ['eks-agent-12g', '12Gi', '7665b941-ecf7-461d-a6da-bec497a81850']
 ].each do |agent_name, memory, id| %>
       - agentInjection: true
+        idleMinutes: 10
+        idleMinutesStr: "10"
         namespace: "jenkins"
         serviceAccount: "jenkins-agent"
         containers:
