@@ -10,6 +10,11 @@ jenkins:
       serverCertificate: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCVENDQWUyZ0F3SUJBZ0lJQzloWnlhRlpXOFF3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TkRBM01ESXhNekU1TlRsYUZ3MHpOREEyTXpBeE16STBOVGxhTUJVeApFekFSQmdOVkJBTVRDbXQxWW1WeWJtVjBaWE13Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLCkFvSUJBUUR0cnF4dnFvejBOS29KMis5YVY2dE85aHZGRWpxYnoxNFhQTDBVSmRuSHd5ZFdZZ21NZU5hVy9oSEcKdXRyaEMyYklJa0dRTWV0ZEdqdGIrRC9TbEJKWVhaM25QZTloblkxYkZvOXFiMWx3am93eFd0bXNad3kxMFo0Rgo0amxuSmljQyt2c0h4cUJXZDZabnZKUERyK3E5T1EvVENYbXVWRWZQeWNiL0x1cVR4Rjd3eUpuaWc0UlBoT0ppCllodDV1TkhQODNRWUIwbnFvUWpTWkM0Mll2a2pXTmVBME9UVU5xTHlaUkFva3RhRWRKK0pzTzBncUtUQjFqT0EKSk93QTNBcHpFSVFNTWZ3c1ZOYWFFMXRrNCtVVldkbXpZQ1JYekUvN3QwRGs5U0ZOcWxGSk9tNXloZWlwMXBjZQo5UjFIMThVaHExWXRuUXFZYTBPaWxzMndrQmx6QWdNQkFBR2pXVEJYTUE0R0ExVWREd0VCL3dRRUF3SUNwREFQCkJnTlZIUk1CQWY4RUJUQURBUUgvTUIwR0ExVWREZ1FXQkJRb3BvaG0yaEpCTXlUT3VNbHFnc1REVUVkWTdEQVYKQmdOVkhSRUVEakFNZ2dwcmRXSmxjbTVsZEdWek1BMEdDU3FHU0liM0RRRUJDd1VBQTRJQkFRQzc2d1NjajhGQgo2ZlhiRVkycmZmaVVzZ2sxSnJoREkzbXcyVGFwRlhIS3V6RmM1MWc0RWp3REZJaGkwbHBhQ2tWbTQ1K00rckpyCld2TkxQVHp2RlVSTnJwdUpSN3g0WmUvQzNFMlpTRUhMb1BpM2diV091bUJrbUdjNHE3bXVuQkQ3Q1ZvcjFQM2MKK3E1aHJIcjNLV2g3RkJuZ21zYU5EcE5lc2FWQm84NzVmMmhXLzR4aXp5dEVuOEpXM0U2ZzU2QkcwRHpnR2J6VAprU3o3cjRzMXp1ZjRlRk1iQlY5azlOV3VpWjFEUGNDUG1vWTVIb3ZPaHo3YXlQaG9zMFN4RzdYd0hXWjJ2UjN0ClBwMU5kcHdROVBjZ3RGVllLbmZqWnJQdUNjOURzREs1dm5lekZVZ1Z2VHBUekkrVGoyWmNSTE5mS3BhdlUwaEwKRUl3Z2RJeERIUVJoCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K"
       serverUrl: "https://AA0165DEF462E7E9E31739D536C3C87C.gr7.eu-west-1.eks.amazonaws.com"
       templates:
+<% [
+  ['eks-agent', '2Gi', '516a7c97-fb02-4302-905f-a945f894fc4c'],
+  ['eks-agent-4g', '4Gi', '96d23bf8-f498-407c-821f-c76087f98238'],
+  ['eks-agent-12g', '12Gi', '7665b941-ecf7-461d-a6da-bec497a81850']
+].each do |agent_name, memory, id| %>
       - agentInjection: true
         namespace: "jenkins"
         serviceAccount: "jenkins-agent"
@@ -21,6 +26,8 @@ jenkins:
               key: "DOCKER_HOST"
               value: "tcp://localhost:2375"
           image: "<%= @configuration['jnlp_image'] %>"
+          resourceRequestMemory: "<%= memory %>"
+          resourceLimitMemory: "<%= memory %>"
           livenessProbe:
             failureThreshold: 0
             initialDelaySeconds: 0
@@ -44,9 +51,9 @@ jenkins:
           name: "dind"
           privileged: true
           workingDir: "/home/jenkins/agent"
-        id: "516a7c97-fb02-4302-905f-a945f894fc4c"
-        label: "eks-agent"
-        name: "eks-agent"
+        id: "<%= id %>"
+        label: "<%= agent_name %>"
+        name: "<%= agent_name %>"
         yaml: |
           apiVersion: v1
           kind: Pod
@@ -70,4 +77,5 @@ jenkins:
                 periodSeconds: 2
                 timeoutSeconds: 2
         yamlMergeStrategy: "override"
+<% end %>
       webSocket: true
