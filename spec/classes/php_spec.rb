@@ -249,6 +249,21 @@ describe 'profiles::php' do
             it { is_expected.not_to contain_exec('stop_php_fpm_before_version_change') }
           end
         end
+
+        context 'with session upload progress enabled via hieradata' do
+          let(:hiera_config) { 'spec/support/hiera/upload_overrides.yaml' }
+
+          it { is_expected.to contain_class('profiles::php').with(
+            'settings' => { 'Session/session.upload_progress.enabled' => 'On' }
+          ) }
+
+          it { is_expected.to contain_class('php').with(
+            'settings' => {
+              'openssl/openssl.cafile'                  => '/etc/ssl/certs/ca-certificates.crt',
+              'Session/session.upload_progress.enabled' => 'On'
+            }
+          ) }
+        end
       end
 
       context 'on node bbb.example.com' do

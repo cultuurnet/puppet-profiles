@@ -9,14 +9,15 @@ describe 'profiles::apache' do
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.to contain_class('profiles::apache').with(
-          'mpm_module'               => 'prefork',
-          'mpm_module_config'        => {},
-          'http2'                    => false,
-          'limitreqfieldsize'        => 8190,
-          'service_status'           => 'running',
-          'metrics'                  => true,
-          'service_override_source'  => nil,
-          'service_override_content' => nil
+          'mpm_module'                  => 'prefork',
+          'mpm_module_config'           => {},
+          'http2'                       => false,
+          'allow_multipart_form_uploads' => false,
+          'limitreqfieldsize'           => 8190,
+          'service_status'              => 'running',
+          'metrics'                     => true,
+          'service_override_source'     => nil,
+          'service_override_content'    => nil
         ) }
 
         it { is_expected.to contain_group('www-data') }
@@ -41,6 +42,11 @@ describe 'profiles::apache' do
                                        'extended_frontend_unique_id_json' => '{ \"remoteIP\": \"%{CLIENT_IP}e\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"requestPath\": \"%U\", \"status\": \"%>s\", \"query\": \"%q\", \"method\": \"%m\", \"userAgent\": \"%{User-Agent}i\", \"referer\": \"%{Referer}i\", \"uniqueID\": \"%{UNIQUE_ID}e\", \"frontendUniqueID\": \"%{X-Frontend-Unique-Id}i\", \"duration\": \"%{ms}T\" }',
                                        'api_key_json'  => '{ \"remoteIP\": \"%{CLIENT_IP}e\", \"time\": \"%{%Y-%m-%d %H:%M:%S}t.%{msec_frac}t\", \"requestPath\": \"%U\", \"status\": \"%>s\", \"query\": \"%q\", \"method\": \"%m\", \"userAgent\": \"%{User-Agent}i\", \"referer\": \"%{Referer}i\", \"uniqueID\": \"%{UNIQUE_ID}e\", \"duration\": \"%{ms}T\", \"apiKey\": \"%{API_KEY}e\", \"clientId\": \"%{CLIENT_ID}e\", \"jwtToken\": \"%{JWT_TOKEN}e\", \"clientProperties\": \"%{X-Client-Properties}i\" }'
                                      }
+        ) }
+
+        it { is_expected.to contain_apache__custom_config('block-multipart-form-uploads').with(
+          'ensure'  => 'present',
+          'content' => %(<If "%{HTTP:Content-Type} =~ m#(?i)^multipart/form-data(?:[[:space:]]*;|[[:space:]]*$)#">\n  Require all denied\n</If>\n)
         ) }
 
         it { is_expected.to contain_systemd__dropin_file('apache2-override.conf').with(
@@ -124,6 +130,19 @@ describe 'profiles::apache' do
           'content' => 'bla'
         ) }
 
+      end
+
+      context 'with multipart form uploads allowed' do
+        let(:params) { { 'allow_multipart_form_uploads' => true } }
+
+        it { is_expected.to contain_apache__custom_config('block-multipart-form-uploads').with('ensure' => 'absent') }
+      end
+
+      context 'with multipart form uploads allowed via hieradata' do
+        let(:hiera_config) { 'spec/support/hiera/upload_overrides.yaml' }
+
+        it { is_expected.to contain_class('profiles::apache').with('allow_multipart_form_uploads' => true) }
+        it { is_expected.to contain_apache__custom_config('block-multipart-form-uploads').with('ensure' => 'absent') }
       end
 
       context "with mpm_module => prefork and http2 => true" do
