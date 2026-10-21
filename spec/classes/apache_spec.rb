@@ -44,10 +44,7 @@ describe 'profiles::apache' do
                                      }
         ) }
 
-        it { is_expected.to contain_apache__custom_config('block-multipart-form-uploads').with(
-          'ensure'  => 'present',
-          'content' => %(<If "%{HTTP:Content-Type} =~ m#(?i)^multipart/form-data(?:[[:space:]]*;|[[:space:]]*$)#">\n  Require all denied\n</If>\n)
-        ) }
+        it { is_expected.not_to contain_apache__custom_config('block-multipart-form-uploads') }
 
         it { is_expected.to contain_systemd__dropin_file('apache2-override.conf').with(
           'ensure'  => 'absent',
@@ -135,14 +132,14 @@ describe 'profiles::apache' do
       context 'with multipart form uploads allowed' do
         let(:params) { { 'allow_multipart_form_uploads' => true } }
 
-        it { is_expected.to contain_apache__custom_config('block-multipart-form-uploads').with('ensure' => 'absent') }
+        it { is_expected.not_to contain_apache__custom_config('block-multipart-form-uploads') }
       end
 
       context 'with multipart form uploads allowed via hieradata' do
         let(:hiera_config) { 'spec/support/hiera/upload_overrides.yaml' }
 
         it { is_expected.to contain_class('profiles::apache').with('allow_multipart_form_uploads' => true) }
-        it { is_expected.to contain_apache__custom_config('block-multipart-form-uploads').with('ensure' => 'absent') }
+        it { is_expected.not_to contain_apache__custom_config('block-multipart-form-uploads') }
       end
 
       context "with mpm_module => prefork and http2 => true" do

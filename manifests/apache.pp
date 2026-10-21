@@ -42,18 +42,6 @@ class profiles::apache (
     require               => [Group['www-data'], User['www-data']]
   }
 
-  apache::custom_config { 'block-multipart-form-uploads':
-    ensure  => $allow_multipart_form_uploads ? {
-                 true  => 'absent',
-                 false => 'present'
-               },
-    content => @("CONFIG"),
-      <If "%{HTTP:Content-Type} =~ m#(?i)^multipart/form-data(?:[[:space:]]*;|[[:space:]]*$)#">
-        Require all denied
-      </If>
-      | CONFIG
-  }
-
   if $http2 {
     include apache::mod::http2
   }

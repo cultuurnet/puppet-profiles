@@ -69,6 +69,15 @@ define profiles::apache::vhost::php_fpm (
     include apache::mod::ssl
   }
 
+  $multipart_form_uploads_fragment = $profiles::apache::allow_multipart_form_uploads ? {
+    true  => undef,
+    false => @("CONFIG"),
+      <If "%{HTTP:Content-Type} =~ m#(?i)^multipart/form-data(?:[[:space:]]*;|[[:space:]]*$)#">
+        Require all denied
+      </If>
+      | CONFIG
+  }
+
   apache::vhost { "${servername}_${port}":
     servername            => $servername,
     serveraliases         => [$aliases].flatten,
@@ -99,6 +108,7 @@ define profiles::apache::vhost::php_fpm (
                                { 'path' => $basedir } + $profiles::apache::defaults::directories
                              ] + [$directories].flatten,
     rewrites              => [$rewrites].flatten,
+    custom_fragment       => $multipart_form_uploads_fragment,
     ssl_proxyengine       => $ssl_proxyengine
   }
 
