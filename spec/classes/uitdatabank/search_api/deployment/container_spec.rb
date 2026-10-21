@@ -5,146 +5,127 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context 'with image => registry.example.com/uitdatabank-search-api' do
+      context 'with ecr_registry => registry.example.com' do
         let(:params) { {
-          'image' => 'registry.example.com/uitdatabank-search-api'
+          'ecr_registry' => 'registry.example.com'
         } }
 
         context 'in the acceptance environment' do
           let(:environment) { 'acceptance' }
 
-          it { is_expected.to compile.with_all_deps }
+          context 'with a docker image version tag available' do
+            let(:pre_condition) { 'function ecr_docker_image_version_tag($parameter1, $parameter2) { return "2026.10.07.000000" }' }
 
-          it { is_expected.to contain_class('profiles::docker') }
+            it { is_expected.to compile.with_all_deps }
 
-          it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment::container').with(
-            'image'                          => 'registry.example.com/uitdatabank-search-api',
-            'aws_region'                     => 'eu-west-1',
-            'image_tag'                      => nil,
-            'default_queries'                => false,
-            'api_keys_matched_to_client_ids' => false,
-            'cli_worker_count'               => 1
-          ) }
+            it { is_expected.to contain_class('profiles::docker') }
 
-          it { is_expected.to contain_class('profiles::docker::ecr_repos').with(
-            'repos' => {
-              'uitdatabank-search-api' => {
-                'region'    => 'eu-west-1',
-                'image_tag' => 'acceptance'
-              }
-            }
-          ) }
+            it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment::container').with(
+              'ecr_registry'                   => 'registry.example.com',
+              'ecr_repository'                 => 'uitdatabank/search-api',
+              'image_tag'                      => '2026.10.07.000000',
+              'default_queries'                => false,
+              'api_keys_matched_to_client_ids' => false,
+              'cli_worker_count'               => 1
+            ) }
 
-          it { is_expected.to contain_file('uitdatabank-search-api-docker-compose').with(
-            'ensure' => 'file',
-            'path'   => '/etc/uitdatabank-search-api/docker-compose.yml',
-            'owner'  => 'root',
-            'group'  => 'root',
-            'mode'   => '0644'
-          ) }
-
-          context 'with docker-compose YAML loaded' do
-            let(:content) { YAML.load(catalogue.resource('file', 'uitdatabank-search-api-docker-compose').send(:parameters)[:content], aliases: true) }
-
-            it { expect(content['x-search-service']['image']).to eq('registry.example.com/uitdatabank-search-api:latest') }
-            it { expect(content['x-search-service']['volumes']).not_to include('/etc/uitdatabank-search-api/api_keys_matched_to_client_ids.php:/var/www/html/api_keys_matched_to_client_ids.php:ro') }
-            it { expect(content['x-search-service']['volumes']).not_to include('/etc/uitdatabank-search-api/default_queries.php:/var/www/html/default_queries.php:ro') }
-            it { expect(content['services']['search-nginx']['volumes']).to include('/etc/uitdatabank-search-api/nginx.conf:/etc/nginx/conf.d/default.conf:ro') }
-            it { expect(content['services']['search-nginx']['network_mode']).to eq('service:search-api') }
-            it { expect(content['services']['search-consume-udb3-cli']['scale']).to eq(1) }
-          end
-
-          it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').with(
-            'ensure' => 'file',
-            'path'   => '/etc/uitdatabank-search-api/fpm-pool.conf',
-            'owner'  => 'root',
-            'group'  => 'root',
-            'mode'   => '0644'
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').with_content(/^pm = static$/) }
-          it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').with_content(/^pm\.max_children = 192$/) }
-          it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').with_content(/^pm\.max_requests = 10000$/) }
-          it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').that_notifies('Exec[uitdatabank-search-api-fpm-pool-reload]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').that_comes_before('Docker_compose[uitdatabank-search-api]') }
-
-          it { is_expected.to contain_file('uitdatabank-search-api-docker-compose').with_content(%r{^\s+- /etc/uitdatabank-search-api/fpm-pool.conf:/usr/local/etc/php-fpm.d/zz-pool.conf:ro$}) }
-
-          it { is_expected.to contain_exec('uitdatabank-search-api-fpm-pool-reload').with(
-            'command'     => '/usr/bin/docker compose -f /etc/uitdatabank-search-api/docker-compose.yml kill -s SIGUSR2 search-api',
-            'refreshonly' => true
-          ) }
-
-          it { is_expected.to contain_exec('uitdatabank-search-api-fpm-pool-reload').that_requires('Docker_compose[uitdatabank-search-api]') }
-
-          it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').with(
-            'ensure' => 'file',
-            'path'   => '/etc/uitdatabank-search-api/nginx.conf',
-            'owner'  => 'root',
-            'group'  => 'root',
-            'mode'   => '0644'
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').with_content(/fastcgi_pass 127\.0\.0\.1:9000;/) }
-          it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').with_content(/^\s+access_log off;$/) }
-          it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').with_content(%r{^\s+error_log /dev/stderr warn;$}) }
-          it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').that_notifies('Exec[uitdatabank-search-api-nginx-reload]') }
-          it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').that_comes_before('Docker_compose[uitdatabank-search-api]') }
-
-          it { is_expected.to contain_exec('uitdatabank-search-api-nginx-reload').with(
-            'command'     => '/usr/bin/docker compose -f /etc/uitdatabank-search-api/docker-compose.yml kill -s SIGHUP search-nginx',
-            'refreshonly' => true
-          ) }
-
-          it { is_expected.to contain_exec('uitdatabank-search-api-nginx-reload').that_requires('Docker_compose[uitdatabank-search-api]') }
-
-          it { is_expected.not_to contain_file('/var/www/udb3-search-service/web') }
-          it { is_expected.not_to contain_file('/var/www/udb3-search-service/web/.htaccess') }
-
-          it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').with(
-            'command'     => '/usr/bin/docker compose -f /etc/uitdatabank-search-api/docker-compose.yml exec -T search-api php bin/app.php udb3-core:reindex-permanent',
-            'environment' => ['MAILTO=infra+cron@publiq.be'],
-            'hour'        => '0',
-            'minute'      => '0'
-          ) }
-
-          it { is_expected.to contain_docker_compose('uitdatabank-search-api').with(
-            'ensure'        => 'present',
-            'compose_files' => ['/etc/uitdatabank-search-api/docker-compose.yml'],
-            'scale'         => { 'search-consume-udb3-cli' => 1 }
-          ) }
-
-          it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').with(
-            'command'     => '/usr/bin/docker compose -f /etc/uitdatabank-search-api/docker-compose.yml exec -T search-api php bin/app.php udb3-core:reindex-permanent',
-            'environment' => ['MAILTO=infra+cron@publiq.be'],
-            'hour'        => '0',
-            'minute'      => '0'
-          ) }
-
-          it { is_expected.to contain_file('uitdatabank-search-api-docker-compose').that_notifies('Docker_compose[uitdatabank-search-api]') }
-          it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').that_requires('Docker_compose[uitdatabank-search-api]') }
-
-          context 'with fact docker_image_tag => { uitdatabank-search-api => 1.2.3 }' do
-            let(:facts) { super().merge(
-              {
-                'docker_image_tag' => { 'uitdatabank-search-api' => '1.2.3' }
-              }
-            )}
+            it { is_expected.to contain_file('uitdatabank-search-api-docker-compose').with(
+              'ensure' => 'file',
+              'path'   => '/etc/uitdatabank-search-api/docker-compose.yml',
+              'owner'  => 'root',
+              'group'  => 'root',
+              'mode'   => '0644'
+            ) }
 
             context 'with docker-compose YAML loaded' do
               let(:content) { YAML.load(catalogue.resource('file', 'uitdatabank-search-api-docker-compose').send(:parameters)[:content], aliases: true) }
 
-              it { expect(content['x-search-service']['image']).to eq('registry.example.com/uitdatabank-search-api:1.2.3') }
+              it { expect(content['x-search-service']['image']).to eq('registry.example.com/uitdatabank/search-api:2026.10.07.000000') }
+              it { expect(content['x-search-service']['volumes']).not_to include('/etc/uitdatabank-search-api/api_keys_matched_to_client_ids.php:/var/www/html/api_keys_matched_to_client_ids.php:ro') }
+              it { expect(content['x-search-service']['volumes']).not_to include('/etc/uitdatabank-search-api/default_queries.php:/var/www/html/default_queries.php:ro') }
+              it { expect(content['services']['search-nginx']['volumes']).to include('/etc/uitdatabank-search-api/nginx.conf:/etc/nginx/conf.d/default.conf:ro') }
+              it { expect(content['services']['search-nginx']['network_mode']).to eq('service:search-api') }
+              it { expect(content['services']['search-consume-udb3-cli']['scale']).to eq(1) }
             end
+
+            it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').with(
+              'ensure' => 'file',
+              'path'   => '/etc/uitdatabank-search-api/fpm-pool.conf',
+              'owner'  => 'root',
+              'group'  => 'root',
+              'mode'   => '0644'
+            ) }
+
+            it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').with_content(/^pm = static$/) }
+            it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').with_content(/^pm\.max_children = 192$/) }
+            it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').with_content(/^pm\.max_requests = 10000$/) }
+            it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').that_notifies('Exec[uitdatabank-search-api-fpm-pool-reload]') }
+            it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').that_comes_before('Docker_compose[uitdatabank-search-api]') }
+
+            it { is_expected.to contain_file('uitdatabank-search-api-docker-compose').with_content(%r{^\s+- /etc/uitdatabank-search-api/fpm-pool.conf:/usr/local/etc/php-fpm.d/zz-pool.conf:ro$}) }
+
+            it { is_expected.to contain_exec('uitdatabank-search-api-fpm-pool-reload').with(
+              'command'     => '/usr/bin/docker compose -f /etc/uitdatabank-search-api/docker-compose.yml kill -s SIGUSR2 search-api',
+              'refreshonly' => true
+            ) }
+
+            it { is_expected.to contain_exec('uitdatabank-search-api-fpm-pool-reload').that_requires('Docker_compose[uitdatabank-search-api]') }
+
+            it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').with(
+              'ensure' => 'file',
+              'path'   => '/etc/uitdatabank-search-api/nginx.conf',
+              'owner'  => 'root',
+              'group'  => 'root',
+              'mode'   => '0644'
+            ) }
+
+            it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').with_content(/fastcgi_pass 127\.0\.0\.1:9000;/) }
+            it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').with_content(/^\s+access_log off;$/) }
+            it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').with_content(%r{^\s+error_log /dev/stderr warn;$}) }
+            it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').that_notifies('Exec[uitdatabank-search-api-nginx-reload]') }
+            it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').that_comes_before('Docker_compose[uitdatabank-search-api]') }
+
+            it { is_expected.to contain_exec('uitdatabank-search-api-nginx-reload').with(
+              'command'     => '/usr/bin/docker compose -f /etc/uitdatabank-search-api/docker-compose.yml kill -s SIGHUP search-nginx',
+              'refreshonly' => true
+            ) }
+
+            it { is_expected.to contain_exec('uitdatabank-search-api-nginx-reload').that_requires('Docker_compose[uitdatabank-search-api]') }
+
+            it { is_expected.not_to contain_file('/var/www/udb3-search-service/web') }
+            it { is_expected.not_to contain_file('/var/www/udb3-search-service/web/.htaccess') }
+
+            it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').with(
+              'command'     => '/usr/bin/docker compose -f /etc/uitdatabank-search-api/docker-compose.yml exec -T search-api php bin/app.php udb3-core:reindex-permanent',
+              'environment' => ['MAILTO=infra+cron@publiq.be'],
+              'hour'        => '0',
+              'minute'      => '0'
+            ) }
+
+            it { is_expected.to contain_docker_compose('uitdatabank-search-api').with(
+              'ensure'        => 'present',
+              'compose_files' => ['/etc/uitdatabank-search-api/docker-compose.yml'],
+              'scale'         => { 'search-consume-udb3-cli' => 1 }
+            ) }
+
+            it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').with(
+              'command'     => '/usr/bin/docker compose -f /etc/uitdatabank-search-api/docker-compose.yml exec -T search-api php bin/app.php udb3-core:reindex-permanent',
+              'environment' => ['MAILTO=infra+cron@publiq.be'],
+              'hour'        => '0',
+              'minute'      => '0'
+            ) }
+
+            it { is_expected.to contain_file('uitdatabank-search-api-docker-compose').that_notifies('Docker_compose[uitdatabank-search-api]') }
+            it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').that_requires('Docker_compose[uitdatabank-search-api]') }
           end
         end
       end
 
-      context 'with image => myregistry.example.com/uitdatabank-search-api, image_tag => foo, aws_region => us-east-1, default_queries => true, api_keys_matched_to_client_ids => true and cli_worker_count => 4' do
+      context 'with ecr_registry => myregistry.example.com, ecr_repository => uitdatabank-search-api, image_tag => foo, default_queries => true, api_keys_matched_to_client_ids => true and cli_worker_count => 4' do
         let(:params) { {
-          'image'                          => 'myregistry.example.com/uitdatabank-search-api',
+          'ecr_registry'                   => 'myregistry.example.com',
+          'ecr_repository'                 => 'uitdatabank-search-api',
           'image_tag'                      => 'foo',
-          'aws_region'                     => 'us-east-1',
           'default_queries'                => true,
           'api_keys_matched_to_client_ids' => true,
           'cli_worker_count'               => 4
@@ -152,15 +133,6 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
 
         context 'in the testing environment' do
           let(:environment) { 'testing' }
-
-          it { is_expected.to contain_class('profiles::docker::ecr_repos').with(
-            'repos' => {
-              'uitdatabank-search-api' => {
-                'region'    => 'us-east-1',
-                'image_tag' => 'testing'
-              }
-            }
-          ) }
 
           context 'with docker-compose YAML loaded' do
             let(:content) { YAML.load(catalogue.resource('file', 'uitdatabank-search-api-docker-compose').send(:parameters)[:content], aliases: true) }
@@ -176,7 +148,7 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
       context 'without parameters' do
         let(:params) { {} }
 
-        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter 'image'/) }
+        it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter \$ecr_registry/) }
       end
     end
   end
