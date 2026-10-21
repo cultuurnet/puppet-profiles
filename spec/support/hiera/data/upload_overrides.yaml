@@ -1,0 +1,4 @@
+---
+profiles::apache::allow_multipart_form_uploads: true
+profiles::php::settings:
+  Session/session.upload_progress.enabled: 'On'
