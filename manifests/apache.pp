@@ -14,6 +14,15 @@ class profiles::apache (
     fail('The HTTP/2 protocol is not supported with MPM module prefork')
   }
 
+  $multipart_form_uploads_fragment = $allow_multipart_form_uploads ? {
+    true  => undef,
+    false => @("CONFIG"),
+      <If "%{HTTP:Content-Type} =~ m#(?i)^multipart/form-data(?:[[:space:]]*;|[[:space:]]*$)#">
+        Require all denied
+      </If>
+      | CONFIG
+  }
+
   include profiles::apache::defaults
   include profiles::apache::logformats
 
