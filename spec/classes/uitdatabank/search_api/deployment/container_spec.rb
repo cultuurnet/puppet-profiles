@@ -65,6 +65,7 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
           it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').with_content(/^pm = static$/) }
           it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').with_content(/^pm\.max_children = 192$/) }
           it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').with_content(/^pm\.max_requests = 10000$/) }
+          it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').with_content(/^php_admin_value\[session\.upload_progress\.enabled\] = Off$/) }
           it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').that_notifies('Exec[uitdatabank-search-api-fpm-pool-reload]') }
           it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').that_comes_before('Docker_compose[uitdatabank-search-api]') }
 

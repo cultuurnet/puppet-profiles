@@ -36,7 +36,7 @@ class profiles::uitdatabank::search_api::deployment::container (
   file { 'uitdatabank-search-api-fpm-pool':
     ensure  => 'file',
     path    => "${config_dir}/fpm-pool.conf",
-    content => "[www]\npm = static\npm.max_children = 192\npm.max_requests = 10000\n",
+    content => "[www]\npm = static\npm.max_children = 192\npm.max_requests = 10000\nphp_admin_value[session.upload_progress.enabled] = Off\n",
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
