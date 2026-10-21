@@ -46,7 +46,8 @@ describe 'profiles::php' do
               'pear'                         => false,
               'fpm'                          => true,
               'settings'                     => {
-                                                  'openssl/openssl.cafile' => '/etc/ssl/certs/ca-certificates.crt'
+                                                  'openssl/openssl.cafile'                  => '/etc/ssl/certs/ca-certificates.crt',
+                                                  'Session/session.upload_progress.enabled' => 'Off'
                                                 },
               'extensions'                   => {
                                                   'bcmath'   => {},
@@ -201,9 +202,10 @@ describe 'profiles::php' do
             'dev'                      => false,
             'pear'                     => false,
             'settings'                 => {
-                                            'openssl/openssl.cafile'  => '/etc/ssl/certs/ca-certificates.crt',
-                                            'PHP/upload_max_filesize' => '22M',
-                                            'PHP/post_max_size'       => '24M'
+                                            'openssl/openssl.cafile'                  => '/etc/ssl/certs/ca-certificates.crt',
+                                            'Session/session.upload_progress.enabled' => 'Off',
+                                            'PHP/upload_max_filesize'                 => '22M',
+                                            'PHP/post_max_size'                       => '24M'
                                           },
             'extensions'               => {
                                             'bcmath'   => {},
@@ -278,7 +280,8 @@ describe 'profiles::php' do
               'dev'                          => false,
               'pear'                         => false,
               'settings'                     => {
-                                                  'openssl/openssl.cafile' => '/etc/ssl/certs/ca-certificates.crt'
+                                                  'openssl/openssl.cafile'                  => '/etc/ssl/certs/ca-certificates.crt',
+                                                  'Session/session.upload_progress.enabled' => 'Off'
                                                 },
               'extensions'                   => {
                                                   'bcmath'   => {},

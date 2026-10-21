@@ -13,7 +13,8 @@ class profiles::php (
 ) inherits ::profiles {
 
   $default_settings     = {
-                            'openssl/openssl.cafile' => '/etc/ssl/certs/ca-certificates.crt'
+                            'openssl/openssl.cafile'                  => '/etc/ssl/certs/ca-certificates.crt',
+                            'Session/session.upload_progress.enabled' => 'Off'
                           }
 
   $default_fpm_settings = {
