@@ -1,5 +1,9 @@
 class profiles::mongodb (
-  String                     $version               = 'installed',
+  String                     $version               = $facts['os']['distro']['codename'] ? {
+                                                      'noble' => '8.0.12',
+                                                      default => 'installed'
+                                                    },
+  String                     $repo_version          = '8.0',
   Stdlib::IP::Address::V4    $listen_address        = '127.0.0.1',
   Enum['running', 'stopped'] $service_status        = 'running',
   Boolean                    $lvm                   = false,
@@ -16,11 +20,17 @@ class profiles::mongodb (
 
   include profiles::firewall::rules
 
+  realize Apt::Source['php']
+
+  if $facts['os']['distro']['codename'] == 'noble' {
+    realize Apt::Source["mongodb-org-${repo_version}-noble"]
+    Apt::Source["mongodb-org-${repo_version}-noble"] -> Class['mongodb::server']
+  }
+
   realize Group['mongodb']
   realize User['mongodb']
   realize Apt::Source['publiq-tools']
   realize Package['mongodb-mongosh']
-
   if !($listen_address == '127.0.0.1') {
     realize Firewall['400 accept mongodb traffic']
   }
@@ -68,10 +78,16 @@ class profiles::mongodb (
   }
 
   class { 'mongodb::server':
-    package_name   => 'mongodb-server',
+    package_name   => $facts['os']['distro']['codename'] ? {
+                        'focal' => 'mongodb-server',
+                        'noble' => 'mongodb-org-server'
+                      },
     package_ensure => $version,
     service_manage => true,
-    service_name   => 'mongodb',
+    service_name   => $facts['os']['distro']['codename'] ? {
+                        'focal' => 'mongodb',
+                        'noble' => 'mongod'
+                      },
     service_ensure => $service_status,
     service_enable => $service_status ? {
                         'running' => true,
