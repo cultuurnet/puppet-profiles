@@ -212,7 +212,11 @@ describe 'profiles::mongodb' do
         )) }
 
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to contain_class('mongodb::server').with('package_name' => 'mongodb-org-server') }
+        it { is_expected.to contain_class('mongodb::server').with(
+          'package_name' => 'mongodb-org-server',
+          'service_name' => 'mongod'
+        ) }
+        it { is_expected.to contain_service('mongodb').with('name' => 'mongod') }
       end
     end
   end
