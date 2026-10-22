@@ -204,6 +204,16 @@ describe 'profiles::mongodb' do
 
         it { expect { catalogue }.to raise_error(Puppet::ParseError, /with LVM enabled, expects a value for both 'volume_group' and 'volume_size'/) }
       end
+
+      context 'on Ubuntu Noble' do
+        let(:facts) { facts.merge(os: facts[:os].merge(
+          'distro' => facts[:os]['distro'].merge('codename' => 'noble'),
+          'release' => facts[:os]['release'].merge('major' => '24.04', 'full' => '24.04')
+        )) }
+
+        it { is_expected.to compile.with_all_deps }
+        it { is_expected.to contain_class('mongodb::server').with('package_name' => 'mongodb-org-server') }
+      end
     end
   end
 end

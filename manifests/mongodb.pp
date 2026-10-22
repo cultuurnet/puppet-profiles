@@ -68,7 +68,10 @@ class profiles::mongodb (
   }
 
   class { 'mongodb::server':
-    package_name   => 'mongodb-server',
+    package_name   => $facts['os']['distro']['codename'] ? {
+                        'focal' => 'mongodb-server',
+                        'noble' => 'mongodb-org-server'
+                      },
     package_ensure => $version,
     service_manage => true,
     service_name   => 'mongodb',
