@@ -176,6 +176,17 @@ class profiles::apt::repositories {
     }
   }
 
+  if $codename == 'noble' {
+    $mongodb_repo_version = lookup('profiles::mongodb::repo_version', String, 'first', '8.0')
+
+    @apt::source { "mongodb-org-${mongodb_repo_version}-noble":
+      location     => "https://apt-mirror.publiq.be/mongodb-org-${mongodb_repo_version}-noble-${environment}",
+      release      => $codename,
+      architecture => $arch,
+      repos        => 'multiverse'
+    }
+  }
+
   if $facts['os']['release']['major'] == '20.04' {
     @apt::source { 'postgresql':
       location     => "https://apt-mirror.publiq.be/postgresql-${codename}-${environment}",

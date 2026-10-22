@@ -12,6 +12,7 @@ describe 'profiles::mongodb' do
 
         it { is_expected.to contain_class('profiles::mongodb').with(
           'version'               => 'installed',
+          'repo_version'          => '8.0',
           'listen_address'        => '127.0.0.1',
           'service_status'        => 'running',
           'lvm'                   => false,
@@ -27,6 +28,7 @@ describe 'profiles::mongodb' do
         it { is_expected.to contain_group('mongodb') }
         it { is_expected.to contain_user('mongodb') }
         it { is_expected.to contain_apt__source('publiq-tools') }
+        it { is_expected.not_to contain_apt__source('mongodb-org-8.0-noble') }
         it { is_expected.to contain_package('mongodb-mongosh') }
 
         it { is_expected.not_to contain_firewall('400 accept mongodb traffic') }
@@ -206,17 +208,26 @@ describe 'profiles::mongodb' do
       end
 
       context 'on Ubuntu Noble' do
+        let(:hiera_config) { 'spec/support/hiera/mongodb.yaml' }
         let(:facts) { facts.merge(os: facts[:os].merge(
           'distro' => facts[:os]['distro'].merge('codename' => 'noble'),
           'release' => facts[:os]['release'].merge('major' => '24.04', 'full' => '24.04')
         )) }
+        let(:environment) { 'acceptance' }
 
         it { is_expected.to compile.with_all_deps }
+        it { is_expected.to contain_apt__source('mongodb-org-8.0-noble').with(
+          'location' => 'https://apt-mirror.publiq.be/mongodb-org-8.0-noble-acceptance',
+          'release'  => 'noble',
+          'repos'    => 'multiverse'
+        ) }
         it { is_expected.to contain_class('mongodb::server').with(
           'package_name' => 'mongodb-org-server',
+          'package_ensure' => '8.0.12',
           'service_name' => 'mongod'
         ) }
         it { is_expected.to contain_service('mongodb').with('name' => 'mongod') }
+        it { is_expected.to contain_apt__source('mongodb-org-8.0-noble').that_comes_before('Class[mongodb::server]') }
       end
     end
   end
