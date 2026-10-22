@@ -99,7 +99,6 @@ define profiles::apache::vhost::php_fpm (
                                { 'path' => $basedir } + $profiles::apache::defaults::directories
                              ] + [$directories].flatten,
     rewrites              => [$rewrites].flatten,
-    custom_fragment       => $profiles::apache::multipart_form_uploads_fragment,
     ssl_proxyengine       => $ssl_proxyengine
   }
 
