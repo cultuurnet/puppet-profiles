@@ -2,7 +2,6 @@ class profiles::apache (
   Enum['event', 'itk', 'peruser', 'prefork', 'worker'] $mpm_module                  = 'prefork',
   Hash                                                 $mpm_module_config           = {},
   Boolean                                              $http2                       = false,
-  Boolean                                              $allow_multipart_form_uploads = false,
   Integer                                              $limitreqfieldsize           = 8190,
   Boolean                                              $metrics                     = true,
   Enum['running', 'stopped']                           $service_status              = 'running',
@@ -12,15 +11,6 @@ class profiles::apache (
 
   if ($mpm_module == 'prefork' and $http2) {
     fail('The HTTP/2 protocol is not supported with MPM module prefork')
-  }
-
-  $multipart_form_uploads_fragment = $allow_multipart_form_uploads ? {
-    true  => undef,
-    false => @("CONFIG"),
-      <If "%{HTTP:Content-Type} =~ m#(?i)^multipart/form-data(?:[[:space:]]*;|[[:space:]]*$)#">
-        Require all denied
-      </If>
-      | CONFIG
   }
 
   include profiles::apache::defaults

@@ -93,7 +93,6 @@ class profiles::museumpas::website (
     request_headers   => $profiles::apache::defaults::request_headers,
     port              => 80,
     access_log_format => 'extended_json',
-    custom_fragment   => $profiles::apache::multipart_form_uploads_fragment,
     directories       => [{
                            path            => '\.php$',
                            provider        => 'filesmatch',

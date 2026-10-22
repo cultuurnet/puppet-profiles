@@ -1,8 +1,4 @@
 describe 'profiles::apache::vhost::php_fpm' do
-  let(:multipart_block) do
-    %(<If "%{HTTP:Content-Type} =~ m#(?i)^multipart/form-data(?:[[:space:]]*;|[[:space:]]*$)#">\n  Require all denied\n</If>\n)
-  end
-
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       let(:facts) { facts }
@@ -76,7 +72,7 @@ describe 'profiles::apache::vhost::php_fpm' do
                                            'allow_override' => 'All'
                                          }],
               'rewrites'              => [],
-              'custom_fragment'       => multipart_block,
+              'custom_fragment'       => nil,
               'ssl_proxyengine'       => false
             ) }
 
@@ -163,14 +159,6 @@ describe 'profiles::apache::vhost::php_fpm' do
               'optional_config' => { 'foo' => 'bar' }
             ) }
           end
-        end
-
-        context 'with multipart form uploads allowed via hieradata' do
-          let(:hiera_config) { 'spec/support/hiera/upload_overrides.yaml' }
-          let(:params) { { 'basedir' => '/var/www/foo' } }
-
-          it { is_expected.to contain_class('profiles::apache').with('allow_multipart_form_uploads' => true) }
-          it { is_expected.to contain_apache__vhost('winston.example.com_80').with('custom_fragment' => nil) }
         end
 
         context "with hieradata" do
@@ -326,7 +314,7 @@ describe 'profiles::apache::vhost::php_fpm' do
                                            'comment'      => 'Proxy to foo.example.com',
                                            'rewrite_rule' => '^(.*)$ http://foo.example.com/$1 [P]'
                                        }],
-              'custom_fragment'       => multipart_block
+              'custom_fragment'       => nil
             ) }
           end
         end
