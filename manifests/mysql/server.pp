@@ -1,7 +1,7 @@
 class profiles::mysql::server (
   Optional[String]                                                              $root_password          = undef,
   Stdlib::IP::Address::V4                                                       $listen_address         = '127.0.0.1',
-  Array[String]                                                                 $extra_hostnames        = [],
+  Variant[String, Array[String]]                                                $hostnames              = $facts['networking']['fqdn'],
   Boolean                                                                       $monitoring             = false,
   Boolean                                                                       $lvm                    = false,
   Optional[String]                                                              $volume_group           = undef,
@@ -90,7 +90,7 @@ class profiles::mysql::server (
         group   => 'root',
         mode    => '0644',
         content => "mysqld_version=${facts['mysqld_version']}",
-        tag     => ['mysqld_version', $facts['networking']['fqdn']] + $extra_hostnames
+        tag     => ['mysqld_version'] + [$hostnames].flatten
       }
     }
 
