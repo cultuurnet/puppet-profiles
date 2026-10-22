@@ -1,3 +1,0 @@
----
-profiles::mongodb::repo_version: '8.0'
-profiles::mongodb::version: '8.0.12'

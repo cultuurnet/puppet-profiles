@@ -208,7 +208,6 @@ describe 'profiles::mongodb' do
       end
 
       context 'on Ubuntu Noble' do
-        let(:hiera_config) { 'spec/support/hiera/mongodb.yaml' }
         let(:facts) { facts.merge(os: facts[:os].merge(
           'distro' => facts[:os]['distro'].merge('codename' => 'noble'),
           'release' => facts[:os]['release'].merge('major' => '24.04', 'full' => '24.04')
@@ -216,6 +215,10 @@ describe 'profiles::mongodb' do
         let(:environment) { 'acceptance' }
 
         it { is_expected.to compile.with_all_deps }
+        it { is_expected.to contain_class('profiles::mongodb').with(
+          'version' => '8.0.12',
+          'repo_version' => '8.0'
+        ) }
         it { is_expected.to contain_apt__source('mongodb-org-8.0-noble').with(
           'location' => 'https://apt-mirror.publiq.be/mongodb-org-8.0-noble-acceptance',
           'release'  => 'noble',
