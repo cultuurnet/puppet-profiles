@@ -224,6 +224,8 @@ describe 'profiles::mongodb' do
           'release'  => 'noble',
           'repos'    => 'multiverse'
         ) }
+        it { is_expected.to contain_package('mongodb-database-tools').with('ensure' => 'installed') }
+        it { is_expected.not_to contain_package('mongo-tools') }
         it { is_expected.to contain_class('mongodb::server').with(
           'package_name' => 'mongodb-org-server',
           'package_ensure' => '8.0.12',
@@ -231,6 +233,7 @@ describe 'profiles::mongodb' do
         ) }
         it { is_expected.to contain_service('mongodb').with('name' => 'mongod') }
         it { is_expected.to contain_apt__source('mongodb-org-8.0-noble').that_comes_before('Class[mongodb::server]') }
+        it { is_expected.to contain_apt__source('mongodb-org-8.0-noble').that_comes_before('Package[mongodb-database-tools]') }
       end
     end
   end

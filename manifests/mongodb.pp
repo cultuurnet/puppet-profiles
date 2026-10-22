@@ -25,6 +25,7 @@ class profiles::mongodb (
   if $facts['os']['distro']['codename'] == 'noble' {
     realize Apt::Source["mongodb-org-${repo_version}-noble"]
     Apt::Source["mongodb-org-${repo_version}-noble"] -> Class['mongodb::server']
+    Apt::Source["mongodb-org-${repo_version}-noble"] -> Package['mongodb-database-tools']
   }
 
   realize Group['mongodb']
@@ -69,7 +70,12 @@ class profiles::mongodb (
     }
   }
 
-  package { 'mongo-tools':
+  $tools_package = $facts['os']['distro']['codename'] ? {
+    'focal' => 'mongo-tools',
+    'noble' => 'mongodb-database-tools'
+  }
+
+  package { $tools_package:
     ensure => 'installed'
   }
 
