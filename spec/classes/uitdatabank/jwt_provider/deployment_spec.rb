@@ -30,6 +30,32 @@ describe 'profiles::uitdatabank::jwt_provider::deployment' do
             'ensure' => 'latest'
           ) }
 
+          it { is_expected.to contain_profiles__newrelic__php__application('uitdatabank-jwt-provider').with(
+            'app_name' => nil,
+            'docroot'  => '/var/www/jwt-provider/web',
+            'enable'   => false
+          ) }
+
+          it { is_expected.to contain_profiles__newrelic__php__application('uitdatabank-jwt-provider').that_requires('Package[uitdatabank-jwt-provider]') }
+
+          context 'with New Relic enabled and an explicit application name' do
+            let(:params) do
+              super().merge(
+                'newrelic'          => true,
+                'newrelic_app_name' => 'jwt.example.com_production'
+              )
+            end
+
+            it { is_expected.to compile.with_all_deps }
+
+            it { is_expected.to contain_profiles__newrelic__php__application('uitdatabank-jwt-provider').with(
+              'app_name' => 'jwt.example.com_production',
+              'enable'   => true
+            ) }
+
+            it { is_expected.to contain_class('profiles::newrelic::php') }
+          end
+
           it { is_expected.to contain_file('uitdatabank-jwt-provider-config').with(
             'ensure' => 'file',
             'owner'  => 'www-data',
