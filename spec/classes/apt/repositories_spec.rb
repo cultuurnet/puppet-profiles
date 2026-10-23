@@ -43,6 +43,7 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'focal', { :location => 'https://apt-mirror.publiq.be/focal-amd64-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'focal-updates', { :location => 'https://apt-mirror.publiq.be/focal-updates-amd64-testing', :repos => 'main', :release => 'focal-updates' }
             include_examples 'apt repositories', 'focal-security', { :location => 'https://apt-mirror.publiq.be/focal-security-amd64-testing', :repos => 'main', :release => 'focal-security' }
+            include_examples 'apt repositories', 'focal-esm-infra', { :location => 'https://apt-mirror.publiq.be/focal-esm-infra-amd64-testing', :repos => 'main', :release => 'focal-esm-infra' }
             include_examples 'apt repositories', 'focal-backports', { :location => 'https://apt-mirror.publiq.be/focal-backports-amd64-testing', :repos => 'main', :release => 'focal-backports' }
             include_examples 'apt repositories', 'php', { :location => 'https://apt-mirror.publiq.be/php-focal-testing', :repos => 'main', :release => 'focal' }
 
@@ -104,6 +105,14 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'uit-api', { :location => 'https://apt.publiq.be/uit-api-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'uit-cms', { :location => 'https://apt.publiq.be/uit-cms-testing', :repos => 'main', :release => 'focal' }
           end
+
+          context 'with a non-focal codename' do
+            let(:facts) do
+              super().merge(:os => super()[:os].merge('distro' => super()[:os]['distro'].merge('codename' => 'other')))
+            end
+
+            it { is_expected.not_to contain_apt__source('focal-esm-infra') }
+          end
         when '24.04'
           context 'in the acceptance environment' do
             let(:environment) { 'acceptance' }
@@ -112,6 +121,7 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'noble-updates', { :location => 'https://apt-mirror.publiq.be/noble-updates-amd64-acceptance', :repos => 'main', :release => 'noble' }
             include_examples 'apt repositories', 'noble-security', { :location => 'https://apt-mirror.publiq.be/noble-security-amd64-acceptance', :repos => 'main', :release => 'noble' }
             include_examples 'apt repositories', 'noble-backports', { :location => 'https://apt-mirror.publiq.be/noble-backports-amd64-acceptance', :repos => 'main', :release => 'noble' }
+            it { is_expected.not_to contain_apt__source('noble-esm-infra') }
 
             include_examples 'apt repositories', 'php', { :location => 'https://apt-mirror.publiq.be/php-noble-acceptance', :repos => 'main', :release => 'noble' }
             include_examples 'apt repositories', 'mysql-8.4', { :location => 'https://apt-mirror.publiq.be/mysql-8.4-noble-acceptance', :repos => 'mysql-8.4-lts', :release => 'noble' }
