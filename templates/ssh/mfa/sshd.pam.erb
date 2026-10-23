@@ -1,7 +1,7 @@
 # Managed by Puppet
 
 <% if @enabled -%>
-auth required pam_google_authenticator.so nullok
+auth required pam_google_authenticator.so
 auth required pam_permit.so
 <% else -%>
 @include common-auth

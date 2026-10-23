@@ -72,7 +72,8 @@ describe 'profiles::ssh::mfa' do
       ).without_content(%r{@include common-auth}) }
 
       it { is_expected.to contain_file('/etc/pam.d/sshd').without_content(%r{pam_succeed_if\.so}) }
-      it { is_expected.to contain_file('/etc/pam.d/sshd').with_content(%r{pam_google_authenticator\.so nullok}) }
+      it { is_expected.to contain_file('/etc/pam.d/sshd').with_content(%r{auth required pam_google_authenticator\.so\n}) }
+      it { is_expected.to contain_file('/etc/pam.d/sshd').without_content(%r{nullok}) }
       it { is_expected.to contain_file('/etc/pam.d/sshd').with_content(%r{auth required pam_permit\.so}) }
       it { is_expected.to contain_package('libpam-google-authenticator').that_comes_before('File[/etc/pam.d/sshd]') }
 
@@ -86,6 +87,7 @@ describe 'profiles::ssh::mfa' do
         'mode'   => '0644'
       ).with_content(%r{Match Group mfa_users Address \*,!194\.78\.13\.220}) }
 
+      it { is_expected.to contain_file('/etc/ssh/sshd_config.d/publiq-mfa.conf').with_content(%r{\A# Managed by Puppet\n\nAuthenticationMethods publickey\n}) }
       it { is_expected.to contain_file('/etc/ssh/sshd_config.d/publiq-mfa.conf').with_content(%r{AuthenticationMethods publickey,keyboard-interactive:pam}) }
       it { is_expected.to contain_file('/etc/ssh/sshd_config.d/publiq-mfa.conf').with_content(%r{Match all}) }
 
@@ -142,6 +144,14 @@ describe 'profiles::ssh::mfa' do
           'mfa_enforced' => true,
           'mfa_config'   => nil
         ) }
+      end
+
+      context 'without configured MFA users' do
+        let(:params) do
+          super().merge({ 'authorized_keys_tags' => 'none' })
+        end
+
+        it { is_expected.to contain_file('/etc/ssh/sshd_config.d/publiq-mfa.conf').with_content(%r{\A# Managed by Puppet\n\nAuthenticationMethods publickey\n\z}) }
       end
 
       context 'with MFA disabled' do

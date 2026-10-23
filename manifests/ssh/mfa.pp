@@ -39,18 +39,12 @@ class profiles::ssh::mfa (
       before => File['/etc/pam.d/sshd']
     }
 
-    if !empty($configured_users) {
-      file { '/etc/ssh/sshd_config.d/publiq-mfa.conf':
-        ensure  => 'file',
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0644',
-        content => template('profiles/ssh/mfa/sshd_config.erb')
-      }
-    } else {
-      file { '/etc/ssh/sshd_config.d/publiq-mfa.conf':
-        ensure => 'absent'
-      }
+    file { '/etc/ssh/sshd_config.d/publiq-mfa.conf':
+      ensure  => 'file',
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0644',
+      content => template('profiles/ssh/mfa/sshd_config.erb')
     }
 
     profiles::ssh::sshd_config { 'ChallengeResponseAuthentication':
