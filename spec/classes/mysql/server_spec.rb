@@ -16,7 +16,7 @@ describe 'profiles::mysql::server' do
           it { is_expected.to contain_class('profiles::mysql::server').with(
             'root_password'         => nil,
             'listen_address'        => '127.0.0.1',
-            'hostnames'             => 'mysql.example.com',
+            'hostname'              => 'mysql.example.com',
             'monitoring'            => false,
             'lvm'                   => false,
             'volume_group'          => nil,
@@ -113,11 +113,11 @@ describe 'profiles::mysql::server' do
           context 'with hieradata' do
             let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-            context 'with root_password => test, listen_address => 0.0.0.0, hostnames => [foo.com, bar.com], long_query_time => 5, max_open_files => 5120, monitoring => true, lvm => true, volume_group => datavg, volume_size => 20G, backup_lvm => true, backup_volume_group => backupvg, backup_volume_size => 10G and backup_retention_days => 5' do
+            context 'with root_password => test, listen_address => 0.0.0.0, hostname => foo.com, long_query_time => 5, max_open_files => 5120, monitoring => true, lvm => true, volume_group => datavg, volume_size => 20G, backup_lvm => true, backup_volume_group => backupvg, backup_volume_size => 10G and backup_retention_days => 5' do
               let(:params) { {
                 'root_password'         => 'test',
                 'listen_address'        => '0.0.0.0',
-                'hostnames'             => ['foo.com', 'bar.com'],
+                'hostname'              => 'foo.com',
                 'max_open_files'        => 5120,
                 'monitoring'            => true,
                 'lvm'                   => true,
@@ -235,7 +235,7 @@ describe 'profiles::mysql::server' do
                   'group'   => 'root',
                   'mode'    => '0644',
                   'content' => 'mysqld_version=8.0.35',
-                  'tag'     => ['mysqld_version', 'foo.com', 'bar.com']
+                  'tag'     => ['mysqld_version', 'foo.com']
                 ) }
               end
 
