@@ -11,12 +11,15 @@ class profiles::uit::mail_subscriptions (
   realize Group['www-data']
   realize User['www-data']
 
-  if $deployment {
-    @@profiles::mysql::app_user { "${database_user}@${database_name}":
-      password => $database_password,
-      tag      => $environment
-    }
+  # Disabled while two uit::api nodes coexist per environment (*02 -> *03 migration):
+  # both would export this same resource and collecting it fails with a duplicate
+  # resource error. The database user already exists on the current node.
+  # @@profiles::mysql::app_user { "${database_user}@${database_name}":
+  #   password => $database_password,
+  #   tag      => $environment
+  # }
 
+  if $deployment {
     include ::profiles::uit::mail_subscriptions::deployment
 
     Group['www-data'] -> Class['profiles::uit::mail_subscriptions::deployment']

@@ -34,23 +34,24 @@ describe 'profiles::uit::mail_subscriptions' do
           it { is_expected.to contain_class('profiles::uit::mail_subscriptions::deployment').that_requires('User[www-data]') }
           it { is_expected.to contain_class('profiles::uit::mail_subscriptions::deployment').that_requires('Class[profiles::nodejs]') }
 
-          context 'in the acceptance environment' do
-            let(:environment) { 'acceptance' }
-
-            it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_mail_subscriptions@uit_api').with(
-              'password' => 'p4ssw0rd',
-              'tag'      => 'acceptance'
-            ) }
-          end
-
-          context 'in the testing environment' do
-            let(:environment) { 'testing' }
-
-            it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_mail_subscriptions@uit_api').with(
-              'password' => 'p4ssw0rd',
-              'tag'      => 'testing'
-            ) }
-          end
+          # Export disabled during the uit-api *02 -> *03 migration, see manifest
+          # context 'in the acceptance environment' do
+          #   let(:environment) { 'acceptance' }
+          #
+          #   it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_mail_subscriptions@uit_api').with(
+          #     'password' => 'p4ssw0rd',
+          #     'tag'      => 'acceptance'
+          #   ) }
+          # end
+          #
+          # context 'in the testing environment' do
+          #   let(:environment) { 'testing' }
+          #
+          #   it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_mail_subscriptions@uit_api').with(
+          #     'password' => 'p4ssw0rd',
+          #     'tag'      => 'testing'
+          #   ) }
+          # end
 
           context 'with deployment => false' do
             let(:params) {
@@ -60,7 +61,6 @@ describe 'profiles::uit::mail_subscriptions' do
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to_not contain_class('profiles::uit::mail_subscriptions::deployment') }
-            it { expect(exported_resources).to_not contain_profiles__mysql__app_user('uit_mail_subscriptions@uit_api') }
 
             it { is_expected.to contain_class('profiles::uit::mail_subscriptions::logging').with(
               'deployment' => false
@@ -75,24 +75,25 @@ describe 'profiles::uit::mail_subscriptions' do
         end
       end
 
-      context 'with database_password => foo' do
-        let(:params) { {
-          'database_password' => 'foo'
-        } }
-
-        context 'with hieradata' do
-          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
-
-          context 'in the production environment' do
-            let(:environment) { 'production' }
-
-            it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_mail_subscriptions@uit_api').with(
-              'password' => 'foo',
-              'tag'      => 'production'
-            ) }
-          end
-        end
-      end
+      # Export disabled during the uit-api *02 -> *03 migration, see manifest
+      # context 'with database_password => foo' do
+      #   let(:params) { {
+      #     'database_password' => 'foo'
+      #   } }
+      #
+      #   context 'with hieradata' do
+      #     let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+      #
+      #     context 'in the production environment' do
+      #       let(:environment) { 'production' }
+      #
+      #       it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_mail_subscriptions@uit_api').with(
+      #         'password' => 'foo',
+      #         'tag'      => 'production'
+      #       ) }
+      #     end
+      #   end
+      # end
 
       context 'without parameters' do
         let(:params) { {} }
