@@ -65,6 +65,7 @@ describe 'profiles::uit::notifications' do
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to_not contain_class('profiles::uit::notifications::deployment') }
+            it { expect(exported_resources).to_not contain_profiles__mysql__app_user('uit_notifications@uit_api') }
           end
         end
       end

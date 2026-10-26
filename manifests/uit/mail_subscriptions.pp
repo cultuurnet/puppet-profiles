@@ -11,12 +11,12 @@ class profiles::uit::mail_subscriptions (
   realize Group['www-data']
   realize User['www-data']
 
-  @@profiles::mysql::app_user { "${database_user}@${database_name}":
-    password => $database_password,
-    tag      => $environment
-  }
-
   if $deployment {
+    @@profiles::mysql::app_user { "${database_user}@${database_name}":
+      password => $database_password,
+      tag      => $environment
+    }
+
     include ::profiles::uit::mail_subscriptions::deployment
 
     Group['www-data'] -> Class['profiles::uit::mail_subscriptions::deployment']

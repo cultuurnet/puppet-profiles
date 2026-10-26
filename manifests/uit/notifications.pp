@@ -12,13 +12,13 @@ class profiles::uit::notifications (
   realize User['www-data']
   realize File['/var/www']
 
-  @@profiles::mysql::app_user { "${database_user}@${database_name}":
-    password => $database_password,
-    remote   => true,
-    tag      => $environment
-  }
-
   if $deployment {
+    @@profiles::mysql::app_user { "${database_user}@${database_name}":
+      password => $database_password,
+      remote   => true,
+      tag      => $environment
+    }
+
     include ::profiles::uit::notifications::deployment
 
     Group['www-data'] -> Class['profiles::uit::notifications::deployment']
