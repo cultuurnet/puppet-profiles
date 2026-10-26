@@ -12,13 +12,16 @@ class profiles::uit::notifications (
   realize User['www-data']
   realize File['/var/www']
 
-  if $deployment {
-    @@profiles::mysql::app_user { "${database_user}@${database_name}":
-      password => $database_password,
-      remote   => true,
-      tag      => $environment
-    }
+  # Disabled while two uit::api nodes coexist per environment (*02 -> *03 migration):
+  # both would export this same resource and collecting it fails with a duplicate
+  # resource error. The database user already exists on the current node.
+  # @@profiles::mysql::app_user { "${database_user}@${database_name}":
+  #   password => $database_password,
+  #   remote   => true,
+  #   tag      => $environment
+  # }
 
+  if $deployment {
     include ::profiles::uit::notifications::deployment
 
     Group['www-data'] -> Class['profiles::uit::notifications::deployment']

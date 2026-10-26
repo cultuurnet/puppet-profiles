@@ -37,25 +37,26 @@ describe 'profiles::uit::notifications' do
           it { is_expected.to contain_class('profiles::uit::notifications::deployment').that_requires('Class[profiles::nodejs]') }
           it { is_expected.to contain_class('profiles::uit::notifications::deployment').that_requires('File[/var/www]') }
 
-          context 'in the acceptance environment' do
-            let(:environment) { 'acceptance' }
-
-            it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_notifications@uit_api').with(
-              'password' => 'p4ssw0rd',
-              'remote'   => true,
-              'tag'      => 'acceptance'
-            ) }
-          end
-
-          context 'in the testing environment' do
-            let(:environment) { 'testing' }
-
-            it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_notifications@uit_api').with(
-              'password' => 'p4ssw0rd',
-              'remote'   => true,
-              'tag'      => 'testing'
-            ) }
-          end
+          # Export disabled during the uit-api *02 -> *03 migration, see manifest
+          # context 'in the acceptance environment' do
+          #   let(:environment) { 'acceptance' }
+          #
+          #   it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_notifications@uit_api').with(
+          #     'password' => 'p4ssw0rd',
+          #     'remote'   => true,
+          #     'tag'      => 'acceptance'
+          #   ) }
+          # end
+          #
+          # context 'in the testing environment' do
+          #   let(:environment) { 'testing' }
+          #
+          #   it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_notifications@uit_api').with(
+          #     'password' => 'p4ssw0rd',
+          #     'remote'   => true,
+          #     'tag'      => 'testing'
+          #   ) }
+          # end
 
           context 'with deployment => false' do
             let(:params) {
@@ -65,30 +66,30 @@ describe 'profiles::uit::notifications' do
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to_not contain_class('profiles::uit::notifications::deployment') }
-            it { expect(exported_resources).to_not contain_profiles__mysql__app_user('uit_notifications@uit_api') }
           end
         end
       end
 
-      context 'with database_password => foo' do
-        let(:params) { {
-          'database_password' => 'foo'
-        } }
-
-        context 'with hieradata' do
-          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
-
-          context 'in the production environment' do
-            let(:environment) { 'production' }
-
-            it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_notifications@uit_api').with(
-              'password' => 'foo',
-              'remote'   => true,
-              'tag'      => 'production'
-            ) }
-          end
-        end
-      end
+      # Export disabled during the uit-api *02 -> *03 migration, see manifest
+      # context 'with database_password => foo' do
+      #   let(:params) { {
+      #     'database_password' => 'foo'
+      #   } }
+      #
+      #   context 'with hieradata' do
+      #     let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+      #
+      #     context 'in the production environment' do
+      #       let(:environment) { 'production' }
+      #
+      #       it { expect(exported_resources).to contain_profiles__mysql__app_user('uit_notifications@uit_api').with(
+      #         'password' => 'foo',
+      #         'remote'   => true,
+      #         'tag'      => 'production'
+      #       ) }
+      #     end
+      #   end
+      # end
 
       context 'without parameters' do
         let(:params) { {} }
