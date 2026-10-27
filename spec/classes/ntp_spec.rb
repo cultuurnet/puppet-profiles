@@ -10,6 +10,8 @@ describe 'profiles::ntp' do
 
         it { is_expected.to compile.with_all_deps }
 
+        it { is_expected.to contain_package('systemd-timesyncd').with_ensure('absent').that_comes_before('Class[ntp]') }
+
         it { is_expected.to contain_class('ntp').with(
             'restrict' => [
               '-4 default kod nomodify notrap nopeer noquery',

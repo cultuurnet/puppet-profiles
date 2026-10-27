@@ -15,6 +15,11 @@ class profiles::ntp (
     $ntp_servers = $servers
   }
 
+  package { 'systemd-timesyncd':
+    ensure => absent,
+    before => Class['ntp'],
+  }
+
   class { '::ntp':
     servers  => $ntp_servers,
     restrict => $restrict
