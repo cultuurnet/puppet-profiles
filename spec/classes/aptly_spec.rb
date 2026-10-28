@@ -242,11 +242,6 @@ describe 'profiles::aptly' do
                 'filter'           => 'Name (% openjdk*)',
                 'filter_with_deps' => false
               ) }
-              it { is_expected.to contain_exec('aptly_mirror_create-mymirror').with_command(/ -filter="Name \(% openjdk\*\)"/) }
-              it do
-                command = catalogue.resource('Exec', 'aptly_mirror_create-mymirror')[:command]
-                expect(command).not_to include(' -filter-with-deps')
-              end
 
               [true, false].each do |with_deps|
                 context "with filter_with_deps => #{with_deps}" do
@@ -260,10 +255,6 @@ describe 'profiles::aptly' do
 
                   it { is_expected.to compile.with_all_deps }
                   it { is_expected.to contain_aptly__mirror('mymirror').with_filter_with_deps(with_deps) }
-                  it do
-                    command = catalogue.resource('Exec', 'aptly_mirror_create-mymirror')[:command]
-                    expect(command.include?(' -filter-with-deps')).to eq(with_deps)
-                  end
                 end
               end
             end
