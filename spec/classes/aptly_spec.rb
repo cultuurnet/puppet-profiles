@@ -223,6 +223,42 @@ describe 'profiles::aptly' do
               'keyring'       => '/home/aptly/.gnupg/trustedkeys.gpg'
             ) }
 
+            it { is_expected.to contain_aptly__mirror('mymirror').with(
+              'filter'           => nil,
+              'filter_with_deps' => false
+            ) }
+
+            context 'with a package filter' do
+              let(:params) do
+                super().merge('mirrors' => {
+                  'mymirror' => super()['mirrors']['mymirror'].merge(
+                    'filter' => 'Name (% openjdk*)'
+                  )
+                })
+              end
+
+              it { is_expected.to compile.with_all_deps }
+              it { is_expected.to contain_aptly__mirror('mymirror').with(
+                'filter'           => 'Name (% openjdk*)',
+                'filter_with_deps' => false
+              ) }
+
+              [true, false].each do |with_deps|
+                context "with filter_with_deps => #{with_deps}" do
+                  let(:params) do
+                    super().merge('mirrors' => {
+                      'mymirror' => super()['mirrors']['mymirror'].merge(
+                        'filter_with_deps' => with_deps
+                      )
+                    })
+                  end
+
+                  it { is_expected.to compile.with_all_deps }
+                  it { is_expected.to contain_aptly__mirror('mymirror').with_filter_with_deps(with_deps) }
+                end
+              end
+            end
+
             it { is_expected.to contain_profiles__aptly__gpgkey('Ubuntu archive').with(
               'key_id'     => '00001234',
               'key_server' => 'hkp://keyserver.ubuntu.com'

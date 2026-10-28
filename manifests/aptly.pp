@@ -179,12 +179,14 @@ class profiles::aptly (
       }
 
       aptly::mirror { $mirror:
-        location      => $attributes['location'],
-        release       => $attributes['distribution'],
-        repos         => [$attributes['components']].flatten,
-        architectures => [$attributes['architectures']].flatten,
-        keyring       => "${home_dir}/.gnupg/trustedkeys.gpg",
-        require       => File['aptly trustedkeys.gpg']
+        location         => $attributes['location'],
+        release          => $attributes['distribution'],
+        repos            => [$attributes['components']].flatten,
+        architectures    => [$attributes['architectures']].flatten,
+        filter           => $attributes['filter'],
+        filter_with_deps => pick($attributes['filter_with_deps'], false),
+        keyring          => "${home_dir}/.gnupg/trustedkeys.gpg",
+        require          => File['aptly trustedkeys.gpg']
       }
 
       if $lvm {
