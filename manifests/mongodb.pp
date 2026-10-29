@@ -3,6 +3,7 @@ class profiles::mongodb (
                                                       'noble' => '8.0.12',
                                                       default => 'installed'
                                                     },
+  String                     $version               = 'installed',
   String                     $repo_version          = '8.0',
   Stdlib::IP::Address::V4    $listen_address        = '127.0.0.1',
   Enum['running', 'stopped'] $service_status        = 'running',

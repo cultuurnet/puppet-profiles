@@ -208,10 +208,12 @@ describe 'profiles::mongodb' do
       end
 
       context 'on Ubuntu Noble' do
+        let(:hiera_config) { 'spec/support/hiera/mongodb.yaml' }
         let(:facts) { facts.merge(os: facts[:os].merge(
           'distro' => facts[:os]['distro'].merge('codename' => 'noble'),
           'release' => facts[:os]['release'].merge('major' => '24.04', 'full' => '24.04')
         )) }
+        let(:environment) { 'acceptance' }
 
         let(:environment) { 'acceptance' }
 
@@ -233,6 +235,7 @@ describe 'profiles::mongodb' do
           'package_ensure' => '8.0.12',
           'service_name' => 'mongod'
         ) }
+
         it { is_expected.to contain_service('mongodb').with('name' => 'mongod') }
         it { is_expected.to contain_apt__source('mongodb-org-8.0-noble').that_comes_before('Class[mongodb::server]') }
         it { is_expected.to contain_apt__source('mongodb-org-8.0-noble').that_comes_before('Package[mongodb-database-tools]') }
