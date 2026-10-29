@@ -1,5 +1,5 @@
 x-search-service: &search-service
-  image: <%= @image %>:<%= @resolved_image_tag %>
+  image: <%= @ecr_registry %>/<%= @ecr_repository %>:<%= @image_tag %>
   network_mode: host
   restart: unless-stopped
   environment:
