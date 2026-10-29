@@ -216,6 +216,7 @@ describe 'profiles::mongodb' do
         let(:environment) { 'acceptance' }
 
         it { is_expected.to compile.with_all_deps }
+
         it { is_expected.to contain_class('profiles::mongodb').with(
           'version' => '8.0.12',
           'repo_version' => '8.0'
