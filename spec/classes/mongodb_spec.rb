@@ -212,6 +212,7 @@ describe 'profiles::mongodb' do
           'distro' => facts[:os]['distro'].merge('codename' => 'noble'),
           'release' => facts[:os]['release'].merge('major' => '24.04', 'full' => '24.04')
         )) }
+
         let(:environment) { 'acceptance' }
 
         it { is_expected.to compile.with_all_deps }
