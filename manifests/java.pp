@@ -1,8 +1,8 @@
 class profiles::java (
-  Variant[Integer[8, 21, 25], Array[Integer[8, 21, 25]]] $installed_versions = 8,
-  Integer[8, 21, 25]                                 $default_version    = [$installed_versions].flatten[0],
-  Enum['jre', 'jdk']                             $distribution           = 'jre',
-  Boolean                                        $headless               = true
+  Variant[Integer[8, 25], Array[Integer[8, 25]]] $installed_versions = 8,
+  Integer[8, 25]                              $default_version    = [$installed_versions].flatten[0],
+  Enum['jre', 'jdk']                          $distribution       = 'jre',
+  Boolean                                     $headless           = true
 ) inherits ::profiles {
 
   $allowed_versions = [8, 11, 16, 17, 21, 25]
