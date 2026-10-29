@@ -1,4 +1,5 @@
 ---
+profiles::logstash::config_defaults: {}
 profiles::logstash::input_source: 'puppet:///modules/infrastructure/input.conf'
 profiles::logstash::filter_source: 'puppet:///modules/infrastructure/filter.conf'
 profiles::logstash::output_source: 'puppet:///modules/infrastructure/output.conf'
