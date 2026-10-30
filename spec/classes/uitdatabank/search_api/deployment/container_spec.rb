@@ -59,8 +59,6 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
             it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').with_content(/^pm = static$/) }
             it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').with_content(/^pm\.max_children = 192$/) }
             it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').with_content(/^pm\.max_requests = 10000$/) }
-            it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').that_notifies('Exec[uitdatabank-search-api-fpm-pool-reload]') }
-            it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').that_comes_before('Docker_compose[uitdatabank-search-api]') }
 
             it { is_expected.to contain_file('uitdatabank-search-api-docker-compose').with_content(%r{^\s+- /etc/uitdatabank-search-api/fpm-pool.conf:/usr/local/etc/php-fpm.d/zz-pool.conf:ro$}) }
 
@@ -68,8 +66,6 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
               'command'     => '/usr/bin/docker compose -f /etc/uitdatabank-search-api/docker-compose.yml kill -s SIGUSR2 search-api',
               'refreshonly' => true
             ) }
-
-            it { is_expected.to contain_exec('uitdatabank-search-api-fpm-pool-reload').that_requires('Docker_compose[uitdatabank-search-api]') }
 
             it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').with(
               'ensure' => 'file',
@@ -82,15 +78,11 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
             it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').with_content(/fastcgi_pass 127\.0\.0\.1:9000;/) }
             it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').with_content(/^\s+access_log off;$/) }
             it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').with_content(%r{^\s+error_log /dev/stderr warn;$}) }
-            it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').that_notifies('Exec[uitdatabank-search-api-nginx-reload]') }
-            it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').that_comes_before('Docker_compose[uitdatabank-search-api]') }
 
             it { is_expected.to contain_exec('uitdatabank-search-api-nginx-reload').with(
               'command'     => '/usr/bin/docker compose -f /etc/uitdatabank-search-api/docker-compose.yml kill -s SIGHUP search-nginx',
               'refreshonly' => true
             ) }
-
-            it { is_expected.to contain_exec('uitdatabank-search-api-nginx-reload').that_requires('Docker_compose[uitdatabank-search-api]') }
 
             it { is_expected.not_to contain_file('/var/www/udb3-search-service/web') }
             it { is_expected.not_to contain_file('/var/www/udb3-search-service/web/.htaccess') }
@@ -115,6 +107,12 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
               'minute'      => '0'
             ) }
 
+            it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').that_notifies('Exec[uitdatabank-search-api-fpm-pool-reload]') }
+            it { is_expected.to contain_file('uitdatabank-search-api-fpm-pool').that_comes_before('Docker_compose[uitdatabank-search-api]') }
+            it { is_expected.to contain_exec('uitdatabank-search-api-fpm-pool-reload').that_requires('Docker_compose[uitdatabank-search-api]') }
+            it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').that_notifies('Exec[uitdatabank-search-api-nginx-reload]') }
+            it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').that_comes_before('Docker_compose[uitdatabank-search-api]') }
+            it { is_expected.to contain_exec('uitdatabank-search-api-nginx-reload').that_requires('Docker_compose[uitdatabank-search-api]') }
             it { is_expected.to contain_file('uitdatabank-search-api-docker-compose').that_notifies('Docker_compose[uitdatabank-search-api]') }
             it { is_expected.to contain_cron('uitdatabank-search-api-reindex-permanent').that_requires('Docker_compose[uitdatabank-search-api]') }
           end

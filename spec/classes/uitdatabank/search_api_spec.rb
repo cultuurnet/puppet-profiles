@@ -60,7 +60,10 @@ describe 'profiles::uitdatabank::search_api' do
 
           it { is_expected.to contain_class('profiles::uitdatabank::geojson_data::deployment') }
 
-          it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment') }
+          it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').with(
+            'type'    => 'instance',
+            'basedir' => '/var/www/udb3-search-service'
+          ) }
 
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::logging').with(
             'servername' => 'baz.example.com'
@@ -71,7 +74,6 @@ describe 'profiles::uitdatabank::search_api' do
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').that_requires('Class[profiles::uitdatabank::geojson_data::deployment]') }
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').that_requires('Class[profiles::elasticsearch]') }
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').that_requires('Class[profiles::redis]') }
-          it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment::instance').that_subscribes_to('Class[profiles::php]') }
         end
 
         context 'without hieradata' do
@@ -93,6 +95,8 @@ describe 'profiles::uitdatabank::search_api' do
           let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
           it { is_expected.to compile.with_all_deps }
+
+          it { is_expected.not_to contain_class('profiles::uitdatabank::search_api::deployment') }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://baz.example.com').with(
             'destination'       => 'http://127.0.0.1:8080/',
@@ -145,10 +149,11 @@ describe 'profiles::uitdatabank::search_api' do
         end
       end
 
-      context "with servername => foo.example.com, serveraliases => [alias1.example.com, alias2.example.com], elasticsearch_servername => es.example.com and data_migration => true" do
+      context "with servername => foo.example.com, serveraliases => [alias1.example.com, alias2.example.com], type => container, elasticsearch_servername => es.example.com and data_migration => true" do
         let(:params) { {
           'servername'               => 'foo.example.com',
           'serveraliases'            => ['alias1.example.com', 'alias2.example.com'],
+          'type'                     => 'container',
           'elasticsearch_servername' => 'es.example.com',
           'data_migration'           => true
         } }
@@ -156,46 +161,51 @@ describe 'profiles::uitdatabank::search_api' do
         context 'with hieradata' do
           let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-          it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://foo.example.com').with(
-            'basedir'              => '/var/www/udb3-search-service',
-            'public_web_directory' => 'web',
-            'aliases'              => ['alias1.example.com', 'alias2.example.com'],
-            'access_log_format'    => 'api_key_json',
-            'rewrites'             => [{
-                                        'comment'      => 'Capture apiKey from URL parameters',
-                                        'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
-                                        'rewrite_rule' => '^ - [E=API_KEY:%1]'
-                                      }, {
-                                        'comment'      => 'Capture apiKey from X-Api-Key header',
-                                        'rewrite_cond' => '%{HTTP:X-Api-Key} ^.+',
-                                        'rewrite_rule' => '^ - [E=API_KEY:%{HTTP:X-Api-Key}]'
-                                      }, {
-                                        'comment'      => 'Capture clientId from URL parameters',
-                                        'rewrite_cond' => '%{QUERY_STRING} (?:^|&)clientId=([^&]+)',
-                                        'rewrite_rule' => '^ - [E=CLIENT_ID:%1]'
-                                      }, {
-                                        'comment'      => 'Capture clientId from X-Client-Id header',
-                                        'rewrite_cond' => '%{HTTP:X-Client-Id} ^.+',
-                                        'rewrite_rule' => '^ - [E=CLIENT_ID:%{HTTP:X-Client-Id}]'
-                                      }, {
-                                        'comment'      => 'Capture JWT token from Authorization header',
-                                        'rewrite_cond' => '%{HTTP:Authorization} "^Bearer (.+)"',
-                                        'rewrite_rule' => '^ - [E=JWT_TOKEN:%1]'
-                                      }]
-          ) }
+          context 'with a docker image version tag available' do
+            let(:pre_condition) { 'function ecr_docker_image_version_tag($parameter1, $parameter2) { return "2026.10.07.000000" }' }
 
-          it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://es.example.com').with(
-            'destination' => 'http://127.0.0.1:9200/'
-          ) }
+            it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').with(
+              'type'    => 'container',
+              'basedir' => '/var/www/udb3-search-service'
+            ) }
 
-          it { is_expected.to contain_class('profiles::uitdatabank::search_api::logging').with(
-            'servername' => 'foo.example.com'
-          ) }
+            it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://foo.example.com').with_additional_rewrites(
+              [{
+                'comment'      => 'Capture apiKey from URL parameters',
+                'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
+                'rewrite_rule' => '^ - [E=API_KEY:%1]'
+              }, {
+                'comment'      => 'Capture apiKey from X-Api-Key header',
+                'rewrite_cond' => '%{HTTP:X-Api-Key} ^.+',
+                'rewrite_rule' => '^ - [E=API_KEY:%{HTTP:X-Api-Key}]'
+              }, {
+                'comment'      => 'Capture clientId from URL parameters',
+                'rewrite_cond' => '%{QUERY_STRING} (?:^|&)clientId=([^&]+)',
+                'rewrite_rule' => '^ - [E=CLIENT_ID:%1]'
+              }, {
+                'comment'      => 'Capture clientId from X-Client-Id header',
+                'rewrite_cond' => '%{HTTP:X-Client-Id} ^.+',
+                'rewrite_rule' => '^ - [E=CLIENT_ID:%{HTTP:X-Client-Id}]'
+              }, {
+                'comment'      => 'Capture JWT token from Authorization header',
+                'rewrite_cond' => '%{HTTP:Authorization} "^Bearer (.+)"',
+                'rewrite_rule' => '^ - [E=JWT_TOKEN:%1]'
+              }]
+            ) }
 
-          it { is_expected.to contain_class('profiles::uitdatabank::search_api::data_migration') }
+            it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://es.example.com').with(
+              'destination' => 'http://127.0.0.1:9200/'
+            ) }
 
-          it { is_expected.to contain_class('profiles::uitdatabank::search_api::data_migration').that_subscribes_to('Class[profiles::uitdatabank::search_api::deployment]') }
-          it { is_expected.to contain_class('profiles::uitdatabank::search_api::data_migration').that_subscribes_to('Class[profiles::uitdatabank::geojson_data::deployment]') }
+            it { is_expected.to contain_class('profiles::uitdatabank::search_api::logging').with(
+              'servername' => 'foo.example.com'
+            ) }
+
+            it { is_expected.to contain_class('profiles::uitdatabank::search_api::data_migration') }
+
+            it { is_expected.to contain_class('profiles::uitdatabank::search_api::data_migration').that_subscribes_to('Class[profiles::uitdatabank::search_api::deployment]') }
+            it { is_expected.to contain_class('profiles::uitdatabank::search_api::data_migration').that_subscribes_to('Class[profiles::uitdatabank::geojson_data::deployment]') }
+          end
         end
       end
 
