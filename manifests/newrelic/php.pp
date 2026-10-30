@@ -1,4 +1,5 @@
 class profiles::newrelic::php (
+  # Override when multiple PHP applications run on the same host to prevent them sharing an app name.
   String           $app_name    = $facts['networking']['fqdn'],
   Optional[String] $license_key = lookup('data::newrelic::license_key', Optional[String], 'first', undef)
 ) inherits ::profiles {
