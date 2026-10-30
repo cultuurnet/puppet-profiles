@@ -458,8 +458,8 @@ describe 'profiles::elasticsearch' do
 
         it { is_expected.to contain_cron('elasticsearch-index-retention').with(
           'command'     => '/usr/local/bin/elasticsearch-index-retention.sh >> /var/log/elasticsearch-index-retention.log 2>&1',
-          'environment' => ['MAILTO=infra+cron@publiq.be'],
           'user'        => 'root',
+          'weekday'     => '0',
           'hour'        => '3',
           'minute'      => '0'
         ) }
@@ -493,13 +493,29 @@ describe 'profiles::elasticsearch' do
                               }
         ) }
 
-        it { is_expected.to contain_file('elasticsearch-index-retention').with_content(/elasticdump --input="http:\/\/localhost:9200\/\$\{index\}"/) }
+        it { is_expected.to contain_file('elasticsearch-index-retention').with_content(/--input="http:\/\/localhost:9200\/\$\{index\}"/) }
         it { is_expected.to contain_file('elasticsearch-index-retention').with_content(/--tgt-conn 'elasticsearch-index-archive'/) }
         it { is_expected.to contain_file('elasticsearch-index-retention').with_content(/ARCHIVE_BUCKET="pbq-es-log-archive"/) }
-        it { is_expected.to contain_file('elasticsearch-index-retention').with_content(%r{uploading \$\{index\} to s3://\$\{ARCHIVE_BUCKET\}/}) }
+        it { is_expected.to contain_file('elasticsearch-index-retention').with_content(%r{archiving \$\{index\}.*to s3://\$\{ARCHIVE_BUCKET\}/}) }
+        it { is_expected.to contain_file('elasticsearch-index-retention').with_content(/CHUNK_THRESHOLD_BYTES=2000000000/) }
+        it { is_expected.to contain_file('elasticsearch-index-retention').with_content(/"field":"@timestamp"/) }
+        it { is_expected.to contain_file('elasticsearch-index-retention').with_content(/archive_index_chunked\(\)/) }
+        it { is_expected.to contain_file('elasticsearch-index-retention').without_content(/--concurrency/) }
 
         it { is_expected.to contain_cron('elasticsearch-index-retention').that_requires('Profiles::Sling::Connection[elasticsearch-index-archive]') }
         it { is_expected.to contain_cron('elasticsearch-index-retention').that_requires('File[elasticsearch-index-retention]') }
+      end
+
+      context "with archive_bucket set and archive_chunk_threshold_bytes => 500000000" do
+        let(:params) { {
+          'index_retention_patterns'       => ['uitdatabank-search-api-app_*'],
+          'archive_bucket'                 => 'pbq-es-log-archive',
+          'archive_chunk_threshold_bytes'  => 500_000_000
+        } }
+
+        it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to contain_file('elasticsearch-index-retention').with_content(/CHUNK_THRESHOLD_BYTES=500000000/) }
       end
 
       context "with index_retention_patterns scoped to testing/acceptance only, excluding production" do
