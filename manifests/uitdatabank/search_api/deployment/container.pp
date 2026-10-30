@@ -2,7 +2,6 @@ class profiles::uitdatabank::search_api::deployment::container (
   String           $ecr_registry,
   String           $ecr_repository                 = 'uitdatabank/search-api',
   String           $image_tag                      = ecr_docker_image_version_tag("${ecr_registry}/${ecr_repository}", $environment),
-  String           $basedir                        = '/var/www/udb3-search-service',
   Boolean          $default_queries                = false,
   Boolean          $api_keys_matched_to_client_ids = false,
   Integer[1]       $cli_worker_count               = 1
