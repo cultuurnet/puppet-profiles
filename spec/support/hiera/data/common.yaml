@@ -2,6 +2,8 @@
 data::puppet::puppetdb::url: 'http://localhost:8081'
 data::puppet::puppetserver::url: 'https://puppetserver.example.com:8140'
 
+data::aws::ecr_registry: '123456789012.dkr.ecr.eu-west-1.amazonaws.com'
+
 data::newrelic::license_key: 'my_license_key'
 
 data::openid::provider_metadata_url: 'https://openid.example.com/.well-known/openid-configuration'
@@ -63,7 +65,8 @@ profiles::uitdatabank::entry_api::deployment::pubkey_keycloak_source: 'appconfig
 profiles::uitdatabank::search_api::deployment::config_source: 'appconfig/uitdatabank/udb3-search-service/config.php'
 profiles::uitdatabank::search_api::deployment::pubkey_keycloak_source: 'appconfig/uitdatabank/keys/pubkey-keycloak.pem'
 profiles::uitdatabank::search_api::deployment::region_mapping_source: 'appconfig/uitdatabank/udb3-search-service/mapping_region.json'
-profiles::uitdatabank::search_api::deployment::container::image: '123456789012.dkr.ecr.eu-west-1.amazonaws.com/udb3-search-service'
+
+profiles::uitdatabank::search_api::deployment::container::ecr_registry: "%{lookup('data::aws::ecr_registry')}"
 
 profiles::uitdatabank::jwt_provider::deployment::config_source: 'appconfig/uitdatabank/udb3-jwtprovider/config.yml'
 

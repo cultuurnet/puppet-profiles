@@ -8,6 +8,7 @@ class profiles::uitdatabank::search_api (
   String                         $basedir                  = '/var/www/udb3-search-service'
 ) inherits ::profiles {
 
+  include profiles::apache
   include profiles::redis
   include profiles::elasticsearch
 
@@ -15,6 +16,7 @@ class profiles::uitdatabank::search_api (
     include profiles::uitdatabank::geojson_data::deployment
 
     class { 'profiles::uitdatabank::search_api::deployment':
+      type    => $type,
       basedir => $basedir,
       require => [Class['profiles::redis'], Class['profiles::elasticsearch'], Class['profiles::uitdatabank::geojson_data::deployment']],
     }
@@ -57,7 +59,7 @@ class profiles::uitdatabank::search_api (
         additional_rewrites => $api_key_rewrites,
       }
     }
-    default: {
+    'instance': {
       profiles::apache::vhost::php_fpm { "http://${servername}":
         basedir              => $basedir,
         public_web_directory => 'web',
