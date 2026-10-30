@@ -61,8 +61,7 @@ describe 'profiles::uitdatabank::search_api' do
           it { is_expected.to contain_class('profiles::uitdatabank::geojson_data::deployment') }
 
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').with(
-            'type'    => 'instance',
-            'basedir' => '/var/www/udb3-search-service'
+            'type' => 'instance'
           ) }
 
           it { is_expected.to contain_class('profiles::uitdatabank::search_api::logging').with(
@@ -165,8 +164,7 @@ describe 'profiles::uitdatabank::search_api' do
             let(:pre_condition) { 'function ecr_docker_image_version_tag($parameter1, $parameter2) { return "2026.10.07.000000" }' }
 
             it { is_expected.to contain_class('profiles::uitdatabank::search_api::deployment').with(
-              'type'    => 'container',
-              'basedir' => '/var/www/udb3-search-service'
+              'type' => 'container'
             ) }
 
             it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://foo.example.com').with_additional_rewrites(
