@@ -1,0 +1,13 @@
+---
+profiles::logstash::config_defaults: {}
+profiles::logstash::input_source: 'puppet:///modules/infrastructure/input.conf'
+profiles::logstash::filter_source: 'puppet:///modules/infrastructure/filter.conf'
+profiles::logstash::output_source: 'puppet:///modules/infrastructure/output.conf'
+
+data::google::gcloud_credentials:
+  bigquery:
+    project_id: 'example'
+    private_key_id: 'example'
+    private_key: 'example'
+    client_id: 'example'
+    client_email: 'example@example.com'
