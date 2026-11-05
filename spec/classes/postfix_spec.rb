@@ -5,7 +5,8 @@ describe 'profiles::postfix' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      context "on host with ipaddress 1.2.3.4" do
+      context "on host foo.example.com with ipaddress 1.2.3.4" do
+        let(:node) { 'foo.example.com' }
         let(:facts) {
           super().merge(
             { 'networking' => { 'ip' => '1.2.3.4' } }
@@ -51,13 +52,13 @@ describe 'profiles::postfix' do
 
           it { is_expected.not_to contain_postfix__dbfile('virtual') }
 
-          it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_127.0.0.1').with(
+          it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_foo.example.com_127.0.0.1').with(
             'target'  => '/etc/postfix/mynetworks',
             'content' => "127.0.0.1\n",
             'tag'     => 'postfix_mynetworks'
           ) }
 
-          it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_1.2.3.4').with(
+          it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_foo.example.com_1.2.3.4').with(
             'target'  => '/etc/postfix/mynetworks',
             'content' => "1.2.3.4\n",
             'tag'     => 'postfix_mynetworks'
@@ -95,7 +96,7 @@ describe 'profiles::postfix' do
 
           it { is_expected.not_to contain_postfix__dbfile('virtual') }
 
-          it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_1.2.3.4').with(
+          it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_foo.example.com_1.2.3.4').with(
             'target'  => '/etc/postfix/mynetworks',
             'content' => "1.2.3.4\n",
             'tag'     => 'postfix_mynetworks'
@@ -138,9 +139,9 @@ describe 'profiles::postfix' do
 
           it { is_expected.not_to contain_postfix__dbfile('virtual') }
 
-          it { expect(exported_resources).not_to contain_concat__fragment('postfix_mynetworks_127.0.0.1') }
+          it { expect(exported_resources).not_to contain_concat__fragment('postfix_mynetworks_foo.example.com_127.0.0.1') }
 
-          it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_1.2.3.4').with(
+          it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_foo.example.com_1.2.3.4').with(
             'target'  => '/etc/postfix/mynetworks',
             'content' => "1.2.3.4\n",
             'tag'     => 'postfix_mynetworks'
@@ -187,7 +188,8 @@ describe 'profiles::postfix' do
         end
       end
 
-      context "on host with ipaddress 5.6.7.8" do
+      context "on host bar.example.com with ipaddress 5.6.7.8" do
+        let(:node) { 'bar.example.com' }
         let(:facts) {
           super().merge(
             { 'networking' => { 'ip' => '5.6.7.8' } }
@@ -214,7 +216,7 @@ describe 'profiles::postfix' do
 
           it { is_expected.not_to contain_postfix__dbfile('virtual') }
 
-          it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_5.6.7.8').with(
+          it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_bar.example.com_5.6.7.8').with(
             'target'  => '/etc/postfix/mynetworks',
             'content' => "5.6.7.8\n",
             'tag'     => 'postfix_mynetworks'
@@ -257,19 +259,19 @@ describe 'profiles::postfix' do
             'source' => 'puppet:///modules/profiles/postfix/virtual'
           ) }
 
-          it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_5.6.7.8').with(
+          it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_bar.example.com_5.6.7.8').with(
             'target'  => '/etc/postfix/mynetworks',
             'content' => "5.6.7.8\n",
             'tag'     => 'postfix_mynetworks'
           ) }
 
-          it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_8.7.6.5').with(
+          it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_bar.example.com_8.7.6.5').with(
             'target'  => '/etc/postfix/mynetworks',
             'content' => "8.7.6.5\n",
             'tag'     => 'postfix_mynetworks'
           ) }
 
-          it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_9.10.11.12').with(
+          it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_bar.example.com_9.10.11.12').with(
             'target'  => '/etc/postfix/mynetworks',
             'content' => "9.10.11.12\n",
             'tag'     => 'postfix_mynetworks'
@@ -311,7 +313,7 @@ describe 'profiles::postfix' do
               'source' => 'puppet:///modules/profiles/postfix/virtual'
             ) }
 
-            it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_5.6.7.8').with(
+            it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_bar.example.com_5.6.7.8').with(
               'target'  => '/etc/postfix/mynetworks',
               'content' => "5.6.7.8\n",
               'tag'     => 'postfix_mynetworks'
@@ -359,7 +361,7 @@ describe 'profiles::postfix' do
                                        }
           ) }
 
-          it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_1.2.3.4').with(
+          it { expect(exported_resources).to contain_concat__fragment('postfix_mynetworks_bar.example.com_1.2.3.4').with(
             'target'  => '/etc/postfix/mynetworks',
             'content' => "1.2.3.4\n",
             'tag'     => 'postfix_mynetworks'
