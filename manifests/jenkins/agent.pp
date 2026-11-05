@@ -12,6 +12,11 @@ class profiles::jenkins::agent (
 
     profiles::puppet::puppetdb::cli { 'jenkins': }
 
+    # Dedicated label so pipeline stages can target an agent with the full native toolset explicitly
+    profiles::jenkins::node_labels { 'native':
+      content => 'native'
+    }
+
     file { 'node-cleanup-script':
       ensure  => 'file',
       path    => '/usr/local/bin/node-cleanup.sh',

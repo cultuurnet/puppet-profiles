@@ -27,6 +27,15 @@ describe 'profiles::jenkins::agent' do
 
             it { is_expected.to contain_profiles__puppet__puppetdb__cli('jenkins') }
 
+            it { is_expected.to contain_profiles__jenkins__node_labels('native').with(
+              'content' => 'native'
+            ) }
+
+            it { is_expected.to contain_concat__fragment('jenkins-swarm-client_node-labels_native').with(
+              'target'  => 'jenkins-swarm-client_node-labels',
+              'content' => 'native'
+            ) }
+
             it { expect(exported_resources).to contain_profiles__vault__trusted_certificate('jenkins1.example.com').with(
               'policies' => ['jenkins_certificate']
             ) }
@@ -58,6 +67,7 @@ describe 'profiles::jenkins::agent' do
             it { is_expected.not_to contain_class('profiles::jenkins::buildtools::playwright') }
 
             it { is_expected.not_to contain_profiles__puppet__puppetdb__cli('jenkins') }
+            it { is_expected.not_to contain_profiles__jenkins__node_labels('native') }
             it { expect(exported_resources).not_to contain_profiles__vault__trusted_certificate('jenkins1.example.com') }
             it { is_expected.not_to contain_file('node-cleanup-script') }
           end
