@@ -58,7 +58,7 @@ class profiles::uitpas::cid_logs (
   }
 
   cron { 'remove-old-cidlogs':
-    command     => "/usr/bin/find ${data_dir} -type f -name '*.log' -mtime +30 -delete",
+    command     => "/usr/bin/find ${data_dir} -type f -name '*.log' -mtime +30 -delete; /usr/bin/find ${data_dir} -type d -empty -delete",
     environment => [ 'MAILTO=infra+cron@publiq.be' ],
     user        => 'root',
     hour        => '3',
