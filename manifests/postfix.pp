@@ -28,14 +28,14 @@ class profiles::postfix (
 
     realize Package['mailutils']
 
-    @@concat::fragment { "postfix_mynetworks_127.0.0.1":
+    @@concat::fragment { "postfix_mynetworks_${facts['networking']['fqdn']}_127.0.0.1":
       target  => $mynetworks_file,
       content => "127.0.0.1\n",
       tag     => 'postfix_mynetworks'
     }
 
     [$extra_allowed_ips].flatten.each |$ip| {
-      @@concat::fragment { "postfix_mynetworks_${ip}":
+      @@concat::fragment { "postfix_mynetworks_${facts['networking']['fqdn']}_${ip}":
         target  => $mynetworks_file,
         content => "${ip}\n",
         tag     => 'postfix_mynetworks'
@@ -58,7 +58,7 @@ class profiles::postfix (
     realize Firewall['300 accept SMTP traffic']
   }
 
-  @@concat::fragment { "postfix_mynetworks_${facts['networking']['ip']}":
+  @@concat::fragment { "postfix_mynetworks_${facts['networking']['fqdn']}_${facts['networking']['ip']}":
     target  => $mynetworks_file,
     content => "${facts['networking']['ip']}\n",
     tag     => 'postfix_mynetworks'
