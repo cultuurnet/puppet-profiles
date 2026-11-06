@@ -6,6 +6,9 @@ class profiles::projectaanvraag::api::deployment (
   String                    $repository               = 'projectaanvraag-api',
   String                    $database_name            = 'projectaanvraag',
   Enum['present', 'absent'] $amqp_consumer            = 'present',
+  Boolean                   $newrelic                 = false,
+  # Set explicitly to retain legacy New Relic application names during migration.
+  Optional[String]          $newrelic_app_name        = undef,
   Optional[String]          $puppetdb_url             = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
@@ -32,6 +35,13 @@ class profiles::projectaanvraag::api::deployment (
     ensure  => $version,
     notify  => [Service['projectaanvraag-api'], Profiles::Deployment::Versions[$title]],
     require => Apt::Source[$repository]
+  }
+
+  profiles::newrelic::php::application { 'projectaanvraag-api':
+    app_name => $newrelic_app_name,
+    docroot  => "${basedir}/web",
+    enable   => $newrelic,
+    require  => Package['projectaanvraag-api']
   }
 
   file { 'projectaanvraag-api-config':
