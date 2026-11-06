@@ -3,27 +3,25 @@ class profiles::ssh::mfa (
   Boolean                        $enforced             = false,
   Variant[Hash, Array[Hash]]     $authorized_keys      = {},
   Variant[String, Array[String]] $authorized_keys_tags = [],
-  Array[String]                  $bypass_ips           = ['194.78.13.220'],
+  Variant[String, Array[String]] $bypass_ips           = [],
   String                         $mfa_directory        = '/etc/puppetlabs/code/data/mfa'
 ) inherits ::profiles {
 
-  $authorized_keys_tags_array = [$authorized_keys_tags].flatten
-
   $configured_users = $authorized_keys.filter |String $user, Hash $attributes| {
-    $tags = $attributes['tags'] ? {
-      undef   => [],
-      default => [$attributes['tags']].flatten
-    }
-    $configured  = $tags.any |String $tag| { $tag in $authorized_keys_tags_array }
-    $mfa_enabled = $attributes['mfa'] ? {
-      undef   => true,
-      default => $attributes['mfa']
-    }
-    $username    = slugify($user)
+                        $tags        = $attributes['tags'] ? {
+                                         undef   => [],
+                                         default => [$attributes['tags']].flatten
+                                       }
+                        $configured  = $tags.any |String $tag| { $tag in [$authorized_keys_tags].flatten }
+                        $mfa_enabled = $attributes['mfa'] ? {
+                                         undef   => true,
+                                         default => $attributes['mfa']
+                                       }
+                        $username    = slugify($user)
 
-    $enabled and $configured and $mfa_enabled and $attributes['active'] != false and ($enforced or find_file("${mfa_directory}/${username}.conf") != undef)
-  }
-  $mfa_addresses        = ['*'] + $bypass_ips.map |String $ip| { "!${ip}" }
+                        $enabled and $configured and $mfa_enabled and $attributes['active'] != false and ($enforced or find_file("${mfa_directory}/${username}.conf") != undef)
+                      }
+  $mfa_addresses    = ['*'] + [$bypass_ips].flatten.map |String $ip| { "!${ip}" }
 
   file { '/etc/pam.d/sshd':
     ensure  => 'file',
@@ -50,6 +48,10 @@ class profiles::ssh::mfa (
     profiles::ssh::sshd_config { 'ChallengeResponseAuthentication':
       value => 'yes'
     }
+
+    profiles::ssh::sshd_config { 'KbdInteractiveAuthentication':
+      value => 'yes'
+    }
   } else {
     file { '/etc/ssh/sshd_config.d/publiq-mfa.conf':
       ensure => 'absent'
@@ -58,26 +60,30 @@ class profiles::ssh::mfa (
     profiles::ssh::sshd_config { 'ChallengeResponseAuthentication':
       value => 'no'
     }
+
+    profiles::ssh::sshd_config { 'KbdInteractiveAuthentication':
+      value => 'no'
+    }
   }
 
   $authorized_keys.each |String $user, Hash $attributes| {
-    $tags = $attributes['tags'] ? {
-      undef   => [],
-      default => [$attributes['tags']].flatten
-    }
-    $configured  = $tags.any |String $tag| { $tag in $authorized_keys_tags_array }
+    $tags        = $attributes['tags'] ? {
+                     undef   => [],
+                     default => [$attributes['tags']].flatten
+                   }
+    $configured  = $tags.any |String $tag| { $tag in [$authorized_keys_tags].flatten }
     $mfa_enabled = $attributes['mfa'] ? {
-      undef   => true,
-      default => $attributes['mfa']
-    }
+                     undef   => true,
+                     default => $attributes['mfa']
+                   }
     $username    = slugify($user)
     $config      = "${mfa_directory}/${username}.conf"
     $config_file = find_file($config)
     $mfa         = $enabled and $configured and $mfa_enabled and $attributes['active'] != false and ($enforced or $config_file != undef)
-    $mfa_config = $mfa ? {
-      true    => $config_file,
-      default => undef
-    }
+    $mfa_config  = $mfa ? {
+                     true    => $config_file,
+                     default => undef
+                   }
 
     if $configured {
       Profiles::Users::Shell <| title == $user |> {
@@ -93,7 +99,6 @@ class profiles::ssh::mfa (
   }
 
   profiles::ssh::sshd_config { 'AuthenticationMethods':
-    ensure => 'absent',
-    value  => 'publickey,keyboard-interactive:pam'
+    ensure => 'absent'
   }
 }

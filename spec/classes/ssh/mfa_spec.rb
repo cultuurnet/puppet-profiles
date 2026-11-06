@@ -34,7 +34,7 @@ describe 'profiles::ssh::mfa' do
         'enabled'              => true,
         'enforced'             => false,
         'authorized_keys_tags' => 'bastion',
-        'bypass_ips'           => ['194.78.13.220']
+        'bypass_ips'           => []
       ) }
 
       it { is_expected.to contain_package('libpam-google-authenticator').with(
@@ -85,7 +85,7 @@ describe 'profiles::ssh::mfa' do
         'owner'  => 'root',
         'group'  => 'root',
         'mode'   => '0644'
-      ).with_content(%r{Match Group mfa_users Address \*,!194\.78\.13\.220}) }
+      ).with_content(%r{Match Group mfa_users Address \*}) }
 
       it { is_expected.to contain_file('/etc/ssh/sshd_config.d/publiq-mfa.conf').with_content(%r{\A# Managed by Puppet\n\nAuthenticationMethods publickey\n}) }
       it { is_expected.to contain_file('/etc/ssh/sshd_config.d/publiq-mfa.conf').with_content(%r{AuthenticationMethods publickey,keyboard-interactive:pam}) }

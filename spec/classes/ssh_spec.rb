@@ -34,6 +34,11 @@ describe 'profiles::ssh' do
           'value'  => 'no'
         ) }
 
+        it { is_expected.to contain_profiles__ssh__sshd_config('PasswordAuthentication').with(
+          'ensure' => 'present',
+          'value'  => 'no'
+        ) }
+
         it { is_expected.to contain_profiles__ssh__sshd_config('PubkeyAcceptedKeyTypes').with(
           'ensure' => 'absent'
         ) }
@@ -76,6 +81,7 @@ describe 'profiles::ssh' do
         ) }
 
         it { is_expected.to contain_profiles__ssh__sshd_config('PermitRootLogin').that_notifies('Class[Profiles::Ssh::Service]') }
+        it { is_expected.to contain_profiles__ssh__sshd_config('PasswordAuthentication').that_notifies('Class[Profiles::Ssh::Service]') }
         it { is_expected.to contain_profiles__ssh__sshd_config('PubkeyAcceptedKeyTypes').that_notifies('Class[Profiles::Ssh::Service]') }
         it { is_expected.to contain_profiles__ssh__sshd_config('Include').that_notifies('Class[Profiles::Ssh::Service]') }
         it { is_expected.to contain_package('openssh-server').that_notifies('Class[Profiles::Ssh::Service]') }
