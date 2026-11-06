@@ -119,6 +119,23 @@ describe 'profiles::java' do
         end
       end
 
+      context 'with JDK 25 as the default and existing Java versions retained' do
+        let(:params) { {
+          'installed_versions' => [8, 21, 25],
+          'default_version' => 25,
+          'distribution' => 'jdk'
+        } }
+
+        it { is_expected.to compile.with_all_deps }
+        it { is_expected.to contain_package('openjdk-25-jdk-headless').that_comes_before('Class[profiles::java::alternatives]') }
+        it { is_expected.to contain_package('openjdk-8-jdk-headless') }
+        it { is_expected.to contain_package('openjdk-21-jdk-headless') }
+        it { is_expected.to contain_shellvar('JAVA_HOME').with('value' => '/usr/lib/jvm/java-25-openjdk-amd64') }
+        it { is_expected.to contain_alternatives('java').with('path' => '/usr/lib/jvm/java-25-openjdk-amd64/bin/java') }
+        it { is_expected.to contain_alternatives('javac').with('path' => '/usr/lib/jvm/java-25-openjdk-amd64/bin/javac') }
+        it { is_expected.to contain_alternatives('jnativescan').with('path' => '/usr/lib/jvm/java-25-openjdk-amd64/bin/jnativescan') }
+      end
+
       context "with installed_versions => [13, 14] and default_version => 13" do
         let(:params) { {
           'installed_versions' => [13, 14],
