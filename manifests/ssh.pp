@@ -1,9 +1,9 @@
 class profiles::ssh(
-  Variant[Hash, Array[Hash]]     $authorized_keys      = {},
-  Variant[String, Array[String]] $authorized_keys_tags = [],
-  Boolean                        $mfa                  = false,
+  Variant[Hash, Array[Hash]]     $authorized_keys                   = {},
+  Variant[String, Array[String]] $authorized_keys_tags              = [],
+  Boolean                        $mfa                               = false,
   Boolean                        $manage_admin_user_authorized_keys = true,
-  Boolean                        $mfa_enforced         = false
+  Boolean                        $mfa_enforced                      = false
 ) inherits ::profiles {
 
   include ::profiles::firewall::rules
@@ -15,6 +15,12 @@ class profiles::ssh(
   }
 
   profiles::ssh::sshd_config { 'PermitRootLogin':
+    ensure => 'present',
+    value  => 'no',
+    notify  => Class['profiles::ssh::service']
+  }
+
+  profiles::ssh::sshd_config { 'PasswordAuthentication':
     ensure => 'present',
     value  => 'no',
     notify  => Class['profiles::ssh::service']
