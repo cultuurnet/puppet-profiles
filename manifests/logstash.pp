@@ -39,6 +39,14 @@ class profiles::logstash (
     }
   }
 
+  file { '/usr/share/logstash':
+    ensure  => 'directory',
+    owner   => 'logstash',
+    group   => 'logstash',
+    require => [Group['logstash'], User['logstash']],
+    before  => Service['logstash']
+  }
+
   file { 'logstash_config_defaults':
     ensure  => 'file',
     path    => '/etc/default/logstash',
