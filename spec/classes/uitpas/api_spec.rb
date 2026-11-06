@@ -1,7 +1,10 @@
 describe 'profiles::uitpas::api' do
   include_examples 'operating system support'
 
-  on_supported_os.each do |os, facts|
+  on_supported_os(supported_os: [{
+    'operatingsystem' => 'Ubuntu',
+    'operatingsystemrelease' => ['20.04', '24.04']
+  }]).each do |os, facts|
     context "on #{os}" do
       let(:facts) { facts }
 
@@ -48,6 +51,30 @@ describe 'profiles::uitpas::api' do
 
 
             it { is_expected.to contain_apt__source('publiq-tools') }
+
+            context 'with JDK mirrors' do
+              ['updates', 'security'].each do |pocket|
+                codename = facts[:os]['distro']['codename']
+                source = "uitpas-#{codename}-#{pocket}"
+
+                if codename == 'focal'
+                  it { is_expected.not_to contain_apt__source(source) }
+                else
+                  it { is_expected.to contain_apt__source(source).with(
+                    'location'     => "https://apt-mirror.publiq.be/#{source}-amd64-production",
+                    'release'      => codename,
+                    'architecture' => 'amd64',
+                    'repos'        => 'main'
+                  ) }
+                end
+
+                context 'with deployment disabled' do
+                  let(:params) { super().merge('deployment' => false) }
+
+                  it { is_expected.not_to contain_apt__source(source) }
+                end
+              end
+            end
 
             it { is_expected.to contain_package('liquibase').with(
               'ensure' => 'present'
