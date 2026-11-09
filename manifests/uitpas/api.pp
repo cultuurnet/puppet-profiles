@@ -77,6 +77,12 @@ class profiles::uitpas::api (
   realize Package['liquibase']
   realize Package['mysql-connector-j']
 
+  if $deployment and $facts['os']['distro']['codename'] != 'focal' {
+    $codename = $facts['os']['distro']['codename']
+    realize Apt::Source["uitpas-${codename}-updates"]
+    realize Apt::Source["uitpas-${codename}-security"]
+  }
+
   profiles::glassfish::domain { 'uitpas':
     portbase             => $portbase,
     initial_heap_size    => $initial_heap_size,

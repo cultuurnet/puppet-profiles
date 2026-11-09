@@ -84,6 +84,17 @@ class profiles::apt::repositories {
   }
 
   # Mirrors
+  if $codename != 'focal' {
+    ['updates', 'security'].each |$pocket| {
+      @apt::source { "uitpas-${codename}-${pocket}":
+        location     => "https://apt-mirror.publiq.be/uitpas-${codename}-${pocket}-${arch}-${environment}",
+        release      => $codename,
+        architecture => $arch,
+        repos        => 'main'
+      }
+    }
+  }
+
   @apt::source { 'docker':
     location     => "https://apt-mirror.publiq.be/docker-${codename}-${environment}",
     release      => $codename,
