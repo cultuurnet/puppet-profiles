@@ -27,6 +27,11 @@ define profiles::media::rewrite (
         'rewrite_rule' => '^ - [E=IMGIX_REQUEST_URI:%{REQUEST_URI}]'
       },
       {
+        'comment'      => 'Remove the AI generated marker from the file name, the stored file has no marker',
+        'rewrite_cond' => '%{ENV:IMGIX_REQUEST_URI} ^(.*)\.ai\.([^./]+)$',
+        'rewrite_rule' => '^ - [E=IMGIX_REQUEST_URI:%1.%2]'
+      },
+      {
         'comment'      => 'Transform parameter width',
         'rewrite_cond' => '%{QUERY_STRING} (?:^|&)width=([^&]+)',
         'rewrite_rule' => '^ - [E=WIDTH:w=%1&,E=CROP:fit=fill&,E=BGCOLOR:bg=FFFFFF&]'
