@@ -1,12 +1,19 @@
 define profiles::media::rewrite (
   String                         $forwardingurl,
-  Variant[String, Array[String]] $serveraliases = []
+  Variant[String, Array[String]] $serveraliases = [],
+  Optional[String]               $ai_watermark  = undef
 )  {
 
   include ::profiles
   include ::profiles::apache
 
   $servername = $title
+
+  # mark64 (base64url) avoids escaping the watermark url inside the rewrite rule
+  $ai_watermark_parameters = $ai_watermark ? {
+    undef   => '',
+    default => "mark64=${regsubst(base64('encode', $ai_watermark, 'urlsafe'), '=+$', '')}&mark-w=50&mark-h=56&mark-x=15&mark-y=9&mark-fit=clip&"
+  }
 
   realize Group['www-data']
   realize User['www-data']
@@ -27,9 +34,9 @@ define profiles::media::rewrite (
         'rewrite_rule' => '^ - [E=IMGIX_REQUEST_URI:%{REQUEST_URI}]'
       },
       {
-        'comment'      => 'Remove the AI generated marker from the file name, the stored file has no marker',
+        'comment'      => 'Remove the AI generated marker from the file name, the stored file has no marker, and add the AI watermark',
         'rewrite_cond' => '%{ENV:IMGIX_REQUEST_URI} ^(.*)\.ai\.([^./]+)$',
-        'rewrite_rule' => '^ - [E=IMGIX_REQUEST_URI:%1.%2]'
+        'rewrite_rule' => "^ - [E=IMGIX_REQUEST_URI:%1.%2,E=WATERMARK:${ai_watermark_parameters}]"
       },
       {
         'comment'      => 'Transform parameter width',
@@ -108,7 +115,7 @@ define profiles::media::rewrite (
       },
       {
         'comment'      => 'Create forwarding rule to image service',
-        'rewrite_rule' => "^/(.*)$ ${forwardingurl}%{ENV:IMGIX_REQUEST_URI}?auto=compress&auto=format&%{ENV:WIDTH}%{ENV:HEIGHT}%{ENV:CROP}%{ENV:RECT}%{ENV:FORMAT}%{ENV:FLIP}%{ENV:ROTATE}%{ENV:PAD}%{ENV:FIT}%{ENV:BGCOLOR} [R=301,L]"
+        'rewrite_rule' => "^/(.*)$ ${forwardingurl}%{ENV:IMGIX_REQUEST_URI}?auto=compress&auto=format&%{ENV:WIDTH}%{ENV:HEIGHT}%{ENV:CROP}%{ENV:RECT}%{ENV:FORMAT}%{ENV:FLIP}%{ENV:ROTATE}%{ENV:PAD}%{ENV:FIT}%{ENV:BGCOLOR}%{ENV:WATERMARK} [R=301,L]"
       }
     ]
   }
