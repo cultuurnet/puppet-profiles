@@ -1,5 +1,5 @@
 class profiles::uitpas::cid_logs (
-  String                        $hostname,
+  String                        $servername,
   Variant[String,Array[String]] $serveraliases   = [],
   Stdlib::IP::Address::V4       $service_address = '127.0.0.1',
   Stdlib::Port::Unprivileged    $service_port    = 8080,
@@ -47,14 +47,14 @@ class profiles::uitpas::cid_logs (
     }
   }
 
-  profiles::apache::vhost::reverse_proxy { "http://${hostname}":
+  profiles::apache::vhost::reverse_proxy { "http://${servername}":
     destination => "http://${service_address}:${service_port}/",
     headers     => 'set Access-Control-Allow-Origin "*"'
   }
 
-  [$serveraliases].flatten.each { |serveralias|
+  [$serveraliases].flatten.each |$serveralias| {
     profiles::apache::vhost::reverse_proxy { "http://${serveralias}":
-      destination => "https://${hostname}/",
+      destination => "https://${servername}/",
       headers     => 'set Access-Control-Allow-Origin "*"'
     }
   }
