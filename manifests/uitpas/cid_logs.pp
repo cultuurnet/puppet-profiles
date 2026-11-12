@@ -1,6 +1,6 @@
 class profiles::uitpas::cid_logs (
   String                        $hostname,
-  Variant[String,Array[String]] $aliases         = undef,
+  Variant[String,Array[String]] $serveraliases   = [],
   Stdlib::IP::Address::V4       $service_address = '127.0.0.1',
   Stdlib::Port::Unprivileged    $service_port    = 8080,
   String                        $data_dir        = '/data/cidlogs',
@@ -49,8 +49,14 @@ class profiles::uitpas::cid_logs (
 
   profiles::apache::vhost::reverse_proxy { "http://${hostname}":
     destination => "http://${service_address}:${service_port}/",
-    aliases     => $aliases,
     headers     => 'set Access-Control-Allow-Origin "*"'
+  }
+
+  [$serveraliases].flatten.each { |serveralias|
+    profiles::apache::vhost::reverse_proxy { "http://${serveralias}":
+      destination => "https://${hostname}/",
+      headers     => 'set Access-Control-Allow-Origin "*"'
+    }
   }
 
   profiles::google::gcloud::credentials { 'bigquery':
