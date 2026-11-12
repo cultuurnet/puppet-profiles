@@ -1,13 +1,14 @@
 class profiles::apache (
   Enum['event', 'itk', 'peruser', 'prefork', 'worker'] $mpm_module                  = 'prefork',
   Hash                                                 $mpm_module_config           = {},
-  Boolean                                              $http2                       = false,
   Integer                                              $limitreqfieldsize           = 8190,
   Boolean                                              $metrics                     = true,
   Enum['running', 'stopped']                           $service_status              = 'running',
   Optional[String]                                     $service_override_source     = undef,
   Optional[String]                                     $service_override_content    = undef
 ) inherits ::profiles {
+
+  $http2 = false
 
   if ($mpm_module == 'prefork' and $http2) {
     fail('The HTTP/2 protocol is not supported with MPM module prefork')
