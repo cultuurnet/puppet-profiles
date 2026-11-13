@@ -1,8 +1,11 @@
 class profiles::uitpas::balie_api::deployment (
   String           $config_source,
-  String           $version       = 'latest',
-  String           $repository    = 'uitpas-balie-api',
-  Optional[String] $puppetdb_url  = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+  String           $version             = 'latest',
+  String           $repository          = 'uitpas-balie-api',
+  Boolean          $newrelic            = false,
+  # Set explicitly to retain legacy New Relic application names during migration.
+  Optional[String] $newrelic_app_name   = undef,
+  Optional[String] $puppetdb_url        = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $basedir = '/var/www/uitpas-balie-api'
@@ -16,6 +19,13 @@ class profiles::uitpas::balie_api::deployment (
     ensure  => $version,
     notify  => [Service['uitpas-balie-api'], Profiles::Deployment::Versions[$title]],
     require => Apt::Source[$repository]
+  }
+
+  profiles::newrelic::php::application { 'uitpas-balie-api':
+    app_name => $newrelic_app_name,
+    docroot  => "${basedir}/web",
+    enable   => $newrelic,
+    require  => Package['uitpas-balie-api']
   }
 
   file { 'uitpas-balie-api-config':

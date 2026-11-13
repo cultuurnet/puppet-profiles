@@ -3,6 +3,9 @@ class profiles::uitdatabank::search_api::deployment::instance (
   String           $repository                            = 'uitdatabank-search-api',
   Optional[String] $default_queries_source                = undef,
   Optional[String] $api_keys_matched_to_client_ids_source = undef,
+  Boolean          $newrelic                              = false,
+  # Set explicitly to retain legacy New Relic application names during migration.
+  Optional[String] $newrelic_app_name                     = undef,
 ) inherits ::profiles {
 
   $config_dir              = '/etc/uitdatabank-search-api'
@@ -24,6 +27,13 @@ class profiles::uitdatabank::search_api::deployment::instance (
     ensure  => $version,
     notify  => [Service['uitdatabank-search-api'], Class['profiles::uitdatabank::search_api::listeners']],
     require => Apt::Source[$repository]
+  }
+
+  profiles::newrelic::php::application { 'uitdatabank-search-api':
+    app_name => $newrelic_app_name,
+    docroot  => "${basedir}/web",
+    enable   => $newrelic,
+    require  => Package['uitdatabank-search-api']
   }
 
   file { "${basedir}/config.php":
