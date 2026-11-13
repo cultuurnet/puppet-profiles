@@ -29,6 +29,7 @@ describe 'profiles::apache' do
           'manage_group'          => false,
           'manage_user'           => false,
           'default_vhost'         => true,
+          'package_ensure'        => '2.4.41-4ubuntu3.23+esm11',
           'protocols'             => ['http/1.1'],
           'protocols_honor_order' => true,
           'limitreqfieldsize'     => 8190,
@@ -141,6 +142,10 @@ describe 'profiles::apache' do
 
       context "without parameters" do
         it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to contain_class('apache').with(
+          'package_ensure' => '2.4.58-1ubuntu8.19'
+        ) }
 
         it { is_expected.to contain_class('apache::mod::mime').with(
           'mime_support_package' => 'media-types'

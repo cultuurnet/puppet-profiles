@@ -20,7 +20,14 @@ class profiles::apache (
   realize Group['www-data']
   realize User['www-data']
 
+  $apache_version = $facts['os']['release']['major'] ? {
+    '20.04' => '2.4.41-4ubuntu3.23+esm11',
+    '24.04' => '2.4.58-1ubuntu8.19',
+    default => 'installed',
+  }
+
   class { '::apache':
+    package_ensure        => $apache_version,
     default_mods          => false,
     mpm_module            => false,
     manage_group          => false,
