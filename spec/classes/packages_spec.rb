@@ -129,6 +129,10 @@ describe 'profiles::packages' do
           'ensure' => 'present'
         ) }
 
+        it { is_expected.to contain_package('libssl-dev').with(
+          'ensure' => 'present'
+        ) }
+
         it { is_expected.to contain_package('maven').with(
           'ensure' => 'present'
         ) }
