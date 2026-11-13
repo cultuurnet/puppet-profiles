@@ -39,8 +39,8 @@ class profiles::apt::repositories {
 
       if $codename == 'focal' {
         apt::source { 'focal-esm-infra':
-          location => "https://apt-mirror.publiq.be/focal-esm-infra-${arch}-${environment}",
-          release  => 'focal-esm-infra',
+          location => "https://apt-mirror.publiq.be/focal-esm-infra-${environment}",
+          release  => 'focal',
           repos    => 'main'
         }
       }

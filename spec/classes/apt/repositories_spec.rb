@@ -43,7 +43,7 @@ describe 'profiles::apt::repositories' do
             include_examples 'apt repositories', 'focal', { :location => 'https://apt-mirror.publiq.be/focal-amd64-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'focal-updates', { :location => 'https://apt-mirror.publiq.be/focal-updates-amd64-testing', :repos => 'main', :release => 'focal-updates' }
             include_examples 'apt repositories', 'focal-security', { :location => 'https://apt-mirror.publiq.be/focal-security-amd64-testing', :repos => 'main', :release => 'focal-security' }
-            include_examples 'apt repositories', 'focal-esm-infra', { :location => 'https://apt-mirror.publiq.be/focal-esm-infra-amd64-testing', :repos => 'main', :release => 'focal-esm-infra' }
+            include_examples 'apt repositories', 'focal-esm-infra', { :location => 'https://apt-mirror.publiq.be/focal-esm-infra-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'focal-backports', { :location => 'https://apt-mirror.publiq.be/focal-backports-amd64-testing', :repos => 'main', :release => 'focal-backports' }
             include_examples 'apt repositories', 'php', { :location => 'https://apt-mirror.publiq.be/php-focal-testing', :repos => 'main', :release => 'focal' }
 
