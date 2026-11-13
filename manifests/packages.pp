@@ -163,6 +163,10 @@ inherits ::profiles {
     ensure  => 'present'
   }
 
+  @package { 'libssl-dev':
+    ensure  => 'present'
+  }
+
   @package { 'mongodb-mongosh':
     ensure  => !!$versions['mongodb-mongosh'] ? { true => $versions['mongodb-mongosh'], default => 'present' },
     require => Apt::Source['publiq-tools']

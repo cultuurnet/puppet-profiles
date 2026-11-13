@@ -8,5 +8,6 @@ class profiles::jenkins::buildtools::bootstrap inherits ::profiles {
   realize Package['git']
   realize Package['build-essential']
   realize Package['debhelper']
+  realize Package['libssl-dev']
   realize Package['golang']
 }
