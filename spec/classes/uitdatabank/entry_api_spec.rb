@@ -28,6 +28,7 @@ describe 'profiles::uitdatabank::entry_api' do
               'serveraliases'                     => [],
               'uitpas_servername'                 => nil,
               'deployment'                        => true,
+              'type'                              => 'instance',
               'catch_mail'                        => false,
               'schedule_process_duplicates'       => false,
               'schedule_movie_fetcher'            => false,
@@ -110,7 +111,7 @@ describe 'profiles::uitdatabank::entry_api' do
             it { is_expected.to contain_mysql_database('uitdatabank').that_requires('Class[profiles::mysql::server]') }
             it { is_expected.to contain_profiles__mysql__app_user('entry_api@uitdatabank').that_comes_before('Class[profiles::uitdatabank::entry_api::deployment]') }
             it { is_expected.to contain_class('profiles::redis').that_comes_before('Class[profiles::uitdatabank::entry_api::deployment]') }
-            it { is_expected.to contain_class('profiles::php').that_notifies('Class[profiles::uitdatabank::entry_api::deployment]') }
+            it { is_expected.to contain_class('profiles::php').that_notifies('Class[profiles::uitdatabank::entry_api::deployment::instance]') }
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api::data_integration').that_requires('Class[profiles::uitdatabank::entry_api::deployment]') }
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api::cron').that_requires('Class[profiles::uitdatabank::entry_api::deployment]') }
           end

@@ -10,12 +10,12 @@ x-entry-api: &entry-api
     - /etc/uitdatabank-entry-api/config.client_permissions.php:/var/www/html/config.client_permissions.php:ro
     - /etc/uitdatabank-entry-api/config.kinepolis.php:/var/www/html/config.kinepolis.php:ro
     - /etc/uitdatabank-entry-api/config.completeness.php:/var/www/html/config.completeness.php:ro
-    - /etc/uitdatabank-entry-api/config.externalid_mapping_organizer.php:/var/www/html/config.externalid_mapping_organizer.php:ro
-    - /etc/uitdatabank-entry-api/config.externalid_mapping_place.php:/var/www/html/config.externalid_mapping_place.php:ro
-    - /etc/uitdatabank-entry-api/public-uitidv1.pem:/var/www/html/public-uitidv1.pem:ro
+    - /etc/uitdatabank-entry-api/config.external_id_mapping_organizer.php:/var/www/html/config.external_id_mapping_organizer.php:ro
+    - /etc/uitdatabank-entry-api/config.external_id_mapping_place.php:/var/www/html/config.external_id_mapping_place.php:ro
+    - /etc/uitdatabank-entry-api/public-uitidv1.pem:/var/www/html/public.pem:ro
     - /etc/uitdatabank-entry-api/public-keycloak.pem:/var/www/html/public-keycloak.pem:ro
-<% if @api_keys_matched_to_client_ids_source -%>
-    - /etc/uitdatabank-entry-api/api_keys_matched_to_client_ids.php:/var/www/html/api_keys_matched_to_client_ids.php:ro
+<% if @api_keys_matched_to_client_ids -%>
+    - /etc/uitdatabank-entry-api/config.api_keys_matched_to_client_ids.php:/var/www/html/config.api_keys_matched_to_client_ids.php:ro
 <% end -%>
 
 x-resque-worker: &resque-worker
@@ -75,5 +75,7 @@ services:
 <% if @amqp_listener_uitpas == 'present' -%>
   amqp-listener-uitpas:
     <<: *entry-api
-    command: ["php", "bin/app.php", "amqp-listener:uitpas"]
+    # bin/udb3.php special-cases this exact command name to set API_NAME, so it
+    # has to match the legacy systemd unit's `php bin/udb3.php amqp-listen-uitpas`
+    command: ["php", "bin/udb3.php", "amqp-listen-uitpas"]
 <% end -%>
