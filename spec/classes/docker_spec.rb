@@ -26,11 +26,13 @@ describe 'profiles::docker' do
         ) }
 
         it { is_expected.to contain_file('/var/lib/docker').with(
-          'ensure' => 'directory'
+          'ensure' => 'directory',
+          'mode'   => '0710'
         ) }
 
         it { is_expected.to contain_file('/var/lib/containerd').with(
-          'ensure' => 'directory'
+          'ensure' => 'directory',
+          'mode'   => '0700'
         ) }
 
         it { is_expected.to contain_class('docker').with(
@@ -144,11 +146,13 @@ describe 'profiles::docker' do
           ) }
 
           it { is_expected.to contain_file('/var/lib/docker').with(
-            'ensure' => 'directory'
+            'ensure' => 'directory',
+            'mode'   => '0710'
           ) }
 
           it { is_expected.to contain_file('/var/lib/containerd').with(
-            'ensure' => 'directory'
+            'ensure' => 'directory',
+            'mode'   => '0700'
           ) }
 
           it { is_expected.to contain_class('docker').with(
@@ -217,11 +221,13 @@ describe 'profiles::docker' do
           it { is_expected.to_not contain_mount('/var/lib/containerd') }
 
           it { is_expected.to contain_file('/var/lib/docker').with(
-            'ensure' => 'directory'
+            'ensure' => 'directory',
+            'mode'   => '0710'
           ) }
 
           it { is_expected.to contain_file('/var/lib/containerd').with(
-            'ensure' => 'directory'
+            'ensure' => 'directory',
+            'mode'   => '0700'
           ) }
 
           it { is_expected.to contain_class('profiles::docker::ecr_login').with(

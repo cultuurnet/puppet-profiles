@@ -66,11 +66,13 @@ class profiles::docker (
 
   file { $docker_data_dir:
     ensure => 'directory',
+    mode   => '0710',
     before => Class['::docker']
   }
 
   file { $containerd_data_dir:
     ensure => 'directory',
+    mode   => '0700',
     before => Class['::docker']
   }
 
