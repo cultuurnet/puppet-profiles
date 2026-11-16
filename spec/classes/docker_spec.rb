@@ -183,12 +183,11 @@ describe 'profiles::docker' do
         end
       end
 
-      context "with lvm => true, volume_group => myvg, docker_volume_size => 10G, containerd_volume_size => 8G, ecr_registries => [ registry1.com, registry2.com] and ecr_users => [jenkins, root]" do
+      context "with lvm => true, volume_group => myvg, docker_volume_size => 10G, ecr_registries => [ registry1.com, registry2.com] and ecr_users => [jenkins, root]" do
         let(:params) { {
           'lvm'                    => true,
           'volume_group'           => 'myvg',
           'docker_volume_size'     => '10G',
-          'containerd_volume_size' => '8G',
           'ecr_registries'         => ['registry1.com', 'registry2.com'],
           'ecr_users'              => ['jenkins', 'root']
         } }
@@ -207,15 +206,6 @@ describe 'profiles::docker' do
             'group'        => 'root'
           ) }
 
-          it { is_expected.to contain_profiles__lvm__mount('containerddata').with(
-            'volume_group' => 'myvg',
-            'size'         => '8G',
-            'mountpoint'   => '/data/containerd',
-            'fs_type'      => 'ext4',
-            'owner'        => 'root',
-            'group'        => 'root'
-          ) }
-
           it { is_expected.to contain_mount('/var/lib/docker').with(
             'ensure'  => 'mounted',
             'device'  => '/data/docker',
@@ -223,12 +213,8 @@ describe 'profiles::docker' do
             'options' => 'rw,bind'
           ) }
 
-          it { is_expected.to contain_mount('/var/lib/containerd').with(
-            'ensure'  => 'mounted',
-            'device'  => '/data/containerd',
-            'fstype'  => 'none',
-            'options' => 'rw,bind'
-          ) }
+          it { is_expected.to_not contain_profiles__lvm__mount('containerddata') }
+          it { is_expected.to_not contain_mount('/var/lib/containerd') }
 
           it { is_expected.to contain_file('/var/lib/docker').with(
             'ensure' => 'directory'
