@@ -17,23 +17,14 @@ class profiles::docker (
   realize Apt::Source['docker']
 
   if $lvm {
-    unless ($volume_group and $docker_volume_size and $containerd_volume_size) {
-      fail("with LVM enabled, expects a value for both 'volume_group', 'docker_volume_size' and 'containerd_volume_size'")
+    unless ($volume_group and $docker_volume_size) {
+      fail("with LVM enabled, expects a value for both 'volume_group' and 'docker_volume_size'")
     }
 
     profiles::lvm::mount { 'dockerdata':
       volume_group => $volume_group,
       size         => $docker_volume_size,
       mountpoint   => '/data/docker',
-      fs_type      => 'ext4',
-      owner        => 'root',
-      group        => 'root'
-    }
-
-    profiles::lvm::mount { 'containerddata':
-      volume_group => $volume_group,
-      size         => $containerd_volume_size,
-      mountpoint   => '/data/containerd',
       fs_type      => 'ext4',
       owner        => 'root',
       group        => 'root'
@@ -48,13 +39,24 @@ class profiles::docker (
       before  => Class['::docker']
     }
 
-    mount { $containerd_data_dir:
-      ensure  => 'mounted',
-      device  => '/data/containerd',
-      fstype  => 'none',
-      options => 'rw,bind',
-      require => [Profiles::Lvm::Mount['containerddata'], File[$containerd_data_dir]],
-      before  => Class['::docker']
+    if $containerd_volume_size {
+      profiles::lvm::mount { 'containerddata':
+        volume_group => $volume_group,
+        size         => $containerd_volume_size,
+        mountpoint   => '/data/containerd',
+        fs_type      => 'ext4',
+        owner        => 'root',
+        group        => 'root'
+      }
+
+      mount { $containerd_data_dir:
+        ensure  => 'mounted',
+        device  => '/data/containerd',
+        fstype  => 'none',
+        options => 'rw,bind',
+        require => [Profiles::Lvm::Mount['containerddata'], File[$containerd_data_dir]],
+        before  => Class['::docker']
+      }
     }
   }
 
