@@ -49,6 +49,16 @@ describe 'profiles::firewall' do
           'jump'   => 'drop',
           'before' => nil
         ) }
+
+        context 'with fact docker defined' do
+          let(:facts) { facts.merge(
+            { 'docker' => { 'ID' => 'foo' } }
+          ) }
+
+          it { is_expected.to contain_resources('firewall').with(
+            'purge' => false
+          ) }
+        end
       end
 
       context "with purge_unmanaged => false" do
