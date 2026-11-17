@@ -20,7 +20,7 @@ class profiles::uit::cms (
   include ::profiles::redis
   include ::profiles::mysql::server
 
-  file { [$basedir, "${basedir}/web", "${basedir}/web/sites", "${basedir}/web/sites/default", "${basedir}/web/sites/default/files"]:
+  file { [$basedir, "${basedir}/privatedata", "${basedir}/web", "${basedir}/web/sites", "${basedir}/web/sites/default", "${basedir}/web/sites/default/files"]:
     ensure  => 'directory',
     owner   => 'www-data',
     group   => 'www-data',
@@ -50,6 +50,24 @@ class profiles::uit::cms (
       owner        => 'www-data',
       group        => 'www-data',
       require      => [Group['www-data'], User['www-data']]
+    }
+
+    profiles::lvm::mount { 'cmsprivatedata':
+      volume_group => $volume_group,
+      size         => $volume_size,
+      mountpoint   => '/data/cmsprivatedata',
+      fs_type      => 'ext4',
+      owner        => 'www-data',
+      group        => 'www-data',
+      require      => [Group['www-data'], User['www-data']]
+    }
+
+    mount { "${basedir}/privatedata":
+      ensure  => 'mounted',
+      device  => '/data/cmsprivatedata',
+      fstype  => 'none',
+      options => 'rw,bind',
+      require => [Profiles::Lvm::Mount['cmsprivatedata'], File["${basedir}/privatedata"]]
     }
 
     mount { "${basedir}/web/sites/default/files":
@@ -88,9 +106,11 @@ class profiles::uit::cms (
     Mysql_database['uit_cms'] -> Class['profiles::uit::cms::deployment']
     Profiles::Mysql::App_user["${database_user}@${database_name}"] -> Class['profiles::uit::cms::deployment']
     File["${basedir}/web/sites/default/files"] -> Class['profiles::uit::cms::deployment']
+    File["${basedir}/privatedata"] -> Class['profiles::uit::cms::deployment']
     Class['profiles::uit::cms::deployment'] -> Profiles::Apache::Vhost::Php_fpm["http://${servername}"]
 
     if $lvm {
+      Mount["${basedir}/privatedata"] -> Class['profiles::uit::cms::deployment']
       Mount["${basedir}/web/sites/default/files"] -> Class['profiles::uit::cms::deployment']
     }
   }

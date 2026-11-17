@@ -48,6 +48,15 @@ describe 'profiles::uit::cms' do
             'group'  => 'www-data',
           ) }
 
+          it { is_expected.to contain_file('/var/www/uit-cms/privatedata').with(
+            'ensure' => 'directory',
+            'owner'  => 'www-data',
+            'group'  => 'www-data'
+          ).that_requires('Group[www-data]').that_requires('User[www-data]') }
+
+          it { is_expected.to_not contain_profiles__lvm__mount('cmsprivatedata') }
+          it { is_expected.to_not contain_mount('/var/www/uit-cms/privatedata') }
+
           it { is_expected.to contain_file('/var/www/uit-cms/web/sites').with(
             'ensure' => 'directory',
             'owner'  => 'www-data',
@@ -127,6 +136,7 @@ describe 'profiles::uit::cms' do
           it { is_expected.to contain_class('profiles::uit::cms::deployment').that_requires('Mysql_database[uit_cms]') }
           it { is_expected.to contain_class('profiles::uit::cms::deployment').that_requires('Profiles::Mysql::App_user[uit_cms@uit_cms]') }
           it { is_expected.to contain_class('profiles::uit::cms::deployment').that_requires('File[/var/www/uit-cms/web/sites/default/files]') }
+          it { is_expected.to contain_class('profiles::uit::cms::deployment').that_requires('File[/var/www/uit-cms/privatedata]') }
         end
 
         context 'with deployment => false' do
@@ -171,6 +181,26 @@ describe 'profiles::uit::cms' do
 
           context "with volume_group myvg present" do
             let(:pre_condition) { 'volume_group { "myvg": ensure => "present" }' }
+
+            it { is_expected.to compile.with_all_deps }
+
+            it { is_expected.to contain_profiles__lvm__mount('cmsprivatedata').with(
+              'volume_group' => 'myvg',
+              'size'         => '10G',
+              'mountpoint'   => '/data/cmsprivatedata',
+              'fs_type'      => 'ext4',
+              'owner'        => 'www-data',
+              'group'        => 'www-data'
+            ).that_requires('Group[www-data]').that_requires('User[www-data]') }
+
+            it { is_expected.to contain_mount('/var/www/uit-cms/privatedata').with(
+              'ensure'  => 'mounted',
+              'device'  => '/data/cmsprivatedata',
+              'fstype'  => 'none',
+              'options' => 'rw,bind'
+            ).that_requires('Profiles::Lvm::Mount[cmsprivatedata]').that_requires('File[/var/www/uit-cms/privatedata]') }
+
+            it { is_expected.to contain_class('profiles::uit::cms::deployment').that_requires('Mount[/var/www/uit-cms/privatedata]') }
 
             it { is_expected.to contain_file('hostnames.txt').with_content(/^tic\.example\.com https:\/\/game\.example\.com$/) }
 
