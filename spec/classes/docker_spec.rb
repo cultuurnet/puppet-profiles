@@ -10,6 +10,8 @@ describe 'profiles::docker' do
 
         it { is_expected.to compile.with_all_deps }
 
+        it { is_expected.to contain_class('profiles::firewall') }
+
         it { is_expected.to contain_apt__source('docker') }
 
         it { is_expected.to contain_class('profiles::docker').with(
@@ -83,6 +85,7 @@ describe 'profiles::docker' do
         ) }
 
         it { is_expected.to contain_apt__source('docker').that_comes_before('Class[docker]') }
+        it { is_expected.to contain_class('profiles::firewall').that_comes_before('Class[docker]') }
         it { is_expected.to contain_file('/var/lib/docker').that_comes_before('Class[docker]') }
         it { is_expected.to contain_file('/var/lib/containerd').that_comes_before('Class[docker]') }
         it { is_expected.to contain_class('profiles::docker::ecr_login').that_requires('Class[docker]') }
