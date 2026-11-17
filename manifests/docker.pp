@@ -14,6 +14,8 @@ class profiles::docker (
   $docker_data_dir = '/var/lib/docker'
   $containerd_data_dir = '/var/lib/containerd'
 
+  include profiles::firewall
+
   realize Apt::Source['docker']
 
   if $lvm {
@@ -79,10 +81,10 @@ class profiles::docker (
   class { '::docker':
     use_upstream_package_source => false,
     docker_users                => [],
-    extra_parameters            => [ "--experimental=${experimental}"],
+    extra_parameters            => ["--experimental=${experimental}"],
     log_driver                  => $log_driver,
     log_opt                     => $log_opt,
-    require                     => Apt::Source['docker']
+    require                     => [Apt::Source['docker'], Class['Profiles::Firewall']]
   }
 
   @profiles::jenkins::node_labels { 'docker':
