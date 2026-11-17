@@ -1,5 +1,8 @@
 class profiles::firewall (
-  Boolean $purge_unmanaged = true
+  Boolean $purge_unmanaged = $facts['docker'] ? {
+                               undef   => true,
+                               default => false
+                             }
 ) inherits ::profiles {
 
   contain ::firewall
