@@ -20,7 +20,7 @@ describe 'profiles::docker' do
           'lvm'                    => false,
           'volume_group'           => nil,
           'docker_volume_size'     => nil,
-          'containerd_volume_size' => nil,
+          'containerd_volume_size' => '10G',
           'ecr_registries'         => [],
           'ecr_users'              => [],
           'log_driver'             => 'json-file',
@@ -99,14 +99,14 @@ describe 'profiles::docker' do
         end
       end
 
-      context "with experimental => true, lvm => true, volume_group => dockervg, docker_volume_size => 5G, containerd_volume_size => 10G, ecr_registries => my.registry.com, ecr_users => ubuntu and schedule_prune => true" do
+      context "with experimental => true, lvm => true, volume_group => dockervg, docker_volume_size => 5G, containerd_volume_size => 20G, ecr_registries => my.registry.com, ecr_users => ubuntu and schedule_prune => true" do
         let(:params) { {
           'experimental'           => true,
           'schedule_prune'         => true,
           'lvm'                    => true,
           'volume_group'           => 'dockervg',
           'docker_volume_size'     => '5G',
-          'containerd_volume_size' => '10G',
+          'containerd_volume_size' => '20G',
           'ecr_registries'         => 'my.registry.com',
           'ecr_users'              => 'ubuntu'
         } }
@@ -127,7 +127,7 @@ describe 'profiles::docker' do
 
           it { is_expected.to contain_profiles__lvm__mount('containerddata').with(
             'volume_group' => 'dockervg',
-            'size'         => '10G',
+            'size'         => '20G',
             'mountpoint'   => '/data/containerd',
             'fs_type'      => 'ext4',
             'owner'        => 'root',
@@ -220,8 +220,21 @@ describe 'profiles::docker' do
             'options' => 'rw,bind'
           ) }
 
-          it { is_expected.to_not contain_profiles__lvm__mount('containerddata') }
-          it { is_expected.to_not contain_mount('/var/lib/containerd') }
+          it { is_expected.to contain_profiles__lvm__mount('containerddata').with(
+            'volume_group' => 'myvg',
+            'size'         => '10G',
+            'mountpoint'   => '/data/containerd',
+            'fs_type'      => 'ext4',
+            'owner'        => 'root',
+            'group'        => 'root'
+          ) }
+
+          it { is_expected.to contain_mount('/var/lib/containerd').with(
+            'ensure'  => 'mounted',
+            'device'  => '/data/containerd',
+            'fstype'  => 'none',
+            'options' => 'rw,bind'
+          ) }
 
           it { is_expected.to contain_file('/var/lib/docker').with(
             'ensure' => 'directory',

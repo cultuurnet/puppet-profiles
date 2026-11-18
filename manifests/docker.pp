@@ -4,7 +4,7 @@ class profiles::docker (
   Boolean                        $lvm                    = false,
   Optional[String]               $volume_group           = undef,
   Optional[String]               $docker_volume_size     = undef,
-  Optional[String]               $containerd_volume_size = undef,
+  String                         $containerd_volume_size = '10G',
   Variant[String, Array[String]] $ecr_registries         = [],
   Variant[String, Array[String]] $ecr_users              = [],
   Optional[String]               $log_driver             = 'json-file',
