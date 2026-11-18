@@ -66,13 +66,6 @@ describe 'profiles::uitdatabank::search_api::deployment::instance' do
           'source' => '/var/www/geojson-data/output/autocomplete.json'
         ) }
 
-        it { is_expected.to contain_file('/var/www/udb3-search-service/src/ElasticSearch/Operations/json/mapping_region.json').with(
-          'ensure' => 'file',
-          'owner'  => 'www-data',
-          'group'  => 'www-data',
-          'source' => '/etc/uitdatabank-search-api/mapping_region.json'
-        ) }
-
         it { is_expected.to contain_file('/var/www/udb3-search-service/default_queries.php').with(
           'ensure' => 'absent',
           'owner'  => 'www-data',
@@ -106,9 +99,6 @@ describe 'profiles::uitdatabank::search_api::deployment::instance' do
         it { is_expected.to contain_file('/var/www/udb3-search-service/web/autocomplete.json').that_requires('Package[uitdatabank-search-api]') }
         it { is_expected.to contain_file('/var/www/udb3-search-service/web/autocomplete.json').that_notifies('Service[uitdatabank-search-api]') }
         it { is_expected.to contain_file('/var/www/udb3-search-service/web/autocomplete.json').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
-        it { is_expected.to contain_file('/var/www/udb3-search-service/src/ElasticSearch/Operations/json/mapping_region.json').that_requires('Package[uitdatabank-search-api]') }
-        it { is_expected.to contain_file('/var/www/udb3-search-service/src/ElasticSearch/Operations/json/mapping_region.json').that_notifies('Service[uitdatabank-search-api]') }
-        it { is_expected.to contain_file('/var/www/udb3-search-service/src/ElasticSearch/Operations/json/mapping_region.json').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }
         it { is_expected.to contain_file('/var/www/udb3-search-service/default_queries.php').that_requires('Package[uitdatabank-search-api]') }
         it { is_expected.to contain_file('/var/www/udb3-search-service/default_queries.php').that_notifies('Service[uitdatabank-search-api]') }
         it { is_expected.to contain_file('/var/www/udb3-search-service/default_queries.php').that_notifies('Class[profiles::uitdatabank::search_api::listeners]') }

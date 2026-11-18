@@ -20,7 +20,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             'type'                                  => 'instance',
             'config_source'                         => 'appconfig/uitdatabank/udb3-search-service/config.php',
             'pubkey_keycloak_source'                => 'appconfig/uitdatabank/keys/pubkey-keycloak.pem',
-            'region_mapping_source'                 => 'appconfig/uitdatabank/udb3-search-service/mapping_region.json',
             'default_queries_source'                => nil,
             'api_keys_matched_to_client_ids_source' => nil
           ) }
@@ -48,13 +47,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             'group'   => 'www-data'
           ) }
 
-          it { is_expected.to contain_file('/etc/uitdatabank-search-api/mapping_region.json').with(
-            'ensure'  => 'file',
-            'owner'   => 'www-data',
-            'group'   => 'www-data',
-            'content' => "{ \"properties\": {} }\n"
-          ) }
-
           it { is_expected.to contain_file('/etc/uitdatabank-search-api/default_queries.php').with(
             'ensure'  => 'absent',
             'owner'   => 'www-data',
@@ -73,9 +65,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           it { is_expected.to contain_file('/etc/uitdatabank-search-api/config.php').that_requires('Group[www-data]') }
           it { is_expected.to contain_file('/etc/uitdatabank-search-api/config.php').that_requires('User[www-data]') }
           it { is_expected.to contain_file('/etc/uitdatabank-search-api/config.php').that_notifies('Class[profiles::uitdatabank::search_api::deployment::instance]') }
-          it { is_expected.to contain_file('/etc/uitdatabank-search-api/mapping_region.json').that_requires('Group[www-data]') }
-          it { is_expected.to contain_file('/etc/uitdatabank-search-api/mapping_region.json').that_requires('User[www-data]') }
-          it { is_expected.to contain_file('/etc/uitdatabank-search-api/mapping_region.json').that_notifies('Class[profiles::uitdatabank::search_api::deployment::instance]') }
           it { is_expected.to contain_file('/etc/uitdatabank-search-api/default_queries.php').that_requires('Group[www-data]') }
           it { is_expected.to contain_file('/etc/uitdatabank-search-api/default_queries.php').that_requires('User[www-data]') }
           it { is_expected.to contain_file('/etc/uitdatabank-search-api/default_queries.php').that_notifies('Class[profiles::uitdatabank::search_api::deployment::instance]') }
@@ -87,7 +76,7 @@ describe 'profiles::uitdatabank::search_api::deployment' do
           it { is_expected.to contain_file('/etc/uitdatabank-search-api/public-keycloak.pem').that_notifies('Class[profiles::uitdatabank::search_api::deployment::instance]') }
         end
 
-        context "with type => container, config_source => appconfig/uitdatabank/udb3-search-service/myconfig.php, pubkey_keycloak_source => appconfig/uitdatabank/keys/mypubkey-keycloak.pem, region_mapping_source => appconfig/uitdatabank/udb3-search-service/my_region_mapping.json, default_queries_source => appconfig/uitdatabank/udb3-search-service/default_queries.php and api_keys_matched_to_client_ids_source => appconfig/uitdatabank/udb3-search-service/api_keys.php" do
+        context "with type => container, config_source => appconfig/uitdatabank/udb3-search-service/myconfig.php, pubkey_keycloak_source => appconfig/uitdatabank/keys/mypubkey-keycloak.pem, default_queries_source => appconfig/uitdatabank/udb3-search-service/default_queries.php and api_keys_matched_to_client_ids_source => appconfig/uitdatabank/udb3-search-service/api_keys.php" do
           context 'with a docker image version tag available' do
             let(:pre_condition) { 'function ecr_docker_image_version_tag($parameter1, $parameter2) { return "2026.10.07.000000" }' }
 
@@ -95,7 +84,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
               'type'                                  => 'container',
               'config_source'                         => 'appconfig/uitdatabank/udb3-search-service/myconfig.php',
               'pubkey_keycloak_source'                => 'appconfig/uitdatabank/keys/mypubkey-keycloak.pem',
-              'region_mapping_source'                 => 'appconfig/uitdatabank/udb3-search-service/my_region_mapping.json',
               'default_queries_source'                => 'appconfig/uitdatabank/udb3-search-service/default_queries.php',
               'api_keys_matched_to_client_ids_source' => 'appconfig/uitdatabank/udb3-search-service/api_keys.php'
             } }
@@ -121,13 +109,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
               'content' => ''
             ) }
 
-            it { is_expected.to contain_file('/etc/uitdatabank-search-api/mapping_region.json').with(
-              'ensure'  => 'file',
-              'owner'   => 'www-data',
-              'group'   => 'www-data',
-              'content' => ''
-            ) }
-
             it { is_expected.to contain_file('/etc/uitdatabank-search-api/default_queries.php').with(
               'ensure'  => 'file',
               'owner'   => 'www-data',
@@ -143,7 +124,6 @@ describe 'profiles::uitdatabank::search_api::deployment' do
             ) }
 
             it { is_expected.to contain_file('/etc/uitdatabank-search-api/config.php').that_notifies('Class[profiles::uitdatabank::search_api::deployment::container]') }
-            it { is_expected.to contain_file('/etc/uitdatabank-search-api/mapping_region.json').that_notifies('Class[profiles::uitdatabank::search_api::deployment::container]') }
             it { is_expected.to contain_file('/etc/uitdatabank-search-api/default_queries.php').that_notifies('Class[profiles::uitdatabank::search_api::deployment::container]') }
             it { is_expected.to contain_file('/etc/uitdatabank-search-api/api_keys_matched_to_client_ids.php').that_notifies('Class[profiles::uitdatabank::search_api::deployment::container]') }
             it { is_expected.to contain_file('/etc/uitdatabank-search-api/public-keycloak.pem').that_notifies('Class[profiles::uitdatabank::search_api::deployment::container]') }

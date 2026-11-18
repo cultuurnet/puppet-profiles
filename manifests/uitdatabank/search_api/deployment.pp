@@ -2,7 +2,6 @@ class profiles::uitdatabank::search_api::deployment (
   String                        $config_source,
   String                        $pubkey_keycloak_source,
   Enum['instance', 'container'] $type                                  = 'instance',
-  String                        $region_mapping_source                 = 'profiles/uitdatabank/search_api/mapping_region.json',
   Optional[String]              $default_queries_source                = undef,
   Optional[String]              $api_keys_matched_to_client_ids_source = undef,
 ) inherits ::profiles {
@@ -51,12 +50,6 @@ class profiles::uitdatabank::search_api::deployment (
   file { "${config_dir}/public-keycloak.pem":
     ensure  => 'file',
     content => template($pubkey_keycloak_source),
-    *       => $file_default_attributes
-  }
-
-  file { "${config_dir}/mapping_region.json":
-    ensure  => 'file',
-    content => template($region_mapping_source),
     *       => $file_default_attributes
   }
 
