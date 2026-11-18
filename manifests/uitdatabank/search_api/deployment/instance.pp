@@ -50,12 +50,6 @@ class profiles::uitdatabank::search_api::deployment::instance (
     *      => $file_default_attributes
   }
 
-  file { "${basedir}/src/ElasticSearch/Operations/json/mapping_region.json":
-    ensure => 'file',
-    source => "${config_dir}/mapping_region.json",
-    *      => $file_default_attributes
-  }
-
   file { "${basedir}/default_queries.php":
     ensure => $default_queries_source ? {
                  undef   => 'absent',
