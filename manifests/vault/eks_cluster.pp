@@ -16,9 +16,6 @@ define profiles::vault::eks_cluster (
     fail("Vault EKS auth_mount must be eks-${title}")
   }
 
-  realize Group['vault']
-  realize User['vault']
-
   $policy_name = "eso-${title}-read-only"
   $policy_file = "${configuration_directory}/${title}-policy.hcl"
   $config_file = "${configuration_directory}/${title}-config.json"

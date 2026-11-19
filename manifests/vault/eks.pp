@@ -5,9 +5,6 @@ class profiles::vault::eks (
 
   $configuration_directory = '/etc/vault.d/eks'
 
-  realize Group['vault']
-  realize User['vault']
-
   file { 'vault_eks_configuration':
     ensure  => 'directory',
     path    => $configuration_directory,
