@@ -33,7 +33,7 @@ services:
       retries: 3
 
   search-nginx:
-    image: nginx:alpine
+    image: nginx:1.31.9-alpine
     restart: unless-stopped
     network_mode: "service:search-api"
     volumes:
