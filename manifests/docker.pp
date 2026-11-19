@@ -1,6 +1,6 @@
 class profiles::docker (
   Boolean                        $experimental           = false,
-  Boolean                        $schedule_prune         = false,
+  Boolean                        $schedule_prune         = true,
   Boolean                        $lvm                    = false,
   Optional[String]               $volume_group           = undef,
   Optional[String]               $docker_volume_size     = undef,

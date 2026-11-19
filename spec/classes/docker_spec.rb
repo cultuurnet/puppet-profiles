@@ -16,7 +16,7 @@ describe 'profiles::docker' do
 
         it { is_expected.to contain_class('profiles::docker').with(
           'experimental'           => false,
-          'schedule_prune'         => false,
+          'schedule_prune'         => true,
           'lvm'                    => false,
           'volume_group'           => nil,
           'docker_volume_size'     => nil,
@@ -81,7 +81,12 @@ describe 'profiles::docker' do
         ) }
 
         it { is_expected.to contain_cron('docker system prune').with(
-          'ensure' => 'absent'
+          'ensure'      => 'present',
+          'command'     => '/usr/bin/docker system prune -f -a --volumes',
+          'environment' => ['MAILTO=infra+cron@publiq.be'],
+          'hour'        => '3',
+          'minute'      => '30',
+          'weekday'     => ['0', '2', '4', '6'],
         ) }
 
         it { is_expected.to contain_apt__source('docker').that_comes_before('Class[docker]') }
@@ -99,10 +104,10 @@ describe 'profiles::docker' do
         end
       end
 
-      context "with experimental => true, lvm => true, volume_group => dockervg, docker_volume_size => 5G, containerd_volume_size => 20G, ecr_registries => my.registry.com, ecr_users => ubuntu and schedule_prune => true" do
+      context "with experimental => true, lvm => true, volume_group => dockervg, docker_volume_size => 5G, containerd_volume_size => 20G, ecr_registries => my.registry.com, ecr_users => ubuntu and schedule_prune => false" do
         let(:params) { {
           'experimental'           => true,
-          'schedule_prune'         => true,
+          'schedule_prune'         => false,
           'lvm'                    => true,
           'volume_group'           => 'dockervg',
           'docker_volume_size'     => '5G',
@@ -172,12 +177,7 @@ describe 'profiles::docker' do
           ) }
 
           it { is_expected.to contain_cron('docker system prune').with(
-            'ensure'      => 'present',
-            'command'     => '/usr/bin/docker system prune -f -a --volumes',
-            'environment' => ['MAILTO=infra+cron@publiq.be'],
-            'hour'        => '3',
-            'minute'      => '30',
-            'weekday'     => ['0', '2', '4', '6'],
+            'ensure' => 'absent'
           ) }
 
           it { is_expected.to contain_mount('/var/lib/docker').that_requires('Profiles::Lvm::Mount[dockerdata]') }
