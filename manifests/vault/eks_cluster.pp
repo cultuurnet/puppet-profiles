@@ -2,7 +2,6 @@
 define profiles::vault::eks_cluster (
   Enum['acceptance', 'testing', 'production']                 $environment,
   Stdlib::Httpsurl                                            $oidc_issuer_url,
-  Pattern[/\A[a-z0-9][a-z0-9-]*\z/]                           $auth_mount,
   Pattern[/\A[a-z0-9][a-z0-9-]*\z/]                           $role_name,
   Array[Pattern[/\A[a-zA-Z0-9._:-]+\z/], 1]                   $bound_audiences,
   Pattern[/\Asystem:serviceaccount:[a-z0-9-]+:[a-z0-9.-]+\z/] $bound_subject,
@@ -12,14 +11,12 @@ define profiles::vault::eks_cluster (
   include ::profiles
 
   assert_type(Pattern[/\A[a-z0-9][a-z0-9-]*\z/], $title)
-  unless $auth_mount == "eks-${title}" {
-    fail("Vault EKS auth_mount must be eks-${title}")
-  }
 
   realize Group['vault']
   realize User['vault']
   realize Package['jq']
 
+  $auth_mount  = "eks-${title}"
   $policy_name = "eso-${title}-read-only"
   $policy_file = "${configuration_directory}/${title}-policy.hcl"
   $config_file = "${configuration_directory}/${title}-config.json"

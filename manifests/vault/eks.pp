@@ -16,7 +16,7 @@ class profiles::vault::eks (
 
   $clusters.each |String $cluster, Hash $configuration| {
     profiles::vault::eks_cluster { $cluster:
-      *                       => $configuration,
+      *                       => $configuration - ['auth_mount'],
       configuration_directory => $configuration_directory,
       require                 => File['vault_eks_configuration']
     }

@@ -6,7 +6,6 @@ describe 'profiles::vault::eks_cluster' do
       let(:params) { {
         'environment' => 'testing',
         'oidc_issuer_url' => 'https://oidc.eks.eu-west-1.amazonaws.com/id/TESTING',
-        'auth_mount' => 'eks-publiq-testing',
         'role_name' => 'external-secrets',
         'bound_audiences' => ['vault'],
         'bound_subject' => 'system:serviceaccount:external-secrets:vault-reader'
@@ -79,11 +78,6 @@ describe 'profiles::vault::eks_cluster' do
       context 'without environment metadata' do
         let(:params) { super().reject { |key, _| key == 'environment' } }
         it { is_expected.not_to compile }
-      end
-
-      context 'with another cluster auth mount' do
-        let(:params) { super().merge('auth_mount' => 'eks-publiq-production') }
-        it { is_expected.to compile.and_raise_error(/auth_mount must be eks-publiq-testing/) }
       end
 
       context 'with a wildcard subject' do

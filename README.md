@@ -27,13 +27,13 @@ profiles::vault::eks_clusters:
   publiq-testing:
     environment: testing
     oidc_issuer_url: https://oidc.eks.eu-west-1.amazonaws.com/id/<issuer-id>
-    auth_mount: eks-publiq-testing
     role_name: external-secrets
     bound_audiences: [vault]
     bound_subject: system:serviceaccount:external-secrets:vault-reader
 ```
 
-Each cluster gets its own JWT auth mount, role and `eso-<cluster>-read-only`
+Puppet derives the JWT auth mount name `eks-<cluster>` from the cluster name.
+Each cluster gets its own role and `eso-<cluster>-read-only`
 policy. Vault trusts that cluster's issuer, validates the exact service-account
 subject and audience, and issues a 10-minute token with only that cluster's
 policy. No default policy or static Kubernetes/Vault token is added.
