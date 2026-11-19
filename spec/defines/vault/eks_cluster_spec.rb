@@ -4,6 +4,7 @@ describe 'profiles::vault::eks_cluster' do
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       let(:facts) { facts }
+      let(:pre_condition) { 'include profiles::vault::install' }
       let(:title) { 'publiq-testing' }
       let(:params) { {
         'environment' => 'testing',

@@ -6,7 +6,7 @@ define profiles::vault::eks_cluster (
   Pattern[/\A[a-z0-9][a-z0-9-]*\z/]                           $role_name,
   Array[Pattern[/\A[a-zA-Z0-9._:-]+\z/], 1]                   $bound_audiences,
   Pattern[/\Asystem:serviceaccount:[a-z0-9-]+:[a-z0-9.-]+\z/] $bound_subject,
-  Stdlib::Absolutepath                                        $configuration_directory = '/etc/vault.d/eks'
+  String                                                      $configuration_directory = '/etc/vault.d/eks'
 ) {
 
   include ::profiles
