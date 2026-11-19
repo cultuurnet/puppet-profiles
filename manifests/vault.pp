@@ -13,7 +13,8 @@ class profiles::vault (
   Boolean                    $backup_lvm            = false,
   Optional[String]           $backup_volume_group   = undef,
   Optional[String]           $backup_volume_size    = undef,
-  Integer                    $backup_retention_days = 7
+  Integer                    $backup_retention_days = 7,
+  Hash                       $eks_clusters          = {}
 ) inherits ::profiles {
 
   if $auto_unseal {
@@ -120,6 +121,13 @@ class profiles::vault (
       class { 'profiles::vault::authentication':
         lease_ttl_seconds => $lease_ttl_seconds,
         require           => Class['profiles::vault::policies']
+      }
+
+      unless empty($eks_clusters) {
+        class { 'profiles::vault::eks':
+          clusters => $eks_clusters,
+          require  => Class['profiles::vault::authentication']
+        }
       }
     }
   }

@@ -1,0 +1,39 @@
+describe 'profiles::vault::eks' do
+  on_supported_os.each do |os, facts|
+    context "on #{os}" do
+      let(:facts) { facts }
+
+      context 'with no exported clusters' do
+        it { is_expected.to compile.with_all_deps }
+        it { is_expected.to have_profiles__vault__eks_cluster_resource_count(0) }
+      end
+
+      context 'with clusters from multiple Terraform environments' do
+        let(:params) { {
+          'clusters' => {
+            'publiq-testing' => {
+              'environment' => 'testing',
+              'oidc_issuer_url' => 'https://oidc.eks.eu-west-1.amazonaws.com/id/TESTING',
+              'auth_mount' => 'eks-publiq-testing', 'role_name' => 'external-secrets',
+              'bound_audiences' => ['vault'],
+              'bound_subject' => 'system:serviceaccount:external-secrets:vault-reader'
+            },
+            'publiq-production' => {
+              'environment' => 'production',
+              'oidc_issuer_url' => 'https://oidc.eks.eu-west-1.amazonaws.com/id/PRODUCTION',
+              'auth_mount' => 'eks-publiq-production', 'role_name' => 'external-secrets',
+              'bound_audiences' => ['vault'],
+              'bound_subject' => 'system:serviceaccount:external-secrets:vault-reader'
+            }
+          }
+        } }
+
+        it { is_expected.to compile.with_all_deps }
+        it { is_expected.to have_profiles__vault__eks_cluster_resource_count(2) }
+        it { is_expected.to contain_profiles__vault__eks_cluster('publiq-testing').with_environment('testing') }
+        it { is_expected.to contain_profiles__vault__eks_cluster('publiq-production').with_environment('production') }
+        it { is_expected.to contain_profiles__vault__eks_cluster('publiq-testing').that_requires('File[vault_eks_configuration]') }
+      end
+    end
+  end
+end

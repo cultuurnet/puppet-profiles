@@ -76,6 +76,7 @@ describe 'profiles::vault' do
         ) }
 
         it { is_expected.not_to contain_class('profiles::vault::authentication') }
+        it { is_expected.not_to contain_class('profiles::vault::eks') }
         it { is_expected.not_to contain_class('profiles::vault::secrets_engines') }
 
         it { is_expected.to contain_class('profiles::vault::install').that_comes_before('Class[profiles::vault::configuration]') }
@@ -265,6 +266,33 @@ describe 'profiles::vault' do
           it { is_expected.to contain_class('profiles::vault::seal').with(
             'auto_unseal' => false
           ) }
+        end
+      end
+
+
+      context 'with Terraform EKS discovery metadata' do
+        let(:params) { {
+          'auto_unseal' => true,
+          'eks_clusters' => {
+            'publiq-testing' => {
+              'environment' => 'testing',
+              'oidc_issuer_url' => 'https://oidc.eks.eu-west-1.amazonaws.com/id/TESTING',
+              'auth_mount' => 'eks-publiq-testing', 'role_name' => 'external-secrets',
+              'bound_audiences' => ['vault'],
+              'bound_subject' => 'system:serviceaccount:external-secrets:vault-reader'
+            }
+          }
+        } }
+        let(:facts) { facts.merge('vault_initialized' => true) }
+
+        it { is_expected.to compile.with_all_deps }
+        it { is_expected.to contain_class('profiles::vault::eks').with_clusters(params['eks_clusters']) }
+        it { is_expected.to contain_class('profiles::vault::eks').that_requires('Class[profiles::vault::authentication]') }
+        it { is_expected.to contain_profiles__vault__eks_cluster('publiq-testing').with_environment('testing') }
+
+        context 'with the service stopped' do
+          let(:params) { super().merge('service_status' => 'stopped') }
+          it { is_expected.not_to contain_class('profiles::vault::eks') }
         end
       end
 

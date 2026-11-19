@@ -1,0 +1,24 @@
+# EKS access is limited to the environment exported by Terraform.
+path "puppet/data/<%= @environment %>" {
+  capabilities = ["read"]
+}
+path "puppet/data/<%= @environment %>/*" {
+  capabilities = ["read"]
+}
+path "puppet/metadata/<%= @environment %>" {
+  capabilities = ["read", "list"]
+}
+path "puppet/metadata/<%= @environment %>/*" {
+  capabilities = ["read", "list"]
+}
+
+# Token lifecycle only; do not attach Vault's default policy.
+path "auth/token/lookup-self" {
+  capabilities = ["read"]
+}
+path "auth/token/renew-self" {
+  capabilities = ["update"]
+}
+path "auth/token/revoke-self" {
+  capabilities = ["update"]
+}
