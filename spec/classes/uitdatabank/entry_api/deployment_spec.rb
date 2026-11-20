@@ -7,6 +7,7 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
 
       context 'with hieradata' do
         let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+        let(:pre_condition) { "class { 'profiles::uitdatabank::entry_api': database_password => 'mypassword', servername => 'uitdatabank.example.com', job_interface_servername => 'jobs.example.com', deployment => false }" }
 
         context 'with config_source => appconfig/uitdatabank/udb3-backend/config.php, admin_permissions_source => appconfig/uitdatabank/udb3-backend/config.allow_all.php, client_permissions_source => appconfig/uitdatabank/udb3-backend/config.client_permissions.php, api_keys_matched_to_client_ids_source => config.api_keys_matched_to_client_ids.php, movie_fetcher_config_source => appconfig/uitdatabank/udb3-backend/config.kinepolis.php, completeness_source => appconfig/uitdatabank/udb3-backend/config.completeness.php, externalid_mapping_organizer_source => appconfig/uitdatabank/udb3-backend/config.external_id_mapping_organizer.php, externalid_mapping_place_source => appconfig/uitdatabank/udb3-backend/config.external_id_mapping_place.php, pubkey_uitidv1_source => appconfig/uitdatabank/keys/public.pem and pubkey_keycloak_source => appconfig/uitdatabank/keys/pubkey-keycloak.pem' do
           let(:params) { {
@@ -44,6 +45,8 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           it { is_expected.to contain_group('www-data') }
           it { is_expected.to contain_user('www-data') }
 
+          it { is_expected.to contain_class('profiles::php') }
+
           it { is_expected.to contain_class('profiles::uitdatabank::entry_api::deployment::instance').with(
             'api_keys_matched_to_client_ids_source' => 'appconfig/uitdatabank/udb3-backend/config.api_keys_matched_to_client_ids.php',
             'amqp_listener_uitpas'                  => 'present',
@@ -51,6 +54,8 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
             'mail_worker'                           => 'present',
             'event_export_worker_count'             => 1
           ) }
+
+          it { is_expected.not_to contain_class('profiles::uitdatabank::entry_api::deployment::container') }
 
           it { is_expected.to contain_file('/etc/uitdatabank-entry-api').with(
             'ensure' => 'directory',
@@ -139,6 +144,8 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
             'content' => "uitdatabank keycloak public key\n"
           ) }
 
+          it { is_expected.to contain_class('profiles::uitdatabank::entry_api::deployment::instance').that_subscribes_to('Class[profiles::php]') }
+
           [
             'uitdatabank-entry-api-config',
             'uitdatabank-entry-api-admin-permissions',
@@ -184,6 +191,37 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
             ) }
           end
 
+          context 'with type => container' do
+            let(:pre_condition) { "class { 'profiles::uitdatabank::entry_api': database_password => 'mypassword', servername => 'uitdatabank.example.com', job_interface_servername => 'jobs.example.com', type => 'container', deployment => false }" }
+
+            it { is_expected.not_to contain_class('profiles::uitdatabank::entry_api::deployment::instance') }
+
+            it { is_expected.to contain_class('profiles::uitdatabank::entry_api::deployment::container').with(
+              'api_keys_matched_to_client_ids' => true,
+              'amqp_listener_uitpas'           => 'present',
+              'bulk_label_offer_worker'        => 'present',
+              'mail_worker'                    => 'present',
+              'event_export_worker_count'      => 1
+            ) }
+
+            it { is_expected.to contain_file('uitdatabank-entry-api-config').with(
+              'ensure' => 'file',
+              'path'   => '/etc/uitdatabank-entry-api/config.php',
+              'owner'  => 'www-data',
+              'group'  => 'www-data'
+            ) }
+
+            it { is_expected.to contain_file('uitdatabank-entry-api-config').that_notifies('Class[profiles::uitdatabank::entry_api::deployment::container]') }
+            it { is_expected.to contain_file('uitdatabank-entry-api-pubkey-keycloak').that_notifies('Class[profiles::uitdatabank::entry_api::deployment::container]') }
+
+            context 'without api_keys_matched_to_client_ids_source' do
+              let(:params) { super().reject { |key, _value| key == 'api_keys_matched_to_client_ids_source' } }
+
+              it { is_expected.to contain_class('profiles::uitdatabank::entry_api::deployment::container').with(
+                'api_keys_matched_to_client_ids' => false
+              ) }
+            end
+          end
         end
 
         context 'with config_source => appconfig/uitdatabank/udb3-backend/my.config.php, admin_permissions_source => appconfig/uitdatabank/udb3-backend/config.my.allow_all.php, client_permissions_source => appconfig/uitdatabank/udb3-backend/config.my.client_permissions.php, api_keys_matched_to_client_ids_source => config.my.api_keys_matched_to_client_ids.php, movie_fetcher_config_source => appconfig/uitdatabank/udb3-backend/config.my.kinepolis.php, completeness_source => appconfig/uitdatabank/udb3-backend/config.my.completeness.php, externalid_mapping_organizer_source => appconfig/uitdatabank/udb3-backend/config.my.external_id_mapping_organizer.php, externalid_mapping_place_source => appconfig/uitdatabank/udb3-backend/config.my.external_id_mapping_place.php, pubkey_uitidv1_source => appconfig/uitdatabank/keys/my_public_key.pem and pubkey_keycloak_source => appconfig/uitdatabank/keys/mypubkey-keycloak.pem' do

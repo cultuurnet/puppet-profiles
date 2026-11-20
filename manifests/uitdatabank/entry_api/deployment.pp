@@ -15,21 +15,42 @@ class profiles::uitdatabank::entry_api::deployment (
   Integer[0]                $event_export_worker_count             = 1
 ) inherits ::profiles {
 
+  # profiles::uitdatabank::rdf includes this class without declaring
+  # profiles::uitdatabank::entry_api, so fall back to the legacy deployment type
+  $type = assert_type(Enum['instance', 'container'], getvar('profiles::uitdatabank::entry_api::type', 'instance'))
+
   $config_dir              = '/etc/uitdatabank-entry-api'
   $secrets                 = lookup('vault:uitdatabank/udb3-backend')
   $file_default_attributes = {
                                owner   => 'www-data',
                                group   => 'www-data',
                                require => [Group['www-data'], User['www-data']],
-                               notify  => Class['profiles::uitdatabank::entry_api::deployment::instance']
+                               notify  => Class["profiles::uitdatabank::entry_api::deployment::${type}"]
                              }
 
-  class { 'profiles::uitdatabank::entry_api::deployment::instance':
-    api_keys_matched_to_client_ids_source => $api_keys_matched_to_client_ids_source,
-    amqp_listener_uitpas                  => $amqp_listener_uitpas,
-    bulk_label_offer_worker               => $bulk_label_offer_worker,
-    mail_worker                           => $mail_worker,
-    event_export_worker_count             => $event_export_worker_count
+  case $type {
+    'instance': {
+      include profiles::php
+
+      class { 'profiles::uitdatabank::entry_api::deployment::instance':
+        api_keys_matched_to_client_ids_source => $api_keys_matched_to_client_ids_source,
+        amqp_listener_uitpas                  => $amqp_listener_uitpas,
+        bulk_label_offer_worker               => $bulk_label_offer_worker,
+        mail_worker                           => $mail_worker,
+        event_export_worker_count             => $event_export_worker_count
+      }
+
+      Class['profiles::php'] ~> Class['profiles::uitdatabank::entry_api::deployment::instance']
+    }
+    'container': {
+      class { 'profiles::uitdatabank::entry_api::deployment::container':
+        api_keys_matched_to_client_ids => !!$api_keys_matched_to_client_ids_source,
+        amqp_listener_uitpas           => $amqp_listener_uitpas,
+        bulk_label_offer_worker        => $bulk_label_offer_worker,
+        mail_worker                    => $mail_worker,
+        event_export_worker_count      => $event_export_worker_count
+      }
+    }
   }
 
   realize Group['www-data']
