@@ -1,8 +1,7 @@
 define profiles::apache::vhost::php_fpm (
   String                         $basedir,
-  String                         $public_web_directory     = 'public',
-  Optional[Hash]                 $newrelic_optional_config = {},
-  Variant[String, Array[String]] $aliases                  = [],
+  String                         $public_web_directory = 'public',
+  Variant[String, Array[String]] $aliases              = [],
   Enum['on', 'off', 'nodecode']  $allow_encoded_slashes    = 'off',
   String                         $access_log_format        = 'extended_json',
   Enum['unix', 'tcp']            $socket_type              = lookup('profiles::php::fpm_socket_type', Enum['unix', 'tcp'], 'first', 'unix'),
@@ -14,10 +13,9 @@ define profiles::apache::vhost::php_fpm (
   Boolean                        $ssl_proxyengine          = false
 ) {
 
-  $transport        = split($title, ':')[0]
-  $servername       = split($title, '/')[-1]
-  $newrelic_enabled = lookup('profiles::php::newrelic', Boolean, 'first', false)
-  $proxy_http       = [$rewrites].flatten.reduce(false) |$proxy_flag_present, $rewrite| {
+  $transport  = split($title, ':')[0]
+  $servername = split($title, '/')[-1]
+  $proxy_http = [$rewrites].flatten.reduce(false) |$proxy_flag_present, $rewrite| {
                         $rewrite_flags = $rewrite['rewrite_rule'].split(' ')[2][1,-2].split(',')
                         $proxy_flag    = 'P' in $rewrite_flags
 
@@ -100,11 +98,5 @@ define profiles::apache::vhost::php_fpm (
                              ] + [$directories].flatten,
     rewrites              => [$rewrites].flatten,
     ssl_proxyengine       => $ssl_proxyengine
-  }
-
-  profiles::newrelic::php::application { $servername:
-    enable          => $newrelic_enabled,
-    docroot         => "${basedir}/${public_web_directory}",
-    optional_config => $newrelic_optional_config
   }
 }

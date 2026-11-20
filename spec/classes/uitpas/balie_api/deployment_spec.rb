@@ -28,6 +28,14 @@ describe 'profiles::uitpas::balie_api::deployment' do
           'ensure' => 'latest'
         ) }
 
+        it { is_expected.to contain_profiles__newrelic__php__application('uitpas-balie-api').with(
+          'app_name' => nil,
+          'docroot'  => '/var/www/uitpas-balie-api/web',
+          'enable'   => false
+        ) }
+
+        it { is_expected.to contain_profiles__newrelic__php__application('uitpas-balie-api').that_requires('Package[uitpas-balie-api]') }
+
         it { is_expected.to contain_file('uitpas-balie-api-config').with(
           'ensure' => 'file',
           'owner'  => 'www-data',
