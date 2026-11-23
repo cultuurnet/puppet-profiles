@@ -69,18 +69,19 @@ define profiles::vault::eks_cluster (
 
   # Compare live state on every run, so drift and missing remote configuration
   # are repaired even when the local files have not changed.
-  $json_comparison = '.data as $live | $desired[0] | to_entries | all(.[]; . as $entry | $live[$entry.key] == $entry.value)'
+  # Slurp so jq 1.6 evaluates the filter even when a missing Vault resource returns no JSON.
+  $json_comparison = '.[0].data as $live | $desired[0] | to_entries | all(.[]; . as $entry | $live[$entry.key] == $entry.value)'
   $policy_check = join([
     "/usr/bin/vault read -format=json sys/policies/acl/${policy_name} | ",
-    "/usr/bin/jq -e --rawfile policy ${policy_file} '.data.policy == \$policy'"
+    "/usr/bin/jq -es --rawfile policy ${policy_file} '.[0].data.policy == \$policy'"
   ], '')
   $config_check = join([
     "/usr/bin/vault read -format=json auth/${auth_mount}/config | ",
-    "/usr/bin/jq -e --slurpfile desired ${config_file} '${json_comparison}'"
+    "/usr/bin/jq -es --slurpfile desired ${config_file} '${json_comparison}'"
   ], '')
   $role_check = join([
     "/usr/bin/vault read -format=json auth/${auth_mount}/role/${role_name} | ",
-    "/usr/bin/jq -e --slurpfile desired ${role_file} '${json_comparison}'"
+    "/usr/bin/jq -es --slurpfile desired ${role_file} '${json_comparison}'"
   ], '')
 
   exec { "vault EKS policy ${title}":
@@ -93,7 +94,7 @@ define profiles::vault::eks_cluster (
 
   exec { "vault EKS auth ${title}":
     command   => "/usr/bin/vault auth enable -path=${auth_mount} jwt",
-    unless    => "/usr/bin/vault auth list -format=json | /usr/bin/jq -e '.[\"${auth_mount}/\"].type == \"jwt\"'",
+    unless    => "/usr/bin/vault auth list -format=json | /usr/bin/jq -es '.[0][\"${auth_mount}/\"].type == \"jwt\"'",
     user      => 'vault',
     logoutput => 'on_failure',
     require   => [User['vault'], Package['jq']]
