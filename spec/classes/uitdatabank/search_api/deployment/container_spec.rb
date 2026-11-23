@@ -44,6 +44,7 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
               it { expect(content['x-search-service']['volumes']).not_to include('/etc/uitdatabank-search-api/api_keys_matched_to_client_ids.php:/var/www/html/api_keys_matched_to_client_ids.php:ro') }
               it { expect(content['x-search-service']['volumes']).not_to include('/etc/uitdatabank-search-api/default_queries.php:/var/www/html/default_queries.php:ro') }
               it { expect(content['services']['search-nginx']['volumes']).to include('/etc/uitdatabank-search-api/nginx.conf:/etc/nginx/conf.d/default.conf:ro') }
+              it { expect(content['services']['search-nginx']['volumes']).to include('/var/www/geojson-data/output:/var/www/geojson-data/output:ro') }
               it { expect(content['services']['search-nginx']['network_mode']).to eq('service:search-api') }
               it { expect(content['services']['search-consume-udb3-cli']['scale']).to eq(1) }
             end
@@ -76,6 +77,7 @@ describe 'profiles::uitdatabank::search_api::deployment::container' do
             ) }
 
             it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').with_content(/fastcgi_pass 127\.0\.0\.1:9000;/) }
+            it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').with_content(%r{location = /autocomplete\.json \{\n\s+alias /var/www/geojson-data/output/autocomplete\.json;}) }
             it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').with_content(/^\s+access_log off;$/) }
             it { is_expected.to contain_file('uitdatabank-search-api-nginx-conf').with_content(%r{^\s+error_log /dev/stderr warn;$}) }
 
