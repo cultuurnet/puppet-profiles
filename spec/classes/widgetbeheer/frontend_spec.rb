@@ -66,6 +66,10 @@ describe 'profiles::widgetbeheer::frontend' do
                                                    'set Pragma "no-cache"',
                                                    'set Expires "Wed, 1 Jan 1970 00:00:00 GMT"'
                                                  ]
+                                 }, {
+                                   'path'     => '/assets/i18n/',
+                                   'provider' => 'location',
+                                   'headers'  => ['set Cache-Control "no-cache"']
                                  }],
             'ssl_proxyengine' => true
           ) }
@@ -123,6 +127,10 @@ describe 'profiles::widgetbeheer::frontend' do
                                                     'set Pragma "no-cache"',
                                                     'set Expires "Wed, 1 Jan 1970 00:00:00 GMT"'
                                                   ]
+                                 }, {
+                                   'path'     => '/assets/i18n/',
+                                   'provider' => 'location',
+                                   'headers'  => ['set Cache-Control "no-cache"']
                                  }],
             'ssl_proxyengine' => false
           ) }
