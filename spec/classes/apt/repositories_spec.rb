@@ -66,7 +66,6 @@ describe 'profiles::apt::repositories' do
             it { is_expected.not_to contain_apt__source('mysql-8.4') }
 
             include_examples 'apt repositories', 'publiq-jenkins', { :location => 'https://apt.publiq.be/publiq-jenkins-testing', :repos => 'main', :release => 'focal' }
-            include_examples 'apt repositories', 'publiq-prototypes', { :location => 'https://apt.publiq.be/publiq-prototypes-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'publiq-versions', { :location => 'https://apt.publiq.be/publiq-versions-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'publiq-infrastructure', { :location => 'https://apt.publiq.be/publiq-infrastructure-testing', :repos => 'main', :release => 'focal' }
             include_examples 'apt repositories', 'publiq-infrastructure-legacy', { :location => 'https://apt.publiq.be/publiq-infrastructure-legacy-testing', :repos => 'main', :release => 'focal' }

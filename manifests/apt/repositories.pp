@@ -391,12 +391,6 @@ class profiles::apt::repositories {
     repos    => 'main'
   }
 
-  @apt::source { 'publiq-prototypes':
-    location => "https://apt.publiq.be/publiq-prototypes-${environment}",
-    release  => $codename,
-    repos    => 'main'
-  }
-
   @apt::source { 'publiq-infrastructure':
     location => "https://apt.publiq.be/publiq-infrastructure-${environment}",
     release  => $codename,
