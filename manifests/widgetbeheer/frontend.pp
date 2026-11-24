@@ -57,7 +57,11 @@ class profiles::widgetbeheer::frontend (
                        }, {
                          path     => '/assets/i18n/',
                          provider => 'location',
-                         headers  => ['set Cache-Control "no-cache"']
+                         headers  => [
+                                       'set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"',
+                                       'set Pragma "no-cache"',
+                                       'set Expires "Wed, 1 Jan 1970 00:00:00 GMT"'
+                                     ]
                        }],
     ssl_proxyengine => $api_transport ? {
                          'https' => true,
