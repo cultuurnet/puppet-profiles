@@ -64,14 +64,14 @@ define profiles::media::rewrite (
         'rewrite_rule' => '^ - [E=CROP:fit=crop&crop=entropy&,E=BGCOLOR:]'
       },
       {
-        'comment'      => 'Transform parameter crop=edges',
-        'rewrite_cond' => '%{QUERY_STRING} (?:^|&)crop=edges(?:&|$)',
-        'rewrite_rule' => '^ - [E=CROP:fit=crop&crop=edges&,E=BGCOLOR:]'
-      },
-      {
         'comment'      => 'Transform parameter crop=(<x1>,<y1>,<x2>,<y2>)',
         'rewrite_cond' => '%{QUERY_STRING} (?:^|&)crop=\(([0-9|,]+)\)(?:&|$)',
         'rewrite_rule' => '^ - [E=RECT:rect=%1&]'
+      },
+      {
+        'comment'      => 'Transform parameter crop=*',
+        'rewrite_cond' => '%{QUERY_STRING} (?:^|&)crop=([^&]+)(?:&|$)',
+        'rewrite_rule' => '^ - [E=CROP:fit=crop&crop=%1&,E=BGCOLOR:]'
       },
       {
         'comment'      => 'Transform parameter format',
