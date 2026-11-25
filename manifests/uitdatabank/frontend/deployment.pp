@@ -5,20 +5,33 @@ class profiles::uitdatabank::frontend::deployment (
   Integer                       $service_port    = 4000,
 ) inherits ::profiles {
 
+  $config_dir = '/etc/uitdatabank-frontend'
+  $secrets    = lookup('vault:uitdatabank/udb3-frontend')
+
   case $type {
     'instance': {
       class { 'profiles::uitdatabank::frontend::deployment::instance':
-        config_source   => $config_source,
         service_address => $service_address,
         service_port    => $service_port,
       }
     }
     'container': {
       class { 'profiles::uitdatabank::frontend::deployment::container':
-        config_source   => $config_source,
-        service_address => $service_address,
-        service_port    => $service_port,
+        service_port => $service_port,
       }
     }
+  }
+
+  file { $config_dir:
+    ensure => 'directory'
+  }
+
+  file { "${config_dir}/env":
+    ensure  => 'file',
+    content => template($config_source),
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0640',
+    notify  => Class["profiles::uitdatabank::frontend::deployment::${type}"]
   }
 }
