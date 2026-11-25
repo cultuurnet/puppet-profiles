@@ -1,22 +1,23 @@
 class profiles::jenkins::controller::configuration(
-  Stdlib::Httpurl            $url,
-  String                     $admin_password,
-  Boolean                    $mfa                      = false,
-  Boolean                    $role_based_authorization = false,
-  Boolean                    $timestamps               = false,
-  Integer[1]                 $max_concurrent_builds    = 1,
-  Optional[Stdlib::Httpurl]  $docker_registry_url      = undef,
-  Optional[String]           $kubernetes_jnlp_image    = undef,
-  Optional[String]           $kubernetes_credentials_id = undef,
-  Optional[String]           $private_key              = undef,
-  Variant[Hash, Array[Hash]] $credentials              = [],
-  String                     $github_hook_url          = '',
-  Variant[Hash, Array[Hash]] $github_servers           = [],
-  Variant[Hash, Array[Hash]] $global_libraries         = [],
-  Variant[Hash, Array[Hash]] $pipelines                = [],
-  Variant[Hash, Array[Hash]] $views                    = [],
-  Variant[Hash, Array[Hash]] $users                    = [],
-  Optional[String]           $puppetdb_url             = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+  Stdlib::Httpurl                               $url,
+  String                                        $admin_password,
+  Boolean                                       $mfa                       = false,
+  Boolean                                       $role_based_authorization  = false,
+  Boolean                                       $timestamps                = false,
+  Enum['xterm', 'vga', 'css', 'gnome-terminal'] $output_colormap           = 'xterm',
+  Integer[1]                                    $max_concurrent_builds     = 1,
+  Optional[Stdlib::Httpurl]                     $docker_registry_url       = undef,
+  Optional[String]                              $kubernetes_jnlp_image     = undef,
+  Optional[String]                              $kubernetes_credentials_id = undef,
+  Optional[String]                              $private_key               = undef,
+  Variant[Hash, Array[Hash]]                    $credentials               = [],
+  String                                        $github_hook_url           = '',
+  Variant[Hash, Array[Hash]]                    $github_servers            = [],
+  Variant[Hash, Array[Hash]]                    $global_libraries          = [],
+  Variant[Hash, Array[Hash]]                    $pipelines                 = [],
+  Variant[Hash, Array[Hash]]                    $views                     = [],
+  Variant[Hash, Array[Hash]]                    $users                     = [],
+  Optional[String]                              $puppetdb_url              = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   $plain_credentials       = [$credentials].flatten.filter |$credential| { $credential['type'] == 'string' or $credential['type'] == 'file' or $credential['type'] == 'username_password' }
@@ -174,6 +175,13 @@ class profiles::jenkins::controller::configuration(
     configuration => {
                        'elapsed_time_format' => "'<b>'HH:mm:ss.SSS'</b> '",
                        'system_time_format'  => "'<b>'yyyy-MM-dd'T'HH:mm:ss.SSSZ'</b> '"
+                     },
+    notify        => Class['profiles::jenkins::controller::configuration::reload']
+  }
+
+  profiles::jenkins::plugin { 'ansicolor':
+    configuration => {
+                       'colormap_name' => $output_colormap
                      },
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }

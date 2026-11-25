@@ -769,6 +769,33 @@ describe 'profiles::jenkins::plugin' do
         end
       end
 
+      context "with title ansicolor" do
+        let(:title) { 'ansicolor' }
+
+        context "with configuration => { 'colormap_name' => 'xterm' }" do
+          let(:params) { {
+              'configuration' => { 'colormap_name' => 'xterm' }
+          } }
+
+          it { is_expected.to contain_file('ansicolor configuration').with(
+            'ensure'  => 'file',
+            'path'    => '/var/lib/jenkins/casc_config/ansicolor.yaml',
+            'owner'   => 'jenkins',
+            'group'   => 'jenkins'
+          ) }
+
+          it { is_expected.to contain_file('ansicolor configuration').with_content(/^\s*globalColorMapName: 'xterm'$/) }
+        end
+
+        context "with configuration => { 'colormap_name' => 'vga' }" do
+          let(:params) { {
+              'configuration' => { 'colormap_name' => 'vga' }
+          } }
+
+          it { is_expected.to contain_file('ansicolor configuration').with_content(/^\s*globalColorMapName: 'vga'$/) }
+        end
+      end
+
       context "with title throttle-concurrents" do
         let(:title) { 'throttle-concurrents' }
 
