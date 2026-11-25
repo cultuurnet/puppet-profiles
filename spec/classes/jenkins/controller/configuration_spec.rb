@@ -25,6 +25,7 @@ describe 'profiles::jenkins::controller::configuration' do
               'mfa'                      => false,
               'role_based_authorization' => false,
               'timestamps'               => false,
+              'output_colormap'          => 'xterm',
               'max_concurrent_builds'    => 1,
               'docker_registry_url'      => nil,
               'kubernetes_jnlp_image'    => nil,
@@ -68,6 +69,12 @@ describe 'profiles::jenkins::controller::configuration' do
             it { is_expected.to contain_profiles__jenkins__plugin('timestamper').with(
               'ensure'        => 'absent',
               'restart'       => false
+            ) }
+
+            it { is_expected.to contain_profiles__jenkins__plugin('ansicolor').with(
+              'ensure'        => 'present',
+              'restart'       => false,
+              'configuration' => { 'colormap_name' => 'xterm' }
             ) }
 
             it { is_expected.to contain_profiles__jenkins__plugin('git-client').with(
@@ -256,6 +263,7 @@ describe 'profiles::jenkins::controller::configuration' do
             it { is_expected.to contain_profiles__jenkins__plugin('ssh-credentials').that_comes_before('Profiles::Jenkins::Plugin[pipeline-groovy-lib]') }
             it { is_expected.to contain_profiles__jenkins__plugin('git').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
             it { is_expected.to contain_profiles__jenkins__plugin('openmfa').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
+            it { is_expected.to contain_profiles__jenkins__plugin('ansicolor').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
             it { is_expected.to contain_profiles__jenkins__plugin('git-client').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
             it { is_expected.to contain_profiles__jenkins__plugin('timestamper').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
             it { is_expected.to contain_profiles__jenkins__plugin('github').that_notifies('Class[profiles::jenkins::controller::configuration::reload]') }
@@ -374,12 +382,13 @@ describe 'profiles::jenkins::controller::configuration' do
         end
       end
 
-      context "with url => https://builds.foobar.com/, admin_password => letmein, mfa => true, timestamps => true, docker_registry_url => https://docker.registry.com/, private_key => 'dcba4321', credentials => [{ id => 'foo', type => 'string', secret => 'bla'}, { id => 'awscred', type => 'aws', access_key => 'aws_key', secret_key => 'aws_secret'}, { id => 'userpass', type => 'username_password', username => 'foo', password => 'bar'}], global_libraries => { git_url => 'git@example.com:org/repo.git', git_ref => 'main', credential_id => 'mygitcred'}, pipelines => { 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'keep_builds' => 5}, users => {'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'} and puppetdb_url => 'https://foobar.com:4567'" do
+      context "with url => https://builds.foobar.com/, admin_password => letmein, mfa => true, timestamps => true, output_colormap => gnome-terminal, docker_registry_url => https://docker.registry.com/, private_key => 'dcba4321', credentials => [{ id => 'foo', type => 'string', secret => 'bla'}, { id => 'awscred', type => 'aws', access_key => 'aws_key', secret_key => 'aws_secret'}, { id => 'userpass', type => 'username_password', username => 'foo', password => 'bar'}], global_libraries => { git_url => 'git@example.com:org/repo.git', git_ref => 'main', credential_id => 'mygitcred'}, pipelines => { 'name' => 'myrepo', 'git_url' => 'git@example.com:org/myrepo.git', 'git_ref' => 'refs/heads/main', 'credential_id' => 'mygitcred', 'keep_builds' => 5}, users => {'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com'} and puppetdb_url => 'https://foobar.com:4567'" do
         let(:params) { {
           'url'                 => 'https://builds.foobar.com/',
           'admin_password'      => 'letmein',
           'mfa'                 => true,
           'timestamps'          => true,
+          'output_colormap'     => 'gnome-terminal',
           'docker_registry_url' => 'https://docker.registry.com/',
           'private_key'         => 'dcba4321',
           'credentials'         => [
@@ -420,6 +429,12 @@ describe 'profiles::jenkins::controller::configuration' do
             'configuration' => {
                                  'issuer' => 'Jenkins publiq (testing)'
                                }
+          ) }
+
+          it { is_expected.to contain_profiles__jenkins__plugin('ansicolor').with(
+            'ensure'        => 'present',
+            'restart'       => false,
+            'configuration' => { 'colormap_name' => 'gnome-terminal' }
           ) }
 
           it { is_expected.to contain_profiles__jenkins__plugin('timestamper').with(
