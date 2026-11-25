@@ -39,6 +39,7 @@ describe 'profiles::uitdatabank::frontend' do
             it { is_expected.to contain_class('profiles::apache') }
 
             it { is_expected.to contain_class('profiles::uitdatabank::frontend::deployment').with(
+              'type'            => 'instance',
               'service_address' => '127.0.0.1',
               'service_port'    => 4000
             ) }
@@ -72,6 +73,35 @@ describe 'profiles::uitdatabank::frontend' do
             it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://frontend.example.com').with(
               'aliases'     => ['foo.example.com', 'bar.example.com'],
               'destination' => 'http://0.0.0.0:4567/'
+            ) }
+          end
+
+          context 'with type => container' do
+            let(:pre_condition) { 'function ecr_docker_image_version_tag($parameter1, $parameter2) { return "2026.10.07.000000" }' }
+
+            let(:params) { super().merge({
+              'type' => 'container'
+            }) }
+
+            it { is_expected.to compile.with_all_deps }
+
+            it { is_expected.to contain_class('profiles::uitdatabank::frontend::deployment').with(
+              'type' => 'container'
+            ) }
+
+            it { is_expected.to contain_class('profiles::apache') }
+            it { is_expected.not_to contain_class('profiles::nodejs') }
+
+            it { is_expected.not_to contain_file('/var/www/udb3-frontend') }
+
+            it { is_expected.to contain_class('profiles::uitdatabank::frontend::deployment::container') }
+            it { is_expected.not_to contain_class('profiles::uitdatabank::frontend::deployment::instance') }
+
+            it { is_expected.to contain_class('profiles::uitdatabank::frontend::deployment').that_requires('Class[profiles::apache]') }
+
+            it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://frontend.example.com').with(
+              'aliases'     => [],
+              'destination' => 'http://127.0.0.1:4000/'
             ) }
           end
 

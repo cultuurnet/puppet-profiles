@@ -1,0 +1,16 @@
+services:
+  frontend:
+    image: <%= @ecr_registry %>/<%= @ecr_repository %>:<%= @image_tag %>
+    network_mode: host
+    restart: unless-stopped
+    env_file:
+      - <%= @config_dir %>/env
+    environment:
+      HOSTNAME: "127.0.0.1"
+      PORT: "<%= @service_port %>"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:<%= @service_port %>/ || exit 1"]
+      start_period: 30s
+      interval: 10s
+      timeout: 5s
+      retries: 3
