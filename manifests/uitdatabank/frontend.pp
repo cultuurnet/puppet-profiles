@@ -28,6 +28,10 @@ class profiles::uitdatabank::frontend (
       $deployment_require = Class['profiles::nodejs']
     }
     'container': {
+      class { 'profiles::uitdatabank::frontend::logging':
+        servername => $servername
+      }
+
       $deployment_require = Class['profiles::apache']
     }
   }
@@ -49,5 +53,4 @@ class profiles::uitdatabank::frontend (
 
   # include ::profiles::uitdatabank::frontend::monitoring
   # include ::profiles::uitdatabank::frontend::metrics
-  # include ::profiles::uitdatabank::frontend::logging
 }
