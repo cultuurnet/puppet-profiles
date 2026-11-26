@@ -40,7 +40,7 @@ class profiles::uitdatabank::rdf (
   profiles::apache::vhost::php_fpm { "http://${servername}":
     basedir               => $basedir,
     public_web_directory  => 'web',
-    aliases               => [$serveraliases].flatten,
+    serveraliases         => $serveraliases,
     allow_encoded_slashes => 'nodecode',
     access_log_format     => 'extended_json',
     request_headers       => [

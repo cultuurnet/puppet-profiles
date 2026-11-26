@@ -63,9 +63,9 @@ class profiles::projectaanvraag::api (
   }
 
   profiles::apache::vhost::php_fpm { "http://${servername}":
-    basedir               => $basedir,
-    public_web_directory  => 'web',
-    aliases               => $serveraliases
+    basedir              => $basedir,
+    public_web_directory => 'web',
+    serveraliases        => $serveraliases
   }
 
   mongodb_database { $mongodb_database_name:

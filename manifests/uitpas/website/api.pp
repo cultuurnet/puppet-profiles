@@ -21,7 +21,7 @@ class profiles::uitpas::website::api (
   profiles::apache::vhost::php_fpm { "http://${servername}":
     basedir              => $basedir,
     public_web_directory => 'public',
-    aliases              => $serveraliases
+    serveraliases        => $serveraliases
   }
 
   if $deployment {

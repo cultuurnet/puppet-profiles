@@ -20,7 +20,7 @@ class profiles::uitpas::balie_api (
   }
 
   profiles::apache::vhost::php_fpm { "http://${servername}":
-    aliases              => $serveraliases,
+    serveraliases        => $serveraliases,
     basedir              => $basedir,
     public_web_directory => 'web',
     headers              => 'set Cache-Control "no-cache,no-store" "env=legacy_app_path"',

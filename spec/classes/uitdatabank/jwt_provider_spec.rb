@@ -27,7 +27,7 @@ describe 'profiles::uitdatabank::jwt_provider' do
           it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://baz.example.com').with(
             'basedir'              => '/var/www/jwt-provider',
             'public_web_directory' => 'web',
-            'aliases'              => [],
+            'serveraliases'        => [],
             'access_log_format'    => 'api_key_json',
             'rewrites'             => [ {
                                           'comment'      => 'Capture apiKey from URL parameters',
@@ -62,7 +62,7 @@ describe 'profiles::uitdatabank::jwt_provider' do
         it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://jwt.example.com').with(
           'basedir'              => '/var/www/jwt-provider',
           'public_web_directory' => 'web',
-          'aliases'              => ['jwt-alias1.example.com', 'jwt-alias2.example.com'],
+          'serveraliases'        => ['jwt-alias1.example.com', 'jwt-alias2.example.com'],
           'access_log_format'    => 'api_key_json',
           'rewrites'             => [ {
                                         'comment'      => 'Capture apiKey from URL parameters',

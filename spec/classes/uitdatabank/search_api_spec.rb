@@ -33,7 +33,7 @@ describe 'profiles::uitdatabank::search_api' do
           it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://baz.example.com').with(
             'basedir'              => '/var/www/udb3-search-service',
             'public_web_directory' => 'web',
-            'aliases'              => [],
+            'serveraliases'        => [],
             'access_log_format'    => 'api_key_json',
             'rewrites'             => [{
                                         'comment'      => 'Capture apiKey from URL parameters',

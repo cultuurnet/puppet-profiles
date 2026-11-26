@@ -61,7 +61,7 @@ describe 'profiles::platform' do
             it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://platform.example.com').with(
               'basedir'              => '/var/www/platform-api',
               'public_web_directory' => 'public',
-              'aliases'              => [],
+              'serveraliases'        => [],
               'socket_type'          => 'tcp'
             ) }
 
@@ -107,7 +107,7 @@ describe 'profiles::platform' do
           it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://myplatform.example.com').with(
             'basedir'              => '/var/www/platform-api',
             'public_web_directory' => 'public',
-            'aliases'              => ['foo.example.com', 'bar.example.com'],
+            'serveraliases'        => ['foo.example.com', 'bar.example.com'],
             'socket_type'          => 'tcp'
           ) }
         end

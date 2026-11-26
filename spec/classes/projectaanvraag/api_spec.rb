@@ -39,7 +39,7 @@ describe 'profiles::projectaanvraag::api' do
             it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://projectaanvraag-api.example.com').with(
               'basedir'              => '/var/www/projectaanvraag-api',
               'public_web_directory' => 'web',
-              'aliases'              => []
+              'serveraliases'        => []
             ) }
 
             it { is_expected.to contain_mongodb_database('widgets').with(
@@ -87,7 +87,7 @@ describe 'profiles::projectaanvraag::api' do
           it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://bar.example.com').with(
             'basedir'              => '/var/www/projectaanvraag-api',
             'public_web_directory' => 'web',
-            'aliases'              => 'baz.example.com'
+            'serveraliases'        => 'baz.example.com'
           ) }
 
           context "with fact mysqld_version => 8.0.33" do

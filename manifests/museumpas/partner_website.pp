@@ -1,9 +1,9 @@
 class profiles::museumpas::partner_website (
-  String $database_password,
-  String $database_host                           = '127.0.0.1',
-  String $servername                              = undef,
-  Variant[String, Array[String]] $serveraliases   = [],
-  Boolean $deployment                             = true
+  String                         $database_password,
+  String                         $database_host     = '127.0.0.1',
+  String                         $servername        = undef,
+  Variant[String, Array[String]] $serveraliases     = [],
+  Boolean                        $deployment        = true
 ) inherits ::profiles {
 
   $basedir = '/var/www/museumpas-partner'
@@ -56,7 +56,7 @@ class profiles::museumpas::partner_website (
   profiles::apache::vhost::php_fpm { "http://${servername}":
     basedir              => $basedir,
     public_web_directory => 'web',
-    aliases              => $serveraliases
+    serveraliases        => $serveraliases
   }
 
   if $deployment {

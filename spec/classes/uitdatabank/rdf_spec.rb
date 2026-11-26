@@ -28,7 +28,7 @@ describe 'profiles::uitdatabank::rdf' do
           it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://rdf.example.com').with(
               'basedir'               => '/var/www/udb3-backend',
               'public_web_directory'  => 'web',
-              'aliases'               => [],
+              'serveraliases'         => [],
               'allow_encoded_slashes' => 'nodecode',
               'access_log_format'     => 'extended_json',
               'request_headers'       => [
@@ -83,7 +83,7 @@ describe 'profiles::uitdatabank::rdf' do
           it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://foo.example.com').with(
               'basedir'               => '/var/www/udb3-backend',
               'public_web_directory'  => 'web',
-              'aliases'               => ['bar.example.com', 'baz.example.com'],
+              'serveraliases'         => ['bar.example.com', 'baz.example.com'],
               'allow_encoded_slashes' => 'nodecode',
               'access_log_format'     => 'extended_json',
               'request_headers'       => [
