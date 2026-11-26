@@ -62,7 +62,7 @@ class profiles::uitdatabank::search_api (
       profiles::apache::vhost::php_fpm { "http://${servername}":
         basedir              => $basedir,
         public_web_directory => 'web',
-        aliases              => $serveraliases,
+        serveraliases        => $serveraliases,
         access_log_format    => 'api_key_json',
         rewrites             => $api_key_rewrites,
       }

@@ -18,7 +18,7 @@ class profiles::uitdatabank::jwt_provider (
   profiles::apache::vhost::php_fpm { "http://${servername}":
     basedir              => $basedir,
     public_web_directory => 'web',
-    aliases              => $serveraliases,
+    serveraliases        => $serveraliases,
     access_log_format    => 'api_key_json',
     rewrites             => [{
                               comment      => 'Capture apiKey from URL parameters',

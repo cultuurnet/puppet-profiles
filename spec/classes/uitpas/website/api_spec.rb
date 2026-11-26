@@ -42,7 +42,7 @@ describe 'profiles::uitpas::website::api' do
             it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://uitpas-backend.example.com').with(
               'basedir'              => '/var/www/uitpas-website-api',
               'public_web_directory' => 'public',
-              'aliases'              => []
+              'serveraliases'        => []
             ) }
 
             it { is_expected.to contain_file('/var/www/uitpas-website-api').that_requires('Group[www-data]') }

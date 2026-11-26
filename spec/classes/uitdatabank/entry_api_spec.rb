@@ -51,7 +51,7 @@ describe 'profiles::uitdatabank::entry_api' do
             it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://uitdatabank.example.com').with(
               'basedir'               => '/var/www/udb3-backend',
               'public_web_directory'  => 'web',
-              'aliases'               => [],
+              'serveraliases'         => [],
               'allow_encoded_slashes' => 'nodecode',
               'access_log_format'     => 'api_key_json',
               'rewrites'              => [{
@@ -194,7 +194,7 @@ describe 'profiles::uitdatabank::entry_api' do
           it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://foo.example.com').with(
             'basedir'               => '/var/www/udb3-backend',
             'public_web_directory'  => 'web',
-            'aliases'               => ['alias1.example.com', 'alias2.example.com'],
+            'serveraliases'         => ['alias1.example.com', 'alias2.example.com'],
             'allow_encoded_slashes' => 'nodecode',
             'access_log_format'     => 'api_key_json',
             'rewrites'              => [{

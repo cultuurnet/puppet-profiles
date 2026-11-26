@@ -40,7 +40,7 @@ class profiles::platform (
   profiles::apache::vhost::php_fpm { "http://${servername}":
     basedir              => $basedir,
     public_web_directory => 'public',
-    aliases              => $serveraliases
+    serveraliases        => $serveraliases
   }
 
   if $catch_mail {

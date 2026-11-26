@@ -106,7 +106,7 @@ describe 'profiles::uit::cms' do
           it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://baz.example.com').with(
             'basedir'              => '/var/www/uit-cms',
             'public_web_directory' => 'web',
-            'aliases'              => [],
+            'serveraliases'        => [],
             'rewrites'             => [ {
                                           'comment'      => 'Redirect all requests to /tip/ to the frontend vhost',
                                           'rewrite_map'  => "hostnames 'txt:/var/www/uit-cms/hostnames.txt'",
@@ -227,7 +227,7 @@ describe 'profiles::uit::cms' do
             it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://tic.example.com').with(
               'basedir'              => '/var/www/uit-cms',
               'public_web_directory' => 'web',
-              'aliases'              => ['tac.example.com', 'toe.example.com'],
+              'serveraliases'        => ['tac.example.com', 'toe.example.com'],
               'rewrites'             => [ {
                                             'comment'      => 'Redirect all requests to /tip/ to the frontend vhost',
                                             'rewrite_map'  => "hostnames 'txt:/var/www/uit-cms/hostnames.txt'",

@@ -30,7 +30,7 @@ describe 'profiles::uitpas::balie_api' do
           it { is_expected.to contain_class('apache::mod::proxy_http') }
 
           it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://balie_api.example.com').with(
-            'aliases'              => [],
+            'serveraliases'        => [],
             'basedir'              => '/var/www/uitpas-balie-api',
             'public_web_directory' => 'web',
             'ssl_proxyengine'      => false,
@@ -96,7 +96,7 @@ describe 'profiles::uitpas::balie_api' do
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_profiles__apache__vhost__php_fpm('http://test.example.com').with(
-            'aliases'              => 'alias.example.com',
+            'serveraliases'        => 'alias.example.com',
             'basedir'              => '/var/www/uitpas-balie-api',
             'public_web_directory' => 'web',
             'ssl_proxyengine'      => true,
