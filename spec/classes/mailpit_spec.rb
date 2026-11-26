@@ -15,7 +15,8 @@ describe 'profiles::mailpit' do
 
           it { is_expected.to contain_class('profiles::mailpit').with(
             'smtp_address' => '127.0.0.1',
-            'http_address' => '127.0.0.1'
+            'http_address' => '127.0.0.1',
+            'max_messages' => 500
           ) }
 
           it { is_expected.to contain_group('mailpit') }
@@ -40,7 +41,7 @@ describe 'profiles::mailpit' do
             'path'   => '/etc/default/mailpit'
           ) }
 
-          it { is_expected.to contain_file('mailpit-service-defaults').with_content(/^SMTP_ADDRESS=127\.0\.0\.1\nSMTP_PORT=1025\nHTTP_ADDRESS=127\.0\.0\.1\nHTTP_PORT=8025\nENVIRONMENT=acceptance$/) }
+          it { is_expected.to contain_file('mailpit-service-defaults').with_content(/^SMTP_ADDRESS=127\.0\.0\.1\nSMTP_PORT=1025\nHTTP_ADDRESS=127\.0\.0\.1\nHTTP_PORT=8025\nENVIRONMENT=acceptance\nMAX_MESSAGES=500$/) }
 
           it { is_expected.to contain_service('mailpit').with(
             'ensure'    => 'running',
@@ -58,17 +59,18 @@ describe 'profiles::mailpit' do
         end
       end
 
-      context 'with smtp_address => 0.0.0.0 and http_address => 127.0.1.1' do
+      context 'with smtp_address => 0.0.0.0, http_address => 127.0.1.1 and max_messages => 10000' do
         let(:params) { {
           'smtp_address' => '0.0.0.0',
-          'http_address' => '127.0.1.1'
+          'http_address' => '127.0.1.1',
+          'max_messages' => 10000
         } }
 
         context 'in the testing environment' do
           let(:environment) { 'testing' }
 
           it { is_expected.to contain_firewall('400 accept mailpit SMTP traffic') }
-          it { is_expected.to contain_file('mailpit-service-defaults').with_content(/^SMTP_ADDRESS=0\.0\.0\.0\nSMTP_PORT=1025\nHTTP_ADDRESS=127\.0\.1\.1\nHTTP_PORT=8025\nENVIRONMENT=testing$/) }
+          it { is_expected.to contain_file('mailpit-service-defaults').with_content(/^SMTP_ADDRESS=0\.0\.0\.0\nSMTP_PORT=1025\nHTTP_ADDRESS=127\.0\.1\.1\nHTTP_PORT=8025\nENVIRONMENT=testing\nMAX_MESSAGES=10000$/) }
         end
       end
     end

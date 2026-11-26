@@ -1,7 +1,7 @@
 class profiles::mailpit (
   Stdlib::IP::Address::V4 $smtp_address = '127.0.0.1',
-  Stdlib::IP::Address::V4 $http_address = '127.0.0.1'
-
+  Stdlib::IP::Address::V4 $http_address = '127.0.0.1',
+  Integer[0]              $max_messages = 500
 ) inherits ::profiles {
 
   $smtp_port = 1025
@@ -33,7 +33,7 @@ class profiles::mailpit (
   file { 'mailpit-service-defaults':
     ensure  => 'file',
     path    => '/etc/default/mailpit',
-    content => "SMTP_ADDRESS=${smtp_address}\nSMTP_PORT=${smtp_port}\nHTTP_ADDRESS=${http_address}\nHTTP_PORT=${http_port}\nENVIRONMENT=${environment}",
+    content => "SMTP_ADDRESS=${smtp_address}\nSMTP_PORT=${smtp_port}\nHTTP_ADDRESS=${http_address}\nHTTP_PORT=${http_port}\nENVIRONMENT=${environment}\nMAX_MESSAGES=${max_messages}",
     notify  => Service['mailpit']
   }
 
