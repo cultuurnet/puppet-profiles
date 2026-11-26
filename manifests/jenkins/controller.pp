@@ -15,7 +15,7 @@ class profiles::jenkins::controller (
   Optional[Stdlib::Httpurl]  $docker_registry_url      = undef,
   String                     $kubernetes_jnlp_image    = 'docker.io/eclipse-temurin:21-jre',
   String                     $kubernetes_credentials_id = 'ops-tooling-eks-kubeconfig',
-  Boolean                    $kubernetes_use_file_kubeconfig = false,
+  Optional[Boolean]          $kubernetes_use_file_kubeconfig = undef,
   Optional[String]           $private_key              = undef,
   Variant[Hash, Array[Hash]] $credentials              = [],
   String                     $github_hook_url          = '',

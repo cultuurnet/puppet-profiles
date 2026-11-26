@@ -8,14 +8,13 @@ describe 'profiles::jenkins::controller::configuration' do
       context "in the production environment" do
         let(:environment) { 'production' }
 
-        context 'with a file-backed Kubernetes kubeconfig' do
+        context 'with a Kubernetes kubeconfig file credential' do
           let(:hiera_config) { 'spec/support/hiera/common.yaml' }
           let(:params) do
             {
               'url' => 'https://jenkins.foobar.com/',
               'admin_password' => 'passw0rd',
               'kubernetes_credentials_id' => 'eks-kubeconfig',
-              'kubernetes_use_file_kubeconfig' => true,
               'credentials' => [
                 { 'id' => 'eks-kubeconfig', 'type' => 'file', 'filename' => 'kubeconfig', 'content' => 'kubeconfig content' },
               ],
@@ -37,7 +36,14 @@ describe 'profiles::jenkins::controller::configuration' do
 
           context 'with no matching file credential' do
             before { params['credentials'] = [] }
-            it { is_expected.to compile.and_raise_error(/requires one matching file credential/) }
+
+            it { is_expected.to compile.with_all_deps }
+            it { is_expected.not_to contain_file('/var/lib/jenkins/.kube/config') }
+
+            context 'when file-backed authentication is explicitly enabled' do
+              before { params['kubernetes_use_file_kubeconfig'] = true }
+              it { is_expected.to compile.and_raise_error(/requires one matching file credential/) }
+            end
           end
 
           context 'when file-backed authentication is disabled' do

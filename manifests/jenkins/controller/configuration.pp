@@ -9,7 +9,7 @@ class profiles::jenkins::controller::configuration(
   Optional[Stdlib::Httpurl]                     $docker_registry_url       = undef,
   Optional[String]                              $kubernetes_jnlp_image     = undef,
   Optional[String]                              $kubernetes_credentials_id = undef,
-  Boolean                                       $kubernetes_use_file_kubeconfig = false,
+  Optional[Boolean]                             $kubernetes_use_file_kubeconfig = undef,
   Optional[String]                              $private_key               = undef,
   Variant[Hash, Array[Hash]]                    $credentials               = [],
   String                                        $github_hook_url           = '',
@@ -149,10 +149,15 @@ class profiles::jenkins::controller::configuration(
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
 
-  if $kubernetes_use_file_kubeconfig {
-    $kubeconfig_credentials = $plain_credentials.filter |$credential| {
-      $credential['type'] == 'file' and $credential['id'] == $kubernetes_credentials_id
-    }
+  $kubeconfig_credentials = $plain_credentials.filter |$credential| {
+    $credential['type'] == 'file' and $credential['id'] == $kubernetes_credentials_id
+  }
+  $use_file_kubeconfig = $kubernetes_use_file_kubeconfig ? {
+    undef   => !$kubeconfig_credentials.empty,
+    default => $kubernetes_use_file_kubeconfig,
+  }
+
+  if $use_file_kubeconfig {
     if $kubeconfig_credentials.length != 1 or $kubeconfig_credentials[0]['content'] !~ String[1] {
       fail('File-backed Kubernetes authentication requires one matching file credential with kubeconfig content')
     }
@@ -177,7 +182,7 @@ class profiles::jenkins::controller::configuration(
     }
   }
 
-  $cloud_credentials_id = $kubernetes_use_file_kubeconfig ? {
+  $cloud_credentials_id = $use_file_kubeconfig ? {
     true    => undef,
     default => $kubernetes_credentials_id,
   }
