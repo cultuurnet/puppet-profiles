@@ -80,20 +80,24 @@ define profiles::apache::vhost::reverse_proxy (
   if $auth_openid_connect {
     include apache::mod::authn_core
 
-    $openid_connect_directories = [{
-                                    'path'      => '/',
-                                    'provider'  => 'location',
-                                    'auth_type' => 'openid-connect',
-                                    'require'   => 'valid-user'
-                                  }]
-    $openid_connect_settings    = {
-                                    'ProviderMetadataURL' => lookup('data::openid::provider_metadata_url', Optional[String], 'first', undef),
-                                    'ClientID'            => lookup('data::openid::client_id', Optional[String], 'first', undef),
-                                    'ClientSecret'        => lookup('data::openid::client_secret', Optional[String], 'first', undef),
-                                    'RedirectURI'         => "https://${servername}/redirect_uri",
-                                    'CryptoPassphrase'    => stdlib::fqdn_rand_string(32, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
-                                  }
-    $no_proxy_uris              = ['/redirect_uri']
+    $openid_connect_directories     = [{
+                                        'path'      => '/',
+                                        'provider'  => 'location',
+                                        'auth_type' => 'openid-connect',
+                                        'require'   => 'valid-user'
+                                      }]
+    $openid_connect_forward_headers = $facts['os']['release']['major'] ? {
+                                        '20.04' => {},
+                                        default => { 'XForwardedHeaders' => 'X-Forwarded-Host X-Forwarded-Port X-Forwarded-Proto' }
+                                      }
+    $openid_connect_settings        = {
+                                        'ProviderMetadataURL' => lookup('data::openid::provider_metadata_url', Optional[String], 'first', undef),
+                                        'ClientID'            => lookup('data::openid::client_id', Optional[String], 'first', undef),
+                                        'ClientSecret'        => lookup('data::openid::client_secret', Optional[String], 'first', undef),
+                                        'RedirectURI'         => "https://${servername}/redirect_uri",
+                                        'CryptoPassphrase'    => stdlib::fqdn_rand_string(32, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
+                                       } + $openid_connect_forward_headers
+    $no_proxy_uris                   = ['/redirect_uri']
   } else {
     $openid_connect_directories = []
     $openid_connect_settings    = {}
