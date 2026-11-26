@@ -37,6 +37,7 @@ describe 'profiles::uitdatabank::frontend' do
 
             it { is_expected.to contain_class('profiles::nodejs') }
             it { is_expected.to contain_class('profiles::apache') }
+            it { is_expected.not_to contain_class('profiles::uitdatabank::frontend::logging') }
 
             it { is_expected.to contain_class('profiles::uitdatabank::frontend::deployment').with(
               'type'            => 'instance',
@@ -96,6 +97,10 @@ describe 'profiles::uitdatabank::frontend' do
 
             it { is_expected.to contain_class('profiles::uitdatabank::frontend::deployment::container') }
             it { is_expected.not_to contain_class('profiles::uitdatabank::frontend::deployment::instance') }
+
+            it { is_expected.to contain_class('profiles::uitdatabank::frontend::logging').with(
+              'servername' => 'frontend.example.com'
+            ) }
 
             it { is_expected.to contain_class('profiles::uitdatabank::frontend::deployment').that_requires('Class[profiles::apache]') }
 
