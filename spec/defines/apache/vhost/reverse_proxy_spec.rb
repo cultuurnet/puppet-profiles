@@ -340,6 +340,29 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                              'no_proxy_uris' => ['/redirect_uri']
                                            }
               ) }
+
+              context 'on Ubuntu 24.04' do
+                let(:facts) { facts.merge({
+                  'os' => {
+                            'family'       => 'Debian',
+                            'name'         => 'Ubuntu',
+                            'architecture' => 'amd64',
+                            'distro'       => { 'codename' => 'noble' },
+                            'release'      => { 'major' => '24.04', 'full' => '24.04' }
+                          }
+                } )}
+
+                it { is_expected.to contain_apache__vhost('raphael.example.com_80').with(
+                  'oidc_settings' => {
+                                       'ProviderMetadataURL' => 'https://openid.example.com/.well-known/openid-configuration',
+                                       'ClientID'            => 'abc123',
+                                       'ClientSecret'        => 'def456',
+                                       'RedirectURI'         => 'https://raphael.example.com/redirect_uri',
+                                       'CryptoPassphrase'    => 'OpB7siHiRe9yJjnSOgEoY0ULL9ute75z',
+                                       'XForwardedHeaders'   => 'X-Forwarded-Host X-Forwarded-Port X-Forwarded-Proto'
+                                     }
+                )}
+              end
             end
           end
         end
