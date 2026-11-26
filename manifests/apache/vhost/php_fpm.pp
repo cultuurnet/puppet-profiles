@@ -2,7 +2,7 @@ define profiles::apache::vhost::php_fpm (
   String                         $basedir,
   String                         $public_web_directory     = 'public',
   Optional[Hash]                 $newrelic_optional_config = {},
-  Variant[String, Array[String]] $aliases                  = [],
+  Variant[String, Array[String]] $serveraliases            = [],
   Enum['on', 'off', 'nodecode']  $allow_encoded_slashes    = 'off',
   String                         $access_log_format        = 'extended_json',
   Enum['unix', 'tcp']            $socket_type              = lookup('profiles::php::fpm_socket_type', Enum['unix', 'tcp'], 'first', 'unix'),
@@ -71,7 +71,7 @@ define profiles::apache::vhost::php_fpm (
 
   apache::vhost { "${servername}_${port}":
     servername            => $servername,
-    serveraliases         => [$aliases].flatten,
+    serveraliases         => [$serveraliases].flatten,
     port                  => $port,
     ssl                   => $https,
     ssl_cert              => $ssl_cert,
