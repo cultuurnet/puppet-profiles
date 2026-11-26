@@ -95,9 +95,9 @@ define profiles::apache::vhost::graphite_web (
                                        } + $openid_connect_forward_headers
     $no_proxy_uris                   = ['/redirect_uri', '/static']
   } else {
-    $directories             = []
-    $openid_connect_settings = {}
-    $no_proxy_uris           = ['/static']
+    $openid_connect_directories = []
+    $openid_connect_settings    = {}
+    $no_proxy_uris              = ['/static']
   }
 
   apache::vhost { "${servername}_${port}":
@@ -115,7 +115,7 @@ define profiles::apache::vhost::graphite_web (
     docroot               => '/var/www/html',
     manage_docroot        => false,
     access_log_format     => $access_log_format,
-    directories           => $directories,
+    directories           => $openid_connect_directories,
     auth_oidc             => $auth_openid_connect,
     oidc_settings         => $openid_connect_settings,
     setenvif              => $profiles::apache::defaults::setenvif,
