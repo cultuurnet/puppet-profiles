@@ -17,12 +17,14 @@ describe 'profiles::publiq::mailpit' do
 
           it { is_expected.to contain_class('profiles::publiq::mailpit').with(
             'servername'    => 'mailpit.local',
-            'serveraliases' => []
+            'serveraliases' => [],
+            'max_messages'  => 500
           ) }
 
           it { is_expected.to contain_class('profiles::apache') }
           it { is_expected.to contain_class('profiles::mailpit').with(
-            'smtp_address' => '0.0.0.0'
+            'smtp_address' => '0.0.0.0',
+            'max_messages' => 500
           ) }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://mailpit.local').with(
@@ -34,11 +36,17 @@ describe 'profiles::publiq::mailpit' do
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://mailpit.local').that_requires('Class[profiles::mailpit]') }
         end
 
-        context 'with servername => mailpit.publiq.dev and serveraliases => mymailpit.publiq.dev' do
+        context 'with servername => mailpit.publiq.dev, serveraliases => mymailpit.publiq.dev and max_message => 1000' do
           let(:params) { {
             'servername'    => 'mailpit.publiq.dev',
-            'serveraliases' => 'mymailpit.publiq.dev'
+            'serveraliases' => 'mymailpit.publiq.dev',
+            'max_messages'  => 1000
           } }
+
+          it { is_expected.to contain_class('profiles::mailpit').with(
+            'smtp_address' => '0.0.0.0',
+            'max_messages' => 1000
+          ) }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://mailpit.publiq.dev').with(
             'aliases'             => 'mymailpit.publiq.dev',
