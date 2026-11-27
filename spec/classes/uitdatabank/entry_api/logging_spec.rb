@@ -16,10 +16,13 @@ describe 'profiles::uitdatabank::entry_api::logging' do
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_class('profiles::uitdatabank::entry_api::logging').with(
-            'servername' => 'foo.example.com'
+            'servername' => 'foo.example.com',
+            'type'       => 'instance'
           ) }
 
           it { is_expected.to contain_class('profiles::filebeat') }
+
+          it { is_expected.not_to contain_filebeat__input('foo.example.com_uitdatabank::entry_api::app') }
 
           it { is_expected.to contain_filebeat__input('foo.example.com_uitdatabank::entry_api::access').with(
             'paths'    => ['/var/log/apache2/foo.example.com_80_access.log'],
@@ -78,6 +81,38 @@ describe 'profiles::uitdatabank::entry_api::logging' do
           ) }
 
           it { is_expected.to contain_filebeat__input('bar.example.com_uitdatabank::entry_api::access').that_requires('Class[profiles::filebeat]') }
+        end
+      end
+
+      context 'with servername => foo.example.com and type => container' do
+        let(:params) { {
+          'servername' => 'foo.example.com',
+          'type'       => 'container'
+        } }
+
+        context 'in the testing environment' do
+          let(:environment) { 'testing' }
+
+          it { is_expected.to compile.with_all_deps }
+
+          it { is_expected.to contain_filebeat__input('foo.example.com_uitdatabank::entry_api::access') }
+
+          it { is_expected.to contain_filebeat__input('foo.example.com_uitdatabank::entry_api::app').with(
+            'input_type' => 'log',
+            'paths'      => ['/var/lib/docker/containers/*/*-json.log'],
+            'doc_type'   => 'log',
+            'json'       => {
+                              'message_key'   => 'log',
+                              'add_error_key' => true
+                            },
+            'fields'     => {
+                              'log_type'    => 'uitdatabank::entry_api::app',
+                              'environment' => 'testing'
+                            },
+            'processors' => [{ 'add_docker_metadata' => { 'host' => 'unix:///var/run/docker.sock' } }]
+          ) }
+
+          it { is_expected.to contain_filebeat__input('foo.example.com_uitdatabank::entry_api::app').that_requires('Class[profiles::filebeat]') }
         end
       end
 

@@ -1,5 +1,6 @@
 class profiles::uitdatabank::entry_api::logging (
-  String $servername
+  String                        $servername,
+  Enum['instance', 'container'] $type = 'instance'
 ) inherits ::profiles {
 
   $log_type = 'uitdatabank::entry_api::access'
@@ -32,4 +33,38 @@ class profiles::uitdatabank::entry_api::logging (
   # if $settings::storeconfigs {
   #   Profiles::Logstash::Filter_fragment <<| |>>
   # }
+
+  # Ships stdout/stderr from the entry-api Docker containers on this host
+  # (entry-api, entry-nginx, the workers and the amqp listener). Only declared
+  # for the container deployment type, on nodes that run no other containers,
+  # so the wildcard path picks up nothing else.
+  if $type == 'container' {
+    $app_log_type = 'uitdatabank::entry_api::app'
+
+    filebeat::input { "${servername}_${app_log_type}":
+      input_type => 'log',
+      paths      => ['/var/lib/docker/containers/*/*-json.log'],
+      doc_type   => 'log',
+      json       => {
+        message_key   => 'log',
+        add_error_key => true,
+      },
+      fields     => {
+        log_type    => $app_log_type,
+        environment => $environment,
+      },
+      processors => [
+        {
+          'add_docker_metadata' => {
+            'host' => 'unix:///var/run/docker.sock',
+          },
+        },
+      ],
+      require    => Class['profiles::filebeat'],
+    }
+
+    # The corresponding Logstash filter/output for this log_type is
+    # hand-maintained directly in infrastructure's logs-prod01 filter.conf/
+    # output.conf (see profiles::uitdatabank::search_api::logging).
+  }
 }

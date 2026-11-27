@@ -156,6 +156,7 @@ class profiles::uitdatabank::entry_api (
   }
 
   class { 'profiles::uitdatabank::entry_api::logging':
-    servername => $servername
+    servername => $servername,
+    type       => $type
   }
 }
