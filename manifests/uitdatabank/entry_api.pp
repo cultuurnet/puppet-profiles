@@ -6,6 +6,8 @@ class profiles::uitdatabank::entry_api (
   Optional[String]               $uitpas_servername                 = undef,
   String                         $database_host                     = '127.0.0.1',
   Boolean                        $deployment                        = true,
+  Enum['instance', 'container']  $type                              = 'instance',
+  Boolean                        $data_integration                  = true,
   Boolean                        $catch_mail                        = false,
   Boolean                        $schedule_process_duplicates       = false,
   Boolean                        $schedule_movie_fetcher            = false,
@@ -17,11 +19,15 @@ class profiles::uitdatabank::entry_api (
   $database_name = 'uitdatabank'
   $database_user = 'entry_api'
 
-  realize Apt::Source['publiq-tools']
-  realize Package['prince']
-
   include profiles::redis
-  include profiles::php
+
+  # The container image brings its own PHP and Prince
+  if $type == 'instance' {
+    realize Apt::Source['publiq-tools']
+    realize Package['prince']
+
+    include profiles::php
+  }
 
   if $database_host == '127.0.0.1' {
     $database_host_remote    = false
@@ -57,15 +63,22 @@ class profiles::uitdatabank::entry_api (
     }
 
     if $deployment {
-      include profiles::uitdatabank::entry_api::deployment
+      class { 'profiles::uitdatabank::entry_api::deployment':
+        type => $type
+      }
 
-      class { 'profiles::uitdatabank::entry_api::data_integration':
-        database_host => $database_host,
-        database_name => $database_name,
-        require       => Class['profiles::uitdatabank::entry_api::deployment']
+      # Its ownership_search password is seeded with the host's private key, so
+      # only one node per database can manage it
+      if $data_integration {
+        class { 'profiles::uitdatabank::entry_api::data_integration':
+          database_host => $database_host,
+          database_name => $database_name,
+          require       => Class['profiles::uitdatabank::entry_api::deployment']
+        }
       }
 
       class { 'profiles::uitdatabank::entry_api::cron':
+        type                              => $type,
         schedule_process_duplicates       => $schedule_process_duplicates,
         schedule_movie_fetcher            => $schedule_movie_fetcher,
         schedule_add_trailers             => $schedule_add_trailers,
@@ -75,7 +88,10 @@ class profiles::uitdatabank::entry_api (
 
       Profiles::Mysql::App_user["${database_user}@${database_name}"] -> Class['profiles::uitdatabank::entry_api::deployment']
       Class['profiles::redis'] -> Class['profiles::uitdatabank::entry_api::deployment']
-      Class['profiles::php'] ~> Class['profiles::uitdatabank::entry_api::deployment']
+
+      if $type == 'instance' {
+        Class['profiles::php'] ~> Class['profiles::uitdatabank::entry_api::deployment']
+      }
     }
   }
 
@@ -87,33 +103,52 @@ class profiles::uitdatabank::entry_api (
     include profiles::mailpit
   }
 
-  profiles::apache::vhost::php_fpm { "http://${servername}":
-    basedir               => $basedir,
-    public_web_directory  => 'web',
-    aliases               => $serveraliases,
-    access_log_format     => 'api_key_json',
-    allow_encoded_slashes => 'nodecode',
-    rewrites              => [{
-                               comment      => 'Capture apiKey from URL parameters',
-                               rewrite_cond => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
-                               rewrite_rule => '^ - [E=API_KEY:%1]'
-                             }, {
-                               comment      => 'Capture apiKey from X-Api-Key header',
-                               rewrite_cond => '%{HTTP:X-Api-Key} ^.+',
-                               rewrite_rule => '^ - [E=API_KEY:%{HTTP:X-Api-Key}]'
-                             }, {
-                               comment      => 'Capture clientId from URL parameters',
-                               rewrite_cond => '%{QUERY_STRING} (?:^|&)clientId=([^&]+)',
-                               rewrite_rule => '^ - [E=CLIENT_ID:%1]'
-                             }, {
-                               comment      => 'Capture clientId from X-Client-Id header',
-                               rewrite_cond => '%{HTTP:X-Client-Id} ^.+',
-                               rewrite_rule => '^ - [E=CLIENT_ID:%{HTTP:X-Client-Id}]'
-                             }, {
-                               comment      => 'Capture JWT token from Authorization header',
-                               rewrite_cond => '%{HTTP:Authorization} "^Bearer (.+)"',
-                               rewrite_rule => '^ - [E=JWT_TOKEN:%1]'
-                             }]
+  $api_key_rewrites = [{
+                        comment      => 'Capture apiKey from URL parameters',
+                        rewrite_cond => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
+                        rewrite_rule => '^ - [E=API_KEY:%1]'
+                      }, {
+                        comment      => 'Capture apiKey from X-Api-Key header',
+                        rewrite_cond => '%{HTTP:X-Api-Key} ^.+',
+                        rewrite_rule => '^ - [E=API_KEY:%{HTTP:X-Api-Key}]'
+                      }, {
+                        comment      => 'Capture clientId from URL parameters',
+                        rewrite_cond => '%{QUERY_STRING} (?:^|&)clientId=([^&]+)',
+                        rewrite_rule => '^ - [E=CLIENT_ID:%1]'
+                      }, {
+                        comment      => 'Capture clientId from X-Client-Id header',
+                        rewrite_cond => '%{HTTP:X-Client-Id} ^.+',
+                        rewrite_rule => '^ - [E=CLIENT_ID:%{HTTP:X-Client-Id}]'
+                      }, {
+                        comment      => 'Capture JWT token from Authorization header',
+                        rewrite_cond => '%{HTTP:Authorization} "^Bearer (.+)"',
+                        rewrite_rule => '^ - [E=JWT_TOKEN:%1]'
+                      }]
+
+  case $type {
+    'container': {
+      # nocanon and preserve_host hand the request to the app as the php_fpm vhost
+      # does: encoded slashes untouched and the original Host header
+      profiles::apache::vhost::reverse_proxy { "http://${servername}":
+        destination           => 'http://127.0.0.1:8080/',
+        aliases               => $serveraliases,
+        access_log_format     => 'api_key_json',
+        allow_encoded_slashes => 'nodecode',
+        proxy_keywords        => 'nocanon',
+        preserve_host         => true,
+        additional_rewrites   => $api_key_rewrites
+      }
+    }
+    'instance': {
+      profiles::apache::vhost::php_fpm { "http://${servername}":
+        basedir               => $basedir,
+        public_web_directory  => 'web',
+        aliases               => $serveraliases,
+        access_log_format     => 'api_key_json',
+        allow_encoded_slashes => 'nodecode',
+        rewrites              => $api_key_rewrites
+      }
+    }
   }
 
   profiles::apache::vhost::reverse_proxy { "http://${uitpas_servername}":

@@ -28,6 +28,8 @@ describe 'profiles::uitdatabank::entry_api' do
               'serveraliases'                     => [],
               'uitpas_servername'                 => nil,
               'deployment'                        => true,
+              'type'                              => 'instance',
+              'data_integration'                  => true,
               'catch_mail'                        => false,
               'schedule_process_duplicates'       => false,
               'schedule_movie_fetcher'            => false,
@@ -113,6 +115,81 @@ describe 'profiles::uitdatabank::entry_api' do
             it { is_expected.to contain_class('profiles::php').that_notifies('Class[profiles::uitdatabank::entry_api::deployment]') }
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api::data_integration').that_requires('Class[profiles::uitdatabank::entry_api::deployment]') }
             it { is_expected.to contain_class('profiles::uitdatabank::entry_api::cron').that_requires('Class[profiles::uitdatabank::entry_api::deployment]') }
+          end
+        end
+
+        context 'with database_password => mypassword, database_host => db.example.com, servername => uitdatabank.example.com, serveraliases => alias.example.com, job_interface_servername => jobs.example.com, type => container and data_integration => false' do
+          let(:params) { {
+            'database_password'        => 'mypassword',
+            'database_host'            => 'db.example.com',
+            'servername'               => 'uitdatabank.example.com',
+            'serveraliases'            => 'alias.example.com',
+            'job_interface_servername' => 'jobs.example.com',
+            'type'                     => 'container',
+            'data_integration'         => false
+          } }
+
+          let(:facts) { facts.merge( { 'mysqld_version' => '8.0.33' } ) }
+
+          context 'with a docker image version tag available' do
+            let(:pre_condition) { 'function ecr_docker_image_version_tag($parameter1, $parameter2) { return "2026.11.27.000000" }' }
+
+            it { is_expected.to compile.with_all_deps }
+
+            it { is_expected.not_to contain_package('prince') }
+            it { is_expected.not_to contain_class('profiles::php') }
+
+            it { is_expected.to contain_class('profiles::redis') }
+
+            it { is_expected.to contain_class('profiles::uitdatabank::entry_api::deployment').with(
+              'type' => 'container'
+            ) }
+
+            it { is_expected.to contain_class('profiles::uitdatabank::entry_api::deployment::container') }
+            it { is_expected.not_to contain_class('profiles::uitdatabank::entry_api::data_integration') }
+
+            it { is_expected.to contain_class('profiles::uitdatabank::entry_api::cron').with(
+              'type' => 'container'
+            ) }
+
+            it { is_expected.not_to contain_profiles__apache__vhost__php_fpm('http://uitdatabank.example.com') }
+
+            it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://uitdatabank.example.com').with(
+              'destination'           => 'http://127.0.0.1:8080/',
+              'aliases'               => 'alias.example.com',
+              'access_log_format'     => 'api_key_json',
+              'allow_encoded_slashes' => 'nodecode',
+              'proxy_keywords'        => 'nocanon',
+              'preserve_host'         => true,
+              'additional_rewrites'   => [{
+                                           'comment'      => 'Capture apiKey from URL parameters',
+                                           'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
+                                           'rewrite_rule' => '^ - [E=API_KEY:%1]'
+                                         }, {
+                                           'comment'      => 'Capture apiKey from X-Api-Key header',
+                                           'rewrite_cond' => '%{HTTP:X-Api-Key} ^.+',
+                                           'rewrite_rule' => '^ - [E=API_KEY:%{HTTP:X-Api-Key}]'
+                                         }, {
+                                           'comment'      => 'Capture clientId from URL parameters',
+                                           'rewrite_cond' => '%{QUERY_STRING} (?:^|&)clientId=([^&]+)',
+                                           'rewrite_rule' => '^ - [E=CLIENT_ID:%1]'
+                                         }, {
+                                           'comment'      => 'Capture clientId from X-Client-Id header',
+                                           'rewrite_cond' => '%{HTTP:X-Client-Id} ^.+',
+                                           'rewrite_rule' => '^ - [E=CLIENT_ID:%{HTTP:X-Client-Id}]'
+                                         }, {
+                                           'comment'      => 'Capture JWT token from Authorization header',
+                                           'rewrite_cond' => '%{HTTP:Authorization} "^Bearer (.+)"',
+                                           'rewrite_rule' => '^ - [E=JWT_TOKEN:%1]'
+                                         }]
+            ) }
+
+            it { is_expected.to contain_class('profiles::uitdatabank::resque_web').with(
+              'servername' => 'jobs.example.com'
+            ) }
+
+            it { is_expected.to contain_profiles__mysql__app_user('entry_api@uitdatabank').that_comes_before('Class[profiles::uitdatabank::entry_api::deployment]') }
+            it { is_expected.to contain_class('profiles::redis').that_comes_before('Class[profiles::uitdatabank::entry_api::deployment]') }
           end
         end
 
