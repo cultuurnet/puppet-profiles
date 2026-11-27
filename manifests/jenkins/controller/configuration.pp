@@ -8,7 +8,7 @@ class profiles::jenkins::controller::configuration(
   Integer[1]                                    $max_concurrent_builds     = 1,
   Optional[Stdlib::Httpurl]                     $docker_registry_url       = undef,
   Optional[String]                              $kubernetes_jnlp_image     = undef,
-  Optional[String[1]]                          $kubernetes_credentials_id = undef,
+  Optional[String[1]]                           $kubernetes_credentials_id = undef,
   Optional[String]                              $private_key               = undef,
   Variant[Hash, Array[Hash]]                    $credentials               = [],
   String                                        $github_hook_url           = '',

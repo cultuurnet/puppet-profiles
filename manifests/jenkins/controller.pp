@@ -13,7 +13,7 @@ class profiles::jenkins::controller (
   Optional[String]           $certificate                        = undef,
   Optional[Stdlib::Httpurl]  $docker_registry_url                = undef,
   String                     $kubernetes_jnlp_image              = 'docker.io/eclipse-temurin:21-jre',
-  String                     $kubernetes_credentials_id          = undef,
+  Optional[String]           $kubernetes_credentials_id          = undef,
   Integer[1]                 $kubernetes_client_cache_expiration = 60,
   Optional[String]           $private_key                        = undef,
   Variant[Hash, Array[Hash]] $credentials                        = [],
@@ -74,25 +74,25 @@ class profiles::jenkins::controller (
   }
 
   class { '::profiles::jenkins::controller::configuration':
-    url                      => $url,
-    admin_password           => $admin_password,
-    mfa                      => $mfa,
-    role_based_authorization => $role_based_authorization,
-    timestamps               => $timestamps,
-    max_concurrent_builds    => $max_concurrent_builds,
-    docker_registry_url      => $docker_registry_url,
-    kubernetes_jnlp_image    => $kubernetes_jnlp_image,
+    url                       => $url,
+    admin_password            => $admin_password,
+    mfa                       => $mfa,
+    role_based_authorization  => $role_based_authorization,
+    timestamps                => $timestamps,
+    max_concurrent_builds     => $max_concurrent_builds,
+    docker_registry_url       => $docker_registry_url,
+    kubernetes_jnlp_image     => $kubernetes_jnlp_image,
     kubernetes_credentials_id => $kubernetes_credentials_id,
-    private_key              => $private_key,
-    credentials              => $credentials,
-    github_hook_url          => $github_hook_url,
-    github_servers           => $github_servers,
-    global_libraries         => $global_libraries,
-    pipelines                => $pipelines,
-    views                    => $views,
-    users                    => $users,
-    puppetdb_url             => $puppetdb_url,
-    require                  => [Class['profiles::jenkins::controller::service'], Class['profiles::jenkins::cli']]
+    private_key               => $private_key,
+    credentials               => $credentials,
+    github_hook_url           => $github_hook_url,
+    github_servers            => $github_servers,
+    global_libraries          => $global_libraries,
+    pipelines                 => $pipelines,
+    views                     => $views,
+    users                     => $users,
+    puppetdb_url              => $puppetdb_url,
+    require                   => [Class['profiles::jenkins::controller::service'], Class['profiles::jenkins::cli']]
   }
 
   if $certificate {
