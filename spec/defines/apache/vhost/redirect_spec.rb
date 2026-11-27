@@ -10,15 +10,15 @@ describe 'profiles::apache::vhost::redirect' do
 
         context "with destination => https://davinci.example.com and aliases => leo.example.com" do
           let(:params) { {
-            'destination' => 'https://davinci.example.com',
-            'aliases'     => 'leo.example.com'
+            'destination'   => 'https://davinci.example.com',
+            'serveraliases' => 'leo.example.com'
           } }
 
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_profiles__apache__vhost__redirect('http://leonardo.example.com').with(
             'destination'       => 'https://davinci.example.com',
-            'aliases'           => 'leo.example.com',
+            'serveraliases'     => 'leo.example.com',
             'certificate'       => nil,
             'access_log_format' => 'extended_json'
           ) }
@@ -55,7 +55,7 @@ describe 'profiles::apache::vhost::redirect' do
           let(:params) { {
             'certificate'       => 'wildcard.example.com',
             'destination'       => 'http://buonarotti.example.com/foo/',
-            'aliases'           => ['mich.example.com', 'angelo.example.com'],
+            'serveraliases'     => ['mich.example.com', 'angelo.example.com'],
             'access_log_format' => 'combined_json'
           } }
 

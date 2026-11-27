@@ -1,7 +1,7 @@
 define profiles::apache::vhost::redirect (
   Stdlib::Httpurl                $destination,
   Optional[String]               $certificate       = undef,
-  Variant[String, Array[String]] $aliases           = [],
+  Variant[String, Array[String]] $serveraliases     = [],
   String                         $access_log_format = 'extended_json'
 ) {
 
@@ -44,7 +44,7 @@ define profiles::apache::vhost::redirect (
 
   apache::vhost { "${servername}_${port}":
     servername        => $servername,
-    serveraliases     => $aliases,
+    serveraliases     => [$serveraliases].flatten,
     port              => $port,
     ssl               => $https,
     ssl_cert          => $ssl_cert,
