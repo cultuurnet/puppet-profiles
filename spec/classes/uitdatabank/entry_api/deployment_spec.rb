@@ -25,6 +25,7 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
           it { is_expected.to compile.with_all_deps }
 
           it { is_expected.to contain_class('profiles::uitdatabank::entry_api::deployment').with(
+            'type'                                  => 'instance',
             'config_source'                         => 'appconfig/uitdatabank/udb3-backend/config.php',
             'admin_permissions_source'              => 'appconfig/uitdatabank/udb3-backend/config.allow_all.php',
             'client_permissions_source'             => 'appconfig/uitdatabank/udb3-backend/config.client_permissions.php',
@@ -98,6 +99,33 @@ describe 'profiles::uitdatabank::entry_api::deployment' do
               'amqp_listener_uitpas'      => 'absent',
               'event_export_worker_count' => 0
             ) }
+          end
+        end
+
+        context 'with type => container' do
+          let(:params) { super().merge({ 'type' => 'container' }) }
+
+          context 'with hieradata' do
+            let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+
+            context 'with a docker image version tag available' do
+              let(:pre_condition) { 'function ecr_docker_image_version_tag($parameter1, $parameter2) { return "2026.11.27.000000" }' }
+
+              it { is_expected.to compile.with_all_deps }
+
+              it { is_expected.not_to contain_class('profiles::uitdatabank::entry_api::deployment::instance') }
+
+              it { is_expected.to contain_class('profiles::uitdatabank::entry_api::deployment::container').with(
+                'api_keys_matched_to_client_ids' => true,
+                'amqp_listener_uitpas'           => 'present',
+                'bulk_label_offer_worker'        => 'present',
+                'mail_worker'                    => 'present',
+                'event_export_worker_count'      => 1
+              ) }
+
+              it { is_expected.to contain_file('/etc/uitdatabank-entry-api/config.php').that_notifies('Class[profiles::uitdatabank::entry_api::deployment::container]') }
+              it { is_expected.to contain_file('/etc/uitdatabank-entry-api/public.pem').that_notifies('Class[profiles::uitdatabank::entry_api::deployment::container]') }
+            end
           end
         end
       end

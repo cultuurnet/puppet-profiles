@@ -1,132 +1,47 @@
 class profiles::uitdatabank::entry_api::deployment::container (
-  String           $image,
-  String           $config_source,
-  String           $admin_permissions_source,
-  String           $client_permissions_source,
-  String           $movie_fetcher_config_source,
-  String           $completeness_source,
-  String           $externalid_mapping_organizer_source,
-  String           $externalid_mapping_place_source,
-  String           $pubkey_uitidv1_source,
-  String           $pubkey_keycloak_source,
-  String           $aws_region                                    = 'eu-west-1',
-  Optional[String] $image_tag                                     = undef,
-  Optional[String] $api_keys_matched_to_client_ids_source         = undef,
-  Enum['present', 'absent'] $amqp_listener_uitpas                 = 'present',
-  Enum['present', 'absent'] $bulk_label_offer_worker              = 'present',
-  Enum['present', 'absent'] $mail_worker                          = 'present',
-  Integer[0]                $event_export_worker_count            = 1,
+  String                    $ecr_registry,
+  Integer[1]                $fpm_max_children,
+  String                    $ecr_repository                 = 'uitdatabank/entry-api',
+  String                    $image_tag                      = ecr_docker_image_version_tag("${ecr_registry}/${ecr_repository}", $environment),
+  Integer[0]                $fpm_max_requests               = 10000,
+  Boolean                   $db_migrate                     = true,
+  Boolean                   $api_keys_matched_to_client_ids = false,
+  Enum['present', 'absent'] $amqp_listener_uitpas           = 'present',
+  Enum['present', 'absent'] $bulk_label_offer_worker        = 'present',
+  Enum['present', 'absent'] $mail_worker                    = 'present',
+  Integer[0]                $event_export_worker_count      = 1
 ) inherits ::profiles {
-  $config_dir         = '/etc/uitdatabank-entry-api'
-  $basedir            = '/var/www/udb3-backend'
-  $webroot            = "${basedir}/web"
-  $secrets            = lookup('vault:uitdatabank/udb3-backend')
-  $ecr_repository     = regsubst($image, '^[^/]+/', '')
-  $resolved_image_tag = pick($image_tag, $facts.dig('docker_image_tag', $ecr_repository), 'latest')
 
-  $file_default_attributes = {
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0640',
-    require => File[$config_dir],
-    notify  => Exec['uitdatabank-entry-api-docker-compose'],
-  }
+  $config_dir            = '/etc/uitdatabank-entry-api'
+  $data_dir              = '/var/lib/uitdatabank-entry-api'
+  $downloads_dir         = "${data_dir}/downloads"
+  $mount_target_dns_name = lookup('terraform::efs::mount_target_dns_name', Optional[String], 'first', undef)
 
   include profiles::docker
-
-  class { 'profiles::docker::ecr_repos':
-    repos => {
-      $ecr_repository => {
-        'region'    => $aws_region,
-        'image_tag' => $environment,
-      },
-    },
-  }
 
   realize Group['www-data']
   realize User['www-data']
 
-  file { $config_dir:
-    ensure => 'directory',
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0755',
+  # Event exports are written here by the workers and served by nginx, so it
+  # lives on the host and is shared by both (and with the instance nodes, when EFS
+  # backs it)
+  file { [$data_dir, $downloads_dir]:
+    ensure  => 'directory',
+    owner   => 'www-data',
+    group   => 'www-data',
+    require => [Group['www-data'], User['www-data']],
+    before  => Docker_compose['uitdatabank-entry-api']
   }
 
-  file { 'uitdatabank-entry-api-config':
-    ensure  => 'file',
-    path    => "${config_dir}/config.php",
-    content => template($config_source),
-    *       => $file_default_attributes,
-  }
-
-  file { 'uitdatabank-entry-api-admin-permissions':
-    ensure  => 'file',
-    path    => "${config_dir}/config.allow_all.php",
-    content => template($admin_permissions_source),
-    *       => $file_default_attributes,
-  }
-
-  file { 'uitdatabank-entry-api-client-permissions':
-    ensure  => 'file',
-    path    => "${config_dir}/config.client_permissions.php",
-    content => template($client_permissions_source),
-    *       => $file_default_attributes,
-  }
-
-  file { 'uitdatabank-entry-api-movie-fetcher-config':
-    ensure  => 'file',
-    path    => "${config_dir}/config.kinepolis.php",
-    content => template($movie_fetcher_config_source),
-    *       => $file_default_attributes,
-  }
-
-  file { 'uitdatabank-entry-api-completeness':
-    ensure  => 'file',
-    path    => "${config_dir}/config.completeness.php",
-    content => template($completeness_source),
-    *       => $file_default_attributes,
-  }
-
-  file { 'uitdatabank-entry-api-externalid-mapping-organizer':
-    ensure  => 'file',
-    path    => "${config_dir}/config.externalid_mapping_organizer.php",
-    content => template($externalid_mapping_organizer_source),
-    *       => $file_default_attributes,
-  }
-
-  file { 'uitdatabank-entry-api-externalid-mapping-place':
-    ensure  => 'file',
-    path    => "${config_dir}/config.externalid_mapping_place.php",
-    content => template($externalid_mapping_place_source),
-    *       => $file_default_attributes,
-  }
-
-  file { 'uitdatabank-entry-api-pubkey-uitidv1':
-    ensure  => 'file',
-    path    => "${config_dir}/public-uitidv1.pem",
-    content => template($pubkey_uitidv1_source),
-    *       => $file_default_attributes,
-  }
-
-  file { 'uitdatabank-entry-api-pubkey-keycloak':
-    ensure  => 'file',
-    path    => "${config_dir}/public-keycloak.pem",
-    content => template($pubkey_keycloak_source),
-    *       => $file_default_attributes,
-  }
-
-  file { 'uitdatabank-entry-api-api-keys-matched-to-client-ids':
-    ensure  => $api_keys_matched_to_client_ids_source ? {
-      undef   => 'absent',
-      default => 'file',
-    },
-    path    => "${config_dir}/api_keys_matched_to_client_ids.php",
-    content => $api_keys_matched_to_client_ids_source ? {
-      undef   => undef,
-      default => template($api_keys_matched_to_client_ids_source),
-    },
-    *       => $file_default_attributes,
+  if $mount_target_dns_name {
+    profiles::nfs::mount { "${mount_target_dns_name}:/":
+      mountpoint    => $downloads_dir,
+      mount_options => 'nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2',
+      owner         => 'www-data',
+      group         => 'www-data',
+      require       => File[$downloads_dir],
+      before        => Docker_compose['uitdatabank-entry-api']
+    }
   }
 
   file { 'uitdatabank-entry-api-docker-compose':
@@ -136,28 +51,65 @@ class profiles::uitdatabank::entry_api::deployment::container (
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    require => File[$config_dir],
-    notify  => Exec['uitdatabank-entry-api-docker-compose'],
+    notify  => Docker_compose['uitdatabank-entry-api']
   }
 
-  exec { 'uitdatabank-entry-api-docker-compose':
-    command     => "/usr/bin/docker compose -f ${config_dir}/docker-compose.yml up -d --remove-orphans",
-    refreshonly => true,
-    require     => [Class['profiles::docker'], File['uitdatabank-entry-api-docker-compose']],
-  }
-
-  file { $webroot:
-    ensure  => 'directory',
-    owner   => 'www-data',
-    group   => 'www-data',
-    require => [Group['www-data'], User['www-data']],
-  }
-
-  file { "${webroot}/.htaccess":
+  # The image ships php-fpm's stock pool (pm.max_children = 5). The instance nodes
+  # set their pool sizes in Hiera, and so does this class
+  file { 'uitdatabank-entry-api-fpm-pool':
     ensure  => 'file',
-    owner   => 'www-data',
-    group   => 'www-data',
-    content => "RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteRule ^ index.php [QSA,L]\n",
-    require => File[$webroot],
+    path    => "${config_dir}/fpm-pool.conf",
+    content => "[www]\npm = static\npm.max_children = ${fpm_max_children}\npm.max_requests = ${fpm_max_requests}\nlisten.backlog = -1\n",
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    before  => Docker_compose['uitdatabank-entry-api'],
+    notify  => Exec['uitdatabank-entry-api-fpm-pool-reload']
+  }
+
+  file { 'uitdatabank-entry-api-nginx-conf':
+    ensure  => 'file',
+    path    => "${config_dir}/nginx.conf",
+    content => template('profiles/uitdatabank/entry_api/deployment/container/nginx.conf.erb'),
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    before  => Docker_compose['uitdatabank-entry-api'],
+    notify  => Exec['uitdatabank-entry-api-nginx-reload']
+  }
+
+  docker_compose { 'uitdatabank-entry-api':
+    ensure        => present,
+    compose_files => ["${config_dir}/docker-compose.yml"],
+    scale         => $event_export_worker_count ? {
+                       0       => undef,
+                       default => { 'event-export-worker' => $event_export_worker_count }
+                     },
+    require       => Class['profiles::docker']
+  }
+
+  # A new image tag rewrites the compose file, which is what the package upgrade
+  # is on the instance nodes
+  if $db_migrate {
+    exec { 'uitdatabank-entry-api-db-migrate':
+      command     => "/usr/bin/docker compose -f ${config_dir}/docker-compose.yml exec -T entry-api vendor/bin/doctrine-dbal --no-interaction migrations:migrate",
+      refreshonly => true,
+      subscribe   => File['uitdatabank-entry-api-docker-compose'],
+      require     => Docker_compose['uitdatabank-entry-api']
+    }
+  }
+
+  # SIGUSR2 tells php-fpm's master process to re-read its config and gracefully
+  # restart just its workers
+  exec { 'uitdatabank-entry-api-fpm-pool-reload':
+    command     => "/usr/bin/docker compose -f ${config_dir}/docker-compose.yml kill -s SIGUSR2 entry-api",
+    refreshonly => true,
+    require     => Docker_compose['uitdatabank-entry-api']
+  }
+
+  exec { 'uitdatabank-entry-api-nginx-reload':
+    command     => "/usr/bin/docker compose -f ${config_dir}/docker-compose.yml kill -s SIGHUP entry-nginx",
+    refreshonly => true,
+    require     => Docker_compose['uitdatabank-entry-api']
   }
 }
