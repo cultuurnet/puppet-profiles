@@ -1,12 +1,14 @@
 class profiles::publiq::mailpit (
   String                         $servername,
-  Variant[String, Array[String]] $serveraliases = []
+  Variant[String, Array[String]] $serveraliases = [],
+  Integer[0]                     $max_messages  = 500
 ) inherits ::profiles {
 
   include ::profiles::apache
 
   class { 'profiles::mailpit':
-    smtp_address => '0.0.0.0'
+    smtp_address => '0.0.0.0',
+    max_messages => $max_messages
   }
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
