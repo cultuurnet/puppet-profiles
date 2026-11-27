@@ -8,6 +8,46 @@ describe 'profiles::jenkins::controller::configuration' do
       context "in the production environment" do
         let(:environment) { 'production' }
 
+        context 'with a Kubernetes kubeconfig file credential' do
+          let(:hiera_config) { 'spec/support/hiera/common.yaml' }
+          let(:params) do
+            {
+              'url' => 'https://jenkins.foobar.com/',
+              'admin_password' => 'passw0rd',
+              'kubernetes_credentials_id' => 'eks-kubeconfig',
+              'credentials' => [
+                { 'id' => 'eks-kubeconfig', 'type' => 'file', 'filename' => 'kubeconfig', 'content' => 'kubeconfig content' },
+              ],
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to contain_file('/var/lib/jenkins/.kube').with_mode('0700') }
+          it do
+            is_expected.to contain_file('/var/lib/jenkins/.kube/config').with(
+              owner: 'jenkins', group: 'jenkins', mode: '0600', show_diff: false
+            ).that_comes_before('Profiles::Jenkins::Plugin[kubernetes]')
+          end
+          it do
+            is_expected.to contain_file('kubernetes configuration')
+              .with_path('/var/lib/jenkins/casc_config/kubernetes.yaml')
+              .without_content(/credentialsId:/)
+          end
+
+          context 'with no Kubernetes credential ID' do
+            before { params.delete('kubernetes_credentials_id') }
+
+            it { is_expected.to compile.with_all_deps }
+            it { is_expected.not_to contain_file('/var/lib/jenkins/.kube/config') }
+          end
+
+          context 'with no matching file credential' do
+            before { params['credentials'] = [] }
+            it { is_expected.to compile.and_raise_error(/requires one matching file credential/) }
+          end
+
+        end
+
         context "with url => https://jenkins.foobar.com/ and admin_password => passw0rd" do
           let(:params) { {
             'url'            => 'https://jenkins.foobar.com/',

@@ -3,7 +3,6 @@ jenkins:
   - kubernetes:
       containerCap: 10
       containerCapStr: "10"
-      credentialsId: "<%= @configuration['credentials_id'] %>"
       defaultsProviderTemplate: "eks-agent"
       name: "ops-tooling"
       namespace: "jenkins"
