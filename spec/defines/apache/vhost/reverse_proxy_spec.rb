@@ -12,10 +12,10 @@ describe 'profiles::apache::vhost::reverse_proxy' do
           context "with hieradata" do
             let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-            context "with destination => http://davinci.example.com and aliases => leo.example.com" do
+            context "with destination => http://davinci.example.com and serveraliases => leo.example.com" do
               let(:params) { {
-                'destination' => 'http://davinci.example.com/',
-                'aliases'     => 'leo.example.com'
+                'destination'   => 'http://davinci.example.com/',
+                'serveraliases' => 'leo.example.com'
               } }
 
               it { is_expected.to compile.with_all_deps }
@@ -29,7 +29,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                 'certificate'           => nil,
                 'preserve_host'         => false,
                 'allow_encoded_slashes' => 'off',
-                'aliases'               => 'leo.example.com',
+                'serveraliases'         => 'leo.example.com',
                 'proxy_keywords'        => [],
                 'proxy_params'          => {},
                 'support_websockets'    => false,
@@ -169,11 +169,11 @@ describe 'profiles::apache::vhost::reverse_proxy' do
           context "without hieradata" do
             let(:hiera_config) { 'spec/support/hiera/empty.yaml' }
 
-            context "with destination => http://davinci.example.com, auth_openid_connect => true and aliases => leo.example.com" do
+            context "with destination => http://davinci.example.com, auth_openid_connect => true and serveraliases => leo.example.com" do
               let(:params) { {
                 'destination'         => 'http://davinci.example.com/',
                 'auth_openid_connect' => true,
-                'aliases'             => 'leo.example.com'
+                'serveraliases'       => 'leo.example.com'
               } }
 
               it { expect { catalogue }.to raise_error(Puppet::ParseError, /parameter 'oidc_settings' entry 'ProviderMetadataURL' expects/) }
@@ -189,7 +189,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
           context "with hieradata" do
             let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-            context "with certificate => 'foobar.example.com', destination => https://buonarotti.example.com/, preserve_host => true, allow_encoded_slashes => nodecode, proxy_keywords => ['interpolate', 'noquery'], support_websockets => true, proxy_params => {'timeout' => 300, 'ping' => 3}, headers => ['set X-My-First-Header \'foo\'', 'set X-My-Second-Header \'bar\''] and aliases => ['mich.example.com', 'angelo.example.com']" do
+            context "with certificate => 'foobar.example.com', destination => https://buonarotti.example.com/, preserve_host => true, allow_encoded_slashes => nodecode, proxy_keywords => ['interpolate', 'noquery'], support_websockets => true, proxy_params => {'timeout' => 300, 'ping' => 3}, headers => ['set X-My-First-Header \'foo\'', 'set X-My-Second-Header \'bar\''] and serveraliases => ['mich.example.com', 'angelo.example.com']" do
               let(:params) { {
                 'certificate'           => 'foobar.example.com',
                 'destination'           => 'https://buonarotti.example.com/',
@@ -202,7 +202,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                              'set X-My-First-Header "foo"',
                                              'set X-My-Second-Header "bar"'
                                            ],
-                'aliases'               => ['mich.example.com', 'angelo.example.com']
+                'serveraliases'         => ['mich.example.com', 'angelo.example.com']
               } }
 
               it { is_expected.to contain_firewall('300 accept HTTPS traffic') }

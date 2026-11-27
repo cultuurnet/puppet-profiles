@@ -8,7 +8,7 @@ describe 'profiles::apache::vhost::redirect' do
       context "with title => http://leonardo.example.com" do
         let(:title) { 'http://leonardo.example.com' }
 
-        context "with destination => https://davinci.example.com and aliases => leo.example.com" do
+        context "with destination => https://davinci.example.com and serveraliases => leo.example.com" do
           let(:params) { {
             'destination'   => 'https://davinci.example.com',
             'serveraliases' => 'leo.example.com'

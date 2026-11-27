@@ -7,7 +7,7 @@ define profiles::apache::vhost::reverse_proxy (
   Boolean                        $auth_openid_connect   = false,
   Hash                           $proxy_params          = {},
   Variant[String, Array[String]] $proxy_keywords        = [],
-  Variant[String, Array[String]] $aliases               = [],
+  Variant[String, Array[String]] $serveraliases         = [],
   Array[String]                  $additional_headers    = [],
   Variant[String, Array[String]] $headers               = [],
   String                         $access_log_format     = 'extended_json',
@@ -106,7 +106,7 @@ define profiles::apache::vhost::reverse_proxy (
 
   apache::vhost { "${servername}_${port}":
     servername            => $servername,
-    serveraliases         => $aliases,
+    serveraliases         => [$serveraliases].flatten,
     port                  => $port,
     ssl                   => $https,
     ssl_cert              => $ssl_cert,
