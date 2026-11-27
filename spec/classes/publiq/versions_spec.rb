@@ -52,8 +52,8 @@ describe 'profiles::publiq::versions' do
           it { is_expected.to contain_class('profiles::publiq::versions::deployment') }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://versions.local').with(
-            'destination' => 'http://127.0.1.1:6000/',
-            'aliases'     => []
+            'destination'   => 'http://127.0.1.1:6000/',
+            'serveraliases' => []
           ) }
 
           it { is_expected.to contain_class('profiles::publiq::versions::deployment').that_requires('Class[profiles::ruby]') }
@@ -72,8 +72,8 @@ describe 'profiles::publiq::versions' do
             } ) }
 
             it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://versions.local').with(
-              'destination' => 'http://0.0.0.0:5000/',
-              'aliases'     => []
+              'destination'   => 'http://0.0.0.0:5000/',
+              'serveraliases' => []
             ) }
           end
         end
@@ -105,8 +105,8 @@ describe 'profiles::publiq::versions' do
           ) }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://versions.publiq.dev').with(
-            'destination' => 'http://127.0.1.1:6000/',
-            'aliases'     => 'foo.example.com'
+            'destination'   => 'http://127.0.1.1:6000/',
+            'serveraliases' => 'foo.example.com'
           ) }
         end
       end
@@ -126,8 +126,8 @@ describe 'profiles::publiq::versions' do
           ) }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://myversions.publiq.dev').with(
-            'destination' => 'http://127.0.1.1:6000/',
-            'aliases'     => ['bar.example.com', 'baz.example.com']
+            'destination'   => 'http://127.0.1.1:6000/',
+            'serveraliases' => ['bar.example.com', 'baz.example.com']
           ) }
         end
       end

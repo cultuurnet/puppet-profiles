@@ -1,7 +1,7 @@
 class profiles::uitpas::website::frontend (
   String                         $servername,
-  Variant[String, Array[String]] $serveraliases       = [],
-  Boolean                        $deployment          = true
+  Variant[String, Array[String]] $serveraliases = [],
+  Boolean                        $deployment    = true
 ) inherits ::profiles {
 
   $basedir = '/var/www/uitpas-website-frontend'
@@ -19,8 +19,8 @@ class profiles::uitpas::website::frontend (
   }
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
-    destination         => 'http://127.0.0.1:3000/',
-    aliases             => $serveraliases
+    destination   => 'http://127.0.0.1:3000/',
+    serveraliases => $serveraliases
   }
 
   if $deployment {

@@ -51,7 +51,7 @@ class profiles::uitid::mailing (
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
     destination   => "http://127.0.0.1:${glassfish_domain_http_port}/",
-    aliases       => $serveraliases,
+    serveraliases => $serveraliases,
     preserve_host => true
   }
 

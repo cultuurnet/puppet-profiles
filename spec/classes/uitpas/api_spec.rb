@@ -90,8 +90,8 @@ describe 'profiles::uitpas::api' do
             it { is_expected.to contain_class('profiles::mysql::server') }
 
             it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://uitpas.example.com').with(
-              'destination' => 'http://127.0.0.1:4880/uitid/rest/',
-              'aliases'     => []
+              'destination'   => 'http://127.0.0.1:4880/uitid/rest/',
+              'serveraliases' => []
             ) }
 
             it { is_expected.to contain_mysql_database('uitpas_api').with(
@@ -296,8 +296,8 @@ describe 'profiles::uitpas::api' do
             ) }
 
             it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://myserver.example.com').with(
-              'destination' => 'http://127.0.0.1:14880/uitid/rest/',
-              'aliases'     => 'foobar.example.com'
+              'destination'   => 'http://127.0.0.1:14880/uitid/rest/',
+              'serveraliases' => 'foobar.example.com'
             ) }
 
             it { is_expected.to contain_set('server.network-config.protocols.protocol.http-listener-1.http.scheme-mapping').with(
@@ -433,8 +433,8 @@ describe 'profiles::uitpas::api' do
             let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
             it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://bonkers.example.com').with(
-              'destination' => 'http://127.0.0.1:4880/uitid/rest/',
-              'aliases'     => ['dizzee.example.com', 'rascal.example.com']
+              'destination'   => 'http://127.0.0.1:4880/uitid/rest/',
+              'serveraliases' => ['dizzee.example.com', 'rascal.example.com']
             ) }
 
             it { is_expected.not_to contain_class('profiles::uitpas::api::deployment') }
@@ -466,8 +466,8 @@ describe 'profiles::uitpas::api' do
             } }
 
             it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://server.example.com').with(
-              'destination' => 'http://127.0.0.1:4880/uitid/rest/',
-              'aliases'     => []
+              'destination'   => 'http://127.0.0.1:4880/uitid/rest/',
+              'serveraliases' => []
             ) }
 
             it { is_expected.to contain_profiles__glassfish__domain('uitpas').with(

@@ -53,7 +53,7 @@ class profiles::uitdatabank::search_api (
     'container': {
       profiles::apache::vhost::reverse_proxy { "http://${servername}":
         destination         => 'http://127.0.0.1:8080/',
-        aliases             => $serveraliases,
+        serveraliases       => $serveraliases,
         access_log_format   => 'api_key_json',
         additional_rewrites => $api_key_rewrites,
       }

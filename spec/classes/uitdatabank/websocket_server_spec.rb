@@ -45,7 +45,7 @@ describe 'profiles::uitdatabank::websocket_server' do
             ) }
 
             it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://sockets.example.com').with(
-              'aliases'            => [],
+              'serveraliases'      => [],
               'destination'        => 'http://127.0.0.1:3000/',
               'support_websockets' => true
             ) }
@@ -73,7 +73,7 @@ describe 'profiles::uitdatabank::websocket_server' do
             ) }
 
             it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://sockets.example.com').with(
-              'aliases'            => ['foo.example.com', 'bar.example.com'],
+              'serveraliases'      => ['foo.example.com', 'bar.example.com'],
               'destination'        => 'http://0.0.0.0:4000/',
               'support_websockets' => true
             ) }

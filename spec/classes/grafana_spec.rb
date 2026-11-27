@@ -38,7 +38,7 @@ describe 'profiles::grafana' do
 
         it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://grafana.example.com').with(
           'destination'   => 'http://127.0.0.1:3000/',
-          'aliases'       => [],
+          'serveraliases' => [],
           'preserve_host' => true
         ) }
 
@@ -78,7 +78,7 @@ describe 'profiles::grafana' do
 
         it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://mygrafana.com').with(
           'destination'   => 'http://0.0.0.0:3001/',
-          'aliases'       => ['foo.example.com', 'bar.example.com'],
+          'serveraliases' => ['foo.example.com', 'bar.example.com'],
           'preserve_host' => true
         ) }
 

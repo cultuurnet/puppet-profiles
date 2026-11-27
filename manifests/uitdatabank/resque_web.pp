@@ -33,7 +33,7 @@ class profiles::uitdatabank::resque_web (
   }
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
-    aliases             => $serveraliases,
+    serveraliases       => $serveraliases,
     destination         => "http://${service_address}:${service_port}/",
     auth_openid_connect => true
   }

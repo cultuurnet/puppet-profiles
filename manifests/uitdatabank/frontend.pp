@@ -47,8 +47,8 @@ class profiles::uitdatabank::frontend (
   }
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
-    aliases     => $serveraliases,
-    destination => "http://${service_address}:${service_port}/"
+    serveraliases => $serveraliases,
+    destination   => "http://${service_address}:${service_port}/"
   }
 
   # include ::profiles::uitdatabank::frontend::monitoring

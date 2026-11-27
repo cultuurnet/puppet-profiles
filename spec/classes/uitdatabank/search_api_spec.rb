@@ -99,7 +99,7 @@ describe 'profiles::uitdatabank::search_api' do
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://baz.example.com').with(
             'destination'       => 'http://127.0.0.1:8080/',
-            'aliases'           => [],
+            'serveraliases'     => [],
             'access_log_format' => 'api_key_json'
           ) }
 

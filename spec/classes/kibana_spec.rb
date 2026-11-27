@@ -43,7 +43,7 @@ describe 'profiles::kibana' do
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://kibana.example.com').with(
             'destination'         => 'http://127.0.0.1:5601/',
-            'aliases'             => [],
+            'serveraliases'       => [],
             'preserve_host'       => true,
             'auth_openid_connect' => true
           ) }
@@ -86,7 +86,7 @@ describe 'profiles::kibana' do
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://mykibana.com').with(
             'destination'         => 'http://0.0.0.0:5602/',
-            'aliases'             => ['foo.example.com', 'bar.example.com'],
+            'serveraliases'       => ['foo.example.com', 'bar.example.com'],
             'preserve_host'       => true,
             'auth_openid_connect' => true
           ) }

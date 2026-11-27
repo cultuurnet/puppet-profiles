@@ -47,8 +47,8 @@ describe 'profiles::uitid::frontend' do
             ) }
 
             it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://foo.example.com').with(
-              'destination' => 'http://127.0.0.1:3000/',
-              'aliases'     => []
+              'destination'   => 'http://127.0.0.1:3000/',
+              'serveraliases' => []
             ) }
 
             it { is_expected.to contain_file('/var/www/uitid-frontend').that_requires('Group[www-data]') }
@@ -85,8 +85,8 @@ describe 'profiles::uitid::frontend' do
             ) }
 
             it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://foo.example.com').with(
-              'destination' => 'http://127.0.1.1:7000/',
-              'aliases'     => []
+              'destination'   => 'http://127.0.1.1:7000/',
+              'serveraliases' => []
             ) }
           end
         end
@@ -105,8 +105,8 @@ describe 'profiles::uitid::frontend' do
           it { is_expected.to_not contain_class('profiles::uitid::frontend::deployment') }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://foo.example.com').with(
-            'destination' => 'http://127.0.0.1:3000/',
-            'aliases'     => []
+            'destination'   => 'http://127.0.0.1:3000/',
+            'serveraliases' => []
           ) }
         end
       end
@@ -121,8 +121,8 @@ describe 'profiles::uitid::frontend' do
 
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://bar.example.com').with(
-            'destination' => 'http://127.0.0.1:3000/',
-            'aliases'     => []
+            'destination'   => 'http://127.0.0.1:3000/',
+            'serveraliases' => []
           ) }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://bar.example.com').that_requires('Class[profiles::uitid::frontend::deployment]') }

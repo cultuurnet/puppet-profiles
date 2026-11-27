@@ -32,9 +32,9 @@ class profiles::uitid::frontend (
   }
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
-    aliases     => $serveraliases,
-    destination => "http://${service_address}:${service_port}/",
-    require     => [Class['profiles::apache'], File['/var/www/uitid-frontend']]
+    serveraliases => $serveraliases,
+    destination   => "http://${service_address}:${service_port}/",
+    require       => [Class['profiles::apache'], File['/var/www/uitid-frontend']]
   }
 
   # include ::profiles::uitid::frontend::logging

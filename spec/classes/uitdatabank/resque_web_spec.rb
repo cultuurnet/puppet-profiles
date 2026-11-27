@@ -47,7 +47,7 @@ describe 'profiles::uitdatabank::resque_web' do
           ) }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://app.example.com').with(
-            'aliases'             => [],
+            'serveraliases'       => [],
             'destination'         => 'http://127.0.0.1:5678/',
             'auth_openid_connect' => true
           ) }
@@ -68,7 +68,7 @@ describe 'profiles::uitdatabank::resque_web' do
           it { is_expected.to contain_file('resque-web-service-defaults').with_content(/^HOST=0.0.0.0\nPORT=1234$/) }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://jobs.example.com').with(
-            'aliases'             => ['www.example.com', 'old.example.com'],
+            'serveraliases'       => ['www.example.com', 'old.example.com'],
             'destination'         => 'http://0.0.0.0:1234/',
             'auth_openid_connect' => true
           ) }

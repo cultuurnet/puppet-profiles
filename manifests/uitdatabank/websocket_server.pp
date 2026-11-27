@@ -32,7 +32,7 @@ class profiles::uitdatabank::websocket_server (
   }
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
-    aliases            => $serveraliases,
+    serveraliases      => $serveraliases,
     destination        => "http://${service_address}:${service_port}/",
     support_websockets => true
   }

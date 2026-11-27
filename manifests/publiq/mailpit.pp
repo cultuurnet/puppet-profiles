@@ -12,7 +12,7 @@ class profiles::publiq::mailpit (
   }
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
-    aliases             => $serveraliases,
+    serveraliases       => $serveraliases,
     destination         => 'http://127.0.0.1:8025/',
     auth_openid_connect => true,
     require             => Class['profiles::mailpit']
