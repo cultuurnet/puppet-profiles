@@ -15,6 +15,7 @@ describe 'profiles::apache::vhost::basic' do
             'serveraliases'        => [],
             'documentroot'         => '/var/www/html',
             'virtual_documentroot' => nil,
+            'aliases'              => [],
             'access_log_format'    => 'extended_json',
             'directories'          => [],
             'auth_openid_connect'  => false,
@@ -32,6 +33,7 @@ describe 'profiles::apache::vhost::basic' do
             'docroot'            => '/var/www/html',
             'manage_docroot'     => false,
             'virtual_docroot'    => false,
+            'aliases'            => [],
             'port'               => 80,
             'ssl'                => false,
             'request_headers'    => [
@@ -57,10 +59,11 @@ describe 'profiles::apache::vhost::basic' do
           ) }
         end
 
-        context 'with serveraliases => [web.example.com, test.example.com], documentroot => /var/www/bar, access_log_format => extended and directories => { path => secret_file.html, provider => files, deny => from all }' do
+        context 'with serveraliases => [web.example.com, test.example.com], documentroot => /var/www/bar, access_log_format => extended, aliases => { alias => /image, path => /pub/image } and directories => { path => secret_file.html, provider => files, deny => from all }' do
           let(:params) { {
             'serveraliases'       => ['web.example.com', 'test.example.com'],
             'documentroot'        => '/var/www/bar',
+            'aliases'             => { 'alias' => '/image', 'path' => '/pub/image' },
             'access_log_format'   => 'extended',
             'directories'         => {
                                        'path'     => 'secret_file.html',
@@ -75,6 +78,7 @@ describe 'profiles::apache::vhost::basic' do
             'docroot'            => '/var/www/bar',
             'virtual_docroot'    => false,
             'manage_docroot'     => false,
+            'aliases'            => [{ 'alias' => '/image', 'path' => '/pub/image' }],
             'port'               => 80,
             'ssl'                => false,
             'auth_oidc'          => false,
@@ -136,12 +140,17 @@ describe 'profiles::apache::vhost::basic' do
               it { expect { catalogue }.to raise_error(Puppet::ParseError, /expects a value for parameter certificate when using HTTPS/) }
             end
 
-            context 'with serveraliases => *.example.com, certificate => wildcard.example.com, documentroot => /var/www/foobar, auth_openid_connect => true, directories => [ { path => /path/to/directory, handler => value }, { path => /path/to/other/directory, handler => othervalue } ], rewrites => { comment => Proxy to foo.example.com, rewrite_rule => ^(.*)$ https://foo.example.com/$1 [P] } and ssl_proxyengine => true' do
+
+            context 'with serveraliases => *.example.com, certificate => wildcard.example.com, documentroot => /var/www/foobar, aliases => [{ aliasmatch => ^/image/(.*)\.jpg$, path => /files/jpg.images/$1.jpg }, { alias => /foo, path => /script/foo }], auth_openid_connect => true, directories => [{ path => /path/to/directory, handler => value }, { path => /path/to/other/directory, handler => othervalue }], rewrites => { comment => Proxy to foo.example.com, rewrite_rule => ^(.*)$ https://foo.example.com/$1 [P] } and ssl_proxyengine => true' do
               let(:params) { {
                 'serveraliases'        => '*.example.com',
                 'certificate'          => 'wildcard.example.com',
                 'documentroot'         => '/var/www/foobar',
                 'virtual_documentroot' => '/var/www/foobar/%1',
+                'aliases'              => [
+                                            { 'aliasmatch' => '^/image/(.*)\.jpg$', 'path' => '/files/jpg.images/$1.jpg' },
+                                            { 'alias' => '/foo', 'path' => '/script/foo' }
+                                          ],
                 'auth_openid_connect'  => true,
                 'directories'          => [
                                             { 'path' => '/path/to/directory', 'handler' => 'value' },
@@ -168,6 +177,10 @@ describe 'profiles::apache::vhost::basic' do
                 'docroot'            => '/var/www/foobar',
                 'virtual_docroot'    => '/var/www/foobar/%1',
                 'manage_docroot'     => false,
+                'aliases'            => [
+                                          { 'aliasmatch' => '^/image/(.*)\.jpg$', 'path' => '/files/jpg.images/$1.jpg' },
+                                          { 'alias' => '/foo', 'path' => '/script/foo' }
+                                        ],
                 'port'               => 443,
                 'ssl'                => true,
                 'ssl_cert'           => '/etc/ssl/certs/wildcard.example.com.bundle.crt',

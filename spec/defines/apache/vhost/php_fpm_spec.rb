@@ -27,6 +27,7 @@ describe 'profiles::apache::vhost::php_fpm' do
               'directories'              => [],
               'request_headers'          => [],
               'headers'                  => [],
+              'aliases'                  => [],
               'rewrites'                 => [],
               'ssl_proxyengine'          => false,
               'newrelic_optional_config' => {}
@@ -71,6 +72,7 @@ describe 'profiles::apache::vhost::php_fpm' do
                                            'options'        => ['Indexes', 'FollowSymLinks', 'MultiViews'],
                                            'allow_override' => 'All'
                                          }],
+              'aliases'               => [],
               'rewrites'              => [],
               'custom_fragment'       => nil,
               'ssl_proxyengine'       => false
@@ -83,7 +85,7 @@ describe 'profiles::apache::vhost::php_fpm' do
             ) }
           end
 
-          context "with basedir => /tmp/bla, public_web_directory => web, serveraliases => [smith.example.com, foo.example.com], allow_encoded_slashes => nodecode, access_log_format => combined_json, directories => { path => /var/www/bar/files, provider => files, deny => from all }, rewrites => { comment => Capture apiKey from URL parameters, rewrite_cond => %{QUERY_STRING} (?:^|&)apiKey=([^&]+), rewrite_rule => ^ - [E=API_KEY:%1] }, socket_type => tcp, request_headers => 'set X-My-First-Request-Header \"foo\"', headers => 'set X-My-Header \"foo\"', ssl_proxyengine => true and newrelic_optional_config => { foo => bar }" do
+          context "with basedir => /tmp/bla, public_web_directory => web, serveraliases => [smith.example.com, foo.example.com], allow_encoded_slashes => nodecode, access_log_format => combined_json, directories => { path => /var/www/bar/files, provider => files, deny => from all }, rewrites => { comment => Capture apiKey from URL parameters, rewrite_cond => %{QUERY_STRING} (?:^|&)apiKey=([^&]+), rewrite_rule => ^ - [E=API_KEY:%1] }, socket_type => tcp, request_headers => 'set X-My-First-Request-Header \"foo\"', headers => 'set X-My-Header \"foo\"', aliases => { alias => /image, path => /pub/image }, ssl_proxyengine => true and newrelic_optional_config => { foo => bar }" do
             let(:params) { {
               'basedir'                  => '/tmp/bla',
               'public_web_directory'     => 'web',
@@ -103,6 +105,7 @@ describe 'profiles::apache::vhost::php_fpm' do
                                             },
               'request_headers'          => 'set X-My-First-Request-Header "foo"',
               'headers'                  => 'set X-My-Header "foo"',
+              'aliases'                  => { 'alias' => '/image', 'path' => '/pub/image' },
               'ssl_proxyengine'          => true,
               'newrelic_optional_config' => { 'foo' => 'bar' }
             } }
@@ -145,6 +148,7 @@ describe 'profiles::apache::vhost::php_fpm' do
                                            'provider' => 'files',
                                            'deny'     => 'from all'
                                          }],
+              'aliases'               => [{ 'alias' => '/image', 'path' => '/pub/image' }],
               'rewrites'              => [{
                                            'comment'      => 'Capture apiKey from URL parameters',
                                            'rewrite_cond' => '%{QUERY_STRING} (?:^|&)apiKey=([^&]+)',
@@ -164,7 +168,7 @@ describe 'profiles::apache::vhost::php_fpm' do
         context "with hieradata" do
           let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-          context "with basedir => /var/www/bar, request_headers => [set X-My-First-Request-Header \"foo\", set X-My-Second-Request-Header \"bar\"], headers => [set X-My-Header1 \"bar\", set X-My-Header2 \"baz\"], directories => [{ path => /path/to/directory, handler => value }, { path => /path/to/other/directory, handler => othervalue }] and serveraliases => mysite.example.com" do
+          context "with basedir => /var/www/bar, request_headers => [set X-My-First-Request-Header \"foo\", set X-My-Second-Request-Header \"bar\"], headers => [set X-My-Header1 \"bar\", set X-My-Header2 \"baz\"], directories => [{ path => /path/to/directory, handler => value }, { path => /path/to/other/directory, handler => othervalue }], aliases => [{ aliasmatch => ^/image/(.*)\.jpg$, path => /files/jpg.images/$1.jpg }, { alias => /foo, path => /script/foo }] and serveraliases => mysite.example.com" do
             let(:params) { {
               'basedir'         => '/var/www/bar',
               'request_headers' => [
@@ -178,6 +182,10 @@ describe 'profiles::apache::vhost::php_fpm' do
               'directories'     => [
                                      { 'path' => '/path/to/directory', 'handler' => 'value' },
                                      { 'path' => '/path/to/other/directory', 'handler' => 'othervalue' }
+                                   ],
+              'aliases'         => [
+                                     { 'aliasmatch' => '^/image/(.*)\.jpg$', 'path' => '/files/jpg.images/$1.jpg' },
+                                     { 'alias' => '/foo', 'path' => '/script/foo' }
                                    ],
               'serveraliases'   => 'mysite.example.com'
             } }
@@ -226,6 +234,10 @@ describe 'profiles::apache::vhost::php_fpm' do
                                            'path'    => '/path/to/other/directory',
                                            'handler' => 'othervalue'
                                          }],
+              'aliases'               => [
+                                           { 'aliasmatch' => '^/image/(.*)\.jpg$', 'path' => '/files/jpg.images/$1.jpg' },
+                                           { 'alias' => '/foo', 'path' => '/script/foo' }
+                                         ],
               'rewrites'              => [],
               'ssl_proxyengine'       => false
             ) }

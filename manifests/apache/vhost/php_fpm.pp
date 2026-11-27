@@ -10,6 +10,7 @@ define profiles::apache::vhost::php_fpm (
   Variant[String, Array[String]] $request_headers          = [],
   Variant[String, Array[String]] $headers                  = [],
   Variant[Hash, Array[Hash]]     $directories              = [],
+  Variant[Hash, Array[Hash]]     $aliases                  = [],
   Variant[Hash, Array[Hash]]     $rewrites                 = [],
   Boolean                        $ssl_proxyengine          = false
 ) {
@@ -98,6 +99,7 @@ define profiles::apache::vhost::php_fpm (
                                },
                                { 'path' => $basedir } + $profiles::apache::defaults::directories
                              ] + [$directories].flatten,
+    aliases               => [$aliases].flatten,
     rewrites              => [$rewrites].flatten,
     ssl_proxyengine       => $ssl_proxyengine
   }

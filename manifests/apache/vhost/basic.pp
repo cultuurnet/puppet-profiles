@@ -1,6 +1,7 @@
 define profiles::apache::vhost::basic (
   Variant[String, Array[String]] $serveraliases        = [],
   String                         $documentroot         = '/var/www/html',
+  Variant[Hash, Array[Hash]]     $aliases              = [],
   Optional[String]               $virtual_documentroot = undef,
   String                         $access_log_format    = 'extended_json',
   Optional[String]               $certificate          = undef,
@@ -101,6 +102,7 @@ define profiles::apache::vhost::basic (
                             default => $virtual_documentroot
                           },
     manage_docroot     => false,
+    aliases            => [$aliases].flatten,
     auth_oidc          => $auth_openid_connect,
     oidc_settings      => $openid_connect_settings,
     request_headers    => $profiles::apache::defaults::request_headers + [
