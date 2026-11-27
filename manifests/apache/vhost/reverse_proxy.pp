@@ -7,6 +7,7 @@ define profiles::apache::vhost::reverse_proxy (
   Boolean                        $auth_openid_connect   = false,
   Hash                           $proxy_params          = {},
   Variant[String, Array[String]] $proxy_keywords        = [],
+  Variant[String, Array[String]] $proxy_exception_uris  = [],
   Variant[String, Array[String]] $serveraliases         = [],
   Array[String]                  $additional_headers    = [],
   Variant[String, Array[String]] $headers               = [],
@@ -98,11 +99,11 @@ define profiles::apache::vhost::reverse_proxy (
                                         'RedirectURI'         => "https://${servername}/redirect_uri",
                                         'CryptoPassphrase'    => stdlib::fqdn_rand_string(32, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
                                        } + $openid_connect_forward_headers
-    $no_proxy_uris                   = ['/redirect_uri']
+    $no_proxy_uris                   = [$proxy_exception_uris].flatten + ['/redirect_uri']
   } else {
     $openid_connect_directories = []
     $openid_connect_settings    = {}
-    $no_proxy_uris              = []
+    $no_proxy_uris              = [$proxy_exception_uris].flatten
   }
 
   apache::vhost { "${servername}_${port}":

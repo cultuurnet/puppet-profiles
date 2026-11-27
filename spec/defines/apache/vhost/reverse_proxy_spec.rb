@@ -32,6 +32,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                 'serveraliases'         => 'leo.example.com',
                 'proxy_keywords'        => [],
                 'proxy_params'          => {},
+                'proxy_exception_uris'  => [],
                 'support_websockets'    => false,
                 'auth_openid_connect'   => false,
                 'access_log_format'     => 'extended_json',
@@ -78,15 +79,16 @@ describe 'profiles::apache::vhost::reverse_proxy' do
               ) }
             end
 
-            context "with destination => http://davinci.example.com, proxy_params => { 'connectiontimeout' => 5 }, auth_openid_connect => true, access_log_format => combined_json, headers => set Access-Control-Allow-Origin '*', aliases => { alias => /image, path => /pub/image } and support_websockets => true" do
+            context "with destination => http://davinci.example.com, proxy_params => { 'connectiontimeout' => 5 }, auth_openid_connect => true, proxy_exception_uris => '/bla', access_log_format => combined_json, headers => set Access-Control-Allow-Origin '*', aliases => { alias => /image, path => /pub/image } and support_websockets => true" do
               let(:params) { {
-                'destination'         => 'http://davinci.example.com/',
-                'proxy_params'        => { 'connectiontimeout' => 5 },
-                'auth_openid_connect' => true,
-                'support_websockets'  => true,
-                'access_log_format'   => 'combined_json',
-                'headers'             => 'set Access-Control-Allow-Origin "*"',
-                'aliases'             => { 'alias' => '/image', 'path' => '/pub/image' }
+                'destination'          => 'http://davinci.example.com/',
+                'proxy_params'         => { 'connectiontimeout' => 5 },
+                'proxy_exception_uris' => '/bla',
+                'auth_openid_connect'  => true,
+                'support_websockets'   => true,
+                'access_log_format'    => 'combined_json',
+                'headers'              => 'set Access-Control-Allow-Origin "*"',
+                'aliases'              => { 'alias' => '/image', 'path' => '/pub/image' }
               } }
 
               it { is_expected.to contain_class('apache::mod::proxy_wstunnel') }
@@ -140,7 +142,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                              'keywords'      => [],
                                              'reverse_urls'  => 'http://davinci.example.com/',
                                              'params'        => { 'connectiontimeout' => 5 },
-                                             'no_proxy_uris' => ['/redirect_uri']
+                                             'no_proxy_uris' => ['/bla', '/redirect_uri']
                                            }
               ) }
             end
@@ -193,7 +195,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
           context "with hieradata" do
             let(:hiera_config) { 'spec/support/hiera/common.yaml' }
 
-            context "with certificate => 'foobar.example.com', destination => https://buonarotti.example.com/, preserve_host => true, allow_encoded_slashes => nodecode, proxy_keywords => ['interpolate', 'noquery'], support_websockets => true, proxy_params => {'timeout' => 300, 'ping' => 3}, headers => ['set X-My-First-Header \'foo\'', 'set X-My-Second-Header \'bar\''], aliases => [{ aliasmatch => ^/image/(.*)\.jpg$, path => /files/jpg.images/$1.jpg }, { alias => /foo, path => /script/foo }] and serveraliases => ['mich.example.com', 'angelo.example.com']" do
+            context "with certificate => 'foobar.example.com', destination => https://buonarotti.example.com/, preserve_host => true, allow_encoded_slashes => nodecode, proxy_keywords => ['interpolate', 'noquery'], support_websockets => true, proxy_params => {'timeout' => 300, 'ping' => 3}, proxy_exception_uris => ['/foo', 'bar'], headers => ['set X-My-First-Header \'foo\'', 'set X-My-Second-Header \'bar\''], aliases => [{ aliasmatch => ^/image/(.*)\.jpg$, path => /files/jpg.images/$1.jpg }, { alias => /foo, path => /script/foo }] and serveraliases => ['mich.example.com', 'angelo.example.com']" do
               let(:params) { {
                 'certificate'           => 'foobar.example.com',
                 'destination'           => 'https://buonarotti.example.com/',
@@ -202,6 +204,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                 'support_websockets'    => true,
                 'proxy_keywords'        => ['interpolate', 'noquery'],
                 'proxy_params'          => { 'timeout' => 300, 'ping' => 3 },
+                'proxy_exception_uris'  => ['/foo', '/bar'],
                 'headers'               => [
                                              'set X-My-First-Header "foo"',
                                              'set X-My-Second-Header "bar"'
@@ -263,7 +266,7 @@ describe 'profiles::apache::vhost::reverse_proxy' do
                                              'keywords'      => ['interpolate', 'noquery'],
                                              'reverse_urls'  => ['https://buonarotti.example.com/', 'http://michelangelo.example.com/'],
                                              'params'        => { 'timeout' => 300, 'ping' => 3 },
-                                             'no_proxy_uris' => []
+                                             'no_proxy_uris' => ['/foo', '/bar']
                                            }
               ) }
 
