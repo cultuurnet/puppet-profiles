@@ -48,8 +48,8 @@ class profiles::publiq::versions (
   }
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
-    destination => "http://${service_address}:${service_port}/",
-    aliases     => $serveraliases
+    destination   => "http://${service_address}:${service_port}/",
+    serveraliases => $serveraliases
   }
 
   # include ::profiles::publiq::versions::monitoring

@@ -29,7 +29,7 @@ class profiles::grafana (
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
     destination   => "http://${service_address}:${service_port}/",
-    aliases       => $serveraliases,
+    serveraliases => $serveraliases,
     preserve_host => true
   }
 

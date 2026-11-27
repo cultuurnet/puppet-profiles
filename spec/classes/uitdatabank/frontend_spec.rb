@@ -46,8 +46,8 @@ describe 'profiles::uitdatabank::frontend' do
             ) }
 
             it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://frontend.example.com').with(
-              'aliases'     => [],
-              'destination' => 'http://127.0.0.1:4000/'
+              'serveraliases' => [],
+              'destination'   => 'http://127.0.0.1:4000/'
             ) }
 
             it { is_expected.to contain_file('/var/www/udb3-frontend').that_requires('Group[www-data]') }
@@ -72,8 +72,8 @@ describe 'profiles::uitdatabank::frontend' do
             ) }
 
             it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://frontend.example.com').with(
-              'aliases'     => ['foo.example.com', 'bar.example.com'],
-              'destination' => 'http://0.0.0.0:4567/'
+              'serveraliases' => ['foo.example.com', 'bar.example.com'],
+              'destination'   => 'http://0.0.0.0:4567/'
             ) }
           end
 
@@ -105,8 +105,8 @@ describe 'profiles::uitdatabank::frontend' do
             it { is_expected.to contain_class('profiles::uitdatabank::frontend::deployment').that_requires('Class[profiles::apache]') }
 
             it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://frontend.example.com').with(
-              'aliases'     => [],
-              'destination' => 'http://127.0.0.1:4000/'
+              'serveraliases' => [],
+              'destination'   => 'http://127.0.0.1:4000/'
             ) }
           end
 
@@ -121,8 +121,8 @@ describe 'profiles::uitdatabank::frontend' do
             it { is_expected.to contain_class('profiles::apache') }
 
             it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://frontend.example.com').with(
-              'aliases'     => [],
-              'destination' => 'http://127.0.0.1:4000/'
+              'serveraliases' => [],
+              'destination'   => 'http://127.0.0.1:4000/'
             ) }
 
             it { is_expected.to_not contain_class('profiles::uitdatabank::frontend::deployment') }

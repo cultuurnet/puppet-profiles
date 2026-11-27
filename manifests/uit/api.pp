@@ -79,7 +79,7 @@ class profiles::uit::api (
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
     destination       => "http://127.0.0.1:${service_port}/",
-    aliases           => $serveraliases,
+    serveraliases     => $serveraliases,
     access_log_format => 'extended_frontend_unique_id_json'
   }
 

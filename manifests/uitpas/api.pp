@@ -45,8 +45,8 @@ class profiles::uitpas::api (
   }
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
-    destination => "http://127.0.0.1:${glassfish_domain_http_port}/uitid/rest/",
-    aliases     => $serveraliases,
+    destination   => "http://127.0.0.1:${glassfish_domain_http_port}/uitid/rest/",
+    serveraliases => $serveraliases,
   }
 
   if $database_host == '127.0.0.1' {

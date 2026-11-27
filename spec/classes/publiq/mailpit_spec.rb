@@ -28,7 +28,7 @@ describe 'profiles::publiq::mailpit' do
           ) }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://mailpit.local').with(
-            'aliases'             => [],
+            'serveraliases'       => [],
             'destination'         => 'http://127.0.0.1:8025/',
             'auth_openid_connect' => true
           ) }
@@ -49,7 +49,7 @@ describe 'profiles::publiq::mailpit' do
           ) }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://mailpit.publiq.dev').with(
-            'aliases'             => 'mymailpit.publiq.dev',
+            'serveraliases'       => 'mymailpit.publiq.dev',
             'destination'         => 'http://127.0.0.1:8025/',
             'auth_openid_connect' => true
           ) }

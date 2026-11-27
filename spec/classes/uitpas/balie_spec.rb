@@ -31,8 +31,8 @@ describe 'profiles::uitpas::balie' do
           ) }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://balie.example.com').with(
-            'destination' => 'http://127.0.0.1:4000/',
-            'aliases'     => []
+            'destination'   => 'http://127.0.0.1:4000/',
+            'serveraliases' => []
           ) }
 
           it { is_expected.to contain_class('profiles::uitpas::balie::deployment').that_subscribes_to('Class[profiles::nodejs]') }
@@ -64,8 +64,8 @@ describe 'profiles::uitpas::balie' do
           ) }
 
           it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://test.example.com').with(
-            'destination' => 'http://127.0.1.1:7000/',
-            'aliases'     => 'alias.example.com'
+            'destination'   => 'http://127.0.1.1:7000/',
+            'serveraliases' => 'alias.example.com'
           ) }
         end
 

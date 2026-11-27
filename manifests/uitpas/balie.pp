@@ -9,8 +9,8 @@ class profiles::uitpas::balie (
   include ::profiles::nodejs
 
   profiles::apache::vhost::reverse_proxy { "http://${servername}":
-    destination => "http://${service_address}:${service_port}/",
-    aliases     => $serveraliases
+    destination   => "http://${service_address}:${service_port}/",
+    serveraliases => $serveraliases
   }
 
   if $deployment {

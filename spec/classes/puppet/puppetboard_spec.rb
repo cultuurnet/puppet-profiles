@@ -74,7 +74,7 @@ describe 'profiles::puppet::puppetboard' do
 
             it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://puppetboard.example.com').with(
               'destination'         => 'http://127.0.0.1:6000/',
-              'aliases'             => [],
+              'serveraliases'       => [],
               'auth_openid_connect' => false
             ) }
 
@@ -120,7 +120,7 @@ describe 'profiles::puppet::puppetboard' do
 
               it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://mypb.example.com').with(
                 'destination'         => 'http://127.0.1.1:4000/',
-                'aliases'             => 'pb.example.com',
+                'serveraliases'       => 'pb.example.com',
                 'auth_openid_connect' => true
               ) }
             end

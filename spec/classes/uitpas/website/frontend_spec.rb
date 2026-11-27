@@ -40,8 +40,8 @@ describe 'profiles::uitpas::website::frontend' do
             it { is_expected.to contain_class('profiles::uitpas::website::frontend::deployment') }
 
             it { is_expected.to contain_profiles__apache__vhost__reverse_proxy('http://uitpas.example.com').with(
-              'destination' => 'http://127.0.0.1:3000/',
-              'aliases'              => [],
+              'destination'   => 'http://127.0.0.1:3000/',
+              'serveraliases' => [],
             ) }
 
             it { is_expected.to contain_file('/var/www/uitpas-website-frontend').that_requires('Group[www-data]') }

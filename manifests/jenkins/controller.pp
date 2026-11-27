@@ -1,34 +1,34 @@
 class profiles::jenkins::controller (
   Stdlib::Httpurl            $url,
   String                     $admin_password,
-  String                     $version                  = 'latest',
-  Boolean                    $mfa                      = false,
-  Boolean                    $role_based_authorization = false,
-  Boolean                    $timestamps               = false,
-  Integer[1]                 $max_concurrent_builds    = 1,
-  Integer[1]                 $session_timeout_minutes  = 480,
+  String                     $version                            = 'latest',
+  Boolean                    $mfa                                = false,
+  Boolean                    $role_based_authorization           = false,
+  Boolean                    $timestamps                         = false,
+  Integer[1]                 $max_concurrent_builds              = 1,
+  Integer[1]                 $session_timeout_minutes            = 480,
+  Boolean                    $lvm                                = false,
+  Optional[String]           $volume_group                       = undef,
+  Optional[String]           $volume_size                        = undef,
+  Optional[String]           $certificate                        = undef,
+  Optional[Stdlib::Httpurl]  $docker_registry_url                = undef,
+  String                     $kubernetes_jnlp_image              = 'docker.io/eclipse-temurin:21-jre',
+  String                     $kubernetes_credentials_id          = undef,
   Integer[1]                 $kubernetes_client_cache_expiration = 60,
-  Boolean                    $lvm                      = false,
-  Optional[String]           $volume_group             = undef,
-  Optional[String]           $volume_size              = undef,
-  Optional[String]           $certificate              = undef,
-  Optional[Stdlib::Httpurl]  $docker_registry_url      = undef,
-  String                     $kubernetes_jnlp_image    = 'docker.io/eclipse-temurin:21-jre',
-  Optional[String[1]]        $kubernetes_credentials_id = undef,
-  Optional[String]           $private_key              = undef,
-  Variant[Hash, Array[Hash]] $credentials              = [],
-  String                     $github_hook_url          = '',
-  Variant[Hash, Array[Hash]] $github_servers           = [],
-  Variant[Hash, Array[Hash]] $global_libraries         = [],
-  Variant[Hash, Array[Hash]] $pipelines                = [],
-  Variant[Hash, Array[Hash]] $views                    = [],
-  Variant[Hash, Array[Hash]] $users                    = [],
-  Optional[String]           $puppetdb_url             = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
+  Optional[String]           $private_key                        = undef,
+  Variant[Hash, Array[Hash]] $credentials                        = [],
+  String                     $github_hook_url                    = '',
+  Variant[Hash, Array[Hash]] $github_servers                     = [],
+  Variant[Hash, Array[Hash]] $global_libraries                   = [],
+  Variant[Hash, Array[Hash]] $pipelines                          = [],
+  Variant[Hash, Array[Hash]] $views                              = [],
+  Variant[Hash, Array[Hash]] $users                              = [],
+  Optional[String]           $puppetdb_url                       = lookup('data::puppet::puppetdb::url', Optional[String], 'first', undef)
 ) inherits ::profiles {
 
   include ::profiles::java
 
-  $hostname   = split($url, '/')[2]
+  $hostname = split($url, '/')[2]
 
   if $lvm {
     unless ($volume_group and $volume_size) {
@@ -92,7 +92,7 @@ class profiles::jenkins::controller (
     views                    => $views,
     users                    => $users,
     puppetdb_url             => $puppetdb_url,
-    require                  => [ Class['profiles::jenkins::controller::service'], Class['profiles::jenkins::cli']]
+    require                  => [Class['profiles::jenkins::controller::service'], Class['profiles::jenkins::cli']]
   }
 
   if $certificate {
