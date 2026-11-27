@@ -8,7 +8,7 @@ class profiles::jenkins::controller::configuration(
   Integer[1]                                    $max_concurrent_builds     = 1,
   Optional[Stdlib::Httpurl]                     $docker_registry_url       = undef,
   Optional[String]                              $kubernetes_jnlp_image     = undef,
-  String                              $kubernetes_credentials_id = 'ops-tooling-eks-kubeconfig',
+  Optional[String[1]]                          $kubernetes_credentials_id = undef,
   Optional[String]                              $private_key               = undef,
   Variant[Hash, Array[Hash]]                    $credentials               = [],
   String                                        $github_hook_url           = '',
@@ -148,30 +148,32 @@ class profiles::jenkins::controller::configuration(
     notify        => Class['profiles::jenkins::controller::configuration::reload']
   }
 
-  $kubeconfig_credentials = $plain_credentials.filter |$credential| {
-    $credential['type'] == 'file' and $credential['id'] == $kubernetes_credentials_id
-  }
-  if $kubeconfig_credentials.length != 1 or $kubeconfig_credentials[0]['content'] !~ String[1] {
-    fail('File-backed Kubernetes authentication requires one matching file credential with kubeconfig content')
-  }
+  if $kubernetes_credentials_id != undef {
+    $kubeconfig_credentials = $plain_credentials.filter |$credential| {
+      $credential['type'] == 'file' and $credential['id'] == $kubernetes_credentials_id
+    }
+    if $kubeconfig_credentials.length != 1 or $kubeconfig_credentials[0]['content'] !~ String[1] {
+      fail('File-backed Kubernetes authentication requires one matching file credential with kubeconfig content')
+    }
 
-  # Fabric8 can rerun the kubeconfig exec command on watch reconnect when it can reread the file.
-  $kubeconfig_dir = '/var/lib/jenkins/.kube'
-  file { $kubeconfig_dir:
-    ensure => directory,
-    owner  => 'jenkins',
-    group  => 'jenkins',
-    mode   => '0700',
-  }
-  file { "${kubeconfig_dir}/config":
-    ensure    => file,
-    owner     => 'jenkins',
-    group     => 'jenkins',
-    mode      => '0600',
-    content   => Sensitive($kubeconfig_credentials[0]['content']),
-    show_diff => false,
-    require   => File[$kubeconfig_dir],
-    before    => Profiles::Jenkins::Plugin['kubernetes'],
+    # Fabric8 can rerun the kubeconfig exec command on watch reconnect when it can reread the file.
+    $kubeconfig_dir = '/var/lib/jenkins/.kube'
+    file { $kubeconfig_dir:
+      ensure => directory,
+      owner  => 'jenkins',
+      group  => 'jenkins',
+      mode   => '0700',
+    }
+    file { "${kubeconfig_dir}/config":
+      ensure    => file,
+      owner     => 'jenkins',
+      group     => 'jenkins',
+      mode      => '0600',
+      content   => Sensitive($kubeconfig_credentials[0]['content']),
+      show_diff => false,
+      require   => File[$kubeconfig_dir],
+      before    => Profiles::Jenkins::Plugin['kubernetes'],
+    }
   }
 
   profiles::jenkins::plugin { 'kubernetes':

@@ -1,10 +1,6 @@
 describe 'profiles::jenkins::controller::configuration' do
   include_examples 'operating system support'
 
-  let(:kubeconfig_credential) do
-    { 'id' => 'ops-tooling-eks-kubeconfig', 'type' => 'file', 'filename' => 'kubeconfig', 'content' => 'kubeconfig content' }
-  end
-
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       let(:facts) { facts }
@@ -38,6 +34,13 @@ describe 'profiles::jenkins::controller::configuration' do
               .without_content(/credentialsId:/)
           end
 
+          context 'with no Kubernetes credential ID' do
+            before { params.delete('kubernetes_credentials_id') }
+
+            it { is_expected.to compile.with_all_deps }
+            it { is_expected.not_to contain_file('/var/lib/jenkins/.kube/config') }
+          end
+
           context 'with no matching file credential' do
             before { params['credentials'] = [] }
             it { is_expected.to compile.and_raise_error(/requires one matching file credential/) }
@@ -48,8 +51,7 @@ describe 'profiles::jenkins::controller::configuration' do
         context "with url => https://jenkins.foobar.com/ and admin_password => passw0rd" do
           let(:params) { {
             'url'            => 'https://jenkins.foobar.com/',
-            'admin_password' => 'passw0rd',
-            'credentials'    => [kubeconfig_credential]
+            'admin_password' => 'passw0rd'
           } }
 
           context "with hieradata" do
@@ -67,9 +69,9 @@ describe 'profiles::jenkins::controller::configuration' do
               'max_concurrent_builds'    => 1,
               'docker_registry_url'      => nil,
               'kubernetes_jnlp_image'    => nil,
-              'kubernetes_credentials_id' => 'ops-tooling-eks-kubeconfig',
+              'kubernetes_credentials_id' => nil,
               'private_key'              => nil,
-              'credentials'              => [kubeconfig_credential],
+              'credentials'              => [],
               'github_hook_url'          => '',
               'github_servers'           => [],
               'global_libraries'         => [],
@@ -202,7 +204,7 @@ describe 'profiles::jenkins::controller::configuration' do
             it { is_expected.to contain_profiles__jenkins__plugin('plain-credentials').with(
               'ensure'        => 'present',
               'restart'       => false,
-              'configuration' => [kubeconfig_credential]
+              'configuration' => []
             ) }
 
             it { is_expected.to contain_profiles__jenkins__plugin('ssh-credentials').with(
@@ -326,7 +328,6 @@ describe 'profiles::jenkins::controller::configuration' do
           'admin_password'           => 'letmein',
           'role_based_authorization' => true,
           'max_concurrent_builds'    => 3,
-          'credentials'              => [kubeconfig_credential],
           'users'                    => [
                                           { 'id' => 'foo', 'name' => 'Foo Bar', 'password' => 'baz', 'email' => 'foo@example.com', 'groups' => ['admin', 'app'] },
                                           { 'id' => 'bar', 'name' => 'Bar Baz', 'password' => 'qux', 'email' => 'bar@example.com', 'groups' => ['app'] },
@@ -431,7 +432,6 @@ describe 'profiles::jenkins::controller::configuration' do
           'docker_registry_url' => 'https://docker.registry.com/',
           'private_key'         => 'dcba4321',
           'credentials'         => [
-                                     kubeconfig_credential,
                                      { 'id' => 'foo', 'type' => 'string', 'secret' => 'bla' },
                                      { 'id' => 'awscred', 'type' => 'aws', 'access_key' => 'aws_key', 'secret_key' => 'aws_secret' },
                                      { 'id' => 'filecred', 'type' => 'file', 'filename' => 'my_file.txt', 'content' => 'filecontent' },
@@ -496,7 +496,6 @@ describe 'profiles::jenkins::controller::configuration' do
             'ensure'        => 'present',
             'restart'       => false,
             'configuration' => [
-                                 kubeconfig_credential,
                                  { 'id' => 'foo', 'type' => 'string', 'secret' => 'bla' },
                                  { 'id' => 'filecred', 'type' => 'file', 'filename' => 'my_file.txt', 'content' => 'filecontent' },
                                  { 'id' => 'userpass', 'type' => 'username_password', 'username' => 'foo', 'password' => 'bar' }
@@ -609,7 +608,6 @@ describe 'profiles::jenkins::controller::configuration' do
           'docker_registry_url' => 'https://docker2.registry.com/',
           'private_key'         => 'abcd1234',
           'credentials'         => [
-                                     kubeconfig_credential,
                                      { 'id' => 'token1', 'type' => 'string', 'secret' => 'secret1' },
                                      { 'id' => 'token2', 'type' => 'string', 'secret' => 'secret2' },
                                      { 'id' => 'key1', 'type' => 'private_key', 'key' => 'privkey1' },
@@ -668,7 +666,6 @@ describe 'profiles::jenkins::controller::configuration' do
           'ensure'        => 'present',
           'restart'       => false,
           'configuration' => [
-                               kubeconfig_credential,
                                { 'id' => 'token1', 'type' => 'string', 'secret' => 'secret1' },
                                { 'id' => 'token2', 'type' => 'string', 'secret' => 'secret2' },
                                { 'id' => 'myfile1', 'type' => 'file', 'filename' => 'my_file1.txt', 'content' => 'spec testfile content 1' },

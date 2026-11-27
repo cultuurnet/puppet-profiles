@@ -1,10 +1,6 @@
 describe 'profiles::jenkins::controller' do
   include_examples 'operating system support'
 
-  let(:kubeconfig_credential) do
-    { 'id' => 'ops-tooling-eks-kubeconfig', 'type' => 'file', 'filename' => 'kubeconfig', 'content' => 'kubeconfig content' }
-  end
-
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       let(:facts) { facts }
@@ -13,8 +9,7 @@ describe 'profiles::jenkins::controller' do
       context "with url => https://jenkins.example.com/ and admin_password => passw0rd" do
         let(:params) { {
           'url'            => 'https://jenkins.example.com/',
-          'admin_password' => 'passw0rd',
-          'credentials'    => [kubeconfig_credential]
+          'admin_password' => 'passw0rd'
         } }
 
         context "with hieradata" do
@@ -34,9 +29,9 @@ describe 'profiles::jenkins::controller' do
             'certificate'              => nil,
             'docker_registry_url'      => nil,
             'kubernetes_jnlp_image'    => 'docker.io/eclipse-temurin:21-jre',
-            'kubernetes_credentials_id' => 'ops-tooling-eks-kubeconfig',
+            'kubernetes_credentials_id' => nil,
             'private_key'              => nil,
-            'credentials'              => [kubeconfig_credential],
+            'credentials'              => [],
             'github_hook_url'          => '',
             'github_servers'           => [],
             'global_libraries'         => [],
@@ -64,9 +59,9 @@ describe 'profiles::jenkins::controller' do
             'max_concurrent_builds'    => 1,
             'docker_registry_url'      => nil,
             'kubernetes_jnlp_image'    => 'docker.io/eclipse-temurin:21-jre',
-            'kubernetes_credentials_id' => 'ops-tooling-eks-kubeconfig',
+            'kubernetes_credentials_id' => nil,
             'private_key'              => nil,
-            'credentials'              => [kubeconfig_credential],
+            'credentials'              => [],
             'github_hook_url'          => '',
             'github_servers'           => [],
             'global_libraries'         => [],
@@ -109,8 +104,8 @@ describe 'profiles::jenkins::controller' do
             'timestamps'          => false,
             'docker_registry_url' => nil,
             'kubernetes_jnlp_image' => 'docker.io/eclipse-temurin:21-jre',
-            'kubernetes_credentials_id' => 'ops-tooling-eks-kubeconfig',
-            'credentials'         => [kubeconfig_credential],
+            'kubernetes_credentials_id' => nil,
+            'credentials'         => [],
             'github_hook_url'     => '',
             'github_servers'      => [],
             'global_libraries'    => [],
@@ -140,7 +135,6 @@ describe 'profiles::jenkins::controller' do
             'docker_registry_url'      => 'https://my.docker.registry.com/',
             'private_key'              => 'abcd1234',
             'credentials'              => [
-                                            kubeconfig_credential,
                                             { 'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'},
                                             { 'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'}
                                           ],
@@ -222,7 +216,6 @@ describe 'profiles::jenkins::controller' do
             'docker_registry_url'      => 'https://my.docker.registry.com/',
             'private_key'              => 'abcd1234',
             'credentials'              => [
-                                            kubeconfig_credential,
                                             { 'id' => 'token1', 'type' => 'string', 'secret' => 'secret1'},
                                             { 'id' => 'token2', 'type' => 'string', 'secret' => 'secret2'}
                                           ],
