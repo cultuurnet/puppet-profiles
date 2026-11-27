@@ -1,14 +1,14 @@
 class profiles::graphite (
   String                     $secret_key,
-  Boolean                    $lvm                       = false,
-  Optional[String]           $volume_group              = undef,
-  Optional[String]           $volume_size               = undef,
-  Boolean                    $auth                      = false,
   String                     $servername,
-  Optional[Array]            $serveraliases             = [],
-  Stdlib::IP::Address::V4    $service_address           = '127.0.0.1',
-  Stdlib::Port::Unprivileged $service_port              = 8080,
-  Enum['running', 'stopped'] $service_status            = 'running',
+  Optional[Array]            $serveraliases       = [],
+  Boolean                    $lvm                 = false,
+  Optional[String]           $volume_group        = undef,
+  Optional[String]           $volume_size         = undef,
+  Boolean                    $auth_openid_connect = false,
+  Stdlib::IP::Address::V4    $service_address     = '127.0.0.1',
+  Stdlib::Port::Unprivileged $service_port        = 8080,
+  Enum['running', 'stopped'] $service_status      = 'running'
 ) inherits ::profiles {
 
   $carbon_conf_dir       = '/etc/carbon'
@@ -100,7 +100,7 @@ class profiles::graphite (
       path    => $storage_dir,
       group   => '_graphite',
       owner   => '_graphite',
-      require => [Group['_graphite'],User['_graphite']],
+      require => [Group['_graphite'], User['_graphite']],
     }
 
     file { 'Graphite data dir':
@@ -108,7 +108,7 @@ class profiles::graphite (
       path    => $local_data_dir,
       group   => '_graphite',
       owner   => '_graphite',
-      require => [Group['_graphite'],User['_graphite'],File['Graphite install dir']],
+      require => [Group['_graphite'], User['_graphite'], File['Graphite install dir']],
     }
 
     mount { $local_data_dir:
@@ -116,7 +116,7 @@ class profiles::graphite (
       device  => '/data/graphite',
       fstype  => 'none',
       options => 'rw,bind',
-      require => [Profiles::Lvm::Mount['graphitedata'],File['Graphite data dir']],
+      require => [Profiles::Lvm::Mount['graphitedata'], File['Graphite data dir']],
       before  => Package['graphite-carbon']
     }
   }
@@ -165,7 +165,7 @@ class profiles::graphite (
     owner   => '_graphite',
     group   => '_graphite',
     notify  => Service['graphite-web'],
-    require     => Package['graphite-web']
+    require => Package['graphite-web']
   }
 
   exec { 'Initial django db creation':
@@ -181,7 +181,7 @@ class profiles::graphite (
     content => template('profiles/graphite/graphite-web.service.erb'),
     enable  => true,
     active  => true,
-    require => [Package['uwsgi'],Package['uwsgi-plugin-python3']]
+    require => [Package['uwsgi'], Package['uwsgi-plugin-python3']]
   }
 
   service { 'carbon-cache':
@@ -202,9 +202,11 @@ class profiles::graphite (
     hasstatus => true
   }
 
-  profiles::apache::vhost::graphite_web { "http://${servername}":
-    destination         => "http://${service_address}:${service_port}/",
-    aliases             => $serveraliases,
-    auth_openid_connect => $auth
+  profiles::apache::vhost::reverse_proxy { "http://${servername}":
+    destination          => "http://${service_address}:${service_port}/",
+    serveraliases        => $serveraliases,
+    auth_openid_connect  => $auth_openid_connect,
+    aliases              => { alias => '/static/', path  => '/usr/share/graphite-web/static/' },
+    proxy_exception_uris => '/static/'
   }
 }
