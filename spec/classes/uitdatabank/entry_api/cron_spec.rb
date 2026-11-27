@@ -12,6 +12,7 @@ describe 'profiles::uitdatabank::entry_api::cron' do
 
         it { is_expected.to contain_class('profiles::uitdatabank::entry_api::cron').with(
           'basedir'                           => '/var/www/udb3-backend',
+          'type'                              => 'instance',
           'schedule_process_duplicates'       => false,
           'schedule_movie_fetcher'            => false,
           'schedule_add_trailers'             => false,
@@ -125,6 +126,47 @@ describe 'profiles::uitdatabank::entry_api::cron' do
             'command' => '/usr/local/bin/replay_mismatched_events.sh /tmp/log/web.log.1'
           ) }
         end
+
+        context 'with type => container' do
+          let(:params) { super().merge({
+            'type' => 'container'
+          }) }
+
+          it { expect { catalogue }.to raise_error(Puppet::ParseError, /schedule_replay_mismatched_events is not supported with type => container/) }
+        end
+      end
+
+      context 'with type => container, schedule_process_duplicates => true, schedule_movie_fetcher => true and schedule_add_trailers => true' do
+        let(:params) { {
+          'type'                        => 'container',
+          'schedule_process_duplicates' => true,
+          'schedule_movie_fetcher'      => true,
+          'schedule_add_trailers'       => true
+        } }
+
+        it { is_expected.to compile.with_all_deps }
+
+        it { is_expected.to contain_cron('uitdatabank_process_duplicates').with(
+          'ensure'  => 'present',
+          'command' => '/usr/bin/docker compose -f /etc/uitdatabank-entry-api/docker-compose.yml exec -T entry-api bin/udb3.php place:process-duplicates --force',
+          'user'    => 'root'
+        ) }
+
+        it { is_expected.to contain_cron('uitdatabank_movie_fetcher').with(
+          'ensure'  => 'present',
+          'command' => '/usr/bin/docker compose -f /etc/uitdatabank-entry-api/docker-compose.yml exec -T entry-api bin/udb3.php movies:fetch --force',
+          'user'    => 'root'
+        ) }
+
+        it { is_expected.to contain_cron('uitdatabank_add_trailers').with(
+          'ensure'  => 'present',
+          'command' => '/usr/bin/docker compose -f /etc/uitdatabank-entry-api/docker-compose.yml exec -T entry-api bin/udb3.php movies:add-trailers -l',
+          'user'    => 'root'
+        ) }
+
+        it { is_expected.to contain_cron('uitdatabank_replay_mismatched_events').with(
+          'ensure' => 'absent'
+        ) }
       end
     end
   end

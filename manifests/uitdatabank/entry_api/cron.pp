@@ -1,10 +1,29 @@
 class profiles::uitdatabank::entry_api::cron (
-  String  $basedir                           = '/var/www/udb3-backend',
-  Boolean $schedule_process_duplicates       = false,
-  Boolean $schedule_movie_fetcher            = false,
-  Boolean $schedule_add_trailers             = false,
-  Boolean $schedule_replay_mismatched_events = false
+  String                        $basedir                           = '/var/www/udb3-backend',
+  Enum['instance', 'container'] $type                              = 'instance',
+  Boolean                       $schedule_process_duplicates       = false,
+  Boolean                       $schedule_movie_fetcher            = false,
+  Boolean                       $schedule_add_trailers             = false,
+  Boolean                       $schedule_replay_mismatched_events = false
 ) inherits ::profiles {
+
+  case $type {
+    'instance': {
+      $udb3_command = "${basedir}/bin/udb3.php"
+      $cron_user    = 'www-data'
+    }
+    'container': {
+      # The script replays events from log/web.log.1, which the container
+      # deployment doesn't write: it logs to stdout
+      if $schedule_replay_mismatched_events {
+        fail('Class[Profiles::Uitdatabank::Entry_api::Cron]: schedule_replay_mismatched_events is not supported with type => container')
+      }
+
+      # Root can reach the docker socket, the command itself still runs as www-data in the container
+      $udb3_command = '/usr/bin/docker compose -f /etc/uitdatabank-entry-api/docker-compose.yml exec -T entry-api bin/udb3.php'
+      $cron_user    = 'root'
+    }
+  }
 
   realize User['www-data']
 
@@ -13,9 +32,9 @@ class profiles::uitdatabank::entry_api::cron (
                      true  => 'present',
                      false => 'absent'
                    },
-    command     => "${basedir}/bin/udb3.php place:process-duplicates --force",
+    command     => "${udb3_command} place:process-duplicates --force",
     environment => ['SHELL=/bin/bash', 'MAILTO=infra+cron@publiq.be'],
-    user        => 'www-data',
+    user        => $cron_user,
     minute      => '0',
     hour        => '5',
     weekday     => '1',
@@ -27,9 +46,9 @@ class profiles::uitdatabank::entry_api::cron (
                      true  => 'present',
                      false => 'absent'
                    },
-    command     => "${basedir}/bin/udb3.php movies:fetch --force",
+    command     => "${udb3_command} movies:fetch --force",
     environment => ['SHELL=/bin/bash', 'MAILTO=infra+cron@publiq.be,jonas.verhaeghe@publiq.be'],
-    user        => 'www-data',
+    user        => $cron_user,
     minute      => '0',
     hour        => '4',
     weekday     => '1',
@@ -41,9 +60,9 @@ class profiles::uitdatabank::entry_api::cron (
                      true  => 'present',
                      false => 'absent'
                    },
-    command     => "${basedir}/bin/udb3.php movies:add-trailers -l",
+    command     => "${udb3_command} movies:add-trailers -l",
     environment => ['SHELL=/bin/bash', 'MAILTO=infra+cron@publiq.be,jonas.verhaeghe@publiq.be'],
-    user        => 'www-data',
+    user        => $cron_user,
     minute      => '0',
     hour        => '6',
     weekday     => ['1', '4'],
