@@ -10,6 +10,7 @@ define profiles::apache::vhost::reverse_proxy (
   Variant[String, Array[String]] $serveraliases         = [],
   Array[String]                  $additional_headers    = [],
   Variant[String, Array[String]] $headers               = [],
+  Variant[Hash, Array[Hash]]     $aliases               = [],
   String                         $access_log_format     = 'extended_json',
   Variant[Hash, Array[Hash]]     $additional_rewrites   = []
 ) {
@@ -123,6 +124,7 @@ define profiles::apache::vhost::reverse_proxy (
                                "setifempty X-Forwarded-Proto \"${transport}\""
                              ],
     headers               => [$headers].flatten,
+    aliases               => [$aliases].flatten,
     ssl_proxyengine       => $https_destination,
     allow_encoded_slashes => $allow_encoded_slashes,
     proxy_preserve_host   => $preserve_host,
